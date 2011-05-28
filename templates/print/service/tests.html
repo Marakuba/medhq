@@ -1,0 +1,74 @@
+{% extends "print/off_blank.html" %}
+
+{% block extra_head %}
+<style>
+	table {
+		width:100%;
+		border:1px solid gray;
+	}
+	td {
+		border:1px solid #AAA;
+		padding:2px;
+	}
+	.title-0 {
+		font-size:2em;
+		font-weight:bold;
+		background:#DDD;
+	}
+	.title-1, .title-2 {
+		
+	}
+	.price {
+		text-align:right;
+		font-weight:bold;
+	}
+	.no-price {
+		background:#ffd6d3;
+	}
+	ol, li {
+		list-style-type:decimal;
+	}
+	ul.analysis {
+		margin-left:40px;
+	}
+	li {
+		padding:2px 0;
+	}
+</style>
+{% endblock %}
+
+{% block body %}
+<table>
+{% for service in services %}
+	{% if service.level > 0 and not service.is_leaf_node %}
+	{% else %}
+
+
+{% with service.price as price %}
+<tr class="">
+	<td class="title-{{ service.level }}"{% if not service.is_leaf_node %} colspan="4"{% endif %}>
+			<div><strong>{{ service }}</strong></div>
+			{% if service.analysis_set %}
+				<ul class="analysis">
+				{% for analysis in service.analysis_set.all %}
+				<li>{{ analysis }} ({{ analysis.result_set.all.count }})<br>
+					<div><i>{{ analysis.ref_range_text|linebreaks }} {{ analysis.measurement|default:"<b>ед.изм. нет</b>" }}</i></div>
+				</li>
+				{% endfor %}
+				</ul>
+			{% endif %}
+			
+	</td>
+	{% if service.is_leaf_node %}
+	<td class="price">{{ service.get_ex_place|default:"<strong>НЕ ОПРЕДЕЛЕНО</strong>" }}</td>
+	<td class="price">{{ service.get_execution_form_display }}</td>
+	<td class="price">{{ price }}</td>
+	{% endif %}
+</tr>
+{% endwith %}
+
+	{% endif %}
+
+{% endfor %}
+</table>
+{% endblock %}

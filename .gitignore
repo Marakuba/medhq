@@ -1,0 +1,5 @@
+*.pyc
+*~
+production.py
+development.py
+manage.py

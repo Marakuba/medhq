@@ -1,0 +1,13 @@
+						<!--{#
+						{% for formset in inline_admin_formsets %}
+                            {% for form in formset %}
+                                {% for fieldset in form %}
+                                    {% for line in fieldset %}
+                                        {% for field in line %}
+                                            {{ field.field.label }}:{{ field.field.label }} {{ field.field.errors }}<br>
+                                        {% endfor %}
+                                    {% endfor %}
+                                {% endfor %}
+                            {% endfor %}
+                        {% endfor %}
+						#}-->

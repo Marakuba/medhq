@@ -1,0 +1,25 @@
+{% load visit_tags %}
+<table>
+<tr>
+<td>
+{% for object in object_list %}
+{% if object.children %}
+	<h2>{{ object.text }}</h2>
+	{% tree_list object.children ids %}
+{% else %}
+	<div class="service-row {% cycle 'row1' 'row2' %} {% if object.id in ids %}selected{% endif %}">
+	<input id="id_service_{{ object.id }}" class="checkbox" type="checkbox" name="services" value="{{ object.id }}" {% if object.id in ids %}checked{% endif %}>
+	<label for="id_service_{{ object.id }}" title="{{ object.name }}">{{ object.text }}</label>
+	<span id="price_{{ object.id }}" class="price">0</span>
+	<span>
+	{% for place in object.places %}
+	<img src='/media/resources/images/state_{{ place.pk }}.png' title='{{ place.name }}'>
+	{% endfor %}
+	</span>
+	</div>
+	{% middle forloop %}
+{% endif %}
+{% endfor %}
+</td>
+</tr>
+</table>

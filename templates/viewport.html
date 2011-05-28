@@ -1,0 +1,77 @@
+<html>
+<head>
+    <meta http-equiv="Content-Type" content="text/html; charset=utf-8">
+    <title>Viewer</title>
+
+    <link rel="stylesheet" type="text/css" href="/media/ext/resources/css/ext-all.css" />
+    <link rel="stylesheet" type="text/css" href="/media/css/feed-viewer.css" />
+    <link rel="stylesheet" type="text/css" href="/media/css/restful.css" />
+    <link rel="stylesheet" type="text/css" href="/media/css/ux/RowEditor.css" />
+    <link rel="stylesheet" type="text/css" href="/media/css/ux/Spinner.css" />
+	    
+    <script type="text/javascript" src="/media/ext/adapter/ext/ext-base.js"></script>
+ 	<script type="text/javascript" src="/media/ext/ext-all.js"></script>
+    
+<!--    <script type="text/javascript" src="../state/save-state.php"></script>
+    <script type="text/javascript" src="../state/get-state.php"></script>
+    <script type="text/javascript" src="../state/SessionProvider.js"></script>-->
+    <script type="text/javascript" src="/media/js/ux/TabCloseMenu.js"></script>
+    <script type="text/javascript" src="/media/js/ux/RowEditor.js"></script>
+    <script type="text/javascript" src="/media/js/ux/ComboRenderer.js"></script>
+    <script type="text/javascript" src="/media/js/ux/Spinner.js"></script>
+    <script type="text/javascript" src="/media/js/ux/SpinnerField.js"></script>
+    <script type="text/javascript" src="/media/js/apps/Staff.js"></script>
+    <script type="text/javascript" src="/media/js/apps/StaffGrid.js"></script>
+    <script type="text/javascript" src="/media/js/AppViewer.js"></script>
+    <script type="text/javascript" src="/media/js/DashBoard.js"></script>
+    <script type="text/javascript" src="/media/js/FeedWindow.js"></script>
+    <script type="text/javascript" src="/media/js/FeedGrid.js"></script>
+    <script type="text/javascript" src="/media/js/Tabs.js"></script>
+    <script type="text/javascript" src="/media/js/StaffTab.js"></script>
+    <script type="text/javascript" src="/media/js/MainPanel.js"></script>
+    <script type="text/javascript" src="/media/js/AppPanel.js"></script>
+
+</head>
+<body>
+<div id="header"><div style="float:right;margin:5px;" class="x-small-editor">
+	<span><a href="#">Авторизация</a></span> |
+	<span><a href="#">Help Desk</a></span>
+	<b>木</b>
+</div></div>
+
+<!-- Template used for Feed Items -->
+<div id="preview-tpl" style="display:none;">
+    <div class="post-data">
+        <span class="post-date">{joined}</span>
+        <h3 class="post-title">{username}</h3>
+        <!--<h4 class="post-author">by </h4>-->
+    </div>
+    <div class="post-body">
+    	<table style="font-size:8pt">
+    		<tr>
+    			<td><b>Место работы:</b></td>
+				<td>{place:this.formatByName}</td>
+    		</tr>
+    		<tr>
+    			<td><b>Дата рождения:</b></td>
+				<td>{birthday}</td>
+    		</tr>
+    		<tr>
+    			<td><b>Лечебное учреждение:</b></td>
+				<td>{mediacal_state:this.formatByName}</td>
+    		</tr>
+    		<tr>
+    			<td><b>Отделение:</b></td>
+				<td>{department:this.formatByName}</td>
+    		</tr>
+    		<tr>
+    			<td><b>Должность:</b></td>
+				<td>{position:this.formatByName}</td>
+    		</tr>
+    	</table>
+    	
+	</div>
+</div>
+
+</body>
+</html>

@@ -1,0 +1,36 @@
+{% extends "admin/base_site.html" %}
+
+{% load i18n %} 
+
+{% block title %}Договор {% endblock %}
+
+{% block breadcrumbs %}{% if not is_popup %}
+<div class="breadcrumbs">
+     <a href="../../../">{% trans "Home" %}</a> &rsaquo;
+     <a href="../../">{{ app_label|capfirst|escape }}</a> &rsaquo; 
+     {% if has_change_permission %}<a href="../">{{ opts.verbose_name_plural|capfirst }}</a>{% else %}{{ opts.verbose_name_plural|capfirst }}{% endif %} &rsaquo; 
+</div>
+{% endif %}{% endblock %}
+
+{% block content %}
+
+{% with patient.get_contract as contract %}
+
+{% if contract %}
+<h1>Печать договора</h1>
+<h2>{{ contract }}</h2>
+<input type="submit" value="Напечатать" onclick="window.open('{% url admin:print_contract patient.id %}');">
+{% else %}
+<h1>Создание договора</h1>
+<p>Договор с данным пациентом еще не заключен</p>
+<form method="post" action="">
+	<div>
+		<input type="hidden" name="post" value="yes">
+		<input type="submit" value="Создать">
+	</div>
+</form>
+{% endif %}
+
+{% endwith %}
+
+{% endblock %}

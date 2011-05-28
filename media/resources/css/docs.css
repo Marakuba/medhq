@@ -1,0 +1,68 @@
+html {
+	margin:0;
+}
+body {
+	font:9pt 'Arial';
+	line-height:100%;
+	width:21cm;
+	/*
+padding:1cm 1cm 0.5cm 2cm;
+*/
+}
+
+h1,h2,h3 {
+	text-align:center;
+}
+
+h1 {
+	font-size:13pt;
+	padding:5pt 0;
+}
+h2 {
+	font-size:12pt;
+	padding:2pt;
+}
+h3 {
+	font-size:10pt;
+	padding:3pt 0;
+}
+p {
+	text-align:justify;
+}
+.preamble, .indent {
+	text-indent: 1cm;
+}
+.preamble {
+	padding:8pt 0;
+	
+}
+
+table.header, table.details {
+	width:100%;
+}
+table.header td, table.details td {
+	width:50%;
+}
+table.details td:last-child {
+	padding-left:1cm;
+}
+table.details th {
+	text-align:center;
+}
+table.header td:last-child {
+	text-align:right;
+}
+
+ol {
+	list-style:decimal inside none;
+}
+
+.single {
+	line-height:100%;
+}
+.one-half {
+	line-height:150%;
+}
+.double {
+	line-height:200%;
+}

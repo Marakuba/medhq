@@ -1,0 +1,185 @@
+{% extends "box.html" %}
+
+{% block title %}Регистратура | Клиника Евромед{% endblock %}
+
+{% block head %}
+	<script type="text/javascript">
+		var state = '{{ request.active_profile.state }}';
+		var MEDIA_URL = '{{ MEDIA_URL }}';
+		var API_URL = '/api/v1';
+		function get_api_url(resource){
+			return [API_URL,'dashboard',resource].join("/");
+		}
+	</script>
+
+	<link rel="icon" type="image/ico" href="{{ MEDIA_URL }}resources/favicon.ico" />
+
+    <!-- ExtJS -->
+    <link rel="stylesheet" type="text/css" href="{{ MEDIA_URL }}extjs/resources/css/ext-all.css"/>
+	<link rel="stylesheet" type="text/css" href="{{ MEDIA_URL }}extjs/ux/css/RowEditor.css" rel="stylesheet" />
+	<link rel="stylesheet" type="text/css" href="{{ MEDIA_URL }}extjs/ux/css/Spinner.css" rel="stylesheet" />
+	<link rel="stylesheet" type="text/css" href="{{ MEDIA_URL }}extjs/ux/treegrid/treegrid.css" rel="stylesheet" />
+	<link rel="stylesheet" type="text/css" href="{{ MEDIA_URL }}extjs/ux/statusbar/css/statusbar.css" rel="stylesheet" />
+
+    <!-- APP -->
+    <link rel="stylesheet" type="text/css" href="{{ MEDIA_URL }}resources/css/app.css"/>
+
+    <!-- FAM -->
+    <link rel="stylesheet" type="text/css" href="{{ MEDIA_URL }}resources/css/silk.css"/>
+
+    <!-- LIBS -->
+    <script type="text/javascript" src="{{ MEDIA_URL }}extjs/adapter/ext/ext-base.js"></script>
+    <!-- ENDLIBS -->
+
+    <script type="text/javascript" src="{{ MEDIA_URL }}extjs/ext-all-debug.js"></script>
+
+    <script type="text/javascript" src="{{ MEDIA_URL }}extjs/src/locale/ext-lang-ru.js"></script>
+    <!--<script type="text/javascript" src="{{ MEDIA_URL }}extjs/src/debug.js"></script>-->
+
+    <script type="text/javascript" src="{{ MEDIA_URL }}extjs/ux/RowEditor.js"></script>
+
+    <script type="text/javascript" src="{{ MEDIA_URL }}extjs/ux/Spinner.js"></script>
+    <script type="text/javascript" src="{{ MEDIA_URL }}extjs/ux/SpinnerField.js"></script>
+
+    <script type="text/javascript" src="{{ MEDIA_URL }}extjs/ux/statusbar/StatusBar.js"></script>
+
+    <script type="text/javascript" src="{{ MEDIA_URL }}extjs/ux/treegrid/TreeGridSorter.js"></script>
+    <script type="text/javascript" src="{{ MEDIA_URL }}extjs/ux/treegrid/TreeGridColumnResizer.js"></script>
+    <script type="text/javascript" src="{{ MEDIA_URL }}extjs/ux/treegrid/TreeGridNodeUI.js"></script>
+    <script type="text/javascript" src="{{ MEDIA_URL }}extjs/ux/treegrid/TreeGridLoader.js"></script>
+    <script type="text/javascript" src="{{ MEDIA_URL }}extjs/ux/treegrid/TreeGridColumns.js"></script>
+    <script type="text/javascript" src="{{ MEDIA_URL }}extjs/ux/treegrid/TreeGrid.js"></script>
+
+    <script type="text/javascript" src="{{ MEDIA_URL }}app/registry/EventManager.js"></script>
+
+    <script type="text/javascript" src="{{ MEDIA_URL }}app/registry/ReferralGrid.js"></script>
+    <script type="text/javascript" src="{{ MEDIA_URL }}app/registry/ReferralWindow.js"></script>
+
+
+    <script type="text/javascript" src="{{ MEDIA_URL }}app/registry/patient/LabGrid.js"></script>
+    <script type="text/javascript" src="{{ MEDIA_URL }}app/registry/patient/VisitGrid.js"></script>
+    <script type="text/javascript" src="{{ MEDIA_URL }}app/registry/patient/ServiceGrid.js"></script>
+    <script type="text/javascript" src="{{ MEDIA_URL }}app/registry/patient/RefundGrid.js"></script>
+    <script type="text/javascript" src="{{ MEDIA_URL }}app/registry/patient/Window.js"></script>
+    <script type="text/javascript" src="{{ MEDIA_URL }}app/registry/patient/Grid.js"></script>
+    <script type="text/javascript" src="{{ MEDIA_URL }}app/registry/patient/Info.js"></script>
+    <script type="text/javascript" src="{{ MEDIA_URL }}app/registry/patient/Card.js"></script>
+    <script type="text/javascript" src="{{ MEDIA_URL }}app/registry/patient/QuickForm.js"></script>
+    <script type="text/javascript" src="{{ MEDIA_URL }}app/registry/Patients.js"></script>
+
+    <script type="text/javascript" src="{{ MEDIA_URL }}app/registry/insurance/PolicyGrid.js"></script>
+    <script type="text/javascript" src="{{ MEDIA_URL }}app/registry/insurance/PolicyWindow.js"></script>
+    <script type="text/javascript" src="{{ MEDIA_URL }}app/registry/insurance/StateGrid.js"></script>
+    <script type="text/javascript" src="{{ MEDIA_URL }}app/registry/insurance/StateWindow.js"></script>
+
+    <script type="text/javascript" src="{{ MEDIA_URL }}app/registry/visit/Form.js"></script>
+    <script type="text/javascript" src="{{ MEDIA_URL }}app/registry/visit/ServiceBasket.js"></script>
+    <script type="text/javascript" src="{{ MEDIA_URL }}app/registry/visit/AddTab.js"></script>
+    <script type="text/javascript" src="{{ MEDIA_URL }}app/registry/visit/Grid.js"></script>
+    <script type="text/javascript" src="{{ MEDIA_URL }}app/registry/visit/PrintWindow.js"></script>
+    <script type="text/javascript" src="{{ MEDIA_URL }}app/registry/Visits.js"></script>
+
+    <script type="text/javascript" src="{{ MEDIA_URL }}app/registry/refund/Form.js"></script>
+    <script type="text/javascript" src="{{ MEDIA_URL }}app/registry/refund/ServiceBasket.js"></script>
+    <script type="text/javascript" src="{{ MEDIA_URL }}app/registry/refund/AddTab.js"></script>
+    <!--<script type="text/javascript" src="{{ MEDIA_URL }}app/registry/refund/Grid.js"></script>
+    <script type="text/javascript" src="{{ MEDIA_URL }}app/registry/Refunds.js"></script>-->
+
+    <script type="text/javascript" src="{{ MEDIA_URL }}app/registry/barcodepackage/Grid.js"></script>
+    <script type="text/javascript" src="{{ MEDIA_URL }}app/registry/barcodepackage/Form.js"></script>
+    <script type="text/javascript" src="{{ MEDIA_URL }}app/registry/barcodepackage/DuplicateWindow.js"></script>
+    <script type="text/javascript" src="{{ MEDIA_URL }}app/registry/barcodepackage/Window.js"></script>
+    
+    <script type="text/javascript" src="{{ MEDIA_URL }}app/registry/barcode/Grid.js"></script>
+    <script type="text/javascript" src="{{ MEDIA_URL }}app/registry/barcode/Window.js"></script>
+    <script type="text/javascript" src="{{ MEDIA_URL }}app/registry/Barcodes.js"></script>
+
+    <script type="text/javascript" src="{{ MEDIA_URL }}app/registry/sampling/TubeWindow.js"></script>
+    <script type="text/javascript" src="{{ MEDIA_URL }}app/registry/sampling/TubeTree.js"></script>
+    <script type="text/javascript" src="{{ MEDIA_URL }}app/registry/sampling/ServiceGrid.js"></script>
+    <script type="text/javascript" src="{{ MEDIA_URL }}app/registry/sampling/FreeGrid.js"></script>
+    <script type="text/javascript" src="{{ MEDIA_URL }}app/registry/sampling/Editor.js"></script>
+
+    <script type="text/javascript" src="{{ MEDIA_URL }}app/registry/results/Grid.js"></script>
+    <script type="text/javascript" src="{{ MEDIA_URL }}app/registry/Results.js"></script>
+
+    <script type="text/javascript" src="{{ MEDIA_URL }}app/registry/ServicePanel.js"></script>
+    <script type="text/javascript" src="{{ MEDIA_URL }}app/registry/Viewport.js"></script>
+
+{% include "webapp/includes/active_profile.html" %}
+
+
+    <script type="text/javascript" src="{{ MEDIA_URL }}resources/js/web-socket-js/swfobject.js"></script>
+  <script type="text/javascript" src="{{ MEDIA_URL }}resources/js/web-socket-js/web_socket.js"></script>
+
+<script type="text/javascript">
+    
+    // Set URL of your WebSocketMain.swf here:
+    WEB_SOCKET_SWF_LOCATION = "{{ MEDIA_URL }}resources/js/web-socket-js/WebSocketMain.swf";
+    // Set this to dump debug message from Flash to console.log:
+    WEB_SOCKET_DEBUG = true;
+    
+    // Everything below is the same as using standard WebSocket.
+    
+    var ws;
+    
+    function websocket_init() {
+
+      // Connect to Web Socket.
+      // Change host/port here to your own Web Socket server.
+      ws = new WebSocket("ws://192.168.1.204:8888/");
+
+      // Set event handlers.
+      ws.onopen = function() {
+        console.log("printserver connected");
+      };
+      ws.onmessage = function(e) {
+        // e.data contains received string.
+        console.log("printserver message: " + e.data);
+      };
+      ws.onclose = function() {
+        console.log("printserver disconnected");
+      };
+      ws.onerror = function() {
+        console.log("printserver error");
+      };
+
+    }
+    
+    function onSubmit() {
+      var input = document.getElementById("input");
+      // You can send message to the Web Socket using ws.send.
+      ws.send(input.value);
+      output("send: " + input.value);
+      input.value = "";
+      input.focus();
+    }
+    
+    function onCloseClick() {
+      ws.close();
+    }
+    
+    function output(str) {
+      var log = document.getElementById("log");
+      var escaped = str.replace(/&/, "&amp;").replace(/</, "&lt;").
+        replace(/>/, "&gt;").replace(/"/, "&quot;"); // "
+      log.innerHTML = escaped + "<br>" + log.innerHTML;
+    }
+
+  </script>
+
+{% endblock %}
+
+{% block body %}
+<div id="main"></div>
+
+<div id="total-tpl" style="display:none;">
+	<div class="total-sum">
+		<span class=""><strong>Общая сумма: {total} руб.</strong></span>
+	</div>
+</div>
+
+<div id="patient-info" style="display:none;">
+	<h1>{last_name} {first_name} {mid_name}</h1>
+</div>
+{% endblock %}

@@ -1,0 +1,21 @@
+.med-testtubes {
+	background-image: url(icons/TestTubes.png) !important; background-repeat: no-repeat;
+}
+.med-usersetup {
+	background-image: url(icons/UserSetup.png) !important; background-repeat: no-repeat;
+}
+.ex-place-1 {
+	background-image: url(../images/state_1.png) !important; background-repeat: no-repeat;
+}
+.ex-place-4 {
+	background-image: url(../images/state_4.png) !important; background-repeat: no-repeat;
+}
+.ex-place-5 {
+	background-image: url(../images/state_5.png) !important; background-repeat: no-repeat;
+}
+.ex-place-7 {
+	background-image: url(../images/state_7.png) !important; background-repeat: no-repeat;
+}
+.x-tree-node-anchor {
+	white-space:normal;
+}

@@ -1,0 +1,17 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml" xml:lang="en" lang="ru">
+<head>
+	<title>{% block "title" %}{% endblock %}</title>
+	<meta http-equiv="Content-type" content="text/html; charset=utf-8" />
+	<link rel="stylesheet" type="text/css" href="{{MEDIA_URL}}css/themes/base/ui.all.css"/>	
+	<link rel="stylesheet" type="text/css" href="{{MEDIA_URL}}css/style.css"/>	
+	<script type="text/javascript" src="{{MEDIA_URL}}js/jquery-1.3.2.js"></script>
+	<script type="text/javascript" src="{{MEDIA_URL}}js/ui/ui.core.js"></script>
+	<script type="text/javascript" src="{{MEDIA_URL}}js/ui/ui.tabs.js"></script>
+	{{staff_form.media}}
+</head>
+<body>
+{% block content %}
+{% endblock %}
+</body>
+</html>

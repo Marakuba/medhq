@@ -1,0 +1,630 @@
+# SOME DESCRIPTIVE TITLE.
+# Copyright (C) YEAR THE PACKAGE'S COPYRIGHT HOLDER
+# This file is distributed under the same license as the PACKAGE package.
+# FIRST AUTHOR <EMAIL@ADDRESS>, YEAR.
+#
+msgid ""
+msgstr ""
+"Project-Id-Version: EUROMED\n"
+"Report-Msgid-Bugs-To: \n"
+"POT-Creation-Date: 2011-01-05 21:36+0300\n"
+"PO-Revision-Date: 2011-01-05 21:39+0300\n"
+"Last-Translator: Anatoly Popov <4015555@gmail.com>\n"
+"Language-Team: INIGROUP <4015555@gmail.com>\n"
+"MIME-Version: 1.0\n"
+"Content-Type: text/plain; charset=UTF-8\n"
+"Content-Transfer-Encoding: 8bit\n"
+"Plural-Forms: nplurals=3; plural=n%10==1 && n%100!=11 ? 0 : n%10>=2 && n%10<=4 && (n%100<10 || n%100>=20) ? 1 : 2;\n"
+"X-Poedit-Language: Russian\n"
+
+#: __init__.py:3
+msgid "Piston"
+msgstr "Приложение piston"
+
+#: __init__.py:4
+msgid "Lab"
+msgstr "Лаборатория"
+
+#: __init__.py:5
+msgid "Auth"
+msgstr "Пользователи"
+
+#: __init__.py:6
+msgid "Patient"
+msgstr "Пациенты"
+
+#: __init__.py:7
+msgid "State"
+msgstr "Организации"
+
+#: __init__.py:8
+msgid "Service"
+msgstr "Услуги"
+
+#: __init__.py:9
+msgid "Visit"
+msgstr "Приемы"
+
+#: __init__.py:10
+msgid "Taskmanager"
+msgstr "Менеджер задач"
+
+#: __init__.py:11
+msgid "Pricelist"
+msgstr "Цены"
+
+#: dashboard.py:42
+msgid "Quick links"
+msgstr ""
+
+#: dashboard.py:49
+msgid "Новый пациент"
+msgstr ""
+
+#: dashboard.py:53
+msgid "Новый прием"
+msgstr ""
+
+#: dashboard.py:68
+#: menu.py:20
+msgid "Applications"
+msgstr "Установленные приложения"
+
+#: dashboard.py:75
+#: menu.py:24
+msgid "Administration"
+msgstr ""
+
+#: dashboard.py:81
+#: dashboard.py:143
+msgid "Recent Actions"
+msgstr ""
+
+#: menu.py:16
+msgid "Dashboard"
+msgstr ""
+
+#: apps/schedule/forms.py:11
+#: apps/schedule/forms.py:15
+msgid "The end time must be later than start time."
+msgstr ""
+
+#: apps/schedule/forms.py:23
+#: apps/schedule/models/events.py:33
+msgid "This date is ignored for one time only events."
+msgstr ""
+
+#: apps/schedule/periods.py:275
+#: apps/schedule/periods.py:299
+#: apps/schedule/models/events.py:43
+msgid "DATE_FORMAT"
+msgstr ""
+
+#: apps/schedule/periods.py:276
+#, python-format
+msgid "Week: %(start)s-%(end)s"
+msgstr ""
+
+#: apps/schedule/periods.py:300
+#, python-format
+msgid "Day: %(start)s-%(end)s"
+msgstr ""
+
+#: apps/schedule/conf/settings.py:8
+msgid "FIRST_DAY_OF_WEEK"
+msgstr ""
+
+#: apps/schedule/models/calendars.py:135
+#: apps/schedule/models/rules.py:41
+msgid "name"
+msgstr ""
+
+#: apps/schedule/models/calendars.py:136
+msgid "slug"
+msgstr ""
+
+#: apps/schedule/models/calendars.py:140
+#: apps/schedule/models/calendars.py:141
+#: apps/schedule/models/calendars.py:225
+msgid "calendar"
+msgstr ""
+
+#: apps/schedule/models/calendars.py:229
+#: apps/schedule/models/events.py:331
+msgid "distinction"
+msgstr ""
+
+#: apps/schedule/models/calendars.py:230
+msgid "inheritable"
+msgstr ""
+
+#: apps/schedule/models/calendars.py:235
+msgid "calendar relation"
+msgstr ""
+
+#: apps/schedule/models/calendars.py:236
+msgid "calendar relations"
+msgstr ""
+
+#: apps/schedule/models/events.py:26
+#: apps/schedule/models/events.py:350
+msgid "start"
+msgstr ""
+
+#: apps/schedule/models/events.py:27
+#: apps/schedule/models/events.py:351
+msgid "end"
+msgstr ""
+
+#: apps/schedule/models/events.py:27
+msgid "The end time must be later than the start time."
+msgstr ""
+
+#: apps/schedule/models/events.py:28
+#: apps/schedule/models/events.py:348
+msgid "title"
+msgstr ""
+
+#: apps/schedule/models/events.py:29
+#: apps/schedule/models/events.py:349
+#: apps/schedule/models/rules.py:42
+msgid "description"
+msgstr ""
+
+#: apps/schedule/models/events.py:30
+msgid "creator"
+msgstr ""
+
+#: apps/schedule/models/events.py:31
+msgid "created on"
+msgstr ""
+
+#: apps/schedule/models/events.py:32
+#: apps/schedule/models/rules.py:47
+msgid "rule"
+msgstr ""
+
+#: apps/schedule/models/events.py:32
+msgid "Select '----' for a one time only event."
+msgstr ""
+
+#: apps/schedule/models/events.py:33
+msgid "end recurring period"
+msgstr ""
+
+#: apps/schedule/models/events.py:38
+#: apps/schedule/models/events.py:327
+#: apps/schedule/models/events.py:347
+msgid "event"
+msgstr ""
+
+#: apps/schedule/models/events.py:39
+msgid "events"
+msgstr ""
+
+#: apps/schedule/models/events.py:44
+#, python-format
+msgid "%(title)s: %(start)s-%(end)s"
+msgstr ""
+
+#: apps/schedule/models/events.py:336
+msgid "event relation"
+msgstr ""
+
+#: apps/schedule/models/events.py:337
+msgid "event relations"
+msgstr ""
+
+#: apps/schedule/models/events.py:352
+msgid "cancelled"
+msgstr ""
+
+#: apps/schedule/models/events.py:353
+msgid "original start"
+msgstr ""
+
+#: apps/schedule/models/events.py:354
+msgid "original end"
+msgstr ""
+
+#: apps/schedule/models/events.py:357
+msgid "occurrence"
+msgstr ""
+
+#: apps/schedule/models/events.py:358
+msgid "occurrences"
+msgstr ""
+
+#: apps/schedule/models/events.py:429
+#, python-format
+msgid "%(start)s to %(end)s"
+msgstr ""
+
+#: apps/schedule/models/rules.py:4
+msgid "Yearly"
+msgstr ""
+
+#: apps/schedule/models/rules.py:5
+msgid "Monthly"
+msgstr ""
+
+#: apps/schedule/models/rules.py:6
+msgid "Weekly"
+msgstr ""
+
+#: apps/schedule/models/rules.py:7
+msgid "Daily"
+msgstr ""
+
+#: apps/schedule/models/rules.py:8
+#, fuzzy
+msgid "Hourly"
+msgstr "История"
+
+#: apps/schedule/models/rules.py:9
+msgid "Minutely"
+msgstr ""
+
+#: apps/schedule/models/rules.py:10
+msgid "Secondly"
+msgstr ""
+
+#: apps/schedule/models/rules.py:43
+msgid "frequency"
+msgstr ""
+
+#: apps/schedule/models/rules.py:44
+msgid "params"
+msgstr ""
+
+#: apps/schedule/models/rules.py:48
+msgid "rules"
+msgstr ""
+
+#: apps/schedule/templates/profiles/schedule.html:4
+msgid "Schedule"
+msgstr ""
+
+#: apps/schedule/templates/profiles/schedule.html:12
+msgid "Start"
+msgstr ""
+
+#: apps/schedule/templates/profiles/schedule.html:13
+msgid "End"
+msgstr ""
+
+#: apps/schedule/templates/profiles/schedule.html:14
+msgid "Title"
+msgstr ""
+
+#: apps/schedule/templates/profiles/schedule.html:26
+#: apps/schedule/templates/profiles/schedule.html:27
+msgid "Event details"
+msgstr ""
+
+#: apps/schedule/templates/profiles/schedule.html:30
+#: apps/schedule/templates/profiles/schedule.html:31
+msgid "Edit event"
+msgstr ""
+
+#: apps/schedule/templates/profiles/schedule.html:33
+#: apps/schedule/templates/profiles/schedule.html:34
+msgid "Delete event"
+msgstr ""
+
+#: apps/schedule/templates/profiles/schedule.html:45
+#, python-format
+msgid "You haven't added any <a href=\"%(add_event_url)s\">event</a> yet."
+msgstr ""
+
+#: apps/schedule/templates/profiles/schedule.html:49
+msgid "Add event"
+msgstr ""
+
+#: apps/schedule/templates/schedule/_detail.html:7
+#: apps/schedule/templates/schedule/_detail.html:11
+#: apps/schedule/templates/schedule/_detail.html:21
+#: apps/schedule/templates/schedule/cancel_occurrence.html:10
+#: apps/schedule/templates/schedule/cancel_occurrence.html:11
+#: apps/schedule/templates/schedule/event.html:38
+#: apps/schedule/templates/schedule/event.html:42
+#: apps/schedule/templates/schedule/event.html:47
+#: apps/schedule/templates/schedule/occurrence.html:25
+#: apps/schedule/templates/schedule/occurrence.html:29
+msgid "DATETIME_FORMAT"
+msgstr ""
+
+#: apps/schedule/templates/schedule/_detail.html:7
+#: apps/schedule/templates/schedule/event.html:38
+#: apps/schedule/templates/schedule/occurrence.html:25
+#, python-format
+msgid "%(start_date)s"
+msgstr ""
+
+#: apps/schedule/templates/schedule/_detail.html:11
+#: apps/schedule/templates/schedule/_detail.html:21
+#: apps/schedule/templates/schedule/event.html:42
+#: apps/schedule/templates/schedule/occurrence.html:29
+#, python-format
+msgid "%(end_date)s"
+msgstr ""
+
+#: apps/schedule/templates/schedule/cancel_occurrence.html:5
+#: apps/schedule/templates/schedule/cancel_occurrence.html:12
+#: apps/schedule/templates/schedule/delete_event.html:5
+#: apps/schedule/templates/schedule/delete_event.html:10
+#: apps/schedule/templates/schedule/event.html:31
+#: templates/admin/feincms/splitpane_editor_tree.html:121
+#: templates/admin/feincms/splitpane_editor_tree.html:128
+msgid "Delete"
+msgstr ""
+
+#: apps/schedule/templates/schedule/cancel_occurrence.html:6
+msgid "Are you sure that you really want to cancel this occurrence?"
+msgstr ""
+
+#: apps/schedule/templates/schedule/cancel_occurrence.html:13
+#: apps/schedule/templates/schedule/create_event.html:13
+#: apps/schedule/templates/schedule/delete_event.html:11
+#: apps/schedule/templates/schedule/edit_occurrence.html:13
+#: apps/schedule/templates/schedule/occurrence.html:19
+msgid "Cancel"
+msgstr ""
+
+#: apps/schedule/templates/schedule/create_event.html:5
+msgid "Create or change event. All fields are required."
+msgstr ""
+
+#: apps/schedule/templates/schedule/create_event.html:12
+#: apps/schedule/templates/schedule/edit_occurrence.html:12
+#: templates/admin/feincms/fe_editor.html:48
+msgid "Save"
+msgstr ""
+
+#: apps/schedule/templates/schedule/delete_event.html:6
+msgid "Are you sure that you really want to delete it?"
+msgstr ""
+
+#: apps/schedule/templates/schedule/edit_occurrence.html:5
+msgid "Create or change occurrence. All fields are required."
+msgstr ""
+
+#: apps/schedule/templates/schedule/event.html:22
+#: apps/schedule/templates/schedule/occurrence.html:16
+msgid "Back"
+msgstr ""
+
+#: apps/schedule/templates/schedule/event.html:27
+#: apps/schedule/templates/schedule/occurrence.html:18
+#: templates/admin_tools/dashboard/modules/app_list.html:14
+#: templates/admin_tools/dashboard/modules/model_list.html:12
+msgid "Change"
+msgstr ""
+
+#: apps/schedule/templates/schedule/event.html:47
+#, python-format
+msgid "%(end_recurring_date)s"
+msgstr ""
+
+#: apps/schedule/templates/schedule/event.html:49
+msgid "Never. This is a 'one time only' event."
+msgstr ""
+
+#: libs/rusgeo_unused/__init__.py:4
+msgid "Rusgeo"
+msgstr "Геолокация"
+
+#: templates/admin/feincms/_messages_js.html:4
+msgid "Really delete item?"
+msgstr ""
+
+#: templates/admin/feincms/_messages_js.html:4
+msgid "Confirm to delete item"
+msgstr ""
+
+#: templates/admin/feincms/_messages_js.html:5
+msgid "Item deleted successfully."
+msgstr ""
+
+#: templates/admin/feincms/_messages_js.html:5
+msgid "Cannot delete item"
+msgstr ""
+
+#: templates/admin/feincms/_messages_js.html:6
+msgid "Cannot delete item, because it is parent of at least one other item."
+msgstr ""
+
+#: templates/admin/feincms/_messages_js.html:7
+msgid "Tree saved successfully."
+msgstr ""
+
+#: templates/admin/feincms/_messages_js.html:8
+msgid "Change template"
+msgstr ""
+
+#: templates/admin/feincms/_messages_js.html:9
+msgid "Really change template? <br />All changes are saved."
+msgstr ""
+
+#: templates/admin/feincms/_messages_js.html:10
+#, python-format
+msgid "Really change template? <br />All changes are saved and content from <strong>%(source_regions)s</strong> is moved to <strong>%(target_region)s</strong>."
+msgstr ""
+
+#: templates/admin/feincms/_messages_js.html:11
+msgid "Cannot make a node a child of itself."
+msgstr ""
+
+#: templates/admin/feincms/_messages_js.html:12
+msgid "No item has been selected."
+msgstr ""
+
+#: templates/admin/feincms/content_editor.html:10
+msgid "Region empty"
+msgstr ""
+
+#: templates/admin/feincms/content_editor.html:14
+msgid "Content from the parent site is automatically inherited. To override this behaviour, add some content."
+msgstr ""
+
+#: templates/admin/feincms/content_editor.html:22
+msgid "Add new item"
+msgstr ""
+
+#: templates/admin/feincms/content_editor.html:36
+msgid "Move to"
+msgstr ""
+
+#: templates/admin/feincms/content_editor.html:40
+msgid "Go"
+msgstr ""
+
+#: templates/admin/feincms/fe_tools.html:26
+msgid "Stop Editing"
+msgstr ""
+
+#: templates/admin/feincms/fe_tools.html:31
+msgid "edit"
+msgstr ""
+
+#: templates/admin/feincms/fe_tools.html:33
+msgid "new"
+msgstr ""
+
+#: templates/admin/feincms/fe_tools.html:34
+msgid "up"
+msgstr ""
+
+#: templates/admin/feincms/fe_tools.html:35
+msgid "down"
+msgstr ""
+
+#: templates/admin/feincms/fe_tools.html:36
+#: templates/admin/feincms/splitpane_editor_tree.html:103
+msgid "remove"
+msgstr ""
+
+#: templates/admin/feincms/item_editor.html:58
+#: templates/admin/feincms/splitpane_editor_blank.html:21
+#: templates/admin/feincms/page/page/item_editor.html:27
+#: templates/admin/feincms/page/page/tree_editor.html:7
+#: templates/admin/visit/add_form.html:97
+#: templates/admin/visit/change_form.html:41
+#: templates/admin_tools/dashboard/admin/app_index.html:9
+msgid "Home"
+msgstr ""
+
+#: templates/admin/feincms/item_editor.html:72
+#: templates/admin/feincms/page/page/item_editor.html:18
+#: templates/admin/tabbed/change_form.html:10
+#: templates/admin/visit/add_form.html:108
+#: templates/admin/visit/change_form.html:52
+msgid "View on site"
+msgstr ""
+
+#: templates/admin/feincms/item_editor.html:75
+#: templates/admin/feincms/page/page/item_editor.html:8
+msgid "Preview"
+msgstr ""
+
+#: templates/admin/feincms/item_editor.html:78
+#: templates/admin/feincms/page/page/item_editor.html:11
+msgid "Add child page"
+msgstr ""
+
+#: templates/admin/feincms/item_editor.html:94
+msgid "available translations"
+msgstr ""
+
+#: templates/admin/feincms/item_editor.html:105
+#: templates/admin/tabbed/change_form.html:20
+#: templates/admin/visit/add_form.html:118
+#: templates/admin/visit/change_form.html:62
+msgid "Please correct the error below."
+msgid_plural "Please correct the errors below."
+msgstr[0] ""
+msgstr[1] ""
+msgstr[2] ""
+
+#: templates/admin/feincms/splitpane_editor_blank.html:37
+#: templates/admin/feincms/splitpane_editor_tree.html:117
+#, python-format
+msgid "Add %(name)s"
+msgstr ""
+
+#: templates/admin/feincms/splitpane_editor_blank.html:42
+msgid "Select an item on the left side if you want to edit it."
+msgstr ""
+
+#: templates/admin/feincms/splitpane_editor_blank.html:43
+msgid "You can change the structure of the tree by drag-dropping elements. Please note that changes will be saved immediately. "
+msgstr ""
+
+#: templates/admin/feincms/splitpane_editor_blank.html:44
+msgid "The context menu on the tree root and tree nodes provide you with additional modes of operation."
+msgstr ""
+
+#: templates/admin/feincms/splitpane_editor_tree.html:49
+msgid "Cannot remove this frame while inside this admin section."
+msgstr ""
+
+#: templates/admin/feincms/splitpane_editor_tree.html:118
+msgid "Reload"
+msgstr ""
+
+#: templates/admin/feincms/splitpane_editor_tree.html:120
+#: templates/admin/feincms/splitpane_editor_tree.html:127
+msgid "Edit"
+msgstr ""
+
+#: templates/admin/feincms/tree_editor.html:151
+msgid "Shortcuts"
+msgstr ""
+
+#: templates/admin/feincms/tree_editor.html:153
+msgid "Collapse tree"
+msgstr ""
+
+#: templates/admin/feincms/tree_editor.html:154
+msgid "Expand tree"
+msgstr ""
+
+#: templates/admin/feincms/tree_editor.html:156
+msgid "Filter"
+msgstr ""
+
+#: templates/admin/feincms/page/page/item_editor.html:14
+#, python-format
+msgid "Replace page %(to_replace)s"
+msgstr ""
+
+#: templates/admin/feincms/page/page/item_editor.html:17
+msgid "Create hidden copy of this page"
+msgstr ""
+
+#: templates/admin/feincms/page/page/item_editor.html:19
+msgid "Edit on site"
+msgstr ""
+
+#: templates/admin/lab/laborder/change_form.html:8
+#: templates/admin/tabbed/change_form.html:9
+#: templates/admin/visit/add_form.html:107
+#: templates/admin/visit/change_form.html:51
+msgid "History"
+msgstr "История"
+
+#: templates/admin/visit/add_form.html:100
+#: templates/admin/visit/change_form.html:44
+#: templates/admin_tools/dashboard/modules/app_list.html:13
+#: templates/admin_tools/dashboard/modules/model_list.html:11
+msgid "Add"
+msgstr ""
+
+#: templates/admin_tools/dashboard/admin/app_index.html:11
+#, python-format
+msgid "%(name)s"
+msgstr ""
+
+#~ msgid "Latest Django News"
+#~ msgstr "Django-новости"
+

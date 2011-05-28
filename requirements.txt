@@ -1,0 +1,16 @@
+django
+django-admin-tools
+django-autocomplete
+django-boss
+django-debug-toolbar
+django-staticfiles
+django-sentry
+johnny-cache
+django-compressor
+django-tastypie
+django-mptt
+feincms
+South
+psycopg2
+python-memcached
+-e git+git://github.com/dottedmag/path.py.git#egg=path_py

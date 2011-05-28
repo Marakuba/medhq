@@ -1,0 +1,12 @@
+{% extends "box.html" %}
+
+{% load core_tags %}
+
+{% block  body %}
+{% for barcode in barcodes %}
+	{% mkrange barcode.duplicates as bc_range %}
+	{% for i in bc_range %}
+	<div><img src="/webapp/barcode/?codestring={{ barcode.id }}"></div>
+	{% endfor %}
+{% endfor %}
+{% endblock %}

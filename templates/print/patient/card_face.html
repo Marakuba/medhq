@@ -1,0 +1,83 @@
+{% extends "print/base.html" %}
+
+{% block title %}Приложение к договору{% endblock %}
+
+{% block extra_head %}
+	<link href="{{ MEDIA_URL }}resources/css/card.css" type="text/css" rel="stylesheet" />
+{% endblock %}
+
+{% block body %}
+
+<table class="grid">
+	<tr>
+		<td>&nbsp;</td>
+		<td>
+			<table class="details">
+				<tr class="head">
+					<th>
+						РОССИЙСКАЯ ФЕДЕРАЦИЯ<br>
+						Краснодарский край, г. Краснодар<br>
+						ООО "Клиника Евромед"<br>
+						<strong>КЛИНИКА "ЕВРОМЕД"</strong><br>
+						ИНН 2309120900 <br>
+						350000, г. Краснодар<br>
+						ул. КИМ, 143<br>
+						тел. (861) 233-43-43<br>
+						факс (861) 233-31-31<br>
+						Код ОГРН: <strong>1102309000694</strong>
+					</th>
+					<th>
+						Медицинская документация<br>
+						Форма №025/у-04<br>
+						Утверждена приказом Министерства здравоохранения<br>
+						и социального развития Российской Федерации<br>
+						от 22 ноября 2004г. №255<br>
+					</th>
+				</tr>
+				<tr>
+					<td colspan="2" class="patient-detail">
+						<ol>
+							<li>Фамилия: <strong>{{ patient.last_name }}</strong></li>
+							<li>Имя: <strong>{{ patient.first_name }}</strong></li>
+							<li>Отчество: <strong>{{ patient.mid_name|default:"-" }}</strong></li>
+							<li>Пол: <strong>{{ patient.get_gender_display|lower }}</strong></li>
+							<li>Дата рождения: <strong>{{ patient.birth_day|date:"d.m.Y" }}</strong></li>
+							<li>Адрес постоянного места жительства: <strong>{{ patient.home_address|default:"-" }}</strong></li>
+							<li>Телефон: <strong>{{ patient.mobile_phone|default:"-" }} {{ patient.home_phone|default:"" }} {{ patient.work_phone|default:"" }}</strong></li>
+							<li>Страховая медицинская организация: <strong>{{ patient.insurance_state|default:"-" }}</strong></li>
+							<li>Номер страхового полиса ДМС: <strong>{{ patient.insurance_doc|default:"-" }}</strong></li>
+						</ol>
+					</td>
+				</tr>
+				<tr>
+					<td colspan="2" class="head-16">Перемена адреса и места работы</td>
+				</tr>
+				<tr>
+					<td colspan="2">
+						<table class="address">
+							<tr>
+								<th class="col-1">Дата</th>
+								<th class="col-2">Новый адрес (новое место работы)</th>
+							</tr>
+							<tr>
+							      <td class="col-1">&nbsp;</td>
+							      <td class="col-2">&nbsp;</td>
+							</tr>
+							<tr>
+							      <td class="col-1">&nbsp;</td>
+							      <td class="col-2">&nbsp;</td>
+							</tr>
+							<tr>
+							      <td class="col-1">&nbsp;</td>
+							      <td class="col-2">&nbsp;</td>
+							</tr>
+						</table>
+					</td>
+				</tr>
+			</table>
+		</td>
+	</tr>
+</table>
+
+{% endblock %}
+</div>

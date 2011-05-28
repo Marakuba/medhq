@@ -1,0 +1,11 @@
+{% extends "admin/change_form.html" %}
+{% load i18n admin_modify adminmedia %}
+
+{% block object-tools %}
+{% if change %}{% if not is_popup %}
+  <ul class="object-tools">
+  	<li><a href="print_results/" target="_blank" class="historylink">Печать результатов</a></li>
+  	<li><a href="history/" class="historylink">{% trans "History" %}</a></li>
+  </ul>
+{% endif %}{% endif %}
+{% endblock %}

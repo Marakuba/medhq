@@ -1,0 +1,106 @@
+html {
+	margin:0;
+}
+body {
+	font:12pt Times;
+	line-height:100%;
+	width:29.7cm;
+	padding-top:0cm;
+}
+
+th {
+	font-weight:normal;
+	font-size:11pt;
+	border:1px solid;
+	/*
+vertical-align:middle;
+*/
+}
+
+table.grid,table.list, table.details {
+	width:100%
+}
+
+table.grid {
+	background:white;
+}
+
+table.grid td {
+	width:50%;
+	padding:0cm;
+}
+table.list {
+}
+table.list th {
+	height:1.4cm;
+}
+
+table.list .col-1 {
+	width:2.5cm;
+}
+
+table.list .col-2 {
+	width:4cm;
+}
+
+table.list .col-3 {
+	width:8.5cm;
+}
+
+table.list .col-4 {
+	width:3.5cm;
+}
+table.list .num {
+	height:0.4cm;
+	font-size:0.3cm;
+}
+table.list td {
+	padding:0;
+	border:1px solid;
+	height:0.693cm;
+}
+
+table.details {
+	border:1px solid;
+	margin-left:1cm;
+}
+table.details td {
+	padding:0cm;
+}
+td.patient-detail {
+	height:10cm;
+}
+td.head-16 {
+	height:0.7cm;
+	text-align:center;
+	text-transform:uppercase;
+	font-weight:bold;
+	font-size:10pt;
+}
+table.details tr.head th {
+	width:50%;
+	height:4cm;
+}
+
+table.address .col-1 {
+	width:2.5cm;
+	height:0.7cm;
+	border:none;
+	border-top:1px solid;
+	border-right:1px solid;
+}
+table.address .col-2 {
+	width:16.5cm;
+	border:none;
+	border-top:1px solid;
+}
+tr.head th {
+	padding:0.5cm 0;
+	vertical-align:middle;
+}
+ol {
+	list-style:decimal inside none;
+	padding:0.5cm;
+	font-size:14pt;
+	line-height:20pt;
+}

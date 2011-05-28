@@ -1,0 +1,124 @@
+{% extends "print/off_blank.html" %}
+
+{% load lab_tags %} 
+
+{% block title %}Направление{% endblock %}
+
+
+{% block extra_head %}
+
+	
+<style>
+	body {
+		width:21cm;
+	}
+	table.page-frame {
+		width:100%;
+		page-break-after:always;
+	}
+	table.service-list {
+		margin-top:12pt;
+	}
+	table.service-list td,table.service-list th  {
+		border:1px solid;
+		padding:3px;
+		font-size:10pt;
+	}
+	table.service-list th {
+		background-color:#EEE;
+	}
+	.details {
+		font-size:12pt;
+		line-height:120%;
+		margin:5px 0 10px 0;
+	}
+	td.visit {
+		height:19cm;
+	}
+	td.agreement {
+		border-top:dashed 1px gray;
+		font-size:8pt;
+		line-height:120%;
+	}
+	td.agreement h3 {
+		text-align:center;
+		font-size:10pt;
+		margin-top:6pt;
+		line-height:150%;
+	}
+	td.agreement .indent {
+		margin-bottom:3pt;
+	}
+	td.agreement ol {
+		list-style:decimal inside none;
+	}
+	.underwrites {
+		margin-top:10pt;
+		width:100%;
+	}
+	.title {
+		font-size:16pt;
+		font-weight:bold;
+		text-align:center;
+		margin:8pt 0;
+	}
+	.rt {
+		text-align:right;
+	}
+	
+</style>
+{% endblock %}
+
+{% block header %}
+{% endblock %}
+
+{% block body %}
+<table class="page-frame">
+	<tr>
+		<td>
+			<div class="header center">
+				<div style="float:right"><img src="/webapp/barcode/?codestring={{ visit.barcode.id }}"></div>
+				<br style="clear:both">
+				<div class="title">Направление в процедурный кабинет</div>
+			</div>
+			<div class="details">
+			<div>Пациент: <strong>{{ visit.patient.full_name }}</strong></div>
+			<div>Дата: <strong>{{ visit.created|date:"d.m.Y" }}</strong></div>
+			<div>Номер визита: <strong>{{ visit.zid }}</strong></div>
+			</div>
+			<table width="100%" class="service-list">
+				<tr>
+					<th>Пробирка</th>
+					<th>Лаборатория</th>
+					<th>Исследования</th>
+					<th>Кол-во пробирок</th>
+					<th>Кол-во штрих-кодов</th>
+					<th>Индивидуальный код</th>
+				</tr>
+				{% for sampling in samplings %}
+				<tr>
+					<td>{{ sampling.tube }}</td>
+					<td>{{ sampling.laboratory }}</td>
+					<td>
+						<ul>
+					{% for service in sampling.orderedservice_set.all %}
+							<li>{{ forloop.counter }}. {{ service.service }}</li>
+					{% endfor %}
+						</ul>
+					</td>
+					<td class="rt">{{ sampling.tube_count }}</td>
+					<td class="rt">{% if sampling.laboratory.type == 'b' and not sampling.is_barcode %}{{ sampling.tube.bc_count }}{% else %}-{% endif %}</td>
+					<td class="rt">{% if sampling.is_barcode %}{{ sampling.number.number }}{% else %}-{% endif %}</td>
+				</tr>
+				{% endfor %}
+				<tr>
+					<td colspan="3" class="rt">Всего:</td>
+					<td class="rt">{{ tubes_count.sum }}</td>
+					<td class="rt">{{ bc_count.sum }}</td>
+				</tr>
+			</table>
+		</td>
+	</tr>
+</table>
+
+{% endblock %}

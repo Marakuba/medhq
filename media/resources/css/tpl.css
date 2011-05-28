@@ -1,0 +1,20 @@
+html {
+	margin:0;
+}
+body {
+	font:12pt;
+}
+.header {
+	width:100%;
+}
+.center {
+	text-align:center;
+}
+.logo {
+	padding:28px 69px;
+	background:url(../images/offlogo.png) no-repeat 80% 0cm;
+}
+.brand {
+	font-family: Impact;
+	font-size:30pt;
+}

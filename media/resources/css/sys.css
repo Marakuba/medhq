@@ -1,0 +1,106 @@
+#branding {
+    padding: 10px;
+    font-weight: bold;
+    font: Verdana, Geneva, Arial, Helvetica, sans-serif;
+    text-transform: uppercase;
+    text-shadow: 1px 1px 2px black;
+}
+
+.printer {
+	padding-left:16px;
+	background:url("../images/printer.png") no-repeat scroll 0 0;
+}
+.attention {
+	padding-left:16px;
+	background:url("../images/attention.png") no-repeat scroll 0 1px;
+	color: #ffff00;
+}
+
+ul, ul li {
+	list-style-type:none;
+}
+
+a.clear-button {
+	text-indent:-9999px;
+	padding:4px 8px;
+	background:url("../images/cancel.png") no-repeat scroll 0 8px;
+	font-size:16px;
+	margin-left:3px;
+}
+
+.empty-list {
+	text-align:center;
+	font:8pt;
+	color: gray;
+	padding:10px;
+}
+.warnings {
+	margin-left:10px;
+	padding:1px;
+	background: #f4715f;
+	color: #fef8bb;
+	font-weight:bold;
+}
+
+.clear {
+	border:none;
+	padding:0;
+}
+.hid {
+	display:none;
+}
+.fl {
+	float: left;
+}
+.flr {
+	float: right;
+}
+.clear {
+	clear:both;
+}
+
+.analysis select {
+	width:300px;
+}
+
+#LoadingMask {
+	position:absolute;
+	top:0;
+	left:0;
+	bottom:0;
+	right:0;
+	background:#CCC;
+	opacity:0.5;
+}
+.mask-wraper {
+	width:100%;
+	position:absolute;
+	top:50%;
+	margin-top:-10px;
+	text-align:center;
+}
+.mask-wraper span {
+	padding:20px;
+	-moz-border-radius:20px;
+	opacity:1;
+	background:#EEE;
+	font-size:3em;
+	font-weight:bold;
+	font-family: Verdana, Geneva, Arial, Helvetica, sans-serif;
+}
+
+#result_set-group .tabular tr.has_original td {
+	padding:2px;
+}
+#result_set-group .tabular tr.has_original td input {
+}
+#result_set-group .tabular tr.selected {
+	background: #fffbb5;
+}
+.inputFocus {
+	-moz-box-shadow:0 0 3px #a9defb;
+	
+}
+#id_patient, #id_referral {
+	font-size:1.5em;
+}

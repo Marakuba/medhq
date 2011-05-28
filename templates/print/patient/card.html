@@ -1,0 +1,44 @@
+{% extends "print/base.html" %}
+
+{% load core_tags %}
+
+{% block title %}Приложение к договору{% endblock %}
+
+{% block extra_head %}
+	<link href="{{ STATIC_URL }}resources/css/card.css" type="text/css" rel="stylesheet" />
+{% endblock %}
+
+{% block body %}
+
+<table class="grid">
+	<tr>
+		<td>
+			<table class="list">
+				<tr>
+					<th class="col-1">Дата посещения</th>
+					<th class="col-2">Амбулаторно, на дому</th>
+					<th class="col-3">Жалобы больного, объективные данные, течение и диагноз болезни, подписи врачей и консультантов</th>
+					<th class="col-4">Назначения и отметки</th>
+				</tr>
+				<tr>
+					{% num_range 4 as cols %}
+				    {% for i in cols %}
+				      <th class="num col-{{ forloop.counter }}">{{ forloop.counter }}</th>
+				    {% endfor %}
+				</tr>
+				{% num_range 16 as rows %}
+				{% for i in rows %}
+				<tr>
+					{% num_range 4 as cols %}
+				    {% for i in cols %}
+				      <td class="col-{{ forloop.counter }}">&nbsp;</td>
+				    {% endfor %}
+				</tr>
+				{% endfor %}
+			</table>
+		</td>
+	</tr>
+</table>
+
+{% endblock %}
+</div>

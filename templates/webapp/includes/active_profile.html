@@ -1,0 +1,11 @@
+{% spaceless %}
+	<script>
+		var profiles = [
+		{% for position in request.user.get_profile.position_set.all %}
+		['{{ position.id }}','{{ position.profile }}'],
+		{% endfor %}
+		]
+		var active_profile = {{ request.active_profile.id }};
+		var active_state = '{{ request.active_profile.department.state }}';
+	</script>
+{% endspaceless %}	

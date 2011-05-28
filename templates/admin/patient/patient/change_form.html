@@ -1,0 +1,62 @@
+{% extends "admin/tabbed/change_form.html" %}
+{% load i18n admin_modify adminmedia appsmedia %}
+
+{% block object-tools %}
+{% if change %}{% if not is_popup %}
+  <ul class="object-tools">
+  <li>
+  	<a href="contract/" target="_blank" class="historylink">
+		<span class="{{ original.get_contract|yesno:'printer,attention' }}">{{ original.get_contract|default:'Договор не создан!' }}</span>
+	</a>
+  </li>
+  <li><a href="print_agreement/" class="historylink">
+  	<span class="{{ original.accept_rules|yesno:'printer,attention' }}">{{ original.accept_rules|yesno:'Согласие,Нет согласия!' }}</span></a></li>
+  <li><a href="print_card/" class="historylink"><span class="printer">Амбулаторная карта</span></a></li>
+  <li><a href="history/" class="historylink">История записи</a></li>
+  </ul>
+{% endif %}{% endif %}
+{% endblock %}
+
+{% block custom_tabs %}
+{% if original %}
+<li><a href="#inline-tabs-results">Результаты анализов</a></li>
+{% endif %}
+{% endblock %}
+
+{% block after_field_sets %}
+{% if original %}
+<div id="inline-tabs-results">
+	<fieldset class="module aligned ">
+	<h2>Результаты анализов</h2>
+	<table width="100%">
+		{% if results %}
+			<tr>
+				<th width="1%">&nbsp;</th>
+				<th>№ заказа</th>
+				<th>Дата</th>
+				<th>Лаборатория</th>
+				<th>Врач</th>
+				<th>Печать</th>
+			</tr>
+			{% for result in results %}
+			<tr>
+				<td><img src="{{ MEDIA_URL }}admin/img/admin/icon-{{ result.is_completed|yesno:'yes,no'}}.gif"></td>
+				<td>{{ result.id }}</td>
+				<td>{{ result.created }}</td>
+				<td>{{ result.laboratory }}</td>
+				<td>{{ result.staff }}</td>
+				<td>
+					<a href='{{ result.get_absolute_url }}print_results/' title='Распечатать' target='_blank'><img src='{{ MEDIA_URL }}resources/images/1294430047_print.png' border='0'></a>
+				</td>
+			</tr>
+			{% endfor %}
+		{% else %}
+		<tr>
+			<td class="empty-list">Нет записей</td>
+		</tr>
+		{% endif %}
+	</table>
+	</fieldset>
+</div>
+{% endif %}
+{% endblock %}

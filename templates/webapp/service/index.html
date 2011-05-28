@@ -1,0 +1,38 @@
+{% extends "box.html" %}
+
+{% block title %}Управление услугами{% endblock %}
+
+{% block head %}
+	<link rel="icon" type="image/ico" href="{{ MEDIA_URL }}resources/favicon.ico" />
+{% load compress %}
+{% compress css %}
+
+    <!-- ExtJS -->
+    <link rel="stylesheet" type="text/css" href="{{ MEDIA_URL }}extjs/resources/css/ext-all.css"/>
+
+    <!-- APP -->
+    <link rel="stylesheet" type="text/css" href="{{ MEDIA_URL }}resources/css/app.css"/>
+
+    <!-- FAM -->
+    <link rel="stylesheet" type="text/css" href="{{ MEDIA_URL }}resources/css/silk.css"/>
+
+{% endcompress %}
+{% compress js %}
+    <!-- LIBS -->
+    <script type="text/javascript" src="{{ MEDIA_URL }}extjs/adapter/ext/ext-base.js"></script>
+    <!-- ENDLIBS -->
+
+    <script type="text/javascript" src="{{ MEDIA_URL }}extjs/ext-all-debug.js"></script>
+    <!--<script type="text/javascript" src="{{ MEDIA_URL }}extjs/src/debug.js"></script>-->
+
+    <script type="text/javascript" src="{{ MEDIA_URL }}app/service/ServicePanel.js"></script>
+    <script type="text/javascript" src="{{ MEDIA_URL }}app/service/MainPanel.js"></script>
+    <script type="text/javascript" src="{{ MEDIA_URL }}app/service/app.js"></script>
+
+
+{% endcompress %}
+
+{% endblock %}
+
+{% block body %}
+{% endblock %}

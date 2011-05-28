@@ -1,0 +1,30 @@
+{% extends "admin/base.html" %}
+{% load i18n admin_tools_menu_tags core_media %}
+
+{% block title %}{{ title }} | Информационная система{% endblock %}
+
+{% block extrastyle %}
+{{ block.super }}
+{% if user.is_active and user.is_staff %}
+{% if not is_popup %}
+{% admin_tools_render_menu_css %}
+{% endif %}
+{% endif %}
+{% endblock %}
+
+{% block extrahead %}
+{{ block.super }}
+{% load_core_media %}
+{% endblock %}
+
+{% block branding %}
+Клиника Евромед (КИМ)
+{% endblock %}
+
+{% block nav-global %}
+{% if user.is_active and user.is_staff %}
+{% if not is_popup %}
+{% admin_tools_render_menu %}
+{% endif %}
+{% endif %}
+{% endblock %}

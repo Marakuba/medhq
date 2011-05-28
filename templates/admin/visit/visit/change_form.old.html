@@ -1,0 +1,202 @@
+{% extends "admin/base_site.html" %}
+{% load i18n admin_modify adminmedia %}
+
+{% block extrahead %}
+{% url admin:jsi18n as jsi18nurl %}
+<script type="text/javascript" src="{{ jsi18nurl|default:"../../../jsi18n/" }}"></script>
+{{ media }}
+{{ block.super }}
+{% endblock %}
+
+{% block extrastyle %}{{ block.super }}
+<link rel="stylesheet" type="text/css" href="{% admin_media_prefix %}css/forms.css" />
+<link rel="stylesheet" type="text/css" href="{{ MEDIA_URL }}resources/css/styles.css" />
+<style>
+	.change-form-fields, .service-list {
+		margin-right: 250px;
+	}
+	.infobar {
+		position:fixed;
+		top:160px;
+		right:20px;
+		width:230px;
+		text-align:center;
+		border:1px dotted #e1e9f7;
+		
+	}
+	.infobar h2 {
+	}
+	.service-list {
+		padding:3px;
+	}
+	.box h2 {
+		font-size:12pt;
+		margin:0;
+	}
+	.service-list a {
+		font-size: 12pt;
+		font-weight:bold;
+		color:#666;
+	}
+	.service-list .title {
+		padding:6px 0 3px 0;
+	}
+	.service-list .title:hover {
+		background: #d6e2f6;
+	}
+	.service-list .box {
+		margin:4px 3px;
+		/*
+display:none;
+*/
+	}
+	.service-list table {
+		width:100%;
+/*
+		border: 1px #EEE solid;
+*/
+	}
+	.service-list table tr {
+		vertical-align:top;
+	}
+	.service-list table td {
+		vertical-align:top;
+		padding:0;
+		width:50%;
+		border: 1px #EEE solid;
+	}
+	.service-row {
+		padding:4px 2px;
+	}
+	.service-row span {
+		float:right;
+	}
+	.service-row span.price {
+		width:40px;
+		text-align:right;
+		background:url({{ MEDIA_URL }}resources/images/delim.png) no-repeat 0 -10px;
+		margin-left:6px;
+	}
+	.service-row label {
+		float:none;
+		padding:0;
+		width:90%;
+		display:inline;
+		margin-right:0px;
+	}
+	.selected {
+		background-color: #f9f695;
+	}
+	
+</style>
+{% endblock %}
+
+{% block coltype %}{% if ordered_objects %}colMS{% else %}colM{% endif %}{% endblock %}
+
+{% block bodyclass %}{{ opts.app_label }}-{{ opts.object_name.lower }} change-form{% endblock %}
+
+{% block breadcrumbs %}{% if not is_popup %}
+<div class="breadcrumbs">
+     <a href="../../../">{% trans "Home" %}</a> &rsaquo;
+     <a href="../../">{{ app_label|capfirst|escape }}</a> &rsaquo; 
+     {% if has_change_permission %}<a href="../">{{ opts.verbose_name_plural|capfirst }}</a>{% else %}{{ opts.verbose_name_plural|capfirst }}{% endif %} &rsaquo; 
+     {% if add %}{% trans "Add" %} {{ opts.verbose_name }}{% else %}{{ original|truncatewords:"18" }}{% endif %}
+</div>
+{% endif %}{% endblock %}
+
+{% block content %}<div id="content-main">
+{% block object-tools %}
+{% if change %}{% if not is_popup %}
+  <ul class="object-tools">
+  	<li><a href="print/" class="historylink"><span class="printer">Направление</span></a></li>
+  	<li><a href="history/" class="historylink">{% trans "History" %}</a></li>
+  {% if has_absolute_url %}<li><a href="../../../r/{{ content_type_id }}/{{ object_id }}/" class="viewsitelink">{% trans "View on site" %}</a></li>{% endif%}
+  </ul>
+{% endif %}{% endif %}
+{% endblock %}
+<form {% if has_file_field %}enctype="multipart/form-data" {% endif %}action="{{ form_url }}" method="post" id="{{ opts.module_name }}_form">{% csrf_token %}{% block form_top %}{% endblock %}
+<div>
+{% if is_popup %}<input type="hidden" name="_popup" value="1" />{% endif %}
+{% if save_on_top %}{% submit_row %}{% endif %}
+{% if errors %}
+    <p class="errornote">
+    {% blocktrans count errors|length as counter %}Please correct the error below.{% plural %}Please correct the errors below.{% endblocktrans %}
+    </p>
+    {{ adminform.form.non_field_errors }}
+{% endif %}
+<div class="infobar">
+	<div>
+		<div class="choiceHolder">{{ value }}</div>
+	</div>
+	<p class="total-cost">Всего к оплате:<br><strong>0 руб.</strong></p>
+</div>
+<div class="change-form-fields">
+{% for fieldset in adminform %}
+  {% include "admin/includes/fieldset.html" %}
+{% endfor %}
+</div>
+<br style="clear:both;">
+{% block after_field_sets %}
+{% endblock %}
+
+{% for inline_admin_formset in inline_admin_formsets %}
+    {% include inline_admin_formset.opts.template %}
+{% endfor %}
+
+{% block after_related_objects %}
+{% if original.is_billed %}
+<fieldset class="module aligned service-list">
+	<h2>Заказанные услуги</h2>
+	{% for service in original.services.all %}
+	<div>{{forloop.counter }}. {{ service }}</div>
+	{% endfor %}
+</fieldset>
+{% else %}
+<script>
+	jQuery(function(){
+		$(".box-toggle").click(function(){
+			$(this).parent().next().toggle();
+			return false;
+		});
+		$(".service-row .checkbox").change(function(){
+			var self = $(this);
+			if (self.attr('checked'))
+			{
+				self.parent().addClass('selected');
+			} else {
+				self.parent().removeClass('selected');
+			}
+		});
+	});
+</script>
+{% load visit_tags %}
+{% make_service_list as service_list %}
+<fieldset class="module aligned service-list">
+	<h2>Услуги</h2>
+{% for service in service_list %}
+	<div class="title"><a href="#" class="box-toggle">{{ service.text }}</a></div>
+	<div class="box">
+	{% if original %}
+	{% tree_list service.children original.services %}
+	{% else %}
+	{% tree_list service.children %}
+	{% endif %}
+	</div>
+{% endfor %}
+</fieldset>
+{% endif %}
+
+{% endblock %}
+
+{% submit_row %}
+
+{% if adminform and add %}
+   <script type="text/javascript">document.getElementById("{{ adminform.first_field.auto_id }}").focus();</script>
+{% endif %}
+
+{# JavaScript for prepopulated fields #}
+{% prepopulated_fields_js %}
+
+</div>
+</form></div>
+{% endblock %}

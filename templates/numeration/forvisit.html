@@ -1,0 +1,12 @@
+{% extends "box.html" %}
+
+{% load core_tags %}
+
+{% block  body %}
+<div style="padding-left:2cm;">
+{% mkrange count as count_range %}
+{% for i in count_range %}
+<div><img src="/webapp/barcode/?codestring={{ barcode }}"></div>
+{% endfor %}
+</div>
+{% endblock %}

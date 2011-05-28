@@ -1,0 +1,19 @@
+{% extends "box.html" %}
+
+{% block body %}
+<h1>Заказ на лабораторное исследование №{{ order.pk }} от {{ order.visit.on_date|date:"d.m.Y" }}</h1>
+<h2>Тесты:</h2>
+{% if object_list %}
+<table style="border:1px solid;" cellpadding="6" cellspacing="0" border="1">
+	<tr>
+		<th>№</th>
+		<th>Тест</th>
+	</tr>
+	{% for object in object_list %}
+	<tr>
+		<td>{{ forloop.counter }}</td><td>{{ object.analysis }}</td>
+	</tr>
+	{% endfor %}
+</table>
+{% endif %}
+{% endblock %}

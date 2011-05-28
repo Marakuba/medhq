@@ -1,0 +1,57 @@
+{% extends "admin/tabbed/change_form.html" %}
+
+{% load visit_tags %}
+
+{% block custom_tabs %}
+{% endblock %}
+
+{% block inlines %}
+<div id="inline-tabs-1"><fieldset class="module aligned x-container"></fieldset></div>
+{% endblock %}
+
+
+{% block after_field_sets %}
+<script>
+	{% menu_json %}
+	{% elements_json %}
+	var price = {{ priceless|yesno:"false,true" }};
+	var initial = {% if original %}{% autoescape off %}{{ original.ordered_services }}{% endautoescape %}{% else %}[]{% endif %};
+	var staff = {% if original %}{% autoescape off %}{{ original.staff_list|default:'{}' }}{% endautoescape %}{% else %} {} {% endif %};
+	var static_url = "{{ STATIC_URL }}";
+	var can_change = true;
+</script>
+<div id="TabTpl" class="hid">
+	<div class="colmask threecol">
+		<div class="colmid">
+			<div class="colleft">
+				<div class="x-elements col1">
+					<div class="x-hint">&laquo; Выберите группу услуг</div>
+				</div>
+				<div class="x-left-sidebar x-menu-container col2"></div>
+				<div class="x-right-sidebar col3">
+					<div class="x-summary">
+						<input type="hidden" id="idTotalForms" name="orderedservice_set-TOTAL_FORMS">
+						<input type="hidden" id="idInitialForms" name="orderedservice_set-INITIAL_FORMS" value="0">
+						<input type="hidden" id="idMaxNumForms" name="orderedservice_set-MAX_NUM_FORMS">
+						<div class="title">Услуги не выбраны</div>
+						<div class="amount">0.00 руб.</div>
+						<ol class="x-service-list"></ol>
+						<div class="x-save">
+							<table>
+								<tr>
+									<td>
+										<input type="checkbox" id="ReadyToBill" name="pay_and_bill" checked>
+										провести<br>
+									</td>
+									<td><input type="submit" name="_save" class="default" value="Сохранить"></td>
+								</tr>
+							</table>
+						</div>
+					</div>
+				</div>
+			</div>
+		</div>
+	</div>
+	<br class="clear">
+</div>
+{% endblock %}

@@ -1,0 +1,29 @@
+<html>
+<head>
+	<script>
+		
+		function onClose()
+		{
+		    parent.patient_id = "{{ obj.id }}";
+		    parent.patient_label = "{{ obj.full_name }}";
+		    parent.patient_desc = "{{ desc }}";
+		    parent.$.fancybox.close();
+			return false;			
+		}
+		
+	</script>
+	<link href="/media/resources/css/reset.css" type="text/css" rel="stylesheet" />
+	<link href="/media/resources/css/print.css" type="text/css" rel="stylesheet" />
+	<link href="/media/resources/css/awesome.css" type="text/css" rel="stylesheet" />
+</head>
+<body>
+<table width="100%">
+	<tr>
+		<td><a class="awesome green" href="{{ obj.get_absolute_url }}print_card/" target="_blank">Амбулаторная карта</a></td>
+		<td><a class="awesome green" href="{{ obj.get_absolute_url }}contract/" target="_blank">Договор</a></td>
+		<td><a class="awesome green" href="{{ obj.get_absolute_url }}print_agreement/" target="_blank">Согласие</a></td>
+		<td><a class="awesome red" href="#" onClick="onClose();">Перейти к приёму</a></td>
+	</tr>
+</table>
+</body>
+</html>

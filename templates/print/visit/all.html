@@ -1,0 +1,205 @@
+{% extends "print/off_blank.html" %}
+
+{% load lab_tags %} 
+
+{% block title %}Направление{% endblock %}
+
+
+{% block extra_head %}
+
+	
+<style>
+	body {
+		width:21cm;
+	}
+	table.page-frame {
+		width:100%;
+		page-break-after:always;
+	}
+	table.service-list td {
+		border:1px solid;
+		padding:2px;
+		font-size:10pt;
+	}
+	.details {
+		font-size:12pt;
+		line-height:120%;
+		margin:5px 0 10px 0;
+	}
+	td.visit {
+		height:19cm;
+	}
+	td.agreement {
+		border-top:dashed 1px gray;
+		font-size:8pt;
+		line-height:120%;
+	}
+	td.agreement h3 {
+		text-align:center;
+		font-size:10pt;
+		margin-top:6pt;
+		line-height:150%;
+	}
+	td.agreement .indent {
+		margin-bottom:3pt;
+	}
+	td.agreement ol {
+		list-style:decimal inside none;
+	}
+	.underwrites {
+		margin-top:10pt;
+		width:100%;
+	}
+	.title {
+		font-size:1.5em;
+		text-align:center;
+	}
+	
+</style>
+{% endblock %}
+
+{% block header %}
+{% endblock %}
+
+{% block body %}
+<table class="page-frame">
+	<tr>
+		<td class="visit">
+			<div class="header center">
+				<div style="float:left"><img src="/webapp/barcode/?codestring={{ visit.zid }}"></div>
+				<div class="brand logo">КЛИНИКА</div>
+			</div>
+			<div class="details">
+			<div>Пациент: <strong>{{ visit.patient.full_name }}</strong></div>
+			<div>Дата: <strong>{{ visit.created|date:"d.m.Y" }}</strong></div>
+			<div>Номер визита: <strong>{{ visit.zid }}</strong></div>
+			</div>
+			<table class="service-list" width="100%">
+				<tr>
+					<th width="2%" class="service">№</th>
+					<th class="service">Наименование услуги</th>
+					<th width="15%" nowrap class="service">Стоимость, руб.</th>
+					<th width="15%" nowrap class="service">Кол-во</th>
+					<th width="15%" nowrap class="service">Сумма, руб.</th>
+				</tr>
+			{% for service in services %}
+			<tr style="border:1px solid">
+			<td>{{ forloop.counter }}.</td>
+			<td>{{ service.service }}</td>
+			<td class="price">{{ service.price }}</td>
+			<td class="price">{{ service.count }}</td>
+			<td class="price">{{ service.total_price }}</td>
+			</tr>
+			{% endfor %}
+			</table>
+			<div class="total">
+				Всего услуг: <strong>{{ services.count }}</strong>, на общую сумму: <strong>{{ visit.total_price }} руб.</strong>
+			</div>			
+		</td>
+	</tr>
+	<tr>
+		<td class="agreement">
+			<h3>Информированное добровольное согласие пациента<br>
+			на проведение лечебно-диагностических процедур
+			</h3>
+			<table style="width:100%; margin:6pt 0;">
+				<tr>
+					<td>Номер визита: <strong>{{ visit.zid }}</strong></td>
+					<td style="text-align:right;">Дата: <strong>{{ visit.created|date:"d.m.Y" }}</strong></td>
+				</tr>
+			</table>
+			<div class="one-half">
+			<p class="indent">
+			Я, {{ patient.full_name }}, ознакомлен{{ f }} лечащим врачом с намеченным планом, объемом и целью моего (ребенка) обследования и лечения, включающим:
+			</p>
+			<ol class="indent">
+				<li>взятие крови из пальца и вены;</li>
+				<li>осуществление различных методов исследований, в том числе инструментальных и инвазивных;</li>
+				<li>внутривенные и внутримышечные инъекции.</li>
+			</ol>
+			
+			<p class="indent">
+			Я осведомлен{{ f }} о возможных осложнениях на этапах лечения (обследования). 
+			Я информирован{{ f }} о действии назначенных мне (моему ребенку) лекарственных препаратов.
+			</p>
+			<p class="indent">
+			Мне разъяснено, что в единичных случаях при применении препаратов любого класса возможно проявление индивидуальной непереносимости лекарства, которое потребует его отмены и назначения другого препарата.
+			</p>
+			<p class="indent">
+			Я предупрежден{{ f }} о возможности изменения сроков лечения, проведения дополнительных обследований и соответственно дополнительной оплаты.
+			</p>
+			<p class="indent">
+			Мною получены рекомендации от врача по дальнейшему лечению, режиму и диете.
+			</p>
+			<p class="indent">
+			Я предупрежден{{ f }} о необходимости соблюдения рекомендаций врача и в случае их нарушения и возникновения осложнений по моей вине не буду иметь претензий к врачу.
+			</p>
+			<p class="indent">
+			Я получил{{ f }} ответы на все мои вопросы.
+			</p>
+			<p class="indent">
+			На лечение соглас{{ ff }}. С суммой и формой оплаты соглас{{ ff }}.
+			</p>
+			<table class="underwrites">
+				<tr>
+					<td>_________________________________ {{ patient.short_name }}</td>
+					<td style="text-align:right;">Врач _________________________________  /________________/</td>
+				</tr>
+			</table>
+			</div>			
+		</td>
+	</tr>
+
+</table>
+<table class="page-frame">
+	<tr>
+		<td>
+			<div class="title">Штрих-коды</div>
+			<table style="width:100%">
+			{% for sampling in samplings %}
+			<tr>
+				<td>{{ sampling }}</td>
+				<td>{{ sampling.id|zid:'6' }}</td>
+				<td align="right"><img src="/webapp/barcode/?codestring={{ sampling.id|zid:'6' }}"></td>
+			</tr>
+			{% endfor %}
+			</table>
+		</td>
+	</tr>
+</table>	
+<table class="page-frame">
+	<tr>
+		<td>
+			<div class="title">Направление в процедурный кабинет</div>
+			<table width="100%" class="service-list">
+				<tr>
+					<th>Пробирка</th>
+					<th>Лаборатория</th>
+					<th>Штрих-код</th>
+					<th>Тесты</th>
+				</tr>
+				{% for sampling in samplings %}
+				{% if sampling.execution_type_group.id != 3 %}
+				<tr>
+					<td class="service">{{ sampling.tube }}</td>
+					<td class="service">{{ sampling.laboratory }}</td>
+					<td class="service">{{ sampling.id|zid:'6' }}</td>
+					<td class="service">
+						<ul>
+					{% for service in sampling.get_services %}
+							<li>{{ service.service }}</li>
+					{% endfor %}
+						</ul>
+					</td>
+				</tr>
+				{% endif %}
+				{% endfor %}
+			</table>
+		</td>
+	</tr>
+</table>
+{% for page in pages %}
+{{ page }}
+{% endfor %}
+
+{% endblock %}

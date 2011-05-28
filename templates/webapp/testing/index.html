@@ -1,0 +1,66 @@
+{% extends "box.html" %}
+
+{% block title %}Панель управления{% endblock %}
+
+{% block head %}
+	<link rel="icon" type="image/ico" href="{{ MEDIA_URL }}resources/favicon.ico" />
+
+    <!-- ExtJS -->
+    <link rel="stylesheet" type="text/css" href="{{ MEDIA_URL }}extjs/resources/css/ext-all.css"/>
+
+    <!-- APP -->
+    <link rel="stylesheet" type="text/css" href="{{ MEDIA_URL }}resources/css/app.css"/>
+
+    <!-- FAM -->
+    <link rel="stylesheet" type="text/css" href="{{ MEDIA_URL }}resources/css/silk.css"/>
+	<link rel="stylesheet" type="text/css" href="{{ MEDIA_URL }}extjs/ux/css/Spinner.css" rel="stylesheet" />
+	<link rel="stylesheet" type="text/css" href="{{ MEDIA_URL }}extjs/ux/css/RowEditor.css" rel="stylesheet" />
+	
+	<style>
+		#bd {
+			width:960px;
+		    margin:5px auto;
+		    zoom:1;
+		}
+		#bd .left-column {
+		    width:738px;
+		    float:left;
+		}
+		#bd .right-column {
+		    width:200px;
+		    float:left;
+		    margin-left:20px;
+		}
+	</style>
+
+	<script type="text/javascript">
+		//var state = '{{ request.active_profile.state }}';
+		var MEDIA_URL = '{{ MEDIA_URL }}';
+		var API_URL = '/api/v1';
+		function get_api_url(resource){
+			return [API_URL,'dashboard',resource].join("/");
+		}
+	</script>
+
+    <!-- LIBS -->
+    <script type="text/javascript" src="{{ MEDIA_URL }}extjs/adapter/ext/ext-base.js"></script>
+    <!-- ENDLIBS -->
+
+    <script type="text/javascript" src="{{ MEDIA_URL }}extjs/ext-all-debug.js"></script>
+    <!--<script type="text/javascript" src="{{ MEDIA_URL }}extjs/src/debug.js"></script>-->
+
+    <script type="text/javascript" src="{{ MEDIA_URL }}extjs/ux/RowEditor.js"></script>
+
+    <script type="text/javascript" src="{{ MEDIA_URL }}app/registry/sampling/TubeWindow.js"></script>
+    <script type="text/javascript" src="{{ MEDIA_URL }}app/registry/sampling/TubeTree.js"></script>
+    <script type="text/javascript" src="{{ MEDIA_URL }}app/registry/sampling/ServiceGrid.js"></script>
+    <script type="text/javascript" src="{{ MEDIA_URL }}app/registry/sampling/FreeGrid.js"></script>
+    <script type="text/javascript" src="{{ MEDIA_URL }}app/registry/sampling/Editor.js"></script>
+
+    <script type="text/javascript" src="{{ MEDIA_URL }}app/testing/app.js"></script>
+
+
+{% endblock %}
+
+{% block body %}
+{% endblock %}

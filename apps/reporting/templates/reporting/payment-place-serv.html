@@ -1,0 +1,106 @@
+
+{% block extra_head %}
+<style>
+    h1 {
+        text-align:center;
+        margin:0.6cm;
+        font-size:2em;
+    }
+
+    table {
+        width:100%;
+        border:1px solid gray;
+    }
+
+    th {
+        text-align:left;
+    }
+
+    td {
+        border:1px solid #AAA;
+        padding:2px;
+    }
+    .group {
+        background:#cdffd1;
+        font-weight: bold;
+    }
+    .group2 {
+        background:#ffd6d3;
+        font-weight: bold;
+    }
+    .footer {
+        margin-bottom:20px;
+        font-size:1.2em;
+        background:#ccccff;
+    }
+    .number {
+    text-align:center;
+    }
+    .total {
+        background:#ccccff;
+    }
+</style>
+{% endblock %}
+
+{% block body %}
+
+<div id="changelist" class="module">
+<h1>{{ name }}</h1>
+
+<ul>
+{% for params in trim_params %}
+    <li>
+    {{ params.0 }} : {{ params.1 }}
+    </li>
+{% endfor %}
+</ul>
+            
+<table width="100%">
+    <tbody>
+
+        <tr class="header">
+            <th></th>
+            <th>Код - Наименование</th>
+            <th class="number">Цена</th>
+            <th class="number">Количество</th>
+            <th class="number">Сумма</th>
+        </tr>
+
+        <tr class="footer">        
+            <th colspan=3>ВСЕГО:</th>
+            <th class="number">{{results.0.1}}</th>
+            <th class="number">{{results.0.2}}</th>
+        </tr>
+
+        {% for gr in results.0.0 %}
+            <tr class="group">
+                <td colspan=3>{{ gr.0 }}</td>
+                <td class="number">{{ gr.1 }}</td>
+                <td class="number">{{ gr.2 }}</td>
+            </tr>
+            {% for gr2row in gr.3 %}            
+                <tr class="group2">
+                    <td></td>
+                    <td colspan=2>{{gr2row.0}}</td>
+                    <td class="number">{{gr2row.1}}</td>
+                    <td class="number">{{gr2row.2}}</td>
+                </tr>
+                {% for grcol2 in gr2row.3 %}
+                    <tr>
+                        <td></td>
+                        <td>{{grcol2.0}}</td>
+                        <td>{{grcol2.1}}</td>
+                        <td class="number">{{grcol2.2}}</td>
+                        <td class="number">{{grcol2.3}}</td>
+                    </tr>
+                {% endfor %}
+            {% endfor %}
+        {% endfor %}
+
+
+
+    </tbody>
+</table>
+</div>
+
+{% endblock %}

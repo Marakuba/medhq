@@ -1,0 +1,171 @@
+html {
+	font-family: Arial, Helvetica, sans-serif;
+	font-size:9.5pt;
+	margin-right:1cm;
+}
+
+.header, .patient, .results, .underwrite {
+	width: 100%;
+}
+
+.header .brand {
+	font-family: Impact;
+	font-size:30pt;
+}
+
+.header .info {
+	vertical-align:top;
+	text-align: right;
+}
+
+.header .worktime {
+	font-size:10pt;
+	padding:15px 0;
+}
+
+.patient {
+	border: 1px solid;
+	padding:6px;
+	margin-bottom:30px;
+}
+
+.patient td {
+	padding:4px;
+}
+
+.patient .name {
+	width:5cm;
+}
+
+.patient .bold {
+	font-weight:bold;
+}
+
+.results {
+	
+}
+
+.results td {
+	border: 1px solid black;
+}
+
+.results td.inline.header {
+	/*
+border-bottom: none;
+*/
+	font-weight: bold;
+	font-style:italic;
+	text-align:left;
+}
+
+.results td.inline {
+	/*
+border-bottom: none;
+*/
+}
+
+.results th {
+	padding:8px;
+	border-top: 2px solid black;
+	border-bottom: 2px solid black;
+	border-left: 1px solid black;
+	border-right: 1px solid black;
+}
+.results th:first-child {
+	border-left: 2px solid black;
+}
+
+.results th:last-child {
+	border-right: 2px solid black;
+}
+
+.results td {
+	padding:0.1cm;
+	text-align:center;
+}
+
+.results .analysis {
+	text-align:left;
+}
+
+
+.results .summary {
+	overflow:hidden;
+}
+td.gen-ref-int {
+	text-align:left;
+}
+.underwrite {
+	margin:20px 0px;
+}
+
+.underwrite td {
+	padding: 40px;
+}
+
+.underwrite .staff {
+	text-align: right;
+}
+
+sup,
+sub {
+	height: 0;
+	line-height: 1;
+	vertical-align: baseline;
+	_vertical-align: bottom;
+	position: relative;
+	font-size:8pt;
+}
+
+sup {
+	bottom: 1ex;
+}
+
+sub {
+	top: .5ex;
+}
+.print_time {
+	text-align:right;
+	margin-top:1cm;
+}
+
+td.group {
+	border:none;
+	font-size:2em;
+	font-weight:bold;
+	padding: 10px 0 4px 0;
+}
+td.service {
+	border:none;
+	font-size:1em;
+	font-weight:bold;
+	padding: 8px 0 4px 0;
+}
+td.blank {
+	text-align:left;
+	border:none;
+	font-size:9pt;
+}
+td.progress {
+	text-align:center;
+	font-weight:bold;
+	font-style:italic;
+}
+th.service {
+	border:1px solid black;
+	font-size:1.3em;
+	padding:2px;
+}
+td.price {
+	text-align:right;
+}
+div.total {
+	margin-top:1em;
+	font-size:1.1em;
+	font-style:italic;
+}
+div.comment {
+	margin-top:1em;
+	font-size:1.1em;
+	font-style:italic;
+}

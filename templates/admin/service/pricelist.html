@@ -1,0 +1,23 @@
+{% extends "admin/base_site.html" %}
+
+{% load i18n %} 
+
+{% block title %}Прайс-лист{% endblock %}
+
+{% block breadcrumbs %}{% if not is_popup %}
+<div class="breadcrumbs">
+     <a href="../../../">{% trans "Home" %}</a> &rsaquo;
+     <a href="../../">{{ app_label|capfirst|escape }}</a> &rsaquo; 
+     {% if has_change_permission %}<a href="../">{{ opts.verbose_name_plural|capfirst }}</a>{% else %}{{ opts.verbose_name_plural|capfirst }}{% endif %} &rsaquo; 
+</div>
+{% endif %}{% endblock %}
+
+
+{% block content %}
+
+<form method="get" action="/helper/pricelist/" target="_blank">
+	<input type="text" name="date" value="{{ today }}">
+	<button>Сформировать</button>
+</form>
+
+{% endblock %}

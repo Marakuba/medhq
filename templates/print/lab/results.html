@@ -1,0 +1,87 @@
+{% extends "print.html" %}
+
+{% load lab_tags %}
+
+{% block title %}{{ order }} - Результаты{% endblock %}
+
+{% block body %}
+
+<table class="header">
+	<tr>
+		<td class="brand">КЛИНИКА<br>ЕВРОМЕД</td>
+		<td class="info">350000, Россия<br>
+			г. Краснодар<br>
+			ул. КИМ, 143<br>
+			телефон: (861) 233-31-31<br>
+			факс: (861) 233-43-43
+		</td>
+	</tr>
+	<tr>
+		<td colspan="2" class="worktime">Время работы: пн-пт 08:00-19-00, сб: 09:00-14:00</td>
+	</tr>
+</table>
+
+<table class="patient">
+	<tr>
+		<td>
+			<table>
+				<tr>
+					<td class="name">Ф.И.О.:</td><td class="bold">{{ order.visit.patient.full_name }}</td>
+				</tr>
+				<tr>
+					<td class="name">Дата рождения:</td><td class="bold">{{ order.visit.patient.birth_day|date:"d.m.Y" }}</td>
+				</tr>
+				<tr>
+					<td class="name">Дата исследования:</td><td class="bold">{{ order.visit.created|date:"d.m.Y H:i" }}</td>
+				</tr>
+			</table>
+		</td>
+		<td align="right">
+			Заказ: <strong>{{ order.id|zid:"5" }}</strong><br>
+			Врач: <strong>{{ order.staff.id|zid:"5" }}</strong><br>
+			Направившее учреждение: <strong>{{ order.visit.referral.id|zid:"5" }}</strong><br>
+			
+		</td>
+	</tr>
+</table>
+
+{% if results %}
+<table class="results">
+	<tr>
+		<th>Наименование исследования</th>
+		<th>Результат</th>
+		<th>Единицы измерения</th>
+		<th>Референсные значения</th>
+	</tr>
+	
+	{% for result in results %}
+	{% if result.class == 'group' or result.class == 'service' or result.class == 'blank'%}
+	<tr>
+		<td colspan="4" class="{{ result.class }}">{{ result.object|linebreaks }}</td>
+	</tr>
+	{% endif %}
+	{% if result.class == 'result' %}
+	<tr>
+		<td class="analysis">{{ result.object.get_title }}</td>
+		<td>{% autoescape off %}{{ result.object.get_result|sup }}{% endautoescape %}</td>
+		<td>{{ result.object.analysis.measurement|default:"---" }}</td>
+		<td>{{ result.object.analysis.ref_range_text|default:"---"|linebreaks }}</td>
+	</tr>
+	{% endif %}
+	{% if result.class == 'progress' %}
+	<tr>
+		<td class="analysis">{{ result.object.get_title }}</td>
+		<td colspan="3" class="progress">В работе</td>
+	</tr>
+	{% endif %}
+	{% endfor %}
+	
+
+</table>
+{% if order.is_completed and order.comment %}
+<div class="comment">{{ order.comment }}</div>
+{% endif %}
+<div class="print_time">{{ order.print_date_display }}</div>
+{% endif %}
+
+{% endblock %}

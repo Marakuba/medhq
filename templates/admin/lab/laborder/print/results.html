@@ -1,0 +1,93 @@
+{% extends "print.html" %}
+
+{% load lab_tags %}
+
+{% block title %}{{ order }} - Результаты{% endblock %}
+
+{% block body %}
+
+<table class="header">
+	<tr>
+		<td class="brand">КЛИНИКА<br>ЕВРОМЕД</td>
+		<td class="info">350000, Россия<br>
+			г. Краснодар<br>
+			ул. КИМ, 143<br>
+			телефон: (861) 233-31-31<br>
+			факс: (861) 233-43-43
+		</td>
+	</tr>
+	<tr>
+		<td colspan="2" class="worktime">Время работы: пн-пт 08:00-19-00, сб: 09:00-14:00</td>
+	</tr>
+</table>
+
+<table class="patient">
+	<tr>
+		<td>
+			<table>
+				<tr>
+					<td class="name">Ф.И.О.:</td><td class="bold">{{ order.visit.patient.full_name }}</td>
+				</tr>
+				<tr>
+					<td class="name">Дата рождения:</td><td class="bold">{{ order.visit.patient.birth_day|date:"d.m.Y" }}</td>
+				</tr>
+				<tr>
+					<td class="name">Дата исследования:</td><td class="bold">{{ order.visit.created|date:"d.m.Y H:i" }}</td>
+				</tr>
+			</table>
+		</td>
+		<td align="right">
+			Заказ: <strong>{{ order.visit.id|zid:"5" }}</strong><br>
+			Врач: <strong>{{ order.staff.id|zid:"5" }}</strong><br>
+			Направившее учреждение: <strong>{{ order.visit.referral.id|zid:"5" }}</strong><br>
+			
+		</td>
+	</tr>
+</table>
+
+{% if results %}
+<table class="results">
+	<tr>
+		<th>Наименование исследования</th>
+		<th>Результат</th>
+		<th>Единицы измерения</th>
+		<th>Референсные значения</th>
+	</tr>
+	{% for k,v in results.items %}
+	{% if v|length > 1 %}
+		<tr>
+			<td class="inline header" colspan="4">{{ k }}</td>
+		</tr>
+	{% for object in v %}	
+	<tr>
+		<td class="analysis {{ forloop.last|yesno:",inline" }}">{{ object.get_title }}</td>
+		<td class="{{ forloop.last|yesno:",inline" }}">{% autoescape off %}{{ object.get_result|sup }}{% endautoescape %}</td>
+		<td class="{{ forloop.last|yesno:",inline" }}">{{ object.analysis.measurement|default:"---" }}</td>
+		{% if object.analysis.service.gen_ref_interval %}
+		{% if forloop.first %}
+		<td class="gen-ref-int" rowspan="{{ v|length }}">
+			{% autoescape off %}
+			{{ object.analysis.service.gen_ref_interval|linebreaks }}
+			{% endautoescape %}
+		</td>
+		{% endif %}
+		{% else %}
+		<td class="{{ forloop.last|yesno:",inline" }}" >{{ object.analysis.ref_range_text|default:"---"|linebreaks }}</td>
+		{% endif %}
+	</tr>
+	{% endfor %}
+		
+	{% else %}
+	<tr>
+		<td nowrap class="analysis">{{ v.0.get_title }}</td>
+		<td nowrap class="">{% autoescape off %}{{ v.0.get_result|sup }}{% endautoescape %}</td>
+		<td>{{ v.0.analysis.measurement|default:"---" }}</td>
+		<td>{{ v.0.analysis.ref_range_text|default:"---"|linebreaks }}</td>
+	</tr>		
+	{% endif %}
+	{% endfor %}
+</table>
+<div class="print_time">{{ order.print_date_display }}</div>
+{% endif %}
+
+{% endblock %}

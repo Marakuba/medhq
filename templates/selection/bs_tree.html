@@ -1,0 +1,48 @@
+{% extends "box.html" %}
+
+{% block body %}
+
+
+{% if object_list %}
+	<div class="breadcrumbs">
+		
+	{% if node %}
+		<a href="{% url selection slc %}">{{ verbose_name|default:'Каталог' }}</a>
+		{% if node.is_root_node %}
+			
+		{% else %}
+			<!--{{ verbose_name|default:'Каталог' }}-->
+			{% for ancestor in node.get_ancestors %}
+				| <a href="{% url selection slc %}?node={{ ancestor.pk }}">{{ ancestor.name }}</a>
+			{% endfor %}
+		{% endif %}
+		| {{ node.name }}
+	{% else %}
+		Выберите раздел
+	{% endif %}
+	</div>
+	<div class="list">
+		<ul>
+			{% for object in object_list %}
+			<li class="{% cycle 'even' '' %}">
+				{% if object.is_leaf_node %}
+				<a class="leaf" href="#" onCLick="top.selectionCallback({{ object.pk }},'{{ object }}');"><!--<span class="idn">{{ object.code }}</span>--> {{ object.name|lower|capfirst }}</a>
+				{% else %}
+				<a class="" href="{% url selection slc %}?node={{ object.pk }}"><!--<span class="idn">{{ object.code }}</span>--> {{ object.name|lower|capfirst }}</a>
+				{% endif %}
+			</li>
+			{% endfor %}
+		</ul>
+	</div>
+	{% if pages > 1 %}
+	<div class="simple-nav">
+		<ul>
+			{% for p in page_range %}
+			<li><a class="gallery-link {% if p == page %}active{% endif %}" href="?page={{ p }}{% if node %}&node={{node.pk}}{% endif %}" title="Страница {{ p }}"></a></li>
+			{% endfor %}
+		</ul>
+	</div>
+	{% endif %}
+	
+{% endif %}
+{% endblock %}
