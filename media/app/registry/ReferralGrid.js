@@ -8,7 +8,6 @@ App.ReferralGrid = Ext.extend(Ext.grid.GridPanel, {
 		    url: '/api/v1/dashboard/referral'
 		});
 		
-		// Typical JsonReader.  Notice additional meta-data params for defining the core attributes of your json-response
 		this.reader = new Ext.data.JsonReader({
 		    totalProperty: 'meta.total_count',
 		    successProperty: 'success',
@@ -17,25 +16,24 @@ App.ReferralGrid = Ext.extend(Ext.grid.GridPanel, {
 		    messageProperty: 'message'
 		}, [
 		    {name: 'id'},
-		    {name: 'name', allowBlank: false},
-		    {name: 'ins_state', allowBlank: true, type:'bool'}
+		    {name: 'name', allowBlank: false}
 		]);
 		
-		// The new DataWriter component.
 		this.writer = new Ext.data.JsonWriter({
-		    encode: false   // <-- don't return encoded JSON -- causes Ext.Ajax#request to send data using jsonData config rather than HTTP params
+		    encode: false
 		});
 		this.baseParams = {
 		    format:'json'
 		}; 
 		this.store = new Ext.data.Store({
 		    id: 'referral-store',
+		    autoLoad:true,
 		    baseParams: this.baseParams,
 		    paramNames: {
-			    start : 'offset',  // The parameter name which specifies the start row
-			    limit : 'limit',  // The parameter name which specifies number of rows to return
-			    sort : 'sort',    // The parameter name which specifies the column to sort on
-			    dir : 'dir'       // The parameter name which specifies the sort direction
+			    start : 'offset',
+			    limit : 'limit',
+			    sort : 'sort',
+			    dir : 'dir'
 			},
 		    restful: true,
 		    proxy: this.proxy,
@@ -47,27 +45,13 @@ App.ReferralGrid = Ext.extend(Ext.grid.GridPanel, {
 		    	}
 		    }
 		});
-		this.store.load();
 		
 		this.columns =  [
 		    {
 		    	header: "Организация, врач", 
-		    	width:70,
 		    	sortable: true, 
 		    	dataIndex: 'name', 
 		    	editor: new Ext.form.TextField({})
-		    },{
-		    	header: "Является страховой компанией",
-		    	width:30,
-		    	sortable: true, 
-		    	dataIndex: 'ins_state', 
-		    	editor: new Ext.form.Checkbox({}),
-		    	renderer: function(val) {
-		    		if (val) {
-		    			return "<img src='"+MEDIA_URL+"admin/img/admin/icon-yes.gif'>"
-		    		}
-		    		return ""
-		    	}
 		    }
 		];		
 		this.editor = new Ext.ux.grid.RowEditor({
@@ -90,12 +74,7 @@ App.ReferralGrid = Ext.extend(Ext.grid.GridPanel, {
 				iconCls:'silk-add',
 				text:'Добавить',
 				handler:this.onAdd.createDelegate(this, [])
-			}/*,{
-				xtype:'button',
-				iconCls:'silk-cancel',
-				text:'Изменить',
-				handler:this.onDelete.createDelegate(this, [])
-			}*/],
+			}],
 			viewConfig : {
 				forceFit : true
 			}			

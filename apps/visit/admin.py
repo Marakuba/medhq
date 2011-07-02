@@ -10,7 +10,7 @@ from service.models import BaseService
 from django.conf.urls.defaults import patterns, url
 from django.views.generic.simple import direct_to_template
 from django.shortcuts import get_object_or_404
-from visit.models import Payment, Referral, IncomeMaterial, PlainVisit, PreVisit
+from visit.models import Referral, PlainVisit, ReferralVisit
 from django.conf import settings
 
 
@@ -168,65 +168,41 @@ class VisitAdmin(admin.ModelAdmin):
               'resources/js/visit.js',
               )
         
-class PlainVisitAdmin(admin.ModelAdmin):
+from autocomplete.views import autocomplete, AutocompleteSettings
+from autocomplete.admin import AutocompleteAdmin
+
+class PatientAutocomplete(AutocompleteSettings):
+    search_fields = ('^last_name', '^first_name')
+    limit = 10
+    
+autocomplete.register(Visit.patient, PatientAutocomplete)
+
+
+class PlainVisitAdmin(AutocompleteAdmin, admin.ModelAdmin):
     """
     """
-    exclude = ('staff','services')
+    inlines = [OrderedServiceFullAdmin]
+    list_display = ('__unicode__','created','office','referral','operator')
+    list_filter = ('office',)
+    date_hierarchy = 'created'
+    search_fields = ('patient__last_name','id')
+    readonly_fields = ('barcode',)
+    
+    def save_model(self, request, obj, form, change):
+        obj.save()
+        if obj.on_date:
+            obj.created=obj.on_date
+            obj.save()
+
+class ReferralVisitAdmin(admin.ModelAdmin):
+    """
+    """
     inlines = [OrderedServiceFullAdmin]
     list_display = ('__unicode__','referral','created')
     date_hierarchy = 'created'
     search_fields = ('patient__last_name','id')
     list_editable = ('referral',)
     list_filter = ('referral',)
-
-class PreVisitAdmin(admin.ModelAdmin):
-    """
-    """
-    exclude = ('operator',)
-    form = IncomeForm
-    add_form_template = 'admin/visit/visit/change_form.html'
-    change_form_template = 'admin/visit/visit/change_form.html'
-    readonly_fields = ['total_price',]
-    list_display = ('__unicode__','is_billed')
-    fieldsets = (
-        (None, {
-            'fields':('patient','on_date','referral','payer')
-        }),
-        #(u'Услуги', {
-        #    'classes':('x-container',),
-        #    'fields':('services','staff')
-        #}),
-        (u'Дополнительно', {
-            'fields':('pregnancy_week','menses_day','menopause','diagnosis','sampled')
-        }),
-
-    )
-    inlines = [OrderedServiceAdmin]
-
-    def queryset(self, request):
-        qs = super(IncomeMaterialAdmin, self).queryset(request)
-        return qs.filter(cls=u'з')
-
-    def save_model(self, request, obj, form, change):
-        if not change:
-            obj.operator=request.user
-            obj.is_billed = True
-            obj.cls = u'з'
-        obj.save()
-
-    class Media:
-        
-        css = {'all':('jquery/fancybox/jquery.fancybox-1.3.1.css',
-                      'resources/css/xstyle.css')}
-        
-        js = ('resources/js/jquery-1.4.4.js',
-              'jquery/fancybox/jquery.fancybox-1.3.1.pack.js',
-              'jquery/jquery.nano.js',
-              'resources/js/services.js',
-              'resources/js/visit.js',
-              )
-
-
 
 class ReferralAdmin(admin.ModelAdmin):
     """
@@ -243,95 +219,10 @@ class ReferralAdmin(admin.ModelAdmin):
         if not change:
             obj.operator=request.user
         obj.save()
-
-
-class IncomeMaterialAdmin(admin.ModelAdmin):
-    """
-    """
-    exclude = ('operator',)
-    form = IncomeForm
-    add_form_template = 'admin/visit/visit/change_form.html'
-    change_form_template = 'admin/visit/visit/change_form.html'
-    readonly_fields = ['total_price',]
-    list_display = ('__unicode__','is_billed')
-    inlines = [OrderedServiceAdmin]
-    date_hierarchy = 'created'
-    search_fields = ('patient__last_name','id')
-    fieldsets = (
-        (None, {
-            'fields':('patient','source_lab','on_date','referral')
-        }),
-#        (u'Услуги', {
-#            'classes':('x-container',),
-#            'fields':('services','staff')
-#        }),
-        (u'Дополнительно', {
-            'fields':('pregnancy_week','menses_day','menopause','diagnosis','sampled')
-        }),
-
-    )
-
-#    def save_formset(self, request, form, formset, change):
-#        super(IncomeMaterialAdmin, self).save_formset(request, form, formset, change)
-#        instance = form.instance
-#        items = instance.orderedservice_set.all()
-#        total_price = 0
-#        for item in items:
-#            price = item.service.price()
-#            total_price += price
-#            item.price = price
-#            item.total_price = price*item.count
-#            item.save()
-#        instance.total_price = total_price
-#        instance.save()
-    
-    def render_change_form(self, request, context, add=False, change=False, form_url='', obj=None):
-        context.update({
-            'priceless':True
-        })
-        return super(IncomeMaterialAdmin, self).render_change_form(request, context, add=add, change=change, form_url=form_url, obj=obj)
-
-    def queryset(self, request):
-        qs = super(IncomeMaterialAdmin, self).queryset(request)
-        return qs.filter(cls=u'б')
-
-    def save_model(self, request, obj, form, change):
-        if not change:
-            obj.operator=request.user
-            obj.is_billed = True
-            obj.cls = u'б'
-            obj.payment_type = u'л'
-        obj.save()
-
-    class Media:
         
-        css = {'all':('jquery/fancybox/jquery.fancybox-1.3.1.css',
-                      'resources/css/xstyle.css')}
-        
-        js = ('resources/js/jquery-1.4.4.js',
-              'jquery/fancybox/jquery.fancybox-1.3.1.pack.js',
-              'jquery/jquery.nano.js',
-              'resources/js/services.js',
-              'resources/js/visit.js',
-              )
 
-
-class PaymentAdmin(admin.ModelAdmin):
-    """
-    """
-    list_display = ('__unicode__','total_paid','get_visit_list','comment','operator')
-    exclude = ('operator',)
-    filter_horizontal = ('visits',)
-    
-    def save_model(self, request, obj, form, change):
-        if not change:
-            obj.operator=request.user
-        obj.save()
-
-
-admin.site.register(PreVisit, PreVisitAdmin)
 admin.site.register(PlainVisit, PlainVisitAdmin)
+admin.site.register(ReferralVisit, ReferralVisitAdmin)
 admin.site.register(Visit, VisitAdmin)
 admin.site.register(Referral, ReferralAdmin)
-admin.site.register(Payment, PaymentAdmin)
-admin.site.register(IncomeMaterial, IncomeMaterialAdmin)
+admin.site.register(OrderedService)

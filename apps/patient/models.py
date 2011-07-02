@@ -6,25 +6,21 @@ from core.models import make_person_object, make_operator_object
 from state.models import State
 import datetime
 from pricelist.models import Discount
-
+from django.db.models.aggregates import Sum
+from django.utils.encoding import smart_unicode
 
 
 class Patient(make_person_object('patient')):
     user = models.ForeignKey(User, related_name="django_user", null=True, blank=True)
     hid_card = models.CharField(u'HID', max_length=50, blank=True)
-    insurance_state = models.ForeignKey(State, 
-                                        verbose_name=u'Страховая организация',
-                                        limit_choices_to={'type':u'i'},
-                                        null=True, blank=True,
-                                        help_text=u'При добавлении новой организации необходимо выбрать тип: "Страховая компания"!')
-    insurance_doc = models.CharField(u'Полис ДМС', max_length=50, 
-                                     null=True, blank=True)
-    #accept_rules = models.BooleanField(u'Согласие подписано', default=False)
     discount = models.ForeignKey(Discount, 
                                  verbose_name=u'Скидка', 
                                  null=True, blank=True)
-    initial_account = models.PositiveIntegerField(u'Первоначальное накопление', default=0)
-    billed_account = models.PositiveIntegerField(u'Счет накопления', default=0)
+    initial_account = models.DecimalField(u'Первоначальная сумма', max_digits=10, decimal_places=2, default='0.0')
+    billed_account = models.DecimalField(u'Счет накопления', max_digits=10, decimal_places=2, default='0.0')
+    doc = models.CharField(u'Документ', max_length=30, blank=True)
+    
+    objects = models.Manager()
     
     def __unicode__(self):
         return u"%s - %s /%s/" % (self.zid(), self.full_name(), self.birth_day.strftime("%d.%m.%Y"))
@@ -63,6 +59,29 @@ class Patient(make_person_object('patient')):
 #            return ". ".join(warns)
         return None
     
+    def update_account(self):
+        visits = self.visit_set.all()
+        result = visits.aggregate(price=Sum('total_price'), discount=Sum('total_discount'))
+        if result['price'] is not None and result['discount'] is not None:
+            total = result['price']-result['discount']
+        else:
+            total = 0    
+        self.billed_account = total
+        
+        print "set new account value:", total
+        
+        if not self.discount or self.discount.type in (u'accum',):
+            full_total = total + self.initial_account
+            if not self.discount or full_total > self.discount.max:
+                new_discount = Discount.objects.filter(type__iexact=u'accum', min__lte=full_total, max__gte=full_total)
+                if len(new_discount):
+                    self.discount = new_discount[0]
+                    print "set new discount:", new_discount[0]
+                else:
+                    print "no discounts for current value!"
+        #commit all changes
+        self.save()
+    
     def get_absolute_url(self):
         return u"/patient/patient/%s/" % self.id
     
@@ -82,6 +101,13 @@ class InsurancePolicy(make_operator_object('insurance_policy')):
     end_date = models.DateField(u'Окончание действия', blank=True, null=True)
     
     objects = models.Manager()
+    
+    def __unicode__(self):
+        return smart_unicode(u'%s' % self.number)
+    
+    class Meta:
+        verbose_name = u'страховой полис'
+        verbose_name_plural = u'страховые полисы'
 
 
 class ContractManager(models.Manager):
@@ -130,6 +156,8 @@ class CardType(models.Model):
 class PatientCard(make_operator_object('patient_card')):
     patient = models.ForeignKey(Patient, related_name='patient_field')
     card_type = models.ForeignKey(CardType)
+    
+    objects = models.Manager()
     
     def __unicode__(self):
         return u"%s (%s)" % (self.patient, self.card_type)

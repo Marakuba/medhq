@@ -124,8 +124,6 @@ App.visit.ServiceBasket = Ext.extend(Ext.grid.EditorGridPanel, {
 		});
 		
 		this.store = new Ext.data.Store({
-		    id: Ext.id(),
-			autoDestroy:true,
 			autoSave:false,
 		    baseParams: {
 		    	format:'json'
@@ -212,7 +210,7 @@ App.visit.ServiceBasket = Ext.extend(Ext.grid.EditorGridPanel, {
 		    	dataIndex: 'staff_list' 
 		    },{
 		    	header: "Врач", 
-		    	width: 50, 
+		    	width: 30, 
 		    	hidden: this.shortMode,
 		    	sortable: true, 
 		    	dataIndex: 'staff_name',
@@ -250,8 +248,8 @@ App.visit.ServiceBasket = Ext.extend(Ext.grid.EditorGridPanel, {
 				    //queryParam:'staff__last_name__istartswith'
 		    	})*/
 		    },{
-		    	header: "Количество", 
-		    	width: 50, 
+		    	header: "Кол-во", 
+		    	width: 10, 
 		    	sortable: false, 
 		    	hidden: this.shortMode,
 		    	dataIndex: 'count', 
@@ -261,14 +259,14 @@ App.visit.ServiceBasket = Ext.extend(Ext.grid.EditorGridPanel, {
             	})
 		    },{
 		    	header: "Цена", 
-		    	width: 50, 
+		    	width: 10, 
 		    	sortable: false, 
 		    	hidden: this.shortMode,
 		    	dataIndex: 'price' 
 		    	//editor: new Ext.form.TextField({})
 		    },{
 		    	header: "Сумма", 
-		    	width: 50, 
+		    	width: 10, 
 		    	sortable: false,
 		    	hidden: this.shortMode,
 		    	dataIndex: 'total',
@@ -291,19 +289,26 @@ App.visit.ServiceBasket = Ext.extend(Ext.grid.EditorGridPanel, {
 			store:this.store,
 			columns:this.columns,
 			sm : new Ext.grid.RowSelectionModel({
-						singleSelect : true
-					}),
+				singleSelect : true,
+				listeners: {
+					rowselect: function(sm,i,rec) {
+						this.getTopToolbar().items.itemAt(0).setDisabled(!rec.phantom);
+					},
+					scope:this
+				}
+			}),
 			tbar:[{
 				xtype:'button',
 				iconCls:'silk-delete',
 				text:'Удалить',
+				disabled:true,
 				handler:this.delRow.createDelegate(this,[])
-			}/*,{
+			},{
 				xtype:'button',
 				//iconCls:'silk-delete',
-				text:'Сохранить',
+				text:'Изменить врача',
 				handler:this.saveBasket.createDelegate(this,[])
-			}*/],
+			}],
 			viewConfig : {
 				forceFit : true
 				//getRowClass : this.applyRowClass
@@ -354,13 +359,7 @@ App.visit.ServiceBasket = Ext.extend(Ext.grid.EditorGridPanel, {
 			c += rec.data.price*rec.data.count;
 			return true;
 		});
-		return c;
-		
-		//this.fireEvent('updatetotalsum',c);  ////R
-		
-		//var p = Ext.getCmp('total-count-panel');
-		//p.tpl.overwrite(p.body,{total:c});
-		//return c
+		return c
 	},
 	
 	addRecord: function(attrs){
@@ -400,17 +399,10 @@ App.visit.ServiceBasket = Ext.extend(Ext.grid.EditorGridPanel, {
 	
 	delRow: function() {
 		rec = this.getSelectionModel().getSelected();
-		this.store.remove(rec);
+		if(rec.phantom) {
+			this.store.remove(rec);
+		}
 	}
-	
-	/*onPatientSelect: function(rec) {
-		this.store.load({
-			params: {
-				'order__patient': rec.data.id
-			}
-		});
-	}*/
-	
 	
 });
 

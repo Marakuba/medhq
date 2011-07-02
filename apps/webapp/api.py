@@ -143,7 +143,7 @@ class BaseServiceResource(ModelResource):
     #order = fields.ToOneField(VisitResource, 'order')
     
     class Meta:
-        queryset = BaseService.objects.actual()
+        queryset = BaseService.objects.all()
         resource_name = 'baseservice'
 #        filtering = {
 #        }

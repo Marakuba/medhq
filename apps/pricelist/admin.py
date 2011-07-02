@@ -8,6 +8,10 @@ class PriceTypeAdmin(admin.ModelAdmin):
     """
     list_display = ('name','slug')
     
+class DiscountAdmin(admin.ModelAdmin):
+    """
+    """
+    list_display = ('name','value','min','max', lambda obj: obj.get_type_display())
     
 admin.site.register(PriceType, PriceTypeAdmin)
-admin.site.register(Discount)
+admin.site.register(Discount, DiscountAdmin)

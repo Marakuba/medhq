@@ -3,11 +3,16 @@
 from django.shortcuts import get_object_or_404
 import datetime
 from django.views.generic.simple import direct_to_template
-from visit.models import Visit
+from visit.models import Visit, OrderedService
 from lab.models import Sampling
 from django.template import loader
 from django.template.context import RequestContext
 from django.db.models.aggregates import Sum
+
+from autocomplete.views import AutocompleteView
+from staff.models import Position
+from django.http import HttpResponseBadRequest
+autocomplete = AutocompleteView('visit')
 
 def all(request, visit_id):
     visit = get_object_or_404(Visit, pk=visit_id)
@@ -92,4 +97,28 @@ def sampling(request, visit_id):
     return direct_to_template(request=request, 
                               template='print/visit/sampling.html', 
                               extra_context=extra_context)
+    
+    
+def daily_staff_report(request):
+    position = get_object_or_404(Position, pk=request.GET.get('staff'))
+    date = request.GET.get('date') #format: YYYY-MM-DD
+    
+    if not date:
+        return HttpResponseBadRequest()
+    
+    year,month,day = date.split('-')
+    
+    date_from = datetime.datetime(int(year), int(month), int(day),0,0,0)
+    date_till = datetime.datetime(int(year), int(month), int(day),23,59,59)
+    
+    ordered_services = OrderedService.objects.filter(staff=position, created__range=(date_from,date_till))
+    ec = {
+          'meta': {
+            'date':date_from
+        },
+          'object_list':ordered_services
+    }
+    return direct_to_template(request=request, 
+                              template="visit/daily_staff_report.html", 
+                              extra_context=ec)
     

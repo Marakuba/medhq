@@ -1,4 +1,4 @@
-Ext.ns('App.patient');
+Ext.ns('App.patient','App.registry');
 
 App.patient.RefundGrid = Ext.extend(Ext.grid.GridPanel, {
 
@@ -6,77 +6,11 @@ App.patient.RefundGrid = Ext.extend(Ext.grid.GridPanel, {
 	
 	initComponent : function() {
 		
-		// Create a standard HttpProxy instance.
-		this.proxy = new Ext.data.HttpProxy({
-		    url: get_api_url('refund')
-		});
+		this.backend = new App.registry.RefundBackend({});
 		
-		// Typical JsonReader.  Notice additional meta-data params for defining the core attributes of your json-response
-		this.reader = new Ext.data.JsonReader({
-		    totalProperty: 'meta.total_count',
-		    //successProperty: 'success',
-		    idProperty: 'id',
-		    root: 'objects'
-		    //messageProperty: 'message'  // <-- New "messageProperty" meta-data
-		}, [
-		    {name: 'id'},
-		    {name: 'created', type:'date',format:'c', allowBlank: true},
-		    {name: 'cls', allowBlank: false},
-		    {name: 'patient', allowBlank: false},
-		    {name: 'patient_id', allowBlank: true},
-		    {name: 'referral', allowBlank: true},
-		    {name: 'source_lab', allowBlank: true},
-		    {name: 'discount_value', allowBlank: true},
-		    {name: 'total_price', allowBlank: true},
-		    {name: 'total_paid', allowBlank: true},
-		    {name: 'office_name', allowBlank: true},
-		    {name: 'operator_name', allowBlank: true},
-		    {name: 'patient_name', allowBlank: true},
-		    {name: 'is_billed', allowBlank: true, type:'boolean'},
-		    {name: 'referral_name', allowBlank: true}
-		]);
-		
-		// The new DataWriter component.
-		this.writer = new Ext.data.JsonWriter({
-		    encode: false   // <-- don't return encoded JSON -- causes Ext.Ajax#request to send data using jsonData config rather than HTTP params
-		});
-		
-		this.store = new Ext.data.GroupingStore({
-		    baseParams: {
-		    	format:'json'
-		    },
-		    paramNames: {
-			    start : 'offset',  // The parameter name which specifies the start row
-			    limit : 'limit',  // The parameter name which specifies number of rows to return
-			    sort : 'sort',    // The parameter name which specifies the column to sort on
-			    dir : 'dir'       // The parameter name which specifies the sort direction
-			},
-		    restful: true,     // <-- This Store is RESTful
-		    proxy: this.proxy,
-		    reader: this.reader,
-		    writer: this.writer    // <-- plug a DataWriter into the store just as you would a Reader
-		});
-		
+		this.store = this.backend.store;
 		
 		this.columns =  [{
-		    	width: 1, 
-		    	sortable: true, 
-		    	dataIndex: 'cls', 
-		    	renderer: function(val) {
-		    		var icon;
-		    		switch (val) {
-			    		case 'п': 
-			    				icon='UserSetup.png';
-			    				alt='Прием'
-			    				break
-			    		case 'б': 
-			    				icon='TestTubes.png'
-			    				alt='Поступление биоматериала'
-			    				break
-		    		}
-		    		return "<img src='"+MEDIA_URL+"resources/css/icons/"+icon+"' title='"+alt+"'>"
-		    	}
-		    },{
 		    	header: "№ возврата", 
 		    	width: 15, 
 		    	sortable: true, 

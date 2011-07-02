@@ -170,16 +170,6 @@ class LabOrder(models.Model):
         ordering = ('-created',)
 
 
-class LabOrderNew(LabOrder):
-    """
-    """
-    class Meta:
-        proxy = True
-        verbose_name = u'новый заказ'
-        verbose_name_plural = u'новые заказы'
-        app_label = 'lab'
-
-
 class Result(models.Model):
     """
     """
@@ -253,82 +243,3 @@ class Sampling(models.Model):
     class Meta:
         verbose_name = u'забор материала'
         verbose_name_plural = u'забор материалов'
-
-
-
-@transaction.commit_on_success
-def OrderedServicePostSave(sender, **kwargs):
-    """
-    """
-    obj = kwargs['instance']
-    visit = obj.order
-    visit.update_total_price()
-
-    if kwargs['created']:
-        s = obj.service
-        ext_service = obj.service.extendedservice_set.get(state=obj.execution_place)
-        if s.is_lab():
-            
-            sampling, created = Sampling.objects.get_or_create(visit=visit,
-                                                               laboratory=obj.execution_place,
-                                                               is_barcode=ext_service.is_manual,
-                                                               tube=ext_service.tube)
-            if created:
-                logger.info('sampling id%s %s created' % (sampling.id,sampling.__unicode__()) )
-            else:
-                logger.info('sampling id%s %s found' % (sampling.id,sampling.__unicode__()) )
-            
-#            if ext_service.is_manual:
-#                try:
-#                    nm = Numerator.objects.get(tag='euromed')
-#                    sampling.number = nm.generate()
-#                    logger.info( "Generated number: %s" % sampling.number )
-#                    sampling.save()
-#                except Exception,err:
-#                    logger.error( "error: %s" % err )
-#                    pass
-            
-
-            lab_order, created = LabOrder.objects.get_or_create(visit=visit,  
-                                                                laboratory=obj.execution_place,
-                                                                lab_group=s.lab_group)
-            if created:
-                logger.info('laborder %s created' % lab_order.id)
-            else:
-                logger.info('laborder %s found' % lab_order.id)
-                
-            for item in obj.service.analysis_set.all():
-                result, created = Result.objects.get_or_create(order=lab_order,
-                                                               analysis=item, 
-                                                               sample=sampling)
-                if created:
-                    logger.info('result id%s %s created' % (result.id,result.__unicode__()) )
-                else:
-                    logger.info('result id%s %s found' % (result.id,result.__unicode__()) )
-
-            if sampling:
-                obj.sampling = sampling
-                obj.save()
-
-    
-#post_save.connect(OrderedServicePostSave, sender=OrderedService)
-
-
-#@transaction.commit_on_success
-#def OrderedServicePreDelete(sender, **kwargs):
-#    """
-#    """
-#    obj = kwargs['instance']
-#    visit = obj.order
-#    #visit
-#    #p = visit.patient
-#    #p.billed_account -= obj.total_price
-#    #p.save()
-#    analysis_list = obj.service.analysis_set.all()
-#    Result.objects.filter(order__visit=visit, analysis__in=analysis_list).delete()
-#    
-#pre_delete.connect(OrderedServicePreDelete, sender=OrderedService)
-
-
-
-

@@ -1,0 +1,144 @@
+{% extends "print/base.html" %}
+
+
+{% block extra_head %}
+<style>
+	html {
+		font-family: 'Arial';
+		font-size:10pt;
+	}
+    h1 {
+        text-align:center;
+        margin:0.6cm;
+        font-size:2em;
+    }
+
+    table.data {
+    	width:100%;
+        border:1px solid gray;
+    }
+    
+    table.params {
+    }
+    
+    table.params td {
+    	border: 1px solid #AAA;
+    	padding:2px;
+    }
+    
+    table.params td.data {
+    	padding:2px 10px;
+    	background-color:#DDD;
+    	font-weight: bold;
+    }
+
+    table.data th {
+        text-align: center;
+        padding:1px;
+    }
+
+    table.data td {
+        border:1px solid #AAA;
+        padding:2px;
+    }
+    .group {
+        background:#cdffd1;
+        font-weight: bold;
+    }
+    .footer {
+        margin-bottom:20px;
+        font-size:1.2em;
+        background:#ccccff;
+    }
+    .number {
+    	text-align:center;
+    }
+    .total {
+        background:#ccccff;
+    }
+    .right {
+    	text-align:center;
+    }
+</style>
+{% endblock %}
+
+{% block body %}
+
+<div id="changelist" class="module">
+<h1>{{ name }}</h1>
+
+<table class="params" border="0" cellpadding="0" cellspacing="1">
+{% for params in trim_params %}
+<tr>
+<td>{{ params.0 }}</td><td class="data">{{ params.1 }}</td></tr>
+{% endfor %}
+</table>
+            
+<br><br>
+            
+<table class="data">
+    <tbody>
+
+        <tr class="header">
+            <th>Ф.И.О.</th>
+<!--             <th>Полис</th>             -->
+<!--             <th>Дата</th> -->
+            <th>№ Приема</th>
+            <th>Наименование</th>
+            <th class="number">Цена</th>
+            <th class="number">Количество</th>
+            <th class="number">Сумма</th>
+            <th class="number">Скидка</th>
+        </tr>
+
+
+        
+        {% for gr in results.0.0 %}
+<!--             <tr class="group">
+                <td colspan=5>{{ gr.0 }}</td>
+                <td class="number">{{ gr.1 }}</td>
+                <td class="number">{{ gr.2 }}</td>
+                <td class="number">{{ gr.3 }}</td>
+            </tr> -->
+            {% for row in gr.4 %}            
+                {% for list in row %}
+                <tr>
+                    <td >{{ list.0 }}</td>
+<!--                     <td >{{ list.1 }}</td> -->
+<!--                     <td >{{ list.2 }}</td> -->
+                    <td >{{ list.3 }}</td>
+                    <td >{{ list.4 }}</td>
+                    <td class="number">{{ list.5 }}</td>
+                    <td class="number">{{ list.6 }}</td>
+                    <td class="number">{{ list.7 }}</td>
+                    <td class="number">{{ list.8|default:"0,00" }}</td>
+                </tr>
+                {% endfor %}
+            {% endfor %}
+        {% endfor %}
+
+        <tr class="footer">        
+            <th style="text-align: right;" colspan=4>ВСЕГО:</th>
+            <th class="number">{{results.0.1}}</th>
+            <th class="number">{{results.0.2}}</th>
+            <th class="number">{{results.0.3|default:"0,00"}}</th>
+        </tr>
+
+    </tbody>
+</table>
+
+
+<table style="width:100%; margin-top:1.5cm">
+	<tr>
+		<td>Врач</td>
+		<td style="width:4cm;text-align:right;border-bottom:1px solid black">&nbsp;</td>
+	</tr>
+	<tr>
+		<td>&nbsp;</td>
+		<td style="text-align:center; font-size:8pt">подпись</td>
+	</tr>
+</table>
+
+</div>
+
+{% endblock %}

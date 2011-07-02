@@ -62,12 +62,14 @@
             <th>Врач</th>
             <th class="number">Количество</th>
             <th class="number">Сумма</th>
+            <th class="number">Скидка</th>
         </tr>
         
         <tr class="footer">        
             <th colspan=1>ВСЕГО:</th>
             <th class="number">{{results.0.1}}</th>
             <th class="number">{{results.0.2}}</th>
+            <th class="number">{{results.0.3}}</th>
         </tr>
 
         {% for row in results.0.0 %}
@@ -75,6 +77,7 @@
                 <td>{{row.0}}</td>
                 <td class="number">{{row.1}}</td>
                 <td class="number">{{row.2}}</td>
+                <td class="number">{{row.3}}</td>
             </tr>
         {% endfor %}
 

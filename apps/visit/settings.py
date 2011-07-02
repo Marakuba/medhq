@@ -17,16 +17,16 @@ PAYMENT_STATUSES = (
 
 STOP_ON_TYPES = (u'д',)
 
-VISIT_STATUSES = (
-    (u'п',u'Предварительная запись'),
-    (u'т',u'Текущий'),
-    (u'з',u'Завершен'),
+CANCEL_STATUSES = (
     (u'0',u'Отменен пациентом'),
     (u'1',u'Отменен врачем'),
     (u'с',u'Сторнирован оператором'),
 )
 
-ORDER_STATUSES = VISIT_STATUSES + (
-    #(u'п',u'Предварительная запись'),
-    #(u'т',u'Текущий'),
-)
+VISIT_STATUSES = (
+    (u'п',u'Предварительная запись'),
+    (u'т',u'Текущий'),
+    (u'з',u'Завершен'),
+) + CANCEL_STATUSES
+
+ORDER_STATUSES = VISIT_STATUSES

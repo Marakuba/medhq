@@ -4,10 +4,32 @@ from service.models import BaseService
 from state.models import State
 
 GROUP_SERVICE_UZI = 'uzi'
+GROUP_SERVICE_LAB = 'lab'
 
 GROUP_SERVICE = (
     (u'%s' % GROUP_SERVICE_UZI,u'УЗИ'),
+    (u'%s' % GROUP_SERVICE_LAB,u'Лабораторка'),
 )
+
+class ServiceGroupPrice_BaseService(models.Model):
+    baseservice = models.ForeignKey(BaseService,unique=True)
+    servicegroupprice = models.ForeignKey('ServiceGroupPrice')
+
+    class Meta:
+        verbose_name = u'услуга'
+        verbose_name_plural = u'услуги'    
+
+class ServiceGroupPrice(models.Model):
+    name =  models.CharField(u'Наименование', max_length=64, unique=True)
+    baseservice = models.ManyToManyField(BaseService, related_name = 'servicegroupprice'
+            , verbose_name = u'Услуги',through='ServiceGroupPrice_BaseService')
+
+    class Meta:
+        verbose_name = u'группы услуг по прайсу'
+        verbose_name_plural = u'группа услуг оп прайсу'
+
+    def __unicode__(self):
+        return u'%s'  %(self.name)
 
 class ServiceGroup(models.Model):
     name = models.CharField(u'Наименование', max_length=3

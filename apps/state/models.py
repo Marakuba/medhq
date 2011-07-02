@@ -28,6 +28,7 @@ class State(models.Model):
     email = models.EmailField(u'E-mail', blank=True)
     type = models.CharField(u'Тип', max_length=1, choices=STATE_TYPES)
     phones = models.CharField(u'Телефоны', max_length=100, blank=True, null=True)
+    fax = models.CharField(u'Факс', max_length=100, blank=True, null=True)
     licenses = models.CharField(u'Лицензии', max_length=150, blank=True, null=True)
     
     inn = models.DecimalField(u'ИНН', max_digits=12, decimal_places=0, blank=True, null=True)

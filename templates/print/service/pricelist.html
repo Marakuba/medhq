@@ -47,15 +47,15 @@
 {% block body %}
 <table class="header">
 	<tr>
-		<td>350000, Россия, г. Краснодар, ул. КИМ, 143<br>
-			телефон: (861) 233-31-31<br>
-			факс: (861) 233-43-43<br>
-			email: klinika-evromed@mail.ru
+		<td>{{ state.address_street }}<br>
+			телефон: {{ state.phones }}<br>
+			факс: {{ state.fax }}<br>
+			email: {{ state.email }}
 		</td>
 		<td class="details">
 			Утверждаю _________________ Долгова А.А.<br>
 			Исполнительный директор <br>
-			ООО "Клиника Евромед"<br>
+			{{ state.official_title }}<br>
 			<div>{{ request.GET.date }}г.</div>
 		</td>
 	</tr>

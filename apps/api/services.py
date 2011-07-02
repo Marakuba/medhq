@@ -25,7 +25,7 @@ def children(parent_id=None):
         nodes.append(service.id)
         children = service.get_children()
     else:
-        children = BaseService.tree.root_nodes()
+        children = BaseService.tree.root_nodes() #@UndefinedVariable
     if children:
         tree_iterate(children)
     

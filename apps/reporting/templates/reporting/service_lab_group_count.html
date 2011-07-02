@@ -1,0 +1,96 @@
+
+{% block extra_head %}
+<style>
+    h1 {
+        text-align:center;
+        margin:0.6cm;
+        font-size:2em;
+    }
+
+    table {
+        width:100%;
+        border:1px solid gray;
+    }
+
+    th {
+        text-align:left;
+    }
+
+    td {
+        border:1px solid #AAA;
+        padding:2px;
+    }
+    .group {
+        background:#cdffd1;
+        font-weight: bold;
+    }
+    .footer {
+        margin-bottom:20px;
+        font-size:1.2em;
+        background:#ccccff;
+    }
+    .number {
+    text-align:center;
+    }
+    .total {
+        background:#ccccff;
+    }
+</style>
+{% endblock %}
+
+{% block body %}
+
+<div id="changelist" class="module">
+<h1>{{ name }}</h1>
+
+{% for params in trim_params %}
+<p>{{ params.0 }} : {{ params.1 }}</p>
+{% endfor %}
+            
+<table width="100%">
+    <tbody>
+
+        <tr class="header">
+            <th>Группа</th>
+            <th>Код - Наименование</th>
+            <th class="number">Цена</th>
+            <th class="number">Количество</th>
+            <th class="number">Сумма</th>
+            <th class="number">Скидка</th>
+        </tr>
+
+        <tr class="footer">        
+            <th colspan=3>ВСЕГО:</th>
+            <th class="number">{{results.totalcount}}</th>
+            <th class="number">{{results.totalsum}}</th>
+            <th class="number">{{results.totaldisc}}</th>
+        </tr>
+        
+        {% for gr in results.list %}
+            <tr class="group">
+                <td colspan=3>{{ gr.0 }}</td>
+                <td class="number">{{ gr.1 }}</td>
+                <td class="number">{{ gr.2 }}</td>
+                <td class="number">{{ gr.3 }}</td>
+            </tr>
+            {% for row in gr.4 %}            
+                {% for list in row %}
+                <tr>
+                    <td ></td>
+                    <td >{{ list.0 }}</td>
+                    <td class="number">{{ list.1 }}</td>
+                    <td class="number">{{ list.2 }}</td>
+                    <td class="number">{{ list.3 }}</td>
+                    <td class="number">{{ list.4 }}</td>
+                </tr>
+                {% endfor %}
+            {% endfor %}
+        {% endfor %}
+
+
+
+    </tbody>
+</table>
+</div>
+
+{% endblock %}

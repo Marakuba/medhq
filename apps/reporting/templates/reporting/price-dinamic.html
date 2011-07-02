@@ -72,6 +72,7 @@
         <tr class="head">
             <th></th>
             <th>Дата</th>
+            <th>Организация</th>
             <th>Тип цены</th>
             <th>Цена 1</th>
             <th>Цена 2</th>
@@ -79,7 +80,7 @@
 
         {% for gr in results %}
             <tr class="group1">
-                <td colspan=5>{{ gr.0 }}</td>
+                <td colspan=6>{{ gr.0 }}</td>
             </tr>
             
             {% for row in gr.1 %}            
@@ -89,6 +90,7 @@
                 <td >{{ row.1 }}</td>
                 <td >{{ row.2 }}</td>
                 <td >{{ row.3 }}</td>
+                <td >{{ row.4 }}</td>
             </tr>
             {% endfor %}
             

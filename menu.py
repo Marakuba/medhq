@@ -40,9 +40,9 @@ class CustomMenu(Menu):
 
         reports = [items.MenuItem(
                 title=u'Прайслист',
-                url="/helper/pricelist/"
+                url="/admin/service/baseservice/pricelist/"
             )]
-        if user.is_superuser:
+        if user.has_perm('pricelist.add_price'):
             reports.append(items.MenuItem(
                 title=u'Панель отчетов',
                 url="/old/reporting/"

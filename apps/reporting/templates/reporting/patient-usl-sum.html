@@ -58,21 +58,25 @@
             <th class="number">Цена</th>
             <th class="number">Количество</th>
             <th class="number">Сумма</th>
+            <th class="number">Скидка</th>
         </tr>
 
         <tr class="footer">        
             <th colspan=5>ВСЕГО:</th>
-            <th class="number">{{results.0.1}}</th>
-            <th class="number">{{results.0.2}}</th>
+            <th class="number">{{results.totalcount}}</th>
+            <th class="number">{{results.totalsum}}</th>
+            <th class="number">{{results.totaldisc}}</th>
         </tr>
         
-        {% for gr in results.0.0 %}
+        {% for gr in results.list %}
             <tr class="group">
-                <td colspan=5>{{ gr.0 }}</td>
-                <td class="number">{{ gr.1 }}</td>
+                <td >{{ gr.0 }}</td>
+                <td colspan=4>{{ gr.1 }}</td>
                 <td class="number">{{ gr.2 }}</td>
+                <td class="number">{{ gr.3 }}</td>
+                <td class="number">{{ gr.4 }}</td>
             </tr>
-            {% for row in gr.3 %}            
+            {% for row in gr.5 %}            
                 {% for list in row %}
                 <tr>
                     <td ></td>
@@ -81,7 +85,8 @@
                     <td >{{ list.2 }}</td>
                     <td class="number">{{ list.3 }}</td>
                     <td class="number">{{ list.4 }}</td>
-                    <td class="number">{{ list.4 }}</td>
+                    <td class="number">{{ list.5 }}</td>
+                    <td class="number">{{ list.6 }}</td>
                 </tr>
                 {% endfor %}
             {% endfor %}

@@ -2,15 +2,15 @@
 from django.utils.encoding import smart_str
 import datetime
 from visit.settings import PAYMENT_TYPES
-from models import GROUP_SERVICE_UZI
+from models import GROUP_SERVICE_UZI, GROUP_SERVICE_LAB
 
 class Report():
     """
     """
     
-    query_str = ''
+    query_str = u''
     verbose_name =''
-    base_wuery_from_where = "\
+    base_wuery_from_where = u"\
 FROM \
   public.visit_visit Tvis \
   left outer join public.visit_orderedservice TTvis on TTvis.order_id = Tvis.id \
@@ -22,12 +22,15 @@ FROM \
   left outer join public.visit_referral Trefrl on Trefrl.id = Tvis.referral_id  \
   left outer join public.reporting_stategroup_state TTstgr on TTstgr.state_id = TTvis.execution_place_id \
   left outer join public.reporting_stategroup Tstgr on Tstgr.id = TTstgr.stategroup_id \
+  left outer join public.patient_insurancepolicy Tpolis on Tpolis.id = Tvis.insurance_policy_id \
+  left outer join public.reporting_servicegroupprice_baseservice TTrepbsgp on TTrepbsgp.baseservice_id = Tserv.id \
+  left outer join public.reporting_servicegroupprice Trepbsgp on Trepbsgp.id = TTrepbsgp.servicegroupprice_id \
 WHERE \
   TTvis.count is not null and TTvis.price is not null and \
   to_char(Tvis.created,'YYYY-MM-DD') BETWEEN '%s' and '%s'  \
   %s %s %s %s %s %s %s %s"
     
-    bq_exists_uzi = "\
+    bq_exists_uzi = u"\
   and exists (SELECT * \
 FROM \
   public.reporting_servicegroup Tsg \
@@ -36,7 +39,7 @@ Where \
  Tsg.name = '%s'\
  and Tsg_Tbs.baseservice_id = TTvis.service_id)" % (GROUP_SERVICE_UZI)
 
-    bq_notexists_uzi = "\
+    bq_notexists_uzi = u"\
   and not exists (SELECT * \
 FROM \
   public.reporting_servicegroup Tsg \
@@ -44,6 +47,24 @@ FROM \
 Where \
  Tsg.name = '%s'\
  and Tsg_Tbs.baseservice_id = TTvis.service_id)"     % (GROUP_SERVICE_UZI)
+
+    bq_exists_lab = u"\
+  and exists (SELECT * \
+FROM \
+  public.reporting_servicegroup Tsg \
+  join public.reporting_servicegroup_baseservice Tsg_Tbs on  Tsg_Tbs.servicegroup_id = Tsg.id \
+Where \
+ Tsg.name = '%s'\
+ and Tsg_Tbs.baseservice_id = TTvis.service_id)" % (GROUP_SERVICE_LAB)
+
+    bq_notexists_lab = u"\
+  and not exists (SELECT * \
+FROM \
+  public.reporting_servicegroup Tsg \
+  join public.reporting_servicegroup_baseservice Tsg_Tbs on  Tsg_Tbs.servicegroup_id = Tsg.id \
+Where \
+ Tsg.name = '%s'\
+ and Tsg_Tbs.baseservice_id = TTvis.service_id)" % (GROUP_SERVICE_LAB)
     
     def __init__(self, request):
         """
@@ -81,35 +102,35 @@ Where \
     def prep_query_str(self):    
         order__cls = ''
         if self.params['order__cls'] is not u'':
-            order__cls = "and Tvis.cls = '%s'"% (self.params['order__cls'])
+            order__cls = u"and Tvis.cls = '%s'"% (self.params['order__cls'])
 
         order__patient = ''
         if self.params['order__patient'] is not u'':
-            order__patient = "and Tvis.patient_id = '%s'"% (self.params['order__patient'])
+            order__patient = u"and Tvis.patient_id = '%s'"% (self.params['order__patient'])
 
         staff__staff = ''
         if self.params['staff__staff'] is not u'':
-            staff__staff = "and Tstaff.id = '%s'"% (self.params['staff__staff'])
+            staff__staff = u"and Tstaff.id = '%s'"% (self.params['staff__staff'])
 
         order__referral = ''
         if self.params['order__referral'] is not u'':
-            order__referral = "and Tvis.referral_id = '%s'"% (self.params['order__referral'])
+            order__referral = u"and Tvis.referral_id = '%s'"% (self.params['order__referral'])
 
         from_place_filial = ''
         if self.params['from_place_filial'] is not u'':
-            from_place_filial = "and Tvis.source_lab_id = '%s'"% (self.params['from_place_filial'])
+            from_place_filial = u"and Tvis.office_id = '%s'"% (self.params['from_place_filial'])
 
         execution_place_office = ''
         if self.params['execution_place_office'] is not u'':
-            execution_place_office = "and Tstgr.id = '%s'"% (self.params['execution_place_office'])
+            execution_place_office = u"and Tstgr.id = '%s'"% (self.params['execution_place_office'])
                         
         execution_place_filial = ''
         if self.params['execution_place_filial'] is not u'':
-            execution_place_filial = "and TTvis.execution_place_id = '%s'"% (self.params['execution_place_filial'])
+            execution_place_filial = u"and TTvis.execution_place_id = '%s'"% (self.params['execution_place_filial'])
             
         order__payment_type = ''
         if self.params['order__payment_type'] is not u'':
-            order__payment_type = "and Tvis.payment_type = '%s'"% (self.params['order__payment_type'])
+            order__payment_type = u"and Tvis.payment_type = '%s'"% (self.params['order__payment_type'])
 
         return self.query_str % (self.params['start_date']
                                 ,self.params['end_date']

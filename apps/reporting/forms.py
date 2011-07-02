@@ -6,7 +6,7 @@ from visit.models import Referral,CLS
 from service.models import ExecutionPlace
 from visit.settings import PAYMENT_TYPES
 from state.models import State
-from pricelist.models import PriceType
+from pricelist.models import PRICE_TYPES
 from models import StateGroup
 
 from fields import PatientModelChoiceField
@@ -16,7 +16,7 @@ staffs = Staff.objects.all()
 referrals = Referral.objects.all()
 places_filial = State.objects.all()
 places_office = StateGroup.objects.all()
-pricetype = PriceType.objects.all()
+
 
 class ReportForm(forms.Form):
     """
@@ -60,7 +60,7 @@ class ReportForm(forms.Form):
                                             choices=[('',u'---------')]+PAYMENT_TYPES,
                                             required=False)
                                             
-    price_type = forms.ModelChoiceField(label=u'Типы цены',
-                                             queryset=pricetype,
+    price_type = forms.ChoiceField(label=u'Типы цены',
+                                            choices=[('',u'---------')]+list(PRICE_TYPES),
                                              required=False,
                                              help_text = 'только для отчетов по ценам')
