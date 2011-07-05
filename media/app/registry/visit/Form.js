@@ -40,7 +40,7 @@ App.visit.Form = Ext.extend(Ext.FormPanel, {
 			//columnWidth:0.80,
 			flex:1,
 			layout:'form',
-			items:new Ext.form.ClearableComboBox({
+/*			items:new Ext.form.ClearableComboBox({
 				id:'visit-policy-cmb',
 	        	fieldLabel:'Полис ДМС',
 				anchor:'98%',
@@ -58,6 +58,20 @@ App.visit.Form = Ext.extend(Ext.FormPanel, {
 			    	'</div></tpl>'
 			    ),
 				editable:false
+			})*/
+			items:new Ext.form.LazyClearableComboBox({
+				id:'visit-policy-cmb',
+	        	fieldLabel:'Полис ДМС',
+				anchor:'98%',
+	        	name:'insurance_policy',
+	        	proxyUrl:get_api_url('insurance_policy'),
+			    displayField: 'number',
+			    itemSelector: 'div.x-combo-list-item',
+			    tpl:new Ext.XTemplate(
+			    	'<tpl for="."><div class="x-combo-list-item">',
+			    	'№{number}, {state_name}, {start_date:date("d.m.Y")} - {end_date:date("d.m.Y")}',
+			    	'</div></tpl>'
+			    )
 			})
 		};
 		this.policyBar = {
@@ -96,41 +110,14 @@ App.visit.Form = Ext.extend(Ext.FormPanel, {
 
 ///
 		
-		this.discountsStore = new Ext.data.JsonStore({
-			proxy: new Ext.data.HttpProxy({
-				url:'/api/v1/dashboard/discount',
-				method:'GET'
-			}),
-			baseParams: {
-				//pid:this.patientId
-			},
-			root:'objects',
-			idProperty:'resource_uri',
-			fields:['resource_uri','title','value','name']
-		});
-		this.discountsStore.load();
 		this.discounts = {
 			layout:'form',
-			items:new Ext.form.ClearableComboBox({
+			items:new Ext.form.LazyClearableComboBox({
 				id:'visit-discount-cmb',
 	        	fieldLabel:'Скидка',
 				anchor:'98%',
 	        	name:'discount',
-			    store: this.discountsStore,
-			    typeAhead: true,
-			    //queryParam:'pid',
-			    triggerAction: 'all',
-			    //emptyText:'Выберите лабораторию...',
-			    valueField: 'resource_uri',
-			    displayField: 'title',
-			    selectOnFocus:true,
-			    itemSelector: 'div.x-combo-list-item',
-			    tpl:new Ext.XTemplate(
-			    	'<tpl for="."><div class="x-combo-list-item">',
-			    	'{name}, {value}%',
-			    	'</div></tpl>'
-			    ),
-				editable:false,
+	        	proxyUrl:get_api_url('discount'),
 				listeners:{
 					select: function(){
 						App.eventManager.fireEvent('sumchange');
@@ -139,6 +126,9 @@ App.visit.Form = Ext.extend(Ext.FormPanel, {
 				}
 			})
 		};
+		if(this.patientRecord) {
+			Ext.getCmp('visit-discount-cmb').setValue(this.patientRecord.data.discount);
+		}
 
 		this.labStore = new Ext.data.JsonStore({
 			autoLoad:true,
@@ -153,62 +143,38 @@ App.visit.Form = Ext.extend(Ext.FormPanel, {
 
 		this.lab = {
 			layout:'form',
-			items:new Ext.form.ClearableComboBox({
+			items:new Ext.form.LazyComboBox({
 	        	fieldLabel:'Лаборатория',
 	        	name:'source_lab',
-			    store: this.labStore,
-			    typeAhead: true,
-			    queryParam:'name__istartswith',
 			    minChars:3,
-			    triggerAction: 'all',
 			    emptyText:'Выберите лабораторию...',
-			    valueField: 'resource_uri',
-			    displayField: 'name',
-			    selectOnFocus:true
+			    proxyUrl:get_api_url('lab')
 			})
 		};
 
-		this.referralStore = new Ext.data.JsonStore({
-			proxy: new Ext.data.HttpProxy({
-				url:'/api/v1/dashboard/referral',
-				method:'GET'
-			}),
-			root:'objects',
-			idProperty:'resource_uri',
-			fields:['resource_uri','name']
-		});
-		this.referralStore.load();
 		this.referral = {
 			layout:'form',
-			columnWidth:0.60,
-			items:new Ext.form.ClearableComboBox({
-				anchor:'95%',
+			columnWidth:1.0,
+			items:new Ext.form.LazyComboBox({
+				anchor:'98%',
 	        	fieldLabel:'Кто направил',
-	        	name:'referral_name',
-	        	hiddenName:'referral',
-			    store: this.referralStore,
-			    typeAhead: true,
-			    queryParam:'name__istartswith',
-			    minChars:3,
-			    triggerAction: 'all',
-			    emptyText:'Выберите врача...',
-			    valueField: 'resource_uri',
-			    displayField: 'name',
-			    selectOnFocus:true
+	        	name:'referral',
+	        	proxyUrl:get_api_url('referral')
 			})
 		};
+		//this.referral.items.setValue('б/н');
 		this.referralBar = {
 			layout:'column',
 			defaults:{
 				baseCls:'x-border-layout-ct',
 				border:false
 			},
-			items:[this.referral,{
-				columnWidth:0.40,
+			items:[this.referral, {
+				width:31,
 				items:{
 					xtype:'button',
-					//text:'Добавить',
 					iconCls:'silk-add',
+					qtip:'Новая организация',
 					handler:function(){
 						var refWin;
 						if(!refWin) {
@@ -291,22 +257,21 @@ App.visit.Form = Ext.extend(Ext.FormPanel, {
 			items:{
 				fieldLabel:'Комментарий',
 				name:'comment',
-				xtype:'textarea',
+				xtype:'textfield',
         		anchor:'98%'
 			}
 		};
-		this.ptStore = new Ext.data.ArrayStore({
-				fields:['id','title'],
-				data: [
-					['н','Наличная оплата'],
-					['б','Безналичный перевод'],
-					['д','ДМС']]
-		}); 
 		this.paymentTypeCB = new Ext.form.ComboBox({
 			id:'payment-type-cb',
 			fieldLabel:'Форма оплаты',
 			name:'payment_type',
-			store:this.ptStore,
+			store:new Ext.data.ArrayStore({
+				fields:['id','title'],
+				data: [
+					['н','Наличная оплата'],
+//					['б','Безналичный перевод'],
+					['д','ДМС']]
+			}),
 			typeAhead: true,
 			triggerAction: 'all',
 			valueField:'id',
@@ -316,6 +281,7 @@ App.visit.Form = Ext.extend(Ext.FormPanel, {
 			selectOnFocus:true,
 			editable:false,
 			anchor:'98%',
+			value:'н',
 			listeners: {
 				select:function(combo,rec,i){
 					var pb = Ext.getCmp('policy-bar');
@@ -325,6 +291,7 @@ App.visit.Form = Ext.extend(Ext.FormPanel, {
 						pb.show();
 					} else {
 						vpc.allowBlank = true;
+						vpc.reset();
 						pb.hide();
 					}
 					
@@ -358,6 +325,7 @@ App.visit.Form = Ext.extend(Ext.FormPanel, {
 				name:'total_sum',
 				fieldLabel:'К оплате с учетом скидки',
 				readOnly:true,
+				value:0,
 				style:{
 					fontSize:'2.5em',
 					height:'1em',
@@ -382,17 +350,6 @@ App.visit.Form = Ext.extend(Ext.FormPanel, {
 				]
 			}
 		};		
-		this.paymentTpl = new Ext.Template(
-			'<div class="total-sum">',
-			'<div class="">Сумма без скидки: <strong>{total} руб.</strong></div>',
-			'<div class="">Сумма со скидкой: <strong>{total_discount} руб.</strong></div>',
-			'<div class="">Скидка: <strong>{discount} руб.</strong></div>',
-			'</div>'
-		);
-		
-		this.paymentPanel = new Ext.Panel({
-			//baseCls:'x-panel-body'
-		});
 		
 		this.defaultItems = [{
     			xtype:'hidden',

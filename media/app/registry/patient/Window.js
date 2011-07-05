@@ -8,6 +8,26 @@ App.PatientWindow = Ext.extend(Ext.Window, {
 			record:this.instance
 		});
 		
+		this.discountsStore = new Ext.data.JsonStore({
+			proxy: new Ext.data.HttpProxy({
+				url:'/api/v1/dashboard/discount',
+				method:'GET'
+			}),
+			baseParams: {
+				//pid:this.patientId
+			},
+			root:'objects',
+			idProperty:'resource_uri',
+			fields:['resource_uri','title','value','name']
+		});
+		this.discountsStore.load();
+		this.discounts = new Ext.form.LazyClearableComboBox({
+        	fieldLabel:'Скидка',
+			anchor:'98%',
+        	name:'discount',
+        	proxyUrl:get_api_url('discount')
+		});
+		
 		this.form = new Ext.form.FormPanel({
 			defaults:{
 				border:false
@@ -40,7 +60,12 @@ App.PatientWindow = Ext.extend(Ext.Window, {
 					},{
 						xtype:'textfield',
 						name:'home_address_street',
-                    	fieldLabel: 'Домашний адрес',
+                    	fieldLabel: 'Адрес',
+                    	value:''
+					},{
+						xtype:'textfield',
+						name:'email',
+                    	fieldLabel: 'E-mail',
                     	value:''
 					}]
 				},{
@@ -56,27 +81,29 @@ App.PatientWindow = Ext.extend(Ext.Window, {
 						xtype:'textfield',
 						name:'mobile_phone',
                     	fieldLabel: 'Телефон',
+                    	allowBlank:false,
                     	value:''
 					},{
 						xtype:'radiogroup',
 						fieldLabel: 'Пол',
                     	allowBlank:false,
+                    	id:'gender',
 						defaults:{
 							xtype:'radio'
 						},
 						items:[{
 							boxLabel:'мужской',
 							inputValue:'М',
-							name:'gender'
+							name:'gender_box'
 						},{
 							boxLabel:'женский',
 							inputValue:'Ж',
-							name:'gender'
+							name:'gender_box'
 						}]
-					},{
+					},this.discounts,{
 						xtype:'textfield',
-						name:'email',
-                    	fieldLabel: 'E-mail',
+						name:'doc',
+                    	fieldLabel: 'Удостоверение',
                     	value:''
 					}]
 				}]

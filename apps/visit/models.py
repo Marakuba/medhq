@@ -20,6 +20,8 @@ from django.db.models.signals import post_save, post_delete
 from lab.models import Sampling, LabOrder, Result
 import logging
 from django.utils.encoding import smart_unicode
+from visit.settings import CANCEL_STATUSES
+from django.core.exceptions import ObjectDoesNotExist
 
 logger = logging.getLogger()
 hdlr = logging.FileHandler(settings.LOG_FILE)
@@ -38,6 +40,8 @@ class Referral(make_operator_object('referral')):
     name = models.CharField(u'Ф.И.О. врача и наименование организации', 
                             max_length=200, 
                             help_text=u'Образец заполнения: Иванова И.И., гор.больница №1.')
+    
+    objects = models.Manager()
     
     def __unicode__(self):
         return u"%s" % (self.name,)
@@ -69,10 +73,9 @@ class Visit(make_operator_object('visit')):
     """
     modified = models.DateTimeField(auto_now=True)
     cls = models.CharField(u'Класс', max_length=1, choices=CLS, default=u'п')   
-    office = models.ForeignKey(State, verbose_name=u'Офис') 
+    office = models.ForeignKey(State, verbose_name=u'Офис', limit_choices_to={'type':u'b'}) 
     patient = models.ForeignKey(Patient, verbose_name=u'Пациент')
     on_date = models.DateTimeField(u'На дату', 
-                                   default=datetime.datetime.now(),
                                    null=True, blank=True)
     referral = models.ForeignKey(Referral, 
                                  verbose_name=Referral._meta.verbose_name, 
@@ -86,7 +89,8 @@ class Visit(make_operator_object('visit')):
     diagnosis = models.TextField(u'Диагноз', null=True, blank=True)
     sampled = models.DateTimeField(u'Дата и время взятия пробы', null=True, blank=True)
     status = models.CharField(u'Статус', max_length=1, 
-                              null=True, blank=True, 
+                              default=u'т',
+                              blank=True,
                               choices=VISIT_STATUSES)
     payer = models.ForeignKey(State, verbose_name=u'Плательщик',
                               related_name='payer_in_visit',
@@ -123,9 +127,6 @@ class Visit(make_operator_object('visit')):
                                      max_digits=10, decimal_places=2, 
                                      default=0, null=True, blank=True)
     is_billed = models.BooleanField(u'Проведен', default=False)
-    services = models.ManyToManyField(BaseService, null=True, blank=True) 
-    staff = SeparatedValuesField(null=True, blank=True)
-    accept_rules = models.BooleanField(u'Согласие подписано', default=False)
     comment = models.TextField(u'Дополнительная информация, комментарии',
                                null=True, blank=True)
     
@@ -180,12 +181,21 @@ class Visit(make_operator_object('visit')):
             self.discount_value = self.discount.value
             self.total_discount = self.total_price*self.discount.value/100
         self.save()
+        self.patient.update_account()
         
     def discount_price(self):
         return self.total_price-self.total_discount
     
     def save(self, *args, **kwargs):
         self.is_billed = True
+        
+        if self.insurance_policy:
+            try:
+                referral = Referral.objects.get(name=self.insurance_policy.insurance_state.name)
+            except ObjectDoesNotExist:
+                referral = Referral.objects.create(name=self.insurance_policy.insurance_state.name, operator=self.operator)
+            self.referral = referral
+            
         super(Visit, self).save(*args, **kwargs)
     
     class Meta:
@@ -194,16 +204,6 @@ class Visit(make_operator_object('visit')):
         ordering = ('-created',)
 
 
-class IncomeMaterial(Visit):
-    """
-    """
-    
-    class Meta:
-        proxy=True
-        verbose_name = u"поступление материала"
-        verbose_name_plural = u"поступления материалов"
-        
-        
 class PlainVisit(Visit):
     """
     """
@@ -214,14 +214,14 @@ class PlainVisit(Visit):
         verbose_name_plural = u"приемы (адм.)"
         
 
-class PreVisit(Visit):
+class ReferralVisit(Visit):
     """
     """
     
     class Meta:
         proxy=True
-        verbose_name = u"прием по записи"
-        verbose_name_plural = u"приемы по записи"
+        verbose_name = u"прием (врачи/орг.)"
+        verbose_name_plural = u"приемы (врачи/орг.)"
         
 
 class OrderedService(make_operator_object('ordered_service')):
@@ -246,7 +246,7 @@ class OrderedService(make_operator_object('ordered_service')):
     status = models.CharField(u'Статус', 
                               max_length=1, 
                               choices=ORDER_STATUSES, 
-                              null=True, blank=True)
+                              default=u'т')
     print_date = models.DateTimeField(u'Время печати', blank=True, null=True)
     sampling = models.ForeignKey('lab.Sampling', 
                                  null=True, blank=True)
@@ -309,35 +309,29 @@ class OrderedService(make_operator_object('ordered_service')):
                 self.sampling = sampling
                 self.save()
                 
+    def get_absolute_url(self):
+        return u"/admin/visit/orderedservice/%s/" % self.id
+                
     class Meta:
         verbose_name = u"услуга"
         verbose_name_plural = u"услуги"
         ordering = ('-order__created',)
         
 
-class Payment(make_operator_object('payment')):
+class Refund(make_operator_object('refund')):
     """
     """
-    visits = models.ManyToManyField(Visit, 
-                                    verbose_name=u'приемы')
-    total_paid = models.DecimalField(u'Оплаченная сумма, руб.', 
-                                     max_digits=10, decimal_places=2, 
-                                     default="0.0")
-    payment_type = models.CharField(u'Способ оплаты', max_length=1, 
-                                    default=u'н', 
-                                    choices=PAYMENT_TYPES)
-    comment = models.TextField(u'Комментарий', null=True, blank=True)
+    modified = models.DateTimeField(auto_now=True)
+    visit = models.ForeignKey(Visit)
+    reason = models.CharField(u'Причина', max_length=1, choices=CANCEL_STATUSES, default=u'с')
     
-    def get_visit_list(self):
-        return ",".join([visit.__unicode__() for visit in self.visits.all()])
-    get_visit_list.short_description = u'Оплаченные приемы'
-        
-    def __unicode__(self):
-        return u"%s" % (self.get_payment_type_display().lower())
+
+class RefundService(make_operator_object('refund_service')):
+    """
+    """
+    refund = models.ForeignKey(Refund)
+    ordered_service = models.OneToOneField(OrderedService)
     
-    class Meta:
-        verbose_name = u'платеж'
-        verbose_name_plural = u'платежи'
 
 ### SIGNALS
 

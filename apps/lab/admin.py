@@ -152,55 +152,6 @@ class LabOrderAdmin(admin.ModelAdmin):
 #        return qs.filter(is_completed=True)
 
 
-class LabOrderNewAdmin(admin.ModelAdmin):
-    """
-    """
-    readonly_fields = ('visit','laboratory')
-    exclude = ('is_completed','is_printed','print_date')
-    list_display = ('visit_id','visit_created','patient_name','laboratory','operator')
-    list_filter = ('laboratory',)
-    date_hierarchy = 'created'
-    search_fields = ['visit__id','visit__patient__last_name']
-    inlines = [ResultInline,]
-    list_select_related = True
-    
-    def visit_id(self, obj):
-        return u"№%s" % obj.visit.zid()
-    visit_id.short_description = u'Номер заказа'
-    
-    def visit_created(self, obj):
-        return obj.visit.created.strftime("%d.%m.%Y / %H:%M")
-    visit_created.short_description = u'Создано'
-    
-    def patient_name(self, obj):
-        return obj.visit.patient.full_name()
-    patient_name.short_description = u'Пациент'
-
-    def save_formset(self, request, form, formset, change):
-        """
-        Given an inline formset save it to the database.
-        """
-        #if formset.model != Contact:
-        #    return super(ClientAdmin, self).save_formset(request, form, formset, change)
-        flag = True
-        instances = formset.save(commit=True)
-        if instances:
-            for instance in instances:
-                flag = flag and instance.is_completed()
-                lab_order = instance.order
-                #if not instance.pk:
-                #    instance.operator = request.user
-            #formset.save_m2m()
-            lab_order.is_completed = flag
-            lab_order.save()
-    
-    
-    def queryset(self, request):
-        qs = super(LabOrderNewAdmin, self).queryset(request)
-        return qs.filter(is_completed=False)
-    
-
-
 class AnalysisAdminForm(forms.ModelForm):
     
     #input_list = 
@@ -233,8 +184,6 @@ admin.site.register(Analysis, AnalysisAdmin)
 admin.site.register(Sampling)
 admin.site.register(InputList)
 admin.site.register(Measurement)
-#admin.site.register(ReferenceRange)
 admin.site.register(Tube)
 admin.site.register(LabOrder,LabOrderAdmin)
-#admin.site.register(LabOrderNew, LabOrderNewAdmin)
 admin.site.register(Result, ResultAdmin)

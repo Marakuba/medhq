@@ -7,7 +7,6 @@ from core.models import make_operator_object
 from state.models import State
 import datetime
 from dateutil import rrule
-from core.decorators import require_lock
 from django.db.models.expressions import F
 from django.core.exceptions import ObjectDoesNotExist
 

@@ -193,54 +193,55 @@ App.visit.VisitGrid = Ext.extend(Ext.grid.GridPanel, {
 					text:'Печать',
 					handler:this.onPrint.createDelegate(this, [])
 				},'->','Период',{
+					id:'visits-start-date-filter',
 					xtype:'datefield',
 					format:'d.m.Y',
-					name:'start_date'
+					name:'start_date',
+					listeners: {
+						select: function(df, date){
+							this.storeFilter('created__gte',date.format('Y-m-d 00:00'));
+						},
+						scope:this
+					}
 				},{
+					id:'visits-end-date-filter',
 					xtype:'datefield',
 					format:'d.m.Y',
-					name:'end_date'
-				},'-',{
+					name:'end_date',
+					listeners: {
+						select: function(df, date){
+							this.storeFilter('created__lte',date.format('Y-m-d 23:59'));
+						},
+						scope:this
+					}
+				},{
+					text:'Очистить',
+					handler:function(){
+						Ext.getCmp('visits-start-date-filter').reset();
+						Ext.getCmp('visits-end-date-filter').reset();
+						this.storeFilter('created__lte',undefined);
+						this.storeFilter('created__gte',undefined);
+					},
+					scope:this
+				},'-','Офис:',{
 					xtype:'button',
 					enableToggle:true,
 					toggleGroup:'visit-cls',
 					text:'Все',
 					pressed: true,
-					handler:this.storeFilter.createDelegate(this,[])
+					handler:this.storeFilter.createDelegate(this,['office',undefined])
 				},{
 					xtype:'button',
 					enableToggle:true,
 					toggleGroup:'visit-cls',
-					text:'Приемы',
-					handler:this.storeFilter.createDelegate(this,['cls','п'])
+					text:'Евромед (КИМ)',
+					handler:this.storeFilter.createDelegate(this,['office',1])
 				},{
 					xtype:'button',
 					enableToggle:true,
 					toggleGroup:'visit-cls',
-					text:'Материалы',
-					handler:this.storeFilter.createDelegate(this,['cls','б'])
-				}/*,{
-					xtype:'button',
-					enableToggle:true,
-					toggleGroup:'visit-cls',
-					text:'По записи'
-				}*/,'-',{
-					xtype:'button',
-					enableToggle:true,
-					toggleGroup:'is_billed',
-					text:'Все',
-					pressed: true,
-					handler:this.storeFilter.createDelegate(this,[])
-				},{
-					xtype:'button',
-					enableToggle:true,
-					toggleGroup:'is_billed',
-					text:'Проведенные'
-				},{
-					xtype:'button',
-					enableToggle:true,
-					toggleGroup:'is_billed',
-					text:'Не проведенные'
+					text:'Евромед (Лузана)',
+					handler:this.storeFilter.createDelegate(this,['office',6])
 				}],
 	        bbar: new Ext.PagingToolbar({
 	            pageSize: 20,
@@ -274,12 +275,15 @@ App.visit.VisitGrid = Ext.extend(Ext.grid.GridPanel, {
 		this.store.load();		
 	},
 
-	storeFilter:function(k,v){
-		if(k && v) {
-			this.store.filter(k,v,true,true);
+	storeFilter: function(field, value){
+		if(!value) {
+			//console.log(this.store.baseParams[field]);
+			delete this.store.baseParams[field]
+			//this.store.setBaseParam(field, );
 		} else {
-			this.store.clearFilter();
+			this.store.setBaseParam(field, value);
 		}
+		this.store.load();
 	},
 	
 	getSelected: function() {

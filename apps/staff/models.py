@@ -18,6 +18,8 @@ class Staff(make_person_object('staff')):
     medical_experience = models.CharField(u"Общемедицинский стаж", max_length=2, blank=True)
     spec_experience = models.CharField(u"Стаж работы по специальности", max_length=2, blank=True)
     #position = models.CharField(u'Должность', max_length=50)
+    
+    objects = models.Manager()
         
     def full_name(self):
         return u"%s %s %s" % (self.last_name, self.first_name, self.mid_name)

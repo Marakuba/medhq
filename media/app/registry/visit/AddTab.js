@@ -76,6 +76,12 @@ App.visit.AddTab = Ext.extend(Ext.Panel, {
 		    		this.form.getForm().loadRecord(this.record);
 		    		this.form.enablePrintBtn();
 		    		this.setTitle(this.getTitleText());
+					var pb = Ext.getCmp('policy-bar');
+					var vpc = Ext.getCmp('visit-policy-cmb');
+					if(this.record.data.payment_type=='д') {
+						vpc.allowBlank = false;
+						pb.show();
+					} 
 		    		//this.loadMask.hide();
 		    	},
 		    	scope:this
@@ -227,22 +233,11 @@ App.visit.AddTab = Ext.extend(Ext.Panel, {
 	updateTotalSum:function() {
 		if(this.type=='visit'){
 			var c = this.basket.getTotalSum();
-			//var c = 0;
-			//var p = this.form.paymentTpl;
-			var d = Ext.getCmp('visit-discount-cmb').getValue();
-			var dRec = this.form.discountsStore.getById(d);
+			var d = Ext.getCmp('visit-discount-cmb');
+			var dRec = d.getStore().getById(d.getValue());
 			var value = dRec ? dRec.data.value : 0;
 			var discount = c*(100-value)/100;
-//			var data = {
-//				total:c,
-//				total_discount:c*(100-value)/100,
-//				discount:c*value/100
-//			};
-//			p.overwrite(this.form.paymentPanel.body,data);
-			//Ext.getCmp('total-paid-field').setValue(discount);
 			Ext.getCmp('total-sum-field').setValue(discount);
-			//this.form.getTotalField().setValue(c);
-			//Ext.getCmp('visit-submit-btn').setDisabled(c==0);
 		}
 	}
 });

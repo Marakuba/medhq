@@ -40,6 +40,7 @@ App.patient.VisitGrid = Ext.extend(Ext.grid.GridPanel, {
 		    {name: 'office_name', allowBlank: true},
 		    {name: 'operator_name', allowBlank: true},
 		    {name: 'patient_name', allowBlank: true},
+		    {name: 'payment_type', allowBlank: true},
 		    {name: 'is_billed', allowBlank: true, type:'boolean'},
 		    {name: 'referral_name', allowBlank: true}
 		]);
@@ -184,6 +185,11 @@ App.patient.VisitGrid = Ext.extend(Ext.grid.GridPanel, {
 		    	dataIndex: 'referral_name', 
 		    	editor: new Ext.form.TextField({})
 		    },{
+		    	header: "*", 
+		    	width: 1, 
+		    	sortable: true, 
+		    	dataIndex: 'payment_type'
+		    },{
 		    	header: "Офис", 
 		    	width: 22, 
 		    	sortable: true, 
@@ -258,39 +264,15 @@ App.patient.VisitGrid = Ext.extend(Ext.grid.GridPanel, {
 					id:'visit-print-btn',
 					text:'Печать счета',
 					handler:this.toPrint.createDelegate(this,['visit'])
-	        	}/*,'->','Период',{
-					xtype:'datefield',
-					format:'d.m.Y',
-					name:'start_date'
-				},{
-					xtype:'datefield',
-					format:'d.m.Y',
-					name:'end_date'
-				},'-',{
-					xtype:'button',
-					enableToggle:true,
-					toggleGroup:'visit-cls',
-					text:'Все',
-					pressed: true,
-					handler:this.storeFilter.createDelegate(this,[])
-				},{
-					xtype:'button',
-					enableToggle:true,
-					toggleGroup:'visit-cls',
-					text:'Приемы',
-					handler:this.storeFilter.createDelegate(this,['cls','п'])
-				},{
-					xtype:'button',
-					enableToggle:true,
-					toggleGroup:'visit-cls',
-					text:'Материалы',
-					handler:this.storeFilter.createDelegate(this,['cls','б'])
-				},{
-					xtype:'button',
-					enableToggle:true,
-					toggleGroup:'visit-cls',
-					text:'По записи'
-				}*/]
+	        	},'->',{
+	        		id:'office-toggle',
+	        		xtype:'checkbox',
+	        		boxLabel:'Документы своего офиса',
+	        		handler:function(){
+	        			this.storeFilter('office',Ext.getCmp('office-toggle').getValue() ? active_state_id : undefined);
+	        		},
+	        		scope:this
+	        	}]
 			},
 	        bbar: new Ext.PagingToolbar({
 	            pageSize: 20,
@@ -371,15 +353,18 @@ App.patient.VisitGrid = Ext.extend(Ext.grid.GridPanel, {
 		this.patientId = id;
 		var s = this.store;
 		s.baseParams = {format:'json','patient': id};
-		s.reload();
+		s.load();
 	},
 	
-	storeFilter:function(k,v){
-		if(k && v) {
-			this.store.filter(k,v,true,true);
+	storeFilter: function(field, value){
+		if(!value) {
+			//console.log(this.store.baseParams[field]);
+			delete this.store.baseParams[field]
+			//this.store.setBaseParam(field, );
 		} else {
-			this.store.clearFilter();
+			this.store.setBaseParam(field, value);
 		}
+		this.store.load();
 	},
 	
 	getSelected: function() {

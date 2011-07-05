@@ -24,8 +24,26 @@ from examination.models import CardTemplate, ExaminationCard
 #from reporting.models import Report, FieldItem, GroupItem, SummaryItem, Fields,\
 #    Groups, Summaries, FilterItem, Filters
 
+class DiscountResource(ModelResource):
 
+    def dehydrate(self, bundle):
+        bundle.data['name'] = "%s, %s" % (bundle.obj.name, bundle.obj.value)
+        return bundle
+    
+    class Meta:
+        queryset = Discount.objects.all() 
+        resource_name = 'discount'
+        filtering = {
+            'name':('istartswith',)
+        }
+        
 class PatientResource(ExtResource):
+    
+    discount = fields.ForeignKey(DiscountResource, 'discount', null=True)
+
+    def dehydrate(self, bundle):
+        bundle.data['discount_name'] = bundle.obj.discount and bundle.obj.discount or u'-'
+        return bundle
 
     def obj_create(self, bundle, request=None, **kwargs):
         kwargs['operator']=request.user
@@ -52,7 +70,8 @@ class PatientResource(ExtResource):
         authorization = DjangoAuthorization()
         filtering = {
             'last_name':('istartswith',),
-            'id':ALL
+            'id':ALL,
+            'discount':ALL_WITH_RELATIONS
         }
         
         
@@ -160,19 +179,6 @@ class InsurancePolicyResource(ExtResource):
             'insurance_state':ALL_WITH_RELATIONS
         }
         
-class DiscountResource(ModelResource):
-
-    def dehydrate(self, bundle):
-        bundle.data['title'] = "%s, %s" % (bundle.obj.name, bundle.obj.value)
-        return bundle
-    
-    class Meta:
-        queryset = Discount.objects.all() 
-        resource_name = 'discount'
-        filtering = {
-#            'name':('istartswith',)
-        }
-        
 
 class BarcodeResource(ModelResource):
     """
@@ -218,7 +224,8 @@ class VisitResource(ExtResource):
             'patient': ALL_WITH_RELATIONS,
             'barcode': ALL_WITH_RELATIONS,
             'id':ALL,
-            'created':ALL
+            'created':ALL,
+            'office':ALL_WITH_RELATIONS
         }
         
 class RefundResource(ExtResource):
@@ -393,15 +400,15 @@ class TubeResource(ModelResource):
             'name':ALL
         }
 
-class AnalysisResource(ModelResource):
-    """
-    """
-    class Meta:
-        queryset = Analysis.objects.all()
-        resource_name = 'analysis'
-        filtering = {
-            'name':ALL
-        }
+#class AnalysisResource(ModelResource):
+#    """
+#    """
+#    class Meta:
+#        queryset = Analysis.objects.all()
+#        resource_name = 'analysis'
+#        filtering = {
+#            'name':ALL
+#        }
 
 
 class NumeratorItemResource(ModelResource):
@@ -492,12 +499,14 @@ class OrderedServiceResource(ExtResource):
         bundle.data['created'] = bundle.obj.order.created
         bundle.data['visit_id'] = bundle.obj.order.id
         bundle.data['barcode'] = bundle.obj.order.barcode.id
+        bundle.data['laboratory'] = bundle.obj.execution_place
         return bundle
     
     class Meta:
         queryset = OrderedService.objects.all()
         resource_name = 'orderedservice'
         authorization = DjangoAuthorization()
+        limit = 100
         filtering = {
             'order': ALL_WITH_RELATIONS,
             'sampling': ALL_WITH_RELATIONS

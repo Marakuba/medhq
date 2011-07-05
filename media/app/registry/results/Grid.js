@@ -123,6 +123,56 @@ App.results.Grid = Ext.extend(Ext.grid.GridPanel, {
 				iconCls:'silk-printer',
 				text:'Печать',
 				handler:this.onPrint.createDelegate(this, [])
+			},'->','Период',{
+				id:'visits-start-date-filter',
+				xtype:'datefield',
+				format:'d.m.Y',
+				name:'start_date',
+				listeners: {
+					select: function(df, date){
+						this.storeFilter('visit__created__gte',date.format('Y-m-d 00:00'));
+					},
+					scope:this
+				}
+			},{
+				id:'visits-end-date-filter',
+				xtype:'datefield',
+				format:'d.m.Y',
+				name:'end_date',
+				listeners: {
+					select: function(df, date){
+						this.storeFilter('visit__created__lte',date.format('Y-m-d 23:59'));
+					},
+					scope:this
+				}
+			},{
+				text:'Очистить',
+				handler:function(){
+					Ext.getCmp('visits-start-date-filter').reset();
+					Ext.getCmp('visits-end-date-filter').reset();
+					this.storeFilter('visit__created__lte',undefined);
+					this.storeFilter('visit__created__gte',undefined);
+				},
+				scope:this
+			},'-','Офис:',{
+				xtype:'button',
+				enableToggle:true,
+				toggleGroup:'visit-cls',
+				text:'Все',
+				pressed: true,
+				handler:this.storeFilter.createDelegate(this,['visit__office',undefined])
+			},{
+				xtype:'button',
+				enableToggle:true,
+				toggleGroup:'visit-cls',
+				text:'Евромед (КИМ)',
+				handler:this.storeFilter.createDelegate(this,['visit__office',1])
+			},{
+				xtype:'button',
+				enableToggle:true,
+				toggleGroup:'visit-cls',
+				text:'Евромед (Лузана)',
+				handler:this.storeFilter.createDelegate(this,['visit__office',6])
 			}],
 			listeners: {
 				rowdblclick:this.onPrint.createDelegate(this, [])
@@ -147,6 +197,15 @@ App.results.Grid = Ext.extend(Ext.grid.GridPanel, {
 		App.eventManager.on('globalsearch', this.onGlobalSearch, this);
 	},
 	
+	storeFilter: function(field, value){
+		if(!value) {
+			delete this.store.baseParams[field]
+		} else {
+			this.store.setBaseParam(field, value);
+		}
+		this.store.load();
+	},
+	
 	getSelected: function() {
 		return this.getSelectionModel().getSelected()
 	},
@@ -166,7 +225,7 @@ App.results.Grid = Ext.extend(Ext.grid.GridPanel, {
 		} else {
 			s.setBaseParam('visit__patient__last_name__istartswith', v);
 		}
-		s.reload();
+		s.load();
 	}
 	
 });

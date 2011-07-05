@@ -38,6 +38,9 @@ Ext.onReady(function() {
                 },{
                 	id:'barcodes-tab',
                     xtype:'barcodes'
+                },{
+                	id:'reports-tab',
+                    xtype:'reports'
                 }
         ]
     });
@@ -108,7 +111,7 @@ Ext.onReady(function() {
             	}
             }*/,'->',{
             	xtype:'button',
-            	text:'Профиль: '+active_state,
+            	text:String.format('Профиль: {0}, {1}',active_user,active_state),
             	menu:{
             		items:[{
             			text:'Выход',

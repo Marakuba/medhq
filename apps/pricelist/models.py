@@ -41,14 +41,22 @@ class Price(models.Model):
         verbose_name_plural = u"цены"
         get_latest_by = "on_date"
             
-
+            
+DISCOUNT_TYPES =(
+    (u'accum',u'Накопительная'),
+    (u'gen',u'Общая'),
+    (u'pens',u'Пенсионная'),
+    (u'admin',u'Административная'),
+)
 
 class Discount(models.Model):
     """
     """
+    type = models.CharField(u'Тип', max_length=5, default=u'gen', choices=DISCOUNT_TYPES)
     name = models.CharField(u'Наименование', max_length=30)
     value = models.DecimalField(u"Размер, %.", max_digits=5, decimal_places=2)
-    accumulation = models.IntegerField(u'Порог накопления', null=True, blank=True)
+    min = models.DecimalField(u'Сумма от', max_digits=10, decimal_places=2, default=0.0)
+    max = models.DecimalField(u'Сумма до', max_digits=10, decimal_places=2, default=0.0)
     comment = models.TextField(u"Комментарий", blank=True)
     
     def __unicode__(self):

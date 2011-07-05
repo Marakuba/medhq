@@ -25,14 +25,18 @@ App.PatientGrid = Ext.extend(Ext.grid.GridPanel, {
 		    {name: 'mobile_phone', allowBlank: true},
 		    {name: 'home_address_street', allowBlank: true},
 		    {name: 'email', allowBlank: true},
-		    {name: 'insurance_doc', allowBlank: true},
 		    {name: 'birth_day', allowBlank: false, type:'date'},
-		    {name: 'resource_uri'}
+		    {name: 'resource_uri'},
+		    {name: 'discount'},
+		    {name: 'discount_name'},
+		    {name: 'billed_account'},
+		    {name: 'doc'}
 		]);
 		
 		// The new DataWriter component.
 		this.writer = new Ext.data.JsonWriter({
-		    encode: false   // <-- don't return encoded JSON -- causes Ext.Ajax#request to send data using jsonData config rather than HTTP params
+		    encode: false,
+		    writeAllFields: true
 		});
 		this.baseParams = {
 		    	format:'json'
@@ -62,12 +66,7 @@ App.PatientGrid = Ext.extend(Ext.grid.GridPanel, {
 		}, this);
 		
 		this.columns =  [
-		    /*{
-		    	header: "ID", 
-		    	width: 15, 
-		    	sortable: true, 
-		    	dataIndex: 'id'
-		    },*/{
+		    {
 		    	header: "Фамилия", 
 		    	width: 45, 
 		    	sortable: true, 
@@ -102,33 +101,33 @@ App.PatientGrid = Ext.extend(Ext.grid.GridPanel, {
 			store:this.store,
 			columns:this.columns,
 			sm : new Ext.grid.RowSelectionModel({
-						singleSelect : true,
-						listeners: {
-	                        rowselect: function(sm, row, rec) {
-	                        	this.fireEvent('patientselect', rec);
-	                            Ext.getCmp("patient-quick-form").getForm().loadRecord(rec);
-	                        },
-	                        scope:this
-	                    }
-					}),
-			listeners:{
-				rowdblclick: function(grid,index,e) {
-					rec = grid.store.getAt(index);
-					
-				},
-				scope:this
-			},
+				singleSelect : true,
+				listeners: {
+                    rowselect: function(sm, row, rec) {
+                    	this.fireEvent('patientselect', rec);
+                        Ext.getCmp("patient-quick-form").getForm().loadRecord(rec);
+                        Ext.getCmp('patient-change-btn').enable();
+                		Ext.getCmp('amb-card-btn').enable();
+                		Ext.getCmp('contract-btn').enable();
+                    },
+                    rowdeselect: function(sm, row, rec) {
+                        Ext.getCmp("patient-quick-form").getForm().reset();
+                        Ext.getCmp('patient-change-btn').disable();
+                    },
+                    scope:this
+                }
+			}),
 			tbar:[{
 				xtype:'button',
 				iconCls:'silk-add',
 				text:'Новый пациент',
 				handler:this.onPatientAdd.createDelegate(this, [])
 			},{
-				id:'change-btn',
+				id:'patient-change-btn',
 				xtype:'button',
 				iconCls:'silk-pencil',
 				text:'Изменить',
-				//disabled:true,
+				disabled:true,
 				handler:this.onPatientEdit.createDelegate(this, [])
 			},'->',{
 				id:'amb-card-btn',
@@ -183,7 +182,7 @@ App.PatientGrid = Ext.extend(Ext.grid.GridPanel, {
 	onPatientSelect: function(){
 		Ext.getCmp('amb-card-btn').enable();
 		Ext.getCmp('contract-btn').enable();
-		//Ext.getCmp('change-btn').enable();
+//		Ext.getCmp('change-btn').enable();
 	},
 	
 	getSelected: function() {
@@ -209,7 +208,7 @@ App.PatientGrid = Ext.extend(Ext.grid.GridPanel, {
 		} else {
 			s.setBaseParam('last_name__istartswith', v);
 		}
-		s.reload();
+		s.load();
 	},
 	
 	onPatientAdd: function() {

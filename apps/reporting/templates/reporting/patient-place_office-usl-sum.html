@@ -66,28 +66,33 @@
             <th class="number">Цена</th>
             <th class="number">Количество</th>
             <th class="number">Сумма</th>
+            <th class="number">Скидка</th>
         </tr>
 
         <tr class="footer">        
             <th colspan=5>ВСЕГО:</th>
-            <th class="number">{{results.0.1}}</th>
-            <th class="number">{{results.0.2}}</th>
+            <th class="number">{{results.totalcount}}</th>
+            <th class="number">{{results.totalsum}}</th>
+            <th class="number">{{results.totaldisc}}</th>
         </tr>
 
-        {% for gr in results.0.0 %}
+        {% for gr in results.list %}
             <tr class="group">
-                <td colspan=5>{{ gr.0 }}</td>
-                <td class="number">{{ gr.1 }}</td>
+                <td >{{ gr.0 }}</td>
+                <td colspan=4>{{ gr.1 }}</td>
                 <td class="number">{{ gr.2 }}</td>
+                <td class="number">{{ gr.3 }}</td>
+                <td class="number">{{ gr.4 }}</td>
             </tr>
-            {% for gr2row in gr.3 %}            
+            {% for gr2row in gr.5 %}            
                 <tr class="group2">
                     <td></td>
                     <td colspan=4>{{gr2row.0}}</td>
                     <td class="number">{{gr2row.1}}</td>
                     <td class="number">{{gr2row.2}}</td>
+                    <td class="number">{{gr2row.3}}</td>
                 </tr>
-                {% for grcol2 in gr2row.3 %}
+                {% for grcol2 in gr2row.4 %}
                     <tr>
                         <td></td>
                         <td>{{grcol2.0}}</td>
@@ -96,6 +101,7 @@
                         <td class="number">{{grcol2.3}}</td>
                         <td class="number">{{grcol2.4}}</td>
                         <td class="number">{{grcol2.5}}</td>
+                        <td class="number">{{grcol2.6}}</td>
                     </tr>
                 {% endfor %}
             {% endfor %}

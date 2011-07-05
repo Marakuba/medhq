@@ -31,10 +31,9 @@
     <script type="text/javascript" src="{{ MEDIA_URL }}extjs/adapter/ext/ext-base.js"></script>
     <!-- ENDLIBS -->
 
-    <script type="text/javascript" src="{{ MEDIA_URL }}extjs/ext-all-debug.js"></script>
+    <script type="text/javascript" src="{{ MEDIA_URL }}extjs/ext-all{% if debug %}-debug{% endif %}.js"></script>
 
     <script type="text/javascript" src="{{ MEDIA_URL }}extjs/src/locale/ext-lang-ru.js"></script>
-    <!--<script type="text/javascript" src="{{ MEDIA_URL }}extjs/src/debug.js"></script>-->
 
     <script type="text/javascript" src="{{ MEDIA_URL }}extjs/ux/RowEditor.js"></script>
 
@@ -43,12 +42,13 @@
 
     <script type="text/javascript" src="{{ MEDIA_URL }}extjs/ux/statusbar/StatusBar.js"></script>
 
-    <script type="text/javascript" src="{{ MEDIA_URL }}extjs/ux/treegrid/TreeGridSorter.js"></script>
-    <script type="text/javascript" src="{{ MEDIA_URL }}extjs/ux/treegrid/TreeGridColumnResizer.js"></script>
-    <script type="text/javascript" src="{{ MEDIA_URL }}extjs/ux/treegrid/TreeGridNodeUI.js"></script>
-    <script type="text/javascript" src="{{ MEDIA_URL }}extjs/ux/treegrid/TreeGridLoader.js"></script>
-    <script type="text/javascript" src="{{ MEDIA_URL }}extjs/ux/treegrid/TreeGridColumns.js"></script>
-    <script type="text/javascript" src="{{ MEDIA_URL }}extjs/ux/treegrid/TreeGrid.js"></script>
+    <script type="text/javascript" src="{{ MEDIA_URL }}app/App.js"></script>
+    <script type="text/javascript" src="{{ MEDIA_URL }}app/Backend.js"></script>
+    <script type="text/javascript" src="{{ MEDIA_URL }}app/form/ClearableComboBox.js"></script>
+    <script type="text/javascript" src="{{ MEDIA_URL }}app/form/LazyComboBox.js"></script>
+
+    <script type="text/javascript" src="{{ MEDIA_URL }}app/registry/models.js"></script>
+    <script type="text/javascript" src="{{ MEDIA_URL }}app/registry/backends.js"></script>
 
     <script type="text/javascript" src="{{ MEDIA_URL }}app/registry/EventManager.js"></script>
 
@@ -102,6 +102,8 @@
 
     <script type="text/javascript" src="{{ MEDIA_URL }}app/registry/results/Grid.js"></script>
     <script type="text/javascript" src="{{ MEDIA_URL }}app/registry/Results.js"></script>
+
+    <script type="text/javascript" src="{{ MEDIA_URL }}app/registry/Reports.js"></script>
 
     <script type="text/javascript" src="{{ MEDIA_URL }}app/registry/ServicePanel.js"></script>
     <script type="text/javascript" src="{{ MEDIA_URL }}app/registry/Viewport.js"></script>

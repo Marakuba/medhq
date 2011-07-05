@@ -7,6 +7,8 @@ from staff.models import Staff, Position
 from numeration.models import Numerator
 from django.utils.encoding import smart_unicode
 from django.conf.locale import tr
+from django.core.cache import cache
+from django.db.models.signals import post_save
 
 
 class ICD10(models.Model):
@@ -292,3 +294,11 @@ try:
 except mptt.AlreadyRegistered:
     pass
 
+
+def clear_service_cache(sender, **kwargs):
+    print "service cache cleared"
+    cache.delete('x-service_list')
+    
+    
+post_save.connect(clear_service_cache, sender=BaseService)
+post_save.connect(clear_service_cache, sender=ExtendedService)

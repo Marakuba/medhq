@@ -1,0 +1,93 @@
+
+{% block extra_head %}
+<style>
+    h1 {
+        text-align:center;
+        margin:0.6cm;
+        font-size:2em;
+    }
+
+    table {
+        width:100%;
+        border:1px solid gray;
+    }
+
+    th {
+        text-align:left;
+    }
+
+    td {
+        border:1px solid #AAA;
+        padding:2px;
+    }
+    .group {
+        background:#cdffd1;
+        font-weight: bold;
+    }
+    .group2 {
+        background:#ffd6d3;
+        font-weight: bold;
+    }
+    .footer {
+        margin-bottom:20px;
+        font-size:1.2em;
+        background:#ccccff;
+    }
+    .number {
+    text-align:center;
+    }
+    .total {
+        background:#ccccff;
+    }
+</style>
+{% endblock %}
+
+{% block body %}
+
+<div id="changelist" class="module">
+<h1>{{ name }}</h1>
+
+<ul>
+{% for params in trim_params %}
+    <li>
+    {{ params.0 }} : {{ params.1 }}
+    </li>
+{% endfor %}
+</ul>
+            
+<table width="100%">
+    <tbody>
+
+        <tr class="header">
+            <th>Дата</th>
+            <th>Ф.И.О</th>
+            <th>Услуга</th>
+            <th class="number">Цена</th>
+            <th class="number">Количество</th>
+            <th class="number">Сумма</th>
+        </tr>
+        
+        <tr class="footer">        
+            <th colspan=4>ВСЕГО:</th>
+            <th class="number">{{results.0.1}}</th>
+            <th class="number">{{results.0.2}}</th>
+        </tr>
+
+        {% for row in results.0.0 %}
+            <tr>
+                <td>{{row.0}}</td>
+                <td>{{row.1}}</td>
+                <td>{{row.2}}</td>
+                <td class="number">{{row.3}}</td>
+                <td class="number">{{row.4}}</td>
+                <td class="number">{{row.5}}</td>
+            </tr>
+        {% endfor %}
+
+
+
+    </tbody>
+</table>
+</div>
+
+{% endblock %}

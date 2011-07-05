@@ -24,7 +24,11 @@ App.patient.ServiceGrid = Ext.extend(Ext.grid.GridPanel, {
 		    {name: 'service_name', allowBlank: false},
 		    {name: 'price', allowBlank: false},
 		    {name: 'barcode'},
-		    {name: 'visit_id', allowBlank: true}
+		    {name: 'laboratory'},
+		    {name: 'visit_id', allowBlank: true},
+		    {name: 'staff', convert:function(v,rec){
+		    	return v ? v.name : '---';
+		    }}
 		]);
 		
 		// The new DataWriter component.
@@ -44,8 +48,9 @@ App.patient.ServiceGrid = Ext.extend(Ext.grid.GridPanel, {
 			    dir : 'dir'       // The parameter name which specifies the sort direction
 			},
 			groupField:'visit_id',
+			remoteSort: true,
 			sortInfo:{
-				field: 'visit_id', 
+				field: 'laboratory', 
 				direction: "desc"
 			},
 		    restful: true,     // <-- This Store is RESTful
@@ -61,31 +66,39 @@ App.patient.ServiceGrid = Ext.extend(Ext.grid.GridPanel, {
 		    	width: 50, 
 		    	sortable: true, 
 		    	dataIndex: 'visit_id',
-		    	editor: new Ext.form.TextField({})
+		    	hidden:true
 		    },{
 		    	header: "BC", 
 		    	width: 15, 
 		    	sortable: true, 
-		    	dataIndex: 'barcode'
+		    	dataIndex: 'barcode',
+		    	hidden:true
+		    },{
+		    	header:'Где выполняется',
+		    	width:30,
+		    	sortable:true,
+		    	dataIndex:'laboratory'
 		    },{
 		    	header: "Дата", 
 		    	width: 50, 
 		    	sortable: true, 
 		    	dataIndex: 'created',
-		    	renderer:Ext.util.Format.dateRenderer('d.m.Y'), 
-		    	editor: new Ext.form.TextField({})
+		    	renderer:Ext.util.Format.dateRenderer('d.m.Y')
 		    },{
 		    	header: "Услуга", 
 		    	width: 50, 
 		    	sortable: true, 
-		    	dataIndex: 'service_name' 
-		    	//editor: new Ext.form.TextField({})
+		    	dataIndex: 'service_name'
+		    },{
+		    	header: "Врач", 
+		    	width: 50, 
+		    	sortable: true, 
+		    	dataIndex: 'staff'
 		    },{
 		    	header: "Стоимость", 
 		    	width: 50, 
 		    	sortable: true, 
 		    	dataIndex: 'price' 
-		    	//editor: new Ext.form.TextField({})
 		    }
 		];		
 		
@@ -100,7 +113,7 @@ App.patient.ServiceGrid = Ext.extend(Ext.grid.GridPanel, {
 						singleSelect : true
 					}),
 	        bbar: new Ext.PagingToolbar({
-	            pageSize: 20,
+	            pageSize: 100,
 	            store: this.store,
 	            displayInfo: true,
 	            displayMsg: 'Показана запись {0} - {1} из {2}',
@@ -138,7 +151,7 @@ App.patient.ServiceGrid = Ext.extend(Ext.grid.GridPanel, {
 		this.patientId = id;
 		var s = this.store;
 		s.baseParams = {format:'json','order__patient': id};
-		s.reload();
+		s.load();
 	}
 	
 	

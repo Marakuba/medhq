@@ -158,7 +158,7 @@ App.patient.LabGrid = Ext.extend(Ext.grid.GridPanel, {
 		this.patientId = id;
 		var s = this.store;
 		s.baseParams = {format:'json','visit__patient': id};
-		s.reload();
+		s.load();
 	},
 	
 	onPatientSelect: function(id) {

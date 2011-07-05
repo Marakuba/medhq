@@ -16,7 +16,7 @@ def utf_8_encoder(unicode_csv_data):
 
 def make_analysis(obj, analysises):
 
-    from appserver.apps.lab.models import Analysis, InputMask, Measurement
+    from lab.models import Analysis, InputMask, Measurement
     
     for analysis in analysises:
         new_analysis, created = Analysis.objects.get_or_create(service=obj, name=unicode(analysis[0],'utf-8'))

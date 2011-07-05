@@ -16,6 +16,7 @@ from django.conf import settings
 from django.views.generic.simple import direct_to_template
 from django.contrib.auth.decorators import login_required
 from lab.models import Sampling
+from django.views.decorators.gzip import gzip_page
 
 
 def auth(request, authentication_form=AuthenticationForm):
@@ -162,14 +163,15 @@ def get_service_tree():
                 
         return nodes
     
-    _cached_tree = None #cache.get('x-service_list')
+    _cached_tree = cache.get('x-service_list')
     if not _cached_tree:
         tree = tree_iterate(BaseService.tree.root_nodes()) #@UndefinedVariable
         _cached_tree = simplejson.dumps(tree)
-        cache.set('x-service_list', _cached_tree, 24*60*60)
+        cache.set('x-service_list', _cached_tree, 24*60*60*30)
 
     return _cached_tree
-    
+
+@gzip_page
 def service_tree(request):
     _cached_tree = get_service_tree()
     return HttpResponse(_cached_tree, mimetype="application/json")
