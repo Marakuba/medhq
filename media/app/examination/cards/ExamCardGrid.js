@@ -93,6 +93,9 @@ App.ExamCardGrid = Ext.extend(Ext.grid.GridPanel, {
 			closable:true,
 			title: 'Карты осмотра',
 			columns:this.columns,
+			listeners: {
+				rowdblclick:this.onEdit.createDelegate(this, [])
+			},
 			sm : new Ext.grid.RowSelectionModel({
 						singleSelect : true
 					}),

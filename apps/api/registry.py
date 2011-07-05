@@ -572,7 +572,7 @@ class ExamServiceResource(ExtResource):
         return bundle
     
     class Meta:
-        queryset = OrderedService.objects.filter(service__lab_group__isnull=False) #all lab services
+        queryset = OrderedService.objects.filter(service__lab_group__isnull=True) #all lab services
         resource_name = 'examservice'
         authorization = DjangoAuthorization()
         filtering = {

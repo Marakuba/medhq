@@ -40,22 +40,22 @@ App.examorder.ExamOrderGrid = Ext.extend(Ext.grid.GridPanel, {
 		    	hidden:true,
 		    	sortable: true, 
 		    	dataIndex: 'patient'
-		    },{
+		    /*},{
 		    	header: "Лаборатория", 
 		    	width: 23,
 		    	hidden:true,
-		    	dataIndex: 'laboratory'
+		    	dataIndex: 'laboratory'*/
 		    },{
 		    	header: "Исследование", 
 		    	width: 23, 
 		    	sortable: true, 
 		    	dataIndex: 'service_name'
-		    },{
+		    /*},{
 		    	header: "Группа", 
 		    	width: 50, 
 		    	sortable: true, 
 		    	hidden:true,
-		    	dataIndex: 'lab_group'
+		    	dataIndex: 'lab_group'*/
 		    },{
 		    	header: "Врач", 
 		    	width: 20,
@@ -151,11 +151,6 @@ App.examorder.ExamOrderGrid = Ext.extend(Ext.grid.GridPanel, {
 					}]
 				},
 				scope:this*/
-			},'-',{
-				xtype:'button',
-				text:'Шаблоны',
-				handler:this.onOpenTemplares,
-				scope:this
 			},'-',/*{
 				text:'Печать',
 				iconCls:'silk-printer',

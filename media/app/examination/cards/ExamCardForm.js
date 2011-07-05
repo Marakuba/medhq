@@ -9,10 +9,6 @@ App.examination.ExamCardForm = Ext.extend(Ext.form.FormPanel, {
 			border:false,
 			autoScroll: true,
 			trackResetOnLoad:true,
-			layout:{
-				type:'vbox',
-				align:'stretch'
-			},
 			padding:5,
 			defaults:{
 				baseCls:'x-plain',
@@ -30,25 +26,25 @@ App.examination.ExamCardForm = Ext.extend(Ext.form.FormPanel, {
 					xtype:'hidden',
 					name:'ordered_service'
 				},{
-					xtype:'htmleditor',
+					xtype:'textarea',
 					fieldLabel:'Характер заболевания',
 					name:'disease',
 					height: 100,
 					anchor:'100%'
 				},{
-					xtype:'htmleditor',
+					xtype:'textarea',
 					fieldLabel:'Жалобы',
 					name:'complaints',
 					height:100,
 					anchor:'100%'
 				},{
-					xtype:'htmleditor',
+					xtype:'textarea',
 					fieldLabel:'История настоящего заболевания',
 					name:'history',
 					height:100,
 					anchor:'100%'
 				},{
-					xtype:'htmleditor',
+					xtype:'textarea',
 					fieldLabel:'Анамнез',
 					name:'anamnesis',
 					height:100,
@@ -60,7 +56,7 @@ App.examination.ExamCardForm = Ext.extend(Ext.form.FormPanel, {
 					height:100,
 					anchor:'100%'
 				},{
-					xtype:'htmleditor',
+					xtype:'textarea',
 					fieldLabel:'Психологический статус',
 					name:'psycho_status',
 					height:100,
@@ -72,43 +68,43 @@ App.examination.ExamCardForm = Ext.extend(Ext.form.FormPanel, {
 					height:100,
 					anchor:'100%'
 				},{
-					xtype:'htmleditor',
+					xtype:'textarea',
 					fieldLabel:'Диагноз по МБК',
 					name:'mbk_diag',
 					height:100,
 					anchor:'100%'
 				},{
-					xtype:'htmleditor',
+					xtype:'textarea',
 					fieldLabel:'Осложнения',
 					name:'complication',
 					height:100,
 					anchor:'100%'
 				},{
-					xtype:'htmleditor',
+					xtype:'textarea',
 					height:100,
 					fieldLabel:'Сопутствующий диагноз',
 					name:'concomitant_diag',
 					anchor:'100%'
 				},{
-					xtype:'htmleditor',
+					xtype:'textarea',
 					fieldLabel:'Клинический диагноз',
 					height:100,
 					name:'clinical_diag',
 					anchor:'100%'
 				},{
-					xtype:'htmleditor',
+					xtype:'textarea',
 					fieldLabel:'Лечение',
 					height:100,
 					name:'treatment',
 					anchor:'100%'
 				},{
-					xtype:'htmleditor',
+					xtype:'textarea',
 					fieldLabel:'Направление',
 					height:100,
 					name:'referral',
 					anchor:'100%'
 				},{
-					xtype:'htmleditor',
+					xtype:'textarea',
 					fieldLabel:'Дополнительные услуги',
 					height:100,
 					name:'extra_service',

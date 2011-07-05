@@ -9,10 +9,6 @@ App.examination.CardTemplateForm = Ext.extend(Ext.form.FormPanel, {
 			border:false,
 			autoScroll: true,
 			trackResetOnLoad:true,
-			layout:{
-				type:'vbox',
-				align:'stretch'
-			},
 			padding:5,
 			defaults:{
 				baseCls:'x-plain',
@@ -27,7 +23,7 @@ App.examination.CardTemplateForm = Ext.extend(Ext.form.FormPanel, {
 					border:false
 				},
 				items:[{
-					xtype:'htmleditor',
+					xtype:'textarea',
 					fieldLabel:'Наименование шаблона',
 					name:'name',
 					height:100,
@@ -39,7 +35,7 @@ App.examination.CardTemplateForm = Ext.extend(Ext.form.FormPanel, {
 					height:100,
 					anchor:'100%'
 				},{
-					xtype:'htmleditor',
+					xtype:'textarea',
 					fieldLabel:'Психологический статус',
 					name:'psycho_status',
 					height:100,
@@ -51,31 +47,31 @@ App.examination.CardTemplateForm = Ext.extend(Ext.form.FormPanel, {
 					height:100,
 					anchor:'100%'
 				},{
-					xtype:'htmleditor',
+					xtype:'textarea',
 					fieldLabel:'Осложнения',
 					name:'complication',
 					height:100,
 					anchor:'100%'
 				},{
-					xtype:'htmleditor',
+					xtype:'textarea',
 					fieldLabel:'Сопутствующий диагноз',
 					name:'concomitant_diag',
 					height:100,
 					anchor:'100%'
 				},{
-					xtype:'htmleditor',
+					xtype:'textarea',
 					fieldLabel:'Клинический диагноз',
 					height:100,
-					name:'clinical_diag',
+					name:'textarea',
 					anchor:'100%'
 				},{
-					xtype:'htmleditor',
+					xtype:'textarea',
 					fieldLabel:'Лечение',
 					height:100,
 					name:'treatment',
 					anchor:'100%'
 				},{
-					xtype:'htmleditor',
+					xtype:'textarea',
 					fieldLabel:'Направление',
 					height:100,
 					name:'referral',
