@@ -1,0 +1,123 @@
+{% extends "print.html" %}
+
+{% load lab_tags %}
+
+{% block title %}{{ card.ordered_service.order }} - Результаты{% endblock %}
+
+{% block body %}
+
+<table class="header">
+	<tr>
+		<td class="brand">КЛИНИКА<br>ЕВРОМЕД</td>
+		<td class="info">350000, Россия<br>
+			г. Краснодар<br>
+			ул. КИМ, 143<br>
+			телефон: (861) 233-31-31<br>
+			факс: (861) 233-43-43
+		</td>
+	</tr>
+	<tr>
+		<td colspan="2" class="worktime">Время работы: пн-пт 08:00-19-00, сб: 09:00-14:00</td>
+	</tr>
+</table>
+
+<table class="patient">
+	<tr>
+		<td>
+			<table>
+				<tr>
+					<td class="name">Ф.И.О.:</td><td class="bold">{{ card.ordered_service.order.visit.patient.full_name }}</td>
+				</tr>
+				<tr>
+					<td class="name">Дата рождения:</td><td class="bold">{{ card.ordered_service.order.visit.patient.birth_day|date:"d.m.Y" }}</td>
+				</tr>
+				<tr>
+					<td class="name">Дата исследования:</td><td class="bold">{{ card.ordered_service.order.visit.created|date:"d.m.Y H:i" }}</td>
+				</tr>
+			</table>
+		</td>
+		<td align="right">
+			Заказ: <strong>{{ card.ordered_service.order.id|zid:"5" }}</strong><br>
+			Врач: <strong>{{ card.ordered_service.order.staff.id|zid:"5" }}</strong><br>
+			Направившее учреждение: <strong>{{ card.ordered_service.order.visit.referral.id|zid:"5" }}</strong><br>
+			
+		</td>
+	</tr>
+</table>
+<br>
+{% if card.disease %}
+	<br> Характер заболевания
+	<br> {{card.disease}}
+{% endif %}
+<br>
+{% if card.complaints %}
+	<br> Жалобы
+	<br> {{card.complaints}}
+{% endif %}
+<br>
+{% if card.history %}
+	<br> История настоящего заболевания
+	<br> {{card.history}}
+{% endif %}
+<br>
+{% if card.anamnesis %}
+	<br> Анамнез
+	<br> {{card.anamnesis}}
+{% endif %}
+<br>
+{% if card.objective_data %}
+	<br> Объективные данные
+	<br> {{card.objective_data}}
+{% endif %}
+<br>
+{% if card.psycho_status %}
+	<br> Психологический статус
+	<br> {{card.psycho_status}}
+{% endif %}
+<br>
+{% if card.gen_diag %}
+	<br> Основной диагноз
+	<br> {{card.gen_diag}}
+{% endif %}
+<br>
+{% if card.mbk_diag %}
+	<br> Диагноз по МБК
+	<br> {{card.mbk_diag}}
+{% endif %}
+<br>
+{% if card.complication %}
+	<br> Осложнения
+	<br> {{card.complication}}
+{% endif %}
+<br>
+{% if card.concomitant_diag %}
+	<br> Сопутствующий диагноз
+	<br> {{card.concomitant_diag}}
+{% endif %}
+<br>
+{% if card.clinical_diag %}
+	<br> Клинический диагноз
+	<br> {{card.clinical_diag}}
+{% endif %}
+<br>
+{% if card.treatment %}
+	<br> Лечение
+	<br> {{card.treatment}}
+{% endif %}
+<br>
+{% if card.referral %}
+	<br> Направление
+	<br> {{card.referral}}
+{% endif %}
+<br>
+{% if card.extra_service %}
+	<br> Дополнительные услуги
+	<br> {{card.extra_service}}
+{% endif %}
+<br>
+{% if card.ordered_service.order.is_completed and card.ordered_service.order.comment %}
+<div class="comment">{{ card.ordered_service.order.comment }}</div>
+{% endif %}
+<div class="print_time">{{ card.ordered_service.order.print_date_display }}</div>
+
+{% endblock %}

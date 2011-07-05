@@ -20,6 +20,7 @@ from numeration.models import BarcodePackage, NumeratorItem, Barcode
 from django.shortcuts import get_object_or_404
 from django.core.exceptions import ObjectDoesNotExist
 from tastypie.exceptions import NotFound
+from examination.models import CardTemplate, ExaminationCard
 #from reporting.models import Report, FieldItem, GroupItem, SummaryItem, Fields,\
 #    Groups, Summaries, FilterItem, Filters
 
@@ -536,6 +537,41 @@ class LabServiceResource(ExtResource):
             'execution_place': ALL_WITH_RELATIONS,
             'executed':ALL
         }
+        
+class ExamServiceResource(ExtResource):
+    """
+    """
+    order = fields.ToOneField(VisitResource, 'order')
+    execution_place = fields.ToOneField(StateResource, 'execution_place')
+    service = fields.ToOneField(BaseServiceResource, 'service')
+    staff = fields.ToOneField(PositionResource, 'staff', null=True)
+    sampling = fields.ForeignKey(SamplingResource, 'sampling', null=True)
+
+    def dehydrate(self, bundle):
+        service = bundle.obj.service
+        bundle.data['service_name'] = service.short_name or service.name
+        bundle.data['service_full_name'] = service.name
+        bundle.data['lab_group'] = service.lab_group
+        bundle.data['created'] = bundle.obj.order.created
+        bundle.data['printed'] = bundle.obj.print_date
+        bundle.data['barcode'] = bundle.obj.order.barcode.id
+        bundle.data['patient'] = bundle.obj.order.patient.full_name()
+        bundle.data['patient_age'] = bundle.obj.order.patient.full_age()
+        bundle.data['staff_name'] = bundle.obj.staff
+        bundle.data['laboratory'] = bundle.obj.execution_place
+        bundle.data['key'] = u"%s_%s" % (bundle.obj.order.id, bundle.obj.execution_place.id) 
+        return bundle
+    
+    class Meta:
+        queryset = OrderedService.objects.filter(service__lab_group__isnull=False) #all lab services
+        resource_name = 'examservice'
+        authorization = DjangoAuthorization()
+        filtering = {
+            'order': ALL_WITH_RELATIONS,
+            'sampling': ALL_WITH_RELATIONS,
+            'execution_place': ALL_WITH_RELATIONS,
+            'executed':ALL
+        }
 
 class SamplingServiceResource(ExtResource):
     """
@@ -667,6 +703,31 @@ class BCPackageResource(ExtResource):
         authorization = DjangoAuthorization()
         resource_name = 'barcodepackage'
         filtering = {
+        }
+
+
+class CardTemplateResource(ExtResource):
+    
+    class Meta:
+        queryset = CardTemplate.objects.all()
+        resource_name = 'cardtemplate'
+        default_format = 'application/json'
+        authorization = DjangoAuthorization()
+        filtering = {
+            'name':ALL,
+            'id':ALL
+        }
+        
+class ExaminationCardResource(ExtResource):
+    ordered_service = fields.ForeignKey(OrderedServiceResource, 'ordered_service', null=True)
+    class Meta:
+        queryset = ExaminationCard.objects.all()
+        resource_name = 'examcard'
+        default_format = 'application/json'
+        authorization = DjangoAuthorization()
+        filtering = {
+            'ordered_service':ALL_WITH_RELATIONS,
+            'id':ALL
         }
 
 
@@ -814,6 +875,7 @@ api.register(ServiceBasketResource())
 api.register(RefundResource())
 api.register(RefundBasketResource())   
 api.register(LabServiceResource())
+api.register(ExamServiceResource())
 
 #lab
 api.register(InputListResource())
@@ -843,6 +905,10 @@ api.register(DiscountResource())
 api.register(BarcodeResource())
 api.register(BCPackageResource())
 api.register(NumeratorItemResource())
+
+#examination
+api.register(CardTemplateResource())
+api.register(ExaminationCardResource())
 
 #reporting
 #api.register(ReportResource())

@@ -18,6 +18,9 @@ LOCALE_PATHS = (PROJECT_ROOT / 'locale',)
 
 LOG_FILE = SITE_ROOT / 'logs' / 'django.log'
 
+DEBUG = True
+TEMPLATE_DEBUG = DEBUG
+
 ADMINS = (
           ('TRX', '4015555@gmail.com'),
 )
@@ -95,6 +98,7 @@ INSTALLED_APPS = (
     'taskmanager',
     'lab',
     'workflow',
+    'examination',
         
     'django.contrib.admin',
     'django.contrib.auth',
@@ -108,7 +112,7 @@ INSTALLED_APPS = (
     'feincms',
     'south',
     'reversion',
-    'tastypie'
+    'tastypie',
 )
 
 ADMIN_TOOLS_MENU = 'medhq.menu.CustomMenu'

@@ -43,6 +43,7 @@ urlpatterns = patterns('',
     url(r'^admin_tools/', include('admin_tools.urls')),
     url(r'^api/', include('api.urls')),
     url(r'^lab/', include('lab.urls')),
+    url(r'^exam/', include('examination.urls')),
     url(r'^visit/', include('visit.urls')),
     url(r'^numeration/', include('numeration.urls')),
 )

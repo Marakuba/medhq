@@ -28,6 +28,13 @@ Ext.onReady(function(){
 			handler: function(){
 				window.location.href = '/webapp/laboratory/';
 			}
+		},{
+            xtype:'button',
+            text: 'Обследование',
+			scale: 'large',
+			handler: function(){
+				window.location.href = '/webapp/examination/';
+			}
         },{
             xtype:'button',
             text: 'Администрирование',

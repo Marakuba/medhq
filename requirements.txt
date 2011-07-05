@@ -1,4 +1,5 @@
 django
+django-annoying
 django-admin-tools
 django-autocomplete
 django-boss
@@ -8,8 +9,10 @@ django-sentry
 johnny-cache
 django-compressor
 django-tastypie
+django-reversion
 django-mptt
 feincms
+elaphe
 South
 psycopg2
 python-memcached

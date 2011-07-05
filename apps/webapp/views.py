@@ -113,6 +113,11 @@ def reporting(request):
 @render_to('webapp/laboratory/index.html')
 def laboratory(request):
     return {}
+
+@login_required
+@render_to('webapp/examination/index.html')
+def examination(request):
+    return {}
     
 
 def get_service_tree():
