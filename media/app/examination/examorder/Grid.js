@@ -10,11 +10,11 @@ App.examorder.ExamOrderGrid = Ext.extend(Ext.grid.GridPanel, {
 		
 		this.columns =  [
 		    {
-		    	width: 8, 
+		    	//width: 8, 
 		    	hidden:true,
 		    	dataIndex: 'key'
 		    },{
-		    	width: 1, 
+		    	width: 25, 
 		    	sortable: true, 
 		    	dataIndex: 'is_completed', 
 		    	renderer: function(val,meta,record) {
@@ -23,23 +23,17 @@ App.examorder.ExamOrderGrid = Ext.extend(Ext.grid.GridPanel, {
 		    	}
 		    },{
 		    	header: "№ заказа", 
-		    	width: 8, 
-		    	hidden:true,
+		    	width: 60, 
+		    	//hidden:true,
 		    	sortable: true, 
 		    	dataIndex: 'barcode'
 		    },{
 		    	header: "Дата", 
-		    	width: 10, 
+		    	//width: 10, 
 		    	hidden:true,
 		    	sortable: true, 
 		    	dataIndex: 'created',
 		    	renderer:Ext.util.Format.dateRenderer('d.m.Y')
-		    },{
-		    	header: "Пациент", 
-		    	width: 50, 
-		    	hidden:true,
-		    	sortable: true, 
-		    	dataIndex: 'patient'
 		    /*},{
 		    	header: "Лаборатория", 
 		    	width: 23,
@@ -47,7 +41,7 @@ App.examorder.ExamOrderGrid = Ext.extend(Ext.grid.GridPanel, {
 		    	dataIndex: 'laboratory'*/
 		    },{
 		    	header: "Исследование", 
-		    	width: 23, 
+		    	width: 400, 
 		    	sortable: true, 
 		    	dataIndex: 'service_name'
 		    /*},{
@@ -57,9 +51,9 @@ App.examorder.ExamOrderGrid = Ext.extend(Ext.grid.GridPanel, {
 		    	hidden:true,
 		    	dataIndex: 'lab_group'*/
 		    },{
-		    	header: "Врач", 
-		    	width: 20,
-		    	dataIndex: 'staff_name'
+		    	header: "Пациент", 
+		    	width: 400,
+		    	dataIndex: 'patient'
 		    },/*{
 		    	width: 10, 
 		    	sortable: true, 
@@ -70,8 +64,8 @@ App.examorder.ExamOrderGrid = Ext.extend(Ext.grid.GridPanel, {
 		    		return "<img src='"+MEDIA_URL+"admin/img/admin/icon-"+flag+".gif'>"
 		    	}
 		    },*/{
-		    	header: "Дата/время печати", 
-		    	width: 10, 
+		    	header: "Дата/время выполнения", 
+		    	width: 200, 
 		    	sortable: true, 
 		    	dataIndex: 'printed',
 		    	renderer:function(val, meta, record) {
@@ -186,15 +180,7 @@ App.examorder.ExamOrderGrid = Ext.extend(Ext.grid.GridPanel, {
 	            displayInfo: true,
 	            displayMsg: 'Показана запись {0} - {1} из {2}',
 	            emptyMsg: "Нет записей"
-	        }),
-			view : new Ext.grid.GroupingView({
-				forceFit : true,
-				emptyText: 'Нет записей',
-				groupTextTpl: "{[values.rs[0].data['barcode']]} от {[values.rs[0].data['created_date']]}"+
-				" <span style='padding-left:10px; color:black;'>{[values.rs[0].data['patient']]}</span>" +
-				" <span style='padding-left:10px; color:gray;font-variant:italic'>{[values.rs[0].data['laboratory']]}</span>"
-				//getRowClass : this.applyRowClass
-			})			
+	        })
 		};
 		
 		this.on('afterrender',function(){
