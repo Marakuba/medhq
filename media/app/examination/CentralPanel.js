@@ -46,6 +46,46 @@ App.ExamCentralPanel = Ext.extend(Ext.Panel, {
 					xtype:'gsearchfield'
 					
 				}]
+			},{
+                xtype: 'buttongroup',
+                title: 'Журналы',
+                columns: 2,
+                defaults: {
+                    scale: 'small'
+                },
+                items: [{
+                    text: 'Заказы',
+                    scale:'medium',
+                    iconAlign: 'top',
+                    handler: function(){
+                    	this.launchApp('examordergrid');
+                    },
+                    scope:this
+                },{
+                    text: 'Обследования',
+                    scale:'medium',
+                    iconAlign: 'top',
+                    handler: function(){
+                    	this.launchApp('allexamgrid');
+                    },
+                    scope:this
+                }]
+            },{
+                xtype: 'buttongroup',
+                title: 'Шаблоны',
+                columns: 2,
+                defaults: {
+                    scale: 'small'
+                },
+                items: [{
+                    text: 'Список шаблонов',
+                    scale:'medium',
+                    iconAlign: 'top',
+                    handler: function(){
+                    	this.launchApp('templateglobalgrid');
+                    },
+                    scope:this
+                }]
             },'->',this.cmb,{
             	text:'Выход',
             	handler:function(){

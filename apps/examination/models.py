@@ -46,6 +46,7 @@ class ExaminationCard(models.Model):
     Карта обследования
     """
     name = models.TextField(u'Наименование операции', null=True, blank=True)
+    created = models.DateTimeField(u'Дата создания', auto_now_add=True)
     modified = models.DateTimeField(auto_now=True)
     print_date = models.DateTimeField(u'Время печати', blank=True, null=True)
     ordered_service = models.ForeignKey(OrderedService,blank=True, null=True)

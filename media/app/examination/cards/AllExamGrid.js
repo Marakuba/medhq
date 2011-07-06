@@ -1,7 +1,7 @@
 Ext.ns('App');
 Ext.ns('App.examination');
 
-App.ExamCardGrid = Ext.extend(Ext.grid.GridPanel, {
+App.AllExamGrid = Ext.extend(Ext.grid.GridPanel, {
 
 	initComponent : function() {	
 		
@@ -104,7 +104,7 @@ App.ExamCardGrid = Ext.extend(Ext.grid.GridPanel, {
 		];		
 		
 		var config = {
-			//id: 'teplare-grid',
+			id: 'all-exam-grid',
 			loadMask : {
 				msg : 'Подождите, идет загрузка...'
 			},
@@ -120,11 +120,6 @@ App.ExamCardGrid = Ext.extend(Ext.grid.GridPanel, {
 						singleSelect : true
 					}),
 			tbar:[{
-				xtype:'button',
-				iconCls:'silk-add',
-				text:'Добавить',
-				handler:this.onAdd.createDelegate(this, [])
-			},{
 				xtype:'button',
 				iconCls:'silk-pencil',
 				text:'Изменить',
@@ -146,13 +141,11 @@ App.ExamCardGrid = Ext.extend(Ext.grid.GridPanel, {
 		};
 		
 		this.on('afterrender',function(){
-            if (this.ordered_service) {
-            	this.store.setBaseParam('ordered_service', App.uriToId(this.ordered_service));
-            }
+
         })
 
 		Ext.apply(this, Ext.apply(this.initialConfig, config));
-		App.ExamCardGrid.superclass.initComponent.apply(this, arguments);
+		App.AllExamGrid.superclass.initComponent.apply(this, arguments);
 		App.eventManager.on('examcardgrid_reload', this.reloadStore, this)
 	},
 	
@@ -217,4 +210,4 @@ App.ExamCardGrid = Ext.extend(Ext.grid.GridPanel, {
 
 
 
-Ext.reg('examcardgrid',App.ExamCardGrid);
+Ext.reg('allexamgrid',App.AllExamGrid);

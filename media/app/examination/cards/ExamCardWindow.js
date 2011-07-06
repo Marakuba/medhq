@@ -4,6 +4,8 @@ App.examination.ExamCardWindow = Ext.extend(Ext.Window, {
 
 	initComponent: function(){
 		
+		this.tmp_id = Ext.id();
+		
 		this.form = new App.examination.ExamCardForm({
 			model:this.model,
 			record:this.record,
@@ -27,6 +29,12 @@ App.examination.ExamCardWindow = Ext.extend(Ext.Window, {
 			layout:'fit',
 			items:[this.form],
 			buttons:[{
+				id:this.tmp_id+'print',
+				disabled:this.record ? false : true,
+				text:'Просмотр',
+				handler:this.onPrint.createDelegate(this),
+				scope:this
+			},{
 				text:'Сохранить',
 				handler:this.onFormSave.createDelegate(this),
 				scope:this
@@ -43,15 +51,24 @@ App.examination.ExamCardWindow = Ext.extend(Ext.Window, {
 	
 	onFormSave: function() {
 		this.form.onSave();
+		if (this.record) {
+			Ext.getCmp(this.tmp_id+'print').enable();
+			App.eventManager.fireEvent('examcardgrid_reload');
+		}
+		
 	},
 	
 	onClose: function() {
 		this.form.isModified();
 		this.close();
 	},
+	onPrint: function() {
+		window.open('/exam/card/'+this.record.data.id+'/');
+	},
 	
 	onExamCardCreate: function(record) {
 		this.record = record;
+		
 	}
 	
 });

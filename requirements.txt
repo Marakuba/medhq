@@ -16,4 +16,6 @@ elaphe
 South
 psycopg2
 python-memcached
+django-extensions
+xlwt
 -e git+git://github.com/dottedmag/path.py.git#egg=path_py

@@ -1,18 +1,14 @@
 Ext.ns('App');
 Ext.ns('App.examination');
 
-App.ExamCardGrid = Ext.extend(Ext.grid.GridPanel, {
+App.TemplateGlobalGrid = Ext.extend(Ext.grid.GridPanel, {
 
-	initComponent : function() {	
-		
-		//this.orderedService = this.orderedService==undefined ? false : this.orderedService;
+	initComponent : function() {		
 
-		//this.backend = App.getBackend('examcard');
-		
+		this.backend = App.getBackend('cardtemplate');	
+		//this.cardBackend = new App.ExamBackend({});
 		this.examModel = new Ext.data.Record.create([
 			{name: 'id'},
-			{name: 'created',allowBlank: true},
-			{name: 'modified',allowBlank: true},
 			{name: 'name',allowBlank: true},
 			{name: 'ordered_service',allowBlank: true},
 			{name: 'print_date', allowBlank: true},
@@ -32,7 +28,7 @@ App.ExamCardGrid = Ext.extend(Ext.grid.GridPanel, {
 			{name: 'extra_service', allowBlank: true}
 		]);
 
-		this.store = new Ext.data.Store({
+		this.examStore = new Ext.data.Store({
 			autoLoad:true,
 			autoSave:true,
 		    baseParams: {
@@ -72,50 +68,29 @@ App.ExamCardGrid = Ext.extend(Ext.grid.GridPanel, {
 		    }
 		});
 		
-		//this.store = this.backend.store;
+		this.store = this.backend.store;
 		
-		//this.store.load();
+		this.store.load();
 		
 		this.columns =  [
 		    {
-		    	header: "Обследование", 
-		    	width:100,
-		    	sortable: true, 
-		    	dataIndex: 'name' 
-		    },{
-		    	header: "Дата создания", 
+		    	header: "Название шаблона", 
 		    	width:70,
 		    	sortable: true, 
-		    	dataIndex: 'created' ,
-		    	renderer:function(val, meta, record) {
-		    		var p = record.data.created;
-		    		return String.format(Ext.util.Format.date(p, 'd.m.Y H:i'));
-		    	}
-		    },{
-		    	header: "Дата изменения", 
-		    	width:70,
-		    	sortable: true, 
-		    	dataIndex: 'modified',
-		    	renderer:function(val, meta, record) {
-		    		var p = record.data.modified;
-		    		return String.format(Ext.util.Format.date(p, 'd.m.Y H:i'));
-		    	}
+		    	dataIndex: 'name', 
+		    	editor: new Ext.form.TextField({})
 		    }
 		];		
-		
 		var config = {
-			//id: 'teplare-grid',
+			id: 'teplare-global-grid',
 			loadMask : {
 				msg : 'Подождите, идет загрузка...'
 			},
 			border: false,
 			store:this.store,
 			closable:true,
-			title: this.title ? this.title : 'Карты осмотра',
+			title: 'Шаблоны',
 			columns:this.columns,
-			listeners: {
-				rowdblclick:this.onEdit.createDelegate(this, [])
-			},
 			sm : new Ext.grid.RowSelectionModel({
 						singleSelect : true
 					}),
@@ -134,63 +109,46 @@ App.ExamCardGrid = Ext.extend(Ext.grid.GridPanel, {
 				iconCls:'silk-delete',
 				text:'Удалить',
 				handler:this.onDelete.createDelegate(this, [])
-			},{
-				xtype:'button',
-				iconCls:'silk-printer',
-				text:'Печать',
-				handler:this.onPrint.createDelegate(this, [])
 			}],
 			viewConfig : {
 				forceFit : true
 			}			
-		};
-		
-		this.on('afterrender',function(){
-            if (this.ordered_service) {
-            	this.store.setBaseParam('ordered_service', App.uriToId(this.ordered_service));
-            }
-        })
-
+		}
+		this.on('rowdblclick', function(object, rowIndex, e){
+            this.onEdit.createDelegate(this, []);
+        },this);
 		Ext.apply(this, Ext.apply(this.initialConfig, config));
-		App.ExamCardGrid.superclass.initComponent.apply(this, arguments);
-		App.eventManager.on('examcardgrid_reload', this.reloadStore, this)
+		App.TemplateGlobalGrid.superclass.initComponent.apply(this, arguments);
+				App.eventManager.on('templategrid_reload', this.reloadStore, this)
 	},
 	
 	reloadStore: function() {
 		this.store.load()	
 	},
 	
-	onAdd: function() {
-		var win = new App.examination.TemplatesWindow({
-			scope:this,
-			ordered_service:this.ordered_service,
-			fn:function(){
-				this.store.load();
-			}
-		});
-		win.show();
+	onAdd: function(btn,ev){
+        var win = new App.examination.CardTemplateWindow({
+    		model:this.backend.getModel(),
+    		scope:this,
+    		fn:function(record){
+    			this.backend.saveRecord(record);
+    		}
+    	});
+    	win.show();
 	},
-	
+    
 	onEdit: function(rowindex){
 		var record = this.getSelected();
 		if(record) {
-    		var win = new App.examination.ExamCardWindow({
+    		var win = new App.examination.CardTemplateWindow({
     			record:record,
-    			model:this.store.recordType,
+    			model:this.backend.getModel(),
     			scope:this,
-    			fn:this.saveRecord(record)
+    			fn:function(record){
+    				this.backend.saveRecord(record);
+    			}
     		});
     		win.show();
-		}
-	},
-	
-	saveRecord: function(record) {
-		if(record.phantom) {
-			if(this.store.indexOf(record)==-1) {
-				this.store.insert(0, record);
-			} else {
-			}
-		} else {
 		}
 	},
 	
@@ -202,19 +160,24 @@ App.ExamCardGrid = Ext.extend(Ext.grid.GridPanel, {
         this.store.remove(rec);
     },	
     
+    saveExamRecord: function(record) {
+		if(record.phantom) {
+			if(this.examStore.indexOf(record)==-1) {
+				this.examStore.insert(0, record);
+				Ext.callback(this.fn, this.scope || window, [this.record]);
+			} else {
+			}
+		} else {
+		};
+	},
+    
     getSelected: function() {
 		return this.getSelectionModel().getSelected()
-	},
-	
-	onPrint : function(){
-		var record = this.getSelected();
-		if(record) {
-			window.open('/exam/card/'+record.data.id+'/');
-		}
 	}
+	
 	
 });
 
 
 
-Ext.reg('examcardgrid',App.ExamCardGrid);
+Ext.reg('templateglobalgrid',App.TemplateGlobalGrid);

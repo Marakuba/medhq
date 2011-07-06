@@ -96,6 +96,11 @@ App.CardTemplateGrid = Ext.extend(Ext.grid.GridPanel, {
 					}),
 			tbar:[{
 				xtype:'button',
+				iconCls:'silk-accept',
+				text:'Выбрать',
+				handler:this.onChoice.createDelegate(this, [])
+			},'-',{
+				xtype:'button',
 				iconCls:'silk-add',
 				text:'Добавить',
 				handler:this.onAdd.createDelegate(this, [])
@@ -109,11 +114,6 @@ App.CardTemplateGrid = Ext.extend(Ext.grid.GridPanel, {
 				iconCls:'silk-delete',
 				text:'Удалить',
 				handler:this.onDelete.createDelegate(this, [])
-			},{
-				xtype:'button',
-				iconCls:'silk-ok',
-				text:'Выбрать',
-				handler:this.onChoice.createDelegate(this, [])
 			}],
 			viewConfig : {
 				forceFit : true
@@ -127,12 +127,14 @@ App.CardTemplateGrid = Ext.extend(Ext.grid.GridPanel, {
 	},
 	
 	onAdd: function(btn,ev){
-        var r = new this.store.recordType({
-            name : ''
-        });
-        this.editor.stopEditing();
-        this.store.insert(0, r);
-        this.editor.startEditing(0);
+        var win = new App.examination.CardTemplateWindow({
+    		model:this.backend.getModel(),
+    		scope:this,
+    		fn:function(record){
+    			this.backend.saveRecord(record);
+    		}
+    	});
+    	win.show();
 	},
     
 	onEdit: function(rowindex){

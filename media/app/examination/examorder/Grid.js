@@ -89,6 +89,10 @@ App.examorder.ExamOrderGrid = Ext.extend(Ext.grid.GridPanel, {
 		
 		this.ttb = new Ext.Toolbar({ 
 			items:[{
+				text:'Добавить карту осмотра',
+				iconCls:'silk-add',
+				handler:this.onAdd.createDelegate(this, [])
+			},{
 				text:'Подтвердить выполнение',
 				id: this.tmp_id + 'order-exec',
 				disabled:true,
@@ -202,15 +206,25 @@ App.examorder.ExamOrderGrid = Ext.extend(Ext.grid.GridPanel, {
 		if (rec) {
 			config = {
 				ordered_service : rec.data.resource_uri,
-				title:'Карты осмотра №'+rec.data.id+' ' + rec.data.patient_name
+				title:'Карты осмотра №'+rec.data.barcode+' ' + rec.data.patient_name
 			}
 			App.eventManager.fireEvent('launchapp', 'examcardgrid',config);
 		}
 		//}
 	},
 	
-	onOpenTemplares: function(){
-		App.eventManager.fireEvent('launchapp', 'cardtemplategrid');
+	onAdd: function() {
+		var rec = this.getSelected();
+		if (rec) {
+			var win = new App.examination.TemplatesWindow({
+				scope:this,
+				ordered_service:rec.data.resource_uri,
+				fn:function(){
+					App.eventManager.fireEvent('examcardgrid_reload')
+				}
+			});
+			win.show();
+		}
 	},
 	
 	onGlobalSearch: function(v) {
