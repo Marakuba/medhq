@@ -4,6 +4,8 @@ App.examorder.ExamOrderGrid = Ext.extend(Ext.grid.GridPanel, {
 
 	initComponent : function() {
 		
+		this.tmp_id = Ext.id();
+		
 		this.backend = App.getBackend('examservice');		
 		
 		this.store = this.backend.store;
@@ -13,13 +15,16 @@ App.examorder.ExamOrderGrid = Ext.extend(Ext.grid.GridPanel, {
 		    	hidden:true,
 		    	dataIndex: 'key'
 		    },{
-		    	width: 25, 
+		    	header: "Дата/время выполнения", 
+		    	width: 200, 
 		    	sortable: true, 
-		    	dataIndex: 'is_completed', 
-		    	renderer: function(val,meta,record) {
-		    		flag = record.data.executed ? 'yes' : 'no';
-		    		return "<img src='"+MEDIA_URL+"admin/img/admin/icon-"+flag+".gif'>"
-		    	}
+		    	dataIndex: 'executed',
+		    	renderer:function(val, meta, record) {
+		    		var p = record.data.executed;
+		    		var flag = p ? 'yes' : 'no';
+		    		var img = "<img src='"+MEDIA_URL+"admin/img/admin/icon-"+flag+".gif'>"
+		    		return String.format("{0} {1}", img, p ? Ext.util.Format.date(p, 'd.m.Y H:i') : "");
+		    	} 
 		    },{
 		    	header: "№ заказа", 
 		    	width: 60, 
@@ -33,7 +38,7 @@ App.examorder.ExamOrderGrid = Ext.extend(Ext.grid.GridPanel, {
 		    	renderer:Ext.util.Format.dateRenderer('d.m.Y')
 		    },{
 		    	header: "Исследование", 
-		    	width: 400, 
+		    	width: 600, 
 		    	sortable: true, 
 		    	dataIndex: 'service_name'
 
@@ -41,7 +46,7 @@ App.examorder.ExamOrderGrid = Ext.extend(Ext.grid.GridPanel, {
 		    	header: "Пациент", 
 		    	width: 400,
 		    	dataIndex: 'patient'
-		    },/*{
+		    }/*{
 		    	width: 10, 
 		    	sortable: true, 
 		    	header:'Напечатано',
@@ -50,18 +55,7 @@ App.examorder.ExamOrderGrid = Ext.extend(Ext.grid.GridPanel, {
 		    		flag = record.data.printed ? 'yes' : 'no';
 		    		return "<img src='"+MEDIA_URL+"admin/img/admin/icon-"+flag+".gif'>"
 		    	}
-		    },*/{
-		    	header: "Дата/время выполнения", 
-		    	width: 200, 
-		    	sortable: true, 
-		    	dataIndex: 'executed',
-		    	renderer:function(val, meta, record) {
-		    		var p = record.data.executed;
-		    		var flag = p ? 'yes' : 'no';
-		    		var img = "<img src='"+MEDIA_URL+"admin/img/admin/icon-"+flag+".gif'>"
-		    		return String.format("{0} {1}", img, p ? Ext.util.Format.date(p, 'd.m.Y H:i') : "");
-		    	} 
-		    }
+		    },*/
 		];		
 		
 		this.singleModeFunc = function(rec) {
@@ -96,15 +90,19 @@ App.examorder.ExamOrderGrid = Ext.extend(Ext.grid.GridPanel, {
 		this.ttb = new Ext.Toolbar({ 
 			items:[{
 				text:'Выполнено',
+				id: this.tmp_id + 'order-exec',
+				disabled:true,
 				handler:function(){
-					var now = new Date();
 					var record = this.getSelected()
-					if (record) {
-						//record.data.executed = now;
-						record.beginEdit();
-						record.set('executed', now);
-						record.endEdit();
-						//this.backend.saveRecord(record)
+					if (record && !record.data.executed) {
+						var now = new Date();
+						Ext.Msg.confirm('Удаление','Удалить выбранный документ?',function(btn){
+            				if (btn=='yes') {
+            					record.beginEdit();
+								record.set('executed', now);
+								record.endEdit();		
+            				}
+			        	},this);
 					}
 				},
 				scope:this
@@ -151,7 +149,19 @@ App.examorder.ExamOrderGrid = Ext.extend(Ext.grid.GridPanel, {
 			store:this.store,
 			columns:this.columns,
 			sm : new Ext.grid.RowSelectionModel({
-				singleSelect : true
+				singleSelect : true,
+				listeners: {
+					rowselect:function(model,ind,rec) {
+						if (!rec.data.executed) {
+							Ext.getCmp(this.tmp_id+'order-exec').enable()
+						}
+						
+					},
+					rowdeselect: function() {
+						Ext.getCmp(this.tmp_id+'order-exec').disable()
+					},
+					scope:this
+				}
 			}),
 	        tbar:this.ttb,
 			listeners: {
@@ -188,7 +198,8 @@ App.examorder.ExamOrderGrid = Ext.extend(Ext.grid.GridPanel, {
 		var rec = this.getSelected();
 		if (rec) {
 			config = {
-				ordered_service : rec.data.resource_uri
+				ordered_service : rec.data.resource_uri,
+				title:'Карты осмотра №'+rec.data.id+' ' + rec.data.patient
 			}
 			App.eventManager.fireEvent('launchapp', 'examcardgrid',config);
 		}

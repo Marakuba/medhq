@@ -91,7 +91,7 @@ App.ExamCardGrid = Ext.extend(Ext.grid.GridPanel, {
 			border: false,
 			store:this.store,
 			closable:true,
-			title: 'Карты осмотра',
+			title: this.title ? this.title : 'Карты осмотра',
 			columns:this.columns,
 			listeners: {
 				rowdblclick:this.onEdit.createDelegate(this, [])
@@ -106,7 +106,7 @@ App.ExamCardGrid = Ext.extend(Ext.grid.GridPanel, {
 				handler:this.onAdd.createDelegate(this, [])
 			},{
 				xtype:'button',
-				iconCls:'silk-edit',
+				iconCls:'silk-pencil',
 				text:'Изменить',
 				handler:this.onEdit.createDelegate(this, [])
 			},{
@@ -116,7 +116,7 @@ App.ExamCardGrid = Ext.extend(Ext.grid.GridPanel, {
 				handler:this.onDelete.createDelegate(this, [])
 			},{
 				xtype:'button',
-				iconCls:'silk-print',
+				iconCls:'silk-printer',
 				text:'Печать',
 				handler:this.onPrint.createDelegate(this, [])
 			}],
