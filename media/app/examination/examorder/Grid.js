@@ -89,14 +89,14 @@ App.examorder.ExamOrderGrid = Ext.extend(Ext.grid.GridPanel, {
 		
 		this.ttb = new Ext.Toolbar({ 
 			items:[{
-				text:'Выполнено',
+				text:'Подтвердить выполнение',
 				id: this.tmp_id + 'order-exec',
 				disabled:true,
 				handler:function(){
 					var record = this.getSelected()
 					if (record && !record.data.executed) {
 						var now = new Date();
-						Ext.Msg.confirm('Удаление','Удалить выбранный документ?',function(btn){
+						Ext.Msg.confirm('Заказ выполнен','Подтвердить выполнение?',function(btn){
             				if (btn=='yes') {
             					record.beginEdit();
 								record.set('executed', now);
