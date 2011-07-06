@@ -5,6 +5,33 @@ App.ExamCentralPanel = Ext.extend(Ext.Panel, {
 	
 	initComponent: function(){
 		this.mainPanel = new App.ExamMainPanel({});
+		
+		this.cmb = new Ext.form.ComboBox({
+    		id:'profile-cmb-exam',
+			fieldLabel:'Профиль',
+			name:'payment_type',
+			store:new Ext.data.ArrayStore({
+				fields:['id','title'],
+				data: profiles
+			}),
+			listeners:{
+				select: function(c, rec, i){
+					var p = rec.data.id;
+					window.location.href = '/webapp/setactiveprofile/'+p+'/?redirect_to=/webapp/registry/';
+				}
+			},
+			width:300,
+			typeAhead: true,
+			triggerAction: 'all',
+			valueField:'id',
+			displayField:'title',
+			mode: 'local',
+			forceSelection:true,
+			selectOnFocus:true,
+			editable:false
+    	});
+	
+		this.cmb.setValue(active_profile);
 
 		config = {
 			region:'center',
@@ -43,7 +70,7 @@ App.ExamCentralPanel = Ext.extend(Ext.Panel, {
                     },
                     scope:this
                 }]
-            },'->',{
+            },'->',this.cmb,{
             	text:'Выход',
             	handler:function(){
             		window.location.href = '/webapp/logout/';

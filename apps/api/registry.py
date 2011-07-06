@@ -578,6 +578,7 @@ class ExamServiceResource(ExtResource):
         filtering = {
             'order': ALL_WITH_RELATIONS,
             'sampling': ALL_WITH_RELATIONS,
+            'staff': ALL_WITH_RELATIONS,
             'execution_place': ALL_WITH_RELATIONS,
             'executed':ALL
         }

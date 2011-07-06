@@ -27,7 +27,7 @@ App.models.ExamService = new Ext.data.Record.create([
 App.regBackend('examservice', new App.Backend({
 
 		store:new Ext.data.GroupingStore({
-			autoLoad:true,
+			autoLoad:false,
 			autoSave:true,
 		    baseParams: {
 		    	format:'json'

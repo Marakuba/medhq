@@ -195,7 +195,12 @@ App.examorder.ExamOrderGrid = Ext.extend(Ext.grid.GridPanel, {
 				" <span style='padding-left:10px; color:gray;font-variant:italic'>{[values.rs[0].data['laboratory']]}</span>"
 				//getRowClass : this.applyRowClass
 			})			
-		}
+		};
+		
+		this.on('afterrender',function(){
+           	this.store.setBaseParam('staff',active_profile);
+           	this.store.load();
+        })
 
 		Ext.apply(this, Ext.apply(this.initialConfig, config));
 		App.examorder.ExamOrderGrid.superclass.initComponent.apply(this, arguments);
