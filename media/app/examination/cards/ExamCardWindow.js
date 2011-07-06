@@ -18,7 +18,7 @@ App.examination.ExamCardWindow = Ext.extend(Ext.Window, {
 		
 		config = {
 			iconCls:'silk-add',
-			title:'Карта осмотра',
+			title: this.tmp_record ? 'Карта осмотра ' + this.tmp_record.data.name : 'Карта осмотра ' + this.record.data.name,
 			width:800,
 			height:450,
 			modal:true,

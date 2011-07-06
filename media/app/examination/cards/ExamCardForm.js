@@ -26,6 +26,9 @@ App.examination.ExamCardForm = Ext.extend(Ext.form.FormPanel, {
 					xtype:'hidden',
 					name:'ordered_service'
 				},{
+					xtype:'hidden',
+					name:'name'
+				},{
 					xtype:'textarea',
 					fieldLabel:'Характер заболевания',
 					name:'disease',
@@ -118,6 +121,7 @@ App.examination.ExamCardForm = Ext.extend(Ext.form.FormPanel, {
 		this.on('afterrender', function(){
 			if(this.record) {
 				this.getForm().loadRecord(this.record);
+				//this.setTitle('Карта осмотра '+this.record.data.name)
 			} else {
 				if (this.tmp_record){
 					/*for (rec in this.tmp_record.data) {
@@ -127,6 +131,7 @@ App.examination.ExamCardForm = Ext.extend(Ext.form.FormPanel, {
 						}
 					}*/
 					this.getForm().loadRecord(this.tmp_record)
+					//this.setTitle('Карта осмотра '+this.tmp_record.data.name)
 				}
 			}
 		},this);

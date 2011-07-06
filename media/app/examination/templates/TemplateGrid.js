@@ -9,6 +9,7 @@ App.CardTemplateGrid = Ext.extend(Ext.grid.GridPanel, {
 		//this.cardBackend = new App.ExamBackend({});
 		this.examModel = new Ext.data.Record.create([
 			{name: 'id'},
+			{name: 'name',allowBlank: true},
 			{name: 'ordered_service',allowBlank: true},
 			{name: 'print_date', allowBlank: true},
 			{name: 'objective_data', allowBlank: true},
@@ -80,10 +81,6 @@ App.CardTemplateGrid = Ext.extend(Ext.grid.GridPanel, {
 		    	editor: new Ext.form.TextField({})
 		    }
 		];		
-		this.editor = new Ext.ux.grid.RowEditor({
-       		saveText: 'Сохранить',
-       		cancelText: 'Отменить'
-    	});
 		var config = {
 			id: 'teplare-grid',
 			loadMask : {
@@ -94,7 +91,6 @@ App.CardTemplateGrid = Ext.extend(Ext.grid.GridPanel, {
 			closable:true,
 			//title: 'Шаблоны',
 			columns:this.columns,
-			plugins: [this.editor],
 			sm : new Ext.grid.RowSelectionModel({
 						singleSelect : true
 					}),
@@ -105,7 +101,7 @@ App.CardTemplateGrid = Ext.extend(Ext.grid.GridPanel, {
 				handler:this.onAdd.createDelegate(this, [])
 			},{
 				xtype:'button',
-				iconCls:'silk-edit',
+				iconCls:'silk-pencil',
 				text:'Изменить',
 				handler:this.onEdit.createDelegate(this, [])
 			},{
@@ -115,7 +111,7 @@ App.CardTemplateGrid = Ext.extend(Ext.grid.GridPanel, {
 				handler:this.onDelete.createDelegate(this, [])
 			},{
 				xtype:'button',
-				iconCls:'silk-yes',
+				iconCls:'silk-ok',
 				text:'Выбрать',
 				handler:this.onChoice.createDelegate(this, [])
 			}],
@@ -123,7 +119,9 @@ App.CardTemplateGrid = Ext.extend(Ext.grid.GridPanel, {
 				forceFit : true
 			}			
 		}
-
+		this.on('rowdblclick', function(object, rowIndex, e){
+            this.onChoice();
+        },this);
 		Ext.apply(this, Ext.apply(this.initialConfig, config));
 		App.CardTemplateGrid.superclass.initComponent.apply(this, arguments);
 	},

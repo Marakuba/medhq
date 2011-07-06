@@ -23,10 +23,10 @@ App.examination.CardTemplateForm = Ext.extend(Ext.form.FormPanel, {
 					border:false
 				},
 				items:[{
-					xtype:'textarea',
-					fieldLabel:'Наименование шаблона',
+					xtype:'textfield',
+					fieldLabel:'Наименование операции',
 					name:'name',
-					height:100,
+					//height:40,
 					anchor:'100%'
 				},{
 					xtype:'htmleditor',

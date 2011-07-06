@@ -199,7 +199,7 @@ App.examorder.ExamOrderGrid = Ext.extend(Ext.grid.GridPanel, {
 		if (rec) {
 			config = {
 				ordered_service : rec.data.resource_uri,
-				title:'Карты осмотра №'+rec.data.id+' ' + rec.data.patient
+				title:'Карты осмотра №'+rec.data.id+' ' + rec.data.patient_name
 			}
 			App.eventManager.fireEvent('launchapp', 'examcardgrid',config);
 		}

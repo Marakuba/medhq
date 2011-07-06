@@ -565,6 +565,7 @@ class ExamServiceResource(ExtResource):
         bundle.data['printed'] = bundle.obj.print_date
         bundle.data['barcode'] = bundle.obj.order.barcode.id
         bundle.data['patient'] = bundle.obj.order.patient.full_name()
+        bundle.data['patient_name'] = bundle.obj.order.patient.short_name()
         bundle.data['patient_age'] = bundle.obj.order.patient.full_age()
         bundle.data['staff_name'] = bundle.obj.staff
         bundle.data['laboratory'] = bundle.obj.execution_place

@@ -11,6 +11,7 @@ App.ExamCardGrid = Ext.extend(Ext.grid.GridPanel, {
 		
 		this.examModel = new Ext.data.Record.create([
 			{name: 'id'},
+			{name: 'name',allowBlank: true},
 			{name: 'ordered_service',allowBlank: true},
 			{name: 'print_date', allowBlank: true},
 			{name: 'objective_data', allowBlank: true},
@@ -75,10 +76,10 @@ App.ExamCardGrid = Ext.extend(Ext.grid.GridPanel, {
 		
 		this.columns =  [
 		    {
-		    	header: "Характер заболевания", 
+		    	header: "Наименование операции", 
 		    	width:70,
 		    	sortable: true, 
-		    	dataIndex: 'disease' 
+		    	dataIndex: 'name' 
 		    	//editor: new Ext.form.TextField({})
 		    }
 		];		
