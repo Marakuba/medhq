@@ -130,9 +130,12 @@ App.examorder.ExamOrderGrid = Ext.extend(Ext.grid.GridPanel, {
                 pressed: false,
                 toggleHandler: function(btn, pressed) {
                 	if (pressed) {
-                    	this.store.filter('executed',null)
+                		this.store.filter('')
+                    	this.store.setBaseParam('executed__isnull',true)
+                    	this.store.load()
                 	} else {
-                		this.store.clearFilter()
+                		delete this.store.baseParams['executed__isnull']
+                		this.store.load()
                 	}
                 },
                 scope: this
