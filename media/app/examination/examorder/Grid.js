@@ -10,7 +10,6 @@ App.examorder.ExamOrderGrid = Ext.extend(Ext.grid.GridPanel, {
 		
 		this.columns =  [
 		    {
-		    	//width: 8, 
 		    	hidden:true,
 		    	dataIndex: 'key'
 		    },{
@@ -24,32 +23,20 @@ App.examorder.ExamOrderGrid = Ext.extend(Ext.grid.GridPanel, {
 		    },{
 		    	header: "№ заказа", 
 		    	width: 60, 
-		    	//hidden:true,
 		    	sortable: true, 
 		    	dataIndex: 'barcode'
 		    },{
 		    	header: "Дата", 
-		    	//width: 10, 
 		    	hidden:true,
 		    	sortable: true, 
 		    	dataIndex: 'created',
 		    	renderer:Ext.util.Format.dateRenderer('d.m.Y')
-		    /*},{
-		    	header: "Лаборатория", 
-		    	width: 23,
-		    	hidden:true,
-		    	dataIndex: 'laboratory'*/
 		    },{
 		    	header: "Исследование", 
 		    	width: 400, 
 		    	sortable: true, 
 		    	dataIndex: 'service_name'
-		    /*},{
-		    	header: "Группа", 
-		    	width: 50, 
-		    	sortable: true, 
-		    	hidden:true,
-		    	dataIndex: 'lab_group'*/
+
 		    },{
 		    	header: "Пациент", 
 		    	width: 400,
@@ -67,9 +54,9 @@ App.examorder.ExamOrderGrid = Ext.extend(Ext.grid.GridPanel, {
 		    	header: "Дата/время выполнения", 
 		    	width: 200, 
 		    	sortable: true, 
-		    	dataIndex: 'printed',
+		    	dataIndex: 'executed',
 		    	renderer:function(val, meta, record) {
-		    		var p = record.data.printed;
+		    		var p = record.data.executed;
 		    		var flag = p ? 'yes' : 'no';
 		    		var img = "<img src='"+MEDIA_URL+"admin/img/admin/icon-"+flag+".gif'>"
 		    		return String.format("{0} {1}", img, p ? Ext.util.Format.date(p, 'd.m.Y H:i') : "");
@@ -107,7 +94,21 @@ App.examorder.ExamOrderGrid = Ext.extend(Ext.grid.GridPanel, {
 		};
 		
 		this.ttb = new Ext.Toolbar({ 
-			items:['Период',{
+			items:[{
+				text:'Выполнено',
+				handler:function(){
+					var now = new Date();
+					var record = this.getSelected()
+					if (record) {
+						//record.data.executed = now;
+						record.beginEdit();
+						record.set('executed', now);
+						record.endEdit();
+						//this.backend.saveRecord(record)
+					}
+				},
+				scope:this
+			},'->','Период',{
 				xtype:'datefield',
 				format:'d.m.Y',
 				listeners: {
@@ -125,37 +126,19 @@ App.examorder.ExamOrderGrid = Ext.extend(Ext.grid.GridPanel, {
 					},
 					scope:this
 				}
-			/*},'-',{
-				xtype:'splitbutton',
-				text:'Открыть',
-				handler:this.onOpen.createDelegate(this, [this.singleModeFunc]),
-				menu:{
-					items:[{
-						id:'all-by-visit',
-						text:'Все тесты по заказу и лаборатории',
-						handler:this.onOpen.createDelegate(this,[ this.examorderModeFunc ])
-					},{
-						id:'all-by-lab',
-						text:'Все тесты по заказу',
-						handler:this.onOpen.createDelegate(this,[ this.orderModeFunc ])
-					},{
-						id:'all-by-group',
-						text:'Все тесты по группе',
-						handler:this.onOpen.createDelegate(this,['lab_group','order__lab_group'])
-					}]
-				},
-				scope:this*/
-			},'-',/*{
-				text:'Печать',
-				iconCls:'silk-printer',
-				handler:function(){
-					var rec = this.getSelected();
-					var visit = App.uriToId(rec.data.order);
-					var lab = App.uriToId(rec.data.execution_place);
-					window.open(String.format('/lab/print/results_by_visit/{0}/{1}/', visit, lab));
-				},
-				scope:this
-			},*/'->']
+			},'-',{
+                text: 'Текущие',
+                enableToggle: true,
+                pressed: false,
+                toggleHandler: function(btn, pressed) {
+                	if (pressed) {
+                    	this.store.filter('executed',null)
+                	} else {
+                		this.store.clearFilter()
+                	}
+                },
+                scope: this
+            },'->']
 		}); 
 		
 		var config = {
@@ -192,7 +175,6 @@ App.examorder.ExamOrderGrid = Ext.extend(Ext.grid.GridPanel, {
 		App.examorder.ExamOrderGrid.superclass.initComponent.apply(this, arguments);
 		App.eventManager.on('globalsearch', this.onGlobalSearch, this);
 		
-		this.initToolbar();
 		//this.on('rowcontextmenu', this.onContextMenu, this);
 	},
 	
@@ -203,17 +185,6 @@ App.examorder.ExamOrderGrid = Ext.extend(Ext.grid.GridPanel, {
 	},
 	
 	onOpen: function(f){
-		/*var rec = this.getSelected();
-		if(rec && Ext.isFunction(f)) {
-			config = f(rec);
-			Ext.apply(config, { 
-				orderRecord:rec,
-				orderModel:this.backend.getModel(),
-				scope:this,
-				fn:function(rec) {
-					
-				}
-			});*/
 		var rec = this.getSelected();
 		if (rec) {
 			config = {
@@ -256,78 +227,6 @@ App.examorder.ExamOrderGrid = Ext.extend(Ext.grid.GridPanel, {
 			this.store.setBaseParam(field, value);
 		}
 		this.store.load();
-	},
-	
-	initToolbar: function(){
-		// laboratory
-		Ext.Ajax.request({
-			url:get_api_url('medstate'),
-			method:'GET',
-			success:function(resp, opts) {
-				this.ttb.add({
-					xtype:'tbtext',
-					text:'Лаборатория: '
-				});
-				this.ttb.add({
-					xtype:'button',
-					enableToggle:true,
-					toggleGroup:'ex-place-cls',
-					text:'Все',
-					pressed: true,
-					handler:this.storeFilter.createDelegate(this,['execution_place'])
-				});
-				var jsonResponse = Ext.util.JSON.decode(resp.responseText);
-				Ext.each(jsonResponse.objects, function(item,i){
-					this.ttb.add({
-						xtype:'button',
-						enableToggle:true,
-						toggleGroup:'ex-place-cls',
-						text:item.name,
-						handler:this.storeFilter.createDelegate(this,['execution_place',item.id])
-					});
-				}, this);
-				//this.ttb.addSeparator();
-				//this.ttb.add();
-				//this.ttb.add()
-				this.ttb.doLayout();
-			},
-			scope:this
-		});
-		
-		//group
-		
-		/*Ext.Ajax.request({
-			url:get_api_url('labgroup'),
-			method:'GET',
-			success:function(resp, opts) {
-				this.ttb.add({
-					xtype:'tbtext',
-					text:'Группа: '
-				});
-				this.ttb.add({
-					xtype:'button',
-					enableToggle:true,
-					toggleGroup:'lab-group-cls',
-					text:'Все',
-					pressed: true,
-					handler:this.storeFilter.createDelegate(this,['lab_group'])
-				});
-				var jsonResponse = Ext.util.JSON.decode(resp.responseText);
-				Ext.each(jsonResponse.objects, function(item,i){
-					this.ttb.add({
-						xtype:'button',
-						enableToggle:true,
-						toggleGroup:'lab-group-cls',
-						text:item.name,
-						handler:this.storeFilter.createDelegate(this,['lab_group',item.id])
-					});
-				}, this);
-				this.ttb.doLayout();
-				//this.ttb.addSeparator();
-			},
-			scope:this
-		});		*/
-		
 	},
 	
 	getSelected: function() {
