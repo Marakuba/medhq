@@ -70,7 +70,7 @@ App.CardTemplateGrid = Ext.extend(Ext.grid.GridPanel, {
 		
 		this.store = this.backend.store;
 		
-		this.store.load();
+		//this.store.load();
 		
 		this.columns =  [
 		    {
@@ -79,6 +79,11 @@ App.CardTemplateGrid = Ext.extend(Ext.grid.GridPanel, {
 		    	sortable: true, 
 		    	dataIndex: 'name', 
 		    	editor: new Ext.form.TextField({})
+		    },{
+		    	header: "Врач", 
+		    	width:70,
+		    	sortable: true, 
+		    	dataIndex: 'staff_name'
 		    }
 		];		
 		var config = {
@@ -118,12 +123,21 @@ App.CardTemplateGrid = Ext.extend(Ext.grid.GridPanel, {
 			viewConfig : {
 				forceFit : true
 			}			
-		}
+		};
+		
 		this.on('rowdblclick', function(object, rowIndex, e){
             this.onChoice();
         },this);
+        
+       	this.on('afterrender',function(){
+           	this.store.setBaseParam('staff',active_profile);
+           	this.store.load();
+        });
+        
+       
 		Ext.apply(this, Ext.apply(this.initialConfig, config));
 		App.CardTemplateGrid.superclass.initComponent.apply(this, arguments);
+		
 	},
 	
 	onAdd: function(btn,ev){

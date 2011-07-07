@@ -718,6 +718,13 @@ class BCPackageResource(ExtResource):
 
 
 class CardTemplateResource(ExtResource):
+    staff = fields.ForeignKey(PositionResource, 'staff', null=True)
+    
+    def dehydrate(self, bundle):
+        obj = bundle.obj
+        if obj.staff:
+            bundle.data['staff_name'] = obj.staff.__unicode__()
+        return bundle
     
     class Meta:
         queryset = CardTemplate.objects.all()
@@ -726,11 +733,13 @@ class CardTemplateResource(ExtResource):
         authorization = DjangoAuthorization()
         filtering = {
             'name':ALL,
+            'staff':ALL_WITH_RELATIONS,
             'id':ALL
         }
         
 class ExaminationCardResource(ExtResource):
     ordered_service = fields.ForeignKey(OrderedServiceResource, 'ordered_service', null=True)
+    
     class Meta:
         queryset = ExaminationCard.objects.all()
         resource_name = 'examcard'
@@ -741,6 +750,25 @@ class ExaminationCardResource(ExtResource):
             'id':ALL
         }
 
+class RegExamCardResource(ExtResource):
+    ordered_service = fields.ForeignKey(OrderedServiceResource, 'ordered_service', null=True)
+    
+    def dehydrate(self, bundle):
+        obj = bundle.obj
+        if obj.staff:
+            bundle.data['staff_name'] = obj.ordered_service.staff.__unicode__()
+            bundle.data['ordered_service_id'] = obj.ordered_service.id
+        return bundle
+    
+    class Meta:
+        queryset = ExaminationCard.objects.all()
+        resource_name = 'regexamcard'
+        default_format = 'application/json'
+        authorization = DjangoAuthorization()
+        filtering = {
+            'ordered_service':ALL_WITH_RELATIONS,
+            'id':ALL
+        }
 
 #
 #class ReportResource(ExtResource):

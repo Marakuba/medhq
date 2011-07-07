@@ -2,6 +2,8 @@ Ext.ns('App','App.models');
 
 App.models.Templare = new Ext.data.Record.create([
 	{name: 'id'},
+	{name: 'staff', allowBlank: false},
+	{name: 'staff_name', allowBlank: false},
 	{name: 'name', allowBlank: false},
 	{name: 'objective_data', allowBlank: true},
 	{name: 'psycho_status', allowBlank: true},
@@ -17,7 +19,7 @@ App.models.Templare = new Ext.data.Record.create([
 App.regBackend('cardtemplate', new App.Backend({
 
 		store:new Ext.data.GroupingStore({
-			autoLoad:true,
+			autoLoad:false,
 			autoSave:true,
 		    baseParams: {
 		    	format:'json'

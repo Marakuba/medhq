@@ -23,6 +23,9 @@ App.examination.CardTemplateForm = Ext.extend(Ext.form.FormPanel, {
 					border:false
 				},
 				items:[{
+					xtype:'hidden',
+					name:'staff'
+				},{
 					xtype:'textfield',
 					fieldLabel:'Наименование операции',
 					name:'name',
@@ -62,7 +65,7 @@ App.examination.CardTemplateForm = Ext.extend(Ext.form.FormPanel, {
 					xtype:'textarea',
 					fieldLabel:'Клинический диагноз',
 					height:100,
-					name:'textarea',
+					name:'clinical_diag',
 					anchor:'100%'
 				},{
 					xtype:'textarea',
@@ -85,6 +88,12 @@ App.examination.CardTemplateForm = Ext.extend(Ext.form.FormPanel, {
 		this.on('afterrender', function(){
 			if(this.record) {
 				this.getForm().loadRecord(this.record);
+			} else {
+				var url = get_api_url('position');
+				var path = [url,active_profile];
+				this.getForm().findField('staff').setValue(path.join("/"));
+				//Ext.Msg.alert('1',path.join("/"));
+				
 			}
 		},this);
 	},
