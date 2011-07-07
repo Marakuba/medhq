@@ -31,7 +31,7 @@ class Price(models.Model):
     price_type = models.CharField(u'Тип цены!', max_length=1, choices=PRICE_TYPES)
     value = models.DecimalField(u'Сумма, руб.', max_digits=10, decimal_places=2,
                                 null=True)
-    on_date = models.DateField(u'Начало действия', default=datetime.datetime.now())
+    on_date = models.DateField(u'Начало действия', default=datetime.date.today())
 
     def __unicode__(self):
         return smart_unicode(u"%s - %s" % (self.extended_service.state, self.get_price_type_display()))

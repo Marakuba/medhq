@@ -9,13 +9,13 @@ class Migration(SchemaMigration):
     def forwards(self, orm):
         
         # Adding field 'ExaminationCard.modified'
-        db.add_column('examination_examinationcard', 'modified', self.gf('django.db.models.fields.DateTimeField')(auto_now=True, default=1, blank=True), keep_default=False)
+        db.add_column('examination_examinationcard', 'modified', self.gf('django.db.models.fields.DateTimeField')(auto_now=True, default=None, blank=True), keep_default=False)
 
         # Adding field 'ExaminationCard.print_date'
         db.add_column('examination_examinationcard', 'print_date', self.gf('django.db.models.fields.DateTimeField')(null=True, blank=True), keep_default=False)
 
         # Adding field 'ExaminationCard.ordered_service'
-        db.add_column('examination_examinationcard', 'ordered_service', self.gf('django.db.models.fields.related.ForeignKey')(default=1, to=orm['visit.OrderedService']), keep_default=False)
+        db.add_column('examination_examinationcard', 'ordered_service', self.gf('django.db.models.fields.related.ForeignKey')(to=orm['visit.OrderedService']), keep_default=False)
 
 
     def backwards(self, orm):

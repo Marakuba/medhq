@@ -100,7 +100,7 @@
                 <td class="number">{{ gr.2 }}</td>
                 <td class="number">{{ gr.3 }}</td>
             </tr> -->
-            {% for row in gr.4 %}            
+            {% for row in gr.5 %}            
                 {% for list in row %}
                 <tr>
                     <td >{{ list.0 }}</td>
@@ -112,6 +112,7 @@
                     <td class="number">{{ list.6 }}</td>
                     <td class="number">{{ list.7 }}</td>
                     <td class="number">{{ list.8|default:"0,00" }}</td>
+                    <td class="number">{{ list.9|default:"0,00" }}</td>
                 </tr>
                 {% endfor %}
             {% endfor %}
@@ -122,6 +123,7 @@
             <th class="number">{{results.0.1}}</th>
             <th class="number">{{results.0.2}}</th>
             <th class="number">{{results.0.3|default:"0,00"}}</th>
+            <th class="number">{{results.0.4}}</th>
         </tr>
 
     </tbody>

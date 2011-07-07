@@ -163,7 +163,8 @@ SELECT \
   TTvis.price as price, \
   sum(TTvis.count) as cnt, \
   sum(TTvis.count * TTvis.price) as sum, \
-  round(sum(TTvis.count * TTvis.price * (Tvis.discount_value/100)),2) as disc  \
+  round(sum(TTvis.count * TTvis.price * (Tvis.discount_value/100)),2) as disc,  \
+  sum(TTvis.count * TTvis.price) - round(sum(TTvis.count * TTvis.price * (Tvis.discount_value/100)),2) as clean_price \
  %s %s \
 GROUP BY \
   Tstaff.last_name ,Tstaff.first_name ,Tstaff.mid_name \
@@ -178,15 +179,19 @@ ORDER BY  \
     staff,pnt,polis, created ,num ,serv" % (Report.base_wuery_from_where, Report.bq_notexists_lab)
     #..
     
+    
     def make(self,results):
         #..
+        
         vl = self.struct(results)
+        print vl
         #..
         tvv = map(lambda x: [
             x[0]                            # gr.0
             ,sum(map(lambda y: y[6],x[1]))  # gr.1
             ,sum(map(lambda y: y[7],x[1]))  # gr.2
             ,sum(map(lambda y: 0 if y[8] == None else y[8],x[1]))  # gr.2
+            ,sum(map(lambda y: y[7] - (0 if y[8] == None else y[8]),x[1]))
             ,x[1:]                          # gr.3!!!!
         ] ,vl)    
         #...
@@ -195,6 +200,7 @@ ORDER BY  \
         t.append(sum(map(lambda x: x[1],tvv)))                  #results.0.1
         t.append(sum(map(lambda x: x[2],tvv)))                  #results.0.2
         t.append(sum(map(lambda x: 0 if x[3] == None else x[3],tvv)))                  #results.0.2
+        t.append(sum(map(lambda x: x[4],tvv)))                  #results.0.2
         tt = []
         tt.append(t)
         return tt

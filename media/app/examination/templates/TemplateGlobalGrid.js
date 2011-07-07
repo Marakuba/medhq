@@ -134,7 +134,7 @@ App.TemplateGlobalGrid = Ext.extend(Ext.grid.GridPanel, {
 				App.eventManager.on('templategrid_reload', this.reloadStore, this)
 	},
 	
-	treloadStore: function() {
+	reloadStore: function() {
 		this.store.load()	
 	},
 	
@@ -143,6 +143,7 @@ App.TemplateGlobalGrid = Ext.extend(Ext.grid.GridPanel, {
     		model:this.backend.getModel(),
     		scope:this,
     		fn:function(record){
+    			console.info(record);
     			this.backend.saveRecord(record);
     		}
     	});

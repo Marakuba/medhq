@@ -12,7 +12,7 @@ body {
 }
 .logo {
 	padding:28px 69px;
-	background:url(../images/offlogo.png) no-repeat 80% 0cm;
+	background:url(../images/offlogo.png) no-repeat top right;
 }
 .brand {
 	font-family: Impact;

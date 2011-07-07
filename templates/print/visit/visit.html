@@ -67,13 +67,13 @@
 		<td class="visit">
 			<div class="header center">
 				<div style="float:left"><img src="/webapp/barcode/?codestring={{ visit.barcode.id }}"></div>
-				<div class="brand logo">КЛИНИКА</div>
+				<div class="brand logo">КЛИНИКА ЕВРОМЕД</div>
 			</div>
 			<div class="details">
-				<div style="font-size:10pt;float:right">Тел.: 8 (861) 233-43-43</div>
+				<div style="font-size:10pt;float:right">Тел.: 8 (861) 233-43-43, 225-35-43</div>
 				<div>Пациент: <strong>{{ visit.patient.full_name }}</strong></div>
 				<div>Дата: <strong>{{ visit.created|date:"d.m.Y" }}</strong></div>
-				<div>Номер визита: <strong>{{ visit.zid }}</strong></div>
+				<div>Номер визита: <strong>{{ visit.barcode.id }}</strong></div>
 			</div>
 			<table class="service-list" width="100%">
 				<tr>

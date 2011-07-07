@@ -27,7 +27,7 @@ class Migration(SchemaMigration):
             ('order', self.gf('django.db.models.fields.related.ForeignKey')(to=orm['visit.Visit'])),
             ('service', self.gf('django.db.models.fields.related.ForeignKey')(to=orm['service.BaseService'])),
             ('executed', self.gf('django.db.models.fields.DateTimeField')()),
-            ('staff', self.gf('django.db.models.fields.related.ForeignKey')(to=orm['state.Staff'], null=True)),
+            ('staff', self.gf('django.db.models.fields.related.ForeignKey')(to=orm['staff.Staff'], null=True)),
             ('price', self.gf('django.db.models.fields.DecimalField')(max_digits=10, decimal_places=2)),
             ('payment_type', self.gf('django.db.models.fields.CharField')(max_length=1)),
             ('status', self.gf('django.db.models.fields.CharField')(max_length=1)),
@@ -131,7 +131,7 @@ class Migration(SchemaMigration):
             'rght': ('django.db.models.fields.PositiveIntegerField', [], {'db_index': 'True'}),
             'tree_id': ('django.db.models.fields.PositiveIntegerField', [], {'db_index': 'True'})
         },
-        'state.staff': {
+        'staff.staff': {
             'Meta': {'object_name': 'Staff'},
             'birth_day': ('django.db.models.fields.DateField', [], {}),
             'created': ('django.db.models.fields.DateTimeField', [], {'auto_now_add': 'True', 'blank': 'True'}),
@@ -178,7 +178,7 @@ class Migration(SchemaMigration):
             'payment_type': ('django.db.models.fields.CharField', [], {'max_length': '1'}),
             'price': ('django.db.models.fields.DecimalField', [], {'max_digits': '10', 'decimal_places': '2'}),
             'service': ('django.db.models.fields.related.ForeignKey', [], {'to': "orm['service.BaseService']"}),
-            'staff': ('django.db.models.fields.related.ForeignKey', [], {'to': "orm['state.Staff']", 'null': 'True'}),
+            'staff': ('django.db.models.fields.related.ForeignKey', [], {'to': "orm['staff.Staff']", 'null': 'True'}),
             'status': ('django.db.models.fields.CharField', [], {'max_length': '1'})
         },
         'visit.visit': {
