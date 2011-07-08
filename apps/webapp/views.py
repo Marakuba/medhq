@@ -119,6 +119,11 @@ def laboratory(request):
 @render_to('webapp/examination/index.html')
 def examination(request):
     return {}
+
+@login_required
+@render_to('webapp/calendar/index.html')
+def calendar(request):
+    return {}
     
 
 @login_required

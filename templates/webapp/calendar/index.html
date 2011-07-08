@@ -1,0 +1,58 @@
+{% extends "box.html" %}
+
+{% block title %}Панель управления{% endblock %}
+
+{% block head %}
+	<link rel="icon" type="image/ico" href="{{ MEDIA_URL }}resources/favicon.ico" />
+
+    <!-- ExtJS -->
+    <link rel="stylesheet" type="text/css" href="{{ MEDIA_URL }}extjs/resources/css/ext-all.css"/>
+
+    <!-- APP -->
+    <link rel="stylesheet" type="text/css" href="{{ MEDIA_URL }}resources/css/app.css"/>
+
+    <!-- FAM -->
+    <link rel="stylesheet" type="text/css" href="{{ MEDIA_URL }}resources/css/silk.css"/>
+	<link rel="stylesheet" type="text/css" href="{{ MEDIA_URL }}extjs/ux/css/Spinner.css" rel="stylesheet" />
+	<link rel="stylesheet" type="text/css" href="{{ MEDIA_URL }}extjs/ux/css/RowEditor.css" rel="stylesheet" />
+	
+	<style>
+	</style>
+
+	<script type="text/javascript">
+		var state = '{{ request.active_profile.state }}';
+		var MEDIA_URL = '{{ MEDIA_URL }}';
+		var API_URL = '/api/v1';
+		function get_api_url(resource){
+			return [API_URL,'dashboard',resource].join("/");
+		}
+	</script>
+
+    <!-- LIBS -->
+    <script type="text/javascript" src="{{ MEDIA_URL }}extjs/adapter/ext/ext-base.js"></script>
+    <!-- ENDLIBS -->
+
+    <script type="text/javascript" src="{{ MEDIA_URL }}extjs/ext-all-debug.js"></script>
+    <!--<script type="text/javascript" src="{{ MEDIA_URL }}extjs/src/debug.js"></script>-->
+
+    <script type="text/javascript" src="{{ MEDIA_URL }}extjs/ux/RowEditor.js"></script>
+    <script type="text/javascript" src="{{ MEDIA_URL }}extjs/ux/CheckColumn.js"></script> 
+    
+    <script type="text/javascript" src="{{ MEDIA_URL }}app/ux/GSearchField.js"></script>
+    <script type="text/javascript" src="{{ MEDIA_URL }}app/App.js"></script>
+    <script type="text/javascript" src="{{ MEDIA_URL }}app/Backend.js"></script>
+    <script type="text/javascript" src="{{ MEDIA_URL }}app/form/LazyComboBox.js"></script>
+
+    <script type="text/javascript" src="{{ MEDIA_URL }}app/calendar/CentralPanel.js"></script>
+    <script type="text/javascript" src="{{ MEDIA_URL }}app/calendar/MainPanel.js"></script>
+    <script type="text/javascript" src="{{ MEDIA_URL }}app/calendar/EventManager.js"></script>
+    <script type="text/javascript" src="{{ MEDIA_URL }}app/calendar/app.js"></script>
+    
+    
+
+{% include "webapp/includes/active_profile.html" %}
+
+{% endblock %}
+
+{% block body %}
+{% endblock %}
