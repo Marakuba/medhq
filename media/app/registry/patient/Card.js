@@ -34,6 +34,10 @@ App.PatientCard = Ext.extend(Ext.Panel, {
 					title:'Оказанные услуги',
 					layout:'fit',
 					xtype:'patientservicegrid'
+				},{
+					title:'Карты осмотра',
+					layout:'fit',
+					xtype:'regexamgrid'
 				}/*,{
 					title:'Возвраты',
 					layout:'fit',
@@ -54,6 +58,7 @@ App.PatientCard = Ext.extend(Ext.Panel, {
 		this.visitGrid = i.itemAt(0);
 		this.labGrid = i.itemAt(1);
 		this.serviceGrid = i.itemAt(2);
+		this.examCardGrid = i.itemAt(3);
 		//this.refundGrid = i.itemAt(3);
 
 		App.eventManager.on('globalsearch', this.onGlobalSearch, this); //
@@ -77,6 +82,7 @@ App.PatientCard = Ext.extend(Ext.Panel, {
 		this.visitGrid.setActivePatient(rec);
 		this.labGrid.setActivePatient(rec);
 		this.serviceGrid.setActivePatient(rec);
+		this.examCardGrid.setActivePatient(rec);
 		//this.refundGrid.setActivePatient(rec);
 	},
 	

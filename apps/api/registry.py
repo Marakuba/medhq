@@ -755,9 +755,8 @@ class RegExamCardResource(ExtResource):
     
     def dehydrate(self, bundle):
         obj = bundle.obj
-        if obj.staff:
-            bundle.data['staff_name'] = obj.ordered_service.staff.__unicode__()
-            bundle.data['ordered_service_id'] = obj.ordered_service.id
+        bundle.data['staff_name'] = obj.ordered_service.staff.__unicode__()
+        bundle.data['ordered_service_id'] = obj.ordered_service.id
         return bundle
     
     class Meta:
@@ -944,6 +943,7 @@ api.register(DiscountResource())
 api.register(BarcodeResource())
 api.register(BCPackageResource())
 api.register(NumeratorItemResource())
+api.register(RegExamCardResource())
 
 #examination
 api.register(CardTemplateResource())
