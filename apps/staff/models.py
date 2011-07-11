@@ -6,6 +6,9 @@ from core.models import make_person_object
 from state.models import Department
 import datetime
 from tagging.fields import TagField
+from south.modelsinspector import add_introspection_rules
+
+add_introspection_rules([], ["^tagging\.fields\.TagField"])
 
 TIMESLOTS =(
             (1,15),
