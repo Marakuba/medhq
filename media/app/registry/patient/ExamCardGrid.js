@@ -25,9 +25,7 @@ App.patient.ExamCardGrid = Ext.extend(Ext.grid.GridPanel, {
 			{name: 'ordered_service',allowBlank: true},
 			{name: 'ordered_service_id',allowBlank: true},
 			{name: 'print_date', allowBlank: true},
-		    {name: 'staff', convert:function(v,rec){
-		    	return v ? v.name : '---';
-		    }}
+		    {name: 'staff_name', allowBlank: true}
 		]);
 		
 		// The new DataWriter component.
@@ -62,11 +60,6 @@ App.patient.ExamCardGrid = Ext.extend(Ext.grid.GridPanel, {
 		    	dataIndex: 'ordered_service_id',
 		    	hidden:true
 		    },{
-		    	header:'Где выполняется',
-		    	width:30,
-		    	sortable:true,
-		    	dataIndex:'laboratory'
-		    },{
 		    	header: "Дата", 
 		    	width: 50, 
 		    	sortable: true, 
@@ -76,17 +69,12 @@ App.patient.ExamCardGrid = Ext.extend(Ext.grid.GridPanel, {
 		    	header: "Услуга", 
 		    	width: 50, 
 		    	sortable: true, 
-		    	dataIndex: 'service_name'
+		    	dataIndex: 'name'
 		    },{
 		    	header: "Врач", 
 		    	width: 50, 
 		    	sortable: true, 
-		    	dataIndex: 'staff'
-		    },{
-		    	header: "Стоимость", 
-		    	width: 50, 
-		    	sortable: true, 
-		    	dataIndex: 'price' 
+		    	dataIndex: 'staff_name'
 		    }
 		];		
 		
@@ -100,6 +88,15 @@ App.patient.ExamCardGrid = Ext.extend(Ext.grid.GridPanel, {
 			sm : new Ext.grid.RowSelectionModel({
 						singleSelect : true
 					}),
+			tbar:[{
+				xtype:'button',
+				iconCls:'silk-printer',
+				text:'Печать',
+				handler:this.onPrint.createDelegate(this, [])
+			}],
+			listeners: {
+				rowdblclick:this.onPrint.createDelegate(this, [])
+			},	
 	        bbar: new Ext.PagingToolbar({
 	            pageSize: 100,
 	            store: this.store,
@@ -121,8 +118,6 @@ App.patient.ExamCardGrid = Ext.extend(Ext.grid.GridPanel, {
 	        }),
 			view: new Ext.grid.GroupingView({
 				forceFit : true
-				
-				//getRowClass : this.applyRowClass
 			})
 			
 		}
@@ -140,6 +135,17 @@ App.patient.ExamCardGrid = Ext.extend(Ext.grid.GridPanel, {
 		var s = this.store;
 		s.baseParams = {format:'json','ordered_service__order__patient': id};
 		s.load();
+	},
+	
+    getSelected: function() {
+		return this.getSelectionModel().getSelected()
+	},
+	
+	onPrint : function(){
+		var record = this.getSelected();
+		if(record) {
+			window.open('/exam/card/'+record.data.id+'/');
+		}
 	}
 	
 	
