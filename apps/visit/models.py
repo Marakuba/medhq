@@ -121,7 +121,7 @@ class Visit(make_operator_object('visit')):
                                  verbose_name=u'Скидка',
                                  null=True, blank=True)
     discount_value = models.DecimalField(u'Размер скидки',
-                                         max_digits=10, decimal_places=2,  
+                                         max_digits=10, decimal_places=2, default=0,
                                          null=True, blank=True)
     total_discount = models.DecimalField(u'Сумма скидки, руб.', 
                                      max_digits=10, decimal_places=2, 

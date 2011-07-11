@@ -20,7 +20,8 @@ App.Reports = Ext.extend(Ext.Panel, {
 				proxyUrl:get_api_url('staff'),
 				fieldLabel:'Врач',
 				name:'staff__staff',
-				valueField:'id'
+				valueField:'id',
+				queryParam:'staff__name'
 			}), {
 				xtype:'button',
 				text:'Сформировать',

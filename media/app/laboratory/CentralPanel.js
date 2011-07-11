@@ -43,6 +43,41 @@ App.CentralPanel = Ext.extend(Ext.Panel, {
                     },
                     scope:this
                 }]
+            },{
+            	xtype:'buttongroup',
+            	title:'Анализаторы',
+            	defaults:{
+            		
+            	},
+            	items:[{
+            		text:'Исследования',
+            		scale:'medium',
+                    handler: function(){
+                    	this.launchApp('equipmentassaygrid');
+                    },
+                    scope:this            	
+                },{
+            		text:'Результаты',
+            		scale:'medium',
+                    handler: function(){
+                    	this.launchApp('equipmentresultgrid');
+                    },
+                    scope:this            	
+                },{
+            		text:'Оборудование',
+            		scale:'medium',
+                    handler: function(){
+                    	this.launchApp('equipmentgrid');
+                    },
+                    scope:this            	
+                },{
+            		text:'Задания',
+            		scale:'medium',
+                    handler: function(){
+                    	this.launchApp('equipmenttaskgrid');
+                    },
+                    scope:this            	
+                }]
             },'->',{
             	text:'Выход',
             	handler:function(){

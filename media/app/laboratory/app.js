@@ -5,16 +5,6 @@ Ext.onReady(function(){
 	
 	Ext.Ajax.defaultHeaders = {Accept:'application/json'};
 	
-	var products = new Ext.Panel({
-		region:'east',
-		width:300,
-		margins:'5 5 5 0',
-		header:false,
-		collapsible:true,
-		collapseMode:'mini',
-		split:true
-	});
-	
 	var centralPanel = new App.CentralPanel({
 	});
 	

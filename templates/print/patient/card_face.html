@@ -17,14 +17,12 @@
 					<th>
 						РОССИЙСКАЯ ФЕДЕРАЦИЯ<br>
 						Краснодарский край, г. Краснодар<br>
-						ООО "Клиника Евромед"<br>
-						<strong>КЛИНИКА "ЕВРОМЕД"</strong><br>
-						ИНН 2309120900 <br>
-						350000, г. Краснодар<br>
-						ул. КИМ, 143<br>
-						тел. (861) 233-43-43<br>
-						факс (861) 233-31-31<br>
-						Код ОГРН: <strong>1102309000694</strong>
+						<strong>{{ state.official_title|upper }}</strong><br>
+						ИНН {{ state.inn }} <br>
+						{{ state.address_street }}<br>
+						тел. {{ state.phones }}<br>
+						факс {{ state.fax }}<br>
+						Код ОГРН: <strong>{{ state.ogrn }}</strong>
 					</th>
 					<th>
 						Медицинская документация<br>

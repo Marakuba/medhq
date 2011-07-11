@@ -164,12 +164,14 @@ SELECT \
   sum(TTvis.count) as cnt, \
   sum(TTvis.count * TTvis.price) as sum, \
   round(sum(TTvis.count * TTvis.price * (Tvis.discount_value/100)),2) as disc,  \
-  sum(TTvis.count * TTvis.price) - round(sum(TTvis.count * TTvis.price * (Tvis.discount_value/100)),2) as clean_price \
+  sum(TTvis.count * TTvis.price) - round(sum(TTvis.count * TTvis.price * (Tvis.discount_value/100)),2) as clean_price, \
+  Tvis.payment_type \
  %s %s \
 GROUP BY \
   Tstaff.last_name ,Tstaff.first_name ,Tstaff.mid_name \
   ,Tvis.created \
   ,Tvis.id \
+  ,Tvis.payment_type \
   ,Tpnt.last_name, Tpnt.first_name,Tpnt.mid_name  \
   ,Tpolis.number \
   ,Tserv.id \

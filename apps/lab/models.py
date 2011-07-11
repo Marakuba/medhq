@@ -1,17 +1,17 @@
 # -*- coding: utf-8 -*-
 
-from django.db import models, transaction
-from service.models import BaseService, LabServiceGroup, ExecutionTypeGroup
+from django.db import models
+from service.models import BaseService, LabServiceGroup
 from lab.vars import OPERATORS, FACTOR_FIELDS, RESULTS, TEST_FORM
 from state.models import State
 from staff.models import Staff
 import datetime
-from django.db.models.signals import post_save, post_delete, pre_delete
 from workflow.models import Status
 from django.contrib.auth.models import User
-from numeration.models import NumeratorItem, Numerator
+from numeration.models import NumeratorItem
 import logging
 from django.conf import settings
+from django.utils.encoding import smart_unicode
 
 
 
@@ -85,7 +85,9 @@ class Analysis(models.Model):
     """
     """
     service = models.ForeignKey(BaseService, null=True, blank=True)
+    equipment_assay = models.ForeignKey('lab.EquipmentAssay', null=True, blank=True)
     name = models.CharField(u'Наименование', max_length=300)
+    code = models.CharField(u'Код', max_length=20, blank=True)
     input_mask = models.ForeignKey(InputMask, null=True, blank=True, verbose_name=InputMask._meta.verbose_name)
     input_list = models.ManyToManyField(InputList, null=True, blank=True, verbose_name=InputList._meta.verbose_name)
     measurement = models.ForeignKey(Measurement, null=True, blank=True, verbose_name=Measurement._meta.verbose_name)
@@ -170,6 +172,12 @@ class LabOrder(models.Model):
         ordering = ('-created',)
 
 
+PASS_STATUS = (
+    (0, u'Требует уточнения'),
+    (1, u'Валидация пройдена'),
+    (-1, u'Валидация не пройдена'),
+)
+
 class Result(models.Model):
     """
     """
@@ -180,11 +188,9 @@ class Result(models.Model):
     presence = models.CharField(u"Наличие", max_length=1, blank=True, null=True, choices=RESULTS)
     test_form = models.CharField(u"Форма", max_length=6, blank=True, null=True, choices=TEST_FORM)
     to_print = models.BooleanField(u'Печатать', default=True)
-    input_list = models.ForeignKey(InputList, 
-                                   blank=True, null=True,
-                                   verbose_name=u'Дополнительное значение',
-                                   )
+    input_list = models.ForeignKey(InputList, blank=True, null=True, verbose_name=u'Дополнительное значение')
     is_validated = models.BooleanField(u'V', default=False)
+    validation = models.IntegerField(u'Статус валидации', choices=PASS_STATUS, default=0)
     sample = models.ForeignKey('Sampling', blank=True, null=True)
     status = models.ForeignKey(Status, blank=True, null=True)
     
@@ -243,3 +249,61 @@ class Sampling(models.Model):
     class Meta:
         verbose_name = u'забор материала'
         verbose_name_plural = u'забор материалов'
+        
+        
+
+class Equipment(models.Model):
+    """
+    """
+    name = models.CharField(u'Наименование', max_length=100)
+    slug = models.CharField(u'Короткое наименование', max_length=15)
+    address = models.CharField(max_length=15)
+    is_active = models.BooleanField(u'Активно', default=True)
+    order = models.IntegerField(u'Порядок', default=0)
+
+    def __unicode__(self):
+        return smart_unicode(self.name)
+    
+    class Meta:
+        verbose_name = u'оборудование'
+        verbose_name_plural = u'оборудование'
+        ordering = ('order',)
+        
+        
+class EquipmentAssay(models.Model):
+    """
+    """
+    equipment = models.ForeignKey(Equipment)
+    service = models.ForeignKey('service.BaseService')
+
+    def __unicode__(self):
+        return smart_unicode( u"%s - %s" % (self.equipment, self.service) )
+    
+    class Meta:
+        verbose_name = u'аппаратное исследование'
+        verbose_name_plural = u'аппаратные исследования'    
+        
+
+class EquipmentTask(models.Model):
+    """
+    """
+    created = models.DateTimeField(auto_now_add=True)
+    equipment_assay = models.ForeignKey(EquipmentAssay)
+    ordered_service = models.ForeignKey('visit.OrderedService')
+    completed = models.DateTimeField(u'Выполнено', null=True, blank=True)
+    
+    def __unicode__(self):
+        return smart_unicode( u"%s - %s" % (self.ordered_service, self.equipment_assay) )
+    
+    class Meta:
+        verbose_name = u'задание для анализаторов'
+        verbose_name_plural = u'задания для анализаторов' 
+
+class EquipmentResult(models.Model):
+    """
+    """
+    order = models.CharField(u'Заказ', max_length=20)
+    assay = models.CharField(u'Исследование', max_length=20)
+    result = models.CharField(u'Результат', max_length=100)
+    measurement = models.CharField(u'Ед.изм.', max_length=15)
+    

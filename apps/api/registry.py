@@ -7,7 +7,8 @@ from tastypie import fields
 from tastypie.api import Api
 from tastypie.authorization import DjangoAuthorization
 from tastypie.constants import ALL, ALL_WITH_RELATIONS
-from lab.models import LabOrder, Sampling, Tube, Result, Analysis, InputList
+from lab.models import LabOrder, Sampling, Tube, Result, Analysis, InputList,\
+    Equipment, EquipmentAssay, EquipmentResult, EquipmentTask
 from service.models import BaseService, LabServiceGroup
 from staff.models import Position, Staff
 from state.models import State
@@ -300,8 +301,9 @@ class BaseServiceResource(ModelResource):
     class Meta:
         queryset = BaseService.objects.all()
         resource_name = 'baseservice'
-#        filtering = {
-#        }
+        filtering = {
+            'name':ALL
+        }
 
 
 
@@ -770,133 +772,69 @@ class RegExamCardResource(ExtResource):
             'id':ALL
         }
 
-#
-#class ReportResource(ExtResource):
-#    """
-#    """
-#    class Meta:
-#        queryset = Report.objects.all()
-#        authorization = DjangoAuthorization()
-#        resource_name = 'report'
-#        filtering = {
-#        }
-#
-#
-#class FilterItemResource(ModelResource):
-#    """
-#    """
-#    class Meta:
-#        queryset = FilterItem.objects.all()
-#        resource_name = 'filteritem'
-#        filtering = {
-#            'name':ALL
-#        }
-#
-#class FieldItemResource(ModelResource):
-#    """
-#    """
-#    class Meta:
-#        queryset = FieldItem.objects.all()
-#        resource_name = 'fielditem'
-#        filtering = {
-#            'name':ALL
-#        }
-#
-#class GroupItemResource(ModelResource):
-#    """
-#    """
-#    class Meta:
-#        queryset = GroupItem.objects.all()
-#        resource_name = 'groupitem'
-#        filtering = {
-#            'name':ALL
-#        }
-#
-#class SummaryItemResource(ModelResource):
-#    """
-#    """
-#    class Meta:
-#        queryset = SummaryItem.objects.all()
-#        resource_name = 'summaryitem'
-#        filtering = {
-#            'name':ALL
-#        }
-#
-#class FieldsResource(ExtResource):
-#    """
-#    """
-#    report = fields.ForeignKey(ReportResource,'report')
-#    field_item = fields.ForeignKey(FieldItemResource,'field_item')
-#
-#    def dehydrate(self, bundle):
-#        bundle.data['field_item_name'] = bundle.obj.field_item
-#        return bundle
-#    
-#    class Meta:
-#        queryset = Fields.objects.all()
-#        resource_name = 'fields'
-#        authorization = DjangoAuthorization()
-#        filtering = {
-#            'report':ALL_WITH_RELATIONS
-#        }
-#
-#class GroupsResource(ExtResource):
-#    """
-#    """
-#    report = fields.ForeignKey(ReportResource,'report')
-#    group_item = fields.ForeignKey(GroupItemResource,'group_item')
-#
-#    def dehydrate(self, bundle):
-#        bundle.data['group_item_name'] = bundle.obj.group_item
-#        return bundle
-#    
-#    class Meta:
-#        queryset = Groups.objects.all()
-#        resource_name = 'groups'
-#        authorization = DjangoAuthorization()
-#        filtering = {
-#            'report':ALL_WITH_RELATIONS
-#        }
-#
-#class SummariesResource(ExtResource):
-#    """
-#    """
-#    report = fields.ForeignKey(ReportResource,'report')
-#    summary_item = fields.ForeignKey(SummaryItemResource,'summary_item')
-#
-#    def dehydrate(self, bundle):
-#        bundle.data['summary_item_name'] = bundle.obj.summary_item
-#        return bundle
-#    
-#    class Meta:
-#        queryset = Summaries.objects.all()
-#        resource_name = 'summaries'
-#        authorization = DjangoAuthorization()
-#        filtering = {
-#            'report':ALL_WITH_RELATIONS
-#        }
-#
-#class FiltersResource(ExtResource):
-#    """
-#    """
-#    report = fields.ForeignKey(ReportResource,'report')
-#    filter_item = fields.ForeignKey(FilterItemResource,'filter_item')
-#
-#    def dehydrate(self, bundle):
-#        bundle.data['filter_item_name'] = bundle.obj.filter_item
-#        bundle.data['filter_type'] = bundle.obj.filter_item.get_type_display()
-#        if bundle.obj.filter_item.content_type:
-#            bundle.data['content_type'] = bundle.obj.filter_item.content_type
-#        return bundle
-#    
-#    class Meta:
-#        queryset = Filters.objects.all()
-#        resource_name = 'filters'
-#        authorization = DjangoAuthorization()
-#        filtering = {
-#            'report':ALL_WITH_RELATIONS
-#        }
 
+class EquipmentResource(ExtResource):
+    
+    class Meta:
+        queryset = Equipment.objects.all()
+        resource_name = 'equipment'
+        authorization = DjangoAuthorization()
+        filtering = {
+            'name':ALL,
+            'slug':ALL,
+        }        
+
+class EquipmentAssayResource(ExtResource):
+    
+    equipment = fields.ForeignKey(EquipmentResource, 'equipment')
+    service = fields.ForeignKey(BaseServiceResource, 'service')
+    
+    def dehydrate(self, bundle):
+        bundle.data['equipment_name'] = bundle.obj.equipment
+        bundle.data['service_name'] = bundle.obj.service
+        return bundle
+    
+    class Meta:
+        queryset = EquipmentAssay.objects.all()
+        resource_name = 'equipmentassay'
+        authorization = DjangoAuthorization()
+        filtering = {
+            'equipment':ALL_WITH_RELATIONS,
+            'service':ALL_WITH_RELATIONS,
+        }        
+
+class EquipmentTaskResource(ExtResource):
+    
+    equipment_assay = fields.ForeignKey(EquipmentAssayResource, 'equipment_assay')
+    ordered_service = fields.ForeignKey(OrderedServiceResource, 'ordered_service')
+    
+    def dehydrate(self, bundle):
+        bundle.data['equipment_name'] = bundle.obj.equipment_assay.equipment
+        bundle.data['service_name'] = bundle.obj.ordered_service.service
+        bundle.data['patient_name'] = bundle.obj.ordered_service.order.patient
+        bundle.data['order'] = bundle.obj.ordered_service.order.barcode.id
+        return bundle
+    
+    class Meta:
+        queryset = EquipmentTask.objects.all()
+        resource_name = 'equipmenttask'
+        authorization = DjangoAuthorization()
+        filtering = {
+            'equipment':ALL_WITH_RELATIONS,
+            'service':ALL_WITH_RELATIONS,
+        }        
+
+
+class EquipmentResultResource(ExtResource):
+    
+    class Meta:
+        queryset = EquipmentResult.objects.all()
+        resource_name = 'equipmentresult'
+        authorization = DjangoAuthorization()
+        filtering = {
+            'order':ALL,
+            'assay':ALL,
+        }        
 
 
 api = Api(api_name=get_api_name('dashboard'))
@@ -925,6 +863,10 @@ api.register(LabResource())
 api.register(SamplingResource())
 api.register(BarcodedSamplingResource())
 api.register(TubeResource())
+api.register(EquipmentResource())
+api.register(EquipmentAssayResource())
+api.register(EquipmentResultResource())
+api.register(EquipmentTaskResource())
 
 #service
 api.register(BaseServiceResource())

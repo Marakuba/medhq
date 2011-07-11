@@ -76,9 +76,11 @@ class PatientAdmin(OperatorAdmin, TabbedMedia):
     def print_contract(self, request, object_id):
         """
         """
+        state = request.active_profile.department.state
         patient = get_object_or_404(Patient, pk=object_id)
         contract = patient.get_contract()
         extra_context = {
+            'state':state,
             'patient':patient,
             'contract':contract
         }
@@ -100,9 +102,11 @@ class PatientAdmin(OperatorAdmin, TabbedMedia):
     def print_card(self, request, object_id):
         """
         """
+        state = request.active_profile.department.state
         patient = get_object_or_404(Patient, pk=object_id)
         contract = patient.get_contract()
         extra_context = {
+            'state':state,
             'patient':patient,
             'contract':contract,
             'f':patient.is_f() and u"а" or u"",

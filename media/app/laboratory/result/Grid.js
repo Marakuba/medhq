@@ -27,6 +27,7 @@ App.result.ResultGrid = Ext.extend(Ext.grid.EditorGridPanel, {
 		    {name: 'value'},
 		    {name: 'inputlist'},
 		    {name: 'measurement'},
+		    {name: 'validation'},
 		    {name: 'is_validated', type:'bool'}
 		]);
 		
@@ -58,23 +59,54 @@ App.result.ResultGrid = Ext.extend(Ext.grid.EditorGridPanel, {
 			Ext.apply(this.store.baseParams, this.filtering);
 		};
 		
-		this.columns =  [
-		    {
+		this.statusCmb = new Ext.form.ComboBox({
+			store:new Ext.data.ArrayStore({
+					fields:['id','title'],
+					data: [ [0,'?'],[-1,'-'],[1,'+'] ]
+			}),
+			typeAhead: true,
+			triggerAction: 'all',
+			valueField:'id',
+			displayField:'title',
+			mode: 'local',
+			forceSelection:true,
+			selectOnFocus:true,
+			editable:false
+		});
+		
+		this.columns =  [{
+				header: "V",
+				width:1,
+				sortable: true, 
+				dataIndex: 'validation',
+		    	renderer: function(val,meta,record) {
+		    		var icon;
+		    		if (val==0) {
+		    			icon = "question.png";
+		    		} else if (val==-1) {
+		    			icon = "no.gif";
+		    		} else if (val==1) {
+		    			icon = "yes.gif";
+		    		};
+		    		return String.format("<img src='{0}resources/images/icon-{1}'>", MEDIA_URL, icon);
+		    	},
+		    	editor: this.statusCmb
+			},/*{
 		    	xtype:'checkcolumn',
 		    	header: "V", 
 		    	width: 1, 
 		    	dataIndex: 'is_validated'
-		    },{
+		    },*/{
 		    	header: "№ заказа", 
 		    	width: 5, 
 		    	sortable: true, 
-		    	hidden: true,//this.mode=='single',
+		    	hidden: this.orderRecord!=undefined,
 		    	dataIndex: 'barcode'
 		    },{
 		    	header: "Лаборатория", 
 		    	width: 5, 
 		    	sortable: true, 
-		    	hidden: true,
+		    	hidden: this.orderRecord!=undefined,
 		    	dataIndex: 'laboratory'
 		    },{
 		    	header: "Исследование",
@@ -86,7 +118,7 @@ App.result.ResultGrid = Ext.extend(Ext.grid.EditorGridPanel, {
 		    	header: "Пациент",
 		    	width:20,
 		    	sortable: true, 
-		    	hidden:true,
+		    	hidden:this.orderRecord!=undefined,
 		    	dataIndex: 'patient'
 		    },{
 		    	header: "Исследование", 
@@ -249,14 +281,18 @@ App.result.ResultGrid = Ext.extend(Ext.grid.EditorGridPanel, {
 	            emptyMsg: "Нет записей",
 	            items:[{
 		    		xtype:'tbtext',
-		    		text:String.format("Пациент: {0}, возраст: {1}", this.orderRecord.data.patient, this.orderRecord.data.patient_age)
+		    		text:this.orderRecord 
+		    				? String.format("Пациент: {0}, возраст: {1}", this.orderRecord.data.patient, this.orderRecord.data.patient_age) 
+		    				: ''
 		    	}]
 	        });
 	        
 	    this.infoBBar = new Ext.Toolbar({
 	    	items:[{
 	    		xtype:'tbtext',
-	    		text:String.format("Пациент: {0}, возраст: {1}", this.orderRecord.data.patient, this.orderRecord.data.patient_age)
+	    		text:this.orderRecord 
+						? String.format("Пациент: {0}, возраст: {1}", this.orderRecord.data.patient, this.orderRecord.data.patient_age) 
+						: ''
 	    	},'->',{
 	    		text:'Сохранить',
 	    		hidden: this.mode!='single',
