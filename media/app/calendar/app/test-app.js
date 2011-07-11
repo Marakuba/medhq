@@ -56,13 +56,13 @@ App = function() {
             // or placed elsewhere within the application.
             new Ext.Viewport({
                 layout: 'border',
-                renderTo: 'calendar-ct',
+                //renderTo: 'calendar-ct',
                 items: [{
                     id: 'app-header',
                     region: 'north',
                     height: 35,
-                    border: false,
-                    contentEl: 'app-header-content'
+                    border: false
+                    //contentEl: 'app-header-content'
                 },{
                     id: 'app-center',
                     title: '...', // will be updated to view date range
@@ -298,11 +298,11 @@ App = function() {
         // This could be replaced with a function to do "toast" style messages, growl messages, etc. This will
         // vary based on application requirements, which is why it's not baked into the CalendarPanel.
         showMsg: function(msg){
-            Ext.fly('app-msg').update(msg).removeClass('x-hidden');
+          //  Ext.fly('app-msg').update(msg).removeClass('x-hidden');
         },
         
         clearMsg: function(){
-            Ext.fly('app-msg').update('').addClass('x-hidden');
+            //Ext.fly('app-msg').update('').addClass('x-hidden');
         }
     }
 }();
