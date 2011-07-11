@@ -1,8 +1,14 @@
 # -*- coding: utf-8 -*-
 
 from django.contrib import admin
-from staff.models import Staff, Position
+from staff.models import Staff, Position, Doctor
 from core.admin import TabbedAdmin
+
+class DoctorInlineAdmin(admin.TabularInline):
+    """
+    """
+    model = Doctor
+    extra = 1
 
 class PositionInlineAdmin(admin.TabularInline):
     """
@@ -11,7 +17,7 @@ class PositionInlineAdmin(admin.TabularInline):
     extra = 1
 
 class StaffAdmin(TabbedAdmin):
-    inlines = [PositionInlineAdmin]
+    inlines = [PositionInlineAdmin, DoctorInlineAdmin]
     list_display = ('__unicode__','mobile_phone','user')
     fieldsets = (
         ('Личные данные',{
