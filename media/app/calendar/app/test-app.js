@@ -19,10 +19,28 @@ App = function() {
             // multi-calendar implementation, which is beyond the scope of this sample app
             this.calendarStore = new Ext.data.JsonStore({
                 storeId: 'calendarStore',
-                root: 'calendars',
-                idProperty: 'id',
-                data: calendarList, // defined in calendar-list.js
-                proxy: new Ext.data.MemoryProxy(),
+                root: 'objects',
+                idProperty: 'resource_uri',
+                restful: true,
+                baseParams: {
+		    		format:'json'
+			    },
+			    autoSave:true,
+			    writer: new Ext.data.JsonWriter({
+			    	encode: false,
+				    writeAllFields: true
+				}),
+			    paramNames: {
+				    start : 'offset',
+				    limit : 'limit',
+			    	sort : 'sort',
+				    dir : 'dir'
+				},
+                //data: calendarList, // defined in calendar-list.js
+                proxy: new Ext.data.HttpProxy({
+			    	url: get_api_url('calendar'),
+			    	method:'GET'
+				}),
                 autoLoad: true,
                 fields: [
                     {name:'CalendarId', mapping: 'id', type: 'int'},
@@ -40,9 +58,27 @@ App = function() {
             // provide custom data mappings for events, see EventRecord.js.
 		    this.eventStore = new Ext.data.JsonStore({
 		        id: 'eventStore',
-		        root: 'evts',
-		        data: eventList, // defined in event-list.js
-				proxy: new Ext.data.MemoryProxy(),
+		        root: 'objects',
+		        baseParams: {
+		    		format:'json'
+			    },
+			    restful: true,
+			    autoSave:true,
+			    writer: new Ext.data.JsonWriter({
+			    	encode: false,
+				    writeAllFields: true
+				}),
+			    paramNames: {
+				    start : 'offset',
+				    limit : 'limit',
+			    	sort : 'sort',
+				    dir : 'dir'
+				},
+		        //data: eventList, // defined in event-list.js
+				proxy: new Ext.data.HttpProxy({
+			    	url: get_api_url('event'),
+			    	method:'GET'
+				}),
 		        fields: Ext.calendar.EventRecord.prototype.fields.getRange(),
 		        sortInfo: {
 		            field: 'StartDate',

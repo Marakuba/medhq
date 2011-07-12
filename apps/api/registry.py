@@ -23,6 +23,7 @@ from django.core.exceptions import ObjectDoesNotExist
 from tastypie.exceptions import NotFound
 from examination.models import CardTemplate, ExaminationCard
 from helpdesk.models import Issue, IssueType
+from scheduler.models import Calendar, Event
 #from reporting.models import Report, FieldItem, GroupItem, SummaryItem, Fields,\
 #    Groups, Summaries, FilterItem, Filters
 
@@ -843,7 +844,31 @@ class EquipmentResultResource(ExtResource):
         filtering = {
             'order':ALL,
             'assay':ALL,
-        }        
+        }   
+        
+class CalendarResource(ExtResource):
+    
+    class Meta:
+        queryset = Calendar.objects.all()
+        resource_name = 'calendar'
+        authorization = DjangoAuthorization()
+        filtering = {
+            'title':ALL,
+        }
+        
+class EventResource(ExtResource):
+    
+    class Meta:
+        queryset = Event.objects.all()
+        resource_name = 'event'
+        authorization = DjangoAuthorization()
+        filtering = {
+            'title':ALL,
+            'id':ALL,
+            'cid':ALL,
+            'start':ALL,
+            'end':ALL,
+        }       
 
 
 
@@ -944,7 +969,21 @@ api.register(RegExamCardResource())
 api.register(CardTemplateResource())
 api.register(ExaminationCardResource())
 
-
 #helpdesk
 api.register(IssueTypeResource())
 api.register(IssueResource())
+
+#scheduler
+api.register(CalendarResource())
+api.register(EventResource())
+
+#reporting
+#api.register(ReportResource())
+#api.register(FilterItemResource())
+#api.register(FieldItemResource())
+#api.register(GroupItemResource())
+#api.register(SummaryItemResource())
+#api.register(FieldsResource())
+#api.register(GroupsResource())
+#api.register(SummariesResource())
+#api.register(FiltersResource())
