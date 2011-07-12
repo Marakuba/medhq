@@ -858,6 +858,11 @@ class CalendarResource(ExtResource):
         
 class EventResource(ExtResource):
     
+    def dehydrate(self, bundle):
+        bundle.data['start'] = bundle.obj.start.strftime('%a %b %d %Y %H:%M:%S')
+        bundle.data['end'] = bundle.obj.end.strftime('%a %b %d %Y %H:%M:%S ')
+        return bundle
+    
     class Meta:
         queryset = Event.objects.all()
         resource_name = 'event'
