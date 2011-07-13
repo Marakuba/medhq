@@ -1185,14 +1185,14 @@ Ext.calendar.EventMappings = {
     StartDate: {
         name: 'StartDate',
         mapping: 'start',
-        type: 'date',
-        dateFormat: 'c'
+        type: 'date'
+        //dateFormat: 'c'
     },
     EndDate: {
         name: 'EndDate',
         mapping: 'end',
-        type: 'date',
-        dateFormat: 'c'
+        type: 'date'
+        //dateFormat: 'c'
     },
     Location: {
         name: 'Location',
@@ -2330,8 +2330,8 @@ Ext.calendar.CalendarView = Ext.extend(Ext.BoxComponent, {
         this.setViewBounds(start);
         this.store.load({
             params: {
-                start: this.viewStart.format('m-d-Y'),
-                end: this.viewEnd.format('m-d-Y')
+                start_gte: this.viewStart.format('m-d-Y'),
+                end_lte: this.viewEnd.format('m-d-Y')
             }
         });
         if (refresh === true) {
@@ -4247,7 +4247,7 @@ Ext.calendar.EventEditForm = Ext.extend(Ext.form.FormPanel, {
     cls: 'ext-evt-edit-form',
 
     // private properties:
-    newId: 10000,
+    //newId: 10000,
     layout: 'column',
 
     // private
@@ -4522,7 +4522,7 @@ Ext.calendar.EventEditWindow = function(config) {
 
 Ext.extend(Ext.calendar.EventEditWindow, Ext.Window, {
     // private
-    newId: 10000,
+    //newId: 10000,
 
     // private
     initComponent: function() {
@@ -4634,7 +4634,7 @@ Ext.extend(Ext.calendar.EventEditWindow, Ext.Window, {
             end = o[M.EndDate.name] || start.add('h', 1);
 
             rec = new Ext.calendar.EventRecord();
-            rec.data[M.EventId.name] = this.newId++;
+            //rec.data[M.EventId.name] = this.newId++;
             rec.data[M.StartDate.name] = start;
             rec.data[M.EndDate.name] = end;
             rec.data[M.IsAllDay.name] = !!o[M.IsAllDay.name] || start.getDate() != end.clone().add(Date.MILLI, 1).getDate();

@@ -72,9 +72,9 @@ class Event(models.Model):
     end = CustomDateTimeField(u'Конечная дата', blank = True, null = True)
     loc = models.TextField(u'Локация', blank = True, null = True)
     notes = models.TextField(u'Примечание', blank = True, null = True)
-    url = models.CharField(u'Заголовок', max_length=300)
+    url = models.CharField(u'Заголовок', max_length=300, blank = True, null = True)
     ad = models.BooleanField(u'Весь день', default = False)
-    rem = models.CharField(u'Напоминание', max_length = 60)
+    rem = models.CharField(u'Напоминание', max_length = 60, blank = True, null = True)
     n = models.BooleanField(u'Новое событие', default = True)
     
     class Meta:

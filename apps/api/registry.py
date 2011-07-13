@@ -874,6 +874,7 @@ class EventResource(ExtResource):
             'start':ALL,
             'end':ALL,
         }       
+        limit = 1000
 
 
 

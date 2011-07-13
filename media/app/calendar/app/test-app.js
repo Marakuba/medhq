@@ -11,7 +11,7 @@
 App = function() {
     return {
         init : function() {
-            
+			Ext.Ajax.defaultHeaders = {Accept:'application/json'};            
             Ext.BLANK_IMAGE_URL = 'http://extjs.cachefly.net/ext-3.1.0/resources/images/default/s.gif';
 
             // This is an example calendar store that enables the events to have
@@ -20,7 +20,7 @@ App = function() {
             this.calendarStore = new Ext.data.JsonStore({
                 storeId: 'calendarStore',
                 root: 'objects',
-                idProperty: 'resource_uri',
+                idProperty: 'id',
                 restful: true,
                 baseParams: {
 		    		format:'json'
@@ -63,6 +63,7 @@ App = function() {
 		    		format:'json'
 			    },
 			    restful: true,
+			    idProperty: 'id',
 			    autoSave:true,
 			    writer: new Ext.data.JsonWriter({
 			    	encode: false,

@@ -45,7 +45,7 @@ Ext.calendar.CalendarPanel = Ext.extend(Ext.Panel, {
      * @cfg {String} todayText
      * Alternate text to use for the 'Today' nav bar button.
      */
-    todayText: 'Today',
+    todayText: 'Сегодня',
     /**
      * @cfg {Boolean} showTodayText
      * True to show the value of {@link #todayText} instead of today's date in the calendar's current day box,
@@ -62,17 +62,17 @@ Ext.calendar.CalendarPanel = Ext.extend(Ext.Panel, {
      * @cfg {String} dayText
      * Alternate text to use for the 'Day' nav bar button.
      */
-    dayText: 'Day',
+    dayText: 'День',
     /**
      * @cfg {String} weekText
      * Alternate text to use for the 'Week' nav bar button.
      */
-    weekText: 'Week',
+    weekText: 'Неделя',
     /**
      * @cfg {String} monthText
      * Alternate text to use for the 'Month' nav bar button.
      */
-    monthText: 'Month',
+    monthText: 'Месяц',
 
     // private
     layoutConfig: {

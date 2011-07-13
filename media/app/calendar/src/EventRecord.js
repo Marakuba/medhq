@@ -29,13 +29,13 @@ Ext.calendar.EventMappings = {
         name: 'StartDate',
         mapping: 'start',
         type: 'date',
-        dateFormat: 'c'
+        //dateFormat: 'c'
     },
     EndDate: {
         name: 'EndDate',
         mapping: 'end',
         type: 'date',
-        dateFormat: 'c'
+        //dateFormat: 'c'
     },
     Location: {
         name: 'Location',
