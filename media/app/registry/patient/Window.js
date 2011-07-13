@@ -105,6 +105,11 @@ App.PatientWindow = Ext.extend(Ext.Window, {
 						name:'doc',
                     	fieldLabel: 'Удостоверение',
                     	value:''
+					},{
+						xtype:'textfield',
+						name:'hid_card',
+						fieldLabel:'№ карты',
+						value:''
 					}]
 				}]
 			},{

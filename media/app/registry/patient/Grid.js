@@ -30,7 +30,8 @@ App.PatientGrid = Ext.extend(Ext.grid.GridPanel, {
 		    {name: 'discount'},
 		    {name: 'discount_name'},
 		    {name: 'billed_account'},
-		    {name: 'doc'}
+		    {name: 'doc'},
+		    {name: 'hid_card'}
 		]);
 		
 		// The new DataWriter component.
