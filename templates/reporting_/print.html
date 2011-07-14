@@ -1,0 +1,97 @@
+{% extends "print/off_blank.html" %}
+
+{% block extra_head %}
+<style>
+	table {
+		width:100%;
+		border:1px solid gray;
+	}
+	td {
+		border:1px solid #AAA;
+		padding:2px;
+	}
+	.title-0 {
+		font-size:1.8em;
+		font-weight:bold;
+		background:#e9f4fa;
+	}
+	.title-1 {
+		font-weight:bold;
+		background: #fbf9bb;
+	}
+	.total-row {
+		font-weight:bolder;
+		font-size:1.2em;
+		background: #ffc0cb;
+	}
+	.price {
+		text-align:right;
+		font-weight:bold;
+	}
+	.no-price {
+		background:#ffd6d3;
+	}
+	.header, .header td {
+		border:none;
+	}
+	.header {
+		margin-bottom:20px;
+		font-size:1.2em;
+	}
+	.header .details {
+		width:9.5cm;
+		line-height:140%;
+	}
+	h1 {
+		text-align:center;
+		margin:0.6cm;
+		font-size:2em;
+	}
+	.headers th {
+		font-size:1.2em;
+		padding:2px;
+		border:1px solid gray;
+		
+	}
+	.filters {
+		line-height:120%;
+		margin-bottom:10px;
+	}
+</style>
+{% endblock %}
+
+{% block body %}
+
+<div id="changelist" class="module">
+<h1>{{ title }}</h1>
+{% if filters %}
+	<div class="filters">
+	{% for filter in filters %}
+		<div><strong>{{ filter.filter_item }}:</strong> <em>{{ filter.display }}</em></div>
+	{% endfor %}
+	</div>
+{% endif %}
+<table width="100%">
+	<tbody>
+		{% if headers %}
+		<tr class="headers">
+			{% for header in headers %}
+			<th>{{ header }}</th>
+			{% endfor %}
+		</tr>
+		{% endif %}
+		{% for row in report.results %}
+		<tr>
+			{% for col in row %}
+			<td class="{{ col.2|default:"" }}"{% if col.1 > 1 %} colspan="{{ col.1 }}"{% endif %}>{{ col.0 }}</td>
+			{% endfor %}
+		</tr>
+		{% empty %}
+		<tr><td>Записи отсутствуют</td></tr>
+		{% endfor %}
+			
+	</tbody>
+</table>
+</div>
+
+{% endblock %}
