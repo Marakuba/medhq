@@ -98,6 +98,7 @@ Ext.form.LazyClearableComboBox = Ext.extend(Ext.form.ClearableComboBox, {
 		this.store.load();
 	}
 });
+Ext.form.LazyClearableComboBox = Ext.form.LazyComboBox;
 
 Ext.reg('lazycombobox', Ext.form.LazyComboBox);
 Ext.reg('lazyclearablecombobox', Ext.form.LazyClearableComboBox);

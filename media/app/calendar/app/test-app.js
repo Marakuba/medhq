@@ -56,15 +56,19 @@ App = function() {
             // implementation would likely be loading remote data via an HttpProxy, but the
             // underlying store functionality is the same.  Note that if you would like to 
             // provide custom data mappings for events, see EventRecord.js.
-		    this.eventStore = new Ext.data.JsonStore({
+		    this.eventStore = new Ext.data.Store({
 		        id: 'eventStore',
-		        root: 'objects',
 		        baseParams: {
 		    		format:'json'
 			    },
 			    restful: true,
-			    idProperty: 'id',
 			    autoSave:true,
+			    reader: new Ext.data.JsonReader({
+				    idProperty: 'id',
+			        root: 'objects',
+			        successProperty: 'success',
+			        messageProperty: 'message',
+			    }, Ext.calendar.EventRecord),
 			    writer: new Ext.data.JsonWriter({
 			    	encode: false,
 				    writeAllFields: true
@@ -80,7 +84,7 @@ App = function() {
 			    	url: get_api_url('event'),
 			    	method:'GET'
 				}),
-		        fields: Ext.calendar.EventRecord.prototype.fields.getRange(),
+//		        fields: Ext.calendar.EventRecord.prototype.fields.getRange(),
 		        sortInfo: {
 		            field: 'StartDate',
 		            direction: 'ASC'
