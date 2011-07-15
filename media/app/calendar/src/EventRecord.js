@@ -9,6 +9,7 @@
  * @extends Object
  * A simple object that provides the field definitions for EventRecords so that they can be easily overridden.
  */
+Ext.ns('Ext.calendar');
 Ext.calendar.EventMappings = {
     EventId: {
         name: 'EventId',

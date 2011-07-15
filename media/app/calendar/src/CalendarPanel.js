@@ -17,6 +17,8 @@
  * @param {Object} config The config object
  * @xtype calendarpanel
  */
+Ext.ns('Ext');
+Ext.ns('Ext.calendar');
 Ext.calendar.CalendarPanel = Ext.extend(Ext.Panel, {
     /**
      * @cfg {Boolean} showDayView

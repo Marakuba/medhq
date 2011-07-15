@@ -21,6 +21,7 @@
  * @constructor
  * @param {Object} config The config object
  */
+Ext.ns('Ext.calendar');
 Ext.calendar.CalendarPicker = Ext.extend(Ext.form.ComboBox, {
     fieldLabel: 'Calendar',
     valueField: 'CalendarId',

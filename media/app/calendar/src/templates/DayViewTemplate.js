@@ -16,6 +16,7 @@
  * @constructor
  * @param {Object} config The config object
  */
+Ext.ns('Ext.calendar');
 Ext.calendar.DayViewTemplate = function(config){
     
     Ext.apply(this, config);

@@ -16,6 +16,8 @@
  * @constructor
  * @param {Object} config The config object
  */
+Ext.ns('Ext');
+Ext.ns('Ext.calendar');
 Ext.calendar.DayView = Ext.extend(Ext.Container, {
     /**
      * @cfg {Boolean} showTime

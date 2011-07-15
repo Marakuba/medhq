@@ -13,6 +13,7 @@
  * @constructor
  * @param {Object} config The config object
  */
+Ext.ns('Ext.calendar');
 Ext.calendar.EventEditWindow = function(config) {
     var formPanelCfg = {
         xtype: 'form',

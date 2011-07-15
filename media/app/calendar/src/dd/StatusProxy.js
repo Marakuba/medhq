@@ -12,6 +12,7 @@
  * @constructor
  * @param {Object} config
  */
+Ext.ns('Ext.calendar');
 Ext.calendar.StatusProxy = function(config) {
     Ext.apply(this, config);
     this.id = this.id || Ext.id();

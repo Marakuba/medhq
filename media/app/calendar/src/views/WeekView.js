@@ -13,6 +13,7 @@
  * @constructor
  * @param {Object} config The config object
  */
+Ext.ns('Ext.calendar');
 Ext.calendar.WeekView = Ext.extend(Ext.calendar.DayView, {
     /**
      * @cfg {Number} dayCount

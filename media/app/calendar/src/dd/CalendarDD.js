@@ -8,6 +8,8 @@
  * Internal drag zone implementation for the calendar components. This provides base functionality
  * and is primarily for the month view -- DayViewDD adds day/week view-specific functionality.
  */
+Ext.ns('Ext.calendar');
+
 Ext.calendar.DragZone = Ext.extend(Ext.dd.DragZone, {
     ddGroup: 'CalendarDD',
     eventSelector: '.ext-cal-evt',

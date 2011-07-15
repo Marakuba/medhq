@@ -21,6 +21,7 @@
  * @constructor
  * @param {Object} config The config object
  */
+Ext.ns('Ext.calendar');
 Ext.calendar.ReminderField = Ext.extend(Ext.form.ComboBox, {
     width: 200,
     fieldLabel: 'Reminder',

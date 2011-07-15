@@ -10,6 +10,7 @@
  * a link at the bottom to view all events for that day. When clicked, a panel pops up that
  * uses this view to display the events for that day.
  */
+Ext.ns('Ext.calendar');
 Ext.calendar.MonthDayDetailView = Ext.extend(Ext.BoxComponent, {
     initComponent: function() {
         Ext.calendar.CalendarView.superclass.initComponent.call(this);

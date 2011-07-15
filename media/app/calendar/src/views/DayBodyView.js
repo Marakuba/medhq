@@ -14,6 +14,7 @@
  * @constructor
  * @param {Object} config The config object
  */
+Ext.ns('Ext.calendar');
 Ext.calendar.DayBodyView = Ext.extend(Ext.calendar.CalendarView, {
     //private
     dayColumnElIdDelimiter: '-day-col-',

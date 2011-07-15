@@ -1223,6 +1223,11 @@ Ext.calendar.EventMappings = {
         name: 'IsNew',
         mapping: 'n',
         type: 'boolean'
+    },
+    Staff: {
+        name: 'Staff',
+        mapping: 'staff',
+        type: 'boolean'
     }
 };
 
@@ -1278,7 +1283,8 @@ rec.data[M.Notes.name] = 'Some notes';
     M.Url,
     M.IsAllDay,
     M.Reminder,
-    M.IsNew
+    M.IsNew,
+    M.Staff
     ]);
 
     /**
@@ -1296,7 +1302,8 @@ rec.data[M.Notes.name] = 'Some notes';
         M.Url,
         M.IsAllDay,
         M.Reminder,
-        M.IsNew
+        M.IsNew,
+        M.Staff
         ]);
     };
 })();
@@ -4391,6 +4398,7 @@ Ext.calendar.EventEditForm = Ext.extend(Ext.form.FormPanel, {
         this.activeRecord.set(Ext.calendar.EventMappings.StartDate.name, dates[0]);
         this.activeRecord.set(Ext.calendar.EventMappings.EndDate.name, dates[1]);
         this.activeRecord.set(Ext.calendar.EventMappings.IsAllDay.name, dates[2]);
+        
     },
 
     // private
@@ -4770,17 +4778,17 @@ Ext.calendar.CalendarPanel = Ext.extend(Ext.Panel, {
      * @cfg {String} dayText
      * Alternate text to use for the 'Day' nav bar button.
      */
-    dayText: 'Day',
+    dayText: 'День',
     /**
      * @cfg {String} weekText
      * Alternate text to use for the 'Week' nav bar button.
      */
-    weekText: 'Week',
+    weekText: 'Неделя',
     /**
      * @cfg {String} monthText
      * Alternate text to use for the 'Month' nav bar button.
      */
-    monthText: 'Month',
+    monthText: 'Месяц',
 
     // private
     layoutConfig: {

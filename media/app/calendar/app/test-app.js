@@ -8,6 +8,7 @@
  * Calendar sample code originally written by Brian Moeskau (brian@ext-calendar.com)
  * See additional calendar examples at http://ext-calendar.com
  */
+Ext.ns('Ext.calendar');
 App = function() {
 	Ext.Ajax.defaultHeaders = {Accept:'application/json'};
     return {
@@ -20,16 +21,8 @@ App = function() {
             // multi-calendar implementation, which is beyond the scope of this sample app
             this.calendarStore = new Ext.data.JsonStore({
                 storeId: 'calendarStore',
-<<<<<<< Updated upstream
                 root: 'objects',
                 idProperty: 'id',
-=======
-    		    totalProperty: 'meta.total_count',
-    		    successProperty: 'success',
-    		    idProperty: 'id',
-    		    root: 'objects',
-    		    messageProperty: 'message',
->>>>>>> Stashed changes
                 restful: true,
                 baseParams: {
 		    		format:'json'
@@ -76,7 +69,7 @@ App = function() {
 				    idProperty: 'id',
 			        root: 'objects',
 			        successProperty: 'success',
-			        messageProperty: 'message',
+			        messageProperty: 'message'
 			    }, Ext.calendar.EventRecord),
 			    writer: new Ext.data.JsonWriter({
 			    	encode: false,

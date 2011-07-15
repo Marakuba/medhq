@@ -8,6 +8,7 @@
  * This is an internal helper class for the calendar views and should not be overridden.
  * It is responsible for the base event rendering logic underlying all of the calendar views.
  */
+Ext.ns('Ext.calendar');
 Ext.calendar.WeekEventRenderer = function() {
 
     var getEventRow = function(id, week, index) {

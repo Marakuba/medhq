@@ -6,6 +6,7 @@ import datetime
 from south.modelsinspector import add_introspection_rules
 from django.utils.encoding import smart_unicode, force_unicode, smart_str
 import time
+from staff.models import Staff
 
 add_introspection_rules([], ["^scheduler\.models\.CustomDateTimeField"])
 
@@ -66,6 +67,7 @@ class Calendar(models.Model):
 class Event(models.Model):
     """
     """
+    staff = models.ForeignKey(Staff, blank = True, null = True)
     cid = models.PositiveIntegerField(u'ID календаря', blank = True, null = True)
     title = models.CharField(u'Заголовок', max_length=300)
     start = CustomDateTimeField(u'Начальная дата', blank = True, null = True)

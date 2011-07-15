@@ -857,6 +857,7 @@ class CalendarResource(ExtResource):
         }
         
 class EventResource(ExtResource):
+    staff = fields.ForeignKey(StaffResource, 'staff', null=True)
     
     def dehydrate(self, bundle):
         bundle.data['start'] = bundle.obj.start.strftime('%a %b %d %Y %H:%M:%S')

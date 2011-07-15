@@ -16,6 +16,8 @@
  * @constructor
  * @param {Object} config The config object
  */
+Ext.ns('Ext.calendar');
+Ext.ns('Ext');
 Ext.calendar.CalendarView = Ext.extend(Ext.BoxComponent, {
     /**
      * @cfg {Number} startDay
@@ -708,8 +710,8 @@ Ext.calendar.CalendarView = Ext.extend(Ext.BoxComponent, {
         this.setViewBounds(start);
         this.store.load({
             params: {
-                start: this.viewStart.format('m-d-Y'),
-                end: this.viewEnd.format('m-d-Y')
+                start_gte: this.viewStart.format('m-d-Y'),
+                end_lte: this.viewEnd.format('m-d-Y')
             }
         });
         if (refresh === true) {

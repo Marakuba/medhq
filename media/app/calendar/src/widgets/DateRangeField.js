@@ -11,6 +11,7 @@
  * @constructor
  * @param {Object} config The config object
  */
+Ext.ns('Ext.calendar');
 Ext.calendar.DateRangeField = Ext.extend(Ext.form.Field, {
     /**
      * @cfg {String} toText

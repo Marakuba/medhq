@@ -14,6 +14,7 @@
  * @constructor
  * @param {Object} config The config object
  */
+Ext.ns('Ext.calendar');
 Ext.calendar.DayHeaderView = Ext.extend(Ext.calendar.MonthView, {
     // private configs
     weekCount: 1,
