@@ -67,16 +67,7 @@ App = function() {
             // provide custom data mappings for events, see EventRecord.js.
 		    this.eventStore = new Ext.data.Store({
 		        id: 'eventStore',
-<<<<<<< Updated upstream
 		        baseParams: {
-=======
-	   		    totalProperty: 'meta.total_count',
-    		    successProperty: 'success',
-    		    idProperty: 'id',
-    		    root: 'objects',
-    		    messageProperty: 'message',
-    		    baseParams: {
->>>>>>> Stashed changes
 		    		format:'json'
 			    },
 			    restful: true,
