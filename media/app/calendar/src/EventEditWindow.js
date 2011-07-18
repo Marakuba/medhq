@@ -222,7 +222,7 @@ Ext.extend(Ext.calendar.EventEditWindow, Ext.Window, {
             //rec.data[M.EventId.name] = this.newId++;
             rec.data[M.StartDate.name] = start;
             rec.data[M.EndDate.name] = end;
-            rec.data[M.IsAllDay.name] = !!o[M.IsAllDay.name] || start.getDate() != end.clone().add(Date.MILLI, 1).getDate();
+            //rec.data[M.IsAllDay.name] = !!o[M.IsAllDay.name] || start.getDate() != end.clone().add(Date.MILLI, 1).getDate();
             rec.data[M.IsNew.name] = true;
 
             f.reset();
@@ -277,7 +277,7 @@ Ext.extend(Ext.calendar.EventEditWindow, Ext.Window, {
         f.updateRecord(this.activeRecord);
         this.activeRecord.set(M.StartDate.name, dates[0]);
         this.activeRecord.set(M.EndDate.name, dates[1]);
-        this.activeRecord.set(M.IsAllDay.name, dates[2]);
+        //this.activeRecord.set(M.IsAllDay.name, dates[2]);
         this.activeRecord.set(M.CalendarId.name, this.formPanel.form.findField('calendar').getValue());
         if (this.staffStore) {
         	this.activeRecord.set(M.StaffId.name, this.formPanel.form.findField('staff').getValue());

@@ -86,7 +86,7 @@ Ext.calendar.MonthDayDetailView = Ext.extend(Ext.BoxComponent, {
             var item = evt.data,
             M = Ext.calendar.EventMappings;
 
-            item._renderAsAllDay = item[M.IsAllDay.name] || Ext.calendar.Date.diffDays(item[M.StartDate.name], item[M.EndDate.name]) > 0;
+            //item._renderAsAllDay = item[M.IsAllDay.name] || Ext.calendar.Date.diffDays(item[M.StartDate.name], item[M.EndDate.name]) > 0;
             item.spanLeft = Ext.calendar.Date.diffDays(item[M.StartDate.name], this.date) > 0;
             item.spanRight = Ext.calendar.Date.diffDays(this.date, item[M.EndDate.name]) > 0;
             item.spanCls = (item.spanLeft ? (item.spanRight ? 'ext-cal-ev-spanboth':

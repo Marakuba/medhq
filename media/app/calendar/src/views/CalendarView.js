@@ -86,13 +86,13 @@ Ext.calendar.CalendarView = Ext.extend(Ext.BoxComponent, {
      * The text to display inside the drag proxy while dragging over the calendar to create a new event (defaults to 
      * 'Create event for {0}' where {0} is a date range supplied by the view)
      */
-    ddCreateEventText: 'Create event for {0}',
+    ddCreateEventText: 'Создать событие на {0}',
     /**
      * @cfg {String} ddMoveEventText
      * The text to display inside the drag proxy while dragging an event to reposition it (defaults to 
      * 'Move event to {0}' where {0} is the updated event start date/time supplied by the view)
      */
-    ddMoveEventText: 'Move event to {0}',
+    ddMoveEventText: 'Переместить событие на {0}',
     /**
      * @cfg {String} ddResizeEventText
      * The string displayed to the user in the drag proxy while dragging the resize handle of an event (defaults to 
@@ -100,7 +100,7 @@ Ext.calendar.CalendarView = Ext.extend(Ext.BoxComponent, {
      * this text is only used in views
      * that allow resizing of events.
      */
-    ddResizeEventText: 'Update event to {0}',
+    ddResizeEventText: 'Обновить событие на {0}',
 
     //private properties -- do not override:
     weekCount: 1,
@@ -349,11 +349,11 @@ Ext.calendar.CalendarView = Ext.extend(Ext.BoxComponent, {
                 this.eventGrid[w][d] = this.eventGrid[w][d] || [];
                 this.eventGrid[w][d][row] = evt;
 
-                if (evt.data[M.IsAllDay.name]) {
+                /*if (evt.data[M.IsAllDay.name]) {
                     row = this.findEmptyRowIndex(w, d, true);
                     this.allDayGrid[w][d] = this.allDayGrid[w][d] || [];
                     this.allDayGrid[w][d][row] = evt;
-                }
+                }*/
             }
 
             if (this.evtMaxCount[w] < this.eventGrid[w][d].length) {
@@ -778,12 +778,12 @@ Ext.calendar.CalendarView = Ext.extend(Ext.BoxComponent, {
             M = Ext.calendar.EventMappings;
 
             // Always sort all day events before anything else
-            if (a[M.IsAllDay.name]) {
+            /*if (a[M.IsAllDay.name]) {
                 return - 1;
             }
             else if (b[M.IsAllDay.name]) {
                 return 1;
-            }
+            }*/
             if (this.spansHavePriority) {
                 // This logic always weights span events higher than non-span events
                 // (at the possible expense of start time order). This seems to

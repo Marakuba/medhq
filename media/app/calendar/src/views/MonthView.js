@@ -251,8 +251,8 @@ Ext.calendar.MonthView = Ext.extend(Ext.calendar.CalendarView, {
 
         return Ext.applyIf({
             _selectorCls: selector,
-            _colorCls: 'ext-color-' + (evt[M.CalendarId.name] ?
-            evt[M.CalendarId.name] : 'default') + (evt._renderAsAllDay ? '-ad': ''),
+            _colorCls: 'ext-color-' + (evt[M.CalendarId.name] ? //evt[M.CalendarId.name]
+             Ext.idToColor(evt[M.CalendarId.name]): 'default') + (evt._renderAsAllDay ? '-ad': ''),
             _elId: selector + '-' + evt._weekIndex,
             _isRecurring: evt.Recurrence && evt.Recurrence != '',
             _isReminder: evt[M.Reminder.name] && evt[M.Reminder.name] != '',

@@ -33,19 +33,19 @@ Ext.calendar.DayView = Ext.extend(Ext.Container, {
      * @cfg {String} todayText
      * The text to display in the current day's box in the calendar when {@link #showTodayText} is true (defaults to 'Today')
      */
-    todayText: 'Today',
+    todayText: 'Сегодня',
     /**
      * @cfg {String} ddCreateEventText
      * The text to display inside the drag proxy while dragging over the calendar to create a new event (defaults to 
      * 'Create event for {0}' where {0} is a date range supplied by the view)
      */
-    ddCreateEventText: 'Create event for {0}',
+    ddCreateEventText: 'Создать событие на {0}',
     /**
      * @cfg {String} ddMoveEventText
      * The text to display inside the drag proxy while dragging an event to reposition it (defaults to 
      * 'Move event to {0}' where {0} is the updated event start date/time supplied by the view)
      */
-    ddMoveEventText: 'Move event to {0}',
+    ddMoveEventText: 'Переместить событие на {0}',
     /**
      * @cfg {Number} dayCount
      * The number of days to display in the view (defaults to 1)
@@ -59,7 +59,7 @@ Ext.calendar.DayView = Ext.extend(Ext.Container, {
         
         var cfg = Ext.apply({}, this.initialConfig);
         cfg.showTime = this.showTime;
-        cfg.showTodatText = this.showTodayText;
+        cfg.showTodayText = this.showTodayText;
         cfg.todayText = this.todayText;
         cfg.dayCount = this.dayCount;
         cfg.wekkCount = 1; 

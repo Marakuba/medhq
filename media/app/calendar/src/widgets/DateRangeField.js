@@ -86,7 +86,7 @@ Ext.calendar.DateRangeField = Ext.extend(Ext.form.Field, {
             });
             this.allDay = new Ext.form.Checkbox({
                 id: this.id + '-allday',
-                hidden: this.showTimes === false || this.showAllDay === false,
+                hidden: true,//this.showTimes === false || this.showAllDay === false,
                 boxLabel: this.allDayText,
                 handler: function(chk, checked) {
                     this.startTime.setVisible(!checked);

@@ -198,7 +198,7 @@ Ext.calendar.EventEditForm = Ext.extend(Ext.form.FormPanel, {
         this.form.updateRecord(this.activeRecord);
         this.activeRecord.set(Ext.calendar.EventMappings.StartDate.name, dates[0]);
         this.activeRecord.set(Ext.calendar.EventMappings.EndDate.name, dates[1]);
-        this.activeRecord.set(Ext.calendar.EventMappings.IsAllDay.name, dates[2]);
+        //this.activeRecord.set(Ext.calendar.EventMappings.IsAllDay.name, dates[2]);
     },
 
     // private
