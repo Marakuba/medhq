@@ -64,12 +64,13 @@ App.visit.Form = Ext.extend(Ext.FormPanel, {
 	        	fieldLabel:'Полис ДМС',
 				anchor:'98%',
 	        	name:'insurance_policy',
+	        	store:this.policyStore,
 	        	proxyUrl:get_api_url('insurance_policy'),
 			    displayField: 'number',
 			    itemSelector: 'div.x-combo-list-item',
 			    tpl:new Ext.XTemplate(
 			    	'<tpl for="."><div class="x-combo-list-item">',
-			    	'№{number}, {state_name}, {start_date:date("d.m.Y")} - {end_date:date("d.m.Y")}',
+			    	'№{number}, {state_name}',
 			    	'</div></tpl>'
 			    )
 			})
@@ -269,7 +270,7 @@ App.visit.Form = Ext.extend(Ext.FormPanel, {
 				fields:['id','title'],
 				data: [
 					['н','Наличная оплата'],
-//					['б','Безналичный перевод'],
+					['б','Безналичный перевод'],
 					['д','ДМС']]
 			}),
 			typeAhead: true,
@@ -363,7 +364,7 @@ App.visit.Form = Ext.extend(Ext.FormPanel, {
         			name:'cls',
         			value:'п'
         		},{
-        			flex:55,
+        			flex:40,
 					defaults:{
 						baseCls:'x-border-layout-ct',
 						border:false
@@ -382,7 +383,7 @@ App.visit.Form = Ext.extend(Ext.FormPanel, {
 	        			this.comment
 	        		]
         		},{
-        			flex:45,
+        			flex:60,
         			baseCls:'x-border-layout-ct',
 					defaults:{
 						baseCls:'x-border-layout-ct',

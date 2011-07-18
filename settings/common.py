@@ -114,7 +114,6 @@ INSTALLED_APPS = (
     'south',
     'reversion',
     'tastypie',
-    'helpdesk',
 )
 
 ADMIN_TOOLS_MENU = 'medhq.menu.CustomMenu'

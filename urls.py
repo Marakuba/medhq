@@ -30,5 +30,5 @@ urlpatterns = patterns('',
     url(r'^visit/', include('visit.urls')),
     url(r'^numeration/', include('numeration.urls')),
     url(r'^autocomplete/', include(autocomplete.urls)),
-    (r'helpdesk/', include('helpdesk.urls')),
+    #(r'helpdesk/', include('helpdesk.urls')),
 )

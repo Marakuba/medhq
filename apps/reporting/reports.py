@@ -865,7 +865,8 @@ SELECT \
   TTvis.price, \
   sum(TTvis.count) as cnt,  \
   sum(TTvis.count * TTvis.price) as sum,  \
-  round(sum(TTvis.count * TTvis.price * (Tvis.discount_value/100)),2) as disc  \
+  round(sum(TTvis.count * TTvis.price * (Tvis.discount_value/100)),2) as disc,  \
+  sum(TTvis.count * TTvis.price) - round(sum(TTvis.count * TTvis.price * (Tvis.discount_value/100)),2) as clean_price \
 %s \
 GROUP BY \
   Trefrl.name \
@@ -899,12 +900,14 @@ ORDER BY \
                 ,sum(map(lambda x: sum(map(lambda x:x[6],x[1])) ,x[1]))                
                 ,sum(map(lambda x: sum(map(lambda x:x[7],x[1])) ,x[1]))                
                 ,sum(map(lambda x: sum(map(lambda x:0 if x[8] == None else x[8],x[1])) ,x[1]))                
+                ,sum(map(lambda x: sum(map(lambda x:x[7] - (0 if x[8] == None else x[8]),x[1])) ,x[1]))                
                 ,map(lambda x: [
                     x[0]
 #                    ,'Mesto'
                     ,sum(map(lambda x:x[6],x[1]))
                     ,sum(map(lambda x:x[7],x[1]))
                     ,sum(map(lambda x:0 if x[8] == None else x[8],x[1]))
+                    ,sum(map(lambda x:x[7] - (0 if x[8] == None else x[8]),x[1]))
                     ,x[1]
                     ]
                 ,x[1])
@@ -917,6 +920,7 @@ ORDER BY \
         t.append(sum(map(lambda x: x[1],ttv)))                  #results.0.1
         t.append(sum(map(lambda x: x[2],ttv)))                  #results.0.2
         t.append(sum(map(lambda x: 0 if x[3] == None else x[3],ttv)))                  #results.0.2        
+        t.append(sum(map(lambda x: x[2] - (0 if x[3] == None else x[3]),ttv)))                  #results.0.2        
         tt = []
         tt.append(t)
         return tt

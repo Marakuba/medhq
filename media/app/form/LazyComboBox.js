@@ -1,9 +1,14 @@
 Ext.form.LazyComboBox = Ext.extend(Ext.form.ComboBox, {
 	
-	initComponent: function(){
+
+    queryParam:'name__istartswith',
+    valueField: 'resource_uri',
+    displayField: 'name',
+
+    initComponent: function(){
 
 		config = {
-		    store: new Ext.data.JsonStore({
+		    store: this.store || new Ext.data.JsonStore({
 		    	autoLoad:this.autoLoad || false,
 				proxy: new Ext.data.HttpProxy({
 					url:this.proxyUrl,
@@ -13,12 +18,9 @@ Ext.form.LazyComboBox = Ext.extend(Ext.form.ComboBox, {
 				idProperty:'resource_uri',
 				fields:['resource_uri','name','value']
 			}),
-		    typeAhead: true,
-		    queryParam:'name__istartswith',
+			typeAhead: true,
 		    minChars:2,
 		    triggerAction: 'all',
-		    valueField: 'resource_uri',
-		    displayField: 'name',
 		    selectOnFocus:true
 		}
 
@@ -49,10 +51,14 @@ Ext.form.LazyComboBox = Ext.extend(Ext.form.ComboBox, {
 
 Ext.form.LazyClearableComboBox = Ext.extend(Ext.form.ClearableComboBox, {
 	
-	initComponent: function(){
+    queryParam:'name__istartswith',
+    valueField: 'resource_uri',
+    displayField: 'name',
+
+    initComponent: function(){
 
 		config = {
-		    store: new Ext.data.JsonStore({
+		    store: this.store || new Ext.data.JsonStore({
 		    	autoLoad:this.autoLoad || false,
 				proxy: new Ext.data.HttpProxy({
 					url:this.proxyUrl,
@@ -63,11 +69,8 @@ Ext.form.LazyClearableComboBox = Ext.extend(Ext.form.ClearableComboBox, {
 				fields:['resource_uri','name','value']
 			}),
 		    typeAhead: true,
-		    queryParam:'name__istartswith',
 		    minChars:2,
 		    triggerAction: 'all',
-		    valueField: 'resource_uri',
-		    displayField: 'name',
 		    selectOnFocus:true
 		}
 
