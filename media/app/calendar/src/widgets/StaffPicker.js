@@ -22,10 +22,10 @@
  * @param {Object} config The config object
  */
 Ext.ns('Ext.calendar');
-Ext.calendar.CalendarPicker = Ext.extend(Ext.form.ComboBox, {
-    fieldLabel: 'Календарь',
-    valueField: 'CalendarId',
-    displayField: 'Title',
+Ext.calendar.StaffPicker = Ext.extend(Ext.form.ComboBox, {
+    fieldLabel: 'Врач',
+    valueField: 'Staff',
+    displayField: 'Name',
     triggerAction: 'all',
     mode: 'local',
     forceSelection: true,
@@ -33,7 +33,7 @@ Ext.calendar.CalendarPicker = Ext.extend(Ext.form.ComboBox, {
 
     // private
     initComponent: function() {
-        Ext.calendar.CalendarPicker.superclass.initComponent.call(this);
+        Ext.calendar.StaffPicker.superclass.initComponent.call(this);
         this.tpl = this.tpl ||
         '<tpl for="."><div class="x-combo-list-item ext-color-{' + this.valueField +
         '}"><div class="ext-cal-picker-icon">&nbsp;</div>{' + this.displayField + '}</div></tpl>';
@@ -41,14 +41,14 @@ Ext.calendar.CalendarPicker = Ext.extend(Ext.form.ComboBox, {
 
     // private
     afterRender: function() {
-        Ext.calendar.CalendarPicker.superclass.afterRender.call(this);
+        Ext.calendar.StaffPicker.superclass.afterRender.call(this);
 
         this.wrap = this.el.up('.x-form-field-wrap');
-        this.wrap.addClass('ext-calendar-picker');
+        this.wrap.addClass('ext-staff-picker');
 
         this.icon = Ext.DomHelper.append(this.wrap, {
             tag: 'div',
-            cls: 'ext-cal-picker-icon ext-cal-picker-mainicon'
+            cls: 'ext-staff-picker-icon ext-cal-picker-mainicon'
         });
     },
 
@@ -57,11 +57,11 @@ Ext.calendar.CalendarPicker = Ext.extend(Ext.form.ComboBox, {
         this.wrap.removeClass('ext-color-' + this.getValue());
         if (!value && this.store !== undefined) {
             // always default to a valid calendar
-            value = this.store.getAt(0).data.CalendarId;
+            value = this.store.getAt(0).data.Staff;
         }
-        Ext.calendar.CalendarPicker.superclass.setValue.call(this, value);
+        Ext.calendar.StaffPicker.superclass.setValue.call(this, value);
         this.wrap.addClass('ext-color-' + value);
     }
 });
 
-Ext.reg('calendarpicker', Ext.calendar.CalendarPicker);
+Ext.reg('staffpicker', Ext.calendar.StaffPicker);

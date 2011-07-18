@@ -25,7 +25,7 @@ Ext.calendar.EventEditWindow = function(config) {
         items: [{
             id: 'title',
             name: Ext.calendar.EventMappings.Title.name,
-            fieldLabel: 'Title',
+            fieldLabel: 'Заголовок',
             xtype: 'textfield',
             anchor: '100%'
         },
@@ -33,7 +33,7 @@ Ext.calendar.EventEditWindow = function(config) {
             xtype: 'daterangefield',
             id: 'date-range',
             anchor: '100%',
-            fieldLabel: 'When'
+            fieldLabel: 'Когда'
         }]
     };
 
@@ -48,11 +48,24 @@ Ext.calendar.EventEditWindow = function(config) {
             anchor: '100%',
             store: this.calendarStore
         });
+    };
+    
+    if (config.staffStore) {
+        this.staffStore = config.staffStore;
+        delete config.staffStore;
+
+        formPanelCfg.items.push({
+            xtype: 'staffpicker',
+            id: 'staff',
+            name: 'staff',
+            anchor: '100%',
+            store: this.staffStore
+        });
     }
 
     Ext.calendar.EventEditWindow.superclass.constructor.call(this, Ext.apply({
-        titleTextAdd: 'Add Event',
-        titleTextEdit: 'Edit Event',
+        titleTextAdd: 'Добавить событие',
+        titleTextEdit: 'Изменить событие',
         width: 600,
         autocreate: true,
         border: true,
@@ -60,29 +73,29 @@ Ext.calendar.EventEditWindow = function(config) {
         modal: false,
         resizable: false,
         buttonAlign: 'left',
-        savingMessage: 'Saving changes...',
-        deletingMessage: 'Deleting event...',
+        savingMessage: 'Сохранение изменений...',
+        deletingMessage: 'Удаление события...',
 
         fbar: [{
             xtype: 'tbtext',
-            text: '<a href="#" id="tblink">Edit Details...</a>'
+            text: '<a href="#" id="tblink">Дополнительно...</a>'
         },
         '->', {
-            text: 'Save',
+            text: 'Сохранить',
             disabled: false,
             handler: this.onSave,
             scope: this
         },
         {
             id: 'delete-btn',
-            text: 'Delete',
+            text: 'Удалить',
             disabled: false,
             handler: this.onDelete,
             scope: this,
             hideMode: 'offsets'
         },
         {
-            text: 'Cancel',
+            text: 'Отмена',
             disabled: false,
             handler: this.onCancel,
             scope: this
@@ -94,7 +107,7 @@ Ext.calendar.EventEditWindow = function(config) {
 
 Ext.extend(Ext.calendar.EventEditWindow, Ext.Window, {
     // private
-    newId: 10000,
+    //newId: 10000,
 
     // private
     initComponent: function() {
@@ -206,7 +219,7 @@ Ext.extend(Ext.calendar.EventEditWindow, Ext.Window, {
             end = o[M.EndDate.name] || start.add('h', 1);
 
             rec = new Ext.calendar.EventRecord();
-            rec.data[M.EventId.name] = this.newId++;
+            //rec.data[M.EventId.name] = this.newId++;
             rec.data[M.StartDate.name] = start;
             rec.data[M.EndDate.name] = end;
             rec.data[M.IsAllDay.name] = !!o[M.IsAllDay.name] || start.getDate() != end.clone().add(Date.MILLI, 1).getDate();
@@ -218,6 +231,9 @@ Ext.extend(Ext.calendar.EventEditWindow, Ext.Window, {
 
         if (this.calendarStore) {
             Ext.getCmp('calendar').setValue(rec.data[Ext.calendar.EventMappings.CalendarId.name]);
+        };
+        if (this.staffStore) {
+            Ext.getCmp('staff').setValue(rec.data[Ext.calendar.EventMappings.StaffId.name]);
         }
         Ext.getCmp('date-range').setValue(rec.data);
         this.activeRecord = rec;
@@ -263,6 +279,9 @@ Ext.extend(Ext.calendar.EventEditWindow, Ext.Window, {
         this.activeRecord.set(M.EndDate.name, dates[1]);
         this.activeRecord.set(M.IsAllDay.name, dates[2]);
         this.activeRecord.set(M.CalendarId.name, this.formPanel.form.findField('calendar').getValue());
+        if (this.staffStore) {
+        	this.activeRecord.set(M.StaffId.name, this.formPanel.form.findField('staff').getValue());
+        }
     },
 
     // private

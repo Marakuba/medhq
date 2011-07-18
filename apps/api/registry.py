@@ -383,6 +383,7 @@ class StaffResource(ModelResource):
     """
     def dehydrate(self, bundle):
         bundle.data['name'] = bundle.obj.short_name()
+        bundle.data['title'] = bundle.obj.short_name()
         return bundle
     
     class Meta:
@@ -390,7 +391,8 @@ class StaffResource(ModelResource):
         resource_name = 'staff'
         limit = 100
         filtering = {
-            'last_name':('istartswith',)
+            'last_name':('istartswith',),
+            'id':ALL
         }
 
 

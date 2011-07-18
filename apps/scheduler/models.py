@@ -68,6 +68,7 @@ class Event(models.Model):
     """
     """
     staff = models.ForeignKey(Staff, blank = True, null = True)
+    sid = models.PositiveIntegerField(u'ID врача', blank = True, null = True)
     cid = models.PositiveIntegerField(u'ID календаря', blank = True, null = True)
     title = models.CharField(u'Заголовок', max_length=300)
     start = CustomDateTimeField(u'Начальная дата', blank = True, null = True)

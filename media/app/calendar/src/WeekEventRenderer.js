@@ -126,7 +126,7 @@ Ext.calendar.WeekEventRenderer = function() {
                                     id: 'ext-cal-ev-more-' + dt.format('Ymd'),
                                     cn: {
                                         tag: 'a',
-                                        html: '+' + skipped + ' more...'
+                                        html: '+ещё ' + skipped + '...'
                                     }
                                 });
                             }

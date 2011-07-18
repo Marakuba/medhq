@@ -42,7 +42,7 @@ Ext.calendar.EventEditForm = Ext.extend(Ext.form.FormPanel, {
     cls: 'ext-evt-edit-form',
 
     // private properties:
-    newId: 10000,
+    //newId: 10000,
     layout: 'column',
 
     // private
@@ -80,31 +80,31 @@ Ext.calendar.EventEditForm = Ext.extend(Ext.form.FormPanel, {
         });
 
         this.titleField = new Ext.form.TextField({
-            fieldLabel: 'Title',
+            fieldLabel: 'Заголовок',
             name: Ext.calendar.EventMappings.Title.name,
             anchor: '90%'
         });
         this.dateRangeField = new Ext.calendar.DateRangeField({
-            fieldLabel: 'When',
+            fieldLabel: 'Когда',
             anchor: '90%'
         });
         this.reminderField = new Ext.calendar.ReminderField({
-            name: 'Reminder'
+            name: 'Напоминание'
         });
         this.notesField = new Ext.form.TextArea({
-            fieldLabel: 'Notes',
+            fieldLabel: 'Комментарий',
             name: Ext.calendar.EventMappings.Notes.name,
             grow: true,
             growMax: 150,
             anchor: '100%'
         });
         this.locationField = new Ext.form.TextField({
-            fieldLabel: 'Location',
+            fieldLabel: 'Кабинет',
             name: Ext.calendar.EventMappings.Location.name,
             anchor: '100%'
         });
         this.urlField = new Ext.form.TextField({
-            fieldLabel: 'Web Link',
+            fieldLabel: 'Web адрес',
             name: Ext.calendar.EventMappings.Url.name,
             anchor: '100%'
         });
@@ -118,6 +118,14 @@ Ext.calendar.EventEditForm = Ext.extend(Ext.form.FormPanel, {
                 name: Ext.calendar.EventMappings.CalendarId.name
             });
             leftFields.splice(2, 0, this.calendarField);
+        };
+        
+        if (this.staffStore) {
+            this.staffField = new Ext.calendar.StaffPicker({
+                store: this.staffStore,
+                name: Ext.calendar.EventMappings.StaffId.name
+            });
+            leftFields.splice(2, 0, this.staffField);
         };
 
         this.items = [{
@@ -163,6 +171,11 @@ Ext.calendar.EventEditForm = Ext.extend(Ext.form.FormPanel, {
         if (this.calendarStore) {
             this.form.setValues({
                 'calendar': rec.data[Ext.calendar.EventMappings.CalendarId.name]
+            });
+        };
+        if (this.staffStore) {
+            this.form.setValues({
+                'staff': rec.data[Ext.calendar.EventMappings.StaffId.name]
             });
         }
         this.isAdd = !!rec.data[Ext.calendar.EventMappings.IsNew.name];

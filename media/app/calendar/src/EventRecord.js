@@ -29,14 +29,12 @@ Ext.calendar.EventMappings = {
     StartDate: {
         name: 'StartDate',
         mapping: 'start',
-        type: 'date',
-        //dateFormat: 'c'
+        type: 'date'
     },
     EndDate: {
         name: 'EndDate',
         mapping: 'end',
-        type: 'date',
-        //dateFormat: 'c'
+        type: 'date'
     },
     Location: {
         name: 'Location',
@@ -67,6 +65,11 @@ Ext.calendar.EventMappings = {
         name: 'IsNew',
         mapping: 'n',
         type: 'boolean'
+    },
+    StaffId: {
+        name: 'StaffId',
+        mapping: 'sid',
+        type: 'string'
     }
 };
 
@@ -122,7 +125,8 @@ rec.data[M.Notes.name] = 'Some notes';
     M.Url,
     M.IsAllDay,
     M.Reminder,
-    M.IsNew
+    M.IsNew,
+    M.StaffId
     ]);
 
     /**
@@ -140,7 +144,8 @@ rec.data[M.Notes.name] = 'Some notes';
         M.Url,
         M.IsAllDay,
         M.Reminder,
-        M.IsNew
+        M.IsNew,
+        M.StaffId
         ]);
     };
 })();

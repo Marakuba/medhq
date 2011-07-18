@@ -17,12 +17,12 @@ Ext.calendar.DateRangeField = Ext.extend(Ext.form.Field, {
      * @cfg {String} toText
      * The text to display in between the date/time fields (defaults to 'to')
      */
-    toText: 'to',
+    toText: 'до',
     /**
      * @cfg {String} toText
      * The text to display as the label for the all day checkbox (defaults to 'All day')
      */
-    allDayText: 'All day',
+    allDayText: 'Весь день',
 
     // private
     onRender: function(ct, position) {

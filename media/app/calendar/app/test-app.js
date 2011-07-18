@@ -13,7 +13,6 @@ App = function() {
 	Ext.Ajax.defaultHeaders = {Accept:'application/json'};
     return {
         init : function() {
-			Ext.Ajax.defaultHeaders = {Accept:'application/json'};            
             Ext.BLANK_IMAGE_URL = 'http://extjs.cachefly.net/ext-3.1.0/resources/images/default/s.gif';
 
             // This is an example calendar store that enables the events to have
@@ -40,7 +39,7 @@ App = function() {
 				},
                 //data: calendarList, // defined in calendar-list.js
                 proxy: new Ext.data.HttpProxy({
-			    	url: get_api_url('calendar'),
+			    	url: get_api_url('staff'),
 			    	method:'GET'
 				}),
                 autoLoad: true,
@@ -50,6 +49,41 @@ App = function() {
                 ],
                 sortInfo: {
                     field: 'CalendarId',
+                    direction: 'ASC'
+                }
+            });
+            
+            this.staffStore = new Ext.data.JsonStore({
+                storeId: 'staffStore',
+                root: 'objects',
+                idProperty: 'id',
+                restful: true,
+                baseParams: {
+		    		format:'json'
+			    },
+			    autoSave:true,
+			    writer: new Ext.data.JsonWriter({
+			    	encode: false,
+				    writeAllFields: true
+				}),
+			    paramNames: {
+				    start : 'offset',
+				    limit : 'limit',
+			    	sort : 'sort',
+				    dir : 'dir'
+				},
+                //data: calendarList, // defined in calendar-list.js
+                proxy: new Ext.data.HttpProxy({
+			    	url: get_api_url('staff'),
+			    	method:'GET'
+				}),
+                autoLoad: true,
+                fields: [
+                    {name:'StaffId', mapping: 'id', type: 'int'},
+                    {name:'Name', mapping: 'name', type: 'string'}
+                ],
+                sortInfo: {
+                    field: 'StaffId',
                     direction: 'ASC'
                 }
             });
@@ -114,6 +148,7 @@ App = function() {
                     items: [{
                         id:'app-west',
                         region: 'west',
+                        layout: 'form',
                         width: 176,
                         border: false,
                         items: [{
@@ -128,10 +163,28 @@ App = function() {
                                     scope: this
                                 }
                             }
+                        },
+                        {
+                        	xtype:'staffgrid',
+                        	id: 'app-staff-picker',
+                        	anchor:'100% 100%',
+                        	listeners: {
+                                'rowclick': {
+                                    fn: function(grid,ind,obj){
+                                        var staff = grid.store.data.items[ind].data.id;
+                                        this.calendarStore.setBaseParam('id',staff);
+                                        this.eventStore.setBaseParam('cid',staff);
+                                        this.calendarStore.load();
+                                        this.eventStore.load();
+                                    },
+                                    scope: this
+                                }
+                            }
                         }]
                     },{
                         xtype: 'calendarpanel',
                         eventStore: this.eventStore,
+                        staffStore: this.staffStore,
                         calendarStore: this.calendarStore,
                         border: false,
                         id:'app-calendar',
