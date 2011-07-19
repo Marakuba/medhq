@@ -39,13 +39,21 @@ App = function() {
 				},
                 //data: calendarList, // defined in calendar-list.js
                 proxy: new Ext.data.HttpProxy({
-			    	url: get_api_url('staff'),
+			    	url: get_api_url('staffsched'),
 			    	method:'GET'
 				}),
                 autoLoad: true,
                 fields: [
                     {name:'CalendarId', mapping: 'id', type: 'int'},
-                    {name:'Title', mapping: 'title', type: 'string'}
+                    {name:'Title', mapping: 'title', type: 'string'},
+                    {name:'Timeslot', mapping: 'timeslot', type: 'int'},
+                    {name:'AmSessionStarts', mapping: 'am_session_starts', type: 'date'},
+                    {name:'AmSessionEnds', mapping: 'am_session_ends', type: 'date'},
+                    {name:'PmSessionStarts', mapping: 'pm_session_starts', type: 'date'},
+                    {name:'PmSessionEnds', mapping: 'pm_session_ends', type: 'date'},
+                    {name:'Routine', mapping: 'routine', type: 'string'},
+                    {name:'WorkDays', mapping: 'work_days', type: 'string'},
+                    {name:'Room', mapping: 'room'}
                 ],
                 sortInfo: {
                     field: 'CalendarId',
@@ -99,6 +107,7 @@ App = function() {
 			    },
 			    restful: true,
 			    autoSave:true,
+			    autoLoad:false,
 			    reader: new Ext.data.JsonReader({
 				    idProperty: 'id',
 			        root: 'objects',
@@ -168,8 +177,25 @@ App = function() {
                         	xtype:'staffgrid',
                         	id: 'app-staff-picker',
                         	anchor:'100% 100%',
-                        	listeners: {
-                                'rowclick': {
+                        	sm : new Ext.grid.RowSelectionModel({
+								singleSelect : true,
+								listeners: {
+									'rowselect': {
+                                 	   fn: function(model,ind,rec){
+                                    	    var staff = rec.data.id;
+                                    	    var start = new Date();
+                                        	this.calendarStore.setBaseParam('id',staff);
+	                                        this.eventStore.setBaseParam('cid',staff);
+    	                                    this.calendarStore.load();
+        	                                //this.eventStore.load();
+    	                                    App.calendarPanel.setStartDate(start);
+            	                        },
+                	                    scope: this
+                    	            }	
+								}
+							})
+                        	/*listeners: {
+                                'rowselect': {
                                     fn: function(grid,ind,obj){
                                         var staff = grid.store.data.items[ind].data.id;
                                         this.calendarStore.setBaseParam('id',staff);
@@ -179,7 +205,7 @@ App = function() {
                                     },
                                     scope: this
                                 }
-                            }
+                            }*/
                         }]
                     },{
                         xtype: 'calendarpanel',
@@ -269,6 +295,8 @@ App = function() {
                             },
                             'dayclick': {
                                 fn: function(vw, dt, ad, el){
+                                	var start = new Date();
+                                	Ext.Msg.alert('1',start);
                                     this.showEditWindow({
                                         StartDate: dt,
                                         IsAllDay: ad

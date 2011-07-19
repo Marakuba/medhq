@@ -134,7 +134,7 @@ Ext.calendar.CalendarView = Ext.extend(Ext.BoxComponent, {
     // must be implemented by a subclass
     // private
     initComponent: function() {
-        this.setStartDate(this.startDate || new Date());
+        this.setStartDate(this.startDate || new Date(),undefined,false);
 
         Ext.calendar.CalendarView.superclass.initComponent.call(this);
 
@@ -705,15 +705,17 @@ Ext.calendar.CalendarView = Ext.extend(Ext.BoxComponent, {
      * earliest and latest dates that match the view requirements and contain the date passed to this function.
      * @param {Date} dt The date used to calculate the new view boundaries
      */
-    setStartDate: function(start, refresh) {
+    setStartDate: function(start, refresh, load) {
         this.startDate = start.clearTime();
         this.setViewBounds(start);
-        this.store.load({
-            params: {
-                start_gte: this.viewStart.format('m-d-Y'),
-                end_lte: this.viewEnd.format('m-d-Y')
-            }
-        });
+        if (load !== false) {
+        	this.store.load({
+	            params: {
+    	            start_gte: this.viewStart.format('m-d-Y'),
+        	        end_lte: this.viewEnd.format('m-d-Y')
+	            }
+    	    });
+        };
         if (refresh === true) {
             this.refresh();
         }

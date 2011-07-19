@@ -115,6 +115,7 @@ INSTALLED_APPS = (
     'south',
     'reversion',
     'tastypie',
+    'tagging'
 )
 
 ADMIN_TOOLS_MENU = 'medhq.menu.CustomMenu'

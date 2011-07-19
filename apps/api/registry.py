@@ -10,7 +10,7 @@ from tastypie.constants import ALL, ALL_WITH_RELATIONS
 from lab.models import LabOrder, Sampling, Tube, Result, Analysis, InputList,\
     Equipment, EquipmentAssay, EquipmentResult, EquipmentTask
 from service.models import BaseService, LabServiceGroup
-from staff.models import Position, Staff
+from staff.models import Position, Staff, Doctor
 from state.models import State
 from django.conf import settings
 from pricelist.models import Discount
@@ -389,6 +389,45 @@ class StaffResource(ModelResource):
     class Meta:
         queryset = Staff.objects.all()
         resource_name = 'staff'
+        limit = 100
+        filtering = {
+            'last_name':('istartswith',),
+            'id':ALL
+        }
+
+class DoctorResource(ExtResource):
+    """
+    """
+    staff = fields.ToOneField(StaffResource, 'staff')
+    class Meta:
+        queryset = Doctor.objects.all()
+        resource_name = 'doctor'
+        limit = 100
+        filtering = {
+            'id':ALL
+        }
+        
+class StaffSchedResource(ModelResource):
+    """
+    """
+    #doctor = fields.ToOneField(DoctorResource, 'doctor', null=True)
+    
+    def dehydrate(self, bundle):
+        bundle.data['name'] = bundle.obj.short_name()
+        bundle.data['title'] = bundle.obj.short_name()
+        bundle.data['timeslot'] = bundle.obj.doctor.timeslot
+        bundle.data['am_session_starts'] = bundle.obj.doctor.am_session_starts
+        bundle.data['am_session_ends'] = bundle.obj.doctor.am_session_ends
+        bundle.data['pm_session_starts'] = bundle.obj.doctor.pm_session_starts
+        bundle.data['pm_session_ends'] = bundle.obj.doctor.pm_session_ends
+        bundle.data['routine'] = bundle.obj.doctor.routine
+        bundle.data['work_days'] = bundle.obj.doctor.work_days
+        bundle.data['room'] = bundle.obj.doctor.room
+        return bundle
+    
+    class Meta:
+        queryset = Staff.objects.all()
+        resource_name = 'staffsched'
         limit = 100
         filtering = {
             'last_name':('istartswith',),
@@ -961,6 +1000,7 @@ api.register(LabServiceGroupResource())
 #state
 api.register(PositionResource())
 api.register(StaffResource())
+api.register(StaffSchedResource())
 api.register(StateResource())
 api.register(MedStateResource())
 api.register(InsuranceStateResource())

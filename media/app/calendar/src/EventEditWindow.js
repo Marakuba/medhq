@@ -170,6 +170,7 @@ Ext.extend(Ext.calendar.EventEditWindow, Ext.Window, {
             this.fireEvent('editdetails', this, this.activeRecord);
         },
         this);
+        
     },
 
     /**
@@ -182,6 +183,16 @@ Ext.extend(Ext.calendar.EventEditWindow, Ext.Window, {
      * @return {Ext.Window} this
      */
     show: function(o, animateTarget) {
+    	/*if (this.calendarStore) {
+    		var a = Ext.getCmp('calendar').getValue();
+    		Ext.Msg.alert('w','есть');
+    	}
+    	Ext.Msg.confirm('Изменился тип цены','Пересчитать цены?',
+    		function(btn){
+    			if (btn=='yes') {
+    				
+    			}
+    		});*/
         // Work around the CSS day cell height hack needed for initial render in IE8/strict:
         var anim = (Ext.isIE8 && Ext.isStrict) ? null: animateTarget;
 

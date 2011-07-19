@@ -43,6 +43,10 @@ Ext.calendar.StaffGrid = Ext.extend(Ext.grid.GridPanel, {
 		    }
 		];		
 		
+		this.store.on('load',function(){
+			this.getSelectionModel().selectFirstRow(0);
+		},this);
+
 		var config = {
 			//title:'Врачи',
 			loadMask : {
@@ -52,16 +56,20 @@ Ext.calendar.StaffGrid = Ext.extend(Ext.grid.GridPanel, {
 			border : false,
 			store:this.store,
 			//height:500,
-			columns:this.columns,
-			sm : new Ext.grid.RowSelectionModel({
-				singleSelect : true
-			})
+			columns:this.columns
+			//sm : new Ext.grid.RowSelectionModel({
+				//singleSelect : true
+			//})
 		}
 
 		Ext.apply(this, Ext.apply(this.initialConfig, config));
 		Ext.calendar.StaffGrid.superclass.initComponent.apply(this, arguments);
 		
-	}
+	},
+	
+	afterRender: function() {
+		this.getSelectionModel().selectFirstRow(0);
+    }
 	
 });
 
