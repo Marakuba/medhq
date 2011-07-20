@@ -67,6 +67,7 @@
             <th class="number">15%</th>
             <th class="number">20%</th>
             <th class="number">Скидка</th>
+            <th class="number">Итого</th>
         </tr>
 
         <tr class="footer">        
@@ -76,6 +77,7 @@
             <th class="number">{{results.0.3}}</th>
             <th class="number">{{results.0.4}}</th>
             <th class="number">{{results.0.5}}</th>
+            <th class="number">{{results.0.6}}</th>
         </tr>
         
         {% for gr in results.0.0 %}
@@ -86,7 +88,8 @@
                 <td class="number">{{gr.3}}</td>
                 <td class="number">{{gr.4}}</td>
                 <td class="number">{{gr.5}}</td>
-                {%for row in gr.6%}
+                <td class="number">{{gr.6}}</td>
+                {%for row in gr.7 %}
                     {%for str in row%}
                         <tr>
                             <td></td>
@@ -97,6 +100,7 @@
                             <td class="number">{{str.4}}</td>
                             <td class="number">{{str.5}}</td>
                             <td class="number">{{str.6}}</td>
+                            <td class="number">{{str.7}}</td>
                         </tr>
                     {%endfor%}
                 {%endfor%}
