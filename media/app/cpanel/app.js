@@ -37,7 +37,7 @@ Ext.onReady(function(){
 			}
 		},{
             xtype:'button',
-            text: 'Календарь',
+            text: 'Расписание врачей',
 			scale: 'large',
 			handler: function(){
 				window.location.href = '/webapp/calendar/';

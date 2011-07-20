@@ -37,7 +37,7 @@ Ext.calendar.StaffGrid = Ext.extend(Ext.grid.GridPanel, {
 		this.columns =  [{
 		    	header: "Врачи", 
 		    	//width: 8,
-				anchor:'100%',
+				//anchor:'100%',
 		    	sortable: true, 
 		    	dataIndex: 'name'
 		    }

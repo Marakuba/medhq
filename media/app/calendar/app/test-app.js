@@ -135,6 +135,46 @@ App = function() {
 		            direction: 'ASC'
 		        }
 		    });
+		    
+		    this.datePicker = new Ext.DatePicker ({
+		    	id: 'app-nav-picker',
+    	        region:'north',
+	            height:190,
+	            width:130,
+    	        cls: 'ext-cal-nav-picker',
+        	    listeners: {
+            		'select': {
+                    	fn: function(dp, dt){
+                	    	App.calendarPanel.setStartDate(dt);
+                       	},
+                        scope: this
+                    }
+                }
+             });
+             
+             this.staffGrid = new Ext.calendar.StaffGrid({
+             	id: 'app-staff-picker',
+	            region:'center',
+	            height:190,
+	     		//autoSize:true,
+            	//anchor:'100% 100%',
+                sm : new Ext.grid.RowSelectionModel({
+					singleSelect : true,
+					listeners: {
+						'rowselect': {
+       	            		fn: function(model,ind,rec){
+           	            		this.staff_id = rec.data.id;
+               	            	var start = new Date();
+	                   	        this.calendarStore.setBaseParam('id',this.staff_id);
+		                   	    this.eventStore.setBaseParam('cid',this.staff_id);
+   	    	                	this.calendarStore.load();
+	    	                    App.calendarPanel.setStartDate(start);
+    	        	        },
+	                	scope: this
+    	            	}	
+					}
+				})
+			});
             
             // This is the app UI layout code.  All of the calendar views are subcomponents of
             // CalendarPanel, but the app title bar and sidebar/navigation calendar are separate
@@ -144,12 +184,6 @@ App = function() {
                 layout: 'border',
                 //renderTo: 'calendar-ct',
                 items: [{
-                    id: 'app-header',
-                    region: 'north',
-                    height: 35,
-                    border: false
-                    //contentEl: 'app-header-content'
-                },{
                     id: 'app-center',
                     title: '...', // will be updated to view date range
                     region: 'center',
@@ -157,62 +191,11 @@ App = function() {
                     items: [{
                         id:'app-west',
                         region: 'west',
-                        layoutConfig:{
-                        	type:'vbox',
-                        	align:'stretch'
-                        },
+                        layout: 'border',
+                        trackResetOnLoad:true,
                         width: 176,
                         border: false,
-                        items: [{
-                            xtype: 'datepicker',
-                            id: 'app-nav-picker',
-                            height:190,
-                            cls: 'ext-cal-nav-picker',
-                            listeners: {
-                                'select': {
-                                    fn: function(dp, dt){
-                                        App.calendarPanel.setStartDate(dt);
-                                    },
-                                    scope: this
-                                }
-                            }
-                        },
-                        {
-                        	xtype:'staffgrid',
-                        	id: 'app-staff-picker',
-                        	flex:1,
-                        	//anchor:'100% 100%',
-                        	autoScroll:true,
-                        	sm : new Ext.grid.RowSelectionModel({
-								singleSelect : true,
-								listeners: {
-									'rowselect': {
-                                 	   fn: function(model,ind,rec){
-                                    	    this.staff_id = rec.data.id;
-                                    	    var start = new Date();
-                                        	this.calendarStore.setBaseParam('id',this.staff_id);
-	                                        this.eventStore.setBaseParam('cid',this.staff_id);
-    	                                    this.calendarStore.load();
-        	                                //this.eventStore.load();
-    	                                    App.calendarPanel.setStartDate(start);
-            	                        },
-                	                    scope: this
-                    	            }	
-								}
-							})
-                        	/*listeners: {
-                                'rowselect': {
-                                    fn: function(grid,ind,obj){
-                                        var staff = grid.store.data.items[ind].data.id;
-                                        this.calendarStore.setBaseParam('id',staff);
-                                        this.eventStore.setBaseParam('cid',staff);
-                                        this.calendarStore.load();
-                                        this.eventStore.load();
-                                    },
-                                    scope: this
-                                }
-                            }*/
-                        }]
+                        items: [this.datePicker,this.staffGrid]
                     },{
                         xtype: 'calendarpanel',
                         eventStore: this.eventStore,
@@ -339,9 +322,11 @@ App = function() {
                                 	//смотрим список дней в тэгах work_days
                                 	var isWorking = true;
                                 	var work_days = staff.data.work_days;
-                                	if (work_days.search(day) === -1) {
-                                		isWorking = false;
-                                	}
+                                	if (work_days) {
+                                		if (work_days.search(day) === -1) {
+                                			isWorking = false;
+                                		}
+                                	};
                                 	//смотрим четность/нечетность дня в routine
                                 	//0 - любые дни
                                 	//1 - четные
