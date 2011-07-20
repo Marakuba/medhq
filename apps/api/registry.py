@@ -426,7 +426,7 @@ class StaffSchedResource(ModelResource):
         return bundle
     
     class Meta:
-        queryset = Staff.objects.all()
+        queryset = Staff.objects.filter(doctor__isnull = False)
         resource_name = 'staffsched'
         limit = 100
         filtering = {

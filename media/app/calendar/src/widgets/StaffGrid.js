@@ -4,7 +4,7 @@ Ext.calendar.StaffGrid = Ext.extend(Ext.grid.GridPanel, {
     initComponent : function() {
 		
 		this.proxy = new Ext.data.HttpProxy({
-		    url: get_api_url('staff')
+		    url: get_api_url('staffsched')
 		});
 		
 		this.reader = new Ext.data.JsonReader({

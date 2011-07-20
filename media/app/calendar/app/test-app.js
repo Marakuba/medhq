@@ -157,12 +157,16 @@ App = function() {
                     items: [{
                         id:'app-west',
                         region: 'west',
-                        layout: 'form',
+                        layoutConfig:{
+                        	type:'vbox',
+                        	align:'stretch'
+                        },
                         width: 176,
                         border: false,
                         items: [{
                             xtype: 'datepicker',
                             id: 'app-nav-picker',
+                            height:190,
                             cls: 'ext-cal-nav-picker',
                             listeners: {
                                 'select': {
@@ -176,7 +180,9 @@ App = function() {
                         {
                         	xtype:'staffgrid',
                         	id: 'app-staff-picker',
-                        	anchor:'100% 100%',
+                        	flex:1,
+                        	//anchor:'100% 100%',
+                        	autoScroll:true,
                         	sm : new Ext.grid.RowSelectionModel({
 								singleSelect : true,
 								listeners: {
@@ -295,10 +301,9 @@ App = function() {
                             },
                             'dayclick': {
                                 fn: function(vw, dt, ad, el){
-                                	var today = new Date();
-                                	var day = today.getDay();
-                                	var date = today.getDate();
-                                	var time = today.getTime();
+                                	var day = dt.getDay();
+                                	var date = dt.getDate();
+                                	var time = dt.getTime();
                                 	var ind = this.calendarStore.find("CalendarId",this.staff_id);
                                 	var staff = this.calendarStore.getAt(ind);
                                 	var routine = staff.data.Routine;
@@ -315,10 +320,12 @@ App = function() {
                                 			start = staff.data.AmSessionStarts || staff.data.PmSessionStarts;
                                 			end = staff.data.AmSessionEnds || staff.data.PmSessionEnds;
                                 			break;
+                                		//первая смена
                                     	case '1':
                                     		start = staff.data.AmSessionStarts;
                                 			end = staff.data.AmSessionEnds;
                                 			break;
+                                		//вторая смена
                                 		case '2':
                                     		start = staff.data.PmSessionStarts;
                                 			end = staff.data.PmSessionEnds;
@@ -332,8 +339,8 @@ App = function() {
                                 	//смотрим список дней в тэгах work_days
                                 	var isWorking = true;
                                 	var work_days = staff.data.work_days;
-                                	if (work_days.search(day) != -1) {
-                                		isWorking = true;
+                                	if (work_days.search(day) === -1) {
+                                		isWorking = false;
                                 	}
                                 	//смотрим четность/нечетность дня в routine
                                 	//0 - любые дни
@@ -341,13 +348,15 @@ App = function() {
                                 	//2 - нечетные
                                 	switch (routine[0]) {
                                 		case '1':
-                                			if (day % 2 > 0) {
+                                			if (date % 2 > 0) {
                                 				isWorking = false;
-                                			}
+                                			};
+                                			break;
                                 		case '2':
-                                			if (day % 2 === 0) {
+                                			if (date % 2 === 0) {
                                 				isWorking = false;
-                                			}
+                                			};
+                                			break;
                                 	}
                                 	
                                 	if (start) {

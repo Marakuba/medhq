@@ -92,7 +92,7 @@ class Doctor(models.Model):
     """
     """
     staff = models.OneToOneField(Staff)
-    comment = models.TextField(u'Комментарий')
+    comment = models.TextField(u'Комментарий', blank = True, null = True)
     timeslot = models.PositiveIntegerField(u'Базовый интервал', default = 4, choices = TIMESLOTS)
     routine = models.CharField(u'Режим работы', default = '00', choices = ROUTINES, max_length=2)
     am_session_starts = models.TimeField(u'время начала первой смены', blank = True, null = True)
