@@ -47,12 +47,12 @@ App = function() {
                     {name:'CalendarId', mapping: 'id', type: 'int'},
                     {name:'Title', mapping: 'title', type: 'string'},
                     {name:'Timeslot', mapping: 'timeslot', type: 'int'},
-                    {name:'AmSessionStarts', mapping: 'am_session_starts', type: 'date'},
-                    {name:'AmSessionEnds', mapping: 'am_session_ends', type: 'date'},
-                    {name:'PmSessionStarts', mapping: 'pm_session_starts', type: 'date'},
-                    {name:'PmSessionEnds', mapping: 'pm_session_ends', type: 'date'},
+                    {name:'AmSessionStarts', mapping: 'am_session_starts'},
+                    {name:'AmSessionEnds', mapping: 'am_session_ends'},
+                    {name:'PmSessionStarts', mapping: 'pm_session_starts'},
+                    {name:'PmSessionEnds', mapping: 'pm_session_ends'},
                     {name:'Routine', mapping: 'routine', type: 'string'},
-                    {name:'WorkDays', mapping: 'work_days', type: 'string'},
+                    {name:'work_days', type: 'string'},
                     {name:'Room', mapping: 'room'}
                 ],
                 sortInfo: {
@@ -182,10 +182,10 @@ App = function() {
 								listeners: {
 									'rowselect': {
                                  	   fn: function(model,ind,rec){
-                                    	    var staff = rec.data.id;
+                                    	    this.staff_id = rec.data.id;
                                     	    var start = new Date();
-                                        	this.calendarStore.setBaseParam('id',staff);
-	                                        this.eventStore.setBaseParam('cid',staff);
+                                        	this.calendarStore.setBaseParam('id',this.staff_id);
+	                                        this.eventStore.setBaseParam('cid',this.staff_id);
     	                                    this.calendarStore.load();
         	                                //this.eventStore.load();
     	                                    App.calendarPanel.setStartDate(start);
@@ -295,12 +295,93 @@ App = function() {
                             },
                             'dayclick': {
                                 fn: function(vw, dt, ad, el){
-                                	var start = new Date();
-                                	Ext.Msg.alert('1',start);
-                                    this.showEditWindow({
-                                        StartDate: dt,
-                                        IsAllDay: ad
-                                    }, el);
+                                	var today = new Date();
+                                	var day = today.getDay();
+                                	var date = today.getDate();
+                                	var time = today.getTime();
+                                	var ind = this.calendarStore.find("CalendarId",this.staff_id);
+                                	var staff = this.calendarStore.getAt(ind);
+                                	var routine = staff.data.Routine;
+                                	var start;
+                                	var end;
+                                	
+                                	//Устанавливаем начальное и конечное время сегодняшней смены
+                                	//Если у врача не указаны соответствующие поля, то берется рабочий день
+                                	//из настроек в календаре
+                                	switch (routine[1]) {
+                                		//любая смена
+                                		case '0':
+                                			//Устанавливаем время работы, какое есть
+                                			start = staff.data.AmSessionStarts || staff.data.PmSessionStarts;
+                                			end = staff.data.AmSessionEnds || staff.data.PmSessionEnds;
+                                			break;
+                                    	case '1':
+                                    		start = staff.data.AmSessionStarts;
+                                			end = staff.data.AmSessionEnds;
+                                			break;
+                                		case '2':
+                                    		start = staff.data.PmSessionStarts;
+                                			end = staff.data.PmSessionEnds;
+                                			break;
+                                		default: 
+                                			start = undefined;
+                                			start = undefined;
+                                			break;
+                                	};
+                                	//Проверяем, работает ли сегодня врач
+                                	//смотрим список дней в тэгах work_days
+                                	var isWorking = true;
+                                	var work_days = staff.data.work_days;
+                                	if (work_days.search(day) != -1) {
+                                		isWorking = true;
+                                	}
+                                	//смотрим четность/нечетность дня в routine
+                                	//0 - любые дни
+                                	//1 - четные
+                                	//2 - нечетные
+                                	switch (routine[0]) {
+                                		case '1':
+                                			if (day % 2 > 0) {
+                                				isWorking = false;
+                                			}
+                                		case '2':
+                                			if (day % 2 === 0) {
+                                				isWorking = false;
+                                			}
+                                	}
+                                	
+                                	if (start) {
+                                		start = this.setTimeToday(start);
+                                	} else {
+                                		start = new Date();
+                                	};
+                               		if (end) {
+                              				end = this.setTimeToday(end);
+                           			} else {
+                           				end = new Date();
+                           				end.add('h',1);
+                           			};
+                           			
+                           			if (isWorking) {
+                           				this.showEditWindow({
+                                        	StartDate: start,
+	                                   		EndDate: end,
+    	                                    IsAllDay: ad
+        	                            }, el);
+                           			} else {
+                           				Ext.Msg.confirm('Предупреждение',staff.data.Title + 
+            							'в этот день не работает. Продолжить?',
+              								function(btn){
+    											if (btn=='yes') {
+    												this.showEditWindow({
+                           								StartDate: start,
+                           								EndDate: end,
+                           								IsAllDay: ad
+                       								}, el);
+    											}
+    										},
+               							this);
+                           			}
                                     this.clearMsg();
                                 },
                                 scope: this
@@ -427,6 +508,27 @@ App = function() {
         
         clearMsg: function(){
             //Ext.fly('app-msg').update('').addClass('x-hidden');
+        },
+        
+        setTimeToday: function(value) {
+        	var today = new Date();
+			today.setHours(value.substring(0,2));
+			today.setMinutes(value.substring(3,5));
+            today.setSeconds(0);
+            return today;
+        },
+        confirmMsg: function(staff,start,end,el){
+        	Ext.Msg.confirm('Предупреждение',staff.data.Title + 
+            'в этот день не работает. Продолжить?',
+              	function(btn){
+    				if (btn=='yes') {
+    					this.showEditWindow({
+                           	StartDate: start,
+                           	EndDate: end
+                       	}, el);
+    				}
+               	}
+            );
         }
     }
 }();

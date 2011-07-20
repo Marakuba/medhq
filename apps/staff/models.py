@@ -19,15 +19,15 @@ TIMESLOTS =(
             )
 
 ROUTINES = (
-            (1,u'любые дни'),
-            (2,u'четные дни'),
-            (3,u'нечетные дни'),
-            (4,u'любые, 1-я смена'),
-            (5,u'любые, 2-я смена'),
-            (6,u'четные, 1-я смена'),
-            (7,u'четные, 2-я смена'),
-            (8,u'нечетные, 1-я смена'),
-            (9,u'нечетные, 2-я смена')
+            ('00',u'любые дни'),
+            ('10',u'четные дни'),
+            ('20',u'нечетные дни'),
+            ('01',u'любые, 1-я смена'),
+            ('02',u'любые, 2-я смена'),
+            ('11',u'четные, 1-я смена'),
+            ('12',u'четные, 2-я смена'),
+            ('21',u'нечетные, 1-я смена'),
+            ('22',u'нечетные, 2-я смена')
             )
 
 
@@ -94,7 +94,7 @@ class Doctor(models.Model):
     staff = models.OneToOneField(Staff)
     comment = models.TextField(u'Комментарий')
     timeslot = models.PositiveIntegerField(u'Базовый интервал', default = 4, choices = TIMESLOTS)
-    routine = models.PositiveIntegerField(u'Режим работы', default = 1, choices = ROUTINES)
+    routine = models.CharField(u'Режим работы', default = '00', choices = ROUTINES, max_length=2)
     am_session_starts = models.TimeField(u'время начала первой смены', blank = True, null = True)
     am_session_ends = models.TimeField(u'время окончания первой смены', blank = True, null = True)
     pm_session_starts = models.TimeField(u'время начала второй смены', blank = True, null = True)
