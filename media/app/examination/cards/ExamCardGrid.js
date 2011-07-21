@@ -34,7 +34,7 @@ App.ExamCardGrid = Ext.extend(Ext.grid.GridPanel, {
 
 		this.store = new Ext.data.Store({
 			autoLoad:true,
-			autoSave:true,
+			//autoSave:true,
 		    baseParams: {
 		    	format:'json'
 		    },
@@ -45,7 +45,7 @@ App.ExamCardGrid = Ext.extend(Ext.grid.GridPanel, {
 			    dir : 'dir'
 			},
 		    restful: true,
-		    remoteSort: true,
+		    //remoteSort: true,
 		    proxy: new Ext.data.HttpProxy({
 			    url: get_api_url('examcard')
 			}),
@@ -66,15 +66,11 @@ App.ExamCardGrid = Ext.extend(Ext.grid.GridPanel, {
 		    	write:function(store, action, result, res, rs){
 		    		if(action=='create') {
 			    		App.eventManager.fireEvent('examcardcreate', rs);
-		    		}
+		    		} 
 		    	},
 		    	scope:this
 		    }
 		});
-		
-		//this.store = this.backend.store;
-		
-		//this.store.load();
 		
 		this.columns =  [
 		    {
@@ -157,6 +153,7 @@ App.ExamCardGrid = Ext.extend(Ext.grid.GridPanel, {
 	},
 	
 	reloadStore: function() {
+//		this.store.save();
 		this.store.load()	
 	},
 	

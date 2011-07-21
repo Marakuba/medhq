@@ -24,7 +24,7 @@ App.regBackend('examcard', new App.Backend({
 
 		store : new Ext.data.GroupingStore({
 			autoLoad:true,
-			autoSave:true,
+			//autoSave:true,
 		    baseParams: {
 		    	format:'json'
 		    },
@@ -35,8 +35,8 @@ App.regBackend('examcard', new App.Backend({
 			    dir : 'dir'
 			},
 		    restful: true,
-		    remoteSort: true,
-		    groupField:'key',
+		    //remoteSort: true,
+		    //groupField:'key',
 		    proxy: new Ext.data.HttpProxy({
 			    url: get_api_url('examcard')
 			}),

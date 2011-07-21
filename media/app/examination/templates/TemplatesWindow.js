@@ -11,7 +11,6 @@ App.examination.TemplatesWindow = Ext.extend(Ext.Window, {
 			fn:function(record){
 				this.record = record;
 				Ext.callback(this.fn, this.scope || window, [this.record]);
-				//this.destroy();
 			},
 			scope:this
 		});

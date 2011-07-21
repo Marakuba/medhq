@@ -106,6 +106,11 @@ App.TemplateGlobalGrid = Ext.extend(Ext.grid.GridPanel, {
 				handler:this.onAdd.createDelegate(this, [])
 			},{
 				xtype:'button',
+				//iconCls:'silk-add',
+				text:'Добавить копированием',
+				handler:this.onAddCopy.createDelegate(this, [])
+			},{
+				xtype:'button',
 				iconCls:'silk-pencil',
 				text:'Изменить',
 				handler:this.onEdit.createDelegate(this, [])
@@ -182,6 +187,28 @@ App.TemplateGlobalGrid = Ext.extend(Ext.grid.GridPanel, {
 			}
 		} else {
 		};
+	},
+	
+    	onAddCopy: function(btn,ev){
+		var record = this.getSelected();
+		if(record) {
+			var url = get_api_url('position');
+			var path = [url,active_profile];
+			var Model = this.backend.getModel();
+			if (Model) {
+				var model = new Model();
+			}
+			
+			var id;
+			for (id in record.data) {
+				if (id != 'id') {
+					model.data[id] = record.data[id];
+					model.data['staff'] = path.join("/");
+				};
+				
+			}
+			this.backend.saveRecord(model);
+		}
 	},
     
     getSelected: function() {

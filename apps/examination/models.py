@@ -57,7 +57,7 @@ class ExaminationCard(models.Model):
     
         
     def __unicode__(self):
-        return self. disease
+        return "%s - %s" % (self.created.strftime("%d/%m/%Y"),self.name)
     
     class Meta:
         verbose_name = u'Карта осмотра'

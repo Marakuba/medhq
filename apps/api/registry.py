@@ -738,9 +738,16 @@ class CardTemplateResource(ExtResource):
             'staff':ALL_WITH_RELATIONS,
             'id':ALL
         }
+        limit = 1000
         
 class ExaminationCardResource(ExtResource):
     ordered_service = fields.ForeignKey(OrderedServiceResource, 'ordered_service', null=True)
+    
+    def dehydrate(self, bundle):
+        obj = bundle.obj
+        bundle.data['view'] = obj.__unicode__()
+        #bundle.data['patient'] = obj.ordered_service.order.patient.id
+        return bundle
     
     class Meta:
         queryset = ExaminationCard.objects.all()
@@ -749,8 +756,10 @@ class ExaminationCardResource(ExtResource):
         authorization = DjangoAuthorization()
         filtering = {
             'ordered_service':ALL_WITH_RELATIONS,
-            'id':ALL
+            'id':ALL,
+            'name':ALL
         }
+        limit = 1000
 
 class RegExamCardResource(ExtResource):
     ordered_service = fields.ForeignKey(OrderedServiceResource, 'ordered_service', null=True)

@@ -53,7 +53,7 @@ App.examination.ExamCardWindow = Ext.extend(Ext.Window, {
 		this.form.onSave();
 		if (this.record) {
 			Ext.getCmp(this.tmp_id+'print').enable();
-			App.eventManager.fireEvent('examcardgrid_reload');
+		//	App.eventManager.fireEvent('examcardgrid_reload');
 		}
 		
 	},

@@ -40,7 +40,7 @@ App.examination.CardTemplateWindow = Ext.extend(Ext.Window, {
 	
 	onFormSave: function() {
 		this.form.onSave();
-		App.eventManager.fireEvent('templategrid_reload');
+		//App.eventManager.fireEvent('templategrid_reload');
 	},
 	
 	onClose: function() {
