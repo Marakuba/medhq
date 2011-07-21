@@ -138,9 +138,9 @@ App = function() {
 		    
 		    this.datePicker = new Ext.DatePicker ({
 		    	id: 'app-nav-picker',
-    	        region:'north',
-	            height:190,
-	            width:130,
+    	        //region:'north',
+	            //height:190,
+	            //width:130,
     	        cls: 'ext-cal-nav-picker',
         	    listeners: {
             		'select': {
@@ -154,10 +154,12 @@ App = function() {
              
              this.staffGrid = new Ext.calendar.StaffGrid({
              	id: 'app-staff-picker',
-	            region:'center',
-	            height:190,
+	            //region:'center',
+	            //height:190,
 	     		//autoSize:true,
             	//anchor:'100% 100%',
+             	autoScroll:true,
+             	autoHeight:true,
                 sm : new Ext.grid.RowSelectionModel({
 					singleSelect : true,
 					listeners: {
@@ -195,7 +197,17 @@ App = function() {
                         trackResetOnLoad:true,
                         width: 176,
                         border: false,
-                        items: [this.datePicker,this.staffGrid]
+                        defaults:{
+                          border:false
+                        },
+                        items: [{
+                          region:'north',
+                          height:190,
+                          items:this.datePicker
+                        },{
+                          region:'center',
+                          items:this.staffGrid
+                        }] 
                     },{
                         xtype: 'calendarpanel',
                         eventStore: this.eventStore,
@@ -345,12 +357,12 @@ App = function() {
                                 	}
                                 	
                                 	if (start) {
-                                		start = this.setTimeToday(start);
+                                		start = this.setTimeToDate(start,dt);
                                 	} else {
                                 		start = new Date();
                                 	};
                                		if (end) {
-                              				end = this.setTimeToday(end);
+                              				end = this.setTimeToDate(end,dt);
                            			} else {
                            				end = new Date();
                            				end.add('h',1);
@@ -504,12 +516,11 @@ App = function() {
             //Ext.fly('app-msg').update('').addClass('x-hidden');
         },
         
-        setTimeToday: function(value) {
-        	var today = new Date();
-			today.setHours(value.substring(0,2));
-			today.setMinutes(value.substring(3,5));
-            today.setSeconds(0);
-            return today;
+        setTimeToDate: function(value,dt) {
+			dt.setHours(value.substring(0,2));
+			dt.setMinutes(value.substring(3,5));
+            dt.setSeconds(0);
+            return dt;
         },
         confirmMsg: function(staff,start,end,el){
         	Ext.Msg.confirm('Предупреждение',staff.data.Title + 
