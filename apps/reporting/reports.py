@@ -175,7 +175,7 @@ SELECT \
   round(sum(TTvis.count * TTvis.price * (Tvis.discount_value/100)),2) as disc,  \
   sum(TTvis.count * TTvis.price) - round(sum(TTvis.count * TTvis.price * (Tvis.discount_value/100)),2) as clean_price, \
   Tvis.payment_type \
- %s %s \
+ %s  \
 GROUP BY \
   Tstaff.last_name ,Tstaff.first_name ,Tstaff.mid_name \
   ,Tvis.created \
@@ -187,7 +187,7 @@ GROUP BY \
   ,Tserv.name \
   ,TTvis.price \
 ORDER BY  \
-    staff,pnt,polis, created ,num ,serv" % (Report.base_wuery_from_where, Report.bq_notexists_lab)
+    staff,pnt,polis, created ,num ,serv" % (Report.base_wuery_from_where)
     #..
     
     

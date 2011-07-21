@@ -31,7 +31,7 @@ class PatientAdmin(OperatorAdmin, TabbedMedia):
             'fields':('last_name','first_name','mid_name','birth_day','gender'),
         }),
         (u'Скидки',{
-            'fields':('discount','doc',),
+            'fields':('discount','doc','initial_account'),
         }),
         (u'Контакты и адрес',{
             'fields':('mobile_phone','work_phone','home_phone','home_address_street','work_address_street','email'),

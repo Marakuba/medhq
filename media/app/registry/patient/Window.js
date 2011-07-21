@@ -67,6 +67,11 @@ App.PatientWindow = Ext.extend(Ext.Window, {
 						name:'email',
                     	fieldLabel: 'E-mail',
                     	value:''
+					},{
+						xtype:'numberfield',
+						name:'initial_account',
+                    	fieldLabel: 'Первоначальная сумма',
+                    	value:0
 					}]
 				},{
 					columnWidth:.5,
