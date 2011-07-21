@@ -64,6 +64,7 @@
             <th class="number">Количество</th>
             <th class="number">Сумма</th>
             <th class="number">Скидка</th>
+            <th class="number">Итого</th>
         </tr>
         
         <tr class="footer">        
@@ -71,6 +72,7 @@
             <th class="number">{{results.totalcount}}</th>
             <th class="number">{{results.totalsum}}</th>
             <th class="number">{{results.totaldisc}}</th>
+            <th class="number">{{results.total}}</th>
         </tr>
 
         {% for row in results.list %}
@@ -80,6 +82,7 @@
                 <td class="number">{{row.2}}</td>
                 <td class="number">{{row.3}}</td>
                 <td class="number">{{row.4}}</td>
+                <td class="number">{{row.5}}</td>
             </tr>
         {% endfor %}
 

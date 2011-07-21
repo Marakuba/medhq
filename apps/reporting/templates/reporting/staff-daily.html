@@ -90,7 +90,6 @@
             <th class="number">Количество</th>
             <th class="number">Сумма</th>
             <th class="number">Скидка</th>
-            <th class="number">Всего</th>
         </tr>
 
 
@@ -110,12 +109,13 @@
 <!--                     <td >{{ list.2 }}</td> -->
                     <td >{{ list.3 }}</td>
                     <td >{{ list.4 }}</td>
-                    <td class="number">{% if list.10 == 'н' %}Наличная{% else %}ДМС{% endif %}</td>
+                    <td class="number">{% if list.10 == 'н' %}Наличная{% endif %}
+                    {% if list.10 == 'д' %}ДМС{% endif %}
+                    {% if list.10 == 'б' %}Безналичная{% endif %}</td>
                     <td class="number">{{ list.5 }}</td>
                     <td class="number">{{ list.6 }}</td>
                     <td class="number">{{ list.7 }}</td>
                     <td class="number">{{ list.8|default:"0,00" }}</td>
-                    <td class="number">{{ list.9|default:"0,00" }}</td>
                 </tr>
                 {% endfor %}
             {% endfor %}
@@ -126,7 +126,6 @@
             <th class="number">{{results.0.1}}</th>
             <th class="number">{{results.0.2}}</th>
             <th class="number">{{results.0.3|default:"0,00"}}</th>
-            <th class="number">{{results.0.4}}</th>
         </tr>
 
     </tbody>

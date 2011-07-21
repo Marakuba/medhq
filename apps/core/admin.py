@@ -2,6 +2,9 @@
 
 from django.contrib.admin import ModelAdmin
 from django.conf import settings
+from django.contrib.admin.templatetags.log import AdminLogNode
+from django.contrib import admin
+from django.contrib.admin.models import LogEntry
 
 class OperatorAdmin(ModelAdmin):
     
@@ -38,3 +41,13 @@ class TabbedMedia(ModelAdmin):
               settings.MEDIA_URL + "jquery/jquery.ui.core.js",
               settings.MEDIA_URL + "jquery/jquery.ui.widget.js",
               settings.MEDIA_URL + "jquery/jquery.ui.tabs.js",)
+
+
+class LogEntryAdmin(ModelAdmin):
+    """
+    """
+    
+    list_display = ('action_time','content_type','get_edited_object','user','change_message','action_flag')
+    list_filter = ('user','action_flag')
+    
+admin.site.register(LogEntry, LogEntryAdmin)

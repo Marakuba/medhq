@@ -14,7 +14,8 @@ SELECT \
   Tstaff.last_name ||' '|| substr(Tstaff.first_name,1,1)||'.' ||substr(Tstaff.mid_name,1,1)||'.' as staff, \
   sum(TTvis.count) as cnt, \
   sum(TTvis.count * TTvis.price) as sum,  \
-  round(sum(TTvis.count * TTvis.price * (Tvis.discount_value/100)),2) as disc  \
+  round(sum(TTvis.count * TTvis.price * (Tvis.discount_value/100)),2) as disc,  \
+  sum(TTvis.count * TTvis.price) - round(sum(TTvis.count * TTvis.price * (Tvis.discount_value/100)),2) as clean_price \
  %s\
 GROUP BY \
   Tstaff.last_name ,Tstaff.first_name ,Tstaff.mid_name \
@@ -32,6 +33,7 @@ ORDER BY \
         t.append(sum(map(lambda x: x[2],ttv)))                  #results.0.2
 #        t.append(sum(map(lambda x: x[3],ttv)))                  #results.0.2
         t.append(sum(map(lambda x: 0 if x[3] == None else x[3],ttv)))                  #results.0.2
+        t.append(sum(map(lambda x: x[2] - (0 if x[3] == None else x[3]),ttv)))                  #results.0.2
         tt = []
         tt.append(t)
         return tt
@@ -49,7 +51,8 @@ SELECT \
   Tserv.id ||' - '||Tserv.name as serv, \
   sum(TTvis.count) as cnt, \
   sum(TTvis.count * TTvis.price) as sum, \
-  round(sum(TTvis.count * TTvis.price * (Tvis.discount_value/100)),2) as disc  \
+  round(sum(TTvis.count * TTvis.price * (Tvis.discount_value/100)),2) as disc,  \
+  sum(TTvis.count * TTvis.price) - round(sum(TTvis.count * TTvis.price * (Tvis.discount_value/100)),2) as clean_price \
  %s \
 GROUP BY \
   Tstaff.last_name ,Tstaff.first_name ,Tstaff.mid_name \
@@ -78,12 +81,14 @@ ORDER BY  \
                 ,sum(map(lambda x: sum(map(lambda x:x[5],x[1])) ,x[1]))                
                 ,sum(map(lambda x: sum(map(lambda x:x[6],x[1])) ,x[1]))                
                 ,sum(map(lambda x: sum(map(lambda x:0 if x[7] == None else x[7],x[1])) ,x[1]))                
+                ,sum(map(lambda x: sum(map(lambda x:x[6] - (0 if x[7] == None else x[7]),x[1])) ,x[1]))                
                 ,map(lambda x: [
                     x[0]
 #                    ,'Mesto'
                     ,sum(map(lambda x:x[5],x[1]))
                     ,sum(map(lambda x:x[6],x[1]))
                     ,sum(map(lambda x:0 if x[7] == None else x[7],x[1]))
+                    ,sum(map(lambda x:x[6] - (0 if x[7] == None else x[7]),x[1]))
                     ,x[1]
                     ]
                 ,x[1])
@@ -96,6 +101,7 @@ ORDER BY  \
         t.append(sum(map(lambda x: x[1],ttv)))                  #results.0.1
         t.append(sum(map(lambda x: x[2],ttv)))                  #results.0.2
         t.append(sum(map(lambda x: 0 if x[3] == None else x[3],ttv)))                  #results.0.2
+        t.append(sum(map(lambda x: x[2] - (0 if x[3] == None else x[3]),ttv)))                  #results.0.3
         tt = []
         tt.append(t)
         return tt
@@ -113,7 +119,8 @@ SELECT \
   TTvis.price as price, \
   sum(TTvis.count) as cnt, \
   sum(TTvis.count * TTvis.price) as sum, \
-  round(sum(TTvis.count * TTvis.price * (Tvis.discount_value/100)),2) as disc  \
+  round(sum(TTvis.count * TTvis.price * (Tvis.discount_value/100)),2) as disc,  \
+  sum(TTvis.count * TTvis.price) - round(sum(TTvis.count * TTvis.price * (Tvis.discount_value/100)),2) as clean_price \
  %s \
 GROUP BY \
   Tstaff.last_name ,Tstaff.first_name ,Tstaff.mid_name \
@@ -137,6 +144,7 @@ ORDER BY  \
             ,sum(map(lambda y: y[6],x[1]))  # gr.1
             ,sum(map(lambda y: y[7],x[1]))  # gr.2
             ,sum(map(lambda y: 0 if y[8] == None else y[8],x[1]))  # gr.2
+            ,sum(map(lambda y: y[7] - (0 if y[8] == None else y[8]),x[1]))  # gr.2
             ,x[1:]                          # gr.3!!!!
         ] ,vl)    
         #...
@@ -145,6 +153,7 @@ ORDER BY  \
         t.append(sum(map(lambda x: x[1],tvv)))                  #results.0.1
         t.append(sum(map(lambda x: x[2],tvv)))                  #results.0.2
         t.append(sum(map(lambda x: 0 if x[3] == None else x[3],tvv)))                  #results.0.2
+        t.append(sum(map(lambda x: x[2] - (0 if x[3] == None else x[3]),tvv)))                  #results.0.2
         tt = []
         tt.append(t)
         return tt
@@ -166,7 +175,7 @@ SELECT \
   round(sum(TTvis.count * TTvis.price * (Tvis.discount_value/100)),2) as disc,  \
   sum(TTvis.count * TTvis.price) - round(sum(TTvis.count * TTvis.price * (Tvis.discount_value/100)),2) as clean_price, \
   Tvis.payment_type \
- %s %s \
+ %s  \
 GROUP BY \
   Tstaff.last_name ,Tstaff.first_name ,Tstaff.mid_name \
   ,Tvis.created \
@@ -178,7 +187,7 @@ GROUP BY \
   ,Tserv.name \
   ,TTvis.price \
 ORDER BY  \
-    staff,pnt,polis, created ,num ,serv" % (Report.base_wuery_from_where, Report.bq_notexists_lab)
+    staff,pnt,polis, created ,num ,serv" % (Report.base_wuery_from_where)
     #..
     
     
@@ -222,7 +231,8 @@ SELECT \
   sum(TTvis.count * TTvis.price) as sum,  \
   round(sum(TTvis.count*TTvis.price*0.15),2) as s15,\
   round(sum(TTvis.count*TTvis.price*0.20),2) as s20, \
-  round(sum(TTvis.count * TTvis.price * (Tvis.discount_value/100)),2) as disc  \
+  round(sum(TTvis.count * TTvis.price * (Tvis.discount_value/100)),2) as disc,  \
+  sum(TTvis.count * TTvis.price) - round(sum(TTvis.count * TTvis.price * (Tvis.discount_value/100)),2) as clean_price \
 %s %s \
 GROUP BY \
   Trefrl.name  \
@@ -244,6 +254,7 @@ ORDER BY  \
             ,sum(map(lambda y: y[4],x[1]))  # gr.3
             ,sum(map(lambda y: y[5],x[1]))  # gr.4
             ,sum(map(lambda y: 0 if y[6] == None else y[6],x[1]))  # gr.4
+            ,sum(map(lambda y: y[3] - (0 if y[6] == None else y[6]),x[1]))  # gr.4
             ,x[1:]                          # gr.5!!!!
         ] ,vl)    
         #...
@@ -254,6 +265,7 @@ ORDER BY  \
         t.append(sum(map(lambda x: x[3],tvv)))                  #results.0.3
         t.append(sum(map(lambda x: x[4],tvv)))                  #results.0.4
         t.append(sum(map(lambda x: 0 if x[5] == None else x[5],tvv)))                  #results.0.4
+        t.append(sum(map(lambda x: x[2] - (0 if x[5] == None else x[5]),tvv)))                  #results.0.4
         tt = []
         tt.append(t)
         return tt
@@ -268,7 +280,8 @@ SELECT \
   sum(TTvis.count) as cnt, \
   sum(TTvis.count * TTvis.price) as sum,  \
   round(sum(TTvis.count*TTvis.price*0.10),2) as s10, \
-  round(sum(TTvis.count * TTvis.price * (Tvis.discount_value/100)),2) as disc  \
+  round(sum(TTvis.count * TTvis.price * (Tvis.discount_value/100)),2) as disc,  \
+  sum(TTvis.count * TTvis.price) - round(sum(TTvis.count * TTvis.price * (Tvis.discount_value/100)),2) as clean_price \
 %s %s \
 GROUP BY \
   Trefrl.name  \
@@ -289,6 +302,7 @@ ORDER BY  \
             ,sum(map(lambda y: y[3],x[1]))  # gr.2
             ,sum(map(lambda y: y[4],x[1]))  # gr.3
             ,sum(map(lambda y: 0 if y[5] == None else y[5],x[1]))  # gr.3            
+            ,sum(map(lambda y: y[3] - (0 if y[5] == None else y[5]),x[1]))  # gr.3            
             ,x[1:]                          # gr.5!!!!
         ] ,vl)    
         #...
@@ -298,6 +312,7 @@ ORDER BY  \
         t.append(sum(map(lambda x: x[2],tvv)))                  #results.0.2
         t.append(sum(map(lambda x: x[3],tvv)))                  #results.0.3
         t.append(sum(map(lambda x: 0 if x[4] == None else x[4],tvv)))                  #results.0.3
+        t.append(sum(map(lambda x: x[2] - (0 if x[4] == None else x[4]),tvv)))                  #results.0.3
         tt = []
         tt.append(t)
         return tt
@@ -313,7 +328,8 @@ SELECT \
   sum(TTvis.count * TTvis.price) as sum,  \
   round(sum(TTvis.count*TTvis.price*0.15),2) as s15,\
   round(sum(TTvis.count*TTvis.price*0.20),2) as s20, \
-  round(sum(TTvis.count * TTvis.price * (Tvis.discount_value/100)),2) as disc  \
+  round(sum(TTvis.count * TTvis.price * (Tvis.discount_value/100)),2) as disc,  \
+  sum(TTvis.count * TTvis.price) - round(sum(TTvis.count * TTvis.price * (Tvis.discount_value/100)),2) as clean_price \
 %s %s\
 GROUP BY \
   Trefrl.name  \
@@ -335,7 +351,8 @@ SELECT \
   Tserv.id ||' - '||Tserv.name as serv, \
   sum(TTvis.count) as cnt, \
   sum(TTvis.count * TTvis.price) as sum, \
-  round(sum(TTvis.count * TTvis.price * (Tvis.discount_value/100)),2) as disc  \
+  round(sum(TTvis.count * TTvis.price * (Tvis.discount_value/100)),2) as disc,  \
+  sum(TTvis.count * TTvis.price) - round(sum(TTvis.count * TTvis.price * (Tvis.discount_value/100)),2) as clean_price \
 %s \
 GROUP BY \
   Tvis.payment_type \
@@ -356,6 +373,7 @@ ORDER BY \
             ,sum(map(lambda y: y[4],x[1]))  # gr.1
             ,sum(map(lambda y: y[5],x[1]))  # gr.2
             ,sum(map(lambda y: 0 if y[6] == None else y[6],x[1]))  # gr.2
+            ,sum(map(lambda y: y[5] - (0 if y[6] == None else y[6]),x[1]))  # gr.2
             ,x[1:]                          # gr.3!!!!
         ] ,vl)    
         #...
@@ -364,6 +382,7 @@ ORDER BY \
         t.append(sum(map(lambda x: x[1],tvv)))                  #results.0.1
         t.append(sum(map(lambda x: x[2],tvv)))                  #results.0.2
         t.append(sum(map(lambda x: 0 if x[3] == None else x[3],tvv)))                  #results.0.2
+        t.append(sum(map(lambda x: x[2] - (0 if x[3] == None else x[3]),tvv)))                  #results.0.2
         tt = []
         tt.append(t)
         return tt   
@@ -379,7 +398,8 @@ SELECT \
   Tserv.id ||' - '||Tserv.name as serv, \
   sum(TTvis.count) as cnt, \
   sum(TTvis.count * TTvis.price) as sum, \
-  round(sum(TTvis.count * TTvis.price * (Tvis.discount_value/100)),2) as disc  \
+  round(sum(TTvis.count * TTvis.price * (Tvis.discount_value/100)),2) as disc,  \
+  sum(TTvis.count * TTvis.price) - round(sum(TTvis.count * TTvis.price * (Tvis.discount_value/100)),2) as clean_price \
 %s \
 GROUP BY \
   Tstate.name \
@@ -400,6 +420,7 @@ ORDER BY \
             ,sum(map(lambda y: y[4],x[1]))  # gr.1
             ,sum(map(lambda y: y[5],x[1]))  # gr.2
             ,sum(map(lambda y: 0 if y[6] == None else y[6],x[1]))  # gr.2
+            ,sum(map(lambda y: y[5] - (0 if y[6] == None else y[6]),x[1]))  # gr.2
             ,x[1:]                          # gr.3!!!!
         ] ,vl)    
         #...
@@ -408,6 +429,7 @@ ORDER BY \
         t.append(sum(map(lambda x: x[1],tvv)))                  #results.0.1
         t.append(sum(map(lambda x: x[2],tvv)))                  #results.0.2
         t.append(sum(map(lambda x: 0 if x[3] == None else x[3],tvv)))                  #results.0.2
+        t.append(sum(map(lambda x: x[2] - (0 if x[3] == None else x[3]),tvv)))                  #results.0.2
         tt = []
         tt.append(t)
         return tt    
@@ -423,7 +445,8 @@ SELECT \
   Tserv.id ||' - '||Tserv.name as serv, \
   sum(TTvis.count) as cnt, \
   sum(TTvis.count * TTvis.price) as sum, \
-  round(sum(TTvis.count * TTvis.price * (Tvis.discount_value/100)),2) as disc  \
+  round(sum(TTvis.count * TTvis.price * (Tvis.discount_value/100)),2) as disc,  \
+  sum(TTvis.count * TTvis.price) - round(sum(TTvis.count * TTvis.price * (Tvis.discount_value/100)),2) as clean_price \
 %s \
 GROUP BY \
   Tstgr.name \
@@ -447,7 +470,8 @@ SELECT \
   TTvis.price as cost, \
   sum(TTvis.count) as cnt, \
   sum(TTvis.count * TTvis.price) as sum, \
- round(sum(TTvis.count * TTvis.price * (Tvis.discount_value/100)),2) as disc  \
+  round(sum(TTvis.count * TTvis.price * (Tvis.discount_value/100)),2) as disc,  \
+  sum(TTvis.count * TTvis.price) - round(sum(TTvis.count * TTvis.price * (Tvis.discount_value/100)),2) as clean_price \
 %s \
 GROUP BY \
   Tpnt.last_name, Tpnt.first_name,Tpnt.mid_name   \
@@ -475,11 +499,13 @@ ORDER BY \
             ,sum(map(lambda x: sum(map(lambda x:x[4],x[1])) ,x[1]))                
             ,sum(map(lambda x: sum(map(lambda x:x[5],x[1])) ,x[1]))                
             ,sum(map(lambda x: sum(map(lambda x:0 if x[6] == None else x[6],x[1])) ,x[1]))                
+            ,sum(map(lambda x: sum(map(lambda x:x[5] - (0 if x[6] == None else x[6]),x[1])) ,x[1]))                
             ,map(lambda x: [
                 x[0]
                 ,sum(map(lambda x:x[4],x[1]))
                 ,sum(map(lambda x:x[5],x[1]))
                 ,sum(map(lambda x:0 if x[6] == None else x[6],x[1]))
+                ,sum(map(lambda x:x[5] - (0 if x[6] == None else x[6]),x[1]))
                 ,x[1]
                 ]
             ,x[1])
@@ -489,7 +515,8 @@ ORDER BY \
             'list': ttv,
             'totalcount':sum(map(lambda x: x[2],ttv)),
             'totalsum':sum(map(lambda x: x[3],ttv)),
-            'totaldisc':sum(map(lambda x: 0 if x[4] == None else x[4],ttv)) 
+            'totaldisc':sum(map(lambda x: 0 if x[4] == None else x[4],ttv)),
+            'total':sum(map(lambda x: x[3] - (0 if x[4] == None else x[4]),ttv))
         }
         
 
@@ -505,7 +532,8 @@ SELECT \
   TTvis.price as cost, \
   sum(TTvis.count) as cnt, \
   sum(TTvis.count * TTvis.price) as sum, \
- round(sum(TTvis.count * TTvis.price * (Tvis.discount_value/100)),2) as disc  \
+  round(sum(TTvis.count * TTvis.price * (Tvis.discount_value/100)),2) as disc,  \
+  sum(TTvis.count * TTvis.price) - round(sum(TTvis.count * TTvis.price * (Tvis.discount_value/100)),2) as clean_price \
 %s %s \
 GROUP BY \
   Tpnt.last_name, Tpnt.first_name,Tpnt.mid_name   \
@@ -533,11 +561,13 @@ ORDER BY \
             ,sum(map(lambda x: sum(map(lambda x:x[4],x[1])) ,x[1]))                
             ,sum(map(lambda x: sum(map(lambda x:x[5],x[1])) ,x[1]))                
             ,sum(map(lambda x: sum(map(lambda x:0 if x[6] == None else x[6],x[1])) ,x[1]))                
+            ,sum(map(lambda x: sum(map(lambda x:x[5] - (0 if x[6] == None else x[6]),x[1])) ,x[1]))                
             ,map(lambda x: [
                 x[0]
                 ,sum(map(lambda x:x[4],x[1]))
                 ,sum(map(lambda x:x[5],x[1]))
                 ,sum(map(lambda x:0 if x[6] == None else x[6],x[1]))
+                ,sum(map(lambda x:x[5] - (0 if x[6] == None else x[6]),x[1]))
                 ,x[1]
                 ]
             ,x[1])
@@ -547,7 +577,8 @@ ORDER BY \
             'list': ttv,
             'totalcount':sum(map(lambda x: x[2],ttv)),
             'totalsum':sum(map(lambda x: x[3],ttv)),
-            'totaldisc':sum(map(lambda x: 0 if x[4] == None else x[4],ttv)) 
+            'totaldisc':sum(map(lambda x: 0 if x[4] == None else x[4],ttv)),
+            'total':sum(map(lambda x: x[3] - (0 if x[4] == None else x[4]),ttv)) 
         }
 
 
@@ -563,7 +594,8 @@ SELECT \
   TTvis.price as cost, \
   sum(TTvis.count) as cnt, \
   sum(TTvis.count * TTvis.price) as sum, \
-  round(sum(TTvis.count * TTvis.price * (Tvis.discount_value/100)),2) as disc  \
+  round(sum(TTvis.count * TTvis.price * (Tvis.discount_value/100)),2) as disc,  \
+  sum(TTvis.count * TTvis.price) - round(sum(TTvis.count * TTvis.price * (Tvis.discount_value/100)),2) as clean_price \
 %s \
 GROUP BY \
   Tpnt.last_name, Tpnt.first_name,Tpnt.mid_name   \
@@ -590,7 +622,8 @@ SELECT \
   TTvis.price as cost, \
   sum(TTvis.count) as cnt, \
   sum(TTvis.count * TTvis.price) as sum, \
-  round(sum(TTvis.count * TTvis.price * (Tvis.discount_value/100)),2) as disc  \
+  round(sum(TTvis.count * TTvis.price * (Tvis.discount_value/100)),2) as disc,  \
+  sum(TTvis.count * TTvis.price) - round(sum(TTvis.count * TTvis.price * (Tvis.discount_value/100)),2) as clean_price \
 %s %s \
 GROUP BY \
   Tpnt.last_name, Tpnt.first_name,Tpnt.mid_name   \
@@ -613,7 +646,8 @@ class PaymentPlaceServReport(Report):
           TTvis.price as cost, \
           sum(TTvis.count) as cnt, \
           sum(TTvis.count * TTvis.price) as sum, \
-          round(sum(TTvis.count * TTvis.price * (Tvis.discount_value/100)),2) as disc  \
+          round(sum(TTvis.count * TTvis.price * (Tvis.discount_value/100)),2) as disc,  \
+          sum(TTvis.count * TTvis.price) - round(sum(TTvis.count * TTvis.price * (Tvis.discount_value/100)),2) as clean_price \
         % s \
         group by \
           Tvis.payment_type,Tstate.name,Tserv.id,TTvis.price,Tserv.name \
@@ -636,12 +670,14 @@ class PaymentPlaceServReport(Report):
                 ,sum(map(lambda x: sum(map(lambda x:x[2],x[1])) ,x[1]))                
                 ,sum(map(lambda x: sum(map(lambda x:x[3],x[1])) ,x[1]))                
                 ,sum(map(lambda x: sum(map(lambda x:0 if x[4] == None else x[4],x[1])) ,x[1]))                
+                ,sum(map(lambda x: sum(map(lambda x:x[3] - (0 if x[4] == None else x[4]),x[1])) ,x[1]))                
                 ,map(lambda x: [
                     x[0]
 #                    ,'Mesto'
                     ,sum(map(lambda x:x[2],x[1]))
                     ,sum(map(lambda x:x[3],x[1]))
                     ,sum(map(lambda x:0 if x[4] == None else x[4],x[1]))
+                    ,sum(map(lambda x:x[3] - (0 if x[4] == None else x[4]),x[1]))
                     ,x[1]
                     ]
                 ,x[1])
@@ -654,6 +690,7 @@ class PaymentPlaceServReport(Report):
         t.append(sum(map(lambda x: x[1],ttv)))                  #results.0.1
         t.append(sum(map(lambda x: x[2],ttv)))                  #results.0.2
         t.append(sum(map(lambda x: 0 if x[3] == None else x[3],ttv)))                  #results.0.2
+        t.append(sum(map(lambda x: x[2] - (0 if x[3] == None else x[3]),ttv)))                  #results.0.2
         tt = []
         tt.append(t)
         return tt
@@ -670,7 +707,8 @@ SELECT \
   Tserv.id ||' - '||Tserv.name as serv, \
   sum(TTvis.count) as cnt, \
   sum(TTvis.count * TTvis.price) as sum, \
-  round(sum(TTvis.count * TTvis.price * (Tvis.discount_value/100)),2) as disc  \
+  round(sum(TTvis.count * TTvis.price * (Tvis.discount_value/100)),2) as disc,  \
+  sum(TTvis.count * TTvis.price) - round(sum(TTvis.count * TTvis.price * (Tvis.discount_value/100)),2) as clean_price \
 %s \
 GROUP BY \
   Tvis.payment_type \
@@ -699,12 +737,14 @@ ORDER BY \
                 ,sum(map(lambda x: sum(map(lambda x:x[4],x[1])) ,x[1]))                
                 ,sum(map(lambda x: sum(map(lambda x:x[5],x[1])) ,x[1]))                
                 ,sum(map(lambda x: sum(map(lambda x:0 if x[6] == None else x[6],x[1])) ,x[1]))                
+                ,sum(map(lambda x: sum(map(lambda x:x[5] - (0 if x[6] == None else x[6]),x[1])) ,x[1]))                
                 ,map(lambda x: [
                     x[0]
 #                    ,'Mesto'
                     ,sum(map(lambda x:x[4],x[1]))
                     ,sum(map(lambda x:x[5],x[1]))
                     ,sum(map(lambda x:0 if x[6] == None else x[6],x[1]))
+                    ,sum(map(lambda x:x[5] - (0 if x[6] == None else x[6]),x[1]))
                     ,x[1]
                     ]
                 ,x[1])
@@ -717,6 +757,7 @@ ORDER BY \
         t.append(sum(map(lambda x: x[1],ttv)))                  #results.0.1
         t.append(sum(map(lambda x: x[2],ttv)))                  #results.0.2
         t.append(sum(map(lambda x: 0 if x[3] == None else x[3],ttv)))                  #results.0.2        
+        t.append(sum(map(lambda x: x[2] - (0 if x[3] == None else x[3]),ttv)))                  #results.0.2        
         tt = []
         tt.append(t)
         return tt
@@ -732,7 +773,8 @@ SELECT \
   Tserv.id ||' - '||Tserv.name as serv, \
   sum(TTvis.count) as cnt, \
   sum(TTvis.count * TTvis.price) as sum, \
-  round(sum(TTvis.count * TTvis.price * (Tvis.discount_value/100)),2) as disc  \
+  round(sum(TTvis.count * TTvis.price * (Tvis.discount_value/100)),2) as disc,  \
+  sum(TTvis.count * TTvis.price) - round(sum(TTvis.count * TTvis.price * (Tvis.discount_value/100)),2) as clean_price \
 % s \
 GROUP BY \
   Tvis.payment_type \
@@ -816,7 +858,8 @@ SELECT \
   TTvis.price as cost, \
   sum(TTvis.count) as cnt,  \
   sum(TTvis.count * TTvis.price) as sum,  \
-  round(sum(TTvis.count * TTvis.price * (Tvis.discount_value/100)),2) as disc  \
+  round(sum(TTvis.count * TTvis.price * (Tvis.discount_value/100)),2) as disc,  \
+  sum(TTvis.count * TTvis.price) - round(sum(TTvis.count * TTvis.price * (Tvis.discount_value/100)),2) as clean_price \
 %s \
 GROUP BY \
   Tstaff.last_name ,Tstaff.first_name ,Tstaff.mid_name \
@@ -837,6 +880,7 @@ ORDER BY \
             ,sum(map(lambda y: y[2],x[1]))  # gr.1
             ,sum(map(lambda y: y[3],x[1]))  # gr.2
             ,sum(map(lambda y: 0 if y[4] == None else y[4],x[1]))  # gr.2
+            ,sum(map(lambda y: y[3] - (0 if y[4] == None else y[4]),x[1]))  # gr.2
             ,x[1:]                          # gr.3!!!!
         ] ,vl)    
         #...
@@ -845,6 +889,7 @@ ORDER BY \
         t.append(sum(map(lambda x: x[1],tvv)))                  #results.0.1
         t.append(sum(map(lambda x: x[2],tvv)))                  #results.0.2
         t.append(sum(map(lambda x: 0 if x[3] == None else x[3],tvv)))                  #results.0.2
+        t.append(sum(map(lambda x: x[2] - (0 if x[3] == None else x[3]),tvv)))                  #results.0.2
         tt = []
         tt.append(t)
         return tt
@@ -865,7 +910,8 @@ SELECT \
   TTvis.price, \
   sum(TTvis.count) as cnt,  \
   sum(TTvis.count * TTvis.price) as sum,  \
-  round(sum(TTvis.count * TTvis.price * (Tvis.discount_value/100)),2) as disc  \
+  round(sum(TTvis.count * TTvis.price * (Tvis.discount_value/100)),2) as disc,  \
+  sum(TTvis.count * TTvis.price) - round(sum(TTvis.count * TTvis.price * (Tvis.discount_value/100)),2) as clean_price \
 %s \
 GROUP BY \
   Trefrl.name \
@@ -899,12 +945,14 @@ ORDER BY \
                 ,sum(map(lambda x: sum(map(lambda x:x[6],x[1])) ,x[1]))                
                 ,sum(map(lambda x: sum(map(lambda x:x[7],x[1])) ,x[1]))                
                 ,sum(map(lambda x: sum(map(lambda x:0 if x[8] == None else x[8],x[1])) ,x[1]))                
+                ,sum(map(lambda x: sum(map(lambda x:x[7] - (0 if x[8] == None else x[8]),x[1])) ,x[1]))                
                 ,map(lambda x: [
                     x[0]
 #                    ,'Mesto'
                     ,sum(map(lambda x:x[6],x[1]))
                     ,sum(map(lambda x:x[7],x[1]))
                     ,sum(map(lambda x:0 if x[8] == None else x[8],x[1]))
+                    ,sum(map(lambda x:x[7] - (0 if x[8] == None else x[8]),x[1]))
                     ,x[1]
                     ]
                 ,x[1])
@@ -917,6 +965,7 @@ ORDER BY \
         t.append(sum(map(lambda x: x[1],ttv)))                  #results.0.1
         t.append(sum(map(lambda x: x[2],ttv)))                  #results.0.2
         t.append(sum(map(lambda x: 0 if x[3] == None else x[3],ttv)))                  #results.0.2        
+        t.append(sum(map(lambda x: x[2] - (0 if x[3] == None else x[3]),ttv)))                  #results.0.2        
         tt = []
         tt.append(t)
         return tt
@@ -932,7 +981,8 @@ SELECT \
   TTvis.price as cost, \
   sum(TTvis.count) as cnt, \
   sum(TTvis.count * TTvis.price) as sum, \
-  round(sum(TTvis.count * TTvis.price * (Tvis.discount_value/100)),2) as disc  \
+  round(sum(TTvis.count * TTvis.price * (Tvis.discount_value/100)),2) as disc,  \
+  sum(TTvis.count * TTvis.price) - round(sum(TTvis.count * TTvis.price * (Tvis.discount_value/100)),2) as clean_price \
 %s \
 GROUP BY \
   Tpnt.last_name, Tpnt.first_name,Tpnt.mid_name   \
@@ -955,6 +1005,7 @@ ORDER BY \
             ,sum(map(lambda y: y[4],x[1]))  # gr.1
             ,sum(map(lambda y: y[5],x[1]))  # gr.2
             ,sum(map(lambda y: 0 if y[6] == None else y[6],x[1]))  # gr.2
+            ,sum(map(lambda y: y[5] - (0 if y[6] == None else y[6]),x[1]))  # gr.2
             ,x[1:]                          # gr.3!!!!
         ] ,vl)    
         #...
@@ -962,7 +1013,8 @@ ORDER BY \
             'list': tvv,
             'totalcount':sum(map(lambda x: x[2],tvv)),
             'totalsum':sum(map(lambda x: x[3],tvv)),
-            'totaldisc':sum(map(lambda x: 0 if x[4] == None else x[4],tvv)) 
+            'totaldisc':sum(map(lambda x: 0 if x[4] == None else x[4],tvv)),
+            'total':sum(map(lambda x: x[3] - (0 if x[4] == None else x[4]),tvv)) 
         }
 
 class KLCReestrReport(Report):
@@ -1051,7 +1103,8 @@ SELECT \
   TTvis.price as cost, \
   sum(TTvis.count) as cnt, \
   sum(TTvis.count * TTvis.price) as sum , \
-  round(sum(TTvis.count * TTvis.price * (Tvis.discount_value/100)),2) as disc  \
+  round(sum(TTvis.count * TTvis.price * (Tvis.discount_value/100)),2) as disc,  \
+  sum(TTvis.count * TTvis.price) - round(sum(TTvis.count * TTvis.price * (Tvis.discount_value/100)),2) as clean_price \
  %s %s \
 GROUP BY \
   Tserv.id \
@@ -1069,7 +1122,8 @@ sum(TTvis.count) desc \
             'list': results,
             'totalcount':sum(map(lambda x: x[2],results)),
             'totalsum':sum(map(lambda x: x[3],results)),
-            'totaldisc':sum(map(lambda x: 0 if x[4] == None else x[4],results)) 
+            'totaldisc':sum(map(lambda x: 0 if x[4] == None else x[4],results)),
+            'total':sum(map(lambda x: x[3] - (0 if x[4] == None else x[4]),results)) 
         }
 
 class ServiceWithoutLabReport(ServiceLabReport):
@@ -1080,7 +1134,8 @@ SELECT \
   TTvis.price as cost, \
   sum(TTvis.count) as cnt, \
   sum(TTvis.count * TTvis.price) as sum , \
-  round(sum(TTvis.count * TTvis.price * (Tvis.discount_value/100)),2) as disc  \
+  round(sum(TTvis.count * TTvis.price * (Tvis.discount_value/100)),2) as disc,  \
+  sum(TTvis.count * TTvis.price) - round(sum(TTvis.count * TTvis.price * (Tvis.discount_value/100)),2) as clean_price \
  %s %s \
 GROUP BY \
   Tserv.id \
@@ -1102,7 +1157,8 @@ Trepbsgp.name as grnam, \
   TTvis.price as cost, \
   sum(TTvis.count) as cnt, \
   sum(TTvis.count * TTvis.price) as sum , \
-  round(sum(TTvis.count * TTvis.price * (Tvis.discount_value/100)),2) as disc  \
+  round(sum(TTvis.count * TTvis.price * (Tvis.discount_value/100)),2) as disc,  \
+  sum(TTvis.count * TTvis.price) - round(sum(TTvis.count * TTvis.price * (Tvis.discount_value/100)),2) as clean_price \
  %s \
 GROUP BY \
     Trepbsgp.name \
@@ -1124,6 +1180,7 @@ sum(TTvis.count) desc \
             ,sum(map(lambda y: y[2],x[1]))  # gr.1
             ,sum(map(lambda y: y[3],x[1]))  # gr.2
             ,sum(map(lambda y: 0 if y[4] == None else y[4],x[1]))  # gr.2
+            ,sum(map(lambda y: y[3] - (0 if y[4] == None else y[4]),x[1]))  # gr.2
             ,x[1:]                          # gr.3!!!!
         ] ,vl)    
         #...
@@ -1132,7 +1189,8 @@ sum(TTvis.count) desc \
             'list': tvv,
             'totalcount':sum(map(lambda x: x[1],tvv)),
             'totalsum':sum(map(lambda x: x[2],tvv)),
-            'totaldisc':sum(map(lambda x: 0 if x[3] == None else x[3],tvv)) 
+            'totaldisc':sum(map(lambda x: 0 if x[3] == None else x[3],tvv)),
+            'total':sum(map(lambda x: x[2] - (0 if x[3] == None else x[3]),tvv)) 
         }
 
 class ServiceLabGroupSumm(ServiceLabGroupCount):
@@ -1145,6 +1203,7 @@ class ServiceLabGroupSumm(ServiceLabGroupCount):
             ,sum(map(lambda y: y[2],x[1]))  # gr.1
             ,sum(map(lambda y: y[3],x[1]))  # gr.2
             ,sum(map(lambda y: 0 if y[4] == None else y[4],x[1]))  # gr.2
+            ,sum(map(lambda y: y[3] - (0 if y[4] == None else y[4]),x[1]))  # gr.2
             ,x[1:]                          # gr.3!!!!
         ] ,vl)    
         #...
@@ -1153,7 +1212,8 @@ class ServiceLabGroupSumm(ServiceLabGroupCount):
             'list': tvv,
             'totalcount':sum(map(lambda x: x[1],tvv)),
             'totalsum':sum(map(lambda x: x[2],tvv)),
-            'totaldisc':sum(map(lambda x: 0 if x[3] == None else x[3],tvv)) 
+            'totaldisc':sum(map(lambda x: 0 if x[3] == None else x[3],tvv)),
+            'total':sum(map(lambda x: x[2] - (0 if x[3] == None else x[3]),tvv))  
         }
 register('vrachi', VrachReport) 
 register('vrachi-usl-sum', VrachiUslSumReport) 
