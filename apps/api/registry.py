@@ -22,6 +22,7 @@ from django.shortcuts import get_object_or_404
 from django.core.exceptions import ObjectDoesNotExist
 from tastypie.exceptions import NotFound
 from examination.models import CardTemplate, ExaminationCard
+from helpdesk.models import Issue, IssueType
 #from reporting.models import Report, FieldItem, GroupItem, SummaryItem, Fields,\
 #    Groups, Summaries, FilterItem, Filters
 
@@ -845,6 +846,49 @@ class EquipmentResultResource(ExtResource):
         }        
 
 
+
+class IssueTypeResource(ExtResource):
+    
+    class Meta:
+        queryset = IssueType.objects.all()
+        resource_name = 'issuetype'
+        limit = 100
+        authorization = DjangoAuthorization()
+        filtering = {
+            'name':ALL
+        }        
+
+
+class IssueResource(ExtResource):
+    
+    type = fields.ForeignKey(IssueTypeResource, 'type')
+    
+    def obj_create(self, bundle, request=None, **kwargs):
+        kwargs['operator']=request.user
+        result = super(IssueResource, self).obj_create(bundle=bundle, request=request, **kwargs)
+        return result
+
+    def dehydrate(self, bundle):
+        bundle.data['type_name'] = bundle.obj.type
+        bundle.data['level_name'] = bundle.obj.get_level_display()
+        bundle.data['status_name'] = bundle.obj.get_status_display()
+        bundle.data['operator_name'] = bundle.obj.operator
+        return bundle
+    
+    class Meta:
+        queryset = Issue.objects.all()
+        resource_name = 'issue'
+        limit = 100
+        authorization = DjangoAuthorization()
+        filtering = {
+            'type':ALL_WITH_RELATIONS,
+            'level':ALL,
+            'status':ALL,
+            'operator':ALL_WITH_RELATIONS
+        }        
+
+
+
 api = Api(api_name=get_api_name('dashboard'))
 
 #patient
@@ -900,13 +944,7 @@ api.register(RegExamCardResource())
 api.register(CardTemplateResource())
 api.register(ExaminationCardResource())
 
-#reporting
-#api.register(ReportResource())
-#api.register(FilterItemResource())
-#api.register(FieldItemResource())
-#api.register(GroupItemResource())
-#api.register(SummaryItemResource())
-#api.register(FieldsResource())
-#api.register(GroupsResource())
-#api.register(SummariesResource())
-#api.register(FiltersResource())
+
+#helpdesk
+api.register(IssueTypeResource())
+api.register(IssueResource())

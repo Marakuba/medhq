@@ -121,6 +121,12 @@ def examination(request):
     return {}
     
 
+@login_required
+@render_to('webapp/helpdesk/index.html')
+def helpdesk(request):
+    return {}
+    
+
 def get_service_tree():
     """
     Генерирует дерево в json-формате.
