@@ -206,6 +206,7 @@ App = function() {
                           items:this.datePicker
                         },{
                           region:'center',
+                          autoScroll:true,
                           items:this.staffGrid
                         }] 
                     },{
