@@ -20,4 +20,5 @@ urlpatterns = patterns('',
     (r'^reporting/$','webapp.views.reporting'),
     (r'^laboratory/$','webapp.views.laboratory'),
     (r'^examination/$','webapp.views.examination'),
+    (r'^helpdesk/$','webapp.views.helpdesk'),    
 )
