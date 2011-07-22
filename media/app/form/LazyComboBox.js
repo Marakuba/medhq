@@ -88,7 +88,7 @@ Ext.form.LazyClearableComboBox = Ext.extend(Ext.form.ClearableComboBox, {
 				this._cachedValue = value;
 				this.store.load();
 			} else {
-				Ext.form.LazyComboBox.superclass.setValue.call(this, value);
+				Ext.form.LazyClearableComboBox.superclass.setValue.call(this, value);
 			}
 		}
 	},
