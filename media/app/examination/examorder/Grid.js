@@ -45,7 +45,7 @@ App.examorder.ExamOrderGrid = Ext.extend(Ext.grid.GridPanel, {
 		    },{
 		    	header: "Пациент", 
 		    	width: 400,
-		    	dataIndex: 'patient'
+		    	dataIndex: 'patient_full'
 		    }/*{
 		    	width: 10, 
 		    	sortable: true, 
@@ -206,6 +206,7 @@ App.examorder.ExamOrderGrid = Ext.extend(Ext.grid.GridPanel, {
 		if (rec) {
 			config = {
 				ordered_service : rec.data.resource_uri,
+				patient:rec.data.patient,
 				title:'Карты осмотра №'+rec.data.barcode+' ' + rec.data.patient_name
 			}
 			App.eventManager.fireEvent('launchapp', 'examcardgrid',config);
@@ -218,6 +219,7 @@ App.examorder.ExamOrderGrid = Ext.extend(Ext.grid.GridPanel, {
 		if (rec) {
 			var win = new App.examination.TemplatesWindow({
 				scope:this,
+				patient:rec.data.patient,
 				ordered_service:rec.data.resource_uri,
 				fn:function(){
 					App.eventManager.fireEvent('examcardgrid_reload')

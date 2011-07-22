@@ -161,6 +161,7 @@ App.ExamCardGrid = Ext.extend(Ext.grid.GridPanel, {
 		var win = new App.examination.TemplatesWindow({
 			scope:this,
 			ordered_service:this.ordered_service,
+			patient:this.patient,
 			fn:function(){
 				this.store.load();
 			}
@@ -173,6 +174,7 @@ App.ExamCardGrid = Ext.extend(Ext.grid.GridPanel, {
 		if(record) {
     		var win = new App.examination.ExamCardWindow({
     			record:record,
+    			patient:this.patient,
     			model:this.store.recordType,
     			scope:this,
     			fn:this.saveRecord(record)

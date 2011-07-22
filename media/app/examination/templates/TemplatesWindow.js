@@ -7,6 +7,7 @@ App.examination.TemplatesWindow = Ext.extend(Ext.Window, {
 		this.form = new App.CardTemplateGrid ({
 			model:this.model,
 			record:this.record,
+			patient:this.patient,
 			ordered_service:this.ordered_service,
 			fn:function(record){
 				this.record = record;

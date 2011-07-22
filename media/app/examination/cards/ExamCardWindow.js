@@ -9,6 +9,7 @@ App.examination.ExamCardWindow = Ext.extend(Ext.Window, {
 		this.form = new App.examination.ExamCardForm({
 			model:this.model,
 			record:this.record,
+			patient:this.patient,
 			tmp_record:this.tmp_record, //данные из шаблона
 			ordered_service:this.ordered_service,
 			fn:function(record){

@@ -14,6 +14,7 @@ App.models.ExamService = new Ext.data.Record.create([
     {name: 'modified'},
     {name: 'order'},
     {name: 'patient'},
+    {name: 'patient_full'},
     {name: 'patient_name'},
     {name: 'patient_age'},
     {name: 'resource_uri'},

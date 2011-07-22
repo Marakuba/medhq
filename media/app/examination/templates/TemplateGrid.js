@@ -209,6 +209,7 @@ App.CardTemplateGrid = Ext.extend(Ext.grid.GridPanel, {
         	rec.data['ordered_service'] = this.ordered_service;
         	var win = new App.examination.ExamCardWindow({
         		tmp_record : rec,
+        		patient:this.patient,
 				model:this.examModel,
 				scope:this,
 				fn:function(record){

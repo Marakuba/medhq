@@ -562,20 +562,21 @@ class ExamServiceResource(ExtResource):
         service = bundle.obj.service
         bundle.data['service_name'] = service.short_name or service.name
         bundle.data['service_full_name'] = service.name
-        bundle.data['lab_group'] = service.lab_group
+        #bundle.data['lab_group'] = service.lab_group
         bundle.data['created'] = bundle.obj.order.created
         bundle.data['printed'] = bundle.obj.print_date
         bundle.data['barcode'] = bundle.obj.order.barcode.id
-        bundle.data['patient'] = bundle.obj.order.patient.full_name()
+        bundle.data['patient_full'] = bundle.obj.order.patient.full_name()
         bundle.data['patient_name'] = bundle.obj.order.patient.short_name()
         bundle.data['patient_age'] = bundle.obj.order.patient.full_age()
+        bundle.data['patient'] = bundle.obj.order.patient.id
         bundle.data['staff_name'] = bundle.obj.staff
         bundle.data['laboratory'] = bundle.obj.execution_place
         bundle.data['key'] = u"%s_%s" % (bundle.obj.order.id, bundle.obj.execution_place.id) 
         return bundle
     
     class Meta:
-        queryset = OrderedService.objects.filter(service__lab_group__isnull=True) #all lab services
+        queryset = OrderedService.objects.filter(service__lab_group__isnull=True)
         resource_name = 'examservice'
         authorization = DjangoAuthorization()
         filtering = {
@@ -746,7 +747,6 @@ class ExaminationCardResource(ExtResource):
     def dehydrate(self, bundle):
         obj = bundle.obj
         bundle.data['view'] = obj.__unicode__()
-        #bundle.data['patient'] = obj.ordered_service.order.patient.id
         return bundle
     
     class Meta:

@@ -29,7 +29,7 @@ App.examination.ExamCardForm = Ext.extend(Ext.form.FormPanel, {
 		]);
 		//store для комбобокса
 		this.examCardStore = new Ext.data.Store({
-			autoLoad:true,
+			//autoLoad:true,
 			//autoSave:true,
 		    baseParams: {
 		    	format:'json',
@@ -195,6 +195,9 @@ App.examination.ExamCardForm = Ext.extend(Ext.form.FormPanel, {
 		App.examination.ExamCardForm.superclass.initComponent.apply(this, arguments);
 		App.eventManager.on('examcardcreate', this.onExamCardCreate, this);
 		this.on('afterrender', function(){
+			if (this.patient) {
+				this.examCardStore.setBaseParam('ordered_service__order__patient',this.patient)
+			};
 			if(this.record) {
 				this.getForm().loadRecord(this.record);
 				//this.setTitle('Карта осмотра '+this.record.data.name)
@@ -209,7 +212,8 @@ App.examination.ExamCardForm = Ext.extend(Ext.form.FormPanel, {
 					this.getForm().loadRecord(this.tmp_record)
 					//this.setTitle('Карта осмотра '+this.tmp_record.data.name)
 				}
-			}
+			};
+			//this.examCardStore.load();
 		},this);
 	},
 	
