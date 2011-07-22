@@ -72,7 +72,6 @@ MIDDLEWARE_CLASSES = (
 )
 
 INSTALLED_APPS = (
-    #'helpdesk',
     #'reversion',
     'admin_tools',
     'admin_tools.theming',
@@ -85,6 +84,7 @@ INSTALLED_APPS = (
     'sentry.client',
 
     'core',
+    'helpdesk',
     'webapp',
     'numeration',
     'patient',
