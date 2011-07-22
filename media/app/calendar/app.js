@@ -6,6 +6,7 @@ Ext.onReady(function(){
 	Ext.Ajax.defaultHeaders = {Accept:'application/json'};
 	
 	var centralPanel = new App.calendar.CentralPanel({
+		//region:north
 	});
 	
 	var viewport = new Ext.Viewport({
@@ -13,6 +14,6 @@ Ext.onReady(function(){
 		items:[centralPanel]
 	});
 	
-	//centralPanel.launchApp('calendar');
+	centralPanel.launchApp('doctorscheduler');
 	
 });

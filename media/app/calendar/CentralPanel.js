@@ -6,7 +6,7 @@ App.calendar.CentralPanel = Ext.extend(Ext.Panel, {
 	initComponent: function(){
 		this.mainPanel = new App.calendar.MainPanel({});
 		
-		this.cmb = new Ext.form.ComboBox({
+		/*this.cmb = new Ext.form.ComboBox({
     		id:'profile-cmb-exam',
 			fieldLabel:'Профиль',
 			name:'payment_type',
@@ -31,7 +31,7 @@ App.calendar.CentralPanel = Ext.extend(Ext.Panel, {
 			editable:false
     	});
 	
-		this.cmb.setValue(active_profile);
+		this.cmb.setValue(active_profile);*/
 
 		config = {
 			region:'center',
