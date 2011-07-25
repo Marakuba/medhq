@@ -207,7 +207,7 @@ def export_into_1c(modeladmin, request, queryset):
     row = u"Конец выгрузки"
     tmp_file.write(u'Конец выгрузки\n'.encode("windows-1251"))
     tmp_file.seek(0)
-    response =  HttpResponse(tmp_file, mimetype='text/csv')
+    response =  HttpResponse(tmp_file, mimetype='text/plain')
     response['Content-Disposition'] = 'attachment; filename=visit_export.txt'
     return response
 export_into_1c.short_description = u"Экспорт документов в 1С (txt-формат)"
