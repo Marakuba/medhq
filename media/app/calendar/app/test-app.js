@@ -358,12 +358,12 @@ App = function() {
                                 	}
                                 	
                                 	if (start) {
-                                		start = this.setTimeToDate(start,dt);
+                                		start = this.setTimeToDate(start,new Date(dt));
                                 	} else {
                                 		start = new Date();
                                 	};
                                		if (end) {
-                              				end = this.setTimeToDate(end,dt);
+                              				end = this.setTimeToDate(end,new Date(dt));
                            			} else {
                            				end = new Date();
                            				end.add('h',1);

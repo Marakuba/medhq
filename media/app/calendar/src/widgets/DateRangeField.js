@@ -29,7 +29,7 @@ Ext.calendar.DateRangeField = Ext.extend(Ext.form.Field, {
         if (!this.el) {
             this.startDate = new Ext.form.DateField({
                 id: this.id + '-start-date',
-                format: 'n/j/Y',
+                format: 'j/n/Y',
                 width: 100,
                 listeners: {
                     'change': {
@@ -72,7 +72,7 @@ Ext.calendar.DateRangeField = Ext.extend(Ext.form.Field, {
             });
             this.endDate = new Ext.form.DateField({
                 id: this.id + '-end-date',
-                format: 'n/j/Y',
+                format: 'j/n/Y',
                 hideLabel: true,
                 width: 100,
                 listeners: {
