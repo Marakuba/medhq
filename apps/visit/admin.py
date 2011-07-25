@@ -11,6 +11,9 @@ from django.conf.urls.defaults import patterns, url
 from django.views.generic.simple import direct_to_template
 from django.shortcuts import get_object_or_404
 from visit.models import Referral, PlainVisit, ReferralVisit
+from django.http import HttpResponse
+import StringIO
+import csv
 from django.conf import settings
 
 
@@ -178,10 +181,42 @@ class PatientAutocomplete(AutocompleteSettings):
 autocomplete.register(Visit.patient, PatientAutocomplete)
 
 
+def export_into_1c(modeladmin, request, queryset):
+    #response =  HttpResponse(mimetype='text/csv')
+    tmp_file = StringIO.StringIO()
+    tmp_file.write(u'Начало выгрузки\n'.encode("windows-1251"))
+    tmp_file.write(u'Количество документов:%s\n'.encode("windows-1251") % len(queryset))
+    #rows = []
+    #rows.append([u'Начало выгрузки'])
+    #rows.append(u'Количество документов:%s' % len(queryset))
+    #[print s.encode("windows-1251")>>output for s in rows]
+    for item in queryset:
+        doc = []
+        doc.append(u'НачалоДок\n')
+        doc.append(u'ДатаДок:%s\n' % item.created.strftime("%d.%m.%Y"))
+        doc.append(u'Контрагент:%s\n' % item.patient.full_name())
+        doc.append(u'НомерКарты:%s\n' % item.patient.hid_card)
+        doc.append(u'Плательщик:%s\n' % (item.payer and item.payer.name or ''))
+        contract = item.patient.contract_set.actual()
+        doc.append(u'НомерДоговора:%s\n' % (contract and contract.id or ''))
+        doc.append(u'ДатаДоговора:%s\n' % (contract and contract.created or ''))
+        doc.append(u'Сумма:%s\n' % (item.total_price-item.total_discount))
+        doc.append(u'КонецДок\n')
+        
+        [tmp_file.write(s.encode("windows-1251")) for s in doc]
+    row = u"Конец выгрузки"
+    tmp_file.write(u'Конец выгрузки\n'.encode("windows-1251"))
+    tmp_file.seek(0)
+    response =  HttpResponse(tmp_file, mimetype='text/csv')
+    response['Content-Disposition'] = 'attachment; filename=visit_export.txt'
+    return response
+export_into_1c.short_description = u"Экспорт документов в 1С (txt-формат)"
+
 class PlainVisitAdmin(AutocompleteAdmin, admin.ModelAdmin):
     """
     """
     inlines = [OrderedServiceFullAdmin]
+    actions = [export_into_1c]
     list_display = ('__unicode__','created','office','referral','operator')
     list_filter = ('office',)
     date_hierarchy = 'created'
