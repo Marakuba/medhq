@@ -1,3 +1,4 @@
+Ext.ns('Ext.form');
 // --- A ComboBox with a secondary trigger button that clears the contents of the ComboBox
 Ext.form.ClearableComboBox = Ext.extend(Ext.form.ComboBox, {
     initComponent : function(){
