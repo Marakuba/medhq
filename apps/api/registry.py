@@ -43,10 +43,25 @@ class DiscountResource(ModelResource):
         filtering = {
             'name':('istartswith',)
         }
+
+class ClientItemResource(ExtResource):
+
+    def dehydrate(self, bundle):
+        bundle.data['client_name'] = bundle.obj.patient
+        return bundle
+    
+    class Meta:
+        queryset = ClientItem.objects.all()
+        resource_name = 'clientitem'
+        authorization = DjangoAuthorization()
+        filtering = {
+            'client' : ALL_WITH_RELATIONS,
+        }
         
 class PatientResource(ExtResource):
     
     discount = fields.ForeignKey(DiscountResource, 'discount', null=True)
+    client_item = fields.ForeignKey(ClientItemResource, 'client_item', null=True)
 
     def dehydrate(self, bundle):
         bundle.data['discount_name'] = bundle.obj.discount and bundle.obj.discount or u'0%'
@@ -989,20 +1004,6 @@ class IssueResource(ExtResource):
             'operator':ALL_WITH_RELATIONS
         }        
         
-class ClientItemResource(ExtResource):
-
-    def dehydrate(self, bundle):
-        bundle.data['client_name'] = bundle.obj.patient
-        return bundle
-    
-    class Meta:
-        queryset = ClientItem.objects.all()
-        resource_name = 'clientitem'
-        authorization = DjangoAuthorization()
-        filtering = {
-            'client' : ALL_WITH_RELATIONS,
-        }
-
 
 class ContentTypeResource(ExtResource):
     class Meta:

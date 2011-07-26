@@ -14,7 +14,9 @@ App.patient.ClientAccountGrid = Ext.extend(Ext.grid.GridPanel, {
 		});
 		
 		this.store = new Ext.data.Store({
-			autoLoad:true,
+			//autoLoad:true,
+			
+			autoSave:false,
 		    baseParams: {
 		    	format:'json'
 		    },
@@ -67,8 +69,13 @@ App.patient.ClientAccountGrid = Ext.extend(Ext.grid.GridPanel, {
 		    	},
 		    	scope:this
 		    }
-		})
+		});
 		
+		if (this.record) {
+			var client_item_id = App.uriToId(this.record.data.client_item);
+			this.store.setBaseParam('client_item',client_item_id);
+			this.store.load();
+		}
 		
 		this.columns =  [
 		    {
@@ -193,6 +200,11 @@ App.patient.ClientAccountGrid = Ext.extend(Ext.grid.GridPanel, {
 		steps+=d;
 		return steps;
 	},
+	
+	onPatientCreate: function(record) {
+		this.record = record;
+		this.onSave();
+	}
 	
 });
 

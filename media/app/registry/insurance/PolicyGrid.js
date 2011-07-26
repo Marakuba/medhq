@@ -37,7 +37,7 @@ App.insurance.PolicyGrid = Ext.extend(Ext.grid.GridPanel, {
 		});
 		
 		this.store = new Ext.data.Store({
-		    id: 'laborder-store',
+		    //id: 'laborder-store',
 			//autoLoad:true,
 			autoSave:this.showChoiceButton,
 		    baseParams: {
@@ -73,7 +73,7 @@ App.insurance.PolicyGrid = Ext.extend(Ext.grid.GridPanel, {
 			    store: new Ext.data.JsonStore({
 					autoLoad:true,
 					proxy: new Ext.data.HttpProxy({
-						url:'/api/v1/dashboard/insurance_state',
+						url:get_api_url('insurance_state'),
 						method:'GET'
 					}),
 					root:'objects',

@@ -17,8 +17,8 @@ App.patient.PatientForm = Ext.extend(Ext.form.FormPanel, {
 		this.inlines.add('inspolicy', this.insPolicy);
 		
 		this.cl_acc_grid = new App.patient.ClientAccountGrid({
-			title:'Аккаунты',
-			clientHidden : true		
+			clientHidden : true	,
+			record:this.record
 		});
 		
 		this.cl_acc_grid.on('newitem', function(){
@@ -95,10 +95,7 @@ App.patient.PatientForm = Ext.extend(Ext.form.FormPanel, {
 				title:'ДМС',
 				layout:'fit',
 				items:[this.insPolicy]
-			},{
-				xtype:'clientaccountgrid',
-				clientHidden:true
-			}
+			},this.cl_acc_grid
 			
 			]
 		});
