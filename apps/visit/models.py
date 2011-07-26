@@ -3,7 +3,7 @@
 import datetime
 from django.db import models, transaction
 
-from patient.models import Patient, InsurancePolicy
+#from patient.models import Patient, InsurancePolicy
 from service.models import BaseService
 from staff.models import Position
 from core.models import make_operator_object
@@ -74,7 +74,7 @@ class Visit(make_operator_object('visit')):
     modified = models.DateTimeField(auto_now=True)
     cls = models.CharField(u'Класс', max_length=1, choices=CLS, default=u'п')   
     office = models.ForeignKey(State, verbose_name=u'Офис', limit_choices_to={'type':u'b'}) 
-    patient = models.ForeignKey(Patient, verbose_name=u'Пациент')
+    patient = models.ForeignKey('patient.Patient', verbose_name=u'Пациент')
     on_date = models.DateTimeField(u'На дату', 
                                    null=True, blank=True)
     referral = models.ForeignKey(Referral, 
@@ -116,7 +116,7 @@ class Visit(make_operator_object('visit')):
     payment_type = models.CharField(u'Способ оплаты', max_length=1, 
                                     default=u'н', 
                                     choices=PAYMENT_TYPES)
-    insurance_policy = models.ForeignKey(InsurancePolicy, null=True, blank=True)
+    insurance_policy = models.ForeignKey('patient.InsurancePolicy', null=True, blank=True)
     discount = models.ForeignKey(Discount, 
                                  verbose_name=u'Скидка',
                                  null=True, blank=True)

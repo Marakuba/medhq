@@ -101,6 +101,8 @@ INSTALLED_APPS = (
     'workflow',
     'examination',
     'scheduler',
+    'interlayer',
+    'billing',
         
     'django.contrib.admin',
     'django.contrib.auth',

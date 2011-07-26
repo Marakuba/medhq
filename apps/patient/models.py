@@ -8,6 +8,9 @@ import datetime
 from pricelist.models import Discount
 from django.db.models.aggregates import Sum
 from django.utils.encoding import smart_unicode
+from interlayer.models import ClientItem
+from billing.models import Payment
+#from visit.models import Visit
 
 
 class Patient(make_person_object('patient')):
@@ -19,6 +22,8 @@ class Patient(make_person_object('patient')):
     initial_account = models.DecimalField(u'Первоначальная сумма', max_digits=10, decimal_places=2, default='0.0')
     billed_account = models.DecimalField(u'Счет накопления', max_digits=10, decimal_places=2, default='0.0')
     doc = models.CharField(u'Документ', max_length=30, blank=True)
+    client_item = models.OneToOneField(ClientItem, null=True, blank= True, related_name = 'client')
+    balance = models.FloatField(u'Баланс', blank=True, null=True)
     
     objects = models.Manager()
     
@@ -84,6 +89,14 @@ class Patient(make_person_object('patient')):
     
     def get_absolute_url(self):
         return u"/patient/patient/%s/" % self.id
+    
+    def updBalance(self):
+        orders = Payment.objects.filter(client_account__client_item = self.client_item).aggregate(Sum("amount"))
+        sales = 'visit.Visit'.objects.filter(client = self).aggregate(Sum("total_price"))
+        discount = 'visit.Visit'.objects.filter(client = self).aggregate(Sum("total_discount"))
+        self.balance = orders['amount__sum'] - ( sales['total_sum__sum'] or 0 ) + (discount['total_discount__sum'] or 0)
+        print 'sales %s' % (sales['total_sum__sum'])
+        self.save()
     
     class Meta:
         verbose_name = u"Пациент"
