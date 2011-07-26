@@ -1,6 +1,6 @@
 # -*- coding: utf-8 -*-
 
-from django.db import models
+from django.db import models, transaction
 from django.contrib.auth.models import User
 from core.models import make_person_object, make_operator_object
 from state.models import State
@@ -9,7 +9,8 @@ from pricelist.models import Discount
 from django.db.models.aggregates import Sum
 from django.utils.encoding import smart_unicode
 from interlayer.models import ClientItem
-from billing.models import Payment
+from billing.models import Payment, Account, ClientAccount
+from django.db.models.signals import post_save
 #from visit.models import Visit
 
 
@@ -180,3 +181,18 @@ class PatientCard(make_operator_object('patient_card')):
         verbose_name_plural = u"Карты пациента"
 
 
+### SIGNALS
+
+@transaction.commit_on_success
+def AccountGenerator(sender, **kwargs):
+    """
+    """
+    if kwargs['created']:
+        patient = kwargs['instance']
+        client_item = ClientItem.objects.create()
+        patient.client_item = client_item
+        account = Account.objects.create()
+        client_account = ClientAccount.objects.create(client_item=client_item,account=account)
+        patient.save()
+            
+post_save.connect(AccountGenerator, sender=Patient)  

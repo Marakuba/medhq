@@ -5,7 +5,7 @@ class ClientItem(models.Model):
     created = models.DateTimeField(u'Дата создания', auto_now_add=True)
     
     def __unicode__(self):
-        return self.id
+        return "%s" % (self.id)
     
     class Meta:
         verbose_name = u'клиент'
