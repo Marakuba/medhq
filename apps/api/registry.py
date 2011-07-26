@@ -992,7 +992,7 @@ class IssueResource(ExtResource):
 class ClientItemResource(ExtResource):
 
     def dehydrate(self, bundle):
-        bundle.data['client_name'] = bundle.obj.client.name
+        bundle.data['client_name'] = bundle.obj.patient
         return bundle
     
     class Meta:
@@ -1023,7 +1023,7 @@ class ClientAccountResource(ExtResource):
     account = fields.ForeignKey(AccountResource, 'account')
     
     def dehydrate(self, bundle):
-        bundle.data['client_name'] = bundle.obj.client_item.client.name
+        bundle.data['client_name'] = bundle.obj.client_item.patient
         bundle.data['account_id'] = bundle.obj.account.id
         bundle.data['amount'] = bundle.obj.account.amount
         return bundle
