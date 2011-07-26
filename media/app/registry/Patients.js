@@ -2,47 +2,66 @@ Ext.ns('App');
 
 App.Patients = Ext.extend(Ext.Panel, {
 	initComponent:function(){
+		
+		this.patientGrid = new App.patient.PatientGrid({
+			region:'center'
+		});
+		
+		this.patientCard = new App.patient.PatientCard({
+			region:'center'
+		});
 
+		this.cardPanel = new Ext.Panel({
+			region:'center',
+			border:false,
+			title:'Выберите пациента',
+			layout:'fit',
+			tools:[{
+				id:'refresh',
+				handler:function(){
+					this.patientCard.doRefresh();
+				},
+				scope:this,
+				qtip:'Обновить карточку пациента'
+			}],
+			items:this.patientCard,
+		});
+
+		this.quickForm = new App.patient.QuickForm({
+			region:'south'
+		});
+		
 		config = {
+			id:'patients',
 			title:'Пациенты',
 			layout:'border',
             defaults: {
 				border:false
 			},
-			items:[{
-				id:'patient-card',
-				region:'center',
-				xtype:'patientcard'
-			},{
+			items:[this.cardPanel, {
 				region:'west',
 				width:'30%',
 				split:true,
-				//border:false,
 				layout:'border',
-				items:[{
-					id:'patient-grid',
-					region:'center',
-					xtype:'patientgrid'
-				},{
-					id:'patient-quick-form',
-					region:'south',
-					xtype:'quickform'
-				}]
+				items:[this.patientGrid, this.quickForm]
 			}]
 		}
 		
 		Ext.apply(this, Ext.apply(this.initialConfig, config));
 		App.Patients.superclass.initComponent.apply(this, arguments);
 		
-		this.patientGrid = Ext.getCmp('patient-grid');
-		this.patientCard = Ext.getCmp('patient-card');
-		
 		this.patientGrid.on('patientselect', this.patientSelect, this);
 
 	},
 	
+	titleTpl : new Ext.Template(
+		'Пациент: {last_name} {first_name} {mid_name}. Скидка: {discount_name}. Общая сумма: {billed_account}'
+	),
+	
 	patientSelect: function(rec){
-		this.patientCard.setActivePatient(rec);
+		this.cardPanel.setTitle(this.titleTpl.apply(rec.data));
+		this.quickForm.setActiveRecord(rec);
+		this.patientCard.setActivePatient.createDelegate(this.patientCard,[rec])();
 	}
 });
 

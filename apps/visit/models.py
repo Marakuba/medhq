@@ -363,4 +363,11 @@ def BarcodeGenerator(sender, **kwargs):
         visit.barcode = new_barcode
         visit.save()
             
-post_save.connect(BarcodeGenerator, sender=Visit)                    
+post_save.connect(BarcodeGenerator, sender=Visit)              
+
+
+
+
+import reversion
+
+#reversion.register(Referral)      

@@ -12,6 +12,7 @@ from django.views.generic.simple import direct_to_template
 from django.shortcuts import get_object_or_404
 from visit.models import Referral, PlainVisit, ReferralVisit
 from django.conf import settings
+from reversion.admin import VersionAdmin
 
 
 class OrderedServiceForm(forms.ModelForm):
@@ -204,7 +205,7 @@ class ReferralVisitAdmin(admin.ModelAdmin):
     list_editable = ('referral',)
     list_filter = ('referral',)
 
-class ReferralAdmin(admin.ModelAdmin):
+class ReferralAdmin(VersionAdmin):
     """
     """
     exclude = ('operator',)

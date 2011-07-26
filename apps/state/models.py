@@ -62,4 +62,3 @@ class Department(models.Model):
         verbose_name = u"отделение/консультация"
         verbose_name_plural = u"отделения/консультации"
         
-

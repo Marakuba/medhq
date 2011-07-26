@@ -165,3 +165,5 @@ class PatientCard(make_operator_object('patient_card')):
     class Meta:
         verbose_name = u"Карта пациента"
         verbose_name_plural = u"Карты пациента"
+
+

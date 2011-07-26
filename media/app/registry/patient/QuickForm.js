@@ -1,4 +1,4 @@
-Ext.ns('App.form');
+Ext.ns('App.patient');
 
 App.patient.QuickForm = Ext.extend(Ext.FormPanel, {
 	initComponent:function(){
@@ -57,9 +57,11 @@ App.patient.QuickForm = Ext.extend(Ext.FormPanel, {
 				    	xtype:'button',
 				    	text:'Сохранить',
 				    	handler:function(){
-				    		var record = Ext.getCmp('patient-grid').getSelectionModel().getSelected();
-				    		Ext.getCmp('patient-quick-form').getForm().updateRecord(record);
-				    	}
+				    		if(this.record) { 
+				    			this.getForm().updateRecord(this.record);
+				    		}
+				    	},
+				    	scope:this
 			    	}]
         		}]
     		}]
@@ -67,6 +69,11 @@ App.patient.QuickForm = Ext.extend(Ext.FormPanel, {
 		
 		Ext.apply(this, Ext.apply(this.initialConfig, config));
 		App.patient.QuickForm.superclass.initComponent.apply(this, arguments);
+	},
+	
+	setActiveRecord: function(record) {
+		this.record = record;
+		this.getForm().loadRecord(this.record);
 	}
 });
 

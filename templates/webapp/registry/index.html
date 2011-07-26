@@ -34,13 +34,18 @@
     <script type="text/javascript" src="{{ MEDIA_URL }}extjs/ext-all{% if debug %}-debug{% endif %}.js"></script>
 
     <script type="text/javascript" src="{{ MEDIA_URL }}extjs/src/locale/ext-lang-ru.js"></script>
+    
+    <!-- UX -->
 
     <script type="text/javascript" src="{{ MEDIA_URL }}extjs/ux/RowEditor.js"></script>
-
     <script type="text/javascript" src="{{ MEDIA_URL }}extjs/ux/Spinner.js"></script>
     <script type="text/javascript" src="{{ MEDIA_URL }}extjs/ux/SpinnerField.js"></script>
-
     <script type="text/javascript" src="{{ MEDIA_URL }}extjs/ux/statusbar/StatusBar.js"></script>
+
+	
+	<!-- OWN CMP -->
+
+    <script type="text/javascript" src="{{ MEDIA_URL }}app/data/RestStore.js"></script>
 
     <script type="text/javascript" src="{{ MEDIA_URL }}app/App.js"></script>
     <script type="text/javascript" src="{{ MEDIA_URL }}app/Backend.js"></script>
@@ -48,23 +53,28 @@
     <script type="text/javascript" src="{{ MEDIA_URL }}app/form/LazyComboBox.js"></script>
 
     <script type="text/javascript" src="{{ MEDIA_URL }}app/registry/models.js"></script>
-    <script type="text/javascript" src="{{ MEDIA_URL }}app/registry/backends.js"></script>
 
     <script type="text/javascript" src="{{ MEDIA_URL }}app/registry/EventManager.js"></script>
+    
+    <script type="text/javascript" src="{{ MEDIA_URL }}app/ux/GSearchField.js"></script>
+    
+    
+
+	<!-- APP -->
 
     <script type="text/javascript" src="{{ MEDIA_URL }}app/registry/ReferralGrid.js"></script>
     <script type="text/javascript" src="{{ MEDIA_URL }}app/registry/ReferralWindow.js"></script>
-
 
     <script type="text/javascript" src="{{ MEDIA_URL }}app/registry/patient/LabGrid.js"></script>
     <script type="text/javascript" src="{{ MEDIA_URL }}app/registry/patient/ExamCardGrid.js"></script>
     <script type="text/javascript" src="{{ MEDIA_URL }}app/registry/patient/VisitGrid.js"></script>
     <script type="text/javascript" src="{{ MEDIA_URL }}app/registry/patient/ServiceGrid.js"></script>
     <script type="text/javascript" src="{{ MEDIA_URL }}app/registry/patient/RefundGrid.js"></script>
-    <script type="text/javascript" src="{{ MEDIA_URL }}app/registry/patient/Window.js"></script>
-    <script type="text/javascript" src="{{ MEDIA_URL }}app/registry/patient/Grid.js"></script>
+	<script type="text/javascript" src="{{ MEDIA_URL }}app/registry/patient/PatientForm.js"></script>
+    <script type="text/javascript" src="{{ MEDIA_URL }}app/registry/patient/PatientWindow.js"></script>
+    <script type="text/javascript" src="{{ MEDIA_URL }}app/registry/patient/PatientGrid.js"></script>
     <script type="text/javascript" src="{{ MEDIA_URL }}app/registry/patient/Info.js"></script>
-    <script type="text/javascript" src="{{ MEDIA_URL }}app/registry/patient/Card.js"></script>
+    <script type="text/javascript" src="{{ MEDIA_URL }}app/registry/patient/PatientCard.js"></script>
     <script type="text/javascript" src="{{ MEDIA_URL }}app/registry/patient/QuickForm.js"></script>
     <script type="text/javascript" src="{{ MEDIA_URL }}app/registry/Patients.js"></script>
 
@@ -73,18 +83,17 @@
     <script type="text/javascript" src="{{ MEDIA_URL }}app/registry/insurance/StateGrid.js"></script>
     <script type="text/javascript" src="{{ MEDIA_URL }}app/registry/insurance/StateWindow.js"></script>
 
-    <script type="text/javascript" src="{{ MEDIA_URL }}app/registry/visit/Form.js"></script>
-    <script type="text/javascript" src="{{ MEDIA_URL }}app/registry/visit/ServiceBasket.js"></script>
-    <script type="text/javascript" src="{{ MEDIA_URL }}app/registry/visit/AddTab.js"></script>
-    <script type="text/javascript" src="{{ MEDIA_URL }}app/registry/visit/Grid.js"></script>
-    <script type="text/javascript" src="{{ MEDIA_URL }}app/registry/visit/PrintWindow.js"></script>
-    <script type="text/javascript" src="{{ MEDIA_URL }}app/registry/Visits.js"></script>
+    <script type="text/javascript" src="{{ MEDIA_URL }}app/registry/visit/VisitServicePanel.js"></script>
+    <script type="text/javascript" src="{{ MEDIA_URL }}app/registry/visit/StaffWindow.js"></script>
+	<script type="text/javascript" src="{{ MEDIA_URL }}app/registry/visit/VisitForm.js"></script>
+    <script type="text/javascript" src="{{ MEDIA_URL }}app/registry/visit/OrderedServiceInlineGrid.js"></script>
+    <script type="text/javascript" src="{{ MEDIA_URL }}app/registry/visit/VisitTab.js"></script>
+    
+    <script type="text/javascript" src="{{ MEDIA_URL }}app/registry/visit/VisitGrid.js"></script>
 
-    <script type="text/javascript" src="{{ MEDIA_URL }}app/registry/refund/Form.js"></script>
+<!--     <script type="text/javascript" src="{{ MEDIA_URL }}app/registry/refund/Form.js"></script>
     <script type="text/javascript" src="{{ MEDIA_URL }}app/registry/refund/ServiceBasket.js"></script>
     <script type="text/javascript" src="{{ MEDIA_URL }}app/registry/refund/AddTab.js"></script>
-    <!--<script type="text/javascript" src="{{ MEDIA_URL }}app/registry/refund/Grid.js"></script>
-    <script type="text/javascript" src="{{ MEDIA_URL }}app/registry/Refunds.js"></script>-->
 
     <script type="text/javascript" src="{{ MEDIA_URL }}app/registry/barcodepackage/Grid.js"></script>
     <script type="text/javascript" src="{{ MEDIA_URL }}app/registry/barcodepackage/Form.js"></script>
@@ -104,15 +113,16 @@
     <script type="text/javascript" src="{{ MEDIA_URL }}app/registry/results/Grid.js"></script>
     <script type="text/javascript" src="{{ MEDIA_URL }}app/registry/Results.js"></script>
 
-    <script type="text/javascript" src="{{ MEDIA_URL }}app/registry/Reports.js"></script>
+    <script type="text/javascript" src="{{ MEDIA_URL }}app/registry/Reports.js"></script> -->
 
-    <script type="text/javascript" src="{{ MEDIA_URL }}app/registry/ServicePanel.js"></script>
-    <script type="text/javascript" src="{{ MEDIA_URL }}app/registry/Viewport.js"></script>
+    <script type="text/javascript" src="{{ MEDIA_URL }}app/registry/MainPanel.js"></script>
+    <script type="text/javascript" src="{{ MEDIA_URL }}app/registry/CentralPanel.js"></script>
+    <script type="text/javascript" src="{{ MEDIA_URL }}app/registry/app.js"></script>
 
 {% include "webapp/includes/active_profile.html" %}
 
 
-    <script type="text/javascript" src="{{ MEDIA_URL }}resources/js/web-socket-js/swfobject.js"></script>
+<!--     <script type="text/javascript" src="{{ MEDIA_URL }}resources/js/web-socket-js/swfobject.js"></script>
   <script type="text/javascript" src="{{ MEDIA_URL }}resources/js/web-socket-js/web_socket.js"></script>
 
 <script type="text/javascript">
@@ -170,7 +180,7 @@
       log.innerHTML = escaped + "<br>" + log.innerHTML;
     }
 
-  </script>
+  </script> -->
 
 {% endblock %}
 

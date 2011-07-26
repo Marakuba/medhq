@@ -68,6 +68,7 @@ MIDDLEWARE_CLASSES = (
     'django.contrib.sessions.middleware.SessionMiddleware',
     'django.contrib.auth.middleware.AuthenticationMiddleware',
     'webapp.middleware.ActiveProfileMiddleware',
+    'reversion.middleware.RevisionMiddleware',
     #'medhq.apps.core.middleware.SQLLogMiddleware'
 )
 

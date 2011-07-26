@@ -12,7 +12,7 @@ Ext.data.DataProxy.addListener('exception', function(proxy, type, action, option
 
 Ext.onReady(function() {
 	
-	websocket_init();
+//	websocket_init();
 
 	Ext.Ajax.defaultHeaders = {Accept:'application/json'};
 	

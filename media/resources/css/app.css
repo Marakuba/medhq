@@ -26,3 +26,8 @@
 	padding:5px;
 	color:#385F95
 }
+
+.splash {
+	background: url(../images/medhq_splash.png) no-repeat center center ;
+	background-color: white;
+}

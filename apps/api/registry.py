@@ -44,7 +44,7 @@ class PatientResource(ExtResource):
     discount = fields.ForeignKey(DiscountResource, 'discount', null=True)
 
     def dehydrate(self, bundle):
-        bundle.data['discount_name'] = bundle.obj.discount and bundle.obj.discount or u'-'
+        bundle.data['discount_name'] = bundle.obj.discount and bundle.obj.discount or u'0%'
         return bundle
 
     def obj_create(self, bundle, request=None, **kwargs):

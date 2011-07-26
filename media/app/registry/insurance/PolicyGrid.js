@@ -6,6 +6,8 @@ App.insurance.PolicyGrid = Ext.extend(Ext.grid.GridPanel, {
 	
 	initComponent : function() {
 		
+		this.deletedRecords = [];
+		
 		// Create a standard HttpProxy instance.
 		this.proxy = new Ext.data.HttpProxy({
 		    url: get_api_url('insurance_policy')
@@ -130,9 +132,9 @@ App.insurance.PolicyGrid = Ext.extend(Ext.grid.GridPanel, {
        		cancelText: 'Отменить',
        		listeners: {
        			afteredit:function(editor,changes,rec,i){
-       				rec.data.patient = this.record.data.resource_uri;
-       				//rec.data.insurance_state = rec.data.state_name;
-       				this.store.save();
+//       				rec.data.patient = this.record.data.resource_uri;
+//       				rec.data.insurance_state = rec.data.state_name;
+//       				this.store.save();
        			}, 
        			scope:this
        		}
@@ -165,16 +167,25 @@ App.insurance.PolicyGrid = Ext.extend(Ext.grid.GridPanel, {
 				iconCls:'silk-add',
 				text:'Добавить компанию',
 				handler:this.onAddState.createDelegate(this)
+			},'-',{
+				xtype:'button',
+				iconCls:'silk-delete',
+				text:'Удалить полис',
+				handler:this.onRemove.createDelegate(this)
 			}],
 			viewConfig : {
 				forceFit : true,
 				emptyText: 'Нет записей'
+			},
+			listeners: {
+				scope:this
 			}
 			
 		}
 
 		Ext.apply(this, Ext.apply(this.initialConfig, config));
 		App.insurance.PolicyGrid.superclass.initComponent.apply(this, arguments);
+		App.eventManager.on('patientcreate', this.onPatientCreate, this);
 	},
 	
 	onChoice: function(rec){
@@ -194,6 +205,42 @@ App.insurance.PolicyGrid = Ext.extend(Ext.grid.GridPanel, {
 		var win = new App.insurance.StateWindow({
 		});
 		win.show();
+	},
+	
+	onRemove: function(){
+		var rec = this.getSelectionModel().getSelected();
+		this.store.remove(rec);
+		this.deletedRecords.push(rec);
+	},
+	
+	onSave: function() {
+		if(this.record) {
+			var records = this.store.queryBy(function(rec,id){
+				return rec.data.patient ? false : true;
+			});
+			records.each(function(item,idx,len){
+				item.beginEdit();
+				item.set('patient', this.record.data.resource_uri);
+				item.endEdit();
+			}, this);
+			this.store.save();
+		} else {
+			Ext.MessageBox.alert('Ошибка','Не задана запись пациента!');
+		}
+	},
+	
+	getSteps: function(){
+		var steps = 0;
+		var m = this.store.getModifiedRecords().length;
+		var d = this.deletedRecords ? this.deletedRecords.length : 0;
+		steps+=m;
+		steps+=d;
+		return steps;
+	},
+	
+	onPatientCreate: function(record) {
+		this.record = record;
+		this.onSave();
 	}
 	
 });

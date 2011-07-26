@@ -6,17 +6,17 @@ App.patient.VisitGrid = Ext.extend(Ext.grid.GridPanel, {
 	//id:'patient-visit-grid',
 	initComponent : function() {
 		
-		// Create a standard HttpProxy instance.
+/*		// Create a standard HttpProxy instance.
 		this.proxy = new Ext.data.HttpProxy({
 		    url: get_api_url('visit')
-		    /*listeners:{
+		    listeners:{
 		    	exception: function(proxy, type, action, options, resp, args){
 		    		console.log("error on server, action is ", action);
 		    		if (action=='create' || action=='update'){
 		    			//Ext.getCmp('visit-submit-btn').enable();
 		    		}
 		    	}
-		    }*/
+		    }
 		});
 		
 		this.reader = new Ext.data.JsonReader({
@@ -73,11 +73,41 @@ App.patient.VisitGrid = Ext.extend(Ext.grid.GridPanel, {
 		    	},
 		    	scope:this
 		    }
-		});
+		});*/
 		
-		this.store.on('load', function(){
-//			Ext.getCmp('vg-print-btn').disable();
-//			Ext.getCmp('vg-change-btn').disable();
+		
+		this.store = new Ext.data.RESTStore({
+			autoLoad : false,
+			apiUrl : get_api_url('visit'),
+			model: [
+				    {name: 'id'},
+				    {name: 'created', type:'date',format:'c'},
+				    {name: 'cls', allowBlank: false},
+				    {name: 'patient', allowBlank: false},
+				    {name: 'patient_id'},
+				    {name: 'referral'},
+				    {name: 'discount'},
+				    {name: 'source_lab'},
+				    {name: 'total_price'},
+				    {name: 'total_paid'},
+				    {name: 'operator_name'},
+				    {name: 'patient_name'},
+				    {name: 'payment_type'},
+				    {name: 'insurance_policy'},
+				    {name: 'comment'},
+				    {name: 'pregnancy_week'},
+				    {name: 'menses_day'},
+				    {name: 'menopause'},
+				    {name: 'diagnosis'},
+				    {name: 'is_billed', type:'boolean'},
+				    {name: 'referral_name'}
+				],
+		    listeners: {
+		    	write: function(store, action, result, res, rs) {
+		    		App.eventManager.fireEvent('visitcreate',rs);
+		    	},
+		    	scope:this
+		    }
 		});
 		
 		this.columns =  [
@@ -388,8 +418,11 @@ App.patient.VisitGrid = Ext.extend(Ext.grid.GridPanel, {
 	},
 
 	onCreate: function(type){
-		if (this.patientId) {
-			App.eventManager.fireEvent('visitcreate',this.patientId,type,false,this.patientRecord);
+		if (this.patientRecord) {
+			App.eventManager.fireEvent('launchapp','visittab',{
+				patientRecord:this.patientRecord,
+				type:type
+			});
 		}
 	},
 	
