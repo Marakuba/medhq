@@ -11,7 +11,7 @@ from django.utils.encoding import smart_unicode
 from interlayer.models import ClientItem
 from billing.models import Payment, Account, ClientAccount
 from django.db.models.signals import post_save
-#from visit.models import Visit
+from visit.models import Visit
 
 
 class Patient(make_person_object('patient')):
@@ -93,10 +93,10 @@ class Patient(make_person_object('patient')):
     
     def updBalance(self):
         orders = Payment.objects.filter(client_account__client_item = self.client_item).aggregate(Sum("amount"))
-        sales = 'visit.Visit'.objects.filter(client = self).aggregate(Sum("total_price"))
-        discount = 'visit.Visit'.objects.filter(client = self).aggregate(Sum("total_discount"))
-        self.balance = orders['amount__sum'] - ( sales['total_sum__sum'] or 0 ) + (discount['total_discount__sum'] or 0)
-        print 'sales %s' % (sales['total_sum__sum'])
+        sales = Visit.objects.filter(patient = self).aggregate(Sum("total_price"))
+        discount = Visit.objects.filter(patient = self).aggregate(Sum("total_discount"))
+        self.balance = (orders['amount__sum'] or 0) - ( sales['total_price__sum'] or 0 ) + (discount['total_discount__sum'] or 0)
+        print 'sales %s' % (sales['total_price__sum'])
         self.save()
     
     class Meta:
