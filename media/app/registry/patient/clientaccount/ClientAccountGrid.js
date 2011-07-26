@@ -14,7 +14,7 @@ App.patient.ClientAccountGrid = Ext.extend(Ext.grid.GridPanel, {
 		});
 		
 		this.store = new Ext.data.Store({
-			autoLoad:false,
+			autoLoad:true,
 		    baseParams: {
 		    	format:'json'
 		    },
@@ -26,7 +26,7 @@ App.patient.ClientAccountGrid = Ext.extend(Ext.grid.GridPanel, {
 			},
 		    restful: true,
 		    proxy: new Ext.data.HttpProxy({
-			    url: App.get_api_url('clientaccount')
+			    url: get_api_url('clientaccount')
 			}),
 		    reader: new Ext.data.JsonReader({
 			    totalProperty: 'meta.total_count',
@@ -183,7 +183,16 @@ App.patient.ClientAccountGrid = Ext.extend(Ext.grid.GridPanel, {
 	
 	onDelete: function() {
 		
-	}
+	},
+	
+	getSteps: function(){
+		var steps = 0;
+		var m = this.store.getModifiedRecords().length;
+		var d = this.deletedRecords ? this.deletedRecords.length : 0;
+		steps+=m;
+		steps+=d;
+		return steps;
+	},
 	
 });
 
