@@ -56,36 +56,36 @@ App.visit.OrderedServiceInlineGrid = Ext.extend(Ext.grid.EditorGridPanel, {
 		    writer: this.writer,
 		    listeners:{
 		    	write: function(store, action, result, res, rs) {
-	    			var pb = Ext.getCmp('global-progress-bar');
-		    		var modified = store.getModifiedRecords().length;
-	    			elapse = this.startModified - modified;
-	    			pb.updateProgress(1-modified/this.startModified,'Сохранено '+elapse+' из '+this.startModified+' записей');
-		    		if (modified==0){
-						var sb = Ext.getCmp('global-status-bar');
-						sb.setStatus({
-							text:'Готово',
-							iconCls:'x-status-valid'
-						});
-//						Ext.getCmp('barcode-print-btn').enable();
-//						Ext.getCmp('visit-print-btn').enable();
-//						Ext.getCmp('sampling-print-btn').enable();
-						Ext.getCmp('visit-submit-btn').enable();
-						pb.hide();
-						App.eventManager.fireEvent('visitclose');
-		    		}
+//	    			var pb = Ext.getCmp('global-progress-bar');
+//		    		var modified = store.getModifiedRecords().length;
+//	    			elapse = this.startModified - modified;
+//	    			pb.updateProgress(1-modified/this.startModified,'Сохранено '+elapse+' из '+this.startModified+' записей');
+//		    		if (modified==0){
+//						var sb = Ext.getCmp('global-status-bar');
+//						sb.setStatus({
+//							text:'Готово',
+//							iconCls:'x-status-valid'
+//						});
+////						Ext.getCmp('barcode-print-btn').enable();
+////						Ext.getCmp('visit-print-btn').enable();
+////						Ext.getCmp('sampling-print-btn').enable();
+//						Ext.getCmp('visit-submit-btn').enable();
+//						pb.hide();
+//						App.eventManager.fireEvent('visitclose');
+//		    		}
 		    	},
-		    	add:function(){
-		    		App.eventManager.fireEvent('sumchange');
-		    	},
-		    	remove:function(){
-		    		App.eventManager.fireEvent('sumchange');
-		    	},
-		    	load:function(){
-		    		App.eventManager.fireEvent('sumchange');
-		    	},
+		    	add:this.onSumChange.createDelegate(this),
+		    	remove:this.onSumChange.createDelegate(this),
+		    	load:this.onSumChange.createDelegate(this),
 		    	scope:this
 		    }
 		});
+		
+		if (this.record) {
+			this.store.setBaseParam('order',this.record.id);
+			this.store.load();
+		}
+		
 		this.staffStore = new Ext.data.Store({
 			autoDestroy:true,
 			proxy: new Ext.data.HttpProxy({
@@ -211,9 +211,7 @@ App.visit.OrderedServiceInlineGrid = Ext.extend(Ext.grid.EditorGridPanel, {
 				//getRowClass : this.applyRowClass
 			},
 			listeners:{
-				afteredit:function(){
-//					App.eventManager.fireEvent('sumchange');
-				},
+				afteredit:this.onSumChange.createDelegate(this),
 				scope:this
 			}
 			
@@ -256,9 +254,12 @@ App.visit.OrderedServiceInlineGrid = Ext.extend(Ext.grid.EditorGridPanel, {
 		this.store.save();
 	},
 	
-	getTotalSum: function(){
-		var c = this.store.sum('total');
-		return c
+	onSumChange: function(){
+		var c = 0;
+		this.store.each(function(item){
+			c+=item.data.price*item.data.count;
+		});
+		this.fireEvent('sumchange',c);
 	},
 	
 	addRecord: function(attrs){

@@ -10,6 +10,7 @@ App.visit.VisitTab = Ext.extend(Ext.Panel, {
 			apiUrl : get_api_url('visit'),
 			model: [
 				    {name: 'id'},
+				    {name: 'resource_uri'},
 				    {name: 'created', type:'date',format:'c'},
 				    {name: 'cls', allowBlank: false},
 				    {name: 'patient', allowBlank: false},
@@ -19,6 +20,7 @@ App.visit.VisitTab = Ext.extend(Ext.Panel, {
 				    {name: 'source_lab'},
 				    {name: 'total_price'},
 				    {name: 'total_paid'},
+				    {name: 'total_sum'},
 				    {name: 'operator_name'},
 				    {name: 'patient_name'},
 				    {name: 'payment_type'},
@@ -30,20 +32,9 @@ App.visit.VisitTab = Ext.extend(Ext.Panel, {
 				    {name: 'diagnosis'},
 				    {name: 'is_billed', type:'boolean'},
 				    {name: 'referral_name'}
-				],
-		    listeners: {
-		    	write: function(store, action, result, res, rs) {
-		    		App.eventManager.fireEvent('visitcreate',rs);
-		    	},
-				exception: function(proxy, type, action, options, resp, args){
-					Ext.Msg.alert('Ошибка!','Во время сохранения возникла ошибка на сервере. Попробуйте еще раз')
-		    	},
-		    	load: function(store, records, options) {
-		    	},
-		    	scope:this
-		    }
+				]
 		});
-
+		
 		this.model = this.store.recordType;
 		
 		this.servicePanel = new App.visit.VisitServicePanel({
@@ -72,7 +63,7 @@ App.visit.VisitTab = Ext.extend(Ext.Panel, {
 		this.saveButton = new Ext.Button({
 			text:'Сохранить',
 			handler: this.onFormSave.createDelegate(this),
-			disabled:true,
+//			disabled:true,
 			scope:this
     	});
 		
@@ -103,6 +94,7 @@ App.visit.VisitTab = Ext.extend(Ext.Panel, {
 		this.store.on('write', this.onStoreWrite, this);
 		this.on('destroy', function(){
 			this.store.un('write', this.onStoreWrite, this);
+			console.info('store unsubscribed');
 		},this);
 		
 		this.on('render', function(){
@@ -121,38 +113,43 @@ App.visit.VisitTab = Ext.extend(Ext.Panel, {
 		var f = this.form;
 		this.steps = f.getSteps();
 		this.tSteps = this.steps;
+		console.info(this.tSteps);
+		console.info(this.store);
 		if(this.steps>0) {
 			this.msgBox = Ext.MessageBox.progress('Подождите','Идет сохранение документа!');
 			f.on('popstep',this.popStep, this);
 			f.onSave();
 		} else {
-			//this.fireEvent('savecomplete');
-			this.onClose();
+			this.onClose(true);
 		}
 	},
 	
-	onClose: function(){
-		Ext.MessageBox.show({
-			title:'Подтверждение',
-			closable:false,
-			modal:true,
-			buttons:{
-				cancel:'Отменить закрытие',
-				yes:'Сохранить и закрыть',
-				no:'Не сохранять'
-			},
-			msg:'Документ не сохранен!',
-			fn:function(btn){
-				if(btn!='cancel') {
-					if(btn=='yes') {
-						this.close();
-					} else if (btn=='no') {
-						this.close();
+	onClose: function(noConfirm){
+		if(!noConfirm) {
+			Ext.MessageBox.show({
+				title:'Подтверждение',
+				closable:false,
+				modal:true,
+				buttons:{
+					cancel:'Отменить закрытие',
+					yes:'Сохранить и закрыть',
+					no:'Не сохранять'
+				},
+				msg:'Документ не сохранен!',
+				fn:function(btn){
+					if(btn!='cancel') {
+						if(btn=='yes') {
+							this.close();
+						} else if (btn=='no') {
+							this.close();
+						}
 					}
-				}
-			},
-			scope:this
-		});
+				},
+				scope:this
+			});
+		} else {
+			this.close();
+		}
 	},
 	
 	close: function() {
@@ -161,6 +158,8 @@ App.visit.VisitTab = Ext.extend(Ext.Panel, {
 	},
 	
 	onStoreWrite: function(store, action, result, res, rs) {
+//		App.eventManager.fireEvent('visitcreate',rs);
+		console.info('onStoreWrite');
 		this.popStep();
 	},
 	
@@ -174,7 +173,7 @@ App.visit.VisitTab = Ext.extend(Ext.Panel, {
 			if(this.msgBox) {
 				this.msgBox.hide();
 			}
-			this.onClose();
+			this.onClose(true);
 //			this.fireEvent('savecomplete');
 		}
 	},
@@ -203,17 +202,6 @@ App.visit.VisitTab = Ext.extend(Ext.Panel, {
 			title = this.type == 'visit' ? 'Новый прием' : 'Новое поступление биоматериала';
 		}
 		return title
-	},
-	
-	updateTotalSum:function() {
-		if(this.type=='visit'){
-//			var c = this.basket.getTotalSum();
-//			var d = Ext.getCmp('visit-discount-cmb');
-//			var dRec = d.getStore().getById(d.getValue());
-//			var value = dRec ? dRec.data.value : 0;
-//			var discount = c*(100-value)/100;
-//			Ext.getCmp('total-sum-field').setValue(discount);
-		}
 	}
 });
 

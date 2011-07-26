@@ -9,6 +9,7 @@ App.visit.VisitForm = Ext.extend(Ext.FormPanel, {
 		this.inlines = new Ext.util.MixedCollection({});
 		
 		this.orderedService = new App.visit.OrderedServiceInlineGrid({
+			record:this.record,
 			type:this.type,
 			region:'center'
 		});
@@ -98,22 +99,23 @@ App.visit.VisitForm = Ext.extend(Ext.FormPanel, {
 		};
 
 ///
+		this.discountCmb = new Ext.form.LazyClearableComboBox({
+			id:'visit-discount-cmb',
+        	fieldLabel:'Скидка',
+			anchor:'98%',
+        	name:'discount',
+        	proxyUrl:get_api_url('discount'),
+			listeners:{
+				select: function(){
+					App.eventManager.fireEvent('sumchange');
+				},
+				scope:this
+			}
+		});
 		
 		this.discounts = {
 			layout:'form',
-			items:new Ext.form.LazyClearableComboBox({
-				id:'visit-discount-cmb',
-	        	fieldLabel:'Скидка',
-				anchor:'98%',
-	        	name:'discount',
-	        	proxyUrl:get_api_url('discount'),
-				listeners:{
-					select: function(){
-						App.eventManager.fireEvent('sumchange');
-					},
-					scope:this
-				}
-			})
+			items:this.discountCmb
 		};
 		if(this.patientRecord) {
 			Ext.getCmp('visit-discount-cmb').setValue(this.patientRecord.data.discount);
@@ -278,25 +280,19 @@ App.visit.VisitForm = Ext.extend(Ext.FormPanel, {
 				scope:this
 			}
 		});
-
-		this.totalSum = {
-			layout:'form',
-			border:false,
-			baseCls:'x-border-layout-ct',
-			items:{
-				id:'total-sum-field',
-				xtype:'numberfield',
-				name:'total_sum',
-				fieldLabel:'К оплате с учетом скидки',
-				readOnly:true,
-				value:0,
-				style:{
-					fontSize:'2.5em',
-					height:'1em',
-					width:'180px'
-				}
+		
+		this.totalSum = new Ext.form.NumberField({
+			name:'total_sum',
+			fieldLabel:'К оплате с учетом скидки',
+			readOnly:true,
+			value:0,
+			style:{
+				fontSize:'2.5em',
+				height:'1em',
+				width:'180px'
 			}
-		};
+		});
+
 		this.paymentFs = {
             layout: 'form',
             border:false,
@@ -310,7 +306,12 @@ App.visit.VisitForm = Ext.extend(Ext.FormPanel, {
 				items:[this.discounts, 
 					this.paymentTypeCB,
 					this.policyBar,
-					this.totalSum
+					{
+						layout:'form',
+						border:false,
+						baseCls:'x-border-layout-ct',
+						items:this.totalSum
+					}
 				]
 			}
 		};		
@@ -420,6 +421,7 @@ App.visit.VisitForm = Ext.extend(Ext.FormPanel, {
 				this.getForm().loadRecord(this.record);
 			}
 		},this);
+		this.orderedService.on('sumchange', this.updateTotalSum, this);
 		
 	},
 	
@@ -463,6 +465,7 @@ App.visit.VisitForm = Ext.extend(Ext.FormPanel, {
 		if(f.isValid()){
 			var Record = this.getRecord();
 			f.updateRecord(Record);
+			console.info('record update');
 			if(!Record.phantom) {
 				this.inlines.each(function(inline,i,l){
 					inline.onSave();
@@ -486,6 +489,16 @@ App.visit.VisitForm = Ext.extend(Ext.FormPanel, {
 			steps+=s;
 		});
 		return steps
+	},
+	
+	updateTotalSum:function(sum) {
+		if(this.type=='visit'){
+			var d = this.discountCmb;
+			var dRec = d.getStore().getById(d.getValue());
+			var value = dRec ? dRec.data.value : 0;
+			var discount = sum*(100-value)/100;
+			this.totalSum.setValue(discount);
+		}
 	}
 	
 /*	onSubmit:function(){

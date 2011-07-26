@@ -105,6 +105,7 @@ App.patient.VisitGrid = Ext.extend(Ext.grid.GridPanel, {
 		    listeners: {
 		    	write: function(store, action, result, res, rs) {
 		    		App.eventManager.fireEvent('visitcreate',rs);
+		    		console.info('visit grid - visitcreate');
 		    	},
 		    	scope:this
 		    }
@@ -427,10 +428,16 @@ App.patient.VisitGrid = Ext.extend(Ext.grid.GridPanel, {
 	},
 	
 	onChange: function(){
-		var rec = this.getSelected();
-		if (rec) {
-			var type = rec.data.cls=='п' ? 'visit' : 'material'; /// TODO: тип формы надо определять как-то иначе
-			App.eventManager.fireEvent('visitcreate',this.patientId,type,rec.id,this.patientRecord);
+		if (this.patientRecord) {
+			var rec = this.getSelected();
+			if (rec) {
+				var type = rec.data.cls=='п' ? 'visit' : 'material'; /// TODO: тип формы надо определять как-то иначе
+				App.eventManager.fireEvent('launchapp','visittab',{
+					record:rec,
+					patientRecord:this.patientRecord,
+					type:type
+				});
+			}
 		}
 	},
 	
