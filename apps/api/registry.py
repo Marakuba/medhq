@@ -10,7 +10,7 @@ from tastypie.constants import ALL, ALL_WITH_RELATIONS
 from lab.models import LabOrder, Sampling, Tube, Result, Analysis, InputList,\
     Equipment, EquipmentAssay, EquipmentResult, EquipmentTask
 from service.models import BaseService, LabServiceGroup
-from staff.models import Position, Staff
+from staff.models import Position, Staff, Doctor
 from state.models import State
 from django.conf import settings
 from pricelist.models import Discount
@@ -23,6 +23,7 @@ from django.core.exceptions import ObjectDoesNotExist
 from tastypie.exceptions import NotFound
 from examination.models import CardTemplate, ExaminationCard
 from helpdesk.models import Issue, IssueType
+from scheduler.models import Calendar, Event
 #from reporting.models import Report, FieldItem, GroupItem, SummaryItem, Fields,\
 #    Groups, Summaries, FilterItem, Filters
 
@@ -382,6 +383,7 @@ class StaffResource(ModelResource):
     """
     def dehydrate(self, bundle):
         bundle.data['name'] = bundle.obj.short_name()
+        bundle.data['title'] = bundle.obj.short_name()
         return bundle
     
     class Meta:
@@ -389,7 +391,47 @@ class StaffResource(ModelResource):
         resource_name = 'staff'
         limit = 100
         filtering = {
-            'last_name':('istartswith',)
+            'last_name':('istartswith',),
+            'id':ALL
+        }
+
+class DoctorResource(ExtResource):
+    """
+    """
+    staff = fields.ToOneField(StaffResource, 'staff')
+    class Meta:
+        queryset = Doctor.objects.all()
+        resource_name = 'doctor'
+        limit = 100
+        filtering = {
+            'id':ALL
+        }
+        
+class StaffSchedResource(ModelResource):
+    """
+    """
+    #doctor = fields.ToOneField(DoctorResource, 'doctor', null=True)
+    
+    def dehydrate(self, bundle):
+        bundle.data['name'] = bundle.obj.short_name()
+        bundle.data['title'] = bundle.obj.short_name()
+        bundle.data['timeslot'] = bundle.obj.doctor.timeslot
+        bundle.data['am_session_starts'] = bundle.obj.doctor.am_session_starts
+        bundle.data['am_session_ends'] = bundle.obj.doctor.am_session_ends
+        bundle.data['pm_session_starts'] = bundle.obj.doctor.pm_session_starts
+        bundle.data['pm_session_ends'] = bundle.obj.doctor.pm_session_ends
+        bundle.data['routine'] = bundle.obj.doctor.routine
+        bundle.data['work_days'] = bundle.obj.doctor.work_days
+        bundle.data['room'] = bundle.obj.doctor.room
+        return bundle
+    
+    class Meta:
+        queryset = Staff.objects.filter(doctor__isnull = False)
+        resource_name = 'staffsched'
+        limit = 100
+        filtering = {
+            'last_name':('istartswith',),
+            'id':ALL
         }
 
 
@@ -843,7 +885,38 @@ class EquipmentResultResource(ExtResource):
         filtering = {
             'order':ALL,
             'assay':ALL,
-        }        
+        }   
+        
+class CalendarResource(ExtResource):
+    
+    class Meta:
+        queryset = Calendar.objects.all()
+        resource_name = 'calendar'
+        authorization = DjangoAuthorization()
+        filtering = {
+            'title':ALL,
+        }
+        
+class EventResource(ExtResource):
+    staff = fields.ForeignKey(StaffResource, 'staff', null=True)
+    
+    def dehydrate(self, bundle):
+        bundle.data['start'] = bundle.obj.start.strftime('%a %b %d %Y %H:%M:%S')
+        bundle.data['end'] = bundle.obj.end.strftime('%a %b %d %Y %H:%M:%S ')
+        return bundle
+    
+    class Meta:
+        queryset = Event.objects.all()
+        resource_name = 'event'
+        authorization = DjangoAuthorization()
+        filtering = {
+            'title':ALL,
+            'id':ALL,
+            'cid':ALL,
+            'start':ALL,
+            'end':ALL,
+        }       
+        limit = 1000
 
 
 
@@ -927,6 +1000,7 @@ api.register(LabServiceGroupResource())
 #state
 api.register(PositionResource())
 api.register(StaffResource())
+api.register(StaffSchedResource())
 api.register(StateResource())
 api.register(MedStateResource())
 api.register(InsuranceStateResource())
@@ -944,7 +1018,21 @@ api.register(RegExamCardResource())
 api.register(CardTemplateResource())
 api.register(ExaminationCardResource())
 
-
 #helpdesk
 api.register(IssueTypeResource())
 api.register(IssueResource())
+
+#scheduler
+api.register(CalendarResource())
+api.register(EventResource())
+
+#reporting
+#api.register(ReportResource())
+#api.register(FilterItemResource())
+#api.register(FieldItemResource())
+#api.register(GroupItemResource())
+#api.register(SummaryItemResource())
+#api.register(FieldsResource())
+#api.register(GroupsResource())
+#api.register(SummariesResource())
+#api.register(FiltersResource())

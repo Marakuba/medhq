@@ -1,4 +1,5 @@
 Ext.ns('App');
+Ext.ns('Ext');
 
 /*
  * MEDIA_URL passing from server
@@ -27,3 +28,7 @@ App.uriToId = function(uri) {
 	var paths = uri.split('/');
 	return paths[paths.length-1];
 };
+
+Ext.idToColor = function(id) {
+	return parseInt(id) % 3 + 1;
+}

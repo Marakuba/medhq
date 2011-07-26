@@ -1,5 +1,5 @@
 Ext.form.LazyComboBox = Ext.extend(Ext.form.ComboBox, {
-	
+
 
     queryParam:'name__istartswith',
     valueField: 'resource_uri',
@@ -8,8 +8,8 @@ Ext.form.LazyComboBox = Ext.extend(Ext.form.ComboBox, {
     initComponent: function(){
 
 		config = {
-		    store: this.store || new Ext.data.JsonStore({
-		    	autoLoad:this.autoLoad || false,
+			store: this.store || new Ext.data.JsonStore({
+				autoLoad:this.autoLoad || false,
 				proxy: new Ext.data.HttpProxy({
 					url:this.proxyUrl,
 					method:'GET'
@@ -19,9 +19,9 @@ Ext.form.LazyComboBox = Ext.extend(Ext.form.ComboBox, {
 				fields:['resource_uri','name','value']
 			}),
 			typeAhead: true,
-		    minChars:2,
-		    triggerAction: 'all',
-		    selectOnFocus:true
+			minChars:2,
+			triggerAction: 'all',
+			selectOnFocus:true
 		}
 
 		Ext.apply(this, Ext.apply(this.initialConfig, config));
@@ -31,7 +31,7 @@ Ext.form.LazyComboBox = Ext.extend(Ext.form.ComboBox, {
 			this.originalValue = this.getValue();
 		},this);
 	},
-	
+
 	setValue:function(value) {
 		if(value) {
 			if(!this.store.getTotalCount()){
@@ -42,7 +42,7 @@ Ext.form.LazyComboBox = Ext.extend(Ext.form.ComboBox, {
 			}
 		}
 	},
-	
+
 	forceValue:function(value) {
 		this._cachedValue = value;
 		this.store.load();
@@ -50,7 +50,7 @@ Ext.form.LazyComboBox = Ext.extend(Ext.form.ComboBox, {
 });
 
 Ext.form.LazyClearableComboBox = Ext.extend(Ext.form.ClearableComboBox, {
-	
+
     queryParam:'name__istartswith',
     valueField: 'resource_uri',
     displayField: 'name',
@@ -58,8 +58,8 @@ Ext.form.LazyClearableComboBox = Ext.extend(Ext.form.ClearableComboBox, {
     initComponent: function(){
 
 		config = {
-		    store: this.store || new Ext.data.JsonStore({
-		    	autoLoad:this.autoLoad || false,
+			store: this.store || new Ext.data.JsonStore({
+				autoLoad:this.autoLoad || false,
 				proxy: new Ext.data.HttpProxy({
 					url:this.proxyUrl,
 					method:'GET'
@@ -68,10 +68,10 @@ Ext.form.LazyClearableComboBox = Ext.extend(Ext.form.ClearableComboBox, {
 				idProperty:'resource_uri',
 				fields:['resource_uri','name','value']
 			}),
-		    typeAhead: true,
-		    minChars:2,
-		    triggerAction: 'all',
-		    selectOnFocus:true
+			typeAhead: true,
+			minChars:2,
+			triggerAction: 'all',
+			selectOnFocus:true
 		}
 
 		Ext.apply(this, Ext.apply(this.initialConfig, config));
@@ -81,7 +81,7 @@ Ext.form.LazyClearableComboBox = Ext.extend(Ext.form.ClearableComboBox, {
 			this.originalValue = this.getValue();
 		},this);
 	},
-	
+
 	setValue:function(value) {
 		if(value) {
 			if(!this.store.getTotalCount()){
@@ -92,7 +92,7 @@ Ext.form.LazyClearableComboBox = Ext.extend(Ext.form.ClearableComboBox, {
 			}
 		}
 	},
-	
+
 	forceValue:function(value) {
 		this._cachedValue = value;
 		this.store.load();

@@ -35,6 +35,13 @@ Ext.onReady(function(){
 			handler: function(){
 				window.location.href = '/webapp/examination/';
 			}
+		},{
+            xtype:'button',
+            text: 'Расписание врачей',
+			scale: 'large',
+			handler: function(){
+				window.location.href = '/webapp/calendar/';
+			}
         },{
             xtype:'button',
             text: 'Администрирование',

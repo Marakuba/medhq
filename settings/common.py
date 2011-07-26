@@ -100,6 +100,7 @@ INSTALLED_APPS = (
     'lab',
     'workflow',
     'examination',
+    'scheduler',
         
     'django.contrib.admin',
     'django.contrib.auth',
@@ -115,6 +116,7 @@ INSTALLED_APPS = (
     'south',
     'reversion',
     'tastypie',
+    'tagging'
 )
 
 ADMIN_TOOLS_MENU = 'medhq.menu.CustomMenu'
@@ -139,6 +141,8 @@ TASTYPIE_ALLOW_MISSING_SLASH = True
 APPEND_SLASH = False
 
 SESSION_EXPIRE_AT_BROWSER_CLOSE = True
+
+TASTYPIE_DATETIME_FORMATTING = 'rfc-2822'
 
 
 
