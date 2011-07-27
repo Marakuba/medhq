@@ -24,7 +24,7 @@ App.Patients = Ext.extend(Ext.Panel, {
 				scope:this,
 				qtip:'Обновить карточку пациента'
 			}],
-			items:this.patientCard,
+			items:this.patientCard
 		});
 
 		this.quickForm = new App.patient.QuickForm({
