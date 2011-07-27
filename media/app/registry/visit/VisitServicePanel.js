@@ -24,12 +24,14 @@ App.visit.VisitServicePanel = Ext.extend(Ext.tree.TreePanel,{
 	        	requestMethod:'GET',
 	        	listeners:{
 	        		load: function(){
-	        		}
+	        		},
+	        		scope:this
 	        	}
 	        }),
 	        rootVisible: false,
 	        root:{
 		        nodeType: 'async',
+		        expanded:true,
 		        text: 'Услуги клиники',
 		        draggable: false,
 		        id: 'source'	        	

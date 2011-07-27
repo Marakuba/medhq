@@ -300,5 +300,5 @@ def clear_service_cache(sender, **kwargs):
     cache.delete('x-service_list')
     
     
-#post_save.connect(clear_service_cache, sender=BaseService)
-#post_save.connect(clear_service_cache, sender=ExtendedService)
+post_save.connect(clear_service_cache, sender=BaseService)
+post_save.connect(clear_service_cache, sender=ExtendedService)

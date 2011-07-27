@@ -32,7 +32,14 @@ App.CentralPanel = Ext.extend(Ext.Panel, {
 					iconCls:'silk-add',
 					tooltip:'Создание нового пациента',
 					handler:function(){
-						
+						var win = new App.patient.PatientWindow({
+							inCard:true,
+							scope:this,
+							fn:function(record){
+//								this.store.insertRecord(record);
+							}
+						});
+						win.show();
 					},
 					scope:this,
 					menu:[{
@@ -46,7 +53,11 @@ App.CentralPanel = Ext.extend(Ext.Panel, {
 					}]
 				},{
 					text:'Приемы',
-					tooltip:'Журнал приемов пациентов'
+					tooltip:'Журнал приемов пациентов',
+					handler:function(){
+						this.launchApp('visits');
+					},
+					scope:this
 				}]
 			},{
 				xtype:'buttongroup',
@@ -58,7 +69,11 @@ App.CentralPanel = Ext.extend(Ext.Panel, {
 				items:[{
 					iconCls:'med-testtubes',
 					text:'Журнал',
-					tooltip:'Журнал результатов анализов'
+					tooltip:'Журнал результатов анализов',
+					handler:function(){
+						this.launchApp('results');
+					},
+					scope:this
 				}]
 			},{
 				xtype:'buttongroup',
@@ -83,9 +98,27 @@ App.CentralPanel = Ext.extend(Ext.Panel, {
 				},
 				items:[{
 					text:'Рабочая смена врача',
-					tooltip:''
+					tooltip:'',
+					handler:function(){
+						this.launchApp('reports');
+					},
+					scope:this
 				}]
 			},'->',{
+				xtype:'buttongroup',
+				title:'HelpDesk',
+				defaults:{
+					xtype:'button',
+					scale:'medium'
+				},
+				items:[{
+					text:'Обращения',
+					handler:function(){
+						this.launchApp('issuegrid');
+					},
+					scope:this
+				}]
+			},{
 				xtype:'buttongroup',
 				title:'Профиль',
 				defaults:{

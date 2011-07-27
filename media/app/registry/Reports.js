@@ -4,6 +4,8 @@ App.Reports = Ext.extend(Ext.Panel, {
 	initComponent:function(){
 		
 		this.form = new Ext.form.FormPanel({
+			border:false,
+			padding:10,
 			items:[{
 				xtype:'datefield',
 				fieldLabel:'Дата с',
@@ -65,14 +67,17 @@ App.Reports = Ext.extend(Ext.Panel, {
 		});
 
 		config = {
+			id:'reports-grid',
 			title:'Отчеты',
+			closable:true,
             defaults: {
 				border:false
 			},
-			layout:'vbox',
+			layout:'fit',
 			items:[{
-				html:'Отчет за смену по врачам'
-			}, this.form]
+				title:'Отчет за смену по врачам',
+				items:this.form
+			}]
 		}
 		
 		Ext.apply(this, Ext.apply(this.initialConfig, config));

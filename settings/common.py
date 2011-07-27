@@ -61,7 +61,7 @@ TEMPLATE_CONTEXT_PROCESSORS = (
 ROOT_URLCONF = 'medhq.urls'
 
 MIDDLEWARE_CLASSES = (
-#    'debug_toolbar.middleware.DebugToolbarMiddleware',
+    'debug_toolbar.middleware.DebugToolbarMiddleware',
     #'johnny.middleware.LocalStoreClearMiddleware',
     #'johnny.middleware.QueryCacheMiddleware',
     'django.middleware.common.CommonMiddleware',
@@ -91,7 +91,7 @@ INSTALLED_APPS = (
     'patient',
     'reporting',
     'service',
-    #'schedule',
+    'promotion',
     'staff',
     'state',
     'pricelist',
@@ -131,20 +131,12 @@ CORE_MEDIA = {
     }
 }
 
-#HARD_CODE SETTINGS
-
-MAIN_STATE_ID = 1 
-
-MAIN_PRICE_TYPE = 'em_retail'
-
 TASTYPIE_ALLOW_MISSING_SLASH = True
 APPEND_SLASH = False
 
 SESSION_EXPIRE_AT_BROWSER_CLOSE = True
 
-TASTYPIE_DATETIME_FORMATTING = 'rfc-2822'
-
-
+#TASTYPIE_DATETIME_FORMATTING = 'rfc-2822'
 
 #import djcelery
 #djcelery.setup_loader()
@@ -156,3 +148,9 @@ TASTYPIE_DATETIME_FORMATTING = 'rfc-2822'
 #BROKER_VHOST = "medhq"
 #CELERY_RESULT_BACKEND = "amqp"
 #CELERY_IMPORTS = ("tasks", )
+
+#HARD_CODE SETTINGS
+
+MAIN_STATE_ID = 1 
+
+MAIN_PRICE_TYPE = 'em_retail'

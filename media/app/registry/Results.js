@@ -4,7 +4,9 @@ App.Results = Ext.extend(Ext.Panel, {
 	initComponent:function(){
 
 		config = {
+			id:'results-grid',
 			title:'Результаты',
+			closable:true,
 			layout:'border',
             defaults: {
 				border:false

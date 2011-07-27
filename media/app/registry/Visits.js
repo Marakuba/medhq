@@ -4,7 +4,9 @@ App.Visits = Ext.extend(Ext.Panel, {
 	initComponent:function(){
 
 		config = {
+			id:'visits-grid',
 			title:'Приемы',
+			closable:true,
 			layout:'border',
             defaults: {
 				border:false

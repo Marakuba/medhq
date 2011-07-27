@@ -2,17 +2,15 @@ Ext.ns('App.patient');
 
 App.patient.PatientCard = Ext.extend(Ext.TabPanel, {
 	
-	
-	
 	initComponent:function(){
 		
 		config = {
+			closable:true,
 			border:false,
         	defaults: {
 				border:false
 			},
 			header:true,
-//	        layout:'fit',
 	        disabled:true,
     		activeTab:0,
 			items:[{
@@ -48,14 +46,27 @@ App.patient.PatientCard = Ext.extend(Ext.TabPanel, {
 		App.eventManager.on('globalsearch', this.onGlobalSearch, this); //
 		App.eventManager.on('visitclose', this.onVisitClose, this); //
 		App.eventManager.on('refundclose', this.onVisitClose, this); //
+		this.on('afterrender',function(){
+			this.doRefresh();
+		},this);
+		this.on('destroy', function(){
+			App.eventManager.un('globalsearch', this.onGlobalSearch, this); //
+			App.eventManager.un('visitclose', this.onVisitClose, this); //
+			App.eventManager.un('refundclose', this.onVisitClose, this); //
+		},this);
 	},
 	
 	onGlobalSearch: function() {
 		this.disable();
 	},
 	
+	titleTpl : new Ext.Template(
+		'Пациент: {last_name} {first_name} {mid_name}'
+	),
+	
 	setActivePatient: function(rec) {
 		this.record = rec;
+		this.setTitle(this.titleTpl.apply(this.record.data));
 		this.enable();
 		this.items.each(function(item,i){
 			if(item.setActivePatient) {
