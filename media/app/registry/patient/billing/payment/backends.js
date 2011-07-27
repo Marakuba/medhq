@@ -3,7 +3,7 @@ Ext.ns('App.payment');
 
 App.regBackend('payment', new App.Backend({
 		store:new Ext.data.Store({
-			autoLoad:true,
+			//autoLoad:true,
 		    baseParams: {
 		    	format:'json'
 		    },

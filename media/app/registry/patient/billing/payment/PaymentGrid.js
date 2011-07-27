@@ -77,7 +77,7 @@ App.billing.PaymentGrid = Ext.extend(Ext.grid.GridPanel, {
 			{	xtype:'button',
 				enableToggle:true,
 				toggleGroup:'document-type',
-				text:'Приходный ордер',
+				text:'Приходные ордеры',
                 scope:this,
 			    handler: function(){
                     this.store.filter('income',"true")
@@ -85,7 +85,7 @@ App.billing.PaymentGrid = Ext.extend(Ext.grid.GridPanel, {
 		    },{	xtype:'button',
 				enableToggle:true,
 				toggleGroup:'document-type',
-				text:'Расходный ордер',
+				text:'Расходные ордеры',
                 scope:this,
 			    handler: function(){
                     this.store.filter('income',"false")
@@ -127,7 +127,6 @@ App.billing.PaymentGrid = Ext.extend(Ext.grid.GridPanel, {
 		var config = {
 			id:'payment-grid',
 			title:'Платежные документы',
-			closable:true,
 			loadMask : {
 				msg : 'Подождите, идет загрузка...'
 			},
@@ -195,16 +194,19 @@ App.billing.PaymentGrid = Ext.extend(Ext.grid.GridPanel, {
 //		window.open(url);
 	},
 	
-	onCreate: function(type) {
-		var data = {
-			is_income : type,
-			model:this.backend.getModel(),
-			scope:this,
-			fn:function(record){
-				this.backend.saveRecord(record);
-			}
-		};
-        App.eventManager.fireEvent('openform','paymentform',data)
+	
+	onCreate: function(type){
+		if (this.patientRecord) {
+			App.eventManager.fireEvent('launchapp','paymentform',{
+				is_income : type,
+				patientRecord:this.patientRecord,
+				model:this.backend.getModel(),
+				scope:this,
+				fn:function(record){
+					this.backend.saveRecord(record);
+				}
+			});
+		}
 	},
 	
 	onChange: function(rowindex){
@@ -215,6 +217,7 @@ App.billing.PaymentGrid = Ext.extend(Ext.grid.GridPanel, {
     			record:record,
                 title: record.data.name,
     			model:this.backend.getModel(),
+    			patientRecord:this.patientRecord,
     			scope:this,
     			fn:function(record){
     				this.backend.saveRecord(record);
@@ -226,6 +229,15 @@ App.billing.PaymentGrid = Ext.extend(Ext.grid.GridPanel, {
 	
 	onDelete: function() {
 		
+	},
+	
+	setActivePatient: function(rec) {
+		id = rec.id;
+		this.patientId = id;
+		this.patientRecord = rec;
+		var s = this.store;
+		s.baseParams = {format:'json','clientaccount__clientitem__client': id};
+		s.load();
 	}
 	
 });

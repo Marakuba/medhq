@@ -126,7 +126,7 @@ App.patient.ExamCardGrid = Ext.extend(Ext.grid.GridPanel, {
 		App.patient.ExamCardGrid.superclass.initComponent.apply(this, arguments);
 		
 		//App.eventManager.on('patientselect', this.onPatientSelect, this);
-		this.ownerCt.on('patientselect', this.setActivePatient, this);
+		//this.ownerCt.on('patientselect', this.setActivePatient, this);
 	},
 	
 	setActivePatient: function(rec) {

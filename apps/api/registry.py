@@ -46,7 +46,7 @@ class DiscountResource(ModelResource):
 class ClientItemResource(ExtResource):
 
     def dehydrate(self, bundle):
-        bundle.data['client_name'] = bundle.obj.patient
+        bundle.data['client_name'] = bundle.obj.client
         return bundle
     
     class Meta:
@@ -60,7 +60,7 @@ class ClientItemResource(ExtResource):
 class PatientResource(ExtResource):
     
     discount = fields.ForeignKey(DiscountResource, 'discount', null=True)
-    client_item = fields.ForeignKey(ClientItemResource, 'client_item', null=True)
+    client_item = fields.OneToOneField(ClientItemResource, 'client_item', null=True)
 
     def dehydrate(self, bundle):
         bundle.data['discount_name'] = bundle.obj.discount and bundle.obj.discount or u'0%'
@@ -998,7 +998,7 @@ class ClientAccountResource(ExtResource):
     account = fields.ForeignKey(AccountResource, 'account')
     
     def dehydrate(self, bundle):
-        bundle.data['client_name'] = ''#bundle.obj.client_item.patient
+        bundle.data['client_name'] = bundle.obj.client_item.client
         bundle.data['account_id'] = bundle.obj.account.id
         bundle.data['amount'] = bundle.obj.account.amount
         return bundle
@@ -1035,6 +1035,7 @@ class PaymentResource(ExtResource):
         filtering = {
             'id' : ALL,
             'doc_date' : ALL,
+            'client_account' : ALL_WITH_RELATIONS,
         }
         
 
