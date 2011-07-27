@@ -215,7 +215,7 @@ class VisitResource(ExtResource):
         bundle.data['patient_name'] = bundle.obj.patient.short_name()
         bundle.data['office_name'] = bundle.obj.office
         bundle.data['patient_id'] = bundle.obj.patient.id
-        bundle.data['barcode'] = bundle.obj.barcode.id
+        bundle.data['barcode_id'] = bundle.obj.barcode.id
         
         return none_to_empty(bundle)
     

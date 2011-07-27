@@ -13,8 +13,10 @@ App.visit.VisitTab = Ext.extend(Ext.Panel, {
 				    {name: 'resource_uri'},
 				    {name: 'created', type:'date',format:'c'},
 				    {name: 'cls', allowBlank: false},
+				    {name: '_cache'},
 				    {name: 'patient', allowBlank: false},
 				    {name: 'patient_id'},
+				    {name: 'barcode_id'},
 				    {name: 'referral'},
 				    {name: 'discount'},
 				    {name: 'source_lab'},
@@ -68,22 +70,19 @@ App.visit.VisitTab = Ext.extend(Ext.Panel, {
     	});
 		
 		config = {
-			layout:'border',
+			layout:'fit',
+			border:false,
 			defaults: {
+				border:false,
 //			    collapsible: true,
 //			    split: true,
 				//baseCls:'x-border-layout-ct',
-			},
-			listeners:{
-				removed:function(){
-					//Ext.getCmp('service-toggle-btn').toggle(false);
-				}
 			},
 			tbar:[this.getPatientTitle(),'->',{
         		text:'Закрыть',
 				handler:this.onClose.createDelegate(this)
 			},this.saveButton],
-	        items:[this.form, this.servicePanel]
+	        items:[this.form]
 		}
 
 		Ext.apply(this, Ext.apply(this.initialConfig, config));
@@ -94,27 +93,30 @@ App.visit.VisitTab = Ext.extend(Ext.Panel, {
 		this.store.on('write', this.onStoreWrite, this);
 		this.on('destroy', function(){
 			this.store.un('write', this.onStoreWrite, this);
-			console.info('store unsubscribed');
 		},this);
 		
 		this.on('render', function(){
 			this.setTitle(this.getTitleText());
 		},this);
 		
-		this.servicePanel.on('serviceclick', this.onServiceClick, this);
+//		this.servicePanel.on('serviceclick', this.onServiceClick, this);
 	},
 	
-	onServiceClick : function(node) {
-		this.saveButton.enable();
-		this.form.addRow(node.attributes);
-	},
+//	onServiceClick : function(node) {
+//		var a = node.attributes;
+//		if (a.isComplex) {
+//			Ext.each(a.nodes, function(item,i){
+//				this.form.addRow(item);
+//			}, this);
+//		} else {
+//			this.form.addRow(a);
+//		}
+//	},
 
 	onFormSave: function() {
 		var f = this.form;
 		this.steps = f.getSteps();
 		this.tSteps = this.steps;
-		console.info(this.tSteps);
-		console.info(this.store);
 		if(this.steps>0) {
 			this.msgBox = Ext.MessageBox.progress('Подождите','Идет сохранение документа!');
 			f.on('popstep',this.popStep, this);
@@ -158,8 +160,10 @@ App.visit.VisitTab = Ext.extend(Ext.Panel, {
 	},
 	
 	onStoreWrite: function(store, action, result, res, rs) {
-//		App.eventManager.fireEvent('visitcreate',rs);
-		console.info('onStoreWrite');
+		if(action=='create') {
+			App.eventManager.fireEvent('visitcreate',rs);
+		}
+		this.record = rs;
 		this.popStep();
 	},
 	

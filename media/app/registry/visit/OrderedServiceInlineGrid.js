@@ -125,11 +125,11 @@ App.visit.OrderedServiceInlineGrid = Ext.extend(Ext.grid.EditorGridPanel, {
 		    		return val //? val.staff_name : '';
 		    	},
 		    	listeners:{
-		    		click: function(col,grid,i,e){
-		    			var rec = grid.store.getAt(i);
-		    			var s = rec.data.service.split('/');
-		    			s = s[s.length-1];
-		    			this.staffWindow(i,s);
+//		    		click: function(col,grid,i,e){
+//		    			var rec = grid.store.getAt(i);
+//		    			var s = rec.data.service.split('/');
+//		    			s = s[s.length-1];
+//		    			this.staffWindow(i,s);
 		    			/*var node = t.getNodeById(rec.data.service);
 		    			var sl = node.attributes.staff;
 		    			if(sl) {
@@ -140,8 +140,8 @@ App.visit.OrderedServiceInlineGrid = Ext.extend(Ext.grid.EditorGridPanel, {
 		    			}*/
 		    			//console.log(rec.data.staff_list);
 		    			//Ext.MessageBox.alert('Column clicked',i);
-		    		},
-		    		scope:this
+//		    		},
+//		    		scope:this
 		    	}
 		    },{
 		    	header: "Кол-во", 
@@ -274,7 +274,7 @@ App.visit.OrderedServiceInlineGrid = Ext.extend(Ext.grid.EditorGridPanel, {
 			service:"/api/v1/dashboard/baseservice/"+id, //TODO: replace to App.getApiUrl
 			service_name:text,
 			price:attrs.price,
-			staff:attrs.staff || null,
+			staff:attrs.staff_id ? "/api/v1/dashboard/staff/"+attrs.staff_id : null,
 			staff_name:attrs.staff_name || '',
 			count:1,
 			execution_place:"/api/v1/dashboard/state/"+place  //TODO: replace to App.getApiUrl
@@ -294,7 +294,17 @@ App.visit.OrderedServiceInlineGrid = Ext.extend(Ext.grid.EditorGridPanel, {
 			}
 		}
 		if(attrs.staff){
-			this.addRecord(attrs);
+			App.visit.StaffBox.show({
+				staffList:attrs.staff,
+				fn:function(button,rec,opts){
+					if(button=='ok' && rec) {
+						attrs.staff_id = rec.data.id;
+						attrs.staff_name = rec.data.staff_name;
+						this.addRecord(attrs);
+					}
+				},
+				scope:this
+			});
 //				var last = this.store.getCount()-1;
 //				this.staffWindow(last,attrs.id);
 		} else {

@@ -52,6 +52,7 @@ App.issue.IssueGrid = Ext.extend(Ext.grid.GridPanel, {
 
 		
 		var config = {
+			closable:true,
 			title:'Тикеты',
 			loadMask : {
 				msg : 'Подождите, идет загрузка...'

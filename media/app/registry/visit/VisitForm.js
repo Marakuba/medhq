@@ -19,6 +19,15 @@ App.visit.VisitForm = Ext.extend(Ext.FormPanel, {
 		}, this);
 
 		this.inlines.add('orderedservice', this.orderedService);
+		
+		
+		this.servicePanel = new App.visit.VisitServicePanel({
+	        region: 'east',
+		    collapsible: true,
+		    collapseMode: 'mini',
+	        width: 300,
+	        split: true
+	    });	
 
 ///
 		
@@ -107,11 +116,14 @@ App.visit.VisitForm = Ext.extend(Ext.FormPanel, {
         	proxyUrl:get_api_url('discount'),
 			listeners:{
 				select: function(){
-					App.eventManager.fireEvent('sumchange');
+					this.orderedService.onSumChange();
+//					App.eventManager.fireEvent('sumchange');
 				},
 				scope:this
 			}
 		});
+		
+//		this.discountCmb.getStore().load();
 		
 		this.discounts = {
 			layout:'form',
@@ -282,7 +294,7 @@ App.visit.VisitForm = Ext.extend(Ext.FormPanel, {
 		});
 		
 		this.totalSum = new Ext.form.NumberField({
-			name:'total_sum',
+			//name:'total_sum_field',
 			fieldLabel:'К оплате с учетом скидки',
 			readOnly:true,
 			value:0,
@@ -400,18 +412,23 @@ App.visit.VisitForm = Ext.extend(Ext.FormPanel, {
 			//title:this.getPatientTitle(this.patientId),
 			layout:'border',
 			items:[{
-				region:'north',
-        		height:150,
-        		layout:'hbox',
-        		border:false,
-        		baseCls:'x-border-layout-ct',
-				defaults:{
-					baseCls:'x-border-layout-ct',
-					border:false
-				},
-			    bodyStyle: 'padding:5px',
-        		items:items
-        	},this.orderedService]
+				layout:'border',
+				region:'center',
+				items:[{
+					region:'north',
+	        		height:150,
+	        		layout:'hbox',
+	        		border:false,
+	        		baseCls:'x-border-layout-ct',
+					defaults:{
+						baseCls:'x-border-layout-ct',
+						border:false
+					},
+				    bodyStyle: 'padding:5px',
+	        		items:items
+	        	},this.orderedService]
+			}, this.servicePanel]
+
 		}
 		
 		Ext.apply(this, Ext.apply(this.initialConfig, config));
@@ -422,6 +439,7 @@ App.visit.VisitForm = Ext.extend(Ext.FormPanel, {
 			}
 		},this);
 		this.orderedService.on('sumchange', this.updateTotalSum, this);
+		this.servicePanel.on('serviceclick', this.onServiceClick, this);
 		
 	},
 	
@@ -465,7 +483,6 @@ App.visit.VisitForm = Ext.extend(Ext.FormPanel, {
 		if(f.isValid()){
 			var Record = this.getRecord();
 			f.updateRecord(Record);
-			console.info('record update');
 			if(!Record.phantom) {
 				this.inlines.each(function(inline,i,l){
 					inline.onSave();
@@ -482,6 +499,11 @@ App.visit.VisitForm = Ext.extend(Ext.FormPanel, {
 	getSteps : function() {
 		var steps = 0;
 		if(this.getForm().isDirty()) {
+	        this.getForm().items.each(function(f){
+	            if(f.isDirty()){
+//	            	console.info('dirty field:',f);
+	            }
+	         });
 			steps+=1;
 		}
 		this.inlines.each(function(inline,i,l){
@@ -498,29 +520,33 @@ App.visit.VisitForm = Ext.extend(Ext.FormPanel, {
 			var value = dRec ? dRec.data.value : 0;
 			var discount = sum*(100-value)/100;
 			this.totalSum.setValue(discount);
-		}
-	}
-	
-/*	onSubmit:function(){
-		if(this.getForm().isValid()){
-			var sb = Ext.getCmp('global-status-bar');
-			sb.setStatus({
-				text:'Подождите, идет сохранение документа...',
-				iconCls:'x-status-busy'
-			});
-			Ext.getCmp('global-progress-bar').show();
-			this.fireEvent('visitsubmit');
-			Ext.getCmp('visit-submit-btn').disable();
-		} else {
-			Ext.MessageBox.alert('Ошибка формы','Пожалуйста, заполните все обязательные поля, которые подчеркнуты красной линией!');
+			this.totalSum.originalValue = discount;
 		}
 	},
-	
-	enablePrintBtn: function(){
-		Ext.getCmp('visit-print-btn').enable();
-		Ext.getCmp('sampling-print-btn').enable();
-		Ext.getCmp('barcode-print-btn').enable();
-	}*/
+
+	onServiceClick : function(node) {
+		var a = node.attributes;
+		if (a.isComplex) {
+			Ext.each(a.nodes, function(item,i){
+				this.addRow(item);
+			}, this);
+			if (a.discount) {
+				var dsc = this.discountCmb;
+				dsc.getStore().load({
+					callback:function(){
+						var r = dsc.findRecord(dsc.valueField,get_api_url('discount')+'/'+a.discount);
+						if(r) {
+							dsc.setValue(r.data.resource_uri);
+							this.orderedService.onSumChange();
+						}
+					},
+					scope:this
+				});
+			}
+		} else {
+			this.addRow(a);
+		}
+	}
 	
 });
 

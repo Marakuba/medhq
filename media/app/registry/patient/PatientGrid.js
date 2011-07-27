@@ -101,7 +101,16 @@ App.patient.PatientGrid = Ext.extend(Ext.grid.GridPanel, {
 				iconCls:'silk-add',
 				text:'Новый пациент',
 				handler:this.onPatientAdd.createDelegate(this, [])
-			},this.editButton,'->',this.cardButton,this.contractButton],
+			},this.editButton,{
+				text:'>',
+				handler:function(){
+					var rec = this.getSelectionModel().getSelected();
+					App.eventManager.fireEvent('launchapp','patientcard',{
+						record:rec
+					});
+				},
+				scope:this
+			},'->',this.cardButton,this.contractButton],
 	        bbar: new Ext.PagingToolbar({
 	            pageSize: 20,
 	            store: this.store,
@@ -200,9 +209,9 @@ App.patient.PatientGrid = Ext.extend(Ext.grid.GridPanel, {
 			this.getSelectionModel().selectFirstRow();
 			this.fireEvent('patientselect',rs);
 		}
-		if(action=='create') {
-			App.eventManager.fireEvent('patientcreate',rs);
-		}
+//		if(action=='create') {
+//			App.eventManager.fireEvent('patientcreate',rs);
+//		}
 	}
 	
 });

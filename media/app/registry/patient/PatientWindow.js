@@ -49,12 +49,16 @@ App.patient.PatientWindow = Ext.extend(Ext.Window, {
 			modal:true,
 			border:false,
 			buttons:[{
+				text:'Закрыть',
+				handler:this.onClose.createDelegate(this),
+				scope:this
+			},{
 				text:'Сохранить',
 				handler:this.onFormSave.createDelegate(this),
 				scope:this
 			},{
-				text:'Закрыть',
-				handler:this.onClose.createDelegate(this),
+				text:'Сохранить и перейти к приему',
+				handler:this.onFormSave.createDelegate(this,[true]),
 				scope:this
 			}]
 		}
@@ -66,7 +70,8 @@ App.patient.PatientWindow = Ext.extend(Ext.Window, {
 		},this);
 	},
 	
-	onFormSave: function() {
+	onFormSave: function(post_visit) {
+		this.post_visit = post_visit;
 		var f = this.form;
 		this.steps = f.getSteps();
 		this.tSteps = this.steps;
@@ -84,6 +89,10 @@ App.patient.PatientWindow = Ext.extend(Ext.Window, {
 	},
 	
 	onStoreWrite: function(store, action, result, res, rs) {
+		if(action=='create') {
+			App.eventManager.fireEvent('patientcreate',rs);
+		}
+		this.record = rs;
 		this.popStep();
 	},
 	
@@ -98,6 +107,20 @@ App.patient.PatientWindow = Ext.extend(Ext.Window, {
 				this.msgBox.hide();
 			}
 			this.fireEvent('savecomplete');
+			if(this.inCard) {
+				App.eventManager.fireEvent('launchapp','patientcard',{
+					record:this.record
+				});
+			}
+			if(this.post_visit) {
+				App.eventManager.fireEvent('launchapp','visittab',{
+					patientRecord:this.record,
+					type:'visit'
+				});
+			}
+			if(this.inCard) {
+				this.close();
+			}
 		}
 	}
 });

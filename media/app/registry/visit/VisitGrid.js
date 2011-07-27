@@ -26,7 +26,7 @@ App.visit.VisitGrid = Ext.extend(Ext.grid.GridPanel, {
 		    {name: 'total_paid', allowBlank: false},
 		    {name: 'discount', allowBlank: false},
 		    {name: 'discount_value', allowBlank: true},
-		    {name: 'barcode', allowBlank: true},
+		    {name: 'barcode_id', allowBlank: true},
 		    {name: 'office_name', allowBlank: false},
 		    {name: 'operator_name', allowBlank: false},
 		    {name: 'patient_name', allowBlank: false},
@@ -100,7 +100,7 @@ App.visit.VisitGrid = Ext.extend(Ext.grid.GridPanel, {
 		    	header: "BC", 
 		    	width: 10, 
 		    	sortable: true, 
-		    	dataIndex: 'barcode'
+		    	dataIndex: 'barcode_id'
 		    },{
 		    	header: "Дата", 
 		    	width: 15, 

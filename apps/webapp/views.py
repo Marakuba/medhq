@@ -17,6 +17,7 @@ from django.views.generic.simple import direct_to_template
 from django.contrib.auth.decorators import login_required
 from lab.models import Sampling
 from django.views.decorators.gzip import gzip_page
+from promotion.models import Promotion
 
 
 def auth(request, authentication_form=AuthenticationForm):
@@ -136,7 +137,40 @@ def get_service_tree():
     """
     Генерирует дерево в json-формате.
     """
+
+    def promo_dict(obj):
+        
+        def node_dict(obj):
+            try:
+                bs = obj.base_service
+                es = bs.extendedservice_set.get(state=obj.execution_place)
+                price = es.get_actual_price()
+                node = {
+                    "id":'%s-%s' % (obj.base_service.id,obj.execution_place.id),
+                    "text":"%s [%s]" % (obj.base_service.short_name or obj.base_service.name, price),
+                    "price":price
+                }
+                staff_all = obj.base_service.staff.all()
+                if staff_all.count():
+                    node['staff'] = [(pos.id,pos.__unicode__()) for pos in staff_all]
+                return node
+            except Exception, err:
+                print err
+                return None
+            
+        return {
+            'id':obj.id,#u'%s_%s' % (obj.base_service.id, obj.execution_place.id),
+            'text':obj.name,#obj.base_service.short_name or obj.base_service.name,
+            'leaf':True,
+            'nodes':[node_dict(node) for node in obj.promotionitem_set.all()],
+            'discount':obj.discount and obj.discount.id or None,
+            'isComplex':True
+        }
+    
+    
     def tree_iterate(qs):
+        
+
         nodes = []
         for base_service in qs.all().order_by(BaseService._meta.tree_id_attr, "-"+BaseService._meta.left_attr): #@UndefinedVariable
             if base_service.is_leaf_node():
@@ -176,7 +210,20 @@ def get_service_tree():
     
     _cached_tree = cache.get('x-service_list')
     if not _cached_tree:
-        tree = tree_iterate(BaseService.tree.root_nodes()) #@UndefinedVariable
+        
+        tree = []
+        promotions = Promotion.objects.actual()
+        if promotions.count():
+            node = {
+                'id':'promotions',
+                'text':u'Акции / Комплексные обследования',
+                'children':[promo_dict(promo) for promo in promotions],
+                'leaf':False,
+                'singleClickExpand':True
+            }
+            tree.append(node)
+        
+        tree.extend(tree_iterate(BaseService.tree.root_nodes())) #@UndefinedVariable
         _cached_tree = simplejson.dumps(tree)
         cache.set('x-service_list', _cached_tree, 24*60*60*30)
 

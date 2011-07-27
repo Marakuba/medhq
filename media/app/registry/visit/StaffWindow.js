@@ -103,34 +103,41 @@ App.visit.StaffBox = function() {
 	
 	return {
 		handleButton: function(button) {
-			Ext.callback(opt.fn, opt.scope||window, [button, opt], 1);
+			var f = this.win.items.itemAt(0).getForm();
+			var field = f.findField('staff');
+			var val = field.getValue();
+			var rec = field.findRecord(field.valueField, val);
+			Ext.callback(opts.fn, opts.scope||window, [button, rec, opts], 1);
+			this.win.close();
 		},
 		getDialog: function(options) {
-			var win = new Ext.Window({
+			this.win = new Ext.Window({
 				title:'Выберите врача',
 				width:380,
-				height:120,
+				height:140,
 				layout:'fit',
 				defaults:{
 					baseCls:'x-border-layout-ct',
 					border:false
 				},
 				items: new Ext.form.FormPanel({
+					padding:7,
 					layout:'form',
-					items: getCmb()
+					items: [getCmb()]
 				}),
 				modal:true,
 				border:false,
 				buttons:[{
 					text:'Выбрать',
-//					handler:this.onSubmit.createDelegate(this,[])
+					handler:this.handleButton.createDelegate(this,['ok']),
+					scope:this
 				},{
 					text:'Отменить',
-//					handler:Ext.emptyFn,
+					handler:this.handleButton.createDelegate(this,['cancel']),
 					scope:this
 				}]
 			});
-			return win
+			return this.win
 		},
 		show: function(options) {
 			opts = options;
@@ -138,4 +145,4 @@ App.visit.StaffBox = function() {
 			dlg.show();
 		}
 	}
-}
+}()

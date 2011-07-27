@@ -2,79 +2,7 @@ Ext.ns('App.patient');
 
 App.patient.VisitGrid = Ext.extend(Ext.grid.GridPanel, {
 
-	loadInstant: false,
-	//id:'patient-visit-grid',
 	initComponent : function() {
-		
-/*		// Create a standard HttpProxy instance.
-		this.proxy = new Ext.data.HttpProxy({
-		    url: get_api_url('visit')
-		    listeners:{
-		    	exception: function(proxy, type, action, options, resp, args){
-		    		console.log("error on server, action is ", action);
-		    		if (action=='create' || action=='update'){
-		    			//Ext.getCmp('visit-submit-btn').enable();
-		    		}
-		    	}
-		    }
-		});
-		
-		this.reader = new Ext.data.JsonReader({
-		    totalProperty: 'meta.total_count',
-		    successProperty: 'success',
-		    idProperty: 'id',
-		    root: 'objects',
-		    messageProperty: 'message'
-		}, [
-		    {name: 'id'},
-		    {name: 'created', type:'date',format:'c', allowBlank: true},
-		    {name: 'cls', allowBlank: false},
-		    {name: 'patient', allowBlank: false},
-		    {name: 'patient_id', allowBlank: true},
-		    {name: 'referral', allowBlank: true},
-		    {name: 'source_lab', allowBlank: true},
-		    {name: 'discount_value', allowBlank: true},
-		    {name: 'barcode', allowBlank: true},
-		    {name: 'total_price', allowBlank: true},
-		    {name: 'total_paid', allowBlank: true},
-		    {name: 'office_name', allowBlank: true},
-		    {name: 'operator_name', allowBlank: true},
-		    {name: 'patient_name', allowBlank: true},
-		    {name: 'payment_type', allowBlank: true},
-		    {name: 'is_billed', allowBlank: true, type:'boolean'},
-		    {name: 'referral_name', allowBlank: true}
-		]);
-		
-		this.writer = new Ext.data.JsonWriter({
-		    encode: false
-		});
-		
-		this.store = new Ext.data.Store({
-		    id: 'visit-store',
-		    baseParams: {
-		    	format:'json'
-		    },
-		    paramNames: {
-			    start : 'offset',  // The parameter name which specifies the start row
-			    limit : 'limit',  // The parameter name which specifies number of rows to return
-			    sort : 'sort',    // The parameter name which specifies the column to sort on
-			    dir : 'dir'       // The parameter name which specifies the sort direction
-			},
-		    restful: true,     // <-- This Store is RESTful
-		    proxy: this.proxy,
-		    reader: this.reader,
-		    writer: this.writer,    // <-- plug a DataWriter into the store just as you would a Reader
-		    listeners: {
-		    	write: function(store, action, result, res, rs) {
-		    		//App.eventManager.fireEvent('visitwrite',rs);
-		    	},
-		    	load: function() {
-		    		this.getSelectionModel().selectFirstRow();
-		    	},
-		    	scope:this
-		    }
-		});*/
-		
 		
 		this.store = new Ext.data.RESTStore({
 			autoLoad : false,
@@ -83,10 +11,13 @@ App.patient.VisitGrid = Ext.extend(Ext.grid.GridPanel, {
 				    {name: 'id'},
 				    {name: 'created', type:'date',format:'c'},
 				    {name: 'cls', allowBlank: false},
+				    {name: '_cache'},
 				    {name: 'patient', allowBlank: false},
 				    {name: 'patient_id'},
 				    {name: 'referral'},
+				    {name: 'barcode_id'},
 				    {name: 'discount'},
+				    {name: 'discount_value'},
 				    {name: 'source_lab'},
 				    {name: 'total_price'},
 				    {name: 'total_paid'},
@@ -100,15 +31,9 @@ App.patient.VisitGrid = Ext.extend(Ext.grid.GridPanel, {
 				    {name: 'menopause'},
 				    {name: 'diagnosis'},
 				    {name: 'is_billed', type:'boolean'},
-				    {name: 'referral_name'}
+				    {name: 'referral_name'},
+				    {name: 'office_name'}
 				],
-		    listeners: {
-		    	write: function(store, action, result, res, rs) {
-		    		App.eventManager.fireEvent('visitcreate',rs);
-		    		console.info('visit grid - visitcreate');
-		    	},
-		    	scope:this
-		    }
 		});
 		
 		this.columns =  [
@@ -139,7 +64,7 @@ App.patient.VisitGrid = Ext.extend(Ext.grid.GridPanel, {
 		    		}
 		    		return "<img src='"+MEDIA_URL+"resources/css/icons/"+icon+"' title='"+alt+"'>"
 		    	}
-		    },{
+		    },/*{
 		    	header: "№ заказа", 
 		    	width: 15, 
 		    	sortable: true, 
@@ -154,11 +79,11 @@ App.patient.VisitGrid = Ext.extend(Ext.grid.GridPanel, {
 		    		}
 		    		return '?'
 		    	}
-		    },{
-		    	header: "BC", 
+		    },*/{
+		    	header: "№ заказа", 
 		    	width: 15, 
 		    	sortable: true, 
-		    	dataIndex: 'barcode'
+		    	dataIndex: 'barcode_id'
 		    },{
 		    	header: "Дата", 
 		    	width: 28, 
@@ -246,8 +171,8 @@ App.patient.VisitGrid = Ext.extend(Ext.grid.GridPanel, {
 						singleSelect : true,
 						listeners: {
 							rowselect: function(sm, row, rec) {
-								//Ext.getCmp('vg-print-btn').enable();
-								Ext.getCmp('vg-change-btn').enable();
+//								Ext.getCmp('vg-print-btn').enable();
+//								Ext.getCmp('vg-change-btn').enable();
 	                        },
 							scope:this
 						}
@@ -256,7 +181,7 @@ App.patient.VisitGrid = Ext.extend(Ext.grid.GridPanel, {
 				rowdblclick:this.onPrint.createDelegate(this, [])
 			},
 			tbar:{
-				id:'patient-visit-tbl',
+//				id:'patient-visit-tbl',
 				xtype:'toolbar',
 				//disabled:true,
 				items:[{
@@ -273,7 +198,7 @@ App.patient.VisitGrid = Ext.extend(Ext.grid.GridPanel, {
 					}
 					
 				},{
-					id:'vg-change-btn',
+//					id:'vg-change-btn',
 					xtype:'button',
 					iconCls:'silk-pencil',
 					text:'Изменить',
@@ -284,19 +209,19 @@ App.patient.VisitGrid = Ext.extend(Ext.grid.GridPanel, {
 					text:'Пробирки',
 					handler:this.onSamplingEdit.createDelegate(this, [])
 				},'-',{
-					id:'barcode-print-btn',
+//					id:'barcode-print-btn',
 					text:'Печать штрих-кодов',
 					handler:this.printBarcode.createDelegate(this,[])
 	        	},{
-					id:'sampling-print-btn',
+//					id:'sampling-print-btn',
 					text:'Печать заказа',
 					handler:this.toPrint.createDelegate(this,['sampling'])
 	        	},{
-					id:'visit-print-btn',
+//					id:'visit-print-btn',
 					text:'Печать счета',
 					handler:this.toPrint.createDelegate(this,['visit'])
 	        	},'->',{
-	        		id:'office-toggle',
+//	        		id:'office-toggle',
 	        		xtype:'checkbox',
 	        		boxLabel:'Документы своего офиса',
 	        		handler:function(){
@@ -333,6 +258,9 @@ App.patient.VisitGrid = Ext.extend(Ext.grid.GridPanel, {
 
 		Ext.apply(this, Ext.apply(this.initialConfig, config));
 		App.patient.VisitGrid.superclass.initComponent.apply(this, arguments);
+		
+		this.store.on('write',function(){
+		},this);
 		//this.ownerCt.ownerCt.on('patientselect', this.setActivePatient, this);
 		//App.eventManager.on('patientselect', this.onPatientSelect, this);
 	},
@@ -433,6 +361,7 @@ App.patient.VisitGrid = Ext.extend(Ext.grid.GridPanel, {
 			if (rec) {
 				var type = rec.data.cls=='п' ? 'visit' : 'material'; /// TODO: тип формы надо определять как-то иначе
 				App.eventManager.fireEvent('launchapp','visittab',{
+					store:this.store,
 					record:rec,
 					patientRecord:this.patientRecord,
 					type:type
@@ -442,7 +371,7 @@ App.patient.VisitGrid = Ext.extend(Ext.grid.GridPanel, {
 	},
 	
 	onPatientSelect: function(id) {
-		Ext.getCmp('patient-visit-tbl').enable();
+//		Ext.getCmp('patient-visit-tbl').enable();
 		this.patientId = id; //rec.data.id;
 		this.store.load({
 			params: {
