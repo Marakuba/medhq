@@ -4,11 +4,24 @@ App.billing.PaymentGrid = Ext.extend(Ext.grid.GridPanel, {
 
 	initComponent : function() {
 		
+		this.store = new Ext.data.RESTStore({
+		    apiUrl : get_api_url('payment'),
+		    model: [
+    		    {name: 'id'},
+    		    {name: 'doc_date', allowBlank: true, type:'date', format: 'd.m.Y'}, 
+	    	    {name: 'client_account', allowBlank: true}, 
+	    	    {name: 'client_name', allowBlank: true}, 
+	    	    {name: 'client', allowBlank: true}, 
+	    	    {name: 'amount', allowBlank: true},
+	    	    {name: 'account_id', allowBlank: true},
+	    	    {name: 'income', allowBlank: true},
+	    	    {name: 'payment_type', allowBlank: true},
+	    	    {name: 'comment', allowBlank: true},
+	    	    {name: 'content_type', allowBlank: true}
+			]
+		});
+		
 		this.tmp_id = Ext.id();
-		
-		this.backend = App.getBackend('payment');
-		
-		this.store = this.backend.store;
 		
 		this.addButton = new Ext.SplitButton({
    			text: 'Добавить',
@@ -48,12 +61,14 @@ App.billing.PaymentGrid = Ext.extend(Ext.grid.GridPanel, {
 		    	header: "Клиент",
 		    	width:60,
 		    	sortable: true, 
-		    	dataIndex: 'client_name'
+		    	dataIndex: 'client_name',
+		    	hidden:true
 		    },{
 		    	header: "Лицевой счет", 
 		    	width: 20, 
 		    	sortable: true, 
-		    	dataIndex: 'account_id'
+		    	dataIndex: 'account_id',
+		    	hidden:true
 		    	/*renderer: function(v,params,rec){
                     var result = rec.data.account_id;
                     return result
@@ -63,6 +78,11 @@ App.billing.PaymentGrid = Ext.extend(Ext.grid.GridPanel, {
 		    	width: 20, 
 		    	sortable: true, 
 		    	dataIndex: 'amount'
+		    },{
+		    	header: "Примечание", 
+		    	width: 70, 
+		    	sortable: true, 
+		    	dataIndex: 'comment'
 		    }
 		];		
 		
@@ -197,33 +217,28 @@ App.billing.PaymentGrid = Ext.extend(Ext.grid.GridPanel, {
 	
 	onCreate: function(type){
 		if (this.patientRecord) {
-			App.eventManager.fireEvent('launchapp','paymentform',{
+			this.win = new App.billing.PaymentWindow({
+				store:this.store,
 				is_income : type,
-				patientRecord:this.patientRecord,
-				model:this.backend.getModel(),
-				scope:this,
-				fn:function(record){
-					this.backend.saveRecord(record);
-				}
+				patientRecord:this.patientRecord
 			});
+			this.win.show();
 		}
 	},
 	
 	onChange: function(rowindex){
-		var record = this.getSelected();
-		if(record) {
-    		var data = {
-    			is_income:true,
-    			record:record,
-                title: record.data.name,
-    			model:this.backend.getModel(),
-    			patientRecord:this.patientRecord,
-    			scope:this,
-    			fn:function(record){
-    				this.backend.saveRecord(record);
-    			}
-    		};
-        App.eventManager.fireEvent('openform','paymentform',data)
+		if (this.patientRecord) {
+			var rec = this.getSelected();
+			if(rec) {
+    			var data = {
+    				is_income:rec.data.income,
+	    			record:rec,
+	    			patientRecord:this.patientRecord,
+	    			store:this.store
+    			};
+    			this.win = new App.billing.PaymentWindow(data);
+    			this.win.show();
+			}
 		}
 	},
 	
@@ -236,7 +251,7 @@ App.billing.PaymentGrid = Ext.extend(Ext.grid.GridPanel, {
 		this.patientId = id;
 		this.patientRecord = rec;
 		var s = this.store;
-		s.baseParams = {format:'json','clientaccount__clientitem__client': id};
+		s.baseParams = {format:'json','client_account__client_item__client': id};
 		s.load();
 	}
 	

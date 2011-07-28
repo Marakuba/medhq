@@ -95,7 +95,7 @@ class Patient(make_person_object('patient')):
         orders = Payment.objects.filter(client_account__client_item = self.client_item).aggregate(Sum("amount"))
         sales = Visit.objects.filter(patient = self).aggregate(Sum("total_price"))
         discount = Visit.objects.filter(patient = self).aggregate(Sum("total_discount"))
-        self.balance = (orders['amount__sum'] or 0) - ( sales['total_price__sum'] or 0 ) + (discount['total_discount__sum'] or 0)
+        self.balance = (orders['amount__sum'] or 0) + (discount['total_discount__sum'] or 0) - float( sales['total_price__sum'] or 0 )
         print 'sales %s' % (sales['total_price__sum'])
         self.save()
     
