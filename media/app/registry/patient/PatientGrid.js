@@ -21,6 +21,7 @@ App.patient.PatientGrid = Ext.extend(Ext.grid.GridPanel, {
 				    {name: 'discount'},
 				    {name: 'discount_name'},
 				    {name: 'client_item'},
+				    {name: 'balance'},
 				    {name: 'initial_account'},
 				    {name: 'billed_account'},
 				    {name: 'doc'},

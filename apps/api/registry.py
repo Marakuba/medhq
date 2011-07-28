@@ -45,7 +45,7 @@ class DiscountResource(ModelResource):
         }
 
 class ClientItemResource(ExtResource):
-
+    client = fields.OneToOneField('apps.api.registry.PatientResource','client')
     def dehydrate(self, bundle):
         bundle.data['client_name'] = bundle.obj.client
         return bundle
@@ -1042,7 +1042,7 @@ class PaymentResource(ExtResource):
     content_type = fields.ForeignKey(ContentTypeResource, 'content_type', null=True)
     
     def dehydrate(self, bundle):
-        bundle.data['client_name'] = bundle.obj.client_account.client_item.client.name
+        bundle.data['client_name'] = bundle.obj.client_account.client_item.client
         bundle.data['client'] = bundle.obj.client_account.client_item.client
         bundle.data['account_id'] = bundle.obj.client_account.account.id
         bundle.data['amount'] = abs(bundle.obj.amount)

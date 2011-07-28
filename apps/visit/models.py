@@ -182,6 +182,7 @@ class Visit(make_operator_object('visit')):
             self.total_discount = self.total_price*self.discount.value/100
         self.save()
         self.patient.update_account()
+        self.patient.updBalance()
         
     def discount_price(self):
         return self.total_price-self.total_discount

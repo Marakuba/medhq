@@ -8,11 +8,30 @@ App.billing.PaymentForm = Ext.extend(Ext.form.FormPanel, {
 	initComponent: function(){
 		
 		this.tmp_id = Ext.id();
+		this.store = this.store || new Ext.data.RESTStore({
+		    apiUrl : get_api_url('payment'),
+		    baseParams:{
+		    	format:'json'
+		    },
+		    model: [
+    		    {name: 'id'},
+    		    {name: 'doc_date', allowBlank: true, type:'date', format: 'd.m.Y'}, 
+	    	    {name: 'client_account', allowBlank: true}, 
+	    	    {name: 'client_name', allowBlank: true}, 
+	    	    {name: 'client', allowBlank: true}, 
+	    	    {name: 'amount', allowBlank: true},
+	    	    {name: 'account_id', allowBlank: true},
+	    	    {name: 'income', allowBlank: true},
+	    	    {name: 'payment_type', allowBlank: true},
+	    	    {name: 'comment', allowBlank: true},
+	    	    {name: 'content_type', allowBlank: true}
+			]
+		});
 				
-		/*this.cl_acc_store = new Ext.data.JsonStore({
+		this.cl_acc_store = new Ext.data.JsonStore({
 			autoLoad:false,
 			proxy: new Ext.data.HttpProxy({
-			    url:'/api/billing/clientaccount',
+			    url:get_api_url('clientaccount'),
 				method:'GET'
 			}),
 			root:'objects',
@@ -25,11 +44,28 @@ App.billing.PaymentForm = Ext.extend(Ext.form.FormPanel, {
 			baseParams : {
 		    	format:'json'
 			}
-    	});*/
+    	});
+    	
+    	this.amountField = new Ext.form.NumberField({ 
+            fieldLabel: 'Сумма',
+            name: 'amount',
+            width:140,
+			allowBlank:true,
+            minValue: 0,
+            value: 0,
+            listeners: {
+                specialkey: function(field, e){
+                    if (e.getKey() == e.ENTER) {
+                        this.onSave();
+                    }
+                },
+                scope:this
+            }
+        });
     
 		//this.is_income = true;
 		config = {
-			title:this.is_income==true ? 'Приходный ордер' : 'Расходный ордер',
+			//title:this.is_income==true ? 'Приходный ордер' : 'Расходный ордер',
 			closable:true,
 			layout:'border',
           	trackResetOnLoad:true,
@@ -41,23 +77,24 @@ App.billing.PaymentForm = Ext.extend(Ext.form.FormPanel, {
 				layout:'border',
 				items:[{
 					region:'center',
-					height:100,
+					//height:200,
 					xtype:'fieldset',
 					border:false,
-					labelWidth:230,
+					labelWidth:75,
 					defaults:{
 						layout:'form'
 					},
 					items:[{
 						xtype:'compositefield',
-						fieldLabel:this.is_income==true ? 'Приходный кассовый ордер №' : 'Расходный кассовый ордер №',
+						fieldLabel:'№',
 						itemCls:'doc-title',
 						invalidClass:'x-plain',
 						items:[{
 							xtype:'textfield',
 							name: 'id',
 							disabled:true,
-							width:70,
+							padding:'2',
+							width:75,
 							allowBlank:true
 						},{
 							xtype:'displayfield',
@@ -82,33 +119,13 @@ App.billing.PaymentForm = Ext.extend(Ext.form.FormPanel, {
 							labelWidth:75
 						},
 						items:[{
-							columnWidth:0.4,
-							items:[new Ext.form.LazyComboBox({
-								fieldLabel:'Клиент',
-								id:this.tmp_id+'client',
-								proxyUrl:App.get_api_url('clients','client'),
-								storeFields:['resource_uri','client_item','name'],
-								allowBlank:false,
-								displayField: 'name',
-								anchor:'89%',
-					        	//name:'client_item',
-					        	listeners: 
-					        	{
-                                    scope:this,
-                                    'select':function(combo, record, index){
-                                    	var client_id = App.uri_to_id(record.id); 
-                                    	this.getForm().findField('client_account').store.setBaseParam('client_item__client',client_id);
-                                    	this.getForm().findField('client_account').store.load();
-                                    	
-                                    }
-					        	}
-							}),
+							columnWidth:1,
+							items:[
 							new Ext.form.LazyComboBox({
 								fieldLabel:'Лицевой счет',
-								anchor:'89%',
+								anchor:'71%',
 					        	name:'client_account',
-					        	storeFields:['resource_uri','account_id','client_name'],
-					        	proxyUrl:App.get_api_url('billing','clientaccount'),
+					        	store:this.cl_acc_store,
                                 allowBlank:false,
 							    displayField: 'account_id',
 							    selectOnFocus:true
@@ -118,7 +135,7 @@ App.billing.PaymentForm = Ext.extend(Ext.form.FormPanel, {
 								fieldLabel: 'Вид оплаты',
 								typeAhead: true,
     							triggerAction: 'all',
-    							anchor:'50%',
+    							anchor:'71%',
     							lazyRender:true,
     							mode: 'local',
     							store: new Ext.data.ArrayStore({
@@ -131,15 +148,16 @@ App.billing.PaymentForm = Ext.extend(Ext.form.FormPanel, {
         									['card','Банковская карта']]
     							}),
     							valueField: 'value',
+    							value:'cash',
     							displayField: 'type'
 							}),
-							{
-								xtype:'numberfield',
-								name:'amount',
-								fieldLabel:'Сумма',
-								anchor:'50%',
-								allowBlank:true,
-								value:0
+							this.amountField,{
+								xtype:'textarea',
+								name:'comment',
+								fieldLabel:'Примечание',
+								anchor:'98%',
+								autoScroll:true,
+								allowBlank:true
 							},
 							{
 								xtype:'hidden',
@@ -151,24 +169,8 @@ App.billing.PaymentForm = Ext.extend(Ext.form.FormPanel, {
                         }]
                     }]
 				}]
-            }],
+            }]
 
-            bbar: new Ext.ux.StatusBar({
-                id: 'statusbar' + this.id,
-                defaultText: '',
-                items: [{
-     				text:'Сохранить',
-					iconCls:'silk-save',
-	   				scale:'medium',
-                    handler : this.onSave,
-                    scope:this
-	   			},{
-	   				text:'Закрыть',
-	   				scale:'medium',
-                    scope: this,
-                    handler: this.onClose
-	   			}]
-            })
 		}
 		Ext.apply(this, Ext.apply(this.initialConfig, config));
 		App.billing.PaymentForm.superclass.initComponent.apply(this, arguments);
@@ -177,16 +179,22 @@ App.billing.PaymentForm = Ext.extend(Ext.form.FormPanel, {
 		//App.eventManager.on('clientaccountcreate', this.onClientAccountCreate, this);
 		
 		this.on('afterrender', function(){
+			if (this.patientRecord) {
+                this.getForm().findField('client_account').store.setBaseParam('client_item__client',
+                														this.patientRecord.data.id);
+                this.getForm().findField('client_account').store.load({callback:this.setAccount,scope:this});
+            }
 			if(this.record) {
 				this.getForm().loadRecord(this.record);
-				Ext.getCmp(this.tmp_id+'client').setValue(this.record.data.client);
-				Ext.getCmp(this.tmp_id+'client').originalValue = this.record.data.client;
+				//Ext.getCmp(this.tmp_id+'client').setValue(this.record.data.client);
+				//Ext.getCmp(this.tmp_id+'client').originalValue = this.record.data.client;
 			}
 			else {
                 var d = new Date;
                 this.getForm().findField('doc_date').setValue(d);
                 this.getForm().findField('doc_date').originalValue = d;
             };
+            this.amountField.focus(true,1000);
 		},this);
 	
 		/*this.on('paymentcreate', function(record){
@@ -249,6 +257,15 @@ App.billing.PaymentForm = Ext.extend(Ext.form.FormPanel, {
 			console.log('dirty field:',f);
            }
         });
+	},
+	
+	setAccount: function(records,opt,success){
+		var combo = this.getForm().findField('client_account');
+		if (records&&!this.record) {
+			var rec = records[0];
+			combo.setValue(rec.data.resource_uri);
+			combo.originalValue = rec.data.resource_uri;
+		}
 	}
 });
 
