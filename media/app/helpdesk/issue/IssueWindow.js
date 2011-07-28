@@ -17,8 +17,8 @@ App.issue.IssueWindow = Ext.extend(Ext.Window, {
 		config = {
 			iconCls:this.record ? 'silk-pencil' : 'silk-add',
 			title:'Тикет',
-			width:900,
-			height:550,
+			width:650,
+			height:450,
 			modal:true,
 			closeAction:'close',
 			layout:'fit',

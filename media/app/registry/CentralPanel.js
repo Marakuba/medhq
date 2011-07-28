@@ -20,7 +20,7 @@ App.CentralPanel = Ext.extend(Ext.Panel, {
 			items:[this.mainPanel],
 			tbar:[{
 				xtype: 'buttongroup',
-				title: '№ заказа или фамилия',
+//				title: '№ заказа или фамилия',
 				padding:5,
 				items:[{
 					xtype:'gsearchfield'
@@ -28,7 +28,7 @@ App.CentralPanel = Ext.extend(Ext.Panel, {
 				}]
 			},{
 				xtype:'buttongroup',
-				title:'Регистратура',
+//				title:'Регистратура',
 				defaults:{
 					xtype:'button',
 					scale:'medium'
@@ -68,7 +68,7 @@ App.CentralPanel = Ext.extend(Ext.Panel, {
 				}]
 			},{
 				xtype:'buttongroup',
-				title:'Результаты',
+//				title:'Результаты',
 				defaults:{
 					xtype:'button',
 					scale:'medium'
@@ -84,7 +84,7 @@ App.CentralPanel = Ext.extend(Ext.Panel, {
 				}]
 			},{
 				xtype:'buttongroup',
-				title:'Штрих-коды',
+//				title:'Штрих-коды',
 				defaults:{
 					xtype:'button',
 					scale:'medium'
@@ -98,13 +98,13 @@ App.CentralPanel = Ext.extend(Ext.Panel, {
 				}]
 			},{
 				xtype:'buttongroup',
-				title:'Отчеты',
+//				title:'Отчеты',
 				defaults:{
 					xtype:'button',
 					scale:'medium'
 				},
 				items:[{
-					text:'Рабочая смена врача',
+					text:'Отчеты',
 					tooltip:'',
 					handler:function(){
 						this.launchApp('reports');
@@ -113,7 +113,7 @@ App.CentralPanel = Ext.extend(Ext.Panel, {
 				}]
 			},'->',{
 				xtype:'buttongroup',
-				title:'HelpDesk',
+//				title:'HelpDesk',
 				defaults:{
 					xtype:'button',
 					scale:'medium'
@@ -127,7 +127,7 @@ App.CentralPanel = Ext.extend(Ext.Panel, {
 				}]
 			},{
 				xtype:'buttongroup',
-				title:'Профиль',
+//				title:'Профиль',
 				defaults:{
 					xtype:'button',
 					scale:'medium'

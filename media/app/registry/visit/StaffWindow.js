@@ -79,6 +79,7 @@ App.visit.StaffWindow = Ext.extend(Ext.Window, {
 App.visit.StaffBox = function() {
 	
 	var opts;
+	var dlg;
 	
 	var getCmb = function() {
 		var cmb = new Ext.form.ComboBox({
@@ -103,12 +104,12 @@ App.visit.StaffBox = function() {
 	
 	return {
 		handleButton: function(button) {
-			var f = this.win.items.itemAt(0).getForm();
+			var f = dlg.items.itemAt(0).getForm();
 			var field = f.findField('staff');
 			var val = field.getValue();
 			var rec = field.findRecord(field.valueField, val);
 			Ext.callback(opts.fn, opts.scope||window, [button, rec, opts], 1);
-			this.win.close();
+			dlg.close();
 		},
 		getDialog: function(options) {
 			this.win = new Ext.Window({
@@ -141,7 +142,7 @@ App.visit.StaffBox = function() {
 		},
 		show: function(options) {
 			opts = options;
-			var dlg = this.getDialog(opts);
+			dlg = this.getDialog(opts);
 			dlg.show();
 		}
 	}

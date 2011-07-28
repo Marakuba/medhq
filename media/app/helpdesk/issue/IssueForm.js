@@ -24,9 +24,10 @@ App.issue.IssueForm = Ext.extend(Ext.form.FormPanel, {
 				store:new Ext.data.ArrayStore({
 					fields:['id','title'],
 					data: [
-						[0,'Обычный'],
-						[1,'Средний'],
-						[2,'Критический']
+						[0,'Низкая'],
+						[1,'Средняя'],
+						[2,'Высокая'],
+						[3,'Критическая']
 					]
 				}),
 				typeAhead: true,
@@ -46,7 +47,7 @@ App.issue.IssueForm = Ext.extend(Ext.form.FormPanel, {
 				xtype:'textarea',
 				fieldLabel:'Описание',
 				name:'description',
-				anchor:'98% 98%',
+				anchor:'98% 50%',
 			}]
 		}
 		Ext.apply(this, Ext.apply(this.initialConfig, config));

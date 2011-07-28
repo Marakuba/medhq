@@ -239,6 +239,8 @@ App.insurance.PolicyGrid = Ext.extend(Ext.grid.GridPanel, {
 	},
 	
 	onPatientCreate: function(record) {
+//		console.info('onPatientCreate');
+//		console.info('store:',this.store);
 		this.record = record;
 		this.onSave();
 	}

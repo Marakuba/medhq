@@ -257,7 +257,8 @@ App.visit.OrderedServiceInlineGrid = Ext.extend(Ext.grid.EditorGridPanel, {
 			}
 		}
 		if(attrs.staff){
-			App.visit.StaffBox.show({
+			var box = App.visit.StaffBox;
+			box.show({
 				staffList:attrs.staff,
 				fn:function(button,rec,opts){
 					if(button=='ok' && rec) {

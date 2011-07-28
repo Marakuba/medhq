@@ -122,8 +122,9 @@ App.visit.VisitForm = Ext.extend(Ext.FormPanel, {
 
 		this.lab = {
 			layout:'form',
+			hideLabel:true,
 			items:new Ext.form.LazyComboBox({
-	        	fieldLabel:'Лаборатория',
+//	        	fieldLabel:'Лаборатория',
 	        	name:'source_lab',
 			    minChars:3,
 			    emptyText:'Выберите лабораторию...',
@@ -134,11 +135,14 @@ App.visit.VisitForm = Ext.extend(Ext.FormPanel, {
 		this.referral = {
 			layout:'form',
 			columnWidth:1.0,
+//			hideLabels:true,
 			items:new Ext.form.LazyComboBox({
 				anchor:'98%',
 	        	fieldLabel:'Кто направил',
+	        	emptyText:'Выберите направившего врача...',
 	        	name:'referral',
-	        	proxyUrl:get_api_url('referral')
+	        	proxyUrl:get_api_url('referral'),
+	        	tooltip:'Врач, который направил пациента'
 			})
 		};
 		

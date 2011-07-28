@@ -54,7 +54,7 @@ App.patient.PatientWindow = Ext.extend(Ext.Window, {
 				scope:this
 			},{
 				text:'Сохранить',
-				handler:this.onFormSave.createDelegate(this),
+				handler:this.onFormSave.createDelegate(this,[false]),
 				scope:this
 			},{
 				text:'Сохранить и перейти к приему',
@@ -75,6 +75,7 @@ App.patient.PatientWindow = Ext.extend(Ext.Window, {
 		var f = this.form;
 		this.steps = f.getSteps();
 		this.tSteps = this.steps;
+		console.info(this.tSteps);
 		if(this.steps>0) {
 			this.msgBox = Ext.MessageBox.progress('Подождите','Идет сохранение документа!');
 			f.on('popstep',this.popStep, this);
