@@ -14,5 +14,7 @@ Ext.onReady(function(){
 	});
 	
 	centralPanel.launchApp('patients');
+	centralPanel.launchApp('visits',{},false);
+	centralPanel.launchApp('results',{},false);
 	
 });

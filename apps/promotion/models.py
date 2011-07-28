@@ -9,7 +9,7 @@ from django.utils.encoding import smart_unicode
 from service.models import BaseService, clear_service_cache
 from state.models import State
 import datetime
-from django.db.models.signals import post_save
+from django.db.models.signals import post_save, post_delete
 
 class PromotionManager(models.Manager):
     """
@@ -57,3 +57,4 @@ class PromotionItem(models.Model):
         
 post_save.connect(clear_service_cache, sender=Promotion)
 post_save.connect(clear_service_cache, sender=PromotionItem)
+post_delete.connect(clear_service_cache, sender=Promotion)

@@ -138,7 +138,7 @@ App.patient.PatientForm = Ext.extend(Ext.form.FormPanel, {
 				var Model = this.model;
 				this.record = new Model();
 			} else {
-				console.log('Ошибка: нет модели');
+				Ext.MessageBox.alert('Ошибка','нет модели');
 			}
 		}
 		return this.record;

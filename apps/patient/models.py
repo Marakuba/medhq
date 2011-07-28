@@ -103,7 +103,7 @@ class InsurancePolicy(make_operator_object('insurance_policy')):
     objects = models.Manager()
     
     def __unicode__(self):
-        return smart_unicode(u'%s' % self.number)
+        return smart_unicode(u'%s, %s' % (self.number, self.insurance_state) )
     
     class Meta:
         verbose_name = u'страховой полис'

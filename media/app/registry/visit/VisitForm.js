@@ -2,8 +2,6 @@ Ext.ns('App.visit');
 
 App.visit.VisitForm = Ext.extend(Ext.FormPanel, {
 	
-	// 
-	
 	initComponent:function(){
 
 		this.inlines = new Ext.util.MixedCollection({});
@@ -25,63 +23,53 @@ App.visit.VisitForm = Ext.extend(Ext.FormPanel, {
 	        region: 'east',
 		    collapsible: true,
 		    collapseMode: 'mini',
+		    margins:'5 5 5 0',
 	        width: 300,
 	        split: true
 	    });	
 
 ///
 		
-		this.policyStore = new Ext.data.JsonStore({
-			proxy: new Ext.data.HttpProxy({
-				url:get_api_url('insurance_policy'),
-				method:'GET'
-			}),
-			baseParams: {
-				patient:this.patientId
-			},
-			root:'objects',
-			idProperty:'resource_uri',
-			fields:['resource_uri','number','state_name','start_date','end_date'],
-			listeners:{
-				load:function(){
-					if (this.policyToSet)
-					{
-						var pc = Ext.getCmp('visit-policy-cmb');
-						pc.setValue(this.policyToSet);
-						this.policyToSet = undefined;
-					}
-				},
-				scope:this
-			}
+		this.policyCmb = new Ext.form.LazyClearableComboBox({
+//			id:'visit-policy-cmb',
+        	fieldLabel:'Полис ДМС',
+			anchor:'98%',
+        	name:'insurance_policy',
+        	store:new Ext.data.JsonStore({
+    			proxy: new Ext.data.HttpProxy({
+    				url:get_api_url('insurance_policy'),
+    				method:'GET'
+    			}),
+    			root:'objects',
+    			idProperty:'resource_uri',
+    			fields:['resource_uri','name','number','state_name','start_date','end_date']
+    		}),
+		    displayField: 'name',
+//		    itemSelector: 'div.x-combo-list-item',
+//		    tpl:new Ext.XTemplate(
+//		    	'<tpl for="."><div class="x-combo-list-item">',
+//		    	'№{number}, {state_name}',
+//		    	'</div></tpl>'
+//		    )
 		});
-		this.policy = {
-			flex:1,
-			layout:'form',
-			items:new Ext.form.LazyClearableComboBox({
-				id:'visit-policy-cmb',
-	        	fieldLabel:'Полис ДМС',
-				anchor:'98%',
-	        	name:'insurance_policy',
-	        	store:this.policyStore,
-	        	proxyUrl:get_api_url('insurance_policy'),
-			    displayField: 'number',
-			    itemSelector: 'div.x-combo-list-item',
-			    tpl:new Ext.XTemplate(
-			    	'<tpl for="."><div class="x-combo-list-item">',
-			    	'№{number}, {state_name}',
-			    	'</div></tpl>'
-			    )
-			})
-		};
-		this.policyBar = {
-			id:'policy-bar',
+		
+		if(this.patientRecord) {
+			this.policyCmb.getStore().setBaseParam('patient',this.patientRecord.data.id);
+		}
+		
+		this.policyBar = new Ext.Panel({
+//			id:'policy-bar',
 			layout:'hbox',
-			hidden:true,
+			hidden:this.record ? this.record.data.payment_type!='д' : true,
 			defaults:{
 				baseCls:'x-border-layout-ct',
 				border:false
 			},
-			items:[this.policy,{
+			items:[{
+				flex:1,
+				layout:'form',
+				items:this.policyCmb
+			},{
 				//columnWidth:0.20,
 				width:30,
 				items:{
@@ -95,9 +83,8 @@ App.visit.VisitForm = Ext.extend(Ext.FormPanel, {
 								patientRecord:this.patientRecord
 							});
 							win.on('policyselect', function(uri){
-								var pc = Ext.getCmp('visit-policy-cmb');
-								this.policyToSet = uri;
-								pc.getStore().load();
+								this.policyCmb.forceValue(uri);
+								win.close();
 							},this);
 							win.show(this);
 						}
@@ -105,11 +92,11 @@ App.visit.VisitForm = Ext.extend(Ext.FormPanel, {
 					scope:this
 				}
 			}]			
-		};
+		});
 
 ///
 		this.discountCmb = new Ext.form.LazyClearableComboBox({
-			id:'visit-discount-cmb',
+//			id:'visit-discount-cmb',
         	fieldLabel:'Скидка',
 			anchor:'98%',
         	name:'discount',
@@ -130,7 +117,7 @@ App.visit.VisitForm = Ext.extend(Ext.FormPanel, {
 			items:this.discountCmb
 		};
 		if(this.patientRecord) {
-			Ext.getCmp('visit-discount-cmb').setValue(this.patientRecord.data.discount);
+			this.discountCmb.setValue(this.patientRecord.data.discount);
 		}
 
 		this.lab = {
@@ -204,12 +191,12 @@ App.visit.VisitForm = Ext.extend(Ext.FormPanel, {
 		this.pregnancy = {
             layout: 'form',
             border:false,
-            columnWidth:0.33,
+            columnWidth:0.5,
             items:[{
 				fieldLabel:'Беременность',
 				name:'pregnancy_week',
 				xtype:'textfield',
-    			anchor:'95%',
+    			anchor:'100%',
 				emptyText:'кол-во недель'
 			}]
 		};
@@ -221,16 +208,16 @@ App.visit.VisitForm = Ext.extend(Ext.FormPanel, {
 				fieldLabel:'День цикла',
 				name:'menses_day',
 				xtype:'textfield',
-    			anchor:'95%',
+    			anchor:'50%',
 				emptyText:'кол-во дней'
 			}]
 		};
 		this.mp = {
             layout: 'form',
             border:false,
-            columnWidth:0.34,
+            columnWidth:0.5,
             items:[{
-				fieldLabel:'Менопауза',
+				boxLabel:'Менопауза',
 				xtype:'checkbox',
 				name:'menopause'
 			}]
@@ -277,15 +264,15 @@ App.visit.VisitForm = Ext.extend(Ext.FormPanel, {
 			value:'н',
 			listeners: {
 				select:function(combo,rec,i){
-					var pb = Ext.getCmp('policy-bar');
-					var vpc = Ext.getCmp('visit-policy-cmb');
+//					var pb = Ext.getCmp('policy-bar');
+//					var vpc = Ext.getCmp('visit-policy-cmb');
 					if(rec.data.id=='д') {
-						vpc.allowBlank = false;
-						pb.show();
+						this.policyCmb.allowBlank = false;
+						this.policyBar.show();
 					} else {
-						vpc.allowBlank = true;
-						vpc.reset();
-						pb.hide();
+						this.policyCmb.allowBlank = true;
+						this.policyCmb.reset();
+						this.policyBar.hide();
 					}
 					
 				},
@@ -329,9 +316,9 @@ App.visit.VisitForm = Ext.extend(Ext.FormPanel, {
 		};		
 		
 		this.defaultItems = [{
-    			xtype:'hidden',
-    			name:'patient',
-    			value:this.patientRecord.data.resource_uri
+			xtype:'hidden',
+			name:'patient',
+			value:this.patientRecord.data.resource_uri
         }];
 		
 		this.types = {
@@ -353,8 +340,9 @@ App.visit.VisitForm = Ext.extend(Ext.FormPanel, {
 								baseCls:'x-border-layout-ct',
 								border:false
 							},
-	        				items:[this.pregnancy, this.menstruation, this.mp]
+	        				items:[this.pregnancy, this.mp]
 	        			},
+	        			this.menstruation, 
 	        			this.diagnosis,
 	        			this.comment
 	        		]
@@ -391,8 +379,9 @@ App.visit.VisitForm = Ext.extend(Ext.FormPanel, {
 								baseCls:'x-border-layout-ct',
 								border:false
 							},
-	        				items:[this.pregnancy, this.menstruation, this.mp]
+	        				items:[this.pregnancy, this.mp]
 	        			},
+	        			this.menstruation, 
 	        			this.diagnosis,
 	        			this.comment
 	        		]
@@ -402,7 +391,7 @@ App.visit.VisitForm = Ext.extend(Ext.FormPanel, {
 		if(this.type){
 			var items = this.defaultItems.concat(this.types[this.type]);
 		} else {
-			console.error('Не задан тип формы');
+//			console.error('Не задан тип формы');
 		}
 		
 
@@ -410,13 +399,15 @@ App.visit.VisitForm = Ext.extend(Ext.FormPanel, {
 //			bodyStyle:'padding:5px',
 //			baseCls:'x-border-layout-ct',
 			//title:this.getPatientTitle(this.patientId),
+			border:false,
 			layout:'border',
 			items:[{
 				layout:'border',
 				region:'center',
+				margins:'5 0 5 5',
 				items:[{
 					region:'north',
-	        		height:150,
+	        		height:170,
 	        		layout:'hbox',
 	        		border:false,
 	        		baseCls:'x-border-layout-ct',
@@ -456,11 +447,6 @@ App.visit.VisitForm = Ext.extend(Ext.FormPanel, {
 		bc_win.show();
 	},
 	
-	getTotalField: function()
-	{
-		return this.totalPaid.items.itemAt(0);
-	},
-	
 	toPrint:function(slug){
 		var url = ['/visit/print',slug,this.visitId,''].join('/');
 		window.open(url);
@@ -472,7 +458,7 @@ App.visit.VisitForm = Ext.extend(Ext.FormPanel, {
 				var Model = this.model;
 				this.record = new Model();
 			} else {
-				console.log('Ошибка: нет модели');
+				Ext.MessageBox.alert('Ошибка','нет модели');
 			}
 		}
 		return this.record;

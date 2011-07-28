@@ -9,7 +9,7 @@ from tastypie.authorization import DjangoAuthorization
 from tastypie.constants import ALL, ALL_WITH_RELATIONS
 from lab.models import LabOrder, Sampling, Tube, Result, Analysis, InputList,\
     Equipment, EquipmentAssay, EquipmentResult, EquipmentTask
-from service.models import BaseService, LabServiceGroup
+from service.models import BaseService, LabServiceGroup, ExtendedService
 from staff.models import Position, Staff, Doctor
 from state.models import State
 from django.conf import settings
@@ -24,6 +24,7 @@ from tastypie.exceptions import NotFound
 from examination.models import CardTemplate, ExaminationCard
 from helpdesk.models import Issue, IssueType
 from scheduler.models import Calendar, Event
+from django.contrib import messages
 #from reporting.models import Report, FieldItem, GroupItem, SummaryItem, Fields,\
 #    Groups, Summaries, FilterItem, Filters
 
@@ -125,6 +126,7 @@ class StateResource(ModelResource):
         resource_name = 'state'
         limit = 10
         filtering = {
+            'id':ALL,
             'name':('istartswith',)
         }
         
@@ -170,6 +172,7 @@ class InsurancePolicyResource(ExtResource):
 
     def dehydrate(self, bundle):
         bundle.data['state_name'] = bundle.obj.insurance_state
+        bundle.data['name'] = bundle.obj
         return bundle
     
     class Meta:
@@ -304,6 +307,29 @@ class BaseServiceResource(ModelResource):
         queryset = BaseService.objects.all()
         resource_name = 'baseservice'
         filtering = {
+            'id':ALL,
+            'name':ALL
+        }
+
+
+class ExtendedServiceResource(ModelResource):
+    """
+    """
+    #order = fields.ToOneField(VisitResource, 'order')
+    base_service = fields.ForeignKey(BaseServiceResource, 'base_service')
+    state = fields.ForeignKey(StateResource, 'state')
+
+    def dehydrate(self, bundle):
+        bundle.data['staff'] = bundle.obj.staff and [[staff.id,staff] for staff in bundle.obj.staff.all()] or None
+        return bundle
+    
+    class Meta:
+        queryset = ExtendedService.objects.all()
+        resource_name = 'extendedservice'
+        filtering = {
+            'id':ALL,
+            'base_service':ALL_WITH_RELATIONS,
+            'state':ALL_WITH_RELATIONS,
             'name':ALL
         }
 
@@ -995,6 +1021,7 @@ api.register(EquipmentTaskResource())
 
 #service
 api.register(BaseServiceResource())
+api.register(ExtendedServiceResource())
 api.register(LabServiceGroupResource())
 
 #state
