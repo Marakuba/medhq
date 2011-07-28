@@ -1,6 +1,13 @@
 Ext.ns('App');
 Ext.ns('App.services');
 
+App.StatusBar = new Ext.ux.StatusBar({
+	defaultText: 'Готово',
+	defaultIconCls: 'x-status-valid',
+	autoClear:3000,
+	items:[]
+}); 
+
 App.CentralPanel = Ext.extend(Ext.Panel, {
 	
 	initComponent: function(){
@@ -137,12 +144,7 @@ App.CentralPanel = Ext.extend(Ext.Panel, {
 	            	}
 	            }]
 			}],
-	        bbar: new Ext.ux.StatusBar({
-	        	id:'global-status-bar',
-	        	text: 'Готово',
-	        	iconCls: 'x-status-valid',
-	        	items:[]
-	        }),
+	        bbar: App.StatusBar,
 		}
 		Ext.apply(this, Ext.apply(this.initialConfig, config));
 		App.CentralPanel.superclass.initComponent.apply(this, arguments);
@@ -154,14 +156,17 @@ App.CentralPanel = Ext.extend(Ext.Panel, {
 		this.mainPanel.remove(appId);
 	},
 	
-	launchApp: function(appId,config) {
+	launchApp: function(appId,config, setActive) {
         var app_config = {
             xtype:appId
         };
         config = config || {};
 		Ext.apply(app_config, config);
 		var new_app = this.mainPanel.add(app_config);
-		this.mainPanel.setActiveTab(new_app);
+		setActive = setActive==undefined ? true : setActive;
+		if(setActive) {
+			this.mainPanel.setActiveTab(new_app);
+		}
 	}
 });
 

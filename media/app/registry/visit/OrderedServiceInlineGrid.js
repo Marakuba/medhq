@@ -55,25 +55,6 @@ App.visit.OrderedServiceInlineGrid = Ext.extend(Ext.grid.EditorGridPanel, {
 		    reader: this.reader,
 		    writer: this.writer,
 		    listeners:{
-		    	write: function(store, action, result, res, rs) {
-//	    			var pb = Ext.getCmp('global-progress-bar');
-//		    		var modified = store.getModifiedRecords().length;
-//	    			elapse = this.startModified - modified;
-//	    			pb.updateProgress(1-modified/this.startModified,'Сохранено '+elapse+' из '+this.startModified+' записей');
-//		    		if (modified==0){
-//						var sb = Ext.getCmp('global-status-bar');
-//						sb.setStatus({
-//							text:'Готово',
-//							iconCls:'x-status-valid'
-//						});
-////						Ext.getCmp('barcode-print-btn').enable();
-////						Ext.getCmp('visit-print-btn').enable();
-////						Ext.getCmp('sampling-print-btn').enable();
-//						Ext.getCmp('visit-submit-btn').enable();
-//						pb.hide();
-//						App.eventManager.fireEvent('visitclose');
-//		    		}
-		    	},
 		    	add:this.onSumChange.createDelegate(this),
 		    	remove:this.onSumChange.createDelegate(this),
 		    	load:this.onSumChange.createDelegate(this),
@@ -105,6 +86,7 @@ App.visit.OrderedServiceInlineGrid = Ext.extend(Ext.grid.EditorGridPanel, {
 		    {
 		    	header: "МВ",
 		    	width: 5, 
+		    	css:'padding-bottom:0px',
 		    	dataIndex: 'execution_place', 
 		    	renderer: function(val) {
 		    		var s = val.split('/');
@@ -124,25 +106,6 @@ App.visit.OrderedServiceInlineGrid = Ext.extend(Ext.grid.EditorGridPanel, {
 		    	renderer: function(val) {
 		    		return val //? val.staff_name : '';
 		    	},
-		    	listeners:{
-//		    		click: function(col,grid,i,e){
-//		    			var rec = grid.store.getAt(i);
-//		    			var s = rec.data.service.split('/');
-//		    			s = s[s.length-1];
-//		    			this.staffWindow(i,s);
-		    			/*var node = t.getNodeById(rec.data.service);
-		    			var sl = node.attributes.staff;
-		    			if(sl) {
-		    				var win = new App.patient.StaffWindow({index:i, staffList:sl});
-		    				win.on('validstaff', this.updateStaff, this);
-		    				win.show();
-		    				
-		    			}*/
-		    			//console.log(rec.data.staff_list);
-		    			//Ext.MessageBox.alert('Column clicked',i);
-//		    		},
-//		    		scope:this
-		    	}
 		    },{
 		    	header: "Кол-во", 
 		    	width: 10, 
@@ -320,7 +283,42 @@ App.visit.OrderedServiceInlineGrid = Ext.extend(Ext.grid.EditorGridPanel, {
 	},
 	
 	changeStaff: function() {
-		rec = this.getSelectionModel().getSelected();
+		var rec = this.getSelectionModel().getSelected();
+		Ext.Ajax.request({
+			url:get_api_url('extendedservice'),
+			method:'GET',
+			success:function(response, opts){
+				var obj = Ext.decode(response.responseText);
+				var staff = obj.objects[0].staff;
+				if(staff) {
+					App.visit.StaffBox.show({
+						staffList:staff,
+						fn:function(button,r,opts){
+							if(button=='ok' && r) {
+								rec.beginEdit();
+								rec.set('staff',get_api_url('staff')+'/'+r.data.id);
+								rec.set('staff_name',r.data.staff_name);
+								rec.endEdit();
+							}
+						},
+						scope:this
+					});
+				} else {
+					App.StatusBar.setStatus({
+                        text: 'Для данной услуги врачи не назначены!',
+                        iconCls: 'x-status-error',
+                        clear: true // auto-clear after a set interval
+                    });
+				}
+			},
+			failure:function(response, opts){
+				Ext.MessageBox.alert('Ошибка','Во время получения данных о врачах произошла ошибка на сервере!');
+			},
+			params:{
+				base_service__id:App.uriToId(rec.data.service),
+				state__id:App.uriToId(rec.data.execution_place)
+			}
+		});
 	},
 	
 	onSave: function() {

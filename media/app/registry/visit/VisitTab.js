@@ -80,7 +80,7 @@ App.visit.VisitTab = Ext.extend(Ext.Panel, {
 			},
 			tbar:[this.getPatientTitle(),'->',{
         		text:'Закрыть',
-				handler:this.onClose.createDelegate(this)
+				handler:this.onClose.createDelegate(this,[])
 			},this.saveButton],
 	        items:[this.form]
 		}
@@ -99,20 +99,8 @@ App.visit.VisitTab = Ext.extend(Ext.Panel, {
 			this.setTitle(this.getTitleText());
 		},this);
 		
-//		this.servicePanel.on('serviceclick', this.onServiceClick, this);
 	},
 	
-//	onServiceClick : function(node) {
-//		var a = node.attributes;
-//		if (a.isComplex) {
-//			Ext.each(a.nodes, function(item,i){
-//				this.form.addRow(item);
-//			}, this);
-//		} else {
-//			this.form.addRow(a);
-//		}
-//	},
-
 	onFormSave: function() {
 		var f = this.form;
 		this.steps = f.getSteps();
@@ -127,7 +115,8 @@ App.visit.VisitTab = Ext.extend(Ext.Panel, {
 	},
 	
 	onClose: function(noConfirm){
-		if(!noConfirm) {
+		var steps = this.form.getSteps();
+		if(noConfirm===undefined && steps>0) {
 			Ext.MessageBox.show({
 				title:'Подтверждение',
 				closable:false,
@@ -141,7 +130,7 @@ App.visit.VisitTab = Ext.extend(Ext.Panel, {
 				fn:function(btn){
 					if(btn!='cancel') {
 						if(btn=='yes') {
-							this.close();
+							this.onFormSave();
 						} else if (btn=='no') {
 							this.close();
 						}

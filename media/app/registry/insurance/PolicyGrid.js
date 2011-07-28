@@ -39,7 +39,7 @@ App.insurance.PolicyGrid = Ext.extend(Ext.grid.GridPanel, {
 		this.store = new Ext.data.Store({
 		    id: 'laborder-store',
 			//autoLoad:true,
-			autoSave:false,
+			autoSave:this.showChoiceButton,
 		    baseParams: {
 		    	format:'json'
 		    },
@@ -167,12 +167,12 @@ App.insurance.PolicyGrid = Ext.extend(Ext.grid.GridPanel, {
 				iconCls:'silk-add',
 				text:'Добавить компанию',
 				handler:this.onAddState.createDelegate(this)
-			},'-',{
+			}/*,'-',{
 				xtype:'button',
 				iconCls:'silk-delete',
 				text:'Удалить полис',
 				handler:this.onRemove.createDelegate(this)
-			}],
+			}*/],
 			viewConfig : {
 				forceFit : true,
 				emptyText: 'Нет записей'
@@ -194,8 +194,8 @@ App.insurance.PolicyGrid = Ext.extend(Ext.grid.GridPanel, {
 	},
 	
 	onAddPolicy: function(){
-        var r = new this.store.recordType({
-        });
+		var data = this.record ? { patient:this.record.data.resource_uri } : {};
+        var r = new this.store.recordType(data);
         this.editor.stopEditing();
         this.store.add(r);
         this.editor.startEditing(this.store.getCount()-1);
