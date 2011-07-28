@@ -193,6 +193,9 @@ class Result(models.Model):
     validation = models.IntegerField(u'Статус валидации', choices=PASS_STATUS, default=0)
     sample = models.ForeignKey('Sampling', blank=True, null=True)
     status = models.ForeignKey(Status, blank=True, null=True)
+    modified = models.DateTimeField(auto_now=True)
+    modified_by = models.ForeignKey(User, blank=True, null=True)
+    previuos_value = models.CharField(u"Предыдущий результат", max_length=50, blank=True, null=True)
     
     def __unicode__(self):
         a = self.analysis.__unicode__()

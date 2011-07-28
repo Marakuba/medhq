@@ -259,7 +259,8 @@ App.patient.VisitGrid = Ext.extend(Ext.grid.GridPanel, {
 		Ext.apply(this, Ext.apply(this.initialConfig, config));
 		App.patient.VisitGrid.superclass.initComponent.apply(this, arguments);
 		
-		this.store.on('write',function(){
+		this.store.on('load',function(){
+			this.getSelectionModel().selectFirstRow();
 		},this);
 		//this.ownerCt.ownerCt.on('patientselect', this.setActivePatient, this);
 		//App.eventManager.on('patientselect', this.onPatientSelect, this);
