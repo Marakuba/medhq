@@ -133,7 +133,7 @@ App.patient.ClientAccountGrid = Ext.extend(Ext.grid.GridPanel, {
 
 		Ext.apply(this, Ext.apply(this.initialConfig, config));
 		App.patient.ClientAccountGrid.superclass.initComponent.apply(this, arguments);
-		App.eventManager.on('globalsearch', this.onGlobalSearch, this);
+		//App.eventManager.on('globalsearch', this.onGlobalSearch, this);
 	},
 	
 	onGlobalSearch: function(v) {
