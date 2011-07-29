@@ -46,7 +46,7 @@ class DiscountResource(ModelResource):
 class ClientItemResource(ExtResource):
     client = fields.OneToOneField('apps.api.registry.PatientResource','client')
     def dehydrate(self, bundle):
-        bundle.data['client_name'] = bundle.obj.client
+        bundle.data['client_name'] = bundle.obj.client.full_name()
         return bundle
     
     class Meta:
@@ -64,6 +64,7 @@ class PatientResource(ExtResource):
 
     def dehydrate(self, bundle):
         bundle.data['discount_name'] = bundle.obj.discount and bundle.obj.discount or u'0%'
+        bundle.data['full_name'] = bundle.obj.full_name()
         return bundle
 
     def obj_create(self, bundle, request=None, **kwargs):
@@ -95,6 +96,21 @@ class PatientResource(ExtResource):
             'discount':ALL_WITH_RELATIONS
         }
         
+class DebtorResource(ExtResource):
+    
+    discount = fields.ForeignKey(DiscountResource, 'discount', null=True)
+    client_item = fields.OneToOneField(ClientItemResource, 'client_item', null=True)
+    
+    class Meta:
+        queryset = Patient.objects.filter(balance__lte = 0) #@UndefinedVariable
+        resource_name = 'debtor'
+        default_format = 'application/json'
+        authorization = DjangoAuthorization()
+        filtering = {
+            'last_name':('istartswith',),
+            'id':ALL,
+            'discount':ALL_WITH_RELATIONS
+        }
         
 class ReferralResource(ExtResource):
 
@@ -1111,6 +1127,8 @@ api.register(AccountResource())
 api.register(ContentTypeResource())
 api.register(ClientAccountResource())
 api.register(PaymentResource())
+
+api.register(DebtorResource())
 
 #reporting
 #api.register(ReportResource())

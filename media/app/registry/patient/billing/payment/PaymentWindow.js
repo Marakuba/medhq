@@ -38,7 +38,8 @@ App.billing.PaymentWindow = Ext.extend(Ext.Window, {
 		});
 		
 		config = {
-			title:(this.is_income==true ? 'Приходный ордер: ' : 'Расходный ордер: ')+this.patientRecord.data.last_name,
+			title:(this.is_income==true ? 'Приходный ордер: ' : 'Расходный ордер: ')+
+				(this.patientRecord? this.patientRecord.data.last_name:''),
 			width:450,
 			height:280,
 			layout:'fit',

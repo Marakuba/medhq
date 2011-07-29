@@ -1,6 +1,6 @@
-Ext.ns('App');
+Ext.ns('App','App.cashier');
 
-App.CashierTab = Ext.extend(Ext.Panel, {
+App.cashier.CashierTab = Ext.extend(Ext.Panel, {
 	
 	initComponent: function(){
 		
@@ -40,6 +40,10 @@ App.CashierTab = Ext.extend(Ext.Panel, {
 					title:'Платежи',
 					layout:'fit',
 					xtype:'paymentgrid'
+				},{
+					title:'Должники',
+					layout:'fit',
+					xtype:'debtorgrid'
 				}]
 		});
 	
@@ -52,9 +56,9 @@ App.CashierTab = Ext.extend(Ext.Panel, {
 			
 		}
 		Ext.apply(this, Ext.apply(this.initialConfig, config));
-		App.CashierTab.superclass.initComponent.apply(this, arguments);
+		App.cashier.CashierTab.superclass.initComponent.apply(this, arguments);
 	}
 	
 });
 
-Ext.reg('cashiertab', App.CashierTab);
+Ext.reg('cashiertab', App.cashier.CashierTab);
