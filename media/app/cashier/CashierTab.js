@@ -1,6 +1,6 @@
 Ext.ns('App','App.cashier','App.ws');
 
-WEB_SOCKET_SWF_LOCATION = "/media/web-socket-js/WebSocketMain.swf";
+WEB_SOCKET_SWF_LOCATION = "http://localhost/medhq/media/web-socket-js/WebSocketMain.swf";
 WEB_SOCKET_DEBUG = true;
 
 function websocket_init() {
