@@ -104,6 +104,21 @@ App.CentralPanel = Ext.extend(Ext.Panel, {
 					},
 					scope:this
 				}]
+			},{
+				xtype:'buttongroup',
+				title:'Касса',
+				defaults:{
+					xtype:'button',
+					scale:'medium'
+				},
+				items:[{
+					text:'Кассир',
+					tooltip:'',
+					handler:function(){
+						this.launchApp('cashiertab');
+					},
+					scope:this
+				}]
 			},'->',{
 				xtype:'buttongroup',
 				title:'HelpDesk',
