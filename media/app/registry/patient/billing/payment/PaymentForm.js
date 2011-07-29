@@ -193,8 +193,11 @@ App.billing.PaymentForm = Ext.extend(Ext.form.FormPanel, {
                 var d = new Date;
                 this.getForm().findField('doc_date').setValue(d);
                 this.getForm().findField('doc_date').originalValue = d;
+                if (this.amount){
+                	this.amountField.setValue(this.amount);
+                }
             };
-            this.amountField.focus(true,1000);
+            this.amountField.focus(true,1500);
 		},this);
 	
 		/*this.on('paymentcreate', function(record){

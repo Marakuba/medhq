@@ -26,6 +26,7 @@ App.billing.PaymentWindow = Ext.extend(Ext.Window, {
 		this.form = new App.billing.PaymentForm({
 			model:this.model,
 			patientRecord:this.patientRecord,
+			amount:this.amount,
 			is_income : this.is_income,
 			record:this.record,
 			fn:function(record){
