@@ -54,7 +54,7 @@ App.billing.PaymentForm = Ext.extend(Ext.form.FormPanel, {
 			}),
 			root:'objects',
 			idProperty:'resource_uri',
-			fields:['resource_uri','client_item','full_name'],
+			fields:['resource_uri','client_item','full_name','last_name'],
 			writer : new Ext.data.JsonWriter({
 		    	encode: false,
             	writeAllFields: true 
@@ -67,7 +67,8 @@ App.billing.PaymentForm = Ext.extend(Ext.form.FormPanel, {
     	this.amountField = new Ext.form.NumberField({ 
             fieldLabel: 'Сумма',
             name: 'amount',
-            width:140,
+            //width:140,
+            style:'font-size:2.5em; height:1em; width:140px',
 			allowBlank:true,
             minValue: 0,
             value: 0,
@@ -143,6 +144,7 @@ App.billing.PaymentForm = Ext.extend(Ext.form.FormPanel, {
 								allowBlank:false,
 								displayField: 'full_name',
 								id:this.tmp_id+'client',
+								queryParam:'last_name__istartswith',
 								hidden:this.patientRecord? true : false,
 								anchor:'71%',
 								store: this.patient_store,

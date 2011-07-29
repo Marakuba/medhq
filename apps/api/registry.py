@@ -93,6 +93,7 @@ class PatientResource(ExtResource):
         filtering = {
             'last_name':('istartswith',),
             'id':ALL,
+            'full_name':('istartswith',),
             'discount':ALL_WITH_RELATIONS
         }
         
