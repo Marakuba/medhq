@@ -216,18 +216,17 @@ App.billing.PaymentGrid = Ext.extend(Ext.grid.GridPanel, {
 	
 	
 	onCreate: function(type){
-		if (this.patientRecord) {
+		//if (this.patientRecord) {
 			this.win = new App.billing.PaymentWindow({
 				store:this.store,
 				is_income : type,
 				patientRecord:this.patientRecord
 			});
 			this.win.show();
-		}
+		//}
 	},
 	
 	onChange: function(rowindex){
-		if (this.patientRecord) {
 			var rec = this.getSelected();
 			if(rec) {
     			var data = {
@@ -238,7 +237,6 @@ App.billing.PaymentGrid = Ext.extend(Ext.grid.GridPanel, {
     			};
     			this.win = new App.billing.PaymentWindow(data);
     			this.win.show();
-			}
 		}
 	},
 	

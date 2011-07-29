@@ -46,6 +46,24 @@ App.billing.PaymentForm = Ext.extend(Ext.form.FormPanel, {
 			}
     	});
     	
+		this.patient_store = new Ext.data.JsonStore({
+			autoLoad:false,
+			proxy: new Ext.data.HttpProxy({
+			    url:get_api_url('patient'),
+				method:'GET'
+			}),
+			root:'objects',
+			idProperty:'resource_uri',
+			fields:['resource_uri','client_item','full_name'],
+			writer : new Ext.data.JsonWriter({
+		    	encode: false,
+            	writeAllFields: true 
+			}),
+			baseParams : {
+		    	format:'json'
+			}
+    	});
+    	
     	this.amountField = new Ext.form.NumberField({ 
             fieldLabel: 'Сумма',
             name: 'amount',
@@ -120,7 +138,26 @@ App.billing.PaymentForm = Ext.extend(Ext.form.FormPanel, {
 						},
 						items:[{
 							columnWidth:1,
-							items:[
+							items:[new Ext.form.LazyComboBox({
+								fieldLabel:'Пациент',
+								allowBlank:false,
+								displayField: 'full_name',
+								id:this.tmp_id+'client',
+								hidden:this.patientRecord? true : false,
+								anchor:'71%',
+								store: this.patient_store,
+					        	//name:'client_item',
+					        	listeners: 
+					        	{
+                                    scope:this,
+                                    'select':function(combo, record, index){
+                                    	var client_id = App.uriToId(record.data.resource_uri); 
+                                    	this.getForm().findField('client_account').store.setBaseParam('client_item__client',client_id);
+                                    	this.getForm().findField('client_account').store.load({callback:this.setAccount,scope:this});
+                                    	
+                                    }
+					        	}
+							}),
 							new Ext.form.LazyComboBox({
 								fieldLabel:'Лицевой счет',
 								anchor:'71%',
@@ -186,8 +223,8 @@ App.billing.PaymentForm = Ext.extend(Ext.form.FormPanel, {
             }
 			if(this.record) {
 				this.getForm().loadRecord(this.record);
-				//Ext.getCmp(this.tmp_id+'client').setValue(this.record.data.client);
-				//Ext.getCmp(this.tmp_id+'client').originalValue = this.record.data.client;
+				Ext.getCmp(this.tmp_id+'client').setValue(this.record.data.client);
+				Ext.getCmp(this.tmp_id+'client').originalValue = this.record.data.client;
 			}
 			else {
                 var d = new Date;
