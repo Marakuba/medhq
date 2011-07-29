@@ -285,7 +285,7 @@ App.visit.VisitForm = Ext.extend(Ext.FormPanel, {
 		});
 		
 		this.totalSum = new Ext.form.NumberField({
-			//name:'total_sum_field',
+			name:'total_sum_field',
 			fieldLabel:'К оплате с учетом скидки',
 			readOnly:true,
 			value:0,
@@ -536,6 +536,11 @@ App.visit.VisitForm = Ext.extend(Ext.FormPanel, {
 		} else {
 			this.addRow(a);
 		}
+	},
+	
+	getSum : function() {
+		var sum = this.getForm().findField('total_sum_field').getValue();
+		return sum;
 	}
 	
 });
