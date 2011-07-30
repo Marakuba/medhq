@@ -39,6 +39,7 @@ App.insurance.PolicyGrid = Ext.extend(Ext.grid.GridPanel, {
 		this.store = new Ext.data.Store({
 		    id: 'laborder-store',
 			//autoLoad:true,
+		    autoDestroy:true,
 			autoSave:this.showChoiceButton,
 		    baseParams: {
 		    	format:'json'
@@ -186,6 +187,9 @@ App.insurance.PolicyGrid = Ext.extend(Ext.grid.GridPanel, {
 		Ext.apply(this, Ext.apply(this.initialConfig, config));
 		App.insurance.PolicyGrid.superclass.initComponent.apply(this, arguments);
 		App.eventManager.on('patientcreate', this.onPatientCreate, this);
+		this.on('destroy', function(){
+			App.eventManager.un('patientcreate', this.onPatientCreate, this);
+		},this);
 	},
 	
 	onChoice: function(rec){
@@ -239,8 +243,6 @@ App.insurance.PolicyGrid = Ext.extend(Ext.grid.GridPanel, {
 	},
 	
 	onPatientCreate: function(record) {
-//		console.info('onPatientCreate');
-//		console.info('store:',this.store);
 		this.record = record;
 		this.onSave();
 	}

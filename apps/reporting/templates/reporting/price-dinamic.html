@@ -88,8 +88,8 @@
                 <td ></td>
                 <td >{{ row.0 }}</td>
                 <td >{{ row.1 }}</td>
-                <td >{{ row.2 }}</td>
-                <td >{{ row.3 }}</td>
+                <td >{% if row.2 == 'r' %}розничная{% else %}закупочная{% endif %}</td>
+                <td >{{ row.3|default:'0' }}</td>
                 <td >{{ row.4 }}</td>
             </tr>
             {% endfor %}

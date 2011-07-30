@@ -815,7 +815,7 @@ Tpr.price_type, \
 		and t1.price_type = Tpr.price_type \
 	)         \
 	and t2.extended_service_id  = Tpr.extended_service_id \
-	and t2.price_type = Tpr.price_type)as costbefor,       \
+	and t2.price_type = Tpr.price_type LIMIT 1) as costbefor,       \
 Tpr.value      \
 FROM       \
 public.service_baseservice Tserv        \

@@ -75,7 +75,6 @@ App.patient.PatientWindow = Ext.extend(Ext.Window, {
 		var f = this.form;
 		this.steps = f.getSteps();
 		this.tSteps = this.steps;
-		console.info(this.tSteps);
 		if(this.steps>0) {
 			this.msgBox = Ext.MessageBox.progress('Подождите','Идет сохранение документа!');
 			f.on('popstep',this.popStep, this);

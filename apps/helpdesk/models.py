@@ -43,6 +43,14 @@ class Issue(make_operator_object('issue')):
     title = models.CharField(u'Заголовок', max_length=200)
     description = models.TextField(u'Описание тикета')
     status = models.PositiveIntegerField(u'Статус', choices=ISSUE_STATUSES, default=0)
+    
+    def __unicode__(self):
+        return self.title
+    
+    class Meta:
+        verbose_name = u'тикет'
+        verbose_name_plural = u'тикеты'
+        ordering = ('-created',)
 
 
 class IssueFeed(make_operator_object('feed')):

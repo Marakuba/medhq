@@ -10,11 +10,16 @@ App.patient.PatientForm = Ext.extend(Ext.form.FormPanel, {
 			record:this.record
 		});
 		
-		this.insPolicy.store.on('write', function(){
-			this.fireEvent('popstep');
-		}, this);
-
 		this.inlines.add('inspolicy', this.insPolicy);
+		
+		this.discountCmb = new Ext.form.LazyComboBox({
+			columnWidth:1,
+        	fieldLabel:'Скидка',
+			anchor:'98%',
+        	name:'discount',
+        	proxyUrl:get_api_url('discount'),
+        	valueNotFoundText:''
+		});
 		
 		config = {
 			baseCls:'x-plain',
@@ -95,12 +100,24 @@ App.patient.PatientForm = Ext.extend(Ext.form.FormPanel, {
 							inputValue:'Ж',
 							name:'gender_box'
 						}]
-					},new Ext.form.LazyClearableComboBox({
-			        	fieldLabel:'Скидка',
-						anchor:'98%',
-			        	name:'discount',
-			        	proxyUrl:get_api_url('discount')
-					}),{
+					},{
+						layout:'column',
+						border:false,
+						defaults:{
+							border:false
+						},
+						items:[this.discountCmb,{
+							xtype:'button',
+							iconCls:'silk-delete',
+							handler:function(){
+								this.discountCmb.setRawValue(''); 
+								this.discountCmb.originalValue='';
+								this.discountCmb.hiddenValue='';
+								this.discountCmb.value='';
+							},
+							scope:this
+						}]
+					},{
 						xtype:'textfield',
 						name:'doc',
                     	fieldLabel: 'Удостоверение',
@@ -125,11 +142,17 @@ App.patient.PatientForm = Ext.extend(Ext.form.FormPanel, {
 		}
 		Ext.apply(this, Ext.apply(this.initialConfig, config));
 		App.patient.PatientForm.superclass.initComponent.apply(this, arguments);
+		
+		this.insPolicy.store.on('write', this.policyStoreWrite, this);
 		this.on('afterrender', function(){
 			if(this.record) {
 				this.getForm().loadRecord(this.record);
 			}
 		},this);
+	},
+	
+	policyStoreWrite: function(){
+		this.fireEvent('popstep');
 	},
 	
 	getRecord: function() {

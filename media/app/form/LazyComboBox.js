@@ -42,7 +42,7 @@ Ext.form.LazyComboBox = Ext.extend(Ext.form.ComboBox, {
 			}
 		}
 	},
-
+	
 	forceValue:function(value) {
 		this._cachedValue = value;
 		this.store.load();
