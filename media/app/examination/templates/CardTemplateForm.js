@@ -4,6 +4,44 @@ App.examination.CardTemplateForm = Ext.extend(Ext.form.FormPanel, {
 
 	initComponent: function(){
 		
+		this.groupStore = new Ext.data.Store({
+		    baseParams: {
+		    	format:'json'
+		    },
+		    paramNames: {
+			    start : 'offset',
+			    limit : 'limit',
+			    sort : 'sort',
+			    dir : 'dir'
+			},
+		    restful: true,
+		    proxy: new Ext.data.HttpProxy({
+			    url: get_api_url('templategroup')
+			}),
+		    reader: new Ext.data.JsonReader({
+			    totalProperty: 'meta.total_count',
+			    successProperty: 'success',
+			    idProperty: 'id',
+			    root: 'objects',
+			    messageProperty: 'message',
+			    fields: ['name','resource_uri']
+			})
+		});
+		
+		this.groupComboBox = new Ext.form.LazyComboBox({
+			id:'group-combo',
+			fieldLabel:'Группа',
+			name:'group',
+			store: this.groupStore,
+			typeAhead: true,
+			queryParam:'name__istartswith',
+			minChars:3,
+			triggerAction: 'all',
+			valueField: 'resource_uri',
+			displayField: 'name',
+			selectOnFocus:true
+		});
+		
 		config = {
 			baseCls:'x-plain',
 			border:false,
@@ -27,9 +65,29 @@ App.examination.CardTemplateForm = Ext.extend(Ext.form.FormPanel, {
 					name:'staff'
 				},{
 					xtype:'textfield',
-					fieldLabel:'Наименование операции',
+					fieldLabel:'Рабочее наименование',
 					name:'name',
 					//height:40,
+					anchor:'100%'
+				},{
+					xtype:'textfield',
+					fieldLabel:'Заголовок для печати',
+					name:'print_name',
+					//height:40,
+					anchor:'100%'
+				},
+					this.groupComboBox,
+				{
+					xtype:'textarea',
+					fieldLabel:'Жалобы',
+					name:'complaints',
+					height:100,
+					anchor:'100%'
+				},{
+					xtype:'textarea',
+					fieldLabel:'Анамнез',
+					name:'anamnesis',
+					height:100,
 					anchor:'100%'
 				},{
 					xtype:'htmleditor',
@@ -53,6 +111,12 @@ App.examination.CardTemplateForm = Ext.extend(Ext.form.FormPanel, {
 					xtype:'textarea',
 					fieldLabel:'Осложнения',
 					name:'complication',
+					height:100,
+					anchor:'100%'
+				},{
+					xtype:'textarea',
+					fieldLabel:'ЭКГ',
+					name:'ekg',
 					height:100,
 					anchor:'100%'
 				},{

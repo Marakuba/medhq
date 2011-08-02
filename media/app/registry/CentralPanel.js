@@ -111,7 +111,7 @@ App.CentralPanel = Ext.extend(Ext.Panel, {
 					},
 					scope:this
 				}]
-			},{
+			}/*,{
 				xtype:'buttongroup',
 				title:'Касса',
 				defaults:{
@@ -126,7 +126,7 @@ App.CentralPanel = Ext.extend(Ext.Panel, {
 					},
 					scope:this
 				}]
-			},'->',{
+			}*/,'->',{
 				xtype:'buttongroup',
 //				title:'HelpDesk',
 				defaults:{

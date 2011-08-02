@@ -21,7 +21,7 @@ from numeration.models import BarcodePackage, NumeratorItem, Barcode
 from django.shortcuts import get_object_or_404
 from django.core.exceptions import ObjectDoesNotExist
 from tastypie.exceptions import NotFound
-from examination.models import CardTemplate, ExaminationCard
+from examination.models import CardTemplate, ExaminationCard, TemplateGroup
 from helpdesk.models import Issue, IssueType
 from scheduler.models import Calendar, Event
 from django.contrib import messages
@@ -823,9 +823,20 @@ class BCPackageResource(ExtResource):
         filtering = {
         }
 
+class TemplateGroupResource(ExtResource):
+    
+    class Meta:
+        queryset = TemplateGroup.objects.all()
+        authorization = DjangoAuthorization()
+        resource_name = 'templategroup'
+        filtering = {
+            'name':ALL,
+            'id':ALL
+        }
 
 class CardTemplateResource(ExtResource):
     staff = fields.ForeignKey(PositionResource, 'staff', null=True)
+    group = fields.ForeignKey(TemplateGroupResource, 'group', null=True)
     
     def dehydrate(self, bundle):
         obj = bundle.obj
@@ -1136,6 +1147,7 @@ api.register(NumeratorItemResource())
 api.register(RegExamCardResource())
 
 #examination
+api.register(TemplateGroupResource())
 api.register(CardTemplateResource())
 api.register(ExaminationCardResource())
 

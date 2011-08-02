@@ -30,7 +30,7 @@ App.patient.PatientCard = Ext.extend(Ext.TabPanel, {
 				title:'Карты осмотра',
 				layout:'fit',
 				xtype:'regexamgrid'
-			},{
+			}/*,{
 				title:'Оплаты',
 				layout:'fit',
 				xtype:'paymentgrid'

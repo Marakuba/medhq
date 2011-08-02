@@ -71,7 +71,7 @@
 {% endif %}
 <br>
 {% if card.psycho_status %}
-	<br> Психологический статус
+	<br> Психологический/неврологический статус
 	<br> {{card.psycho_status}}
 {% endif %}
 <br>
@@ -88,6 +88,11 @@
 {% if card.complication %}
 	<br> Осложнения
 	<br> {{card.complication}}
+{% endif %}
+<br>
+{% if card.complication %}
+	<br> ЭКГ
+	<br> {{card.ekg}}
 {% endif %}
 <br>
 {% if card.concomitant_diag %}

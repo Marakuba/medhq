@@ -7,21 +7,39 @@ from django.core.exceptions import ObjectDoesNotExist
 from visit.models import OrderedService
 from staff.models import Position
 
+class TemplateGroup(models.Model):
+    """
+    Шаблон карты обследования
+    """
+    name = models.TextField(u'Наименование', null=True, blank=True)
+    
+    def __unicode__(self):
+        return self.name
+    
+    class Meta:
+        verbose_name = u'Группа шаблонов'
+        verbose_name_plural = u'Группы шаблонов'
+
 
 class CardTemplate(models.Model):
     """
     Шаблон карты обследования
     """
     staff = models.ForeignKey(Position, null=True, blank=True, verbose_name=u'Врач')
-    name = models.TextField(u'Наименование шаблона', null=True, blank=True)
+    name = models.TextField(u'Рабочее наименование', null=True, blank=True)
+    print_name = models.TextField(u'Заголовок для печати', null=True, blank=True)
+    complaints = models.TextField(u'Жалобы', null=True, blank=True)
+    anamnesis = models.TextField(u'Анамнез', null=True, blank=True)
     objective_data = models.TextField(u'Объективные данные', null=True, blank=True)
     psycho_status = models.TextField(u'Психологический статус', null=True, blank=True)
     gen_diag = models.TextField(u'Основной диагноз', null=True, blank=True)
     complication = models.TextField(u'Осложнения', null=True, blank=True)
+    ekg = models.TextField(u'ЭКГ', null=True, blank=True)
     concomitant_diag= models.TextField(u'Сопутствующий диагноз', null=True, blank=True)
     clinical_diag = models.TextField(u'Клинический диагноз', null=True, blank=True)
     treatment = models.TextField(u'Лечение', null=True, blank=True)
     referral = models.TextField(u'Направление', null=True, blank=True)
+    group = models.ForeignKey(TemplateGroup, null=True, blank=True)
     
     def __unicode__(self):
         return self.name
@@ -29,13 +47,13 @@ class CardTemplate(models.Model):
     class Meta:
         verbose_name = u'Шаблон карты осмотра'
         verbose_name_plural = u'Шаблоны карты осмотра'
-
-
+        
 class ExaminationCard(models.Model):
     """
     Карта обследования
     """
-    name = models.TextField(u'Наименование операции', null=True, blank=True)
+    name = models.TextField(u'Рабочее наименование', null=True, blank=True)
+    print_name = models.TextField(u'Заголовок для печати', null=True, blank=True)
     created = models.DateTimeField(u'Дата создания', auto_now_add=True)
     modified = models.DateTimeField(auto_now=True)
     print_date = models.DateTimeField(u'Время печати', blank=True, null=True)
@@ -45,15 +63,18 @@ class ExaminationCard(models.Model):
     history = models.TextField(u'История настоящего заболевания', null=True, blank=True)
     anamnesis = models.TextField(u'Анамнез', null=True, blank=True)
     objective_data = models.TextField(u'Объективные данные', null=True, blank=True)
-    psycho_status = models.TextField(u'Психологический статус', null=True, blank=True)
+    psycho_status = models.TextField(u'Психологический/неврологический статус', null=True, blank=True)
     gen_diag = models.TextField(u'Основной диагноз', null=True, blank=True)
     mbk_diag = models.TextField(u'Диагноз по МБК', null=True, blank=True)
     complication= models.TextField(u'Осложнения', null=True, blank=True)
+    ekg = models.TextField(u'ЭКГ', null=True, blank=True)
     concomitant_diag= models.TextField(u'Сопутствующий диагноз', null=True, blank=True)
     clinical_diag = models.TextField(u'Клинический диагноз', null=True, blank=True)
     treatment = models.TextField(u'Лечение', null=True, blank=True)
     referral = models.TextField(u'Направление', null=True, blank=True)
-    extra_service = models.TextField(u'Дополнительные услуги', null=True, blank=True)
+    #extra_service = models.TextField(u'Дополнительные услуги', null=True, blank=True)
+    conclusion = models.TextField(u'Заключение', null=True, blank=True)
+    comment = models.TextField(u'Примечание', null=True, blank=True)
     
         
     def __unicode__(self):

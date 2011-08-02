@@ -5,6 +5,7 @@ App.models.Templare = new Ext.data.Record.create([
 	{name: 'staff', allowBlank: false},
 	{name: 'staff_name', allowBlank: true},
 	{name: 'name', allowBlank: false},
+	{name: 'print_name', allowBlank: true},
 	{name: 'objective_data', allowBlank: true},
 	{name: 'psycho_status', allowBlank: true},
 	{name: 'gen_diag', allowBlank: true},
@@ -12,7 +13,8 @@ App.models.Templare = new Ext.data.Record.create([
 	{name: 'concomitant_diag', allowBlank: true},
 	{name: 'clinical_diag', allowBlank: true},
 	{name: 'treatment', allowBlank: true},
-	{name: 'referral', allowBlank: true}
+	{name: 'referral', allowBlank: true},
+	{name: 'group', allowBlank: true}
 ]);
 
 
@@ -32,7 +34,7 @@ App.regBackend('cardtemplate', new App.Backend({
 			},
 		    restful: true,
 		    remoteSort: true,
-		    groupField:'key',
+		    groupField:'group',
 		    proxy: new Ext.data.HttpProxy({
 			    url: get_api_url('cardtemplate')
 			}),

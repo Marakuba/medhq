@@ -9,6 +9,7 @@ App.examination.ExamCardForm = Ext.extend(Ext.form.FormPanel, {
 			{name: 'created',allowBlank: true},
 			{name: 'modified',allowBlank: true},
 			{name: 'name',allowBlank: true},
+			{name: 'print_name',allowBlank: true},
 			{name: 'ordered_service',allowBlank: true},
 			{name: 'print_date', allowBlank: true},
 			{name: 'objective_data', allowBlank: true},
@@ -25,7 +26,9 @@ App.examination.ExamCardForm = Ext.extend(Ext.form.FormPanel, {
 			{name: 'anamnesis', allowBlank: true},
 			{name: 'mbk_diag', allowBlank: true},
 			{name: 'extra_service', allowBlank: true},
-			{name: 'view',allowBlank: true}
+			{name: 'view',allowBlank: true},
+			{name: 'conclusion', allowBlank: true},
+			{name: 'comment', allowBlank: true}
 		]);
 		//store для комбобокса
 		this.examCardStore = new Ext.data.Store({
@@ -160,6 +163,12 @@ App.examination.ExamCardForm = Ext.extend(Ext.form.FormPanel, {
 					anchor:'100%'
 				},{
 					xtype:'textarea',
+					fieldLabel:'ЭКГ',
+					name:'ekg',
+					height:100,
+					anchor:'100%'
+				},{
+					xtype:'textarea',
 					height:100,
 					fieldLabel:'Сопутствующий диагноз',
 					name:'concomitant_diag',
@@ -184,9 +193,15 @@ App.examination.ExamCardForm = Ext.extend(Ext.form.FormPanel, {
 					anchor:'100%'
 				},{
 					xtype:'textarea',
-					fieldLabel:'Дополнительные услуги',
+					fieldLabel:'Заключение',
 					height:100,
-					name:'extra_service',
+					name:'conclusion',
+					anchor:'100%'
+				},{
+					xtype:'textarea',
+					fieldLabel:'Примечание',
+					height:100,
+					name:'comment',
 					anchor:'100%'
 				}]
 			}]
