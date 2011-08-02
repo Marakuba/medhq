@@ -126,6 +126,7 @@ App.patient.PatientForm = Ext.extend(Ext.form.FormPanel, {
 						xtype:'textfield',
 						name:'hid_card',
 						fieldLabel:'№ карты',
+						stripCharsRe:new RegExp('[\;\?]'),
 						value:''
 					}]
 				}]

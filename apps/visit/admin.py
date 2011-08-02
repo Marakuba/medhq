@@ -240,7 +240,7 @@ class ReferralVisitAdmin(admin.ModelAdmin):
     list_editable = ('referral',)
     list_filter = ('referral',)
 
-class ReferralAdmin(VersionAdmin):
+class ReferralAdmin(admin.ModelAdmin):
     """
     """
     exclude = ('operator',)

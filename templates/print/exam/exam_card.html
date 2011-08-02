@@ -47,72 +47,59 @@
 <br>
 {% if card.disease %}
 	<br> Характер заболевания
-	<br> {{card.disease}}
+	<p> {{card.disease}}</p>
 {% endif %}
-<br>
 {% if card.complaints %}
 	<br> Жалобы
-	<br> {{card.complaints}}
+	<p> {{card.complaints}}</p>
 {% endif %}
-<br>
 {% if card.history %}
 	<br> История настоящего заболевания
-	<br> {{card.history}}
+	<p> {{card.history}}</p>
 {% endif %}
-<br>
 {% if card.anamnesis %}
 	<br> Анамнез
-	<br> {{card.anamnesis}}
+	<p> {{card.anamnesis}}</p>
 {% endif %}
-<br>
 {% if card.objective_data %}
 	<br> Объективные данные
-	<br> {{card.objective_data}}
+	<p> {{card.objective_data}}</p>
 {% endif %}
-<br>
 {% if card.psycho_status %}
 	<br> Психологический статус
-	<br> {{card.psycho_status}}
+	<p> {{card.psycho_status}}</p>
 {% endif %}
-<br>
 {% if card.gen_diag %}
 	<br> Основной диагноз
-	<br> {{card.gen_diag}}
+	<p> {{card.gen_diag}}</p>
 {% endif %}
-<br>
 {% if card.mbk_diag %}
 	<br> Диагноз по МБК
-	<br> {{card.mbk_diag}}
+	<p> {{card.mbk_diag}}</p>
 {% endif %}
-<br>
 {% if card.complication %}
 	<br> Осложнения
-	<br> {{card.complication}}
+	<p> {{card.complication}}</p>
 {% endif %}
-<br>
 {% if card.concomitant_diag %}
 	<br> Сопутствующий диагноз
-	<br> {{card.concomitant_diag}}
+	<p> {{card.concomitant_diag}}</p>
 {% endif %}
-<br>
 {% if card.clinical_diag %}
 	<br> Клинический диагноз
-	<br> {{card.clinical_diag}}
+	<p> {{card.clinical_diag}}</p>
 {% endif %}
-<br>
 {% if card.treatment %}
 	<br> Лечение
-	<br> {{card.treatment}}
+	<p> {{card.treatment}}</p>
 {% endif %}
-<br>
 {% if card.referral %}
 	<br> Направление
-	<br> {{card.referral}}
+	<p> {{card.referral}}</p>
 {% endif %}
-<br>
 {% if card.extra_service %}
 	<br> Дополнительные услуги
-	<br> {{card.extra_service}}
+	<p> {{card.extra_service}}</p>
 {% endif %}
 <br>
 {% if card.ordered_service.order.is_completed and card.ordered_service.order.comment %}

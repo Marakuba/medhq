@@ -2,14 +2,45 @@
 
 from django.views.generic.simple import direct_to_template
 from service.models import BaseService, EXECUTION
-from service.forms import HelperFormSet
-from django.http import HttpResponse
+from service.forms import HelperFormSet, StaffForm
+from django.http import HttpResponse, HttpResponseRedirect,\
+    HttpResponseBadRequest
 from state.models import State
 from django.shortcuts import get_object_or_404
 import StringIO
 
 from xlwt import *
 from django.conf import settings
+from annoying.decorators import render_to
+
+def pricelist(request):
+
+    """
+    """
+    state = get_object_or_404(State, id=request.GET.get('state', None))
+    services = BaseService.objects.all().order_by(BaseService._meta.tree_id_attr, BaseService._meta.left_attr, 'level')
+    nodes = []
+    for service in services:
+        if service.is_leaf_node():
+            node = {
+                'id':service.id,
+                'name':service.name,
+                'level':service.level,
+                'leaf':True
+            }
+            nodes.append(node)
+        else:
+            node = {
+                'name':service.name,
+                'level':service.level,
+                'leaf':False
+            }
+            nodes.append(node)
+    extra_context = {
+        'services':nodes
+    }
+    return direct_to_template(request, "print/service/fullpricelist.html", extra_context=extra_context)
+    
 
 def price_list_helper(request):
     """
@@ -95,3 +126,28 @@ def service_list(request):
     
     extra_context = {'services':services}
     return direct_to_template(request, "helpers/service/list.html", extra_context=extra_context)
+
+
+@render_to('helpers/service/staff_setter.html')
+def staff_setter(request):
+    
+    if request.method=="POST":
+        form = StaffForm(request.POST)
+        if form.is_valid():
+            services = form.cleaned_data['service']
+            for service in services:
+                service.staff.clear()
+                service.staff.add(*form.cleaned_data['staff'])
+            return HttpResponseRedirect('/helper/staffsetter/')
+        else:
+            print "form is not valid"
+            return HttpResponseBadRequest('form is invalid!')
+            
+    else:
+        form = StaffForm()
+    
+    c = {'form':form}
+    
+    return c
+    
+    

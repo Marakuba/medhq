@@ -23,8 +23,8 @@ App.CentralPanel = Ext.extend(Ext.Panel, {
 //				title: '№ заказа или фамилия',
 				padding:5,
 				items:[{
-					xtype:'gsearchfield'
-					
+					xtype:'gsearchfield',
+					stripCharsRe:new RegExp('[\;\?]')
 				}]
 			},{
 				xtype:'buttongroup',

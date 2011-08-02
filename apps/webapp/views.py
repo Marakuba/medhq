@@ -18,6 +18,7 @@ from django.contrib.auth.decorators import login_required
 from lab.models import Sampling
 from django.views.decorators.gzip import gzip_page
 from promotion.models import Promotion
+from state.models import State
 
 
 def auth(request, authentication_form=AuthenticationForm):
@@ -133,10 +134,15 @@ def helpdesk(request):
     return {}
     
 
-def get_service_tree():
+def get_service_tree(request):
     """
     Генерирует дерево в json-формате.
     """
+    _cache_key = request.active_profile and 'service_list_%s' % request.active_profile.state or 'service_list'
+    
+    if settings.SERVICETREE_ONLY_OWN and request.active_profile:
+        office = request.active_profile.department.state
+        ignored = State.objects.filter(type='b').exclude(id=office.id)
 
     def promo_dict(obj):
         
@@ -176,7 +182,12 @@ def get_service_tree():
             if base_service.is_leaf_node():
                 """
                 """
-                for item in base_service.extendedservice_set.active():
+                items = base_service.extendedservice_set.active()
+                if ignored:
+                    items = items.exclude(state__id__in=ignored)
+                    
+
+                for item in items:
                     price = item.get_actual_price()
                     if price:
                         node = {
@@ -208,9 +219,13 @@ def get_service_tree():
                 
         return nodes
     
-    _cached_tree = cache.get('x-service_list')
-    if not _cached_tree:
+    
+    if request.GET.get('refresh'):
+        _cached_tree = None
+    else:
+        _cached_tree = cache.get(_cache_key)
         
+    if not _cached_tree:
         tree = []
         promotions = Promotion.objects.actual()
         if promotions.count():
@@ -225,13 +240,13 @@ def get_service_tree():
         
         tree.extend(tree_iterate(BaseService.tree.root_nodes())) #@UndefinedVariable
         _cached_tree = simplejson.dumps(tree)
-        cache.set('x-service_list', _cached_tree, 24*60*60*30)
+        cache.set(_cache_key, _cached_tree, 24*60*60*30)
 
     return _cached_tree
 
 @gzip_page
 def service_tree(request):
-    _cached_tree = get_service_tree()
+    _cached_tree = get_service_tree(request)
     return HttpResponse(_cached_tree, mimetype="application/json")
 
 from collections import defaultdict

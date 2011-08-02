@@ -1,0 +1,87 @@
+{% extends "print/off_blank.html" %}
+
+{% block extra_head %}
+<style>
+	table {
+		width:100%;
+		border:1px solid gray;
+	}
+	td {
+		border:1px solid #AAA;
+		padding:2px;
+	}
+	.title-0 {
+		font-size:1.8em;
+		font-weight:bold;
+		background:#DDD;
+	}
+	.title-1 {
+		font-size:1.5em;
+		font-weight:bold;
+		background:#DFDFDF;
+	}
+	
+	.title-2 {
+		font-size:1.2em;
+		font-weight:bold;
+		background:#EAEAEA;
+	}
+	.price {
+		text-align:right;
+		font-weight:bold;
+	}
+	.no-price {
+		background:#ffd6d3;
+	}
+	.header, .header td {
+		border:none;
+	}
+	.header {
+		margin-bottom:20px;
+		font-size:1.2em;
+	}
+	.header .details {
+		width:9.5cm;
+		line-height:140%;
+	}
+	h1 {
+		text-align:center;
+		margin:0.6cm;
+		font-size:2em;
+	}
+</style>
+{% endblock %}
+
+{% block body %}
+<table class="header">
+	<tr>
+		<td>{{ state.address_street }}<br>
+			телефон: {{ state.phones }}<br>
+			факс: {{ state.fax }}<br>
+			email: {{ state.email }}
+		</td>
+		<td class="details">
+			Утверждаю _________________ Долгова А.А.<br>
+			Исполнительный директор <br>
+			{{ state.official_title }}<br>
+			<div>{{ request.GET.date }}г.</div>
+		</td>
+	</tr>
+</table>
+<h1>Прейскурант цен</h1>
+<table>
+{% for service in services %}
+
+<tr>
+{% if service.leaf %}
+<td>{{ service.id }}</td>
+<td>{{ service.name }}</td>
+<td>{{ service.price }}</td>
+{% else %}
+<td class="{% if service.leaf %}{% else %}title-{{ service.level }}{% endif %}" colspan="3">{{ service.name }}</td>
+{% endif %}
+</tr>
+
+{% endfor %}
+</table>
+{% endblock %}
