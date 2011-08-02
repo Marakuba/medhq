@@ -1,4 +1,5 @@
 Ext.ns('App.patient');
+Ext.ns('App.billing');
 
 App.patient.PatientCard = Ext.extend(Ext.TabPanel, {
 	
@@ -29,6 +30,10 @@ App.patient.PatientCard = Ext.extend(Ext.TabPanel, {
 				title:'Карты осмотра',
 				layout:'fit',
 				xtype:'regexamgrid'
+			}/*,{
+				title:'Оплаты',
+				layout:'fit',
+				xtype:'paymentgrid'
 			}/*,{
 				title:'Возвраты',
 				layout:'fit',

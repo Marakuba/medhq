@@ -24,7 +24,7 @@ App.Patients = Ext.extend(Ext.Panel, {
 				scope:this,
 				qtip:'Обновить карточку пациента'
 			}],
-			items:this.patientCard,
+			items:this.patientCard
 		});
 
 		this.quickForm = new App.patient.QuickForm({
@@ -55,7 +55,7 @@ App.Patients = Ext.extend(Ext.Panel, {
 	},
 	
 	titleTpl : new Ext.Template(
-		'Пациент: {last_name} {first_name} {mid_name}. Скидка: {discount_name}. Общая сумма: {billed_account}'
+		'Пациент: {last_name} {first_name} {mid_name}. Скидка: {discount_name}. Общая сумма: {billed_account}. Баланс: <FONT COLOR="red"> {balance} </FONT>'
 	),
 	
 	patientSelect: function(rec){

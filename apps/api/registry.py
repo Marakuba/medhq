@@ -21,10 +21,13 @@ from numeration.models import BarcodePackage, NumeratorItem, Barcode
 from django.shortcuts import get_object_or_404
 from django.core.exceptions import ObjectDoesNotExist
 from tastypie.exceptions import NotFound
-from examination.models import CardTemplate, ExaminationCard
+from examination.models import CardTemplate, ExaminationCard, TemplateGroup
 from helpdesk.models import Issue, IssueType
 from scheduler.models import Calendar, Event
 from django.contrib import messages
+from billing.models import Account, Payment, ClientAccount
+from interlayer.models import ClientItem
+from django.contrib.contenttypes.models import ContentType
 #from reporting.models import Report, FieldItem, GroupItem, SummaryItem, Fields,\
 #    Groups, Summaries, FilterItem, Filters
 
@@ -40,13 +43,33 @@ class DiscountResource(ModelResource):
         filtering = {
             'name':('istartswith',)
         }
+
+class ClientItemResource(ExtResource):
+    client = fields.OneToOneField('apps.api.registry.PatientResource','client')
+    def dehydrate(self, bundle):
+        bundle.data['client_name'] = bundle.obj.client.full_name()
+        return bundle
+    
+    class Meta:
+        queryset = ClientItem.objects.all()
+        resource_name = 'clientitem'
+        authorization = DjangoAuthorization()
+        filtering = {
+            'client' : ALL_WITH_RELATIONS,
+        }
         
 class PatientResource(ExtResource):
     
     discount = fields.ForeignKey(DiscountResource, 'discount', null=True)
+<<<<<<< HEAD
     
+=======
+    client_item = fields.OneToOneField(ClientItemResource, 'client_item', null=True)
+
+>>>>>>> adaea67be06728702e579675b8a9a9f7d0950e39
     def dehydrate(self, bundle):
         bundle.data['discount_name'] = bundle.obj.discount and bundle.obj.discount or u'0%'
+        bundle.data['full_name'] = bundle.obj.full_name()
         return bundle
 
     def obj_create(self, bundle, request=None, **kwargs):
@@ -75,9 +98,25 @@ class PatientResource(ExtResource):
         filtering = {
             'last_name':('istartswith',),
             'id':ALL,
+            'full_name':('istartswith',),
             'discount':ALL_WITH_RELATIONS
         }
         
+class DebtorResource(ExtResource):
+    
+    discount = fields.ForeignKey(DiscountResource, 'discount', null=True)
+    client_item = fields.OneToOneField(ClientItemResource, 'client_item', null=True)
+    
+    class Meta:
+        queryset = Patient.objects.filter(balance__lte = 0) #@UndefinedVariable
+        resource_name = 'debtor'
+        default_format = 'application/json'
+        authorization = DjangoAuthorization()
+        filtering = {
+            'last_name':('istartswith',),
+            'id':ALL,
+            'discount':ALL_WITH_RELATIONS
+        }
         
 class ReferralResource(ExtResource):
 
@@ -788,9 +827,20 @@ class BCPackageResource(ExtResource):
         filtering = {
         }
 
+class TemplateGroupResource(ExtResource):
+    
+    class Meta:
+        queryset = TemplateGroup.objects.all()
+        authorization = DjangoAuthorization()
+        resource_name = 'templategroup'
+        filtering = {
+            'name':ALL,
+            'id':ALL
+        }
 
 class CardTemplateResource(ExtResource):
     staff = fields.ForeignKey(PositionResource, 'staff', null=True)
+    group = fields.ForeignKey(TemplateGroupResource, 'group', null=True)
     
     def dehydrate(self, bundle):
         obj = bundle.obj
@@ -985,8 +1035,67 @@ class IssueResource(ExtResource):
             'status':ALL,
             'operator':ALL_WITH_RELATIONS
         }        
+        
 
+class ContentTypeResource(ExtResource):
+    class Meta:
+        queryset = ContentType.objects.all()
+        resource_name = 'contenttype'
+        authorization = DjangoAuthorization()
+        allowed_methods = ['get']
 
+class AccountResource(ExtResource):
+    
+    class Meta:
+        queryset = Account.objects.all()
+        resource_name = 'account'
+        authorization = DjangoAuthorization()
+        
+class ClientAccountResource(ExtResource):
+    client_item = fields.ForeignKey(ClientItemResource, 'client_item')
+    account = fields.ForeignKey(AccountResource, 'account')
+    
+    def dehydrate(self, bundle):
+        bundle.data['client_name'] = bundle.obj.client_item.client
+        bundle.data['account_id'] = bundle.obj.account.id
+        bundle.data['amount'] = bundle.obj.account.amount
+        return bundle
+    
+    class Meta:
+        queryset = ClientAccount.objects.all().select_related()
+        resource_name = 'clientaccount'
+        authorization = DjangoAuthorization()
+        filtering = {
+            'client_item' : ALL_WITH_RELATIONS,
+        }
+        
+class PaymentResource(ExtResource):
+    client_account = fields.ForeignKey(ClientAccountResource, 'client_account')
+    content_type = fields.ForeignKey(ContentTypeResource, 'content_type', null=True)
+    
+    def dehydrate(self, bundle):
+        bundle.data['client_name'] = bundle.obj.client_account.client_item.client
+        bundle.data['client'] = bundle.obj.client_account.client_item.client
+        bundle.data['account_id'] = bundle.obj.client_account.account.id
+        bundle.data['amount'] = abs(bundle.obj.amount)
+        return bundle
+    
+    def obj_create(self, bundle, request=None, **kwargs):
+        kwargs['operator']=request.user
+        result = super(PaymentResource, self).obj_create(bundle=bundle, request=request, **kwargs)
+        return result
+    
+    class Meta:
+        queryset = Payment.objects.all()
+        resource_name = 'payment'
+        authorization = DjangoAuthorization()
+        limit = 1000
+        filtering = {
+            'id' : ALL,
+            'doc_date' : ALL,
+            'client_account' : ALL_WITH_RELATIONS,
+        }
+        
 
 api = Api(api_name=get_api_name('dashboard'))
 
@@ -1042,6 +1151,7 @@ api.register(NumeratorItemResource())
 api.register(RegExamCardResource())
 
 #examination
+api.register(TemplateGroupResource())
 api.register(CardTemplateResource())
 api.register(ExaminationCardResource())
 
@@ -1052,6 +1162,17 @@ api.register(IssueResource())
 #scheduler
 api.register(CalendarResource())
 api.register(EventResource())
+
+#interlayer
+api.register(ClientItemResource())
+
+#billing
+api.register(AccountResource())
+api.register(ContentTypeResource())
+api.register(ClientAccountResource())
+api.register(PaymentResource())
+
+api.register(DebtorResource())
 
 #reporting
 #api.register(ReportResource())

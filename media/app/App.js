@@ -32,3 +32,4 @@ App.uriToId = function(uri) {
 Ext.idToColor = function(id) {
 	return parseInt(id) % 3 + 1;
 }
+

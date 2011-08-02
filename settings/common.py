@@ -101,6 +101,8 @@ INSTALLED_APPS = (
     'workflow',
     'examination',
     'scheduler',
+    'interlayer',
+    'billing',
         
     'django.contrib.admin',
     'django.contrib.auth',
@@ -136,7 +138,6 @@ APPEND_SLASH = False
 
 SESSION_EXPIRE_AT_BROWSER_CLOSE = True
 
-#TASTYPIE_DATETIME_FORMATTING = 'rfc-2822'
 
 #import djcelery
 #djcelery.setup_loader()

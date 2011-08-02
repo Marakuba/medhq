@@ -5,11 +5,33 @@ App.CardTemplateGrid = Ext.extend(Ext.grid.GridPanel, {
 
 	initComponent : function() {		
 
-		this.backend = App.getBackend('cardtemplate');	
+		//this.backend = App.getBackend('cardtemplate');	
 		//this.cardBackend = new App.ExamBackend({});
+		
+		this.tmpModel = new Ext.data.Record.create([
+			{name: 'id'},
+			{name: 'staff', allowBlank: false},
+			{name: 'staff_name', allowBlank: true},
+			{name: 'complaints', allowBlank: true},
+			{name: 'anamnesis', allowBlank: true},
+			{name: 'ekg', allowBlank: true},
+			{name: 'name', allowBlank: false},
+			{name: 'print_name', allowBlank: true},
+			{name: 'objective_data', allowBlank: true},
+			{name: 'psycho_status', allowBlank: true},
+			{name: 'gen_diag', allowBlank: true},
+			{name: 'complication', allowBlank: true},
+			{name: 'concomitant_diag', allowBlank: true},
+			{name: 'clinical_diag', allowBlank: true},
+			{name: 'treatment', allowBlank: true},
+			{name: 'referral', allowBlank: true},
+			{name: 'group', allowBlank: true}
+		]);
+		
 		this.examModel = new Ext.data.Record.create([
 			{name: 'id'},
 			{name: 'name',allowBlank: true},
+			{name: 'print_name',allowBlank: true},
 			{name: 'ordered_service',allowBlank: true},
 			{name: 'print_date', allowBlank: true},
 			{name: 'objective_data', allowBlank: true},
@@ -25,7 +47,7 @@ App.CardTemplateGrid = Ext.extend(Ext.grid.GridPanel, {
 			{name: 'history', allowBlank: true},
 			{name: 'anamnesis', allowBlank: true},
 			{name: 'mbk_diag', allowBlank: true},
-			{name: 'extra_service', allowBlank: true}
+			{name: 'group', allowBlank: true}
 		]);
 
 		this.examStore = new Ext.data.Store({
@@ -68,7 +90,46 @@ App.CardTemplateGrid = Ext.extend(Ext.grid.GridPanel, {
 		    }
 		});
 		
-		this.store = this.backend.store;
+		this.store = new Ext.data.Store({
+			autoLoad:true,
+			autoSave:true,
+		    baseParams: {
+		    	format:'json'
+		    },
+		    paramNames: {
+			    start : 'offset',
+			    limit : 'limit',
+			    sort : 'sort',
+			    dir : 'dir'
+			},
+		    restful: true,
+		    remoteSort: true,
+		    proxy: new Ext.data.HttpProxy({
+			    url: get_api_url('cardtemplate')
+			}),
+		    reader: new Ext.data.JsonReader({
+			    totalProperty: 'meta.total_count',
+			    successProperty: 'success',
+			    idProperty: 'id',
+			    root: 'objects',
+			    messageProperty: 'message'
+			}, this.tmpModel),
+		    writer: new Ext.data.JsonWriter({
+			    encode: false,
+			    writeAllFields: true
+			}),
+		    listeners:{
+		    	exception:function(proxy, type, action, options, response, arg){
+		    	},
+		    	write:function(store, action, result, res, rs){
+		    		if(action=='create') {
+			    		App.eventManager.fireEvent('templatecardcreate', rs);
+		    		}
+		    	},
+		    	scope:this
+		    }
+		});
+		//this.store = this.backend.store;
 		
 		//this.store.load();
 		
@@ -124,6 +185,28 @@ App.CardTemplateGrid = Ext.extend(Ext.grid.GridPanel, {
 				iconCls:'silk-delete',
 				text:'Удалить',
 				handler:this.onDelete.createDelegate(this, [])
+			},'-',{
+				xtype:'button',
+				enableToggle:true,
+				toggleGroup:'templare-filter',
+				text:'Свои',
+                scope:this,
+				handler: function(){
+					var url = get_api_url('position');
+					var path = [url,active_profile];
+					this.store.filter('staff',path.join("/"));
+				}
+                
+			},{
+				xtype:'button',
+				enableToggle:true,
+				toggleGroup:'templare-filter',
+				text:'Все',
+				pressed: true,
+                scope:this,
+				handler: function(){
+                    this.store.clearFilter()
+                }
 			}],
 			viewConfig : {
 				forceFit : true
@@ -135,7 +218,7 @@ App.CardTemplateGrid = Ext.extend(Ext.grid.GridPanel, {
         },this);
         
        	this.on('afterrender',function(){
-           	this.store.setBaseParam('staff',active_profile);
+           	//this.store.setBaseParam('staff',active_profile);
            	this.store.load();
         });
         
@@ -147,10 +230,10 @@ App.CardTemplateGrid = Ext.extend(Ext.grid.GridPanel, {
 	
 	onAdd: function(btn,ev){
         var win = new App.examination.CardTemplateWindow({
-    		model:this.backend.getModel(),
+    		model:this.tmpModel,
     		scope:this,
     		fn:function(record){
-    			this.backend.saveRecord(record);
+    			this.saveRecord(record);
     		}
     	});
     	win.show();
@@ -161,7 +244,7 @@ App.CardTemplateGrid = Ext.extend(Ext.grid.GridPanel, {
 		if(record) {
 			var url = get_api_url('position');
 			var path = [url,active_profile];
-			var Model = this.backend.getModel();
+			var Model = this.tmpModel;
 			if (Model) {
 				var model = new Model();
 			}
@@ -174,7 +257,7 @@ App.CardTemplateGrid = Ext.extend(Ext.grid.GridPanel, {
 				};
 				
 			}
-			this.backend.saveRecord(model);
+			this.saveRecord(model);
 		}
 	},
     
@@ -183,10 +266,10 @@ App.CardTemplateGrid = Ext.extend(Ext.grid.GridPanel, {
 		if(record) {
     		var win = new App.examination.CardTemplateWindow({
     			record:record,
-    			model:this.backend.getModel(),
+    			model:this.tmpModel,
     			scope:this,
     			fn:function(record){
-    				this.backend.saveRecord(record);
+    				this.saveRecord(record);
     			}
     		});
     		win.show();
@@ -230,6 +313,16 @@ App.CardTemplateGrid = Ext.extend(Ext.grid.GridPanel, {
 			}
 		} else {
 		};
+	},
+	
+	saveRecord: function(record) {
+		if(record.phantom) {
+			if(this.store.indexOf(record)==-1) {
+				this.store.insert(0, record);
+			} else {
+			}
+		} else {
+		}
 	},
     
     getSelected: function() {

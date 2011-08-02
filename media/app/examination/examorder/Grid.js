@@ -94,6 +94,7 @@ App.examorder.ExamOrderGrid = Ext.extend(Ext.grid.GridPanel, {
 				handler:this.onAdd.createDelegate(this, [])
 			},{
 				text:'Подтвердить выполнение',
+				iconCls:'silk-accept',
 				id: this.tmp_id + 'order-exec',
 				disabled:true,
 				handler:function(){
@@ -110,7 +111,15 @@ App.examorder.ExamOrderGrid = Ext.extend(Ext.grid.GridPanel, {
 					}
 				},
 				scope:this
-			},'->','Период',{
+			},{
+				text:'Обновить',
+				//iconCls:'silk-add',
+				scope:this,
+				handler:function(){
+					this.store.load()
+				}
+			},
+			'->','Период',{
 				xtype:'datefield',
 				format:'d.m.Y',
 				listeners: {

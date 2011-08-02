@@ -66,8 +66,8 @@
 	<p> {{card.objective_data}}</p>
 {% endif %}
 {% if card.psycho_status %}
-	<br> Психологический статус
-	<p> {{card.psycho_status}}</p>
+	<br> Психологический/неврологический статус
+	<br> {{card.psycho_status}}
 {% endif %}
 {% if card.gen_diag %}
 	<br> Основной диагноз
@@ -81,6 +81,12 @@
 	<br> Осложнения
 	<p> {{card.complication}}</p>
 {% endif %}
+<br>
+{% if card.ekg %}
+	<br> ЭКГ
+	<br> {{card.ekg}}
+{% endif %}
+<br>
 {% if card.concomitant_diag %}
 	<br> Сопутствующий диагноз
 	<p> {{card.concomitant_diag}}</p>

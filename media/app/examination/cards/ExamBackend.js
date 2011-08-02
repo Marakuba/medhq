@@ -2,6 +2,8 @@ Ext.ns('App','App.models');
 
 App.models.ExamCard = new Ext.data.Record.create([
 	{name: 'id'},
+	{name: 'name',allowBlank: true},
+	{name: 'print_name',allowBlank: true},
 	{name: 'ordered_service',allowBlank: true},
 	{name: 'print_date', allowBlank: true},
 	{name: 'objective_data', allowBlank: true},
@@ -17,7 +19,9 @@ App.models.ExamCard = new Ext.data.Record.create([
 	{name: 'history', allowBlank: true},
 	{name: 'anamnesis', allowBlank: true},
 	{name: 'mbk_diag', allowBlank: true},
-	{name: 'extra_service', allowBlank: true}
+	{name: 'conclusion', allowBlank: true},
+	{name: 'ekg', allowBlank: true},
+	{name: 'comment', allowBlank: true}
 ]);
 
 App.regBackend('examcard', new App.Backend({

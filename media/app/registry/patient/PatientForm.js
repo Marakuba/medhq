@@ -12,13 +12,88 @@ App.patient.PatientForm = Ext.extend(Ext.form.FormPanel, {
 		
 		this.inlines.add('inspolicy', this.insPolicy);
 		
-		this.discountCmb = new Ext.form.LazyComboBox({
-			columnWidth:1,
-        	fieldLabel:'Скидка',
-			anchor:'98%',
-        	name:'discount',
-        	proxyUrl:get_api_url('discount'),
-        	valueNotFoundText:''
+		this.cl_acc_grid = new App.patient.ClientAccountGrid({
+			clientHidden : true	,
+			record:this.record
+		});
+		
+		this.cl_acc_grid.on('newitem', function(){
+			this.newAccount();
+		},this)
+		
+		this.cl_acc_backend = App.getBackend('clientaccount');
+		
+		this.acc_store = new Ext.data.Store({
+			autoLoad:true,
+		    baseParams: {
+		    	format:'json'
+		    },
+		    paramNames: {
+			    start : 'offset',
+			    limit : 'limit',
+			    sort : 'sort',
+			    dir : 'dir'
+			},
+		    restful: true,
+		    proxy: new Ext.data.HttpProxy({
+			    url: get_api_url('account')
+			}),
+		    reader: new Ext.data.JsonReader({
+			    totalProperty: 'meta.total_count',
+			    successProperty: 'success',
+			    idProperty: 'id',
+			    root: 'objects',
+			    messageProperty: 'message'
+			}, [
+    		    {name: 'id'},
+    		    {name: 'resource_uri'},
+                {name: 'amount', allowBlank: true}
+			]),
+		    writer: new Ext.data.JsonWriter({
+			    encode: false,
+			    writeAllFields: true
+			}),
+		    listeners:{
+		    	exception:function(proxy, type, action, options, response, arg){
+		    		console.log('Account Grid Exception!');
+		    		console.log(proxy);
+		    		console.log(type);
+		    		console.log(action);
+		    		console.log(options);
+		    		console.log(response);
+		    		console.log(arg);
+		    	},
+		    	write:function(store, action, result, res, rs){
+		    		console.log('Account created!');
+		    		console.log(store);
+		    		console.log(action);
+		    		console.log(result);
+		    		console.log(res);
+		    		console.log(rs);
+		    		if(action=='create') {
+			    		//App.eventManager.fireEvent('accountcreate', rs);
+		    			this.onAccountCreate(rs);
+		    		}
+		    	},
+		    	scope:this
+		    }
+		});
+		
+		this.bottom = new Ext.TabPanel({
+			activeTab:0,
+			height:200,
+			plain:false,
+			
+			defaults:{
+				border:false
+			},
+			items:[{
+				title:'ДМС',
+				layout:'fit',
+				items:[this.insPolicy]
+			},this.cl_acc_grid
+			
+			]
 		});
 		
 		config = {
@@ -100,24 +175,12 @@ App.patient.PatientForm = Ext.extend(Ext.form.FormPanel, {
 							inputValue:'Ж',
 							name:'gender_box'
 						}]
-					},{
-						layout:'column',
-						border:false,
-						defaults:{
-							border:false
-						},
-						items:[this.discountCmb,{
-							xtype:'button',
-							iconCls:'silk-delete',
-							handler:function(){
-								this.discountCmb.setRawValue(''); 
-								this.discountCmb.originalValue='';
-								this.discountCmb.hiddenValue='';
-								this.discountCmb.value='';
-							},
-							scope:this
-						}]
-					},{
+					},new Ext.form.LazyClearableComboBox({
+			        	fieldLabel:'Скидка',
+						anchor:'80%',
+			        	name:'discount',
+			        	proxyUrl:get_api_url('discount')
+					}),{
 						xtype:'textfield',
 						name:'doc',
                     	fieldLabel: 'Удостоверение',
@@ -130,16 +193,7 @@ App.patient.PatientForm = Ext.extend(Ext.form.FormPanel, {
 						value:''
 					}]
 				}]
-			},{
-				title:'ДМС',
-				height:200,
-				plain:false,
-				layout:'fit',
-				defaults:{
-					border:false
-				},
-				items:[this.insPolicy]
-			}]
+			},this.bottom]
 		}
 		Ext.apply(this, Ext.apply(this.initialConfig, config));
 		App.patient.PatientForm.superclass.initComponent.apply(this, arguments);

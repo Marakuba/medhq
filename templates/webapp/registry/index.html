@@ -29,6 +29,10 @@
 
     <!-- LIBS -->
     <script type="text/javascript" src="{{ MEDIA_URL }}extjs/adapter/ext/ext-base.js"></script>
+    
+    <script type="text/javascript" src="{{ MEDIA_URL }}web-socket-js/swfobject.js"></script>
+    <script type="text/javascript" src="{{ MEDIA_URL }}web-socket-js/web_socket.js"></script>
+    
     <!-- ENDLIBS -->
 
     <script type="text/javascript" src="{{ MEDIA_URL }}extjs/ext-all{% if debug %}-debug{% endif %}.js"></script>
@@ -120,7 +124,17 @@
     <script type="text/javascript" src="{{ MEDIA_URL }}app/registry/results/Grid.js"></script>
     <script type="text/javascript" src="{{ MEDIA_URL }}app/registry/Results.js"></script>
 
-    <script type="text/javascript" src="{{ MEDIA_URL }}app/registry/Reports.js"></script>
+    <script type="text/javascript" src="{{ MEDIA_URL }}app/registry/Reports.js"></script> -->
+    
+    <script type="text/javascript" src="{{ MEDIA_URL }}app/registry/patient/clientaccount/backends.js"></script>
+    <script type="text/javascript" src="{{ MEDIA_URL }}app/registry/patient/clientaccount/ClientAccountGrid.js"></script>
+    
+    <script type="text/javascript" src="{{ MEDIA_URL }}app/registry/patient/billing/payment/PaymentForm.js"></script>
+    <script type="text/javascript" src="{{ MEDIA_URL }}app/registry/patient/billing/payment/PaymentGrid.js"></script>
+    <script type="text/javascript" src="{{ MEDIA_URL }}app/registry/patient/billing/payment/PaymentWindow.js"></script>
+    
+    <script type="text/javascript" src="{{ MEDIA_URL }}app/cashier/CashierTab.js"></script>
+    <script type="text/javascript" src="{{ MEDIA_URL }}app/cashier/DebtorGrid.js"></script>
 
     <script type="text/javascript" src="{{ MEDIA_URL }}app/registry/MainPanel.js"></script>
     <script type="text/javascript" src="{{ MEDIA_URL }}app/registry/CentralPanel.js"></script>

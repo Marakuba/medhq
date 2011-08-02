@@ -14,6 +14,7 @@ App.ExamCardGrid = Ext.extend(Ext.grid.GridPanel, {
 			{name: 'created',allowBlank: true},
 			{name: 'modified',allowBlank: true},
 			{name: 'name',allowBlank: true},
+			{name: 'print_name',allowBlank: true},
 			{name: 'ordered_service',allowBlank: true},
 			{name: 'print_date', allowBlank: true},
 			{name: 'objective_data', allowBlank: true},
@@ -29,7 +30,9 @@ App.ExamCardGrid = Ext.extend(Ext.grid.GridPanel, {
 			{name: 'history', allowBlank: true},
 			{name: 'anamnesis', allowBlank: true},
 			{name: 'mbk_diag', allowBlank: true},
-			{name: 'extra_service', allowBlank: true}
+			{name: 'conclusion', allowBlank: true},
+			{name: 'comment', allowBlank: true},
+			{name: 'ekg', allowBlank: true}
 		]);
 
 		this.store = new Ext.data.Store({
@@ -162,9 +165,13 @@ App.ExamCardGrid = Ext.extend(Ext.grid.GridPanel, {
 			scope:this,
 			ordered_service:this.ordered_service,
 			patient:this.patient,
-			fn:function(){
-				this.store.load();
-			}
+			fn: function(record){
+    			console.info(record);
+    			this.saveRecord(record);
+    		}
+			//fn:function(){
+				//this.store.load();
+			//}
 		});
 		win.show();
 	},

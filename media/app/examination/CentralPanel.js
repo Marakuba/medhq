@@ -85,6 +85,14 @@ App.ExamCentralPanel = Ext.extend(Ext.Panel, {
                     	this.launchApp('templateglobalgrid');
                     },
                     scope:this
+                },{
+                    text: 'Группы',
+                    scale:'medium',
+                    iconAlign: 'top',
+                    handler: function(){
+                    	this.launchApp('groupgrid');
+                    },
+                    scope:this
                 }]
             },'->',this.cmb,{
             	text:'Выход',

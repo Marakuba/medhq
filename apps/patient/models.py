@@ -1,6 +1,6 @@
 # -*- coding: utf-8 -*-
 
-from django.db import models
+from django.db import models, transaction
 from django.contrib.auth.models import User
 from core.models import make_person_object, make_operator_object
 from state.models import State
@@ -8,6 +8,10 @@ import datetime
 from pricelist.models import Discount
 from django.db.models.aggregates import Sum
 from django.utils.encoding import smart_unicode
+from interlayer.models import ClientItem
+from billing.models import Payment, Account, ClientAccount
+from django.db.models.signals import post_save
+from visit.models import Visit
 
 
 class Patient(make_person_object('patient')):
@@ -19,6 +23,8 @@ class Patient(make_person_object('patient')):
     initial_account = models.DecimalField(u'Первоначальная сумма', max_digits=10, decimal_places=2, default='0.0')
     billed_account = models.DecimalField(u'Счет накопления', max_digits=10, decimal_places=2, default='0.0')
     doc = models.CharField(u'Документ', max_length=30, blank=True)
+    client_item = models.OneToOneField(ClientItem, null=True, blank= True, related_name = 'client')
+    balance = models.FloatField(u'Баланс', blank=True, null=True)
     
     objects = models.Manager()
     
@@ -84,6 +90,14 @@ class Patient(make_person_object('patient')):
     
     def get_absolute_url(self):
         return u"/patient/patient/%s/" % self.id
+    
+    def updBalance(self):
+        orders = Payment.objects.filter(client_account__client_item = self.client_item).aggregate(Sum("amount"))
+        sales = Visit.objects.filter(patient = self).aggregate(Sum("total_price"))
+        discount = Visit.objects.filter(patient = self).aggregate(Sum("total_discount"))
+        self.balance = (float(orders['amount__sum'] or 0) + float(discount['total_discount__sum'] or 0) - float( sales['total_price__sum'] or 0 )) or 0
+        print 'sales %s' % (sales['total_price__sum'])
+        self.save()
     
     class Meta:
         verbose_name = u"Пациент"
@@ -167,3 +181,18 @@ class PatientCard(make_operator_object('patient_card')):
         verbose_name_plural = u"Карты пациента"
 
 
+### SIGNALS
+
+@transaction.commit_on_success
+def AccountGenerator(sender, **kwargs):
+    """
+    """
+    if kwargs['created']:
+        patient = kwargs['instance']
+        client_item = ClientItem.objects.create()
+        patient.client_item = client_item
+        account = Account.objects.create()
+        client_account = ClientAccount.objects.create(client_item=client_item,account=account)
+        patient.save()
+            
+post_save.connect(AccountGenerator, sender=Patient)  
