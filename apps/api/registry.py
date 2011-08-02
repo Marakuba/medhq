@@ -24,7 +24,6 @@ from tastypie.exceptions import NotFound
 from examination.models import CardTemplate, ExaminationCard, TemplateGroup
 from helpdesk.models import Issue, IssueType
 from scheduler.models import Calendar, Event
-from django.contrib import messages
 from billing.models import Account, Payment, ClientAccount
 from interlayer.models import ClientItem
 from django.contrib.contenttypes.models import ContentType
