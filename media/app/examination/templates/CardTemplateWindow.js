@@ -9,7 +9,7 @@ App.examination.CardTemplateWindow = Ext.extend(Ext.Window, {
 			record:this.record,
 			fn:function(record){
 				this.record = record;
-				Ext.callback(this.fn, this.scope || window, [this.record]);
+				Ext.callback(this.fn, this.scope || window, [record]);
 			},
 			scope:this
 		});
