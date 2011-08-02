@@ -61,12 +61,8 @@ class ClientItemResource(ExtResource):
 class PatientResource(ExtResource):
     
     discount = fields.ForeignKey(DiscountResource, 'discount', null=True)
-<<<<<<< HEAD
-    
-=======
     client_item = fields.OneToOneField(ClientItemResource, 'client_item', null=True)
 
->>>>>>> adaea67be06728702e579675b8a9a9f7d0950e39
     def dehydrate(self, bundle):
         bundle.data['discount_name'] = bundle.obj.discount and bundle.obj.discount or u'0%'
         bundle.data['full_name'] = bundle.obj.full_name()
@@ -846,6 +842,7 @@ class CardTemplateResource(ExtResource):
         obj = bundle.obj
         if obj.staff:
             bundle.data['staff_name'] = obj.staff.__unicode__()
+        bundle.data['group_name'] = obj.group
         return bundle
     
     class Meta:

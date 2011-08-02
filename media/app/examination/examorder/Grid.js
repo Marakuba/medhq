@@ -111,9 +111,9 @@ App.examorder.ExamOrderGrid = Ext.extend(Ext.grid.GridPanel, {
 					}
 				},
 				scope:this
-			},{
+			},'-',{
 				text:'Обновить',
-				//iconCls:'silk-add',
+				iconCls:'x-tbar-loading',
 				scope:this,
 				handler:function(){
 					this.store.load()

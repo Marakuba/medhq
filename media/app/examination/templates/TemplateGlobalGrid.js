@@ -24,10 +24,11 @@ App.TemplateGlobalGrid = Ext.extend(Ext.grid.GridPanel, {
 			{name: 'clinical_diag', allowBlank: true},
 			{name: 'treatment', allowBlank: true},
 			{name: 'referral', allowBlank: true},
-			{name: 'group', allowBlank: true}
+			{name: 'group', allowBlank: true},
+			{name: 'group_name', allowBlank: false}
 		]);
 
-		this.store = new Ext.data.Store({
+		this.store = new Ext.data.GroupingStore({
 			autoLoad:true,
 			autoSave:true,
 		    baseParams: {
@@ -64,7 +65,8 @@ App.TemplateGlobalGrid = Ext.extend(Ext.grid.GridPanel, {
 		    		}
 		    	},
 		    	scope:this
-		    }
+		    },
+		    groupField:'group_name'
 		});
 		
 		
@@ -72,6 +74,11 @@ App.TemplateGlobalGrid = Ext.extend(Ext.grid.GridPanel, {
 		
 		this.columns =  [
 		    {
+		    	header: "Группа", 
+		    	hidden:true,
+		    	sortable: true, 
+		    	dataIndex: 'group_name'
+		    },{
 		    	header: "Название шаблона", 
 		    	width:70,
 		    	sortable: true, 
@@ -79,7 +86,7 @@ App.TemplateGlobalGrid = Ext.extend(Ext.grid.GridPanel, {
 		    	editor: new Ext.form.TextField({})
 		    },{
 		    	header: "Врач", 
-		    	width:70,
+		    	width:30,
 		    	sortable: true, 
 		    	dataIndex: 'staff_name'
 		    }
@@ -104,7 +111,7 @@ App.TemplateGlobalGrid = Ext.extend(Ext.grid.GridPanel, {
 				handler:this.onAdd.createDelegate(this, [])
 			},{
 				xtype:'button',
-				//iconCls:'silk-add',
+				iconCls:'silk-page-copy',
 				text:'Добавить копированием',
 				handler:this.onAddCopy.createDelegate(this, [])
 			},{
@@ -140,9 +147,10 @@ App.TemplateGlobalGrid = Ext.extend(Ext.grid.GridPanel, {
                     this.store.clearFilter()
                 }
 			}],
-			viewConfig : {
-				forceFit : true
-			}			
+			view : new Ext.grid.GroupingView({
+				forceFit : true,
+				groupTextTpl: "{text}"
+			})			
 		};
 		
 		this.on('rowdblclick', function(object, rowIndex, e){
