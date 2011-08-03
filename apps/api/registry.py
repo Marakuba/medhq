@@ -494,6 +494,32 @@ class StaffSchedResource(ModelResource):
             'id':ALL
         }
 
+class PosSchedResource(ModelResource):
+    """
+    """
+    #doctor = fields.ToOneField(DoctorResource, 'doctor', null=True)
+    
+    def dehydrate(self, bundle):
+        bundle.data['name'] = bundle.obj.staff.short_name()
+        bundle.data['short_name'] = bundle.obj.staff.short_name()
+        bundle.data['timeslot'] = bundle.obj.staff.doctor.timeslot
+        bundle.data['am_session_starts'] = bundle.obj.staff.doctor.am_session_starts
+        bundle.data['am_session_ends'] = bundle.obj.staff.doctor.am_session_ends
+        bundle.data['pm_session_starts'] = bundle.obj.staff.doctor.pm_session_starts
+        bundle.data['pm_session_ends'] = bundle.obj.staff.doctor.pm_session_ends
+        bundle.data['routine'] = bundle.obj.staff.doctor.routine
+        bundle.data['work_days'] = bundle.obj.staff.doctor.work_days
+        bundle.data['room'] = bundle.obj.staff.doctor.room
+        return bundle
+    
+    class Meta:
+        queryset = Position.objects.filter(staff__doctor__isnull = False)
+        resource_name = 'possched'
+        limit = 100
+        filtering = {
+            'last_name':('istartswith',),
+            'id':ALL
+        }
 
 class TubeResource(ModelResource):
     """
@@ -1132,6 +1158,7 @@ api.register(LabServiceGroupResource())
 api.register(PositionResource())
 api.register(StaffResource())
 api.register(StaffSchedResource())
+api.register(PosSchedResource())
 api.register(StateResource())
 api.register(MedStateResource())
 api.register(InsuranceStateResource())

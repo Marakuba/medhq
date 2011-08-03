@@ -32,7 +32,7 @@ Ext.calendar.DoctorScheduler = Ext.extend(Ext.Panel, {
 				},
                 //data: calendarList, // defined in calendar-list.js
                 proxy: new Ext.data.HttpProxy({
-			    	url: get_api_url('staffsched'),
+			    	url: get_api_url('possched'),
 			    	method:'GET'
 				}),
                 autoLoad: true,
