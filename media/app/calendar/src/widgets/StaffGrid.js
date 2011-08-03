@@ -4,7 +4,7 @@ Ext.calendar.StaffGrid = Ext.extend(Ext.grid.GridPanel, {
     initComponent : function() {
 		
 		this.proxy = new Ext.data.HttpProxy({
-		    url: get_api_url('staffsched')
+		    url: get_api_url('possched')
 		});
 		
 		this.reader = new Ext.data.JsonReader({
@@ -15,7 +15,8 @@ Ext.calendar.StaffGrid = Ext.extend(Ext.grid.GridPanel, {
 		    messageProperty: 'message'
 		}, [
 		    {name: 'id'},
-		    {name: 'name'}
+		    {name: 'name'},
+		    {name: 'title'}
 		]);
 
 		this.store = new Ext.data.Store({
@@ -40,6 +41,12 @@ Ext.calendar.StaffGrid = Ext.extend(Ext.grid.GridPanel, {
 				//anchor:'100%',
 		    	sortable: true, 
 		    	dataIndex: 'name'
+		    },{
+		    	header: " Должность", 
+		    	//width: 8,
+				//anchor:'100%',
+		    	sortable: true, 
+		    	dataIndex: 'title'
 		    }
 		];		
 		
