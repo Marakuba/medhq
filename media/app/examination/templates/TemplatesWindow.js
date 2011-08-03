@@ -11,7 +11,7 @@ App.examination.TemplatesWindow = Ext.extend(Ext.Window, {
 			ordered_service:this.ordered_service,
 			fn:function(record){
 				this.record = record;
-				Ext.callback(this.fn, this.scope || window, [this.record]);
+				Ext.callback(this.fn, this.scope || window, [record]);
 			},
 			scope:this
 		});

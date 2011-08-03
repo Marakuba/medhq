@@ -89,7 +89,6 @@ App.visit.VisitTab = Ext.extend(Ext.Panel, {
         		text:'Закрыть',
 				handler:this.onClose.createDelegate(this,[])
 			},this.saveButton],
-
 	        items:[this.form]
 		}
 

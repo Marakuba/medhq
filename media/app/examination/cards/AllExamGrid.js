@@ -31,6 +31,7 @@ App.AllExamGrid = Ext.extend(Ext.grid.GridPanel, {
 			{name: 'anamnesis', allowBlank: true},
 			{name: 'mbk_diag', allowBlank: true},
 			{name: 'conclusion', allowBlank: true},
+			{name: 'patient_name', allowBlank: true},
 			{name: 'comment', allowBlank: true}
 		]);
 
@@ -80,6 +81,11 @@ App.AllExamGrid = Ext.extend(Ext.grid.GridPanel, {
 		
 		this.columns =  [
 		    {
+		    	header: "Пациент", 
+		    	width:100,
+		    	sortable: true, 
+		    	dataIndex: 'patient_name' 
+		    },{
 		    	header: "Обследование", 
 		    	width:100,
 		    	sortable: true, 

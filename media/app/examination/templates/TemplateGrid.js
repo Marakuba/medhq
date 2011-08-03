@@ -296,6 +296,7 @@ App.CardTemplateGrid = Ext.extend(Ext.grid.GridPanel, {
 				model:this.examModel,
 				scope:this,
 				fn:function(record){
+					this.record = record;
 					this.saveExamRecord(record);
 				}
 			});
