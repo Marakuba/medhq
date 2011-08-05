@@ -27,6 +27,7 @@ from scheduler.models import Calendar, Event
 from billing.models import Account, Payment, ClientAccount
 from interlayer.models import ClientItem
 from django.contrib.contenttypes.models import ContentType
+from examination.models import TemplateGroup
 #from reporting.models import Report, FieldItem, GroupItem, SummaryItem, Fields,\
 #    Groups, Summaries, FilterItem, Filters
 
@@ -50,7 +51,7 @@ class ClientItemResource(ExtResource):
         return bundle
     
     class Meta:
-#        queryset = ClientItem.objects.all()
+        queryset = ClientItem.objects.all()
         resource_name = 'clientitem'
         authorization = DjangoAuthorization()
         filtering = {
@@ -60,7 +61,7 @@ class ClientItemResource(ExtResource):
 class PatientResource(ExtResource):
     
     discount = fields.ForeignKey(DiscountResource, 'discount', null=True)
-    #client_item = fields.OneToOneField(ClientItemResource, 'client_item', null=True)
+    client_item = fields.OneToOneField(ClientItemResource, 'client_item', null=True)
 
     def dehydrate(self, bundle):
         bundle.data['discount_name'] = bundle.obj.discount and bundle.obj.discount or u'0%'
@@ -103,7 +104,7 @@ class DebtorResource(ExtResource):
     client_item = fields.OneToOneField(ClientItemResource, 'client_item', null=True)
     
     class Meta:
-#        queryset = Patient.objects.filter(balance__lte = 0) #@UndefinedVariable
+        queryset = Patient.objects.filter(balance__lte = 0) #@UndefinedVariable
         resource_name = 'debtor'
         default_format = 'application/json'
         authorization = DjangoAuthorization()
@@ -851,7 +852,7 @@ class BCPackageResource(ExtResource):
 class TemplateGroupResource(ExtResource):
     
     class Meta:
-#        queryset = TemplateGroup.objects.all()
+        queryset = TemplateGroup.objects.all()
         authorization = DjangoAuthorization()
         resource_name = 'templategroup'
         filtering = {
@@ -861,13 +862,13 @@ class TemplateGroupResource(ExtResource):
 
 class CardTemplateResource(ExtResource):
     staff = fields.ForeignKey(PositionResource, 'staff', null=True)
-    #group = fields.ForeignKey(TemplateGroupResource, 'group', null=True)
+    group = fields.ForeignKey(TemplateGroupResource, 'group', null=True)
     
     def dehydrate(self, bundle):
         obj = bundle.obj
         if obj.staff:
             bundle.data['staff_name'] = obj.staff.__unicode__()
-        #bundle.data['group_name'] = obj.group
+        bundle.data['group_name'] = obj.group
         return bundle
     
     class Meta:
@@ -1070,7 +1071,7 @@ class ContentTypeResource(ExtResource):
 class AccountResource(ExtResource):
     
     class Meta:
-#        queryset = Account.objects.all()
+        queryset = Account.objects.all()
         resource_name = 'account'
         authorization = DjangoAuthorization()
         
@@ -1085,7 +1086,7 @@ class ClientAccountResource(ExtResource):
         return bundle
     
     class Meta:
-#        queryset = ClientAccount.objects.all().select_related()
+        queryset = ClientAccount.objects.all().select_related()
         resource_name = 'clientaccount'
         authorization = DjangoAuthorization()
         filtering = {
@@ -1109,7 +1110,7 @@ class PaymentResource(ExtResource):
         return result
     
     class Meta:
-#        queryset = Payment.objects.all()
+        queryset = Payment.objects.all()
         resource_name = 'payment'
         authorization = DjangoAuthorization()
         limit = 1000

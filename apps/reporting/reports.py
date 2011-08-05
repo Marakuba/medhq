@@ -11,14 +11,14 @@ class VrachReport(Report):
     verbose_name = u'Врач - количество,сумма..'
     query_str = "\
 SELECT \
-  Tstaff.last_name ||' '|| substr(Tstaff.first_name,1,1)||'.' ||substr(Tstaff.mid_name,1,1)||'.' as staff, \
+  Tstaff.last_name ||' '|| substr(Tstaff.first_name,1,1)||'.' ||substr(Tstaff.mid_name,1,1)||'., '||Tpstf.title as staff, \
   sum(TTvis.count) as cnt, \
   sum(TTvis.count * TTvis.price) as sum,  \
   round(sum(TTvis.count * TTvis.price * (Tvis.discount_value/100)),2) as disc,  \
   sum(TTvis.count * TTvis.price) - round(sum(TTvis.count * TTvis.price * (Tvis.discount_value/100)),2) as clean_price \
  %s\
 GROUP BY \
-  Tstaff.last_name ,Tstaff.first_name ,Tstaff.mid_name \
+  Tstaff.last_name ,Tstaff.first_name ,Tstaff.mid_name, Tpstf.title \
 ORDER BY \
     staff " % (Report.base_wuery_from_where)
     #..
@@ -42,7 +42,7 @@ class VrachRefrlPntUslReport(Report):
     verbose_name = u'<<Врач - Кто направил>> - пациент,услуга..'
     query_str = "\
 SELECT \
-  Tstaff.last_name ||' '|| substr(Tstaff.first_name,1,1)||'.' ||substr(Tstaff.mid_name,1,1)||'.' as staff, \
+  Tstaff.last_name ||' '|| substr(Tstaff.first_name,1,1)||'.' ||substr(Tstaff.mid_name,1,1)||'., '||Tpstf.title as staff, \
   Trefrl.name as refrl, \
   to_char(Tvis.created,'YYYY-MM-DD HH24:MI') as created, \
   Tpnt.last_name ||' '|| substr(Tpnt.first_name,1,1)||'.' ||substr(Tpnt.mid_name,1,1)||'.' as pnt,    \
@@ -55,7 +55,7 @@ SELECT \
   sum(TTvis.count * TTvis.price) - round(sum(TTvis.count * TTvis.price * (Tvis.discount_value/100)),2) as clean_price \
  %s \
 GROUP BY \
-  Tstaff.last_name ,Tstaff.first_name ,Tstaff.mid_name \
+  Tstaff.last_name ,Tstaff.first_name ,Tstaff.mid_name, Tpstf.title \
   ,Trefrl.name \
   ,Tvis.created \
   ,Tpolis.number \
@@ -110,7 +110,7 @@ class VrachPntUslReport(Report):
     verbose_name = u'<< Врач >> - пациент,услуга..'
     query_str = "\
 SELECT \
-  Tstaff.last_name ||' '|| substr(Tstaff.first_name,1,1)||'.' ||substr(Tstaff.mid_name,1,1)||'.' as staff, \
+  Tstaff.last_name ||' '|| substr(Tstaff.first_name,1,1)||'.' ||substr(Tstaff.mid_name,1,1)||'., '||Tpstf.title as staff, \
   Tpnt.last_name ||' '|| substr(Tpnt.first_name,1,1)||'.' ||substr(Tpnt.mid_name,1,1)||'.' as pnt,    \
   Tpolis.number as polis, \
   to_char(Tvis.created,'YYYY-MM-DD HH24:MI') as created, \
@@ -123,7 +123,7 @@ SELECT \
   sum(TTvis.count * TTvis.price) - round(sum(TTvis.count * TTvis.price * (Tvis.discount_value/100)),2) as clean_price \
  %s \
 GROUP BY \
-  Tstaff.last_name ,Tstaff.first_name ,Tstaff.mid_name \
+  Tstaff.last_name ,Tstaff.first_name ,Tstaff.mid_name, Tpstf.title \
   ,Tvis.created \
   ,Tvis.id \
   ,Tpnt.last_name, Tpnt.first_name,Tpnt.mid_name  \
@@ -853,7 +853,7 @@ class VrachiUslSumReport(Report):
     verbose_name = u'Врачи - Услуги - Сумма'
     query_str = " \
 SELECT \
-  Tstaff.last_name ||' '|| substr(Tstaff.first_name,1,1)||'.' ||substr(Tstaff.mid_name,1,1)||'.' as staff, \
+  Tstaff.last_name ||' '|| substr(Tstaff.first_name,1,1)||'.' ||substr(Tstaff.mid_name,1,1)||'., '||Tpstf.title as staff, \
   Tserv.id ||' - '||Tserv.name as serv,  \
   TTvis.price as cost, \
   sum(TTvis.count) as cnt,  \
@@ -862,7 +862,7 @@ SELECT \
   sum(TTvis.count * TTvis.price) - round(sum(TTvis.count * TTvis.price * (Tvis.discount_value/100)),2) as clean_price \
 %s \
 GROUP BY \
-  Tstaff.last_name ,Tstaff.first_name ,Tstaff.mid_name \
+  Tstaff.last_name ,Tstaff.first_name ,Tstaff.mid_name, Tpstf.title \
   ,Tserv.id \
   ,Tserv.name \
   ,TTvis.price  \

@@ -217,6 +217,7 @@ Ext.calendar.DoctorScheduler = Ext.extend(Ext.Panel, {
                         // underlying views to make configuration possible without explicitly having to 
                         // create those views at this level:
                         monthViewCfg: {
+                        	startDay:1,
                             showHeader: true,
                             showWeekLinks: true,
                             showWeekNumbers: true
