@@ -8,6 +8,8 @@ App.CardTemplateGrid = Ext.extend(Ext.grid.GridPanel, {
 		//this.backend = App.getBackend('cardtemplate');	
 		//this.cardBackend = new App.ExamBackend({});
 		
+		this.tmp_id = Ext.id();
+		
 		this.tmpModel = new Ext.data.Record.create([
 			{name: 'id'},
 			{name: 'staff', allowBlank: false},
@@ -158,14 +160,25 @@ App.CardTemplateGrid = Ext.extend(Ext.grid.GridPanel, {
 			//title: 'Шаблоны',
 			columns:this.columns,
 			sm : new Ext.grid.RowSelectionModel({
-						singleSelect : true
-					}),
+				singleSelect : true,
+				listeners: {
+					rowselect:function(model,ind,rec) {
+						Ext.getCmp(this.tmp_id+'choice-btn').enable()
+						
+					},
+					rowdeselect: function() {
+						Ext.getCmp(this.tmp_id+'choice-btn').disable()
+					},
+					scope:this
+				}
+			}),
 			tbar:[{
 				xtype:'button',
+				id:this.tmp_id + 'choice-btn',
 				iconCls:'silk-accept',
 				text:'Выбрать',
 				handler:this.onChoice.createDelegate(this, [])
-			},'-',{
+			}/*,'-',{
 				xtype:'button',
 				iconCls:'silk-add',
 				text:'Добавить',
@@ -185,7 +198,7 @@ App.CardTemplateGrid = Ext.extend(Ext.grid.GridPanel, {
 				iconCls:'silk-delete',
 				text:'Удалить',
 				handler:this.onDelete.createDelegate(this, [])
-			},'-',{
+			}*/,'-',{
 				xtype:'button',
 				enableToggle:true,
 				toggleGroup:'templare-filter',
@@ -229,14 +242,17 @@ App.CardTemplateGrid = Ext.extend(Ext.grid.GridPanel, {
 	},
 	
 	onAdd: function(btn,ev){
-        var win = new App.examination.CardTemplateWindow({
-    		model:this.tmpModel,
-    		scope:this,
-    		fn:function(record){
-    			this.saveRecord(record);
-    		}
-    	});
-    	win.show();
+        config = {
+			title:'Новый шаблон',
+			closable:true,
+   			model:this.tmpModel,
+   			scope:this,
+   			fn:function(record){
+   				this.saveRecord(record);
+   			}
+		}
+		App.eventManager.fireEvent('launchapp', 'cardtemplateform',config);
+		//this.setVisible(false); 
 	},
 	
 	onAddCopy: function(btn,ev){
@@ -264,15 +280,17 @@ App.CardTemplateGrid = Ext.extend(Ext.grid.GridPanel, {
 	onEdit: function(rowindex){
 		var record = this.getSelected();
 		if(record) {
-    		var win = new App.examination.CardTemplateWindow({
-    			record:record,
+			config = {
+				title:'Шаблон '+record.data.name,
+				closable:true,
+				record:record,
     			model:this.tmpModel,
     			scope:this,
     			fn:function(record){
     				this.saveRecord(record);
     			}
-    		});
-    		win.show();
+			}
+			App.eventManager.fireEvent('launchapp', 'cardtemplateform',config);
 		}
 	},
 	
@@ -285,23 +303,8 @@ App.CardTemplateGrid = Ext.extend(Ext.grid.GridPanel, {
     },	
     
     onChoice: function() {
-        var rec = this.getSelectionModel().getSelected();
-        if (!rec) {
-            return false;
-        } else {
-        	rec.data['ordered_service'] = this.ordered_service;
-        	var win = new App.examination.ExamCardWindow({
-        		tmp_record : rec,
-        		patient:this.patient,
-				model:this.examModel,
-				scope:this,
-				fn:function(record){
-					this.record = record;
-					this.saveExamRecord(record);
-				}
-			});
-			win.show();
-        }
+        var record = this.getSelectionModel().getSelected();
+        Ext.callback(this.fn, this.scope || window, [record]);        
     },
     
     saveExamRecord: function(record) {

@@ -9,31 +9,7 @@ App.ExamCardGrid = Ext.extend(Ext.grid.GridPanel, {
 
 		//this.backend = App.getBackend('examcard');
 		
-		this.examModel = new Ext.data.Record.create([
-			{name: 'id'},
-			{name: 'created',allowBlank: true},
-			{name: 'modified',allowBlank: true},
-			{name: 'name',allowBlank: true},
-			{name: 'print_name',allowBlank: true},
-			{name: 'ordered_service',allowBlank: true},
-			{name: 'print_date', allowBlank: true},
-			{name: 'objective_data', allowBlank: true},
-			{name: 'psycho_status', allowBlank: true},
-			{name: 'gen_diag', allowBlank: true},
-			{name: 'complication', allowBlank: true},
-			{name: 'concomitant_diag', allowBlank: true},
-			{name: 'clinical_diag', allowBlank: true},
-			{name: 'treatment', allowBlank: true},
-			{name: 'referral', allowBlank: true},
-			{name: 'disease', allowBlank: true},
-			{name: 'complaints', allowBlank: true},
-			{name: 'history', allowBlank: true},
-			{name: 'anamnesis', allowBlank: true},
-			{name: 'mbk_diag', allowBlank: true},
-			{name: 'conclusion', allowBlank: true},
-			{name: 'comment', allowBlank: true},
-			{name: 'ekg', allowBlank: true}
-		]);
+		this.examModel = App.models.examModel;
 
 		this.store = new Ext.data.Store({
 			autoLoad:true,
@@ -161,32 +137,28 @@ App.ExamCardGrid = Ext.extend(Ext.grid.GridPanel, {
 	},
 	
 	onAdd: function() {
-		var win = new App.examination.TemplatesWindow({
-			scope:this,
-			ordered_service:this.ordered_service,
-			patient:this.patient,
-			fn: function(record){
-    			console.info(record);
-    			this.saveRecord(record);
-    		}
-			//fn:function(){
-				//this.store.load();
-			//}
-		});
-		win.show();
+		config = {
+			closable:true,
+        	//patient:rec.data.patient,
+       		ordered_service:this.ordered_service,
+			title: 'Карта осмотра ' + this.patient_name,
+			scope:this
+		}
+		App.eventManager.fireEvent('launchapp', 'examcardform',config);
 	},
 	
 	onEdit: function(rowindex){
 		var record = this.getSelected();
 		if(record) {
-    		var win = new App.examination.ExamCardWindow({
-    			record:record,
-    			patient:this.patient,
-    			model:this.store.recordType,
-    			scope:this,
-    			fn:this.saveRecord(record)
-    		});
-    		win.show();
+    		config = {
+				closable:true,
+				record:record,
+	        	//patient:rec.data.patient,
+    	   		ordered_service:this.ordered_service,
+				title: 'Карта осмотра ' + this.patient_name,
+				scope:this
+			}
+			App.eventManager.fireEvent('launchapp', 'examcardform',config);
 		}
 	},
 	

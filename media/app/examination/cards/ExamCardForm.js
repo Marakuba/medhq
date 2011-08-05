@@ -4,39 +4,12 @@ App.examination.ExamCardForm = Ext.extend(Ext.form.FormPanel, {
 
 	initComponent: function(){
 		
-		this.examModel = new Ext.data.Record.create([
-			{name: 'id'},
-			{name: 'created',allowBlank: true},
-			{name: 'modified',allowBlank: true},
-			{name: 'name',allowBlank: true},
-			{name: 'print_name',allowBlank: true},
-			{name: 'ordered_service',allowBlank: true},
-			{name: 'print_date', allowBlank: true},
-			{name: 'objective_data', allowBlank: true},
-			{name: 'psycho_status', allowBlank: true},
-			{name: 'gen_diag', allowBlank: true},
-			{name: 'complication', allowBlank: true},
-			{name: 'concomitant_diag', allowBlank: true},
-			{name: 'clinical_diag', allowBlank: true},
-			{name: 'treatment', allowBlank: true},
-			{name: 'referral', allowBlank: true},
-			{name: 'disease', allowBlank: true},
-			{name: 'complaints', allowBlank: true},
-			{name: 'history', allowBlank: true},
-			{name: 'anamnesis', allowBlank: true},
-			{name: 'mbk_diag', allowBlank: true},
-			{name: 'extra_service', allowBlank: true},
-			{name: 'view',allowBlank: true},
-			{name: 'conclusion', allowBlank: true},
-			{name: 'comment', allowBlank: true}
-		]);
-		//store для комбобокса
+		this.examModel = App.models.examModel;
 		this.examCardStore = new Ext.data.Store({
 			//autoLoad:true,
-			//autoSave:true,
+			autoSave:true,
 		    baseParams: {
-		    	format:'json',
-		    	name:this.record?this.record.data.name:this.tmp_record.data.name
+		    	format:'json'
 		    },
 		    paramNames: {
 			    start : 'offset',
@@ -54,7 +27,22 @@ App.examination.ExamCardForm = Ext.extend(Ext.form.FormPanel, {
 			    idProperty: 'id',
 			    root: 'objects',
 			    messageProperty: 'message'
-			}, this.examModel)
+			}, this.examModel),
+			writer: new Ext.data.JsonWriter({
+			    encode: false,
+			    writeAllFields: true
+			}),
+			listeners:{
+		    	exception:function(proxy, type, action, options, response, arg){
+		    	},
+		    	write:function(store, action, result, res, rs){
+		    		if(action=='create') {
+			    		App.eventManager.fireEvent('examcardcreate', rs);
+			    		Ext.getCmp(this.tmp_id+'print').enable();
+		    		}
+		    	},
+		    	scope:this
+		    }
 		});
 		
 		this.examComboBox = new Ext.form.ComboBox({
@@ -77,6 +65,7 @@ App.examination.ExamCardForm = Ext.extend(Ext.form.FormPanel, {
 		});
 		
 		config = {
+			id: 'exam-form',
 			baseCls:'x-plain',
 			border:false,
 			autoScroll: true,
@@ -86,11 +75,25 @@ App.examination.ExamCardForm = Ext.extend(Ext.form.FormPanel, {
 				baseCls:'x-plain',
 				border:false
 			},
-			tbar:['Другие карты данного обследования:  ',this.examComboBox,
-			{
+			buttons:[{
+				id:this.tmp_id+'print',
+				disabled:this.record ? false : true,
+				text:'Просмотр',
+				handler:this.onPrint.createDelegate(this),
+				scope:this
+			},{
+				text:'Сохранить',
+				handler:this.onSave.createDelegate(this),
+				scope:this
+			},{
+				text:'Закрыть',
+				handler:this.onClose.createDelegate(this),
+				scope:this
+			}],
+			tbar:[{
 				xtype:'button',
 				iconCls:'silk-accept',
-				text:'Выбрать',
+				text:'Выбрать шаблон',
 				handler:this.onChoice.createDelegate(this, [])
 			}],
 			items:[{
@@ -107,6 +110,12 @@ App.examination.ExamCardForm = Ext.extend(Ext.form.FormPanel, {
 				},{
 					xtype:'hidden',
 					name:'name'
+				},{
+					xtype:'textfield',
+					fieldLabel:'Заголовок для печати',
+					name:'print_name',
+					//height:40,
+					anchor:'100%'
 				},{
 					xtype:'textarea',
 					fieldLabel:'Характер заболевания',
@@ -210,24 +219,15 @@ App.examination.ExamCardForm = Ext.extend(Ext.form.FormPanel, {
 		App.examination.ExamCardForm.superclass.initComponent.apply(this, arguments);
 		App.eventManager.on('examcardcreate', this.onExamCardCreate, this);
 		this.on('afterrender', function(){
-			if (this.patient) {
-				this.examCardStore.setBaseParam('ordered_service__order__patient',this.patient)
-			};
+			//if (this.patient) {
+				//this.examCardStore.setBaseParam('ordered_service__order__patient',this.patient)
+			//};
 			if(this.record) {
 				this.getForm().loadRecord(this.record);
-				//this.setTitle('Карта осмотра '+this.record.data.name)
-			} else {
-				if (this.tmp_record){
-					/*for (rec in this.tmp_record.data) {
-						var field = this.getForm().findField(rec);
-						if (field) {
-							field.setValue(this.tmp_record.data[rec])
-						}
-					}*/
-					this.getForm().loadRecord(this.tmp_record)
-					//this.setTitle('Карта осмотра '+this.tmp_record.data.name)
-				}
 			};
+			if (this.ordered_service) {
+				this.getForm().findField('ordered_service').setValue(this.ordered_service)
+			}
 			//this.examCardStore.load();
 		},this);
 	},
@@ -240,7 +240,7 @@ App.examination.ExamCardForm = Ext.extend(Ext.form.FormPanel, {
 	getRecord: function() {
 		if(!this.record) {
 			if(this.model) {
-				var Model = this.model;
+				var Model = this.examModel;
 				this.record = new Model();
 			} else {
 				console.log('Ошибка: нет модели');
@@ -252,11 +252,20 @@ App.examination.ExamCardForm = Ext.extend(Ext.form.FormPanel, {
 	onSave: function() {
 		var f = this.getForm();
 		if(f.isValid()){
-			var Record = this.getRecord();
+			var Record = this.record ? this.record : new this.examModel();
 			f.updateRecord(Record);
-			//App.eventManager.fireEvent('examcardgrid_reload');
+			if (!Record.data.name){
+				Record.data['name'] = Record.data.print_name; 
+			}
+			this.record = Record;
 			if(this.fn) {
 				Ext.callback(this.fn, this.scope || window, [Record]);
+			} else {
+				if(Record.phantom) {
+					if(this.examCardStore.indexOf(Record)==-1) {
+						this.examCardStore.insert(0, Record);
+					}
+				}
 			}
 		} else {
 			Ext.MessageBox.alert('Предупреждение','Пожалуйста, заполните все поля формы!');
@@ -264,15 +273,23 @@ App.examination.ExamCardForm = Ext.extend(Ext.form.FormPanel, {
 	},
 	
 	onChoice: function(){
-		if (this.examDonor){
-			Ext.Msg.confirm('Предупреждение','Перенести данные в документ?',
-				function(btn){
-					if (btn==='yes'){
-						this.getForm().loadRecord(this.examDonor);
-					}
-				},
-			this);
-		}
+		var win = new App.examination.TemplatesWindow({
+			fn: function(record){
+				//this.record = record;
+				if (record){
+					Ext.Msg.confirm('Предупреждение','Перенести данные в документ?',
+						function(btn){
+							if (btn==='yes'){
+								this.getForm().loadRecord(record);
+							}
+						},
+					this);
+				}
+			},
+			scope:this
+		})
+		win.show();
+		
 	},
 	
 	isModified: function() {
@@ -284,6 +301,16 @@ App.examination.ExamCardForm = Ext.extend(Ext.form.FormPanel, {
            }
         });
         
-	}
+	},
 	
+	onClose: function() {
+		this.isModified();
+		this.destroy();
+	},
+	
+	onPrint: function() {
+		window.open('/exam/card/'+this.record.data.id+'/');
+	}
 });		
+
+Ext.reg('examcardform', App.examination.ExamCardForm);

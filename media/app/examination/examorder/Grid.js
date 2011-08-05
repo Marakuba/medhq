@@ -90,7 +90,9 @@ App.examorder.ExamOrderGrid = Ext.extend(Ext.grid.GridPanel, {
 		this.ttb = new Ext.Toolbar({ 
 			items:[{
 				text:'Добавить карту осмотра',
+				id: this.tmp_id + 'add-exam',
 				iconCls:'silk-add',
+				disabled:true,
 				handler:this.onAdd.createDelegate(this, [])
 			},{
 				text:'Подтвердить выполнение',
@@ -170,11 +172,13 @@ App.examorder.ExamOrderGrid = Ext.extend(Ext.grid.GridPanel, {
 					rowselect:function(model,ind,rec) {
 						if (!rec.data.executed) {
 							Ext.getCmp(this.tmp_id+'order-exec').enable()
-						}
+						};
+						Ext.getCmp(this.tmp_id+'add-exam').enable()
 						
 					},
 					rowdeselect: function() {
-						Ext.getCmp(this.tmp_id+'order-exec').disable()
+						Ext.getCmp(this.tmp_id+'order-exec').disable();
+						Ext.getCmp(this.tmp_id+'add-exam').disable()
 					},
 					scope:this
 				}
@@ -215,7 +219,7 @@ App.examorder.ExamOrderGrid = Ext.extend(Ext.grid.GridPanel, {
 		if (rec) {
 			config = {
 				ordered_service : rec.data.resource_uri,
-				patient:rec.data.patient,
+				patient_name:rec.data.patient_name,
 				title:'Карты осмотра №'+rec.data.barcode+' ' + rec.data.patient_name
 			}
 			App.eventManager.fireEvent('launchapp', 'examcardgrid',config);
@@ -226,16 +230,15 @@ App.examorder.ExamOrderGrid = Ext.extend(Ext.grid.GridPanel, {
 	onAdd: function() {
 		var rec = this.getSelected();
 		if (rec) {
-			var win = new App.examination.TemplatesWindow({
-				scope:this,
-				patient:rec.data.patient,
-				ordered_service:rec.data.resource_uri,
-				fn:function(){
-					App.eventManager.fireEvent('examcardgrid_reload')
-				}
-			});
-			win.show();
-		}
+			config = {
+				closable:true,
+        		patient:rec.data.patient,
+        		ordered_service:rec.data.resource_uri,
+				title: 'Карта осмотра ' + rec.data.patient_name,
+				scope:this
+			}
+			App.eventManager.fireEvent('launchapp', 'examcardform',config);
+        }
 	},
 	
 	onGlobalSearch: function(v) {
@@ -270,12 +273,6 @@ App.examorder.ExamOrderGrid = Ext.extend(Ext.grid.GridPanel, {
 	
 	getSelected: function() {
 		return this.getSelectionModel().getSelected()
-	},
-	
-	onPrint: function() {
-		var id = this.getSelected().data.id;
-		var url = ['/lab/print/results',id,''].join('/');
-		window.open(url);
 	}
 
 	

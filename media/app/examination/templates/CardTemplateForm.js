@@ -42,25 +42,11 @@ App.examination.CardTemplateForm = Ext.extend(Ext.form.FormPanel, {
 			selectOnFocus:true
 		});
 		
-		config = {
-			baseCls:'x-plain',
-			border:false,
-			autoScroll: true,
-			trackResetOnLoad:true,
-			padding:5,
-			defaults:{
-				baseCls:'x-plain',
-				border:false
-			},
-			items:[{
-				layout:'form',
-				labelAlign:'top',
-				autoScroll: true,
-				defaults:{
-					baseCls:'x-plain',
-					border:false
-				},
-				items:[{
+		this.workPlace = [
+			{
+					//region:'center',
+					//layout:'form',
+						//items:[{
 					xtype:'hidden',
 					name:'staff'
 				},{
@@ -93,7 +79,7 @@ App.examination.CardTemplateForm = Ext.extend(Ext.form.FormPanel, {
 					xtype:'htmleditor',
 					fieldLabel:'Объективные данные',
 					name:'objective_data',
-					height:100,
+					height:400,
 					anchor:'100%'
 				},{
 					xtype:'textarea',
@@ -143,7 +129,64 @@ App.examination.CardTemplateForm = Ext.extend(Ext.form.FormPanel, {
 					height:100,
 					name:'referral',
 					anchor:'100%'
+				}];
+				
+		this.menuBar = [{
+					xtype:'textarea',
+					fieldLabel:'Направление',
+					height:100,
+					//name:'referral',
+					anchor:'100%'
+				}];
+		
+		config = {
+			id : 'temp-panel',
+			layout:'border',
+			border:false,
+			autoScroll: true,
+			trackResetOnLoad:true,
+			padding:5,
+			closable:true,
+			items:[{
+				region:'center',
+				border:false,
+				width:'70%',
+				autoScroll:true,
+				trackResetOnLoad:true,
+				layout:{
+					type:'vbox'
+					//align:'stretch'
+				},
+				padding:5,
+				defaults:{
+					baseCls:'x-plain',
+					width:350,
+					border:false,
+					autoScroll:true
+				},
+				items:[{
+					layout:'form',
+					labelAlign:'top',
+					autoScroll:true,
+					defaults:{
+						baseCls:'x-plain',
+						border:false
+					},
+					items:this.workPlace
 				}]
+			}],
+			buttons:[{
+				text:'Фокус',
+				handler:this.onFocus.createDelegate(this),
+				scope:this
+			},{
+				text:'Сохранить',
+				handler:this.onSave.createDelegate(this),
+				scope:this
+			},{
+				text:'Закрыть',
+				handler:this.onClose.createDelegate(this),
+				scope:this
 			}]
 		}
 		Ext.apply(this, Ext.apply(this.initialConfig, config));
@@ -194,13 +237,22 @@ App.examination.CardTemplateForm = Ext.extend(Ext.form.FormPanel, {
 	
 	isModified: function() {
 		console.log('is form dirty:', this.getForm().isDirty());
-        
         this.getForm().items.each(function(f){
            if(f.isDirty()){
 			console.log('dirty field:',f);
            }
         });
-        
+	},
+	
+	onClose: function() {
+		this.isModified();
+		this.destroy();
+	},
+	
+	onFocus: function(){
+		 this.getForm().findField('referral').focus(true,300);
 	}
 	
 });		
+
+Ext.reg('cardtemplateform', App.examination.CardTemplateForm);

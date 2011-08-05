@@ -10,8 +10,9 @@ App.examination.TemplatesWindow = Ext.extend(Ext.Window, {
 			patient:this.patient,
 			ordered_service:this.ordered_service,
 			fn:function(record){
-				this.record = record;
+				//this.record = record;
 				Ext.callback(this.fn, this.scope || window, [record]);
+				this.close()
 			},
 			scope:this
 		});

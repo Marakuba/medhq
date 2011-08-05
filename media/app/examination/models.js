@@ -64,5 +64,6 @@ App.models.examModel = new Ext.data.Record.create([
 	{name: 'history', allowBlank: true},
 	{name: 'anamnesis', allowBlank: true},
 	{name: 'mbk_diag', allowBlank: true},
+	{name: 'view', allowBlank: true},
 	{name: 'group', allowBlank: true}
 ]);

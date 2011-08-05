@@ -164,29 +164,32 @@ App.TemplateGlobalGrid = Ext.extend(Ext.grid.GridPanel, {
 	},
 	
 	onAdd: function(btn,ev){
-        var win = new App.examination.CardTemplateWindow({
-    		model:this.tmpModel,
-    		scope:this,
-    		fn:function(record){
-    			console.info(record);
-    			this.saveRecord(record);
-    		}
-    	});
-    	win.show();
+        config = {
+			title:'Новый шаблон',
+			closable:true,
+   			model:this.tmpModel,
+   			scope:this,
+   			fn:function(record){
+   				this.saveRecord(record);
+   			}
+		}
+		App.eventManager.fireEvent('launchapp', 'cardtemplateform',config);
 	},
     
 	onEdit: function(rowindex){
 		var record = this.getSelected();
 		if(record) {
-    		var win = new App.examination.CardTemplateWindow({
-    			record:record,
+			config = {
+				title:'Шаблон '+record.data.name,
+				closable:true,
+				record:record,
     			model:this.tmpModel,
     			scope:this,
     			fn:function(record){
     				this.saveRecord(record);
     			}
-    		});
-    		win.show();
+			}
+			App.eventManager.fireEvent('launchapp', 'cardtemplateform',config);
 		}
 	},
 	

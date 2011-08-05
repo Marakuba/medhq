@@ -78,7 +78,7 @@ class ExaminationCard(models.Model):
     
         
     def __unicode__(self):
-        return "%s - %s - %s" % (self.created.strftime("%d/%m/%Y"),self.name,self.ordered_service.order.patient.short_name())
+        return "%s - %s - %s" % (self.created.strftime("%d/%m/%Y"),self.name or self.print_name,self.ordered_service.order.patient.short_name())
     
     class Meta:
         verbose_name = u'Карта осмотра'
