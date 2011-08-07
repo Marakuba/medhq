@@ -47,6 +47,7 @@ DISCOUNT_TYPES =(
     (u'gen',u'Общая'),
     (u'pens',u'Пенсионная'),
     (u'admin',u'Административная'),
+    (u'arc',u'Архив'),
 )
 
 class Discount(models.Model):
