@@ -141,7 +141,7 @@ App.billing.PaymentForm = Ext.extend(Ext.form.FormPanel, {
 							columnWidth:1,
 							items:[new Ext.form.LazyComboBox({
 								fieldLabel:'Пациент',
-								allowBlank:false,
+								allowBlank:true,
 								displayField: 'full_name',
 								id:this.tmp_id+'client',
 								queryParam:'last_name__istartswith',

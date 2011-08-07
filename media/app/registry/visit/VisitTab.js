@@ -64,14 +64,14 @@ App.visit.VisitTab = Ext.extend(Ext.Panel, {
 	    
 		this.saveButton = new Ext.Button({
 			text:'Сохранить',
-			handler: this.onFormSave.createDelegate(this),
+			handler: this.onFormSave.createDelegate(this,[]),
 //			disabled:true,
 			scope:this
     	});
     	
     	this.payButton = new Ext.Button({
 			text:'Сохранить и оплатить',
-			handler: this.onFormSave.createDelegate(this),
+			handler: this.onFormSave.createDelegate(this,[true]),
 //			disabled:true,
 			scope:this
     	});
@@ -113,6 +113,8 @@ App.visit.VisitTab = Ext.extend(Ext.Panel, {
 		if (post_pay){
 			this.post_pay = post_pay
 			this.totalSum = this.form.getSum();
+		} else {
+			this.post_pay = undefined;
 		};
 		var f = this.form;
 		this.steps = f.getSteps();
@@ -151,6 +153,15 @@ App.visit.VisitTab = Ext.extend(Ext.Panel, {
 				scope:this
 			});
 		} else {
+			if (this.post_pay != undefined) {
+				//var c = this.form.getSum();
+				this.win = new App.billing.PaymentWindow({
+					is_income : true,
+					amount:this.totalSum,
+					patientRecord:this.patientRecord
+				});
+				this.win.show();
+			};	
 			this.close();
 		}
 	},
@@ -179,15 +190,6 @@ App.visit.VisitTab = Ext.extend(Ext.Panel, {
 				this.msgBox.hide();
 			}
 			this.onClose(true);
-			if (this.post_pay) {
-				//var c = this.form.getSum();
-				this.win = new App.billing.PaymentWindow({
-					is_income : true,
-					amount:this.totalSum,
-					patientRecord:this.patientRecord
-				});
-				this.win.show();
-			}	
 //			this.fireEvent('savecomplete');
 		}
 	},

@@ -42,24 +42,23 @@ App.examination.CardTemplateForm = Ext.extend(Ext.form.FormPanel, {
 			selectOnFocus:true
 		});
 		
-		this.workPlace = [
-			{
-					//region:'center',
-					//layout:'form',
-						//items:[{
+		
+		this.workPlace = new Ext.Panel({
+			region:'center',
+			layout:'form',
+			autoScroll:true,
+			items:[{
 					xtype:'hidden',
 					name:'staff'
 				},{
 					xtype:'textfield',
 					fieldLabel:'Рабочее наименование',
 					name:'name',
-					//height:40,
 					anchor:'100%'
 				},{
 					xtype:'textfield',
 					fieldLabel:'Заголовок для печати',
 					name:'print_name',
-					//height:40,
 					anchor:'100%'
 				},
 					this.groupComboBox,
@@ -67,77 +66,161 @@ App.examination.CardTemplateForm = Ext.extend(Ext.form.FormPanel, {
 					xtype:'textarea',
 					fieldLabel:'Жалобы',
 					name:'complaints',
-					height:100,
+					height:500,
 					anchor:'100%'
 				},{
 					xtype:'textarea',
 					fieldLabel:'Анамнез',
 					name:'anamnesis',
-					height:100,
+					height:500,
 					anchor:'100%'
 				},{
 					xtype:'htmleditor',
 					fieldLabel:'Объективные данные',
 					name:'objective_data',
-					height:400,
+					height:500,
 					anchor:'100%'
 				},{
 					xtype:'textarea',
 					fieldLabel:'Психологический статус',
 					name:'psycho_status',
-					height:100,
+					height:500,
 					anchor:'100%'
 				},{
 					xtype:'htmleditor',
 					fieldLabel:'Основной диагноз',
 					name:'gen_diag',
-					height:100,
+					height:500,
 					anchor:'100%'
 				},{
 					xtype:'textarea',
 					fieldLabel:'Осложнения',
 					name:'complication',
-					height:100,
+					height:500,
 					anchor:'100%'
 				},{
 					xtype:'textarea',
 					fieldLabel:'ЭКГ',
 					name:'ekg',
-					height:100,
+					height:500,
 					anchor:'100%'
 				},{
 					xtype:'textarea',
 					fieldLabel:'Сопутствующий диагноз',
 					name:'concomitant_diag',
-					height:100,
+					height:500,
 					anchor:'100%'
 				},{
 					xtype:'textarea',
 					fieldLabel:'Клинический диагноз',
-					height:100,
+					height:500,
 					name:'clinical_diag',
 					anchor:'100%'
 				},{
 					xtype:'textarea',
 					fieldLabel:'Лечение',
-					height:100,
+					height:500,
 					name:'treatment',
 					anchor:'100%'
 				},{
 					xtype:'textarea',
 					fieldLabel:'Направление',
-					height:100,
+					height:500,
 					name:'referral',
 					anchor:'100%'
-				}];
-				
-		this.menuBar = [{
-					xtype:'textarea',
-					fieldLabel:'Направление',
-					height:100,
-					//name:'referral',
-					anchor:'100%'
-				}];
+				}]
+		});
+		
+		this.menuBar = new Ext.Panel({
+			region:'west',
+			width:150,
+			layout:'form',
+			items:[{
+					text:'Наименование',
+					xtype:'button',
+					height:30,
+					anchor:'100%',
+					handler:this.onFocus.createDelegate(this,['name']),
+					scope:this
+				},{
+					text:'Жалобы',
+					xtype:'button',
+					height:30,
+					anchor:'100%',
+					handler:this.onFocus.createDelegate(this,['complaints']),
+					scope:this
+				},{
+					text:'Анамнез',
+					xtype:'button',
+					height:30,
+					anchor:'100%',
+					handler:this.onFocus.createDelegate(this,['anamnesis']),
+					scope:this
+				},{
+					text:'Объективные данные',
+					xtype:'button',
+					height:30,
+					anchor:'100%',
+					handler:this.onFocus.createDelegate(this,['objective_data']),
+					scope:this
+				},{
+					text:'Психологический статус',
+					xtype:'button',
+					height:30,
+					anchor:'100%',
+					handler:this.onFocus.createDelegate(this,['psycho_status']),
+					scope:this
+				},{
+					text:'Основной диагноз',
+					xtype:'button',
+					height:30,
+					anchor:'100%',
+					handler:this.onFocus.createDelegate(this,['gen_diag']),
+					scope:this
+				},{
+					text:'Осложнения',
+					xtype:'button',
+					height:30,
+					anchor:'100%',
+					handler:this.onFocus.createDelegate(this,['complication']),
+					scope:this
+				},{
+					text:'ЭКГ',
+					xtype:'button',
+					height:30,
+					anchor:'100%',
+					handler:this.onFocus.createDelegate(this,['ekg']),
+					scope:this
+				},{
+					text:'Сопутствующий диагноз',
+					xtype:'button',
+					height:30,
+					anchor:'100%',
+					handler:this.onFocus.createDelegate(this,['concomitant_diag']),
+					scope:this
+				},{
+					text:'Клинический диагноз',
+					xtype:'button',
+					height:30,
+					anchor:'100%',
+					handler:this.onFocus.createDelegate(this,['clinical_diag']),
+					scope:this
+				},{
+					text:'Лечение',
+					xtype:'button',
+					height:30,
+					anchor:'100%',
+					handler:this.onFocus.createDelegate(this,['treatment']),
+					scope:this
+				},{
+					text:'Направление',
+					xtype:'button',
+					height:30,
+					anchor:'100%',
+					handler:this.onFocus.createDelegate(this,['referral']),
+					scope:this
+				}]
+		});
 		
 		config = {
 			id : 'temp-panel',
@@ -147,39 +230,8 @@ App.examination.CardTemplateForm = Ext.extend(Ext.form.FormPanel, {
 			trackResetOnLoad:true,
 			padding:5,
 			closable:true,
-			items:[{
-				region:'center',
-				border:false,
-				width:'70%',
-				autoScroll:true,
-				trackResetOnLoad:true,
-				layout:{
-					type:'vbox'
-					//align:'stretch'
-				},
-				padding:5,
-				defaults:{
-					baseCls:'x-plain',
-					width:350,
-					border:false,
-					autoScroll:true
-				},
-				items:[{
-					layout:'form',
-					labelAlign:'top',
-					autoScroll:true,
-					defaults:{
-						baseCls:'x-plain',
-						border:false
-					},
-					items:this.workPlace
-				}]
-			}],
+			items:[this.workPlace,this.menuBar],
 			buttons:[{
-				text:'Фокус',
-				handler:this.onFocus.createDelegate(this),
-				scope:this
-			},{
 				text:'Сохранить',
 				handler:this.onSave.createDelegate(this),
 				scope:this
@@ -201,7 +253,8 @@ App.examination.CardTemplateForm = Ext.extend(Ext.form.FormPanel, {
 				this.getForm().findField('staff').setValue(path.join("/"));
 				//Ext.Msg.alert('1',path.join("/"));
 				
-			}
+			};
+			
 		},this);
 	},
 	
@@ -249,8 +302,8 @@ App.examination.CardTemplateForm = Ext.extend(Ext.form.FormPanel, {
 		this.destroy();
 	},
 	
-	onFocus: function(){
-		 this.getForm().findField('referral').focus(true,300);
+	onFocus: function(name){
+		 this.getForm().findField(name).focus(true,150);
 	}
 	
 });		
