@@ -64,17 +64,249 @@ App.examination.ExamCardForm = Ext.extend(Ext.form.FormPanel, {
 			selectOnFocus:true
 		});
 		
+				
+		this.workPlace = new Ext.Panel({
+			region:'center',
+			layout:'form',
+			autoScroll:true,
+			items:[{
+					xtype:'hidden',
+					name:'ordered_service'
+				},{
+					xtype:'hidden',
+					name:'name'
+				},{
+					xtype:'textfield',
+					fieldLabel:'Заголовок для печати',
+					name:'print_name',
+					//height:40,
+					anchor:'100%'
+				},{
+					xtype:'textarea',
+					fieldLabel:'Характер заболевания',
+					name:'disease',
+					height: 500,
+					anchor:'100%'
+				},{
+					xtype:'textarea',
+					fieldLabel:'Жалобы',
+					name:'complaints',
+					height:500,
+					anchor:'100%'
+				},{
+					xtype:'textarea',
+					fieldLabel:'История настоящего заболевания',
+					name:'history',
+					height:500,
+					anchor:'100%'
+				},{
+					xtype:'textarea',
+					fieldLabel:'Анамнез',
+					name:'anamnesis',
+					height:500,
+					anchor:'100%'
+				},{
+					xtype:'htmleditor',
+					fieldLabel:'Объективные данные',
+					name:'objective_data',
+					height:500,
+					anchor:'100%'
+				},{
+					xtype:'textarea',
+					fieldLabel:'Психологический статус',
+					name:'psycho_status',
+					height:500,
+					anchor:'100%'
+				},{
+					xtype:'htmleditor',
+					fieldLabel:'Основной диагноз',
+					name:'gen_diag',
+					height:500,
+					anchor:'100%'
+				},{
+					xtype:'textarea',
+					fieldLabel:'Диагноз по МКБ',
+					name:'mbk_diag',
+					height:500,
+					anchor:'100%'
+				},{
+					xtype:'textarea',
+					fieldLabel:'Осложнения',
+					name:'complication',
+					height:500,
+					anchor:'100%'
+				},{
+					xtype:'textarea',
+					fieldLabel:'ЭКГ',
+					name:'ekg',
+					height:500,
+					anchor:'100%'
+				},{
+					xtype:'textarea',
+					height:500,
+					fieldLabel:'Сопутствующий диагноз',
+					name:'concomitant_diag',
+					anchor:'100%'
+				},{
+					xtype:'textarea',
+					fieldLabel:'Клинический диагноз',
+					height:500,
+					name:'clinical_diag',
+					anchor:'100%'
+				},{
+					xtype:'textarea',
+					fieldLabel:'Лечение',
+					height:500,
+					name:'treatment',
+					anchor:'100%'
+				},{
+					xtype:'textarea',
+					fieldLabel:'Направление',
+					height:500,
+					name:'referral',
+					anchor:'100%'
+				},{
+					xtype:'textarea',
+					fieldLabel:'Заключение',
+					height:500,
+					name:'conclusion',
+					anchor:'100%'
+				},{
+					xtype:'textarea',
+					fieldLabel:'Примечание',
+					height:500,
+					name:'comment',
+					anchor:'100%'
+				}]
+		});
+		
+		this.menuBar = new Ext.Panel({
+			region:'west',
+			width:150,
+			layout:'form',
+			items:[{
+					text:'Заголовок',
+					xtype:'button',
+					height:30,
+					anchor:'100%',
+					handler:this.onFocus.createDelegate(this,['print_name']),
+					scope:this
+				},{
+					text:'Жалобы',
+					xtype:'button',
+					height:30,
+					anchor:'100%',
+					handler:this.onFocus.createDelegate(this,['complaints']),
+					scope:this
+				},{
+					text:'История заболевания',
+					xtype:'button',
+					height:30,
+					anchor:'100%',
+					handler:this.onFocus.createDelegate(this,['history']),
+					scope:this
+				},{
+					text:'Анамнез',
+					xtype:'button',
+					height:30,
+					anchor:'100%',
+					handler:this.onFocus.createDelegate(this,['anamnesis']),
+					scope:this
+				},{
+					text:'Объективные данные',
+					xtype:'button',
+					height:30,
+					anchor:'100%',
+					handler:this.onFocus.createDelegate(this,['objective_data']),
+					scope:this
+				},{
+					text:'Психологический статус',
+					xtype:'button',
+					height:30,
+					anchor:'100%',
+					handler:this.onFocus.createDelegate(this,['psycho_status']),
+					scope:this
+				},{
+					text:'Основной диагноз',
+					xtype:'button',
+					height:30,
+					anchor:'100%',
+					handler:this.onFocus.createDelegate(this,['gen_diag']),
+					scope:this
+				},{
+					text:'Диагноз МКБ',
+					xtype:'button',
+					height:30,
+					anchor:'100%',
+					handler:this.onFocus.createDelegate(this,['mbk_diag']),
+					scope:this
+				},{
+					text:'Осложнения',
+					xtype:'button',
+					height:30,
+					anchor:'100%',
+					handler:this.onFocus.createDelegate(this,['complication']),
+					scope:this
+				},{
+					text:'ЭКГ',
+					xtype:'button',
+					height:30,
+					anchor:'100%',
+					handler:this.onFocus.createDelegate(this,['ekg']),
+					scope:this
+				},{
+					text:'Сопутствующий диагноз',
+					xtype:'button',
+					height:30,
+					anchor:'100%',
+					handler:this.onFocus.createDelegate(this,['concomitant_diag']),
+					scope:this
+				},{
+					text:'Клинический диагноз',
+					xtype:'button',
+					height:30,
+					anchor:'100%',
+					handler:this.onFocus.createDelegate(this,['clinical_diag']),
+					scope:this
+				},{
+					text:'Лечение',
+					xtype:'button',
+					height:30,
+					anchor:'100%',
+					handler:this.onFocus.createDelegate(this,['treatment']),
+					scope:this
+				},{
+					text:'Направление',
+					xtype:'button',
+					height:30,
+					anchor:'100%',
+					handler:this.onFocus.createDelegate(this,['referral']),
+					scope:this
+				},{
+					text:'Заключение',
+					xtype:'button',
+					height:30,
+					anchor:'100%',
+					handler:this.onFocus.createDelegate(this,['conclusion']),
+					scope:this
+				},{
+					text:'Примечание',
+					xtype:'button',
+					height:30,
+					anchor:'100%',
+					handler:this.onFocus.createDelegate(this,['comment']),
+					scope:this
+				}]
+		});
+		
 		config = {
 			id: 'exam-form',
-			baseCls:'x-plain',
+			layout:'border',
 			border:false,
 			autoScroll: true,
 			trackResetOnLoad:true,
 			padding:5,
-			defaults:{
-				baseCls:'x-plain',
-				border:false
-			},
+			closable:true,
 			buttons:[{
 				id:this.tmp_id+'print',
 				disabled:this.record ? false : true,
@@ -96,124 +328,7 @@ App.examination.ExamCardForm = Ext.extend(Ext.form.FormPanel, {
 				text:'Выбрать шаблон',
 				handler:this.onChoice.createDelegate(this, [])
 			}],
-			items:[{
-				layout:'form',
-				labelAlign:'top',
-				autoScroll: true,
-				defaults:{
-					baseCls:'x-plain',
-					border:false
-				},
-				items:[{
-					xtype:'hidden',
-					name:'ordered_service'
-				},{
-					xtype:'hidden',
-					name:'name'
-				},{
-					xtype:'textfield',
-					fieldLabel:'Заголовок для печати',
-					name:'print_name',
-					//height:40,
-					anchor:'100%'
-				},{
-					xtype:'textarea',
-					fieldLabel:'Характер заболевания',
-					name:'disease',
-					height: 100,
-					anchor:'100%'
-				},{
-					xtype:'textarea',
-					fieldLabel:'Жалобы',
-					name:'complaints',
-					height:100,
-					anchor:'100%'
-				},{
-					xtype:'textarea',
-					fieldLabel:'История настоящего заболевания',
-					name:'history',
-					height:100,
-					anchor:'100%'
-				},{
-					xtype:'textarea',
-					fieldLabel:'Анамнез',
-					name:'anamnesis',
-					height:100,
-					anchor:'100%'
-				},{
-					xtype:'htmleditor',
-					fieldLabel:'Объективные данные',
-					name:'objective_data',
-					height:100,
-					anchor:'100%'
-				},{
-					xtype:'textarea',
-					fieldLabel:'Психологический статус',
-					name:'psycho_status',
-					height:100,
-					anchor:'100%'
-				},{
-					xtype:'htmleditor',
-					fieldLabel:'Основной диагноз',
-					name:'gen_diag',
-					height:100,
-					anchor:'100%'
-				},{
-					xtype:'textarea',
-					fieldLabel:'Диагноз по МБК',
-					name:'mbk_diag',
-					height:100,
-					anchor:'100%'
-				},{
-					xtype:'textarea',
-					fieldLabel:'Осложнения',
-					name:'complication',
-					height:100,
-					anchor:'100%'
-				},{
-					xtype:'textarea',
-					fieldLabel:'ЭКГ',
-					name:'ekg',
-					height:100,
-					anchor:'100%'
-				},{
-					xtype:'textarea',
-					height:100,
-					fieldLabel:'Сопутствующий диагноз',
-					name:'concomitant_diag',
-					anchor:'100%'
-				},{
-					xtype:'textarea',
-					fieldLabel:'Клинический диагноз',
-					height:100,
-					name:'clinical_diag',
-					anchor:'100%'
-				},{
-					xtype:'textarea',
-					fieldLabel:'Лечение',
-					height:100,
-					name:'treatment',
-					anchor:'100%'
-				},{
-					xtype:'textarea',
-					fieldLabel:'Направление',
-					height:100,
-					name:'referral',
-					anchor:'100%'
-				},{
-					xtype:'textarea',
-					fieldLabel:'Заключение',
-					height:100,
-					name:'conclusion',
-					anchor:'100%'
-				},{
-					xtype:'textarea',
-					fieldLabel:'Примечание',
-					height:100,
-					name:'comment',
-					anchor:'100%'
-				}]
-			}]
+			items:[this.workPlace,this.menuBar]
 		}
 		Ext.apply(this, Ext.apply(this.initialConfig, config));
 		App.examination.ExamCardForm.superclass.initComponent.apply(this, arguments);
@@ -310,6 +425,10 @@ App.examination.ExamCardForm = Ext.extend(Ext.form.FormPanel, {
 	
 	onPrint: function() {
 		window.open('/exam/card/'+this.record.data.id+'/');
+	},
+	
+	onFocus: function(name){
+		 this.getForm().findField(name).focus(true,150);
 	}
 });		
 
