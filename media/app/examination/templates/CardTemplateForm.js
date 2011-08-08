@@ -128,6 +128,12 @@ App.examination.CardTemplateForm = Ext.extend(Ext.form.FormPanel, {
 					height:500,
 					name:'referral',
 					anchor:'100%'
+				},{
+					xtype:'textarea',
+					fieldLabel:'Заключение',
+					height:500,
+					name:'conclusion',
+					anchor:'100%'
 				}]
 		});
 		
@@ -140,6 +146,8 @@ App.examination.CardTemplateForm = Ext.extend(Ext.form.FormPanel, {
 					xtype:'button',
 					height:30,
 					anchor:'100%',
+					toggleGroup:'menu-bar-tmp',
+					pressed:true,
 					handler:this.onFocus.createDelegate(this,['name']),
 					scope:this
 				},{
@@ -147,6 +155,7 @@ App.examination.CardTemplateForm = Ext.extend(Ext.form.FormPanel, {
 					xtype:'button',
 					height:30,
 					anchor:'100%',
+					toggleGroup:'menu-bar-tmp',
 					handler:this.onFocus.createDelegate(this,['complaints']),
 					scope:this
 				},{
@@ -154,6 +163,7 @@ App.examination.CardTemplateForm = Ext.extend(Ext.form.FormPanel, {
 					xtype:'button',
 					height:30,
 					anchor:'100%',
+					toggleGroup:'menu-bar-tmp',
 					handler:this.onFocus.createDelegate(this,['anamnesis']),
 					scope:this
 				},{
@@ -161,6 +171,7 @@ App.examination.CardTemplateForm = Ext.extend(Ext.form.FormPanel, {
 					xtype:'button',
 					height:30,
 					anchor:'100%',
+					toggleGroup:'menu-bar-tmp',
 					handler:this.onFocus.createDelegate(this,['objective_data']),
 					scope:this
 				},{
@@ -168,6 +179,7 @@ App.examination.CardTemplateForm = Ext.extend(Ext.form.FormPanel, {
 					xtype:'button',
 					height:30,
 					anchor:'100%',
+					toggleGroup:'menu-bar-tmp',
 					handler:this.onFocus.createDelegate(this,['psycho_status']),
 					scope:this
 				},{
@@ -175,6 +187,7 @@ App.examination.CardTemplateForm = Ext.extend(Ext.form.FormPanel, {
 					xtype:'button',
 					height:30,
 					anchor:'100%',
+					toggleGroup:'menu-bar-tmp',
 					handler:this.onFocus.createDelegate(this,['gen_diag']),
 					scope:this
 				},{
@@ -182,6 +195,7 @@ App.examination.CardTemplateForm = Ext.extend(Ext.form.FormPanel, {
 					xtype:'button',
 					height:30,
 					anchor:'100%',
+					toggleGroup:'menu-bar-tmp',
 					handler:this.onFocus.createDelegate(this,['complication']),
 					scope:this
 				},{
@@ -189,6 +203,7 @@ App.examination.CardTemplateForm = Ext.extend(Ext.form.FormPanel, {
 					xtype:'button',
 					height:30,
 					anchor:'100%',
+					toggleGroup:'menu-bar-tmp',
 					handler:this.onFocus.createDelegate(this,['ekg']),
 					scope:this
 				},{
@@ -196,6 +211,7 @@ App.examination.CardTemplateForm = Ext.extend(Ext.form.FormPanel, {
 					xtype:'button',
 					height:30,
 					anchor:'100%',
+					toggleGroup:'menu-bar-tmp',
 					handler:this.onFocus.createDelegate(this,['concomitant_diag']),
 					scope:this
 				},{
@@ -203,6 +219,7 @@ App.examination.CardTemplateForm = Ext.extend(Ext.form.FormPanel, {
 					xtype:'button',
 					height:30,
 					anchor:'100%',
+					toggleGroup:'menu-bar-tmp',
 					handler:this.onFocus.createDelegate(this,['clinical_diag']),
 					scope:this
 				},{
@@ -210,6 +227,7 @@ App.examination.CardTemplateForm = Ext.extend(Ext.form.FormPanel, {
 					xtype:'button',
 					height:30,
 					anchor:'100%',
+					toggleGroup:'menu-bar-tmp',
 					handler:this.onFocus.createDelegate(this,['treatment']),
 					scope:this
 				},{
@@ -217,7 +235,16 @@ App.examination.CardTemplateForm = Ext.extend(Ext.form.FormPanel, {
 					xtype:'button',
 					height:30,
 					anchor:'100%',
+					toggleGroup:'menu-bar-tmp',
 					handler:this.onFocus.createDelegate(this,['referral']),
+					scope:this
+				},{
+					text:'Заключение',
+					xtype:'button',
+					height:30,
+					toggleGroup:'menu-bar-tmp',
+					anchor:'100%',
+					handler:this.onFocus.createDelegate(this,['conclusion']),
 					scope:this
 				}]
 		});

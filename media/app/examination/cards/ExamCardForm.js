@@ -189,12 +189,25 @@ App.examination.ExamCardForm = Ext.extend(Ext.form.FormPanel, {
 					xtype:'button',
 					height:30,
 					anchor:'100%',
+					toggleGroup:'menu-bar',
+					enableToggle:true,
+					pressed: true,
 					handler:this.onFocus.createDelegate(this,['print_name']),
+					scope:this
+				},{
+					text:'Характер заболевания',
+					xtype:'button',
+					height:30,
+					toggleGroup:'menu-bar',
+					enableToggle:true,
+					anchor:'100%',
+					handler:this.onFocus.createDelegate(this,['disease']),
 					scope:this
 				},{
 					text:'Жалобы',
 					xtype:'button',
 					height:30,
+					toggleGroup:'menu-bar',
 					anchor:'100%',
 					handler:this.onFocus.createDelegate(this,['complaints']),
 					scope:this
@@ -202,6 +215,7 @@ App.examination.ExamCardForm = Ext.extend(Ext.form.FormPanel, {
 					text:'История заболевания',
 					xtype:'button',
 					height:30,
+					toggleGroup:'menu-bar',
 					anchor:'100%',
 					handler:this.onFocus.createDelegate(this,['history']),
 					scope:this
@@ -209,6 +223,7 @@ App.examination.ExamCardForm = Ext.extend(Ext.form.FormPanel, {
 					text:'Анамнез',
 					xtype:'button',
 					height:30,
+					toggleGroup:'menu-bar',
 					anchor:'100%',
 					handler:this.onFocus.createDelegate(this,['anamnesis']),
 					scope:this
@@ -216,6 +231,7 @@ App.examination.ExamCardForm = Ext.extend(Ext.form.FormPanel, {
 					text:'Объективные данные',
 					xtype:'button',
 					height:30,
+					toggleGroup:'menu-bar',
 					anchor:'100%',
 					handler:this.onFocus.createDelegate(this,['objective_data']),
 					scope:this
@@ -223,6 +239,7 @@ App.examination.ExamCardForm = Ext.extend(Ext.form.FormPanel, {
 					text:'Психологический статус',
 					xtype:'button',
 					height:30,
+					toggleGroup:'menu-bar',
 					anchor:'100%',
 					handler:this.onFocus.createDelegate(this,['psycho_status']),
 					scope:this
@@ -230,6 +247,7 @@ App.examination.ExamCardForm = Ext.extend(Ext.form.FormPanel, {
 					text:'Основной диагноз',
 					xtype:'button',
 					height:30,
+					toggleGroup:'menu-bar',
 					anchor:'100%',
 					handler:this.onFocus.createDelegate(this,['gen_diag']),
 					scope:this
@@ -237,6 +255,7 @@ App.examination.ExamCardForm = Ext.extend(Ext.form.FormPanel, {
 					text:'Диагноз МКБ',
 					xtype:'button',
 					height:30,
+					toggleGroup:'menu-bar',
 					anchor:'100%',
 					handler:this.onFocus.createDelegate(this,['mbk_diag']),
 					scope:this
@@ -244,6 +263,7 @@ App.examination.ExamCardForm = Ext.extend(Ext.form.FormPanel, {
 					text:'Осложнения',
 					xtype:'button',
 					height:30,
+					toggleGroup:'menu-bar',
 					anchor:'100%',
 					handler:this.onFocus.createDelegate(this,['complication']),
 					scope:this
@@ -251,6 +271,7 @@ App.examination.ExamCardForm = Ext.extend(Ext.form.FormPanel, {
 					text:'ЭКГ',
 					xtype:'button',
 					height:30,
+					toggleGroup:'menu-bar',
 					anchor:'100%',
 					handler:this.onFocus.createDelegate(this,['ekg']),
 					scope:this
@@ -258,6 +279,7 @@ App.examination.ExamCardForm = Ext.extend(Ext.form.FormPanel, {
 					text:'Сопутствующий диагноз',
 					xtype:'button',
 					height:30,
+					toggleGroup:'menu-bar',
 					anchor:'100%',
 					handler:this.onFocus.createDelegate(this,['concomitant_diag']),
 					scope:this
@@ -265,6 +287,7 @@ App.examination.ExamCardForm = Ext.extend(Ext.form.FormPanel, {
 					text:'Клинический диагноз',
 					xtype:'button',
 					height:30,
+					toggleGroup:'menu-bar',
 					anchor:'100%',
 					handler:this.onFocus.createDelegate(this,['clinical_diag']),
 					scope:this
@@ -272,6 +295,7 @@ App.examination.ExamCardForm = Ext.extend(Ext.form.FormPanel, {
 					text:'Лечение',
 					xtype:'button',
 					height:30,
+					toggleGroup:'menu-bar',
 					anchor:'100%',
 					handler:this.onFocus.createDelegate(this,['treatment']),
 					scope:this
@@ -279,6 +303,7 @@ App.examination.ExamCardForm = Ext.extend(Ext.form.FormPanel, {
 					text:'Направление',
 					xtype:'button',
 					height:30,
+					toggleGroup:'menu-bar',
 					anchor:'100%',
 					handler:this.onFocus.createDelegate(this,['referral']),
 					scope:this
@@ -286,6 +311,7 @@ App.examination.ExamCardForm = Ext.extend(Ext.form.FormPanel, {
 					text:'Заключение',
 					xtype:'button',
 					height:30,
+					toggleGroup:'menu-bar',
 					anchor:'100%',
 					handler:this.onFocus.createDelegate(this,['conclusion']),
 					scope:this
@@ -293,6 +319,7 @@ App.examination.ExamCardForm = Ext.extend(Ext.form.FormPanel, {
 					text:'Примечание',
 					xtype:'button',
 					height:30,
+					toggleGroup:'menu-bar',
 					anchor:'100%',
 					handler:this.onFocus.createDelegate(this,['comment']),
 					scope:this

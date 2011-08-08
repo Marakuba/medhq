@@ -122,7 +122,7 @@ App.ExamCardGrid = Ext.extend(Ext.grid.GridPanel, {
 		
 		this.on('afterrender',function(){
             if (this.ordered_service) {
-            	this.store.setBaseParam('ordered_service', App.uriToId(this.ordered_service));
+            	this.store.setBaseParam('ordered_service__order__patient',this.patient);// App.uriToId(this.patient));
             }
         })
 

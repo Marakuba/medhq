@@ -39,6 +39,7 @@ class CardTemplate(models.Model):
     clinical_diag = models.TextField(u'Клинический диагноз', null=True, blank=True)
     treatment = models.TextField(u'Лечение', null=True, blank=True)
     referral = models.TextField(u'Направление', null=True, blank=True)
+    conclusion = models.TextField(u'Заключение', null=True, blank=True)
     group = models.ForeignKey(TemplateGroup, null=True, blank=True)
     
     def __unicode__(self):

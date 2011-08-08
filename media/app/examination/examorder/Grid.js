@@ -219,6 +219,7 @@ App.examorder.ExamOrderGrid = Ext.extend(Ext.grid.GridPanel, {
 		if (rec) {
 			config = {
 				ordered_service : rec.data.resource_uri,
+				patient:rec.data.patient,
 				patient_name:rec.data.patient_name,
 				title:'Карты осмотра №'+rec.data.barcode+' ' + rec.data.patient_name
 			}
