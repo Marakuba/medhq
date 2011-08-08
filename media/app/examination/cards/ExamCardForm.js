@@ -147,7 +147,7 @@ App.examination.ExamCardForm = Ext.extend(Ext.form.FormPanel, {
 					name:'psycho_status',
 					height:500,
 					anchor:'100%'
-				},{
+				},this.mbk,{
 					xtype:'htmleditor',
 					fieldLabel:'Основной диагноз',
 					name:'gen_diag',
@@ -165,7 +165,7 @@ App.examination.ExamCardForm = Ext.extend(Ext.form.FormPanel, {
 					height:500,
 					name:'clinical_diag',
 					anchor:'100%'
-				},this.mbk,
+				},
 				{
 					xtype:'textarea',
 					fieldLabel:'Осложнения',
@@ -238,6 +238,9 @@ App.examination.ExamCardForm = Ext.extend(Ext.form.FormPanel, {
 					text:'Психологический статус',
 					handler:this.onFocus.createDelegate(this,['psycho_status'])
 				},{
+					text:'Диагноз МКБ',
+					handler:this.onFocus.createDelegate(this,['mbk_diag'])
+				},{
 					text:'Основной диагноз',
 					handler:this.onFocus.createDelegate(this,['gen_diag'])
 				},{
@@ -246,9 +249,6 @@ App.examination.ExamCardForm = Ext.extend(Ext.form.FormPanel, {
 				},{
 					text:'Клинический диагноз',
 					handler:this.onFocus.createDelegate(this,['clinical_diag'])
-				},{
-					text:'Диагноз МКБ',
-					handler:this.onFocus.createDelegate(this,['mbk_diag'])
 				},{
 					text:'Осложнения',
 					handler:this.onFocus.createDelegate(this,['complication'])

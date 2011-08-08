@@ -8,40 +8,20 @@ class Migration(SchemaMigration):
 
     def forwards(self, orm):
         
-        # Renaming column for 'CardTemplate.mbk_diag' to match new field type.
-        db.rename_column('examination_cardtemplate', 'mbk_diag', 'mbk_diag_id')
-        # Changing field 'CardTemplate.mbk_diag'
-        db.alter_column('examination_cardtemplate', 'mbk_diag_id', self.gf('django.db.models.fields.related.ForeignKey')(to=orm['service.ICD10'], null=True))
+        # Deleting field 'CardTemplate.mbk_diag'
+        db.delete_column('examination_cardtemplate', 'mbk_diag')
 
-        # Adding index on 'CardTemplate', fields ['mbk_diag']
-        db.create_index('examination_cardtemplate', ['mbk_diag_id'])
-
-        # Renaming column for 'ExaminationCard.mbk_diag' to match new field type.
-        db.rename_column('examination_examinationcard', 'mbk_diag', 'mbk_diag_id')
-        # Changing field 'ExaminationCard.mbk_diag'
-        db.alter_column('examination_examinationcard', 'mbk_diag_id', self.gf('django.db.models.fields.related.ForeignKey')(to=orm['service.ICD10'], null=True))
-
-        # Adding index on 'ExaminationCard', fields ['mbk_diag']
-        db.create_index('examination_examinationcard', ['mbk_diag_id'])
+        # Deleting field 'ExaminationCard.mbk_diag'
+        db.delete_column('examination_examinationcard', 'mbk_diag')
 
 
     def backwards(self, orm):
         
-        # Removing index on 'ExaminationCard', fields ['mbk_diag']
-        db.delete_index('examination_examinationcard', ['mbk_diag_id'])
+        # Adding field 'CardTemplate.mbk_diag'
+        db.add_column('examination_cardtemplate', 'mbk_diag', self.gf('django.db.models.fields.TextField')(null=True, blank=True), keep_default=False)
 
-        # Removing index on 'CardTemplate', fields ['mbk_diag']
-        db.delete_index('examination_cardtemplate', ['mbk_diag_id'])
-
-        # Renaming column for 'CardTemplate.mbk_diag' to match new field type.
-        db.rename_column('examination_cardtemplate', 'mbk_diag_id', 'mbk_diag')
-        # Changing field 'CardTemplate.mbk_diag'
-        db.alter_column('examination_cardtemplate', 'mbk_diag', self.gf('django.db.models.fields.TextField')(null=True))
-
-        # Renaming column for 'ExaminationCard.mbk_diag' to match new field type.
-        db.rename_column('examination_examinationcard', 'mbk_diag_id', 'mbk_diag')
-        # Changing field 'ExaminationCard.mbk_diag'
-        db.alter_column('examination_examinationcard', 'mbk_diag', self.gf('django.db.models.fields.TextField')(null=True))
+        # Adding field 'ExaminationCard.mbk_diag'
+        db.add_column('examination_examinationcard', 'mbk_diag', self.gf('django.db.models.fields.TextField')(null=True, blank=True), keep_default=False)
 
 
     models = {
@@ -93,7 +73,6 @@ class Migration(SchemaMigration):
             'gen_diag': ('django.db.models.fields.TextField', [], {'null': 'True', 'blank': 'True'}),
             'group': ('django.db.models.fields.related.ForeignKey', [], {'to': "orm['examination.TemplateGroup']", 'null': 'True', 'blank': 'True'}),
             'id': ('django.db.models.fields.AutoField', [], {'primary_key': 'True'}),
-            'mbk_diag': ('django.db.models.fields.related.ForeignKey', [], {'to': "orm['service.ICD10']", 'null': 'True', 'blank': 'True'}),
             'name': ('django.db.models.fields.TextField', [], {'null': 'True', 'blank': 'True'}),
             'objective_data': ('django.db.models.fields.TextField', [], {'null': 'True', 'blank': 'True'}),
             'print_name': ('django.db.models.fields.TextField', [], {'null': 'True', 'blank': 'True'}),
@@ -117,7 +96,6 @@ class Migration(SchemaMigration):
             'gen_diag': ('django.db.models.fields.TextField', [], {'null': 'True', 'blank': 'True'}),
             'history': ('django.db.models.fields.TextField', [], {'null': 'True', 'blank': 'True'}),
             'id': ('django.db.models.fields.AutoField', [], {'primary_key': 'True'}),
-            'mbk_diag': ('django.db.models.fields.related.ForeignKey', [], {'to': "orm['service.ICD10']", 'null': 'True', 'blank': 'True'}),
             'modified': ('django.db.models.fields.DateTimeField', [], {'auto_now': 'True', 'blank': 'True'}),
             'name': ('django.db.models.fields.TextField', [], {'null': 'True', 'blank': 'True'}),
             'objective_data': ('django.db.models.fields.TextField', [], {'null': 'True', 'blank': 'True'}),
@@ -141,7 +119,7 @@ class Migration(SchemaMigration):
         'lab.sampling': {
             'Meta': {'object_name': 'Sampling'},
             'code': ('django.db.models.fields.IntegerField', [], {'null': 'True', 'blank': 'True'}),
-            'created': ('django.db.models.fields.DateTimeField', [], {'default': 'datetime.datetime(2011, 8, 8, 22, 19, 58, 49162)'}),
+            'created': ('django.db.models.fields.DateTimeField', [], {'default': 'datetime.datetime(2011, 8, 8, 23, 38, 43, 998702)'}),
             'id': ('django.db.models.fields.AutoField', [], {'primary_key': 'True'}),
             'is_barcode': ('django.db.models.fields.BooleanField', [], {'default': 'False'}),
             'laboratory': ('django.db.models.fields.related.ForeignKey', [], {'to': "orm['state.State']"}),
@@ -189,7 +167,7 @@ class Migration(SchemaMigration):
             'prefix': ('django.db.models.fields.CharField', [], {'max_length': '10', 'blank': 'True'}),
             'reset_on': ('django.db.models.fields.IntegerField', [], {'default': '0'}),
             'tag': ('django.db.models.fields.CharField', [], {'max_length': '20'}),
-            'valid_till': ('django.db.models.fields.DateTimeField', [], {'default': 'datetime.datetime(2011, 8, 8, 22, 19, 57, 727720)'})
+            'valid_till': ('django.db.models.fields.DateTimeField', [], {'default': 'datetime.datetime(2011, 8, 8, 23, 38, 43, 672220)'})
         },
         'numeration.numeratoritem': {
             'Meta': {'ordering': "('-id',)", 'object_name': 'NumeratorItem'},
@@ -294,18 +272,6 @@ class Migration(SchemaMigration):
             'Meta': {'object_name': 'ExecutionTypeGroup'},
             'id': ('django.db.models.fields.AutoField', [], {'primary_key': 'True'}),
             'name': ('django.db.models.fields.CharField', [], {'max_length': '100'})
-        },
-        'service.icd10': {
-            'Meta': {'object_name': 'ICD10'},
-            'code': ('django.db.models.fields.CharField', [], {'max_length': '20'}),
-            'description': ('django.db.models.fields.CharField', [], {'max_length': '500'}),
-            'id': ('django.db.models.fields.AutoField', [], {'primary_key': 'True'}),
-            'level': ('django.db.models.fields.PositiveIntegerField', [], {'db_index': 'True'}),
-            'lft': ('django.db.models.fields.PositiveIntegerField', [], {'db_index': 'True'}),
-            'name': ('django.db.models.fields.CharField', [], {'max_length': '512'}),
-            'parent': ('django.db.models.fields.related.ForeignKey', [], {'blank': 'True', 'related_name': "'children'", 'null': 'True', 'to': "orm['service.ICD10']"}),
-            'rght': ('django.db.models.fields.PositiveIntegerField', [], {'db_index': 'True'}),
-            'tree_id': ('django.db.models.fields.PositiveIntegerField', [], {'db_index': 'True'})
         },
         'service.labservicegroup': {
             'Meta': {'object_name': 'LabServiceGroup'},
