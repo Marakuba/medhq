@@ -68,6 +68,7 @@ App.examination.ExamCardForm = Ext.extend(Ext.form.FormPanel, {
 		this.workPlace = new Ext.Panel({
 			region:'center',
 			layout:'form',
+			labelAlign:'top',
 			autoScroll:true,
 			items:[{
 					xtype:'hidden',
@@ -125,6 +126,18 @@ App.examination.ExamCardForm = Ext.extend(Ext.form.FormPanel, {
 					anchor:'100%'
 				},{
 					xtype:'textarea',
+					height:500,
+					fieldLabel:'Сопутствующий диагноз',
+					name:'concomitant_diag',
+					anchor:'100%'
+				},{
+					xtype:'textarea',
+					fieldLabel:'Клинический диагноз',
+					height:500,
+					name:'clinical_diag',
+					anchor:'100%'
+				},{
+					xtype:'textarea',
 					fieldLabel:'Диагноз по МКБ',
 					name:'mbk_diag',
 					height:500,
@@ -140,18 +153,6 @@ App.examination.ExamCardForm = Ext.extend(Ext.form.FormPanel, {
 					fieldLabel:'ЭКГ',
 					name:'ekg',
 					height:500,
-					anchor:'100%'
-				},{
-					xtype:'textarea',
-					height:500,
-					fieldLabel:'Сопутствующий диагноз',
-					name:'concomitant_diag',
-					anchor:'100%'
-				},{
-					xtype:'textarea',
-					fieldLabel:'Клинический диагноз',
-					height:500,
-					name:'clinical_diag',
 					anchor:'100%'
 				},{
 					xtype:'textarea',
@@ -184,145 +185,65 @@ App.examination.ExamCardForm = Ext.extend(Ext.form.FormPanel, {
 			region:'west',
 			width:150,
 			layout:'form',
+			defaults:{
+				height:30,
+				anchor:'100%',
+				toggleGroup:'menu-bar',
+				xtype:'button',
+				scope:this
+			},
 			items:[{
 					text:'Заголовок',
-					xtype:'button',
-					height:30,
-					anchor:'100%',
-					toggleGroup:'menu-bar',
-					enableToggle:true,
 					pressed: true,
-					handler:this.onFocus.createDelegate(this,['print_name']),
-					scope:this
+					handler:this.onFocus.createDelegate(this,['print_name'])
 				},{
 					text:'Характер заболевания',
-					xtype:'button',
-					height:30,
-					toggleGroup:'menu-bar',
-					enableToggle:true,
-					anchor:'100%',
-					handler:this.onFocus.createDelegate(this,['disease']),
-					scope:this
+					handler:this.onFocus.createDelegate(this,['disease'])
 				},{
 					text:'Жалобы',
-					xtype:'button',
-					height:30,
-					toggleGroup:'menu-bar',
-					anchor:'100%',
-					handler:this.onFocus.createDelegate(this,['complaints']),
-					scope:this
+					handler:this.onFocus.createDelegate(this,['complaints'])
 				},{
 					text:'История заболевания',
-					xtype:'button',
-					height:30,
-					toggleGroup:'menu-bar',
-					anchor:'100%',
-					handler:this.onFocus.createDelegate(this,['history']),
-					scope:this
+					handler:this.onFocus.createDelegate(this,['history'])
 				},{
 					text:'Анамнез',
-					xtype:'button',
-					height:30,
-					toggleGroup:'menu-bar',
-					anchor:'100%',
-					handler:this.onFocus.createDelegate(this,['anamnesis']),
-					scope:this
+					handler:this.onFocus.createDelegate(this,['anamnesis'])
 				},{
 					text:'Объективные данные',
-					xtype:'button',
-					height:30,
-					toggleGroup:'menu-bar',
-					anchor:'100%',
-					handler:this.onFocus.createDelegate(this,['objective_data']),
-					scope:this
+					handler:this.onFocus.createDelegate(this,['objective_data'])
 				},{
 					text:'Психологический статус',
-					xtype:'button',
-					height:30,
-					toggleGroup:'menu-bar',
-					anchor:'100%',
-					handler:this.onFocus.createDelegate(this,['psycho_status']),
-					scope:this
+					handler:this.onFocus.createDelegate(this,['psycho_status'])
 				},{
 					text:'Основной диагноз',
-					xtype:'button',
-					height:30,
-					toggleGroup:'menu-bar',
-					anchor:'100%',
-					handler:this.onFocus.createDelegate(this,['gen_diag']),
-					scope:this
-				},{
-					text:'Диагноз МКБ',
-					xtype:'button',
-					height:30,
-					toggleGroup:'menu-bar',
-					anchor:'100%',
-					handler:this.onFocus.createDelegate(this,['mbk_diag']),
-					scope:this
-				},{
-					text:'Осложнения',
-					xtype:'button',
-					height:30,
-					toggleGroup:'menu-bar',
-					anchor:'100%',
-					handler:this.onFocus.createDelegate(this,['complication']),
-					scope:this
-				},{
-					text:'ЭКГ',
-					xtype:'button',
-					height:30,
-					toggleGroup:'menu-bar',
-					anchor:'100%',
-					handler:this.onFocus.createDelegate(this,['ekg']),
-					scope:this
+					handler:this.onFocus.createDelegate(this,['gen_diag'])
 				},{
 					text:'Сопутствующий диагноз',
-					xtype:'button',
-					height:30,
-					toggleGroup:'menu-bar',
-					anchor:'100%',
-					handler:this.onFocus.createDelegate(this,['concomitant_diag']),
-					scope:this
+					handler:this.onFocus.createDelegate(this,['concomitant_diag'])
 				},{
 					text:'Клинический диагноз',
-					xtype:'button',
-					height:30,
-					toggleGroup:'menu-bar',
-					anchor:'100%',
-					handler:this.onFocus.createDelegate(this,['clinical_diag']),
-					scope:this
+					handler:this.onFocus.createDelegate(this,['clinical_diag'])
+				},{
+					text:'Диагноз МКБ',
+					handler:this.onFocus.createDelegate(this,['mbk_diag'])
+				},{
+					text:'Осложнения',
+					handler:this.onFocus.createDelegate(this,['complication'])
+				},{
+					text:'ЭКГ',
+					handler:this.onFocus.createDelegate(this,['ekg'])
 				},{
 					text:'Лечение',
-					xtype:'button',
-					height:30,
-					toggleGroup:'menu-bar',
-					anchor:'100%',
-					handler:this.onFocus.createDelegate(this,['treatment']),
-					scope:this
+					handler:this.onFocus.createDelegate(this,['treatment'])
 				},{
 					text:'Направление',
-					xtype:'button',
-					height:30,
-					toggleGroup:'menu-bar',
-					anchor:'100%',
-					handler:this.onFocus.createDelegate(this,['referral']),
-					scope:this
+					handler:this.onFocus.createDelegate(this,['referral'])
 				},{
 					text:'Заключение',
-					xtype:'button',
-					height:30,
-					toggleGroup:'menu-bar',
-					anchor:'100%',
-					handler:this.onFocus.createDelegate(this,['conclusion']),
-					scope:this
+					handler:this.onFocus.createDelegate(this,['conclusion'])
 				},{
 					text:'Примечание',
-					xtype:'button',
-					height:30,
-					toggleGroup:'menu-bar',
-					anchor:'100%',
-					handler:this.onFocus.createDelegate(this,['comment']),
-					scope:this
+					handler:this.onFocus.createDelegate(this,['comment'])
 				}]
 		});
 		

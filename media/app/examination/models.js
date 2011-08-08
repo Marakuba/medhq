@@ -37,6 +37,7 @@ App.models.tmpModel = new Ext.data.Record.create([
 	{name: 'objective_data', allowBlank: true},
 	{name: 'psycho_status', allowBlank: true},
 	{name: 'gen_diag', allowBlank: true},
+	{name: 'mbk_diag', allowBlank: true},
 	{name: 'complication', allowBlank: true},
 	{name: 'concomitant_diag', allowBlank: true},
 	{name: 'clinical_diag', allowBlank: true},
