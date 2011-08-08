@@ -36,7 +36,7 @@ class CardTemplate(models.Model):
     gen_diag = models.TextField(u'Основной диагноз', null=True, blank=True)
     complication = models.TextField(u'Осложнения', null=True, blank=True)
     ekg = models.TextField(u'ЭКГ', null=True, blank=True)
-    #mbk_diag = models.ForeignKey(ICD10, null=True, blank=True)
+    mbk_diag = models.ForeignKey(ICD10, null=True, blank=True)
     concomitant_diag= models.TextField(u'Сопутствующий диагноз', null=True, blank=True)
     clinical_diag = models.TextField(u'Клинический диагноз', null=True, blank=True)
     treatment = models.TextField(u'Лечение', null=True, blank=True)

@@ -147,7 +147,8 @@ App.examination.ExamCardForm = Ext.extend(Ext.form.FormPanel, {
 					name:'psycho_status',
 					height:500,
 					anchor:'100%'
-				},this.mbk,{
+				},this.mkb,
+				{
 					xtype:'htmleditor',
 					fieldLabel:'Основной диагноз',
 					name:'gen_diag',
