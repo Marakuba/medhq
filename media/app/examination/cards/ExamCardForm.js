@@ -4,6 +4,8 @@ App.examination.ExamCardForm = Ext.extend(Ext.form.FormPanel, {
 
 	initComponent: function(){
 		
+		this.tmp_id = Ext.id();
+		
 		this.examModel = App.models.examModel;
 		this.examCardStore = new Ext.data.Store({
 			//autoLoad:true,
@@ -34,12 +36,14 @@ App.examination.ExamCardForm = Ext.extend(Ext.form.FormPanel, {
 			}),
 			listeners:{
 		    	exception:function(proxy, type, action, options, response, arg){
+		    		App.eventManager.fireEvent('saveexamcard', rs);
 		    	},
 		    	write:function(store, action, result, res, rs){
 		    		if(action=='create') {
 			    		App.eventManager.fireEvent('examcardcreate', rs);
 			    		Ext.getCmp(this.tmp_id+'print').enable();
-		    		}
+		    		};
+		    		App.eventManager.fireEvent('saveexamcard', rs);
 		    	},
 		    	scope:this
 		    }
@@ -194,7 +198,6 @@ App.examination.ExamCardForm = Ext.extend(Ext.form.FormPanel, {
 			},
 			items:[{
 					text:'Заголовок',
-					pressed: true,
 					handler:this.onFocus.createDelegate(this,['print_name'])
 				},{
 					text:'Характер заболевания',
@@ -255,21 +258,25 @@ App.examination.ExamCardForm = Ext.extend(Ext.form.FormPanel, {
 			trackResetOnLoad:true,
 			padding:5,
 			closable:true,
-			buttons:[{
-				id:this.tmp_id+'print',
-				disabled:this.record ? false : true,
-				text:'Просмотр',
-				handler:this.onPrint.createDelegate(this),
-				scope:this
-			},{
-				text:'Сохранить',
-				handler:this.onSave.createDelegate(this),
-				scope:this
-			},{
-				text:'Закрыть',
-				handler:this.onClose.createDelegate(this),
-				scope:this
-			}],
+			bbar:new Ext.ux.StatusBar({
+                id: 'statusbar' + this.tmp_id,
+                defaultText: '',
+                items:[{
+					id:this.tmp_id+'print',
+					disabled:this.record ? false : true,
+					text:'Просмотр',
+					handler:this.onPrint.createDelegate(this),
+					scope:this
+				},{
+					text:'Сохранить',
+					handler:this.onSave.createDelegate(this),
+					scope:this
+				},{
+					text:'Закрыть',
+					handler:this.onClose.createDelegate(this),
+					scope:this
+				}]
+			}),
 			tbar:[{
 				xtype:'button',
 				iconCls:'silk-accept',
@@ -280,7 +287,7 @@ App.examination.ExamCardForm = Ext.extend(Ext.form.FormPanel, {
 		}
 		Ext.apply(this, Ext.apply(this.initialConfig, config));
 		App.examination.ExamCardForm.superclass.initComponent.apply(this, arguments);
-		App.eventManager.on('examcardcreate', this.onExamCardCreate, this);
+		App.eventManager.on('saveexamcard', this.onSaveExamCard, this);
 		this.on('afterrender', function(){
 			//if (this.patient) {
 				//this.examCardStore.setBaseParam('ordered_service__order__patient',this.patient)
@@ -295,6 +302,16 @@ App.examination.ExamCardForm = Ext.extend(Ext.form.FormPanel, {
 		},this);
 	},
 	
+	onSaveExamCard: function(record) {
+		var bar = Ext.getCmp('statusbar' + this.tmp_id);
+        bar.setStatus({
+        	text: 'Документ успешно сохранён',
+            iconCls: 'silk-status-accept'
+        });
+        (function(){
+			bar.clearStatus({useDefaults:true});
+		}).defer(2000);
+	},
 	onExamCardCreate: function(record) {
 		this.record = record;
 		this.getForm().loadRecord(this.record);
@@ -303,10 +320,12 @@ App.examination.ExamCardForm = Ext.extend(Ext.form.FormPanel, {
 	getRecord: function() {
 		if(!this.record) {
 			if(this.model) {
-				var Model = this.examModel;
+				var Model = this.model;
 				this.record = new Model();
 			} else {
 				console.log('Ошибка: нет модели');
+				var Model = this.examModel;
+				this.record = new Model();
 			}
 		}
 		return this.record;
@@ -315,7 +334,7 @@ App.examination.ExamCardForm = Ext.extend(Ext.form.FormPanel, {
 	onSave: function() {
 		var f = this.getForm();
 		if(f.isValid()){
-			var Record = this.record ? this.record : new this.examModel();
+			var Record = this.getRecord();//this.record ? this.record : new this.examModel();
 			f.updateRecord(Record);
 			if (!Record.data.name){
 				Record.data['name'] = Record.data.print_name; 

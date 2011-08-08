@@ -7,7 +7,7 @@ App.TemplateGlobalGrid = Ext.extend(Ext.grid.GridPanel, {
 
 		//this.backend = App.getBackend('cardtemplate');	
 		//this.cardBackend = new App.ExamBackend({});
-		this.tmpModel = new Ext.data.Record.create([
+		/*this.tmpModel = new Ext.data.Record.create([
 			{name: 'id'},
 			{name: 'staff', allowBlank: false},
 			{name: 'staff_name', allowBlank: true},
@@ -25,7 +25,9 @@ App.TemplateGlobalGrid = Ext.extend(Ext.grid.GridPanel, {
 			{name: 'treatment', allowBlank: true},
 			{name: 'referral', allowBlank: true},
 			{name: 'group', allowBlank: true}
-		]);
+		]);*/
+		
+		this.tmpModel = App.models.tmpModel;
 
 		this.store = new Ext.data.Store({
 			autoLoad:true,
@@ -61,7 +63,8 @@ App.TemplateGlobalGrid = Ext.extend(Ext.grid.GridPanel, {
 		    	write:function(store, action, result, res, rs){
 		    		if(action=='create') {
 			    		App.eventManager.fireEvent('templatecardcreate', rs);
-		    		}
+		    		};
+		    		App.eventManager.fireEvent('savetemplatecard', rs);
 		    	},
 		    	scope:this
 		    }
@@ -151,7 +154,7 @@ App.TemplateGlobalGrid = Ext.extend(Ext.grid.GridPanel, {
         
         this.on('afterrender',function(){
            	//this.store.setBaseParam('staff',active_profile);
-           	this.store.load();
+           	//this.store.load();
         });
         
 		Ext.apply(this, Ext.apply(this.initialConfig, config));

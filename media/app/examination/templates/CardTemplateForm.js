@@ -4,6 +4,8 @@ App.examination.CardTemplateForm = Ext.extend(Ext.form.FormPanel, {
 
 	initComponent: function(){
 		
+		this.tmp_id = Ext.id();
+		
 		this.groupStore = new Ext.data.Store({
 		    baseParams: {
 		    	format:'json'
@@ -157,7 +159,6 @@ App.examination.CardTemplateForm = Ext.extend(Ext.form.FormPanel, {
 			},
 			items:[{
 					text:'Наименование',
-					pressed:true,
 					handler:this.onFocus.createDelegate(this,['name'])
 				},{
 					text:'Жалобы',
@@ -210,19 +211,24 @@ App.examination.CardTemplateForm = Ext.extend(Ext.form.FormPanel, {
 			padding:5,
 			closable:true,
 			items:[this.workPlace,this.menuBar],
-			buttons:[{
-				text:'Сохранить',
-				handler:this.onSave.createDelegate(this),
-				scope:this
-			},{
-				text:'Закрыть',
-				handler:this.onClose.createDelegate(this),
-				scope:this
-			}]
+			bbar:new Ext.ux.StatusBar({
+				id: 'statusbar' + this.tmp_id,
+                defaultText: '',
+                items:[{
+					text:'Сохранить',
+					handler:this.onSave.createDelegate(this),
+					scope:this
+				},{
+					text:'Закрыть',
+					handler:this.onClose.createDelegate(this),
+					scope:this
+				}]
+			})
 		}
 		Ext.apply(this, Ext.apply(this.initialConfig, config));
 		App.examination.CardTemplateForm.superclass.initComponent.apply(this, arguments);
 		App.eventManager.on('cardtemplatecreate', this.onCardTemplateCreate, this);
+		App.eventManager.on('savetemplatecard', this.onSaveTmpCard, this);
 		this.on('afterrender', function(){
 			if(this.record) {
 				this.getForm().loadRecord(this.record);
@@ -235,6 +241,19 @@ App.examination.CardTemplateForm = Ext.extend(Ext.form.FormPanel, {
 			};
 			
 		},this);
+	},
+	
+	onSaveTmpCard: function(record) {
+		this.setTitle('Шаблон: '+ record.data.name);
+		var bar = Ext.getCmp('statusbar' + this.tmp_id);
+        bar.setStatus({
+        	text: 'Шаблон успешно сохранён',
+            iconCls: 'silk-status-accept'
+        });
+        (function(){
+			bar.clearStatus({useDefaults:true});
+		}).defer(2000);
+		
 	},
 	
 	onCardTemplateCreate: function(record) {

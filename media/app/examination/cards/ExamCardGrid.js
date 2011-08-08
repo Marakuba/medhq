@@ -13,7 +13,7 @@ App.ExamCardGrid = Ext.extend(Ext.grid.GridPanel, {
 
 		this.store = new Ext.data.Store({
 			autoLoad:true,
-			//autoSave:true,
+			autoSave:true,
 		    baseParams: {
 		    	format:'json'
 		    },
@@ -24,7 +24,7 @@ App.ExamCardGrid = Ext.extend(Ext.grid.GridPanel, {
 			    dir : 'dir'
 			},
 		    restful: true,
-		    //remoteSort: true,
+		    remoteSort: true,
 		    proxy: new Ext.data.HttpProxy({
 			    url: get_api_url('examcard')
 			}),
@@ -45,7 +45,8 @@ App.ExamCardGrid = Ext.extend(Ext.grid.GridPanel, {
 		    	write:function(store, action, result, res, rs){
 		    		if(action=='create') {
 			    		App.eventManager.fireEvent('examcardcreate', rs);
-		    		} 
+		    		};
+		    		App.eventManager.fireEvent('saveexamcard', rs);
 		    	},
 		    	scope:this
 		    }
@@ -128,7 +129,7 @@ App.ExamCardGrid = Ext.extend(Ext.grid.GridPanel, {
 
 		Ext.apply(this, Ext.apply(this.initialConfig, config));
 		App.ExamCardGrid.superclass.initComponent.apply(this, arguments);
-		App.eventManager.on('examcardgrid_reload', this.reloadStore, this)
+		//App.eventManager.on('examcardgrid_reload', this.reloadStore, this)
 	},
 	
 	reloadStore: function() {
@@ -141,22 +142,31 @@ App.ExamCardGrid = Ext.extend(Ext.grid.GridPanel, {
 			closable:true,
         	//patient:rec.data.patient,
        		ordered_service:this.ordered_service,
+       		model:this.examModel,
 			title: 'Карта осмотра ' + this.patient_name,
-			scope:this
+			scope:this,
+			fn:function(record){
+   				this.saveRecord(record);
+   			}
 		}
 		App.eventManager.fireEvent('launchapp', 'examcardform',config);
 	},
 	
-	onEdit: function(rowindex){
+	onEdit: function(){
 		var record = this.getSelected();
 		if(record) {
     		config = {
 				closable:true,
 				record:record,
+				model:this.examModel,
 	        	//patient:rec.data.patient,
     	   		ordered_service:this.ordered_service,
 				title: 'Карта осмотра ' + this.patient_name,
-				scope:this
+				scope:this,
+				fn:function(record){
+   					this.saveRecord(record);
+   				}
+				
 			}
 			App.eventManager.fireEvent('launchapp', 'examcardform',config);
 		}
@@ -169,7 +179,8 @@ App.ExamCardGrid = Ext.extend(Ext.grid.GridPanel, {
 			} else {
 			}
 		} else {
-		}
+		};
+		//this.store.save();
 	},
 	
     onDelete: function() {

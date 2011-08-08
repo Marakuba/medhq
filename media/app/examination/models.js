@@ -71,5 +71,5 @@ App.models.examModel = new Ext.data.Record.create([
 	{name: 'view', allowBlank: true},
 	{name: 'conclusion', allowBlank: true},
 	{name: 'group', allowBlank: true},
-	{name: 'staff_id', allowBlank: false}
+	{name: 'staff_id', allowBlank: true}
 ]);
