@@ -49,6 +49,31 @@ App.examination.ExamCardForm = Ext.extend(Ext.form.FormPanel, {
 		    }
 		});
 		
+		this.mkb = new Ext.form.LazyComboBox({
+			fieldLabel:'Диагноз по МКБ',
+			anchor:'95%',
+			name:'mbk_diag',
+            allowBlank:true,
+			store: new Ext.data.JsonStore({
+				autoLoad:true,
+				proxy: new Ext.data.HttpProxy({
+					url:get_api_url('icd10'),
+					method:'GET'
+				}),
+				root:'objects',
+				idProperty:'resource_uri',
+				fields:['resource_uri','disp_name','id','code']
+			}),
+			typeAhead: true,
+			queryParam:'code__istartswith',
+			minChars:3,
+			triggerAction: 'all',
+			emptyText:'Выберите диагноз...',
+			valueField: 'resource_uri',
+			displayField: 'disp_name',
+			selectOnFocus:true
+		});
+		
 		this.examComboBox = new Ext.form.ComboBox({
 			id:'exam-combo',
 			fieldLabel:'Другие карты осмотра',
@@ -140,13 +165,8 @@ App.examination.ExamCardForm = Ext.extend(Ext.form.FormPanel, {
 					height:500,
 					name:'clinical_diag',
 					anchor:'100%'
-				},{
-					xtype:'textarea',
-					fieldLabel:'Диагноз по МКБ',
-					name:'mbk_diag',
-					height:500,
-					anchor:'100%'
-				},{
+				},this.mbk,
+				{
 					xtype:'textarea',
 					fieldLabel:'Осложнения',
 					name:'complication',

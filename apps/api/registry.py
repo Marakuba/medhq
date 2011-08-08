@@ -9,7 +9,7 @@ from tastypie.authorization import DjangoAuthorization
 from tastypie.constants import ALL, ALL_WITH_RELATIONS
 from lab.models import LabOrder, Sampling, Tube, Result, Analysis, InputList,\
     Equipment, EquipmentAssay, EquipmentResult, EquipmentTask
-from service.models import BaseService, LabServiceGroup, ExtendedService
+from service.models import BaseService, LabServiceGroup, ExtendedService, ICD10
 from staff.models import Position, Staff, Doctor
 from state.models import State
 from django.conf import settings
@@ -29,6 +29,21 @@ from interlayer.models import ClientItem
 from django.contrib.contenttypes.models import ContentType
 #from reporting.models import Report, FieldItem, GroupItem, SummaryItem, Fields,\
 #    Groups, Summaries, FilterItem, Filters
+
+class ICD10Resource(ModelResource):
+    
+    def dehydrate(self, bundle):
+        bundle.data['disp_name'] = "%s, %s" % (bundle.obj.code, bundle.obj.name)
+        return bundle
+    
+    class Meta:
+        queryset = ICD10.objects.all() 
+        resource_name = 'icd10'
+        filtering = {
+            'name':('istartswith',),
+            'code':('istartswith',)
+        }
+
 
 class DiscountResource(ModelResource):
 
@@ -862,6 +877,7 @@ class TemplateGroupResource(ExtResource):
 class CardTemplateResource(ExtResource):
     staff = fields.ForeignKey(PositionResource, 'staff', null=True)
     group = fields.ForeignKey(TemplateGroupResource, 'group', null=True)
+    mbk_diag = fields.ForeignKey(ICD10Resource, 'mbk_diag', null=True)
     
     def dehydrate(self, bundle):
         obj = bundle.obj
@@ -883,6 +899,7 @@ class CardTemplateResource(ExtResource):
         
 class ExaminationCardResource(ExtResource):
     ordered_service = fields.ForeignKey(OrderedServiceResource, 'ordered_service', null=True)
+    mbk_diag = fields.ForeignKey(ICD10Resource, 'mbk_diag', null=True)
     
     def dehydrate(self, bundle):
         obj = bundle.obj
@@ -1153,6 +1170,7 @@ api.register(EquipmentTaskResource())
 api.register(BaseServiceResource())
 api.register(ExtendedServiceResource())
 api.register(LabServiceGroupResource())
+api.register(ICD10Resource())
 
 #state
 api.register(PositionResource())

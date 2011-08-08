@@ -13,7 +13,7 @@ from pricelist.models import Price
 from lab.models import Analysis, Tube
 from state.models import State
 from service.models import ExecutionPlace, Material, BaseServiceGroup,\
-    LabServiceGroup, ExecutionTypeGroup, ExtendedService
+    LabServiceGroup, ExecutionTypeGroup, ExtendedService, ICD10
 from django.http import HttpResponseBadRequest, HttpResponse
 from django.utils.safestring import mark_safe
 from django.utils import simplejson
@@ -251,6 +251,7 @@ admin.site.register(Material)
 admin.site.register(BaseServiceGroup)
 admin.site.register(LabServiceGroup)
 admin.site.register(ExecutionTypeGroup)
+admin.site.register(ICD10)
 
 
 #admin.site.register(ICD10)

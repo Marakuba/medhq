@@ -6,6 +6,7 @@ import datetime
 from django.core.exceptions import ObjectDoesNotExist
 from visit.models import OrderedService
 from staff.models import Position
+from service.models import ICD10
 
 class TemplateGroup(models.Model):
     """
@@ -35,7 +36,7 @@ class CardTemplate(models.Model):
     gen_diag = models.TextField(u'Основной диагноз', null=True, blank=True)
     complication = models.TextField(u'Осложнения', null=True, blank=True)
     ekg = models.TextField(u'ЭКГ', null=True, blank=True)
-    mbk_diag = models.TextField(u'Диагноз по МКБ', null=True, blank=True)
+    mbk_diag = models.ForeignKey(ICD10, null=True, blank=True)
     concomitant_diag= models.TextField(u'Сопутствующий диагноз', null=True, blank=True)
     clinical_diag = models.TextField(u'Клинический диагноз', null=True, blank=True)
     treatment = models.TextField(u'Лечение', null=True, blank=True)
@@ -67,7 +68,7 @@ class ExaminationCard(models.Model):
     objective_data = models.TextField(u'Объективные данные', null=True, blank=True)
     psycho_status = models.TextField(u'Психологический/неврологический статус', null=True, blank=True)
     gen_diag = models.TextField(u'Основной диагноз', null=True, blank=True)
-    mbk_diag = models.TextField(u'Диагноз по МКБ', null=True, blank=True)
+    mbk_diag = models.ForeignKey(ICD10, null=True, blank=True)
     complication= models.TextField(u'Осложнения', null=True, blank=True)
     ekg = models.TextField(u'ЭКГ', null=True, blank=True)
     concomitant_diag= models.TextField(u'Сопутствующий диагноз', null=True, blank=True)

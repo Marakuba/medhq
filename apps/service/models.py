@@ -9,9 +9,10 @@ from django.utils.encoding import smart_unicode
 from django.conf.locale import tr
 from django.core.cache import cache
 from django.db.models.signals import post_save
+from mptt.models import MPTTModel
 
 
-class ICD10(models.Model):
+class ICD10(MPTTModel):
     name = models.CharField(u'Наименование', max_length=512)
     code = models.CharField(u'Код', max_length=20)
     description = models.CharField(u'Дополнительное описание', max_length=500)
