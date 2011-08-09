@@ -206,12 +206,29 @@ App.examination.ExamCardForm = Ext.extend(Ext.form.FormPanel, {
 				}]
 		});
 		
+		this.ttb = [{
+				xtype:'button',
+				iconCls:'silk-accept',
+				text:'Выбрать шаблон',
+				handler:this.onChoice.createDelegate(this, [])
+			},{
+				xtype:'button',
+				iconCls:'silk-accept',
+				text:'Скопировать из документа',
+				handler:this.onCardChoice.createDelegate(this, [])
+			},'-',{
+				xtype:'button',
+				id:this.tmp_id+'-info-btn',
+				text:'',
+				disabled:true
+			}]
+		
 		this.menuBar = new Ext.Panel({
 			region:'west',
 			width:150,
 			layout:'form',
 			defaults:{
-				height:30,
+				height:20,
 				anchor:'100%',
 				toggleGroup:'menu-bar',
 				xtype:'button',
@@ -280,7 +297,7 @@ App.examination.ExamCardForm = Ext.extend(Ext.form.FormPanel, {
 			padding:5,
 			closable:true,
 			bbar:new Ext.ux.StatusBar({
-                id: 'statusbar' + this.tmp_id,
+                id: ('statusbar' + this.tmp_id),
                 defaultText: '',
                 items:[{
 					id:this.tmp_id+'print',
@@ -298,12 +315,7 @@ App.examination.ExamCardForm = Ext.extend(Ext.form.FormPanel, {
 					scope:this
 				}]
 			}),
-			tbar:[{
-				xtype:'button',
-				iconCls:'silk-accept',
-				text:'Выбрать шаблон',
-				handler:this.onChoice.createDelegate(this, [])
-			}],
+			tbar:this.ttb,
 			items:[this.workPlace,this.menuBar]
 		}
 		Ext.apply(this, Ext.apply(this.initialConfig, config));
@@ -315,6 +327,7 @@ App.examination.ExamCardForm = Ext.extend(Ext.form.FormPanel, {
 			//};
 			if(this.record) {
 				this.getForm().loadRecord(this.record);
+				Ext.getCmp(this.tmp_id+'-info-btn').setText('Выбранный шаблон:'+this.record.data.name);
 			};
 			if (this.ordered_service) {
 				this.getForm().findField('ordered_service').setValue(this.ordered_service)
@@ -384,6 +397,7 @@ App.examination.ExamCardForm = Ext.extend(Ext.form.FormPanel, {
 						function(btn){
 							if (btn==='yes'){
 								this.getForm().loadRecord(record);
+								Ext.getCmp(this.tmp_id+'-info-btn').setText('Выбранный шаблон:'+record.data.name);
 							}
 						},
 					this);
@@ -392,7 +406,27 @@ App.examination.ExamCardForm = Ext.extend(Ext.form.FormPanel, {
 			scope:this
 		})
 		win.show();
-		
+	},
+	
+	onCardChoice: function(){
+		var win = new App.examination.CardsWindow({
+			patient:this.patient,
+			fn: function(record){
+				//this.record = record;
+				if (record){
+					Ext.Msg.confirm('Предупреждение','Перенести данные в документ?',
+						function(btn){
+							if (btn==='yes'){
+								this.getForm().loadRecord(record);
+								Ext.getCmp(this.tmp_id+'-info-btn').setText('Выбранный шаблон:'+record.data.name);
+							}
+						},
+					this);
+				}
+			},
+			scope:this
+		})
+		win.show();
 	},
 	
 	isModified: function() {

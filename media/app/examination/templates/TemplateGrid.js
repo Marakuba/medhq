@@ -10,47 +10,9 @@ App.CardTemplateGrid = Ext.extend(Ext.grid.GridPanel, {
 		
 		this.tmp_id = Ext.id();
 		
-		this.tmpModel = new Ext.data.Record.create([
-			{name: 'id'},
-			{name: 'staff', allowBlank: false},
-			{name: 'staff_name', allowBlank: true},
-			{name: 'complaints', allowBlank: true},
-			{name: 'anamnesis', allowBlank: true},
-			{name: 'ekg', allowBlank: true},
-			{name: 'name', allowBlank: false},
-			{name: 'print_name', allowBlank: true},
-			{name: 'objective_data', allowBlank: true},
-			{name: 'psycho_status', allowBlank: true},
-			{name: 'gen_diag', allowBlank: true},
-			{name: 'complication', allowBlank: true},
-			{name: 'concomitant_diag', allowBlank: true},
-			{name: 'clinical_diag', allowBlank: true},
-			{name: 'treatment', allowBlank: true},
-			{name: 'referral', allowBlank: true},
-			{name: 'group', allowBlank: true}
-		]);
+		this.tmpModel = App.models.tmpModel;
 		
-		this.examModel = new Ext.data.Record.create([
-			{name: 'id'},
-			{name: 'name',allowBlank: true},
-			{name: 'print_name',allowBlank: true},
-			{name: 'ordered_service',allowBlank: true},
-			{name: 'print_date', allowBlank: true},
-			{name: 'objective_data', allowBlank: true},
-			{name: 'psycho_status', allowBlank: true},
-			{name: 'gen_diag', allowBlank: true},
-			{name: 'complication', allowBlank: true},
-			{name: 'concomitant_diag', allowBlank: true},
-			{name: 'clinical_diag', allowBlank: true},
-			{name: 'treatment', allowBlank: true},
-			{name: 'referral', allowBlank: true},
-			{name: 'disease', allowBlank: true},
-			{name: 'complaints', allowBlank: true},
-			{name: 'history', allowBlank: true},
-			{name: 'anamnesis', allowBlank: true},
-			{name: 'mbk_diag', allowBlank: true},
-			{name: 'group', allowBlank: true}
-		]);
+		this.examModel = App.models.examModel;
 
 		this.examStore = new Ext.data.Store({
 			autoLoad:true,
@@ -96,7 +58,8 @@ App.CardTemplateGrid = Ext.extend(Ext.grid.GridPanel, {
 			autoLoad:true,
 			autoSave:true,
 		    baseParams: {
-		    	format:'json'
+		    	format:'json',
+		    	staff:active_profile
 		    },
 		    paramNames: {
 			    start : 'offset',
@@ -203,11 +166,11 @@ App.CardTemplateGrid = Ext.extend(Ext.grid.GridPanel, {
 				enableToggle:true,
 				toggleGroup:'templare-filter',
 				text:'Свои',
+				pressed: true,
                 scope:this,
 				handler: function(){
-					var url = get_api_url('position');
-					var path = [url,active_profile];
-					this.store.filter('staff',path.join("/"));
+					this.store.setBaseParam('staff',active_profile);
+					this.store.load();
 				}
                 
 			},{
@@ -215,10 +178,10 @@ App.CardTemplateGrid = Ext.extend(Ext.grid.GridPanel, {
 				enableToggle:true,
 				toggleGroup:'templare-filter',
 				text:'Все',
-				pressed: true,
                 scope:this,
 				handler: function(){
-                    this.store.clearFilter()
+                    delete this.store.baseParams['staff'];
+                    this.store.load();
                 }
 			}],
 			viewConfig : {

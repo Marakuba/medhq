@@ -33,7 +33,8 @@ App.TemplateGlobalGrid = Ext.extend(Ext.grid.GridPanel, {
 			autoLoad:true,
 			autoSave:true,
 		    baseParams: {
-		    	format:'json'
+		    	format:'json',
+		    	staff:active_profile
 		    },
 		    paramNames: {
 			    start : 'offset',
@@ -123,13 +124,13 @@ App.TemplateGlobalGrid = Ext.extend(Ext.grid.GridPanel, {
 			},'-',{
 				xtype:'button',
 				enableToggle:true,
+				pressed:true,
 				toggleGroup:'templare-filter',
 				text:'Свои',
                 scope:this,
 				handler: function(){
-					var url = get_api_url('position');
-					var path = [url,active_profile];
-					this.store.filter('staff',path.join("/"));
+					this.store.setBaseParam('staff',active_profile);
+					this.store.load();
 				}
                 
 			},{
@@ -137,10 +138,10 @@ App.TemplateGlobalGrid = Ext.extend(Ext.grid.GridPanel, {
 				enableToggle:true,
 				toggleGroup:'templare-filter',
 				text:'Все',
-				pressed: true,
                 scope:this,
 				handler: function(){
-                    this.store.clearFilter()
+                     delete this.store.baseParams['staff'];
+                    this.store.load();
                 }
 			}],
 			viewConfig : {

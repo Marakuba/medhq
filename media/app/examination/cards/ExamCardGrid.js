@@ -12,7 +12,7 @@ App.ExamCardGrid = Ext.extend(Ext.grid.GridPanel, {
 		this.examModel = App.models.examModel;
 
 		this.store = new Ext.data.Store({
-			autoLoad:true,
+			//autoLoad:true,
 			autoSave:true,
 		    baseParams: {
 		    	format:'json'
@@ -123,8 +123,17 @@ App.ExamCardGrid = Ext.extend(Ext.grid.GridPanel, {
 		
 		this.on('afterrender',function(){
             if (this.ordered_service) {
-            	this.store.setBaseParam('ordered_service__order__patient',this.patient);// App.uriToId(this.patient));
-            }
+            	if (this.mode === 'patient') {
+            		this.store.setBaseParam('ordered_service__order__patient',this.patient);// App.uriToId(this.patient));
+            		this.store.load();
+            	} else {
+            		if (this.mode === 'order') {
+            			this.store.setBaseParam('ordered_service',App.uriToId(this.ordered_service));
+            			this.store.load();
+            		}
+            	}
+            };
+            
         })
 
 		Ext.apply(this, Ext.apply(this.initialConfig, config));
@@ -140,7 +149,7 @@ App.ExamCardGrid = Ext.extend(Ext.grid.GridPanel, {
 	onAdd: function() {
 		config = {
 			closable:true,
-        	//patient:rec.data.patient,
+        	patient:this.patient,
        		ordered_service:this.ordered_service,
        		model:this.examModel,
 			title: 'Карта осмотра ' + this.patient_name,
@@ -155,20 +164,25 @@ App.ExamCardGrid = Ext.extend(Ext.grid.GridPanel, {
 	onEdit: function(){
 		var record = this.getSelected();
 		if(record) {
-    		config = {
-				closable:true,
-				record:record,
-				model:this.examModel,
-	        	//patient:rec.data.patient,
-    	   		ordered_service:this.ordered_service,
-				title: 'Карта осмотра ' + this.patient_name,
-				scope:this,
-				fn:function(record){
-   					this.saveRecord(record);
-   				}
+			var staff = active_profile;
+			if (staff === record.data.staff_id) {
+    			config = {
+					closable:true,
+					record:record,
+					model:this.examModel,
+		        	patient:this.patient,
+    		   		ordered_service:this.ordered_service,
+					title: 'Карта осмотра ' + this.patient_name,
+					scope:this,
+					fn:function(record){
+   						this.saveRecord(record);
+   					}
 				
+				}
+				App.eventManager.fireEvent('launchapp', 'examcardform',config);
+			} else {
+				this.onPrint();
 			}
-			App.eventManager.fireEvent('launchapp', 'examcardform',config);
 		}
 	},
 	

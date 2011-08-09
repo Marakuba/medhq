@@ -125,7 +125,8 @@ class DebtorResource(ExtResource):
         filtering = {
             'last_name':('istartswith',),
             'id':ALL,
-            'discount':ALL_WITH_RELATIONS
+            'discount':ALL_WITH_RELATIONS,
+            'hid_card':ALL
         }
         
 class ReferralResource(ExtResource):
@@ -904,6 +905,7 @@ class ExaminationCardResource(ExtResource):
     def dehydrate(self, bundle):
         obj = bundle.obj
         bundle.data['view'] = obj.__unicode__()
+        bundle.data['staff_id'] = obj.ordered_service.staff.id
         return bundle
     
     class Meta:

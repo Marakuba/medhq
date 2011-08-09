@@ -170,7 +170,7 @@ App.examination.CardTemplateForm = Ext.extend(Ext.form.FormPanel, {
 			width:150,
 			layout:'form',
 			defaults:{
-				height:30,
+				height:25,
 				anchor:'100%',
 				toggleGroup:'menu-bar-tmp',
 				xtype:'button',
@@ -231,7 +231,7 @@ App.examination.CardTemplateForm = Ext.extend(Ext.form.FormPanel, {
 			closable:true,
 			items:[this.workPlace,this.menuBar],
 			bbar:new Ext.ux.StatusBar({
-				id: 'statusbar' + this.tmp_id,
+				id: ('statusbar' + this.tmp_id),
                 defaultText: '',
                 items:[{
 					text:'Сохранить',

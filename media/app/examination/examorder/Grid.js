@@ -61,19 +61,16 @@ App.examorder.ExamOrderGrid = Ext.extend(Ext.grid.GridPanel, {
 		this.singleModeFunc = function(rec) {
 			return {
 				filtering: {
-					'analysis__service':App.uriToId(rec.data.service),
-					'order__visit__barcode':rec.data.barcode
-				},
-				mode: 'single'
+					'ordered_service':App.uriToId(rec.data.id)
+				}
 			}
 		};
 		
 		this.orderModeFunc = function(rec) {
 			return {
 				filtering: {
-					'order__visit__barcode':rec.data.barcode
-				},
-				mode: 'order'
+					'ordered_service__order__patient':rec.data.patient
+				}
 			}
 		};
 		
@@ -120,8 +117,23 @@ App.examorder.ExamOrderGrid = Ext.extend(Ext.grid.GridPanel, {
 				handler:function(){
 					this.store.load()
 				}
-			},
-			'->','Период',{
+			},'-',{
+				xtype:'splitbutton',
+				text:'Открыть',
+				handler:this.onOpen.createDelegate(this, ['order']),
+				menu:{
+					items:[{
+						id:'all-by-visit',
+						text:'Открыть карты осмотра',
+						handler:this.onOpen.createDelegate(this,['order'])
+					},{
+						id:'all-by-lab',
+						text:'Открыть все карты осмотра',
+						handler:this.onOpen.createDelegate(this,['patient'])
+					}]
+				},
+				scope:this
+			},'->','Период',{
 				xtype:'datefield',
 				format:'d.m.Y',
 				listeners: {
@@ -185,7 +197,7 @@ App.examorder.ExamOrderGrid = Ext.extend(Ext.grid.GridPanel, {
 			}),
 	        tbar:this.ttb,
 			listeners: {
-				rowdblclick:this.onOpen.createDelegate(this, [this.singleModeFunc])
+				rowdblclick:this.onOpen.createDelegate(this, ['order'])
 			},
 			bbar: new Ext.PagingToolbar({
 	            pageSize: 20,
@@ -214,15 +226,16 @@ App.examorder.ExamOrderGrid = Ext.extend(Ext.grid.GridPanel, {
 		console.log(e);
 	},
 	
-	onOpen: function(f){
+	onOpen: function(mode){
 		var rec = this.getSelected();
-		if (rec) {
+		if(rec) {
 			config = {
 				ordered_service : rec.data.resource_uri,
 				patient:rec.data.patient,
+				mode:mode,
 				patient_name:rec.data.patient_name,
 				title:'Карты осмотра №'+rec.data.barcode+' ' + rec.data.patient_name
-			}
+			};
 			App.eventManager.fireEvent('launchapp', 'examcardgrid',config);
 		}
 		//}

@@ -9,33 +9,12 @@ App.AllExamGrid = Ext.extend(Ext.grid.GridPanel, {
 
 		//this.backend = App.getBackend('examcard');
 		
-		this.examModel = new Ext.data.Record.create([
-			{name: 'id'},
-			{name: 'created',allowBlank: true},
-			{name: 'modified',allowBlank: true},
-			{name: 'name',allowBlank: true},
-			{name: 'print_name',allowBlank: true},
-			{name: 'ordered_service',allowBlank: true},
-			{name: 'print_date', allowBlank: true},
-			{name: 'objective_data', allowBlank: true},
-			{name: 'psycho_status', allowBlank: true},
-			{name: 'gen_diag', allowBlank: true},
-			{name: 'complication', allowBlank: true},
-			{name: 'concomitant_diag', allowBlank: true},
-			{name: 'clinical_diag', allowBlank: true},
-			{name: 'treatment', allowBlank: true},
-			{name: 'referral', allowBlank: true},
-			{name: 'disease', allowBlank: true},
-			{name: 'complaints', allowBlank: true},
-			{name: 'history', allowBlank: true},
-			{name: 'anamnesis', allowBlank: true},
-			{name: 'mbk_diag', allowBlank: true},
-			{name: 'conclusion', allowBlank: true},
-			{name: 'comment', allowBlank: true}
-		]);
+		this.tmp_id = Ext.id();
+		
+		this.examModel = App.models.examModel;
 
 		this.store = new Ext.data.Store({
-			autoLoad:true,
+			//autoLoad:true,
 			autoSave:true,
 		    baseParams: {
 		    	format:'json'
@@ -83,7 +62,7 @@ App.AllExamGrid = Ext.extend(Ext.grid.GridPanel, {
 		    	header: "Обследование", 
 		    	width:100,
 		    	sortable: true, 
-		    	dataIndex: 'name' 
+		    	dataIndex: 'view' 
 		    },{
 		    	header: "Дата создания", 
 		    	width:70,
@@ -111,30 +90,28 @@ App.AllExamGrid = Ext.extend(Ext.grid.GridPanel, {
 				msg : 'Подождите, идет загрузка...'
 			},
 			border: false,
+			autoScroll:true,
 			store:this.store,
 			closable:true,
 			title: this.title ? this.title : 'Карты осмотра',
 			columns:this.columns,
 			listeners: {
-				rowdblclick:this.onEdit.createDelegate(this, [])
+				rowdblclick:this.onChoice.createDelegate(this, [])
 			},
 			sm : new Ext.grid.RowSelectionModel({
 						singleSelect : true
 					}),
 			tbar:[{
 				xtype:'button',
-				iconCls:'silk-pencil',
-				text:'Изменить',
-				handler:this.onEdit.createDelegate(this, [])
-			},{
-				xtype:'button',
-				iconCls:'silk-delete',
-				text:'Удалить',
-				handler:this.onDelete.createDelegate(this, [])
+				iconCls:'silk-accept',
+				id:this.tmp_id+'-choice-btn',
+				text:'Выбрать',
+				disabled:true,
+				handler:this.onChoice.createDelegate(this, [])
 			},{
 				xtype:'button',
 				iconCls:'silk-printer',
-				text:'Печать',
+				text:'Посмотреть',
 				handler:this.onPrint.createDelegate(this, [])
 			}],
 			viewConfig : {
@@ -143,7 +120,12 @@ App.AllExamGrid = Ext.extend(Ext.grid.GridPanel, {
 		};
 		
 		this.on('afterrender',function(){
-
+			if (this.patient) {
+				this.store.setBaseParam('ordered_service__order__patient',this.patient);
+				Ext.getCmp(this.tmp_id+'-choice-btn').enable();
+			};
+			this.store.load();
+			
         })
 
 		Ext.apply(this, Ext.apply(this.initialConfig, config));
@@ -206,7 +188,20 @@ App.AllExamGrid = Ext.extend(Ext.grid.GridPanel, {
 		if(record) {
 			window.open('/exam/card/'+record.data.id+'/');
 		}
-	}
+	},
+	
+	onChoice: function() {
+		//Если в форму передан пациент, то этот grid вызван из формы карты осмотра, 
+		//значит нужно передать выбранный документ в ту форму
+		//Иначе: просто смотрим выбранный документ
+		if (this.patient){
+			var record = this.getSelected();
+        	Ext.callback(this.fn, this.scope || window, [record]);
+		} else {
+			this.onPrint();
+		}
+                
+    }
 	
 });
 
