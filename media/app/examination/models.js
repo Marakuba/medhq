@@ -44,7 +44,8 @@ App.models.tmpModel = new Ext.data.Record.create([
 	{name: 'treatment', allowBlank: true},
 	{name: 'referral', allowBlank: true},
 	{name: 'conclusion', allowBlank: true},
-	{name: 'group', allowBlank: true}
+	{name: 'group', allowBlank: true},
+	{name: 'group_name', allowBlank: true}
 ]);
 		
 App.models.examModel = new Ext.data.Record.create([

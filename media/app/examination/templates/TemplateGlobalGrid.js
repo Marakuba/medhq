@@ -5,33 +5,12 @@ App.TemplateGlobalGrid = Ext.extend(Ext.grid.GridPanel, {
 
 	initComponent : function() {		
 
-		//this.backend = App.getBackend('cardtemplate');	
-		//this.cardBackend = new App.ExamBackend({});
-		/*this.tmpModel = new Ext.data.Record.create([
-			{name: 'id'},
-			{name: 'staff', allowBlank: false},
-			{name: 'staff_name', allowBlank: true},
-			{name: 'complaints', allowBlank: true},
-			{name: 'anamnesis', allowBlank: true},
-			{name: 'ekg', allowBlank: true},
-			{name: 'name', allowBlank: false},
-			{name: 'print_name', allowBlank: true},
-			{name: 'objective_data', allowBlank: true},
-			{name: 'psycho_status', allowBlank: true},
-			{name: 'gen_diag', allowBlank: true},
-			{name: 'complication', allowBlank: true},
-			{name: 'concomitant_diag', allowBlank: true},
-			{name: 'clinical_diag', allowBlank: true},
-			{name: 'treatment', allowBlank: true},
-			{name: 'referral', allowBlank: true},
-			{name: 'group', allowBlank: true}
-		]);*/
-		
 		this.tmpModel = App.models.tmpModel;
 
-		this.store = new Ext.data.Store({
+		this.store = new Ext.data.GroupingStore({
 			autoLoad:true,
 			autoSave:true,
+			groupField:'group_name',
 		    baseParams: {
 		    	format:'json',
 		    	staff:active_profile
@@ -71,11 +50,12 @@ App.TemplateGlobalGrid = Ext.extend(Ext.grid.GridPanel, {
 		    }
 		});
 		
-		
-		//this.store.load();
-		
 		this.columns =  [
-		    {
+			{
+				header: "Название шаблона", 
+				dataIndex:'group_name',
+				hidden:true
+			},{
 		    	header: "Название шаблона", 
 		    	width:70,
 		    	sortable: true, 
@@ -140,13 +120,14 @@ App.TemplateGlobalGrid = Ext.extend(Ext.grid.GridPanel, {
 				text:'Все',
                 scope:this,
 				handler: function(){
-                     delete this.store.baseParams['staff'];
+                    delete this.store.baseParams['staff'];
                     this.store.load();
                 }
 			}],
-			viewConfig : {
-				forceFit : true
-			}			
+			view : new Ext.grid.GroupingView({
+				forceFit : true,
+				groupTextTpl:"{[values.rs[0].data['group_name']]}"
+			})
 		};
 		
 		this.on('rowdblclick', function(object, rowIndex, e){

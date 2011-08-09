@@ -63,7 +63,7 @@ App.AllExamGrid = Ext.extend(Ext.grid.GridPanel, {
 		    	width:100,
 		    	sortable: true, 
 		    	dataIndex: 'view' 
-		    },{
+		    }/*,{
 		    	header: "Дата создания", 
 		    	width:70,
 		    	sortable: true, 
@@ -81,7 +81,7 @@ App.AllExamGrid = Ext.extend(Ext.grid.GridPanel, {
 		    		var p = record.data.modified;
 		    		return String.format(Ext.util.Format.date(p, 'd.m.Y H:i'));
 		    	}
-		    }
+		    }*/
 		];		
 		
 		var config = {

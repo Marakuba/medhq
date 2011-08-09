@@ -54,9 +54,10 @@ App.CardTemplateGrid = Ext.extend(Ext.grid.GridPanel, {
 		    }
 		});
 		
-		this.store = new Ext.data.Store({
+		this.store = new Ext.data.GroupingStore({
 			autoLoad:true,
 			autoSave:true,
+			groupField:'group_name',
 		    baseParams: {
 		    	format:'json',
 		    	staff:active_profile
@@ -100,6 +101,10 @@ App.CardTemplateGrid = Ext.extend(Ext.grid.GridPanel, {
 		
 		this.columns =  [
 		    {
+		    	header: "Группа",
+		    	dataIndex: 'group_name',
+		    	hidden:true
+		    },{
 		    	header: "Название шаблона", 
 		    	width:70,
 		    	sortable: true, 
@@ -184,9 +189,10 @@ App.CardTemplateGrid = Ext.extend(Ext.grid.GridPanel, {
                     this.store.load();
                 }
 			}],
-			viewConfig : {
-				forceFit : true
-			}			
+			view : new Ext.grid.GroupingView({
+				forceFit : true,
+				groupTextTpl:"{[values.rs[0].data['group_name']]}"
+			})	
 		};
 		
 		this.on('rowdblclick', function(object, rowIndex, e){

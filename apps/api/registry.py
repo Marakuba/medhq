@@ -884,6 +884,7 @@ class CardTemplateResource(ExtResource):
         obj = bundle.obj
         if obj.staff:
             bundle.data['staff_name'] = obj.staff.__unicode__()
+        bundle.data['group_name'] = obj.group and obj.group.name or u'Без группы'
         return bundle
     
     class Meta:
