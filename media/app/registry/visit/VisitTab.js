@@ -88,7 +88,7 @@ App.visit.VisitTab = Ext.extend(Ext.Panel, {
 			tbar:[this.getPatientTitle(),'->',{
         		text:'Закрыть',
 				handler:this.onClose.createDelegate(this,[])
-			},this.saveButton],
+			},this.saveButton,this.payButton],
 	        items:[this.form]
 		}
 

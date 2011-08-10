@@ -217,10 +217,10 @@ App.examination.ExamCardForm = Ext.extend(Ext.form.FormPanel, {
 				text:'Скопировать из документа',
 				handler:this.onCardChoice.createDelegate(this, [])
 			},'-',{
-				xtype:'button',
+				xtype:'tbtext',
 				id:this.tmp_id+'-info-btn',
-				text:'',
-				disabled:true
+				text:''
+				//disabled:true
 			}]
 		
 		this.menuBar = new Ext.Panel({
@@ -327,7 +327,7 @@ App.examination.ExamCardForm = Ext.extend(Ext.form.FormPanel, {
 			//};
 			if(this.record) {
 				this.getForm().loadRecord(this.record);
-				Ext.getCmp(this.tmp_id+'-info-btn').setText('Выбранный шаблон:'+this.record.data.name);
+				Ext.getCmp(this.tmp_id+'-info-btn').setText('Выбранный шаблон: '+this.record.data.name);
 			};
 			if (this.ordered_service) {
 				this.getForm().findField('ordered_service').setValue(this.ordered_service)
@@ -397,7 +397,7 @@ App.examination.ExamCardForm = Ext.extend(Ext.form.FormPanel, {
 						function(btn){
 							if (btn==='yes'){
 								this.getForm().loadRecord(record);
-								Ext.getCmp(this.tmp_id+'-info-btn').setText('Выбранный шаблон:'+record.data.name);
+								Ext.getCmp(this.tmp_id+'-info-btn').setText('Выбранный шаблон: '+record.data.name);
 							}
 						},
 					this);
@@ -418,7 +418,7 @@ App.examination.ExamCardForm = Ext.extend(Ext.form.FormPanel, {
 						function(btn){
 							if (btn==='yes'){
 								this.getForm().loadRecord(record);
-								Ext.getCmp(this.tmp_id+'-info-btn').setText('Выбранный шаблон:'+record.data.name);
+								Ext.getCmp(this.tmp_id+'-info-btn').setText('Выбранный шаблон: '+record.data.name);
 							}
 						},
 					this);

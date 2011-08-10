@@ -144,6 +144,7 @@ App.CardTemplateGrid = Ext.extend(Ext.grid.GridPanel, {
 				xtype:'button',
 				id:this.tmp_id + 'choice-btn',
 				iconCls:'silk-accept',
+				disabled:true,
 				text:'Выбрать',
 				handler:this.onChoice.createDelegate(this, [])
 			}/*,'-',{
@@ -273,7 +274,9 @@ App.CardTemplateGrid = Ext.extend(Ext.grid.GridPanel, {
     
     onChoice: function() {
         var record = this.getSelectionModel().getSelected();
-        Ext.callback(this.fn, this.scope || window, [record]);        
+        if (record) {
+        	Ext.callback(this.fn, this.scope || window, [record]);
+        };
     },
     
     saveExamRecord: function(record) {

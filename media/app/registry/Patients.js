@@ -55,7 +55,7 @@ App.Patients = Ext.extend(Ext.Panel, {
 	},
 	
 	titleTpl : new Ext.Template(
-		'Пациент: {last_name} {first_name} {mid_name}. Скидка: {discount_name}. Общая сумма: {billed_account}.'// Баланс: <FONT COLOR="red"> {balance} </FONT>'
+		'Пациент: {last_name} {first_name} {mid_name}. Скидка: {discount_name}. Общая сумма: {billed_account}. Баланс: <FONT COLOR="red"> {balance} </FONT>'
 	),
 	
 	patientSelect: function(rec){
