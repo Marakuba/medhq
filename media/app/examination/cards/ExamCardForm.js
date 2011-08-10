@@ -49,6 +49,88 @@ App.examination.ExamCardForm = Ext.extend(Ext.form.FormPanel, {
 		    }
 		});
 		
+		this.prompt = new Ext.Window({
+//            applyTo:'hello-win',
+            layout:'fit',
+            title: 'Выберите поля для переноса',
+            width:400,
+            height:300,
+            closeAction:'hide',
+//            plain: true,
+            items: new Ext.FormPanel({
+                labelWidth: 10, 
+                bodyStyle: 'padding:5px 0px 0',
+                //width: 100,
+//                defaults: {width: 150},
+                //defaultType: 'textfield',
+        
+                items:  [new Ext.form.CheckboxGroup({
+                	id:this.tmp_id+'fieldsGroup',
+    				xtype: 'checkboxgroup',
+    				//fieldLabel: 'Single Column',
+    				//itemCls: 'x-check-group-alt',
+    				vertical:true,
+    				anchor:'100%',
+    				columns: 2,
+    				defaults:{
+    					checked:true
+    				},
+    				items: [
+    					{boxLabel:'Наименование',name:'name'},
+        				{boxLabel:'Заголовок',name:'print_name'},
+						{boxLabel:'Характер заболевания',name:'disease'},
+						{boxLabel:'Жалобы',name:'complaints'},
+						{boxLabel:'История заболевания',name:'history'},
+						{boxLabel:'Анамнез',name:'anamnesis'},
+						{boxLabel:'Объективные данные',name:'objective_data'},	
+						{boxLabel:'Психологический статус',name:'psycho_status'},
+						{boxLabel:'Диагноз МКБ',name:'mbk_diag'},
+						{boxLabel:'Основной диагноз',name:'gen_diag'},
+						{boxLabel:'Сопутствующий диагноз',name:'concomitant_diag'},
+						{boxLabel:'Клинический диагноз',name:'clinical_diag'},
+						{boxLabel:'Осложнения',name:'complication'},
+						{boxLabel:'ЭКГ',name:'ekg'},
+						{boxLabel:'Лечение',name:'treatment'},
+						{boxLabel:'Направление',name:'referral'},
+						{boxLabel:'Заключение',name:'conclusion'},
+						{boxLabel:'Примечание',name:'comment'}
+    				]
+    					
+                })],
+                    
+                buttons: [{
+                    text:'Ok',
+                    scope: this,
+                    handler: function(){
+                    	var arr = Ext.getCmp(this.tmp_id+'fieldsGroup').getValue();
+                    	this.prompt.fireEvent('submit',arr)
+                    }
+                },{
+                    text: 'Отмена',
+                    scope: this,
+                    handler: function(){
+                        this.prompt.hide();
+                    }
+                }]
+            })
+        });
+
+        this.prompt.on('submit', function(arr) {
+        	//Переносим данные из выбранных полей
+        	var field;
+        	for (item in arr){
+        		if (this.tmp_record.data[arr[item]['name']]) {
+        			field = this.getForm().findField(arr[item]['name'])
+        			if (field){
+        				field.setValue(this.tmp_record.data[arr[item]['name']]);
+        			}
+        		}
+        	};
+        	//this.getForm().loadRecord(this.tmp_record);
+			Ext.getCmp(this.tmp_id+'-info-btn').setText('Выбранный шаблон: '+this.tmp_record.data.name);
+			this.prompt.hide();
+        },this);
+		
 		this.mkb = new Ext.form.LazyComboBox({
 			fieldLabel:'Диагноз по МКБ',
 			anchor:'95%',
@@ -391,16 +473,9 @@ App.examination.ExamCardForm = Ext.extend(Ext.form.FormPanel, {
 	onChoice: function(){
 		var win = new App.examination.TemplatesWindow({
 			fn: function(record){
-				//this.record = record;
+				this.tmp_record = record;
 				if (record){
-					Ext.Msg.confirm('Предупреждение','Перенести данные в документ?',
-						function(btn){
-							if (btn==='yes'){
-								this.getForm().loadRecord(record);
-								Ext.getCmp(this.tmp_id+'-info-btn').setText('Выбранный шаблон: '+record.data.name);
-							}
-						},
-					this);
+					this.prompt.show();
 				}
 			},
 			scope:this
@@ -412,16 +487,9 @@ App.examination.ExamCardForm = Ext.extend(Ext.form.FormPanel, {
 		var win = new App.examination.CardsWindow({
 			patient:this.patient,
 			fn: function(record){
-				//this.record = record;
+				this.tmp_record = record;
 				if (record){
-					Ext.Msg.confirm('Предупреждение','Перенести данные в документ?',
-						function(btn){
-							if (btn==='yes'){
-								this.getForm().loadRecord(record);
-								Ext.getCmp(this.tmp_id+'-info-btn').setText('Выбранный шаблон: '+record.data.name);
-							}
-						},
-					this);
+					this.prompt.show();
 				}
 			},
 			scope:this

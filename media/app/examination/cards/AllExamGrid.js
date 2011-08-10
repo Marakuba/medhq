@@ -99,8 +99,20 @@ App.AllExamGrid = Ext.extend(Ext.grid.GridPanel, {
 				rowdblclick:this.onChoice.createDelegate(this, [])
 			},
 			sm : new Ext.grid.RowSelectionModel({
-						singleSelect : true
-					}),
+				singleSelect : true,
+				listeners: {
+					rowselect:function(model,ind,rec) {
+						if (this.patient){ //Если форма открыта из карты осмотра для копирования документа
+							Ext.getCmp(this.tmp_id+'-choice-btn').enable()
+						}
+						
+					},
+					rowdeselect: function() {
+						Ext.getCmp(this.tmp_id+'-choice-btn').disable()
+					},
+					scope:this
+				}
+			}),
 			tbar:[{
 				xtype:'button',
 				iconCls:'silk-accept',
@@ -122,7 +134,7 @@ App.AllExamGrid = Ext.extend(Ext.grid.GridPanel, {
 		this.on('afterrender',function(){
 			if (this.patient) {
 				this.store.setBaseParam('ordered_service__order__patient',this.patient);
-				Ext.getCmp(this.tmp_id+'-choice-btn').enable();
+				//Ext.getCmp(this.tmp_id+'-choice-btn').enable();
 			};
 			this.store.load();
 			
