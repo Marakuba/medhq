@@ -49,5 +49,6 @@ class LogEntryAdmin(ModelAdmin):
     
     list_display = ('action_time','content_type','get_edited_object','user','change_message','action_flag')
     list_filter = ('user','action_flag')
+    search_fields = ('object_repr',)
     
 admin.site.register(LogEntry, LogEntryAdmin)

@@ -28,6 +28,7 @@ from billing.models import Account, Payment, ClientAccount
 from interlayer.models import ClientItem
 from django.contrib.contenttypes.models import ContentType
 from examination.models import TemplateGroup
+from tastypie.cache import SimpleCache
 #from reporting.models import Report, FieldItem, GroupItem, SummaryItem, Fields,\
 #    Groups, Summaries, FilterItem, Filters
 
@@ -672,12 +673,56 @@ class LabServiceResource(ExtResource):
         queryset = OrderedService.objects.filter(service__lab_group__isnull=False) #all lab services
         resource_name = 'labservice'
         authorization = DjangoAuthorization()
+        limit = 500
         filtering = {
+            'created': ALL_WITH_RELATIONS,
             'order': ALL_WITH_RELATIONS,
             'sampling': ALL_WITH_RELATIONS,
             'execution_place': ALL_WITH_RELATIONS,
             'executed':ALL
         }
+        
+        
+class LabTestResource(ExtResource):
+    """
+    """
+    order = fields.ToOneField(VisitResource, 'order')
+    execution_place = fields.ToOneField(StateResource, 'execution_place')
+    service = fields.ToOneField(BaseServiceResource, 'service')
+    staff = fields.ToOneField(PositionResource, 'staff', null=True)
+    #sampling = fields.ForeignKey(SamplingResource, 'sampling', null=True)
+
+    def dehydrate(self, bundle):
+        service = bundle.obj.service
+        order = bundle.obj.order
+        patient = order.patient
+        bundle.data['service_name'] = service.short_name or service.name
+        bundle.data['service_full_name'] = service.name
+#        bundle.data['lab_group'] = service.lab_group
+        bundle.data['created'] = order.created
+        bundle.data['printed'] = bundle.obj.print_date
+        bundle.data['barcode'] = order.barcode.id
+        bundle.data['patient'] = patient.full_name()
+        bundle.data['patient_age'] = patient.full_age()
+        bundle.data['staff_name'] = bundle.obj.staff
+        bundle.data['laboratory'] = bundle.obj.execution_place
+        bundle.data['key'] = u"%s_%s" % (order.id, bundle.obj.execution_place.id) 
+        return bundle
+    
+    class Meta:
+        queryset = OrderedService.objects.select_related().filter(service__lab_group__isnull=False).order_by('service','-created') #all lab services
+        resource_name = 'labtest'
+        authorization = DjangoAuthorization()
+        limit = 10000
+        filtering = {
+            'order': ALL_WITH_RELATIONS,
+#            'sampling': ALL_WITH_RELATIONS,
+            'execution_place': ALL_WITH_RELATIONS,
+            'executed':ALL,
+            'created':ALL_WITH_RELATIONS
+        }
+        cache = SimpleCache()
+        
         
 class ExamServiceResource(ExtResource):
     """
@@ -1136,6 +1181,7 @@ api.register(ServiceBasketResource())
 api.register(RefundResource())
 api.register(RefundBasketResource())   
 api.register(LabServiceResource())
+api.register(LabTestResource())
 api.register(ExamServiceResource())
 
 #lab

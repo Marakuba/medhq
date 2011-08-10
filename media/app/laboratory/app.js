@@ -13,6 +13,6 @@ Ext.onReady(function(){
 		items:[centralPanel]
 	});
 	
-	centralPanel.launchApp('labordergrid');
+	centralPanel.launchApp('labservicegrid');
 	
 });

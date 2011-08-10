@@ -72,6 +72,55 @@ App.regBackend('labservice', new App.Backend({
 
 
 
+
+App.regBackend('labtest', new App.Backend({
+
+		store:new Ext.data.GroupingStore({
+			autoLoad:false,
+			autoSave:true,
+		    baseParams: {
+		    	format:'json'
+		    },
+		    paramNames: {
+			    start : 'offset',
+			    limit : 'limit',
+			    sort : 'sort',
+			    dir : 'dir'
+			},
+		    restful: true,
+		    remoteSort: true,
+		    groupField:'service_name',
+		    proxy: new Ext.data.HttpProxy({
+			    url: get_api_url('labtest')
+			}),
+		    reader: new Ext.data.JsonReader({
+			    totalProperty: 'meta.total_count',
+			    successProperty: 'success',
+			    idProperty: 'id',
+			    root: 'objects',
+			    messageProperty: 'message'
+			}, App.models.LabService),
+		    writer: new Ext.data.JsonWriter({
+			    encode: false,
+			    writeAllFields: true
+			}),
+		    listeners:{
+		    	exception:function(proxy, type, action, options, response, arg){
+		    	},
+		    	write:function(store, action, result, res, rs){
+		    		if(action=='create') {
+			    		App.eventManager.fireEvent('labservicecreate', rs);
+		    		}
+		    	},
+		    	scope:this
+		    }
+		})	
+	
+}));
+
+
+
+
 App.models.EquipmentAssay = new Ext.data.Record.create([
     {name: 'id'},
     {name: 'resource_uri'},

@@ -12,6 +12,7 @@ from numeration.models import NumeratorItem
 import logging
 from django.conf import settings
 from django.utils.encoding import smart_unicode
+from core.models import GENDER_TYPES
 
 
 
@@ -80,7 +81,6 @@ class InputList(models.Model):
         verbose_name_plural = u'маски результатов'
         
 
-
 class Analysis(models.Model):
     """
     """
@@ -94,7 +94,9 @@ class Analysis(models.Model):
     tube = models.ManyToManyField(Tube, null=True, blank=True, verbose_name=Tube._meta.verbose_name, related_name='m2m_tube')
     ref_range_text = models.TextField(u'Реф.интервалы (текст)', blank=True)
     order = models.PositiveIntegerField(u'Порядок', default=0, null=True, blank=True)
-    
+    by_age = models.BooleanField(u'Оценивать по возрасту')
+    by_gender = models.BooleanField(u'Оценивать по возрасту')
+    by_pregnancy = models.BooleanField(u'Оценивать по возрасту')
     
     def __unicode__(self):
         return self.name
@@ -102,31 +104,28 @@ class Analysis(models.Model):
     class Meta:
         verbose_name = u'тест'
         verbose_name_plural = u'тесты'
+        
 
-
-
-class ReferenceRange(models.Model):
+class RefRange(models.Model):
     """
     """
-    
     analysis = models.ForeignKey(Analysis)
-    operator1 = models.CharField(u'Оператор 1', max_length=2, choices=OPERATORS)
-    value1 = models.CharField(u'Значение 1', max_length=50)
-    operator2 = models.CharField(u'Оператор 2', max_length=2, choices=OPERATORS, blank=True)
-    value2 = models.CharField(u'Значение 2', max_length=50, blank=True)
+    title = models.CharField(u'Наименование', max_length=50, blank=True)
+    age_from = models.PositiveIntegerField(u'Возраст, от (мес.)', null=True, blank=True)
+    age_to = models.PositiveIntegerField(u'Возраст, до (мес.)', null=True, blank=True)
+    gender = models.CharField(u'Пол', max_length=1, choices=GENDER_TYPES, blank=True)
+    pregnance_from = models.PositiveIntegerField(u'Беременность, от (нед.)', null=True, blank=True)
+    pregnance_to = models.PositiveIntegerField(u'Беременность, до (нед.)', null=True, blank=True)
+    min_value = models.DecimalField(u'Мин.значение', max_digits=12, decimal_places=2, null=True, blank=True)
+    min_value = models.DecimalField(u'Макс.значение', max_digits=12, decimal_places=2, null=True, blank=True)
+    result = models.SmallIntegerField(u'Уровень', max_length=1, choices=( (-1,u'Отрицательно'),(0,u'Сомнительно'),(1,u'Норма') ) )
     
+    def __unicode__(self):
+        return smart_unicode(u"Ref to: %s" % (self.analysis) )
     
-class Factor(models.Model):
-    """
-    """
-
-    ref_range = models.ForeignKey(ReferenceRange)
-    field = models.CharField(u"Параметр", max_length=20, choices=FACTOR_FIELDS, blank=True)
-    operator = models.CharField(u'Оператор', max_length=2, choices=OPERATORS, blank=True)
-    value = models.CharField(u'Значение', max_length=50, blank=True)
-
-
-
+    class Meta:
+        verbose_name = u'реф.значение'
+        verbose_name_plural = u'реф.значения'
 
 
 class LabOrder(models.Model):
@@ -184,6 +183,7 @@ class Result(models.Model):
     
     order = models.ForeignKey(LabOrder)
     analysis = models.ForeignKey(Analysis, verbose_name=Analysis._meta.verbose_name)
+    previous_value = models.CharField(u"Предыдущий результат", max_length=50, blank=True, null=True)
     value = models.CharField(u"Результат", max_length=50, blank=True, null=True)
     presence = models.CharField(u"Наличие", max_length=1, blank=True, null=True, choices=RESULTS)
     test_form = models.CharField(u"Форма", max_length=6, blank=True, null=True, choices=TEST_FORM)
@@ -195,7 +195,6 @@ class Result(models.Model):
     status = models.ForeignKey(Status, blank=True, null=True)
     modified = models.DateTimeField(auto_now=True)
     modified_by = models.ForeignKey(User, blank=True, null=True)
-    previuos_value = models.CharField(u"Предыдущий результат", max_length=50, blank=True, null=True)
     
     def __unicode__(self):
         a = self.analysis.__unicode__()
@@ -278,6 +277,7 @@ class EquipmentAssay(models.Model):
     """
     equipment = models.ForeignKey(Equipment)
     service = models.ForeignKey('service.BaseService')
+    is_active = models.BooleanField(u'Активно', default=True)
 
     def __unicode__(self):
         return smart_unicode( u"%s - %s" % (self.equipment, self.service) )
