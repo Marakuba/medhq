@@ -76,11 +76,6 @@ App.billing.PaymentWindow = Ext.extend(Ext.Window, {
 		}
 		App.eventManager.fireEvent('paymentsave',rs);
 		this.record = rs;
-	},
-	
-	onSave: function() {
-		var f = this.form;
-		f.onSave();
 		this.statusbar.setStatus({
         	text: 'Документ успешно сохранён',
             iconCls: 'silk-status-accept'
@@ -88,6 +83,11 @@ App.billing.PaymentWindow = Ext.extend(Ext.Window, {
         (function(){
 			this.statusbar.clearStatus({useDefaults:true});
 		}).defer(2000);
+	},
+	
+	onSave: function() {
+		var f = this.form;
+		f.onSave();
 	}
 });
 

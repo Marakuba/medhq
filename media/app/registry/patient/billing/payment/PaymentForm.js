@@ -133,11 +133,12 @@ App.billing.PaymentForm = Ext.extend(Ext.form.FormPanel, {
 							columnWidth:1,
 							items:[new Ext.form.LazyComboBox({
 								fieldLabel:'Пациент',
-								allowBlank:true,
+								allowBlank:false,
 								displayField: 'full_name',
 								id:this.tmp_id+'client',
 								queryParam:'last_name__istartswith',
 								hidden:this.patientRecord? true : false,
+								disabled:this.patientRecord? true : false,
 								anchor:'71%',
 								store: this.patient_store,
 					        	//name:'client_item',
@@ -318,7 +319,7 @@ App.billing.PaymentForm = Ext.extend(Ext.form.FormPanel, {
 	
 	onPrintCheck: function(){
 		var value = this.getForm().findField('print_check').getValue();
-		if (value===true) {
+		if (value=='true') {
 			Ext.MessageBox.show({
                 title:'Чек уже был напечатан',
                 msg: 'Всё равно печатать?',
@@ -332,7 +333,7 @@ App.billing.PaymentForm = Ext.extend(Ext.form.FormPanel, {
                 scope: this
             });
 		} else {
-			this.getForm().findField('print_check').setValue('true');
+			this.getForm().findField('print_check').setValue(true);
 			this.onSave()
 			//Посылаем команду печати чека
 		}
