@@ -118,7 +118,7 @@ class DebtorResource(ExtResource):
     client_item = fields.OneToOneField(ClientItemResource, 'client_item', null=True)
     
     class Meta:
-        queryset = Patient.objects.filter(balance__lte = 0) #@UndefinedVariable
+        queryset = Patient.objects.filter(balance__lt = 0) #@UndefinedVariable
         resource_name = 'debtor'
         default_format = 'application/json'
         authorization = DjangoAuthorization()

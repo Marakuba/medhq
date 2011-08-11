@@ -51,6 +51,16 @@ App.cashier.DebtorGrid = Ext.extend(Ext.grid.GridPanel, {
 		    	dataIndex: 'balance'
 		    }
 		];		
+		this.payButton = new Ext.Button({
+			iconCls:'silk-add',
+			text:'Погасить долг',
+			disabled:true,
+			handler:this.onPay.createDelegate(this),
+			scope:this
+		});
+		this.ttb = new Ext.Toolbar({
+			items:[this.payButton]
+		});
 		
 		
 		var config = {
@@ -64,18 +74,19 @@ App.cashier.DebtorGrid = Ext.extend(Ext.grid.GridPanel, {
 				singleSelect : true,
 				listeners: {
                     rowselect: function(sm, row, rec) {
-                    	this.fireEvent('patientselect', rec);
+                    	//this.fireEvent('patientselect', rec);
 //                        Ext.getCmp("patient-quick-form").getForm().loadRecord(rec);
                     	this.btnSetDisabled(false);
                     },
                     rowdeselect: function(sm, row, rec) {
-                    	this.fireEvent('patientdeselect', rec);
+                    	//this.fireEvent('patientdeselect', rec);
 //                        Ext.getCmp("patient-quick-form").getForm().reset();
                     	this.btnSetDisabled(true);
                     },
                     scope:this
                 }
 			}),
+			tbar:this.ttb,
 	        bbar: new Ext.PagingToolbar({
 	            pageSize: 20,
 	            store: this.store,
@@ -96,15 +107,11 @@ App.cashier.DebtorGrid = Ext.extend(Ext.grid.GridPanel, {
 		Ext.apply(this, Ext.apply(this.initialConfig, config));
 		App.cashier.DebtorGrid.superclass.initComponent.apply(this, arguments);
 		App.eventManager.on('globalsearch', this.onGlobalSearch, this);
+		App.eventManager.on('paymentsave', this.reloadStore, this);
+		App.eventManager.on('visitcreate', this.reloadStore, this);
 //		App.eventManager.on('patientwrite', this.onPatientWrite, this);
 		//this.on('patientselect', this.onPatientSelect, this);
 		//this.store.on('write', this.onStoreWrite, this);
-	},
-	
-	btnSetDisabled: function(status) {
-        this.editButton.setDisabled(status);
-        this.cardButton.setDisabled(status);
-        this.contractButton.setDisabled(status);
 	},
 	
 	onPatientSelect: function(){
@@ -135,6 +142,29 @@ App.cashier.DebtorGrid = Ext.extend(Ext.grid.GridPanel, {
 			s.setBaseParam('last_name__istartswith', v);
 		}
 		s.load();
+	},
+	
+	onPay: function(){
+		var record = this.getSelected();
+		if (record) {
+			this.win = new App.billing.PaymentWindow({
+				is_income : true,
+				amount:Math.abs(record.data.balance),
+				patientRecord:record
+			});
+			this.win.show();
+		}
+	},
+	
+	reloadStore: function(record){
+		this.store.load();
+		this.btnSetDisabled(true);
+	},
+	
+	btnSetDisabled: function(status) {
+        this.payButton.setDisabled(status);
+        //this.cardButton.setDisabled(status);
+        //this.contractButton.setDisabled(status);
 	}
 	
 	

@@ -76,8 +76,9 @@ App.billing.PaymentWindow = Ext.extend(Ext.Window, {
 	
 	onStoreWrite: function(store, action, result, res, rs) {
 		if(action=='create') {
-			App.eventManager.fireEvent('paymentcreate',rs);
+			//App.eventManager.fireEvent('paymentcreate',rs);
 		}
+		App.eventManager.fireEvent('paymentsave',rs);
 		this.record = rs;
 	},
 	

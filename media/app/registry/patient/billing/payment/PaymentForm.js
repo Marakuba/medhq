@@ -217,6 +217,13 @@ App.billing.PaymentForm = Ext.extend(Ext.form.FormPanel, {
 		//App.eventManager.on('accountcreate', this.onAccountCreate, this);
 		//App.eventManager.on('clientaccountcreate', this.onClientAccountCreate, this);
 		
+		this.store.on('write', this.onStoreWrite, this);
+		this.on('destroy', function(){
+			this.store.un('write', this.onStoreWrite, this);
+		},this);
+		
+		
+		
 		this.on('afterrender', function(){
 			if (this.patientRecord) {
                 this.getForm().findField('client_account').store.setBaseParam('client_item__client',
@@ -308,6 +315,11 @@ App.billing.PaymentForm = Ext.extend(Ext.form.FormPanel, {
 			combo.setValue(rec.data.resource_uri);
 			combo.originalValue = rec.data.resource_uri;
 		}
+	},
+	
+	onStoreWrite: function(store, action, result, res, rs) {
+		App.eventManager.fireEvent('paymentsave',rs);
+		this.record = rs;
 	}
 });
 
