@@ -147,9 +147,10 @@ App.billing.PaymentForm = Ext.extend(Ext.form.FormPanel, {
                                     scope:this,
                                     'select':function(combo, record, index){
                                     	var client_id = App.uriToId(record.data.resource_uri); 
-                                    	this.getForm().findField('client_account').store.setBaseParam('client_item__client',client_id);
-                                    	this.getForm().findField('client_account').store.load({callback:this.setAccount,scope:this});
-                                    	this.getForm().findField('client_account').enable();
+                                    	var combo = this.getForm().findField('client_account'); 
+                                    	combo.store.setBaseParam('client_item__client',client_id);
+                                    	combo.store.load({callback:this.setAccount,scope:this});
+                                    	combo.enable();
                                     	
                                     }
 					        	}
@@ -178,8 +179,7 @@ App.billing.PaymentForm = Ext.extend(Ext.form.FormPanel, {
             							'value',
             							'type'
         							],
-        							data:   [['cash', 'Наличные'], ['non_cash', 'Безналичный расчет'],
-        									['card','Банковская карта']]
+        							data:   [['cash', 'Наличные'], ['card','Банковская карта']]//убрал ['non_cash', 'Безналичный расчет'],
     							}),
     							valueField: 'value',
     							value:'cash',
@@ -223,7 +223,7 @@ App.billing.PaymentForm = Ext.extend(Ext.form.FormPanel, {
 			if (this.patientRecord) {
                 this.getForm().findField('client_account').store.setBaseParam('client_item__client',
                 														this.patientRecord.data.id);
-                this.getForm().findField('client_account').store.load({callback:this.setAccount,scope:this});
+                this.getForm().findField('client_account').store.load();
             }
 			if(this.record) {
 				this.getForm().loadRecord(this.record);
@@ -305,7 +305,7 @@ App.billing.PaymentForm = Ext.extend(Ext.form.FormPanel, {
 	
 	setAccount: function(records,opt,success){
 		var combo = this.getForm().findField('client_account');
-		if (records&&!this.record) {
+		if (records) {
 			var rec = records[0];
 			combo.setValue(rec.data.resource_uri);
 			combo.originalValue = rec.data.resource_uri;
