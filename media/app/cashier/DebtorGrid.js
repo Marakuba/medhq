@@ -157,8 +157,10 @@ App.cashier.DebtorGrid = Ext.extend(Ext.grid.GridPanel, {
 	},
 	
 	reloadStore: function(record){
-		this.store.load();
-		this.btnSetDisabled(true);
+		if (this.store) {
+			this.store.load();
+			this.btnSetDisabled(true);
+		}
 	},
 	
 	btnSetDisabled: function(status) {

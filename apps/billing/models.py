@@ -48,6 +48,7 @@ class Payment(models.Model):
     object_id = models.PositiveIntegerField(blank=True, null=True)
     document = generic.GenericForeignKey('content_type', 'object_id')
     comment = models.TextField(u'Комментарий', blank=True, null=True)
+    print_check = models.BooleanField(u'Чек напечатан', default=False)
     
     def save(self, *args, **kwargs):
         if self.income == 'false':

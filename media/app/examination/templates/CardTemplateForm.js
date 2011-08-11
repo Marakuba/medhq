@@ -221,17 +221,7 @@ App.examination.CardTemplateForm = Ext.extend(Ext.form.FormPanel, {
 				}]
 		});
 		
-		config = {
-			id : 'temp-panel',
-			layout:'border',
-			border:false,
-			autoScroll: true,
-			trackResetOnLoad:true,
-			padding:5,
-			closable:true,
-			items:[this.workPlace,this.menuBar],
-			bbar:new Ext.ux.StatusBar({
-				id: ('statusbar' + this.tmp_id),
+		this.statusbar = new Ext.ux.StatusBar({
                 defaultText: '',
                 items:[{
 					text:'Сохранить',
@@ -242,7 +232,18 @@ App.examination.CardTemplateForm = Ext.extend(Ext.form.FormPanel, {
 					handler:this.onClose.createDelegate(this),
 					scope:this
 				}]
-			})
+			});
+		
+		config = {
+			id : 'temp-panel',
+			layout:'border',
+			border:false,
+			autoScroll: true,
+			trackResetOnLoad:true,
+			padding:5,
+			closable:true,
+			items:[this.workPlace,this.menuBar],
+			bbar:this.statusbar
 		}
 		Ext.apply(this, Ext.apply(this.initialConfig, config));
 		App.examination.CardTemplateForm.superclass.initComponent.apply(this, arguments);
@@ -264,13 +265,12 @@ App.examination.CardTemplateForm = Ext.extend(Ext.form.FormPanel, {
 	
 	onSaveTmpCard: function(record) {
 		this.setTitle('Шаблон: '+ record.data.name);
-		var bar = Ext.getCmp('statusbar' + this.tmp_id);
-        bar.setStatus({
+        this.statusbar.setStatus({
         	text: 'Шаблон успешно сохранён',
             iconCls: 'silk-status-accept'
         });
         (function(){
-			bar.clearStatus({useDefaults:true});
+			this.statusbar.clearStatus({useDefaults:true});
 		}).defer(2000);
 		
 	},

@@ -13,19 +13,7 @@ App.billing.PaymentForm = Ext.extend(Ext.form.FormPanel, {
 		    baseParams:{
 		    	format:'json'
 		    },
-		    model: [
-    		    {name: 'id'},
-    		    {name: 'doc_date', allowBlank: true, type:'date', format: 'd.m.Y'}, 
-	    	    {name: 'client_account', allowBlank: true}, 
-	    	    {name: 'client_name', allowBlank: true}, 
-	    	    {name: 'client', allowBlank: true}, 
-	    	    {name: 'amount', allowBlank: true},
-	    	    {name: 'account_id', allowBlank: true},
-	    	    {name: 'income', allowBlank: true},
-	    	    {name: 'payment_type', allowBlank: true},
-	    	    {name: 'comment', allowBlank: true},
-	    	    {name: 'content_type', allowBlank: true}
-			]
+		    model: App.models.paymentModel
 		});
 				
 		this.cl_acc_store = new Ext.data.JsonStore({
@@ -104,6 +92,10 @@ App.billing.PaymentForm = Ext.extend(Ext.form.FormPanel, {
 						layout:'form'
 					},
 					items:[{
+						xtype:'hidden',
+						name:'print_check'
+						//value:false
+					},{
 						xtype:'compositefield',
 						fieldLabel:'№',
 						itemCls:'doc-title',
@@ -322,6 +314,29 @@ App.billing.PaymentForm = Ext.extend(Ext.form.FormPanel, {
 	onStoreWrite: function(store, action, result, res, rs) {
 		App.eventManager.fireEvent('paymentsave',rs);
 		this.record = rs;
+	},
+	
+	onPrintCheck: function(){
+		var value = this.getForm().findField('print_check').getValue();
+		if (value===true) {
+			Ext.MessageBox.show({
+                title:'Чек уже был напечатан',
+                msg: 'Всё равно печатать?',
+                buttons: Ext.MessageBox.YESNO,
+                fn: function(btn){
+                	if(btn=='yes'){
+						//Посылаем команду печати чека
+                	}
+				},
+                
+                scope: this
+            });
+		} else {
+			this.getForm().findField('print_check').setValue('true');
+			this.onSave()
+			//Посылаем команду печати чека
+		}
+		
 	}
 });
 

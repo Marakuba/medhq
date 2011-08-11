@@ -6,19 +6,7 @@ App.billing.PaymentGrid = Ext.extend(Ext.grid.GridPanel, {
 		
 		this.store = new Ext.data.RESTStore({
 		    apiUrl : get_api_url('payment'),
-		    model: [
-    		    {name: 'id'},
-    		    {name: 'doc_date', allowBlank: true, type:'date', format: 'd.m.Y'}, 
-	    	    {name: 'client_account', allowBlank: true}, 
-	    	    {name: 'client_name', allowBlank: true}, 
-	    	    {name: 'client', allowBlank: true}, 
-	    	    {name: 'amount', allowBlank: true},
-	    	    {name: 'account_id', allowBlank: true},
-	    	    {name: 'income', allowBlank: true},
-	    	    {name: 'payment_type', allowBlank: true},
-	    	    {name: 'comment', allowBlank: true},
-	    	    {name: 'content_type', allowBlank: true}
-			]
+		    model: App.models.paymentModel
 		});
 		
 		this.tmp_id = Ext.id();

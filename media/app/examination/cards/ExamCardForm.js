@@ -370,16 +370,7 @@ App.examination.ExamCardForm = Ext.extend(Ext.form.FormPanel, {
 				}]
 		});
 		
-		config = {
-			id: 'exam-form',
-			layout:'border',
-			border:false,
-			autoScroll: true,
-			trackResetOnLoad:true,
-			padding:5,
-			closable:true,
-			bbar:new Ext.ux.StatusBar({
-                id: ('statusbar' + this.tmp_id),
+		this.statusbar = new Ext.ux.StatusBar({
                 defaultText: '',
                 items:[{
 					id:this.tmp_id+'print',
@@ -397,6 +388,16 @@ App.examination.ExamCardForm = Ext.extend(Ext.form.FormPanel, {
 					scope:this
 				}]
 			}),
+		
+		config = {
+			id: 'exam-form',
+			layout:'border',
+			border:false,
+			autoScroll: true,
+			trackResetOnLoad:true,
+			padding:5,
+			closable:true,
+			bbar:this.statusbar,
 			tbar:this.ttb,
 			items:[this.workPlace,this.menuBar]
 		}
@@ -419,13 +420,12 @@ App.examination.ExamCardForm = Ext.extend(Ext.form.FormPanel, {
 	},
 	
 	onSaveExamCard: function(record) {
-		var bar = Ext.getCmp('statusbar' + this.tmp_id);
-        bar.setStatus({
+        this.statusbar.setStatus({
         	text: 'Документ успешно сохранён',
             iconCls: 'silk-status-accept'
         });
         (function(){
-			bar.clearStatus({useDefaults:true});
+			this.statusbar.clearStatus({useDefaults:true});
 		}).defer(2000);
 	},
 	onExamCardCreate: function(record) {

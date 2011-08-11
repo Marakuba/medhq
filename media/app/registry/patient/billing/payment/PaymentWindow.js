@@ -6,19 +6,7 @@ App.billing.PaymentWindow = Ext.extend(Ext.Window, {
 		
 		this.store = this.store || new Ext.data.RESTStore({
 		    apiUrl : get_api_url('payment'),
-		    model: [
-    		    {name: 'id'},
-    		    {name: 'doc_date', allowBlank: true, type:'date', format: 'd.m.Y'}, 
-	    	    {name: 'client_account', allowBlank: true}, 
-	    	    {name: 'client_name', allowBlank: true}, 
-	    	    {name: 'client', allowBlank: true}, 
-	    	    {name: 'amount', allowBlank: true},
-	    	    {name: 'account_id', allowBlank: true},
-	    	    {name: 'income', allowBlank: true},
-	    	    {name: 'payment_type', allowBlank: true},
-	    	    {name: 'comment', allowBlank: true},
-	    	    {name: 'content_type', allowBlank: true}
-			]
+		    model: App.models.paymentModel
 		});
 		
 		this.model = this.store.recordType;
@@ -37,6 +25,23 @@ App.billing.PaymentWindow = Ext.extend(Ext.Window, {
 			scope:this			
 		});
 		
+		this.statusbar = new Ext.ux.StatusBar({
+                defaultText: '',
+                items:[{
+					text:'Печать чека',
+					handler:this.onPrintCheck.createDelegate(this),
+					scope:this
+				},{
+					text:'Сохранить',
+					handler:this.onSave.createDelegate(this),
+					scope:this
+				},{
+					text:'Закрыть',
+					handler:this.onClose.createDelegate(this),
+					scope:this
+				}]
+			})
+		
 		config = {
 			title:(this.is_income==true ? 'Приходный ордер: ' : 'Расходный ордер: ')+
 				(this.patientRecord? this.patientRecord.data.last_name:''),
@@ -46,19 +51,7 @@ App.billing.PaymentWindow = Ext.extend(Ext.Window, {
 			items:this.form,
 			modal:true,
 			border:false,
-			buttons:[{
-				text:'Печать',
-				//handler:this.onSave.createDelegate(this),
-				scope:this
-			},{
-				text:'Сохранить',
-				handler:this.onSave.createDelegate(this),
-				scope:this
-			},{
-				text:'Закрыть',
-				handler:this.onClose.createDelegate(this),
-				scope:this
-			}]
+			bbar:this.statusbar
 		}
 		Ext.apply(this, Ext.apply(this.initialConfig, config));
 		App.billing.PaymentWindow.superclass.initComponent.apply(this, arguments);
@@ -72,7 +65,10 @@ App.billing.PaymentWindow = Ext.extend(Ext.Window, {
 		this.close();
 	},
 	
-	
+	onPrintCheck: function(){
+		var f = this.form;
+		f.onPrintCheck();
+	},
 	
 	onStoreWrite: function(store, action, result, res, rs) {
 		if(action=='create') {
@@ -85,6 +81,13 @@ App.billing.PaymentWindow = Ext.extend(Ext.Window, {
 	onSave: function() {
 		var f = this.form;
 		f.onSave();
+		this.statusbar.setStatus({
+        	text: 'Документ успешно сохранён',
+            iconCls: 'silk-status-accept'
+        });
+        (function(){
+			this.statusbar.clearStatus({useDefaults:true});
+		}).defer(2000);
 	}
 });
 
