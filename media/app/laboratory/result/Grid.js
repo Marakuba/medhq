@@ -24,7 +24,9 @@ App.result.ResultGrid = Ext.extend(Ext.grid.EditorGridPanel, {
 		    {name: 'analysis'},
 		    {name: 'analysis_name'},
 		    {name: 'laboratory'},
+		    {name: 'previous_value'},
 		    {name: 'value'},
+		    {name: 'modified_by_name'},
 		    {name: 'inputlist'},
 		    {name: 'measurement'},
 		    {name: 'validation'},
@@ -84,7 +86,7 @@ App.result.ResultGrid = Ext.extend(Ext.grid.EditorGridPanel, {
 		    		if (val==0) {
 		    			icon = "question.png";
 		    		} else if (val==-1) {
-		    			icon = "no.gif";
+		    			icon = "attention.png";
 		    		} else if (val==1) {
 		    			icon = "yes.gif";
 		    		};
@@ -126,6 +128,11 @@ App.result.ResultGrid = Ext.extend(Ext.grid.EditorGridPanel, {
 		    	sortable: true, 
 		    	dataIndex: 'analysis_name'
 		    },{
+		    	header: "Пред. результат", 
+		    	width: 25, 
+		    	sortable: true, 
+		    	dataIndex: 'previous_value'
+		    },{
 		    	header: "Результат", 
 		    	width: 25, 
 		    	sortable: true, 
@@ -136,6 +143,11 @@ App.result.ResultGrid = Ext.extend(Ext.grid.EditorGridPanel, {
 		    	width: 8, 
 		    	sortable: true, 
 		    	dataIndex: 'measurement'
+		    },{
+		    	header: "Изменено", 
+		    	width: 8, 
+		    	sortable: true, 
+		    	dataIndex: 'modified_by_name'
 		    }
 		];		
 		
@@ -347,6 +359,9 @@ App.result.ResultGrid = Ext.extend(Ext.grid.EditorGridPanel, {
 //					this.inputlistXY = e.xy;
 //				},
 				beforeedit: function(e) {
+					if(this.win) {
+						this.win.close();
+					}
 					var analysis = e.record.data.inputlist;
 					if(analysis.length){
 						this.win = new App.result.InputListWindow({
@@ -359,7 +374,7 @@ App.result.ResultGrid = Ext.extend(Ext.grid.EditorGridPanel, {
 							if(val){
 								e.record.beginEdit();
 								e.record.set('value',val);
-								e.record.set('is_validated',true);
+								e.record.set('validation',1);
 								e.record.endEdit();
 							}
 						}, this);
@@ -368,9 +383,9 @@ App.result.ResultGrid = Ext.extend(Ext.grid.EditorGridPanel, {
 				},
 				afteredit: function(e) {
 					if(e.value) {
-						e.record.set('is_validated',true);
+						e.record.set('validation',1);
 					} else {
-						e.record.set('is_validated',false);
+						e.record.set('validation',0);
 					}
 				},
 				scope:this

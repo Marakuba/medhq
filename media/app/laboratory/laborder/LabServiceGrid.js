@@ -60,16 +60,7 @@ App.laborder.LabServiceGrid = Ext.extend(Ext.grid.GridPanel, {
 		    	header: "Врач", 
 		    	width: 20,
 		    	dataIndex: 'staff_name'
-		    },/*{
-		    	width: 10, 
-		    	sortable: true, 
-		    	header:'Напечатано',
-		    	dataIndex: 'is_printed', 
-		    	renderer: function(val, meta, record) {
-		    		flag = record.data.printed ? 'yes' : 'no';
-		    		return "<img src='"+MEDIA_URL+"admin/img/admin/icon-"+flag+".gif'>"
-		    	}
-		    },*/{
+		    },{
 		    	header: "Дата/время печати", 
 		    	width: 10, 
 		    	sortable: true, 
@@ -256,9 +247,7 @@ App.laborder.LabServiceGrid = Ext.extend(Ext.grid.GridPanel, {
 	storeFilter: function(field, value, autoLoad){
 		var autoLoad = autoLoad==undefined ? true : autoLoad;
 		if(!value) {
-			//console.log(this.store.baseParams[field]);
 			delete this.store.baseParams[field]
-			//this.store.setBaseParam(field, );
 		} else {
 			this.store.setBaseParam(field, value);
 		}

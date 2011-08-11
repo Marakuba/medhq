@@ -28,7 +28,7 @@ App.models.LabService = new Ext.data.Record.create([
 App.regBackend('labservice', new App.Backend({
 
 		store:new Ext.data.GroupingStore({
-			autoLoad:true,
+			autoLoad:false,
 			autoSave:true,
 		    baseParams: {
 		    	format:'json'

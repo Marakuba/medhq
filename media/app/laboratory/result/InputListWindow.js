@@ -20,7 +20,7 @@ App.result.InputListWindow = Ext.extend(Ext.Window, {
 	        	click:function(dv,index,node,e) {
 	        		var rec = this.store.getAt(index);
 	        		this.fireEvent('inputlist',rec.data.name);
-	        		this.hide();
+	        		this.close();
 	        	},
 	        	scope:this
 	        }

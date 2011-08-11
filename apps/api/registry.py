@@ -29,9 +29,15 @@ from interlayer.models import ClientItem
 from django.contrib.contenttypes.models import ContentType
 from examination.models import TemplateGroup
 from tastypie.cache import SimpleCache
-#from reporting.models import Report, FieldItem, GroupItem, SummaryItem, Fields,\
-#    Groups, Summaries, FilterItem, Filters
+from django.contrib.auth.models import User
 
+class UserResource(ModelResource):
+
+    class Meta:
+        queryset = User.objects.all()
+        limit = 1000
+        resource_name = 'user'
+        
 class DiscountResource(ModelResource):
 
     def dehydrate(self, bundle):
@@ -388,6 +394,12 @@ class ResultResource(ExtResource):
     """
     order = fields.ForeignKey(LabOrderResource, 'order')
     analysis = fields.ForeignKey(AnalysisResource,'analysis')
+    modified_by = fields.ForeignKey(UserResource, 'modified_by', null=True)
+    
+    def obj_update(self, bundle, request=None, **kwargs):
+        kwargs['modified_by']=request.user
+        result = super(ResultResource, self).obj_update(bundle=bundle, request=request, **kwargs)
+        return result
     
     def dehydrate(self, bundle):
         obj = bundle.obj
@@ -398,6 +410,7 @@ class ResultResource(ExtResource):
         bundle.data['analysis_name'] = obj.analysis
         bundle.data['inputlist'] = [[input.name] for input in obj.analysis.input_list.all()]
         bundle.data['measurement'] = obj.analysis.measurement
+        bundle.data['modified_by_name'] = obj.modified_by
         return bundle
     
     class Meta:
@@ -1167,6 +1180,8 @@ class PaymentResource(ExtResource):
         
 
 api = Api(api_name=get_api_name('dashboard'))
+
+api.register(UserResource())
 
 #patient
 api.register(PatientResource())
