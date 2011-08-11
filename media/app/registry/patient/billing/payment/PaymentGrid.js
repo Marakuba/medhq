@@ -49,8 +49,8 @@ App.billing.PaymentGrid = Ext.extend(Ext.grid.GridPanel, {
 		    	header: "Клиент",
 		    	width:60,
 		    	sortable: true, 
-		    	dataIndex: 'client_name',
-		    	hidden:true
+		    	dataIndex: 'client_name'
+		    	//hidden:true
 		    },{
 		    	header: "Лицевой счет", 
 		    	width: 20, 

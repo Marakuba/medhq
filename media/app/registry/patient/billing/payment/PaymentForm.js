@@ -42,7 +42,7 @@ App.billing.PaymentForm = Ext.extend(Ext.form.FormPanel, {
 			}),
 			root:'objects',
 			idProperty:'resource_uri',
-			fields:['resource_uri','client_item','full_name','last_name'],
+			fields:['resource_uri','client_item','full_name','last_name','balance'],
 			writer : new Ext.data.JsonWriter({
 		    	encode: false,
             	writeAllFields: true 
@@ -51,6 +51,14 @@ App.billing.PaymentForm = Ext.extend(Ext.form.FormPanel, {
 		    	format:'json'
 			}
     	});
+    	
+    	this.balanceButton = new Ext.Button({
+    		text:'...',//будет обновляться при выборе пациента
+    		disabled:true,
+    		fieldLabel:' Баланс',
+    		handler:this.onBalanceClick.createDelegate(this),
+    		scope:this
+    	})
     	
     	this.amountField = new Ext.form.NumberField({ 
             fieldLabel: 'Сумма',
@@ -151,6 +159,8 @@ App.billing.PaymentForm = Ext.extend(Ext.form.FormPanel, {
                                     	combo.store.setBaseParam('client_item__client',client_id);
                                     	combo.store.load({callback:this.setAccount,scope:this});
                                     	combo.enable();
+                                    	this.balanceButton.setText(String.format("{0}",record.data.balance));
+                                    	this.balanceButton.setDisabled(false);
                                     	
                                     }
 					        	}
@@ -185,6 +195,7 @@ App.billing.PaymentForm = Ext.extend(Ext.form.FormPanel, {
     							value:'cash',
     							displayField: 'type'
 							}),
+							this.balanceButton,
 							this.amountField,{
 								xtype:'textarea',
 								name:'comment',
@@ -227,8 +238,9 @@ App.billing.PaymentForm = Ext.extend(Ext.form.FormPanel, {
             }
 			if(this.record) {
 				this.getForm().loadRecord(this.record);
-				Ext.getCmp(this.tmp_id+'client').setValue(this.record.data.client);
-				Ext.getCmp(this.tmp_id+'client').originalValue = this.record.data.client;
+				var clientCombo = Ext.getCmp(this.tmp_id+'client');
+				clientCombo.setValue(this.record.data.client);
+				clientCombo.originalValue = this.record.data.client;
 			}
 			else {
                 var d = new Date;
@@ -338,6 +350,10 @@ App.billing.PaymentForm = Ext.extend(Ext.form.FormPanel, {
 			//Посылаем команду печати чека
 		}
 		
+	},
+	
+	onBalanceClick: function(){
+		this.amountField.setValue(Math.abs(parseInt(this.balanceButton.getText())))
 	}
 });
 
