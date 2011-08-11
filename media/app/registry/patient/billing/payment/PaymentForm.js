@@ -161,9 +161,9 @@ App.billing.PaymentForm = Ext.extend(Ext.form.FormPanel, {
                                     	combo.enable();
                                     	this.balanceButton.setText(String.format("{0}",record.data.balance));
                                     	if (record.data.balance <0 ){
-                                    		this.balanceButton.setDisabled(false);
+                                    		this.balanceButton.setDisabled(!this.is_income);
                                     	} else {
-                                    		this.balanceButton.setDisabled(true);
+                                    		this.balanceButton.setDisabled(!this.is_income);
                                     	}
                                     	
                                     }
@@ -238,7 +238,8 @@ App.billing.PaymentForm = Ext.extend(Ext.form.FormPanel, {
 			if (this.patientRecord) {
                 this.getForm().findField('client_account').store.setBaseParam('client_item__client',
                 														this.patientRecord.data.id);
-                this.getForm().findField('client_account').store.load();
+                this.getForm().findField('client_account').store.load({callback:this.setAccount,scope:this});
+                //this.getForm().findField('client_account').setValue(this.patientRecord.data.resource_uri);
             }
 			if(this.record) {
 				this.getForm().loadRecord(this.record);
