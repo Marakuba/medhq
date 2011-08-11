@@ -156,6 +156,7 @@ App.billing.PaymentForm = Ext.extend(Ext.form.FormPanel, {
                                     	var client_id = App.uriToId(record.data.resource_uri); 
                                     	this.getForm().findField('client_account').store.setBaseParam('client_item__client',client_id);
                                     	this.getForm().findField('client_account').store.load({callback:this.setAccount,scope:this});
+                                    	this.getForm().findField('client_account').enable();
                                     	
                                     }
 					        	}
@@ -165,6 +166,7 @@ App.billing.PaymentForm = Ext.extend(Ext.form.FormPanel, {
 								anchor:'71%',
 					        	name:'client_account',
 					        	store:this.cl_acc_store,
+					        	disabled:this.patientRecord? false : true,
                                 allowBlank:false,
 							    displayField: 'account_id',
 							    selectOnFocus:true
