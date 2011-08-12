@@ -145,8 +145,8 @@ App.billing.PaymentForm = Ext.extend(Ext.form.FormPanel, {
 								displayField: 'full_name',
 								id:this.tmp_id+'client',
 								queryParam:'last_name__istartswith',
-								hidden:this.patientRecord? true : false,
-								disabled:this.patientRecord? true : false,
+								hidden:this.patientRecord||this.patient_id? true : false,
+								disabled:this.patientRecord||this.patient_id? true : false,
 								anchor:'71%',
 								store: this.patient_store,
 					        	//name:'client_item',
@@ -160,12 +160,8 @@ App.billing.PaymentForm = Ext.extend(Ext.form.FormPanel, {
                                     	combo.store.load({callback:this.setAccount,scope:this});
                                     	combo.enable();
                                     	this.balanceButton.setText(String.format("{0}",record.data.balance));
-                                    	if (record.data.balance <0 ){
-                                    		this.balanceButton.setDisabled(!this.is_income);
-                                    	} else {
-                                    		this.balanceButton.setDisabled(!this.is_income);
-                                    	}
-                                    	
+                                    	//this.balanceButton.setDisabled(false)
+                                   		this.balanceButton.setDisabled((!(record.data.balance <0 == this.is_income))||(record.data.balance==0));
                                     }
 					        	}
 							}),
@@ -174,7 +170,7 @@ App.billing.PaymentForm = Ext.extend(Ext.form.FormPanel, {
 								anchor:'71%',
 					        	name:'client_account',
 					        	store:this.cl_acc_store,
-					        	disabled:this.patientRecord? false : true,
+					        	disabled:this.patientRecord||this.patient_id? false : true,
                                 allowBlank:false,
 							    displayField: 'account_id',
 							    selectOnFocus:true
@@ -235,9 +231,10 @@ App.billing.PaymentForm = Ext.extend(Ext.form.FormPanel, {
 		
 		
 		this.on('afterrender', function(){
-			if (this.patientRecord) {
+			if (this.patientRecord || this.patient_id) {
+				var patient_id = this.patientRecord ? this.patientRecord.data.id : this.patient_id;
                 this.getForm().findField('client_account').store.setBaseParam('client_item__client',
-                														this.patientRecord.data.id);
+                														patient_id);
                 this.getForm().findField('client_account').store.load({callback:this.setAccount,scope:this});
                 //this.getForm().findField('client_account').setValue(this.patientRecord.data.resource_uri);
             }

@@ -17,6 +17,7 @@ App.billing.PaymentWindow = Ext.extend(Ext.Window, {
 			amount:this.amount,
 			is_income : this.is_income,
 			record:this.record,
+			patient_id: this.patient_id,
 			fn:function(record){
 				this.record = record;
 				this.store.insertRecord(record);

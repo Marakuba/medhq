@@ -37,6 +37,92 @@ App.cashier.CashierTab = Ext.extend(Ext.Panel, {
 		
 		websocket_init();
 		
+		this.visitStore = new Ext.data.RESTStore({
+			autoLoad : true,
+			apiUrl : get_api_url('visit'),
+			model: App.models.visitModel
+		});
+		
+		this.visitField = new Ext.form.NumberField({ //Поле для ввода количества продуктов
+            fieldLabel: 'Заказ №',
+            width: 70,
+            //name: 'amount',
+            minValue: 1,
+            //value: 1,
+            listeners: {
+                specialkey: function(field, e){
+                    if (e.getKey() == e.ENTER) {
+                        this.prompt.fireEvent('submit');
+                    }
+                },
+                scope:this
+            }
+        });
+        
+    
+        this.prompt = new Ext.Window({
+            layout:'fit',
+            title: 'Введите номер заказа',
+            width:280,
+            height:180,
+            closeAction:'hide',
+            items: new Ext.FormPanel({
+                labelWidth: 80, 
+                bodyStyle: 'padding:5px 5px 0',
+                width: 100,
+                defaultType: 'textfield',
+        
+                items: [ this.visitField,
+                {
+                	xtype:'tbtext',
+                	id:'patient-field',
+                	text:''
+                },{
+                	xtype:'tbtext',
+                	id:'sum-field',
+                	text:''
+                }],
+                
+                buttons: [{
+                    text:'Найти',
+                    scope: this,
+                    handler: function(){this.prompt.fireEvent('submit')}
+                },{
+                	text:'Оплатить',
+                	id: 'pay-button',
+                    scope: this,
+                    disabled:true,
+                    handler: this.onPay.createDelegate(this)
+                },{
+                    text: 'Закрыть',
+                    scope: this,
+                    handler: function(){
+                        this.prompt.hide();
+                    }
+                }]
+            })
+        });
+
+        this.prompt.on('show',function(win){
+            this.visitField.reset();
+            this.visitField.focus(true,400);
+            Ext.getCmp('patient-field').setText('');
+            Ext.getCmp('sum-field').setText('');
+            Ext.getCmp('pay-button').disable();
+         },this);
+
+        this.prompt.on('submit', function() {
+        	var s = this.visitStore;
+			s.baseParams = { format:'json' };
+			var num = parseInt(this.visitField.getValue());
+			if (num>0){
+				s.setBaseParam('id', num);
+			};
+			s.load({callback:this.onVisitFinded,scope:this});
+			rec = s.getAt(0);
+			var a;
+        },this);
+		
 		this.menuBar = new Ext.Panel({
 			region:'west',
 			//frame:true,
@@ -48,7 +134,10 @@ App.cashier.CashierTab = Ext.extend(Ext.Panel, {
             	padding:'10',
             	align:'stretch'
         	},
-        	defaults:{margins:'0 0 5 0'},
+        	defaults:{
+        		margins:'0 0 5 0',
+        		anchor:'100%'
+        	},
         	items:[{
 	            xtype:'button',
     	        text: 'Z-Отчет',
@@ -63,6 +152,12 @@ App.cashier.CashierTab = Ext.extend(Ext.Panel, {
 				handler: function(){
 					App.ws.send('XREPORT')
 				}
+			},{
+    	        xtype:'button',
+        	    text: 'Найти заказ',
+				scale: 'large',
+				handler: this.onVisitSearch.createDelegate(this),
+				scope:this
 			}]
 		});
 	
@@ -92,6 +187,47 @@ App.cashier.CashierTab = Ext.extend(Ext.Panel, {
 		}
 		Ext.apply(this, Ext.apply(this.initialConfig, config));
 		App.cashier.CashierTab.superclass.initComponent.apply(this, arguments);
+		//App.eventManager.on('globalsearch', this.onGlobalSearch, this);
+	},
+	
+	onVisitSearch: function(v){
+		this.prompt.show();
+		/*if (this.visitStore){
+			var s = this.visitStore;
+			s.load();
+			s.baseParams = { format:'json' };
+			vi = parseInt(v);
+			if (!isNaN(vi)){
+				s.setBaseParam('id', vi);
+			} else {
+			//	s.setBaseParam('last_name__istartswith', v);
+			}
+			s.load();
+			rec = s.getAt(0);
+			var a;
+		}*/
+	},
+	
+	onPay: function(){
+		
+			this.win = new App.billing.PaymentWindow({
+				is_income : true,
+				amount:Math.abs(this.amount),
+				patient_id:this.patient_id
+			});
+			this.win.show();
+		this.prompt.hide();
+	},
+	
+	onVisitFinded: function(records,opt,success) {
+		if (records) {
+			var rec = records[0];
+			Ext.getCmp('patient-field').setText('Пациент: '+rec.data.patient_name);
+            Ext.getCmp('sum-field').setText('Сумма: ' + rec.data.total_price);
+            Ext.getCmp('pay-button').enable();
+            this.patient_id = rec.data.patient_id;
+            this.amount = rec.data.total_price;
+		}
 	}
 	
 });

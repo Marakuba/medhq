@@ -167,7 +167,8 @@ App.billing.PaymentGrid = Ext.extend(Ext.grid.GridPanel, {
 		
 		Ext.apply(this, Ext.apply(this.initialConfig, config));
 		App.billing.PaymentGrid.superclass.initComponent.apply(this, arguments);
-		App.eventManager.on('globalsearch', this.onGlobalSearch, this);
+		//App.eventManager.on('globalsearch', this.onGlobalSearch, this);
+		App.eventManager.on('paymentsave', this.reloadStore, this);
 
 		
 		this.on('afterrender', function(){
@@ -239,6 +240,13 @@ App.billing.PaymentGrid = Ext.extend(Ext.grid.GridPanel, {
 		var s = this.store;
 		s.baseParams = {format:'json','client_account__client_item__client': id};
 		s.load();
+	},
+	
+	reloadStore: function(record){
+		if (this.store) {
+			this.store.load();
+			this.btnSetDisabled(true);
+		}
 	}
 	
 });

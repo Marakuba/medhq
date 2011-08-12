@@ -106,7 +106,7 @@ App.cashier.DebtorGrid = Ext.extend(Ext.grid.GridPanel, {
 
 		Ext.apply(this, Ext.apply(this.initialConfig, config));
 		App.cashier.DebtorGrid.superclass.initComponent.apply(this, arguments);
-		App.eventManager.on('globalsearch', this.onGlobalSearch, this);
+		//App.eventManager.on('globalsearch', this.onGlobalSearch, this);
 		App.eventManager.on('paymentsave', this.reloadStore, this);
 		App.eventManager.on('visitcreate', this.reloadStore, this);
 //		App.eventManager.on('patientwrite', this.onPatientWrite, this);
