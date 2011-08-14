@@ -282,6 +282,9 @@ App.billing.PaymentForm = Ext.extend(Ext.form.FormPanel, {
 	
 	onSave: function() {
 		var f = this.getForm();
+		if (f.findField('amount')=='0'){
+			return false
+		}
 		if(f.isValid()){
 			var Record = this.getRecord();
 			/*this.cl_acc_store.baseParams = {

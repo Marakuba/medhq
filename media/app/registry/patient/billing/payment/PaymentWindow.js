@@ -22,6 +22,7 @@ App.billing.PaymentWindow = Ext.extend(Ext.Window, {
 				this.record = record;
 				this.store.insertRecord(record);
 				Ext.callback(this.fn, this.scope || window, [this.record]);
+				this.hide();
 			},
 			scope:this			
 		});
@@ -81,9 +82,6 @@ App.billing.PaymentWindow = Ext.extend(Ext.Window, {
         	text: 'Документ успешно сохранён',
             iconCls: 'silk-status-accept'
         });
-        (function(){
-			this.statusbar.clearStatus({useDefaults:true});
-		}).defer(2000);
 	},
 	
 	onSave: function() {

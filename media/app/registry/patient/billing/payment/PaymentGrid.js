@@ -245,7 +245,7 @@ App.billing.PaymentGrid = Ext.extend(Ext.grid.GridPanel, {
 	reloadStore: function(record){
 		if (this.store) {
 			this.store.load();
-			this.btnSetDisabled(true);
+			//this.btnSetDisabled(true);
 		}
 	}
 	
