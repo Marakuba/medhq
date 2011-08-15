@@ -9,7 +9,7 @@ from tastypie.authorization import DjangoAuthorization
 from tastypie.constants import ALL, ALL_WITH_RELATIONS
 from lab.models import LabOrder, Sampling, Tube, Result, Analysis, InputList,\
     Equipment, EquipmentAssay, EquipmentResult, EquipmentTask
-from service.models import BaseService, LabServiceGroup, ExtendedService
+from service.models import BaseService, LabServiceGroup, ExtendedService, ICD10
 from staff.models import Position, Staff, Doctor
 from state.models import State
 from django.conf import settings
@@ -38,6 +38,21 @@ class UserResource(ModelResource):
         limit = 1000
         resource_name = 'user'
         
+class ICD10Resource(ModelResource):
+    
+    def dehydrate(self, bundle):
+        bundle.data['disp_name'] = "%s, %s" % (bundle.obj.code, bundle.obj.name)
+        return bundle
+    
+    class Meta:
+        queryset = ICD10.objects.all() 
+        resource_name = 'icd10'
+        filtering = {
+            'name':('istartswith',),
+            'code':('istartswith',)
+        }
+
+
 class DiscountResource(ModelResource):
 
     def dehydrate(self, bundle):
@@ -111,14 +126,15 @@ class DebtorResource(ExtResource):
     client_item = fields.OneToOneField(ClientItemResource, 'client_item', null=True)
     
     class Meta:
-        queryset = Patient.objects.filter(balance__lte = 0) #@UndefinedVariable
+        queryset = Patient.objects.filter(balance__lt = 0) #@UndefinedVariable
         resource_name = 'debtor'
         default_format = 'application/json'
         authorization = DjangoAuthorization()
         filtering = {
             'last_name':('istartswith',),
             'id':ALL,
-            'discount':ALL_WITH_RELATIONS
+            'discount':ALL_WITH_RELATIONS,
+            'hid_card':ALL
         }
         
 class ReferralResource(ExtResource):
@@ -921,12 +937,13 @@ class TemplateGroupResource(ExtResource):
 class CardTemplateResource(ExtResource):
     staff = fields.ForeignKey(PositionResource, 'staff', null=True)
     group = fields.ForeignKey(TemplateGroupResource, 'group', null=True)
+    mbk_diag = fields.ForeignKey(ICD10Resource, 'mbk_diag', null=True)
     
     def dehydrate(self, bundle):
         obj = bundle.obj
         if obj.staff:
             bundle.data['staff_name'] = obj.staff.__unicode__()
-        bundle.data['group_name'] = obj.group
+        bundle.data['group_name'] = obj.group and obj.group.name or u'Без группы'
         return bundle
     
     class Meta:
@@ -943,11 +960,12 @@ class CardTemplateResource(ExtResource):
         
 class ExaminationCardResource(ExtResource):
     ordered_service = fields.ForeignKey(OrderedServiceResource, 'ordered_service', null=True)
+    mbk_diag = fields.ForeignKey(ICD10Resource, 'mbk_diag', null=True)
     
     def dehydrate(self, bundle):
         obj = bundle.obj
         bundle.data['view'] = obj.__unicode__()
-        bundle.data['patient_name'] = obj.ordered_service.order.patient
+        bundle.data['staff_id'] = obj.ordered_service.staff.id
         return bundle
     
     class Meta:
@@ -1217,6 +1235,7 @@ api.register(EquipmentTaskResource())
 api.register(BaseServiceResource())
 api.register(ExtendedServiceResource())
 api.register(LabServiceGroupResource())
+api.register(ICD10Resource())
 
 #state
 api.register(PositionResource())

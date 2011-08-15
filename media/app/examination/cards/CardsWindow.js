@@ -1,12 +1,10 @@
 Ext.ns('App');
 
-App.examination.TemplatesWindow = Ext.extend(Ext.Window, {
+App.examination.CardsWindow = Ext.extend(Ext.Window, {
 
 	initComponent:function(){
 		
-		this.form = new App.CardTemplateGrid ({
-			model:this.model,
-			record:this.record,
+		this.form = new App.AllExamGrid ({
 			patient:this.patient,
 			ordered_service:this.ordered_service,
 			fn:function(record){
@@ -18,19 +16,20 @@ App.examination.TemplatesWindow = Ext.extend(Ext.Window, {
 		});
 		
 		config = {
-			title:'Шаблоны',
+			title:'Карты осмотра',
 			width:700,
 			height:500,
+			autoScroll:true,
 			layout:'fit',
 			items:[this.form],
 			modal:true,
 			border:false
 		}
 		Ext.apply(this, Ext.apply(this.initialConfig, config));
-		App.examination.TemplatesWindow.superclass.initComponent.apply(this, arguments);
+		App.examination.CardsWindow.superclass.initComponent.apply(this, arguments);
 	}
 	
 });
 
 
-Ext.reg('templateswindow', App.examination.TemplatesWindow);
+Ext.reg('cardswindow', App.examination.CardsWindow);

@@ -9,35 +9,11 @@ App.ExamCardGrid = Ext.extend(Ext.grid.GridPanel, {
 
 		//this.backend = App.getBackend('examcard');
 		
-		this.examModel = new Ext.data.Record.create([
-			{name: 'id'},
-			{name: 'created',allowBlank: true},
-			{name: 'modified',allowBlank: true},
-			{name: 'name',allowBlank: true},
-			{name: 'print_name',allowBlank: true},
-			{name: 'ordered_service',allowBlank: true},
-			{name: 'print_date', allowBlank: true},
-			{name: 'objective_data', allowBlank: true},
-			{name: 'psycho_status', allowBlank: true},
-			{name: 'gen_diag', allowBlank: true},
-			{name: 'complication', allowBlank: true},
-			{name: 'concomitant_diag', allowBlank: true},
-			{name: 'clinical_diag', allowBlank: true},
-			{name: 'treatment', allowBlank: true},
-			{name: 'referral', allowBlank: true},
-			{name: 'disease', allowBlank: true},
-			{name: 'complaints', allowBlank: true},
-			{name: 'history', allowBlank: true},
-			{name: 'anamnesis', allowBlank: true},
-			{name: 'mbk_diag', allowBlank: true},
-			{name: 'conclusion', allowBlank: true},
-			{name: 'comment', allowBlank: true},
-			{name: 'ekg', allowBlank: true}
-		]);
+		this.examModel = App.models.examModel;
 
 		this.store = new Ext.data.Store({
-			autoLoad:true,
-			//autoSave:true,
+			//autoLoad:true,
+			autoSave:true,
 		    baseParams: {
 		    	format:'json'
 		    },
@@ -48,7 +24,7 @@ App.ExamCardGrid = Ext.extend(Ext.grid.GridPanel, {
 			    dir : 'dir'
 			},
 		    restful: true,
-		    //remoteSort: true,
+		    remoteSort: true,
 		    proxy: new Ext.data.HttpProxy({
 			    url: get_api_url('examcard')
 			}),
@@ -69,7 +45,8 @@ App.ExamCardGrid = Ext.extend(Ext.grid.GridPanel, {
 		    	write:function(store, action, result, res, rs){
 		    		if(action=='create') {
 			    		App.eventManager.fireEvent('examcardcreate', rs);
-		    		} 
+		    		};
+		    		App.eventManager.fireEvent('saveexamcard', rs);
 		    	},
 		    	scope:this
 		    }
@@ -146,13 +123,22 @@ App.ExamCardGrid = Ext.extend(Ext.grid.GridPanel, {
 		
 		this.on('afterrender',function(){
             if (this.ordered_service) {
-            	this.store.setBaseParam('ordered_service', App.uriToId(this.ordered_service));
-            }
+            	if (this.mode === 'patient') {
+            		this.store.setBaseParam('ordered_service__order__patient',this.patient);// App.uriToId(this.patient));
+            		this.store.load();
+            	} else {
+            		if (this.mode === 'order') {
+            			this.store.setBaseParam('ordered_service',App.uriToId(this.ordered_service));
+            			this.store.load();
+            		}
+            	}
+            };
+            
         })
 
 		Ext.apply(this, Ext.apply(this.initialConfig, config));
 		App.ExamCardGrid.superclass.initComponent.apply(this, arguments);
-		App.eventManager.on('examcardgrid_reload', this.reloadStore, this)
+		//App.eventManager.on('examcardgrid_reload', this.reloadStore, this)
 	},
 	
 	reloadStore: function() {
@@ -161,32 +147,42 @@ App.ExamCardGrid = Ext.extend(Ext.grid.GridPanel, {
 	},
 	
 	onAdd: function() {
-		var win = new App.examination.TemplatesWindow({
+		config = {
+			closable:true,
+        	patient:this.patient,
+       		ordered_service:this.ordered_service,
+       		model:this.examModel,
+			title: 'Карта осмотра ' + this.patient_name,
 			scope:this,
-			ordered_service:this.ordered_service,
-			patient:this.patient,
-			fn: function(record){
-    			console.info(record);
-    			this.saveRecord(record);
-    		}
-			//fn:function(){
-				//this.store.load();
-			//}
-		});
-		win.show();
+			fn:function(record){
+   				this.saveRecord(record);
+   			}
+		}
+		App.eventManager.fireEvent('launchapp', 'examcardform',config);
 	},
 	
-	onEdit: function(rowindex){
+	onEdit: function(){
 		var record = this.getSelected();
 		if(record) {
-    		var win = new App.examination.ExamCardWindow({
-    			record:record,
-    			patient:this.patient,
-    			model:this.store.recordType,
-    			scope:this,
-    			fn:this.saveRecord(record)
-    		});
-    		win.show();
+			var staff = active_profile;
+			if (staff === record.data.staff_id) {
+    			config = {
+					closable:true,
+					record:record,
+					model:this.examModel,
+		        	patient:this.patient,
+    		   		ordered_service:this.ordered_service,
+					title: 'Карта осмотра ' + this.patient_name,
+					scope:this,
+					fn:function(record){
+   						this.saveRecord(record);
+   					}
+				
+				}
+				App.eventManager.fireEvent('launchapp', 'examcardform',config);
+			} else {
+				this.onPrint();
+			}
 		}
 	},
 	
@@ -197,7 +193,8 @@ App.ExamCardGrid = Ext.extend(Ext.grid.GridPanel, {
 			} else {
 			}
 		} else {
-		}
+		};
+		//this.store.save();
 	},
 	
     onDelete: function() {

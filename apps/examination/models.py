@@ -6,6 +6,7 @@ import datetime
 from django.core.exceptions import ObjectDoesNotExist
 from visit.models import OrderedService
 from staff.models import Position
+from service.models import ICD10
 
 class TemplateGroup(models.Model):
     """
@@ -35,10 +36,12 @@ class CardTemplate(models.Model):
     gen_diag = models.TextField(u'Основной диагноз', null=True, blank=True)
     complication = models.TextField(u'Осложнения', null=True, blank=True)
     ekg = models.TextField(u'ЭКГ', null=True, blank=True)
+    mbk_diag = models.ForeignKey(ICD10, null=True, blank=True)
     concomitant_diag= models.TextField(u'Сопутствующий диагноз', null=True, blank=True)
     clinical_diag = models.TextField(u'Клинический диагноз', null=True, blank=True)
     treatment = models.TextField(u'Лечение', null=True, blank=True)
     referral = models.TextField(u'Направление', null=True, blank=True)
+    conclusion = models.TextField(u'Заключение', null=True, blank=True)
     group = models.ForeignKey(TemplateGroup, null=True, blank=True)
     
     def __unicode__(self):
@@ -47,6 +50,7 @@ class CardTemplate(models.Model):
     class Meta:
         verbose_name = u'Шаблон карты осмотра'
         verbose_name_plural = u'Шаблоны карты осмотра'
+        ordering = ('group','staff','id')
         
 class ExaminationCard(models.Model):
     """
@@ -65,20 +69,20 @@ class ExaminationCard(models.Model):
     objective_data = models.TextField(u'Объективные данные', null=True, blank=True)
     psycho_status = models.TextField(u'Психологический/неврологический статус', null=True, blank=True)
     gen_diag = models.TextField(u'Основной диагноз', null=True, blank=True)
-    mbk_diag = models.TextField(u'Диагноз по МБК', null=True, blank=True)
+    mbk_diag = models.ForeignKey(ICD10, null=True, blank=True)
     complication= models.TextField(u'Осложнения', null=True, blank=True)
     ekg = models.TextField(u'ЭКГ', null=True, blank=True)
     concomitant_diag= models.TextField(u'Сопутствующий диагноз', null=True, blank=True)
     clinical_diag = models.TextField(u'Клинический диагноз', null=True, blank=True)
     treatment = models.TextField(u'Лечение', null=True, blank=True)
     referral = models.TextField(u'Направление', null=True, blank=True)
-    #extra_service = models.TextField(u'Дополнительные услуги', null=True, blank=True)
+    extra_service = models.TextField(u'Дополнительные услуги', null=True, blank=True)
     conclusion = models.TextField(u'Заключение', null=True, blank=True)
     comment = models.TextField(u'Примечание', null=True, blank=True)
     
         
     def __unicode__(self):
-        return "%s - %s - %s" % (self.created.strftime("%d/%m/%Y"),self.name,self.ordered_service.order.patient.short_name())
+        return "%s - %s - %s" % (self.created.strftime("%d/%m/%Y"),self.name or self.print_name,self.ordered_service.order.patient.short_name())
     
     class Meta:
         verbose_name = u'Карта осмотра'

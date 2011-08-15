@@ -111,9 +111,9 @@ App.CentralPanel = Ext.extend(Ext.Panel, {
 					},
 					scope:this
 				}]
-			}/*,{
+			},{
 				xtype:'buttongroup',
-				title:'Касса',
+				//title:'Касса',
 				defaults:{
 					xtype:'button',
 					scale:'medium'
@@ -126,7 +126,7 @@ App.CentralPanel = Ext.extend(Ext.Panel, {
 					},
 					scope:this
 				}]
-			}*/,'->',{
+			},'->',{
 				xtype:'buttongroup',
 //				title:'HelpDesk',
 				defaults:{
@@ -159,7 +159,7 @@ App.CentralPanel = Ext.extend(Ext.Panel, {
 	            	}
 	            }]
 			}],
-	        bbar: App.StatusBar,
+	        bbar: App.StatusBar
 		}
 		Ext.apply(this, Ext.apply(this.initialConfig, config));
 		App.CentralPanel.superclass.initComponent.apply(this, arguments);

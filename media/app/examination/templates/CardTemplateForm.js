@@ -4,6 +4,8 @@ App.examination.CardTemplateForm = Ext.extend(Ext.form.FormPanel, {
 
 	initComponent: function(){
 		
+		this.tmp_id = Ext.id();
+		
 		this.groupStore = new Ext.data.Store({
 		    baseParams: {
 		    	format:'json'
@@ -42,38 +44,48 @@ App.examination.CardTemplateForm = Ext.extend(Ext.form.FormPanel, {
 			selectOnFocus:true
 		});
 		
-		config = {
-			baseCls:'x-plain',
-			border:false,
-			autoScroll: true,
-			trackResetOnLoad:true,
-			padding:5,
-			defaults:{
-				baseCls:'x-plain',
-				border:false
-			},
+		this.mkb = new Ext.form.LazyComboBox({
+			fieldLabel:'Диагноз по МКБ',
+			anchor:'95%',
+			name:'mbk_diag',
+            allowBlank:true,
+			store: new Ext.data.JsonStore({
+				autoLoad:true,
+				proxy: new Ext.data.HttpProxy({
+					url:get_api_url('icd10'),
+					method:'GET'
+				}),
+				root:'objects',
+				idProperty:'resource_uri',
+				fields:['resource_uri','disp_name','id','code']
+			}),
+			typeAhead: true,
+			queryParam:'code__istartswith',
+			minChars:3,
+			triggerAction: 'all',
+			emptyText:'Выберите диагноз...',
+			valueField: 'resource_uri',
+			displayField: 'disp_name',
+			selectOnFocus:true
+		});
+		
+		this.workPlace = new Ext.Panel({
+			region:'center',
+			layout:'form',
+			autoScroll:true,
+			labelAlign:'top',
 			items:[{
-				layout:'form',
-				labelAlign:'top',
-				autoScroll: true,
-				defaults:{
-					baseCls:'x-plain',
-					border:false
-				},
-				items:[{
 					xtype:'hidden',
 					name:'staff'
 				},{
 					xtype:'textfield',
 					fieldLabel:'Рабочее наименование',
 					name:'name',
-					//height:40,
 					anchor:'100%'
 				},{
 					xtype:'textfield',
 					fieldLabel:'Заголовок для печати',
 					name:'print_name',
-					//height:40,
 					anchor:'100%'
 				},
 					this.groupComboBox,
@@ -81,74 +93,162 @@ App.examination.CardTemplateForm = Ext.extend(Ext.form.FormPanel, {
 					xtype:'textarea',
 					fieldLabel:'Жалобы',
 					name:'complaints',
-					height:100,
+					height:500,
 					anchor:'100%'
 				},{
 					xtype:'textarea',
 					fieldLabel:'Анамнез',
 					name:'anamnesis',
-					height:100,
+					height:500,
 					anchor:'100%'
 				},{
 					xtype:'htmleditor',
 					fieldLabel:'Объективные данные',
 					name:'objective_data',
-					height:100,
+					height:500,
 					anchor:'100%'
 				},{
 					xtype:'textarea',
 					fieldLabel:'Психологический статус',
 					name:'psycho_status',
-					height:100,
+					height:500,
 					anchor:'100%'
-				},{
+				},this.mkb,
+				{
 					xtype:'htmleditor',
 					fieldLabel:'Основной диагноз',
 					name:'gen_diag',
-					height:100,
-					anchor:'100%'
-				},{
-					xtype:'textarea',
-					fieldLabel:'Осложнения',
-					name:'complication',
-					height:100,
-					anchor:'100%'
-				},{
-					xtype:'textarea',
-					fieldLabel:'ЭКГ',
-					name:'ekg',
-					height:100,
+					height:500,
 					anchor:'100%'
 				},{
 					xtype:'textarea',
 					fieldLabel:'Сопутствующий диагноз',
 					name:'concomitant_diag',
-					height:100,
+					height:500,
 					anchor:'100%'
 				},{
 					xtype:'textarea',
 					fieldLabel:'Клинический диагноз',
-					height:100,
+					height:500,
 					name:'clinical_diag',
 					anchor:'100%'
 				},{
 					xtype:'textarea',
+					fieldLabel:'Осложнения',
+					name:'complication',
+					height:500,
+					anchor:'100%'
+				},{
+					xtype:'textarea',
+					fieldLabel:'ЭКГ',
+					name:'ekg',
+					height:500,
+					anchor:'100%'
+				},{
+					xtype:'textarea',
 					fieldLabel:'Лечение',
-					height:100,
+					height:500,
 					name:'treatment',
 					anchor:'100%'
 				},{
 					xtype:'textarea',
 					fieldLabel:'Направление',
-					height:100,
+					height:500,
 					name:'referral',
 					anchor:'100%'
+				},{
+					xtype:'textarea',
+					fieldLabel:'Заключение',
+					height:500,
+					name:'conclusion',
+					anchor:'100%'
 				}]
-			}]
+		});
+		
+		this.menuBar = new Ext.Panel({
+			region:'west',
+			width:150,
+			layout:'form',
+			defaults:{
+				height:25,
+				anchor:'100%',
+				toggleGroup:'menu-bar-tmp',
+				xtype:'button',
+				scope:this
+			},
+			items:[{
+					text:'Наименование',
+					handler:this.onFocus.createDelegate(this,['name'])
+				},{
+					text:'Жалобы',
+					handler:this.onFocus.createDelegate(this,['complaints'])
+				},{
+					text:'Анамнез',
+					handler:this.onFocus.createDelegate(this,['anamnesis'])
+				},{
+					text:'Объективные данные',
+					handler:this.onFocus.createDelegate(this,['objective_data'])
+				},{
+					text:'Психологический статус',
+					handler:this.onFocus.createDelegate(this,['psycho_status'])
+				},{
+					text:'Диагноз МКБ',
+					handler:this.onFocus.createDelegate(this,['mbk_diag'])
+				},{
+					text:'Основной диагноз',
+					handler:this.onFocus.createDelegate(this,['gen_diag'])
+				},{
+					text:'Сопутствующий диагноз',
+					handler:this.onFocus.createDelegate(this,['concomitant_diag'])
+				},{
+					text:'Клинический диагноз',
+					handler:this.onFocus.createDelegate(this,['clinical_diag'])
+				},{
+					text:'Осложнения',
+					handler:this.onFocus.createDelegate(this,['complication'])
+				},{
+					text:'ЭКГ',
+					handler:this.onFocus.createDelegate(this,['ekg'])
+				},{
+					text:'Лечение',
+					handler:this.onFocus.createDelegate(this,['treatment'])
+				},{
+					text:'Направление',
+					handler:this.onFocus.createDelegate(this,['referral'])
+				},{
+					text:'Заключение',
+					handler:this.onFocus.createDelegate(this,['conclusion'])
+				}]
+		});
+		
+		this.statusbar = new Ext.ux.StatusBar({
+                defaultText: '',
+                items:[{
+					text:'Сохранить',
+					handler:this.onSave.createDelegate(this),
+					scope:this
+				},{
+					text:'Закрыть',
+					handler:this.onClose.createDelegate(this),
+					scope:this
+				}]
+			});
+		
+		config = {
+			id : 'temp-panel',
+			layout:'border',
+			border:false,
+			autoScroll: true,
+			trackResetOnLoad:true,
+			padding:5,
+			closable:true,
+			items:[this.workPlace,this.menuBar],
+			bbar:this.statusbar
 		}
 		Ext.apply(this, Ext.apply(this.initialConfig, config));
 		App.examination.CardTemplateForm.superclass.initComponent.apply(this, arguments);
 		App.eventManager.on('cardtemplatecreate', this.onCardTemplateCreate, this);
+		App.eventManager.on('savetemplatecard', this.onSaveTmpCard, this);
 		this.on('afterrender', function(){
 			if(this.record) {
 				this.getForm().loadRecord(this.record);
@@ -158,8 +258,21 @@ App.examination.CardTemplateForm = Ext.extend(Ext.form.FormPanel, {
 				this.getForm().findField('staff').setValue(path.join("/"));
 				//Ext.Msg.alert('1',path.join("/"));
 				
-			}
+			};
+			
 		},this);
+	},
+	
+	onSaveTmpCard: function(record) {
+		this.setTitle('Шаблон: '+ record.data.name);
+        this.statusbar.setStatus({
+        	text: 'Шаблон успешно сохранён',
+            iconCls: 'silk-status-accept'
+        });
+        (function(){
+			this.statusbar.clearStatus({useDefaults:true});
+		}).defer(2000);
+		
 	},
 	
 	onCardTemplateCreate: function(record) {
@@ -194,13 +307,22 @@ App.examination.CardTemplateForm = Ext.extend(Ext.form.FormPanel, {
 	
 	isModified: function() {
 		console.log('is form dirty:', this.getForm().isDirty());
-        
         this.getForm().items.each(function(f){
            if(f.isDirty()){
 			console.log('dirty field:',f);
            }
         });
-        
+	},
+	
+	onClose: function() {
+		this.isModified();
+		this.destroy();
+	},
+	
+	onFocus: function(name){
+		 this.getForm().findField(name).focus(true,150);
 	}
 	
 });		
+
+Ext.reg('cardtemplateform', App.examination.CardTemplateForm);

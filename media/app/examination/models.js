@@ -37,16 +37,21 @@ App.models.tmpModel = new Ext.data.Record.create([
 	{name: 'objective_data', allowBlank: true},
 	{name: 'psycho_status', allowBlank: true},
 	{name: 'gen_diag', allowBlank: true},
+	{name: 'mbk_diag', allowBlank: true},
 	{name: 'complication', allowBlank: true},
 	{name: 'concomitant_diag', allowBlank: true},
 	{name: 'clinical_diag', allowBlank: true},
 	{name: 'treatment', allowBlank: true},
 	{name: 'referral', allowBlank: true},
-	{name: 'group', allowBlank: true}
+	{name: 'conclusion', allowBlank: true},
+	{name: 'group', allowBlank: true},
+	{name: 'group_name', allowBlank: true}
 ]);
 		
 App.models.examModel = new Ext.data.Record.create([
 	{name: 'id'},
+	{name: 'created', type:'date',format:'c'},
+	{name: 'modified', type:'date',format:'c'},
 	{name: 'name',allowBlank: true},
 	{name: 'print_name',allowBlank: true},
 	{name: 'ordered_service',allowBlank: true},
@@ -64,5 +69,8 @@ App.models.examModel = new Ext.data.Record.create([
 	{name: 'history', allowBlank: true},
 	{name: 'anamnesis', allowBlank: true},
 	{name: 'mbk_diag', allowBlank: true},
-	{name: 'group', allowBlank: true}
+	{name: 'view', allowBlank: true},
+	{name: 'conclusion', allowBlank: true},
+	{name: 'group', allowBlank: true},
+	{name: 'staff_id', allowBlank: true}
 ]);

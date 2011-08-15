@@ -6,19 +6,7 @@ App.billing.PaymentGrid = Ext.extend(Ext.grid.GridPanel, {
 		
 		this.store = new Ext.data.RESTStore({
 		    apiUrl : get_api_url('payment'),
-		    model: [
-    		    {name: 'id'},
-    		    {name: 'doc_date', allowBlank: true, type:'date', format: 'd.m.Y'}, 
-	    	    {name: 'client_account', allowBlank: true}, 
-	    	    {name: 'client_name', allowBlank: true}, 
-	    	    {name: 'client', allowBlank: true}, 
-	    	    {name: 'amount', allowBlank: true},
-	    	    {name: 'account_id', allowBlank: true},
-	    	    {name: 'income', allowBlank: true},
-	    	    {name: 'payment_type', allowBlank: true},
-	    	    {name: 'comment', allowBlank: true},
-	    	    {name: 'content_type', allowBlank: true}
-			]
+		    model: App.models.paymentModel
 		});
 		
 		this.tmp_id = Ext.id();
@@ -61,8 +49,8 @@ App.billing.PaymentGrid = Ext.extend(Ext.grid.GridPanel, {
 		    	header: "Клиент",
 		    	width:60,
 		    	sortable: true, 
-		    	dataIndex: 'client_name',
-		    	hidden:true
+		    	dataIndex: 'client_name'
+		    	//hidden:true
 		    },{
 		    	header: "Лицевой счет", 
 		    	width: 20, 
@@ -179,7 +167,8 @@ App.billing.PaymentGrid = Ext.extend(Ext.grid.GridPanel, {
 		
 		Ext.apply(this, Ext.apply(this.initialConfig, config));
 		App.billing.PaymentGrid.superclass.initComponent.apply(this, arguments);
-		App.eventManager.on('globalsearch', this.onGlobalSearch, this);
+		//App.eventManager.on('globalsearch', this.onGlobalSearch, this);
+		App.eventManager.on('paymentsave', this.reloadStore, this);
 
 		
 		this.on('afterrender', function(){
@@ -251,6 +240,13 @@ App.billing.PaymentGrid = Ext.extend(Ext.grid.GridPanel, {
 		var s = this.store;
 		s.baseParams = {format:'json','client_account__client_item__client': id};
 		s.load();
+	},
+	
+	reloadStore: function(record){
+		if (this.store) {
+			this.store.load();
+			//this.btnSetDisabled(true);
+		}
 	}
 	
 });

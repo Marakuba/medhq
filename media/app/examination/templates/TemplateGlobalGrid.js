@@ -5,34 +5,15 @@ App.TemplateGlobalGrid = Ext.extend(Ext.grid.GridPanel, {
 
 	initComponent : function() {		
 
-		//this.backend = App.getBackend('cardtemplate');	
-		//this.cardBackend = new App.ExamBackend({});
-		this.tmpModel = new Ext.data.Record.create([
-			{name: 'id'},
-			{name: 'staff', allowBlank: false},
-			{name: 'staff_name', allowBlank: true},
-			{name: 'complaints', allowBlank: true},
-			{name: 'anamnesis', allowBlank: true},
-			{name: 'ekg', allowBlank: true},
-			{name: 'name', allowBlank: false},
-			{name: 'print_name', allowBlank: true},
-			{name: 'objective_data', allowBlank: true},
-			{name: 'psycho_status', allowBlank: true},
-			{name: 'gen_diag', allowBlank: true},
-			{name: 'complication', allowBlank: true},
-			{name: 'concomitant_diag', allowBlank: true},
-			{name: 'clinical_diag', allowBlank: true},
-			{name: 'treatment', allowBlank: true},
-			{name: 'referral', allowBlank: true},
-			{name: 'group', allowBlank: true},
-			{name: 'group_name', allowBlank: false}
-		]);
+		this.tmpModel = App.models.tmpModel;
 
 		this.store = new Ext.data.GroupingStore({
 			autoLoad:true,
 			autoSave:true,
+			groupField:'group_name',
 		    baseParams: {
-		    	format:'json'
+		    	format:'json',
+		    	staff:active_profile
 		    },
 		    paramNames: {
 			    start : 'offset',
@@ -62,23 +43,29 @@ App.TemplateGlobalGrid = Ext.extend(Ext.grid.GridPanel, {
 		    	write:function(store, action, result, res, rs){
 		    		if(action=='create') {
 			    		App.eventManager.fireEvent('templatecardcreate', rs);
-		    		}
+		    		};
+		    		App.eventManager.fireEvent('savetemplatecard', rs);
 		    	},
 		    	scope:this
 		    },
 		    groupField:'group_name'
 		});
 		
-		
-		//this.store.load();
-		
 		this.columns =  [
+<<<<<<< HEAD
 		    {
 		    	header: "Группа", 
 		    	hidden:true,
 		    	sortable: true, 
 		    	dataIndex: 'group_name'
 		    },{
+=======
+			{
+				header: "Название шаблона", 
+				dataIndex:'group_name',
+				hidden:true
+			},{
+>>>>>>> 952774d853769aee0060fd54f5a9f1ac2f0750ae
 		    	header: "Название шаблона", 
 		    	width:70,
 		    	sortable: true, 
@@ -127,13 +114,13 @@ App.TemplateGlobalGrid = Ext.extend(Ext.grid.GridPanel, {
 			},'-',{
 				xtype:'button',
 				enableToggle:true,
+				pressed:true,
 				toggleGroup:'templare-filter',
 				text:'Свои',
                 scope:this,
 				handler: function(){
-					var url = get_api_url('position');
-					var path = [url,active_profile];
-					this.store.filter('staff',path.join("/"));
+					this.store.setBaseParam('staff',active_profile);
+					this.store.load();
 				}
                 
 			},{
@@ -141,16 +128,21 @@ App.TemplateGlobalGrid = Ext.extend(Ext.grid.GridPanel, {
 				enableToggle:true,
 				toggleGroup:'templare-filter',
 				text:'Все',
-				pressed: true,
                 scope:this,
 				handler: function(){
-                    this.store.clearFilter()
+                    delete this.store.baseParams['staff'];
+                    this.store.load();
                 }
 			}],
 			view : new Ext.grid.GroupingView({
 				forceFit : true,
+<<<<<<< HEAD
 				groupTextTpl: "{text}"
 			})			
+=======
+				groupTextTpl:"{[values.rs[0].data['group_name']]}"
+			})
+>>>>>>> 952774d853769aee0060fd54f5a9f1ac2f0750ae
 		};
 		
 		this.on('rowdblclick', function(object, rowIndex, e){
@@ -159,7 +151,7 @@ App.TemplateGlobalGrid = Ext.extend(Ext.grid.GridPanel, {
         
         this.on('afterrender',function(){
            	//this.store.setBaseParam('staff',active_profile);
-           	this.store.load();
+           	//this.store.load();
         });
         
 		Ext.apply(this, Ext.apply(this.initialConfig, config));
@@ -172,29 +164,32 @@ App.TemplateGlobalGrid = Ext.extend(Ext.grid.GridPanel, {
 	},
 	
 	onAdd: function(btn,ev){
-        var win = new App.examination.CardTemplateWindow({
-    		model:this.tmpModel,
-    		scope:this,
-    		fn:function(record){
-    			console.info(record);
-    			this.saveRecord(record);
-    		}
-    	});
-    	win.show();
+        config = {
+			title:'Новый шаблон',
+			closable:true,
+   			model:this.tmpModel,
+   			scope:this,
+   			fn:function(record){
+   				this.saveRecord(record);
+   			}
+		}
+		App.eventManager.fireEvent('launchapp', 'cardtemplateform',config);
 	},
     
 	onEdit: function(rowindex){
 		var record = this.getSelected();
 		if(record) {
-    		var win = new App.examination.CardTemplateWindow({
-    			record:record,
+			config = {
+				title:'Шаблон '+record.data.name,
+				closable:true,
+				record:record,
     			model:this.tmpModel,
     			scope:this,
     			fn:function(record){
     				this.saveRecord(record);
     			}
-    		});
-    		win.show();
+			}
+			App.eventManager.fireEvent('launchapp', 'cardtemplateform',config);
 		}
 	},
 	

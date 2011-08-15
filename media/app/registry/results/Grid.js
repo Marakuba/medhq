@@ -108,17 +108,8 @@ App.results.Grid = Ext.extend(Ext.grid.GridPanel, {
 		    }
 		];		
 		
-		var config = {
-			loadMask : {
-				msg : 'Подождите, идет загрузка...'
-			},
-			border : false,
-			store:this.store,
-			columns:this.columns,
-			sm : new Ext.grid.RowSelectionModel({
-				singleSelect : true
-			}),
-	        tbar:[{
+		this.ttb =  new Ext.Toolbar({ 
+			items:[{
 				xtype:'button',
 				iconCls:'silk-printer',
 				text:'Печать',
@@ -154,26 +145,20 @@ App.results.Grid = Ext.extend(Ext.grid.GridPanel, {
 					this.storeFilter('visit__created__gte',undefined);
 				},
 				scope:this
-			},'-','Офис:',{
-				xtype:'button',
-				enableToggle:true,
-				toggleGroup:'visit-cls',
-				text:'Все',
-				pressed: true,
-				handler:this.storeFilter.createDelegate(this,['visit__office',undefined])
-			},{
-				xtype:'button',
-				enableToggle:true,
-				toggleGroup:'visit-cls',
-				text:'Евромед (КИМ)',
-				handler:this.storeFilter.createDelegate(this,['visit__office',1])
-			},{
-				xtype:'button',
-				enableToggle:true,
-				toggleGroup:'visit-cls',
-				text:'Евромед (Лузана)',
-				handler:this.storeFilter.createDelegate(this,['visit__office',6])
-			}],
+			},'-'
+			]});
+		
+		var config = {
+			loadMask : {
+				msg : 'Подождите, идет загрузка...'
+			},
+			border : false,
+			store:this.store,
+			columns:this.columns,
+			sm : new Ext.grid.RowSelectionModel({
+				singleSelect : true
+			}),
+	        tbar:this.ttb,
 			listeners: {
 				rowdblclick:this.onPrint.createDelegate(this, [])
 			},
@@ -195,6 +180,8 @@ App.results.Grid = Ext.extend(Ext.grid.GridPanel, {
 		Ext.apply(this, Ext.apply(this.initialConfig, config));
 		App.results.Grid.superclass.initComponent.apply(this, arguments);
 		App.eventManager.on('globalsearch', this.onGlobalSearch, this);
+		
+		this.initToolbar();
 	},
 	
 	storeFilter: function(field, value){
@@ -226,6 +213,43 @@ App.results.Grid = Ext.extend(Ext.grid.GridPanel, {
 			s.setBaseParam('visit__patient__last_name__istartswith', v);
 		}
 		s.load();
+	},
+	
+	initToolbar: function(){
+		// laboratory
+		Ext.Ajax.request({
+			url:get_api_url('medstate'),
+			method:'GET',
+			success:function(resp, opts) {
+				this.ttb.add({
+					xtype:'tbtext',
+					text:'Лаборатория: '
+				});
+				this.ttb.add({
+					xtype:'button',
+					enableToggle:true,
+					toggleGroup:'ex-place-cls',
+					text:'Все',
+					pressed: true,
+					handler:this.storeFilter.createDelegate(this,['execution_place'])
+				});
+				var jsonResponse = Ext.util.JSON.decode(resp.responseText);
+				Ext.each(jsonResponse.objects, function(item,i){
+					this.ttb.add({
+						xtype:'button',
+						enableToggle:true,
+						toggleGroup:'ex-place-cls',
+						text:item.name,
+						handler:this.storeFilter.createDelegate(this,['execution_place',item.id])
+					});
+				}, this);
+				//this.ttb.addSeparator();
+				//this.ttb.add();
+				//this.ttb.add()
+				this.ttb.doLayout();
+			},
+			scope:this
+		});
 	}
 	
 });
