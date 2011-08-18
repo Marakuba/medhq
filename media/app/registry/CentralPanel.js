@@ -5,7 +5,7 @@ App.StatusBar = new Ext.ux.StatusBar({
 	defaultText: 'Готово',
 	defaultIconCls: 'x-status-valid',
 	autoClear:3000,
-	items:[]
+	items:[String.format('{0}, {1}', active_user, active_state)]
 }); 
 
 App.CentralPanel = Ext.extend(Ext.Panel, {
@@ -149,9 +149,30 @@ App.CentralPanel = Ext.extend(Ext.Panel, {
 				},
 				items:[{
 					iconCls:'silk-cog',
-					menu:[{
-						text:'Смена профиля'
-					}]
+					menu:[new Ext.form.ComboBox({
+						fieldLabel:'Профиль',
+						name:'payment_type',
+						store:new Ext.data.ArrayStore({
+							fields:['id','title'],
+							data: profiles
+						}),
+						listeners:{
+							select: function(c, rec, i){
+								var p = rec.data.id;
+								window.location.href = '/webapp/setactiveprofile/'+p+'/?redirect_to=/webapp/registry/';
+							}
+						},
+						width:300,
+						typeAhead: true,
+						triggerAction: 'all',
+						valueField:'id',
+						displayField:'title',
+						mode: 'local',
+						forceSelection:true,
+						selectOnFocus:true,
+						editable:false,
+						value:active_profile
+				    })]
 				},{
 	            	text:'Выход',
 	            	handler:function(){

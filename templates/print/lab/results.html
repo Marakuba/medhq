@@ -1,6 +1,6 @@
 {% extends "print.html" %}
 
-{% load lab_tags %}
+{% load lab_tags flatblock_tags %}
 
 {% block title %}{{ order }} - Результаты{% endblock %}
 
@@ -8,12 +8,8 @@
 
 <table class="header">
 	<tr>
-		<td class="brand">КЛИНИКА<br>ЕВРОМЕД</td>
-		<td class="info">350000, Россия<br>
-			г. Краснодар<br>
-			ул. КИМ, 143<br>
-			телефон: (861) 233-31-31<br>
-			факс: (861) 233-43-43
+		<td class="brand">{{ config.BRAND|upper }}</td>
+		<td class="info">{% flatblock "address.lab" %}
 		</td>
 	</tr>
 	<tr>

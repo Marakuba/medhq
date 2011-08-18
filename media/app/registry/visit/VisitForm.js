@@ -438,8 +438,8 @@ App.visit.VisitForm = Ext.extend(Ext.FormPanel, {
 		
 	},
 	
-	addRow: function(attrs) {
-		this.orderedService.addRow.createDelegate(this.orderedService, [attrs])();
+	addRow: function(attrs, cb, scope) {
+		this.orderedService.addRow.createDelegate(this.orderedService, [attrs, undefined, cb, scope])();
 	},
 	
 	printBarcode: function()
@@ -513,13 +513,23 @@ App.visit.VisitForm = Ext.extend(Ext.FormPanel, {
 			this.totalSum.originalValue = discount;
 		}
 	},
-
+	
 	onServiceClick : function(node) {
 		var a = node.attributes;
 		if (a.isComplex) {
-			Ext.each(a.nodes, function(item,i){
-				this.addRow(item);
-			}, this);
+			this.cNodes = a.nodes;
+			complexAdd = function() {
+				var item = this.cNodes.pop();
+				this.addRow(item, function(){
+					if(this.cNodes.length) {
+						complexAdd.createDelegate(this,[])();
+					}
+				}, this);
+			}
+			complexAdd.createDelegate(this,[])();
+//			Ext.each(a.nodes, function(item,i){
+//				this.addRow(item);
+//			}, this);
 			if (a.discount) {
 				var dsc = this.discountCmb;
 				dsc.getStore().load({

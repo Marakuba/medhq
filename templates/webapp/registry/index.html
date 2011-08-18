@@ -1,6 +1,6 @@
 {% extends "box.html" %}
 
-{% block title %}Регистратура | Клиника Евромед{% endblock %}
+{% block title %}Регистратура | {{ BRAND }}{% endblock %}
 
 {% block head %}
 	<script type="text/javascript">
@@ -11,6 +11,8 @@
 			return [API_URL,'dashboard',resource].join("/");
 		}
 	</script>
+	
+	{% include "webapp/includes/active_profile.html" %}
 
 	<link rel="icon" type="image/ico" href="{{ MEDIA_URL }}resources/favicon.ico" />
 
@@ -124,7 +126,7 @@
     <script type="text/javascript" src="{{ MEDIA_URL }}app/registry/results/Grid.js"></script>
     <script type="text/javascript" src="{{ MEDIA_URL }}app/registry/Results.js"></script>
 
-    <script type="text/javascript" src="{{ MEDIA_URL }}app/registry/Reports.js"></script> -->
+    <script type="text/javascript" src="{{ MEDIA_URL }}app/registry/Reports.js"></script>
     
     <script type="text/javascript" src="{{ MEDIA_URL }}app/registry/patient/clientaccount/backends.js"></script>
     <script type="text/javascript" src="{{ MEDIA_URL }}app/registry/patient/clientaccount/ClientAccountGrid.js"></script>
@@ -139,8 +141,6 @@
     <script type="text/javascript" src="{{ MEDIA_URL }}app/registry/MainPanel.js"></script>
     <script type="text/javascript" src="{{ MEDIA_URL }}app/registry/CentralPanel.js"></script>
     <script type="text/javascript" src="{{ MEDIA_URL }}app/registry/app.js"></script>
-
-{% include "webapp/includes/active_profile.html" %}
 
 
 <!--     <script type="text/javascript" src="{{ MEDIA_URL }}resources/js/web-socket-js/swfobject.js"></script>

@@ -56,6 +56,7 @@ TEMPLATE_CONTEXT_PROCESSORS = (
     "django.core.context_processors.i18n",
     "django.core.context_processors.media",
     "django.core.context_processors.request",
+    'constance.context_processors.config',
 )
 
 ROOT_URLCONF = 'medhq.urls'
@@ -103,6 +104,7 @@ INSTALLED_APPS = (
     'scheduler',
     'interlayer',
     'billing',
+    
         
     'django.contrib.admin',
     'django.contrib.auth',
@@ -111,10 +113,12 @@ INSTALLED_APPS = (
     
     'autocomplete',
     'compressor',
+    'constance',
     'debug_toolbar',
     'django_extensions',
     #'djcelery',
     'feincms',
+    'flatblocks',
     'south',
     'reversion',
     'tastypie',
@@ -151,6 +155,10 @@ SESSION_EXPIRE_AT_BROWSER_CLOSE = True
 #CELERY_IMPORTS = ("tasks", )
 
 #HARD_CODE SETTINGS
+
+CONSTANCE_CONFIG = {
+    'BRAND': (u'', 'company brand'),
+}
 
 MAIN_STATE_ID = 1 
 

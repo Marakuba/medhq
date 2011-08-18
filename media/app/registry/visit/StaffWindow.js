@@ -113,7 +113,7 @@ App.visit.StaffBox = function() {
 		},
 		getDialog: function(options) {
 			this.win = new Ext.Window({
-				title:'Выберите врача',
+				title:String.format('Выберите врача :: {0}', options.text),
 				width:380,
 				height:140,
 				layout:'fit',

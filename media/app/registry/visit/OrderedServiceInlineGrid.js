@@ -85,12 +85,20 @@ App.visit.OrderedServiceInlineGrid = Ext.extend(Ext.grid.EditorGridPanel, {
 		this.columns =  [new Ext.grid.RowNumberer({width: 30}),
 		    {
 		    	header: "МВ",
-		    	width: 5, 
-		    	css:'padding-bottom:0px',
+		    	width: 3, 
+		    	css:'padding:0px!important;',
 		    	dataIndex: 'execution_place', 
 		    	renderer: function(val) {
+		    		colors = {
+		    			"5":"black",
+		    			"1":"green",
+		    			"7":"green",
+		    			"4":"red",
+		    			"6":"green"
+		    		};
 		    		var s = val.split('/');
-		    		return "<img src='"+MEDIA_URL+"resources/images/state_"+s[s.length-1]+".png'>"
+		    		return String.format("<span style='font-weight:bolder;font-size:19px;padding:3px 0 0 3px;color:{0}'>+</span>", colors[s[s.length-1]]);
+//		    		return "<img src='"+MEDIA_URL+"resources/images/state_"+s[s.length-1]+".png'>"
 		    	}
 		    },{
 		    	header: "Услуга", 
@@ -135,6 +143,7 @@ App.visit.OrderedServiceInlineGrid = Ext.extend(Ext.grid.EditorGridPanel, {
 		];		
 		
 		var config = {
+			id:'ordered-service-inline-grid',
 			loadMask : {
 				msg : 'Подождите, идет загрузка...'
 			},
@@ -247,7 +256,7 @@ App.visit.OrderedServiceInlineGrid = Ext.extend(Ext.grid.EditorGridPanel, {
 		this.startEditing(0, 0);
 	},
 	
-	addRow: function(attrs, can_duplicate) {
+	addRow: function(attrs, can_duplicate, callback, scope) {
 		if(!can_duplicate) {
 			var re = /(.*) \[\d+\]/;
 			res = re.exec(attrs.text);
@@ -259,12 +268,16 @@ App.visit.OrderedServiceInlineGrid = Ext.extend(Ext.grid.EditorGridPanel, {
 		if(attrs.staff){
 			var box = App.visit.StaffBox;
 			box.show({
+				text:attrs.text,
 				staffList:attrs.staff,
 				fn:function(button,rec,opts){
 					if(button=='ok' && rec) {
 						attrs.staff_id = rec.data.id;
 						attrs.staff_name = rec.data.staff_name;
 						this.addRecord(attrs);
+					}
+					if(callback) {
+						Ext.callback(callback, scope);
 					}
 				},
 				scope:this

@@ -264,6 +264,12 @@ class OrderedService(make_operator_object('ordered_service')):
         self.total_price = price*self.count
         super(OrderedService, self).save(*args, **kwargs)
         self.order.update_total_price()
+        
+    def total_discount(self):
+        return self.order.discount_value*self.total_price/100
+    
+    def discount_price(self):
+        return self.total_price - self.total_discount()
     
     @transaction.commit_on_success
     def to_lab(self):
