@@ -9,7 +9,7 @@
  * See additional calendar examples at http://ext-calendar.com
  */
 Ext.ns('Ext.calendar');
-Ext.calendar.DoctorScheduler = Ext.extend(Ext.Panel, {
+Ext.calendar.Reception = Ext.extend(Ext.Panel, {
         initComponent: function(){
             this.calendarStore = new Ext.data.JsonStore({
                 storeId: 'calendarStore',
@@ -94,7 +94,7 @@ Ext.calendar.DoctorScheduler = Ext.extend(Ext.Panel, {
             // underlying store functionality is the same.  Note that if you would like to 
             // provide custom data mappings for events, see EventRecord.js.
 		    this.eventStore = new Ext.data.Store({
-		        id: 'eventStore',
+		        id: 'recept-eventStore',
 		        baseParams: {
 		    		format:'json'
 			    },
@@ -130,7 +130,7 @@ Ext.calendar.DoctorScheduler = Ext.extend(Ext.Panel, {
 		    });
 		    
 		    this.datePicker = new Ext.DatePicker ({
-		    	id: 'app-nav-picker',
+		    	id: 'recept-app-nav-picker',
     	        //region:'north',
 	            //height:190,
 	            //width:130,
@@ -146,7 +146,7 @@ Ext.calendar.DoctorScheduler = Ext.extend(Ext.Panel, {
              });
              
              this.staffGrid = new Ext.calendar.StaffGrid({
-             	id: 'app-staff-picker',
+             	id: 'reception-app-staff-picker',
 	            //region:'center',
 	            //height:190,
 	     		//autoSize:true,
@@ -176,17 +176,17 @@ Ext.calendar.DoctorScheduler = Ext.extend(Ext.Panel, {
             // pieces that are composed in app-specific layout code since they could be ommitted
             // or placed elsewhere within the application.
             config = {
-            	id:'doctor-scheduler',
+            	id:'reception',
                 layout: 'border',
                 //renderTo: 'calendar-ct',
-                title:'Расписание врачей',
+                title:'Предварительная запись',
                 items: [{
-                    id: 'app-center',
+                    id: 'reception-app-center',
                     title: '...', // will be updated to view date range
                     region: 'center',
                     layout: 'border',
                     items: [{
-                        id:'app-west',
+                        id:'reception-app-west',
                         region: 'west',
                         layout: 'border',
                         trackResetOnLoad:true,
@@ -210,7 +210,7 @@ Ext.calendar.DoctorScheduler = Ext.extend(Ext.Panel, {
                         staffStore: this.staffStore,
                         calendarStore: this.calendarStore,
                         border: false,
-                        id:'app-calendar',
+                        id:'reception-app-calendar',
                         region: 'center',
                         activeItem: 2, // month view
                         
@@ -282,13 +282,6 @@ Ext.calendar.DoctorScheduler = Ext.extend(Ext.Panel, {
                                     if(this.editWin){
                                         this.editWin.hide();
                                     };
-                                    if (vw.xtype == "monthview") {
-                                    	this.eventStore.setBaseParam('timeslot',false);
-                                    	this.eventStore.load();
-                                    } else {
-                                    	this.eventStore.setBaseParam('timeslot',true);
-                                    	this.eventStore.load();
-                                    }
                                     if(dateInfo !== null){
                                         // will be null when switching to the event edit form so ignore
                                         Ext.getCmp('app-nav-picker').setValue(dateInfo.activeDate);
@@ -438,7 +431,7 @@ Ext.calendar.DoctorScheduler = Ext.extend(Ext.Panel, {
                 }]
             };
             Ext.apply(this, Ext.apply(this.initialConfig, config));
-		Ext.calendar.DoctorScheduler.superclass.initComponent.apply(this, arguments);
+		Ext.calendar.Reception.superclass.initComponent.apply(this, arguments);
         },
         
         // The edit popup window is not part of the CalendarPanel itself -- it is a separate component.
@@ -542,4 +535,4 @@ Ext.calendar.DoctorScheduler = Ext.extend(Ext.Panel, {
         }
     });
 
-Ext.reg('doctorscheduler',Ext.calendar.DoctorScheduler);
+Ext.reg('reception',Ext.calendar.Reception);

@@ -7,8 +7,20 @@ from south.modelsinspector import add_introspection_rules
 from django.utils.encoding import smart_unicode, force_unicode, smart_str
 import time
 from staff.models import Staff
+from patient.models import Patient
+from mptt.models import MPTTModel
+
+from datetime import timedelta
 
 add_introspection_rules([], ["^scheduler\.models\.CustomDateTimeField"])
+
+def datetimeIterator(from_date=None, to_date=None, delta=timedelta(minutes=30)):
+    from_date = from_date or datetime.now()
+    print "timeslot %s" % (delta)
+    while to_date is None or from_date <= to_date:
+        yield from_date
+        from_date = from_date + delta
+        return
 
 class CustomDateTimeField(models.DateTimeField):
     
@@ -66,6 +78,7 @@ class Calendar(models.Model):
     
 class Event(models.Model):
     """
+    Модель смены врача
     """
     staff = models.ForeignKey(Staff, blank = True, null = True)
     sid = models.PositiveIntegerField(u'ID врача', blank = True, null = True)
@@ -73,18 +86,41 @@ class Event(models.Model):
     title = models.CharField(u'Заголовок', max_length=300)
     start = CustomDateTimeField(u'Начальная дата', blank = True, null = True)
     end = CustomDateTimeField(u'Конечная дата', blank = True, null = True)
-    loc = models.TextField(u'Локация', blank = True, null = True)
+    loc = models.TextField(u'Кабинет', blank = True, null = True)
     notes = models.TextField(u'Примечание', blank = True, null = True)
     url = models.CharField(u'Заголовок', max_length=300, blank = True, null = True)
     ad = models.BooleanField(u'Весь день', default = False)
+    timeslot = models.BooleanField(u'Таймслот', default = False)
+    vacant = models.BooleanField(u'Свободно', default = True)
     rem = models.CharField(u'Напоминание', max_length = 60, blank = True, null = True)
     n = models.BooleanField(u'Новое событие', default = True)
+    parent = models.ForeignKey('self', null=True, blank=True, related_name='children')
     
+    def save(self, *args, **kwargs):
+        if not self.timeslot:
+            staff = Staff.objects.get(id=self.cid)
+            timeslot = timedelta(minutes=staff.doctor.get_timeslot_display() or 30)
+            start = self.start
+            end = self.end
+            while start < end:
+                print start
+                Event.objects.create(staff = self.staff, cid = self.cid,title='',start = start,\
+                                     end = start+timeslot, timeslot = True, vacant = True, n = False, \
+                                     parent = self, rem = self.rem)
+                start += timeslot
+        super(Event, self).save(*args, **kwargs)
+            
     class Meta:
-        verbose_name = u'событие'
-        verbose_name_plural = u'события'
+        verbose_name = u'смена'
+        verbose_name_plural = u'смены'
         ordering = ('cid',)
         
     def __unicode__(self):
         return self.title
     
+class Preorder(models.Model):
+    """
+    Модель предварительного заказа
+    """
+    patient = models.ForeignKey(Patient, blank = True, null = True)
+    timeslot = models.OneToOneField(Event)

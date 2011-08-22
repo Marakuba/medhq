@@ -919,7 +919,7 @@ class ExaminationCardResource(ExtResource):
             'id':ALL,
             'name':ALL
         }
-        limit = 1000
+        #limit = 1000
 
 class RegExamCardResource(ExtResource):
     ordered_service = fields.ForeignKey(OrderedServiceResource, 'ordered_service', null=True)
@@ -1032,6 +1032,7 @@ class EventResource(ExtResource):
             'cid':ALL,
             'start':ALL,
             'end':ALL,
+            'timeslot':ALL,
         }       
         limit = 1000
 
