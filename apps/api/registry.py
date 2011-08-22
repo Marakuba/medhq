@@ -60,7 +60,7 @@ class DiscountResource(ModelResource):
         return bundle
     
     class Meta:
-        queryset = Discount.objects.all() 
+        queryset = Discount.objects.exclude(type=u'arc') 
         resource_name = 'discount'
         filtering = {
             'name':('istartswith',)
