@@ -249,7 +249,7 @@ Ext.calendar.DayBodyView = Ext.extend(Ext.calendar.CalendarView, {
         this.getTemplateEventBox(evt);
 
         data._selectorCls = selector;
-        data._colorCls = 'ext-color-' + '2' + (evt._renderAsAllDay ? '-ad': '');
+        data._colorCls = 'ext-color-' + (evt[M.Vacant.name]?'vac':'occupy') + (evt._renderAsAllDay ? '-ad': '');
         //data._colorCls = 'ext-color-' + Ext.idToColor(evt[M.CalendarId.name]) + (evt._renderAsAllDay ? '-ad': '');
         data._elId = selector + (evt._weekIndex ? '-' + evt._weekIndex: '');
         data._isRecurring = evt.Recurrence && evt.Recurrence != '';

@@ -243,7 +243,7 @@ Ext.calendar.DoctorScheduler = Ext.extend(Ext.Panel, {
                         listeners: {
                             'eventclick': {
                                 fn: function(vw, rec, el){
-                                    this.showEditWindow(rec, el);
+                                    this.showEditWindow(rec, el, vw);
                                     this.clearMsg();
                                 },
                                 scope: this
@@ -377,7 +377,7 @@ Ext.calendar.DoctorScheduler = Ext.extend(Ext.Panel, {
                                         	StartDate: start,
 	                                   		EndDate: end,
     	                                    IsAllDay: ad
-        	                            }, el);
+        	                            }, el,vw);
                            			} else {
                            				Ext.Msg.confirm('Предупреждение',staff.data.Title + 
             							'в этот день не работает. Продолжить?',
@@ -387,7 +387,7 @@ Ext.calendar.DoctorScheduler = Ext.extend(Ext.Panel, {
                            								StartDate: start,
                            								EndDate: end,
                            								IsAllDay: ad
-                       								}, el);
+                       								}, el, vw);
     											}
     										},
                							this);
@@ -446,46 +446,96 @@ Ext.calendar.DoctorScheduler = Ext.extend(Ext.Panel, {
         // This makes it very easy to swap it out with a different type of window or custom view, or omit
         // it altogether. Because of this, it's up to the application code to tie the pieces together.
         // Note that this function is called from various event handlers in the CalendarPanel above.
-		showEditWindow : function(rec, animateTarget){
-	        if(!this.editWin){
-	            this.editWin = new Ext.calendar.EventEditWindow({
-                    calendarStore: this.calendarStore,
-					listeners: {
-						'eventadd': {
-							fn: function(win, rec){
-								win.hide();
-								rec.data.IsNew = false;
-								this.eventStore.add(rec);
-                                this.showMsg('Event '+ rec.data.Title +' was added');
+		showEditWindow : function(rec, animateTarget, vw){
+			if (vw['id']=="app-calendar-month"){
+	        	if(!this.editWin){
+	        	
+	            	this.editWin = new Ext.calendar.EventEditWindow({
+                    	calendarStore: this.calendarStore,
+						listeners: {
+							'eventadd': {
+								fn: function(win, rec){
+									win.hide();
+									rec.data.IsNew = false;
+									this.eventStore.add(rec);
+                    	            this.showMsg('Event '+ rec.data.Title +' was added');
+								},
+								scope: this
 							},
-							scope: this
-						},
-						'eventupdate': {
-							fn: function(win, rec){
-								win.hide();
-								rec.commit();
-                                this.showMsg('Event '+ rec.data.Title +' was updated');
+							'eventupdate': {
+								fn: function(win, rec){
+									win.hide();
+									rec.commit();
+                    	            this.showMsg('Event '+ rec.data.Title +' was updated');
+								},
+								scope: this
 							},
-							scope: this
-						},
-						'eventdelete': {
-							fn: function(win, rec){
-								this.eventStore.remove(rec);
-								win.hide();
-                                this.showMsg('Event '+ rec.data.Title +' was deleted');
+							'eventdelete': {
+								fn: function(win, rec){
+									this.eventStore.remove(rec);
+									win.hide();
+                    	            this.showMsg('Event '+ rec.data.Title +' was deleted');
+								},
+								scope: this
 							},
-							scope: this
-						},
-                        'editdetails': {
-                            fn: function(win, rec){
-                                win.hide();
-                                App.calendarPanel.showEditForm(rec);
-                            }
-                        }
-					}
-                });
-	        }
-	        this.editWin.show(rec, animateTarget);
+    	                    'editdetails': {
+        	                    fn: function(win, rec){
+            	                    win.hide();
+                	                App.calendarPanel.showEditForm(rec);
+                    	        }
+                        	}
+						}
+    	            });
+    	            this.editWin.show(rec, animateTarget);
+	        	} else {
+	        		this.editWin.show(rec, animateTarget);
+	        	}
+	        	
+	        	
+	        		
+	        } else {
+	        	if(!this.timeslotWin){
+	        		this.timeslotWin = new Ext.calendar.TimeslotEditWindow({
+                    	calendarStore: this.calendarStore,
+						listeners: {
+							'eventadd': {
+								fn: function(win, rec){
+									win.hide();
+									rec.data.IsNew = false;
+									this.eventStore.add(rec);
+                        	        this.showMsg('Event '+ rec.data.Title +' was added');
+								},
+								scope: this
+							},
+							'eventupdate': {
+								fn: function(win, rec){
+									win.hide();
+									rec.commit();
+                        	        this.showMsg('Event '+ rec.data.Title +' was updated');
+								},
+								scope: this
+							},
+							'eventdelete': {
+								fn: function(win, rec){
+									this.eventStore.remove(rec);
+									win.hide();
+                        	        this.showMsg('Event '+ rec.data.Title +' was deleted');
+								},
+								scope: this
+							},
+        	                'editdetails': {
+            	                fn: function(win, rec){
+                	                win.hide();
+                    	            App.calendarPanel.showEditForm(rec);
+                        	    }
+	                        }	
+						}
+        	        });
+        	        this.timeslotWin.show(rec, animateTarget);
+	        	} else {
+	        		this.timeslotWin.show(rec, animateTarget);
+	        	}
+	        } 
 		},
         
         // The CalendarPanel itself supports the standard Panel title config, but that title
