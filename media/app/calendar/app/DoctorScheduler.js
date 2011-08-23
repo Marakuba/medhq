@@ -303,6 +303,40 @@ Ext.calendar.DoctorScheduler = Ext.extend(Ext.Panel, {
                                 	if (vw['id']=="app-calendar-month"){
                                 		this.dayClickMW(vw, dt, ad, el)
                                 	}
+                                	
+                                	if (start) {
+                                		start = this.setTimeToDate(start,new Date(dt));
+                                	} else {
+                                		start = new Date();
+                                	};
+                               		if (end) {
+                              				end = this.setTimeToDate(end,new Date(dt));
+                           			} else {
+                           				end = new Date();
+                           				end.add('h',1);
+                           			};
+                           			
+                           			if (isWorking) {
+                           				this.showEditWindow({
+                                        	StartDate: start,
+	                                   		EndDate: end,
+    	                                    IsAllDay: ad
+        	                            }, el,vw);
+                           			} else {
+                           				Ext.Msg.confirm('Предупреждение',staff.data.Title + 
+            							'в этот день не работает. Продолжить?',
+              								function(btn){
+    											if (btn=='yes') {
+    												this.showEditWindow({
+                           								StartDate: start,
+                           								EndDate: end,
+                           								IsAllDay: ad
+                       								}, el, vw);
+    											}
+    										},
+               							this);
+                           			}
+                                    this.clearMsg();
                                 },
                                 scope: this
                             },
@@ -375,7 +409,7 @@ Ext.calendar.DoctorScheduler = Ext.extend(Ext.Panel, {
 							'eventupdate': {
 								fn: function(win, rec){
 									win.hide();
-									//rec.commit();
+									rec.commit();
                     	            this.showMsg('Event '+ rec.data.Title +' was updated');
 								},
 								scope: this
@@ -420,7 +454,7 @@ Ext.calendar.DoctorScheduler = Ext.extend(Ext.Panel, {
 							'eventupdate': {
 								fn: function(win, rec){
 									win.hide();
-									//rec.commit();
+									rec.commit();
                         	        this.showMsg('Event '+ rec.data.Title +' was updated');
 								},
 								scope: this

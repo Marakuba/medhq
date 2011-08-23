@@ -14,119 +14,107 @@
  * @param {Object} config The config object
  */
 Ext.ns('Ext.calendar');
-Ext.ns('App.visit');
-Ext.ns('App');
-Ext.calendar.TimeslotEditWindow = Ext.extend(Ext.Window, {
-	initComponent: function() {
+Ext.calendar.TimeslotEditWindow = function(config) {
+    var formPanelCfg = {
+        xtype: 'form',
+        labelWidth: 65,
+        frame: false,
+        bodyStyle: 'background:transparent;padding:5px 10px 10px;',
+        bodyBorder: false,
+        border: false,
+        items: [{
+            id: 'timeslot-title',
+            name: Ext.calendar.EventMappings.Title.name,
+            fieldLabel: 'Заголовок',
+            xtype: 'textfield',
+            anchor: '100%'
+        },{
+        	xtype:'button',
+        	text:'...',
+        	headler:this.onChoice.createDelegate(this)
+        },{
+        	xtype:'button',
+        	text:'+',
+        	headler:this.onAdd.createDelegate(this)
+        },{
+            xtype: 'hidden',
+            name: 'StartDate'
+        },{
+            xtype: 'hidden',
+            name: 'EndDate'
+        },{
+            xtype: 'hidden',
+            name: 'CalendarId'
+        },{
+            xtype: 'hidden',
+            name: 'Vacant'
+        }]
+    };
 
-		this.inlines = new Ext.util.MixedCollection({});
-		
-	    this.preorderedService = new Ext.calendar.PreorderedServiceInlineGrid({
-			//record:this.preorder,
-			type:this.type,
-			region:'south',
-			height:200,
-			margins:'0 0 5 5'
-		});
-		
-		this.preorderedService.store.on('write', function(){
-			this.popStep();
-		}, this);
-		
-		this.inlines.add('preorderedservice', this.preorderedService);
-		
-		this.servicePanel = new App.visit.VisitServicePanel({
-	        region: 'east',
-		    collapsible: true,
-		    collapseMode: 'mini',
-		    margins:'5 5 5 0',
-	        width: 200,
-	        split: true
-	    });
-	    
-	    this.fieldSet = new Ext.FormPanel({
-	    	//layout:'column',
-	    	baseCls:'x-border-layout-ct',
-	    	labelWidth: 65,
-	    	frame: false,
-	    	region:'center',
-	    	margins:'5 0 5 5',
-	    	//width:'400',
-	    	defaults:{
-	    		anchor:'100%'
-	    	},
-	    	items:[{
-    	    id: 'timeslot-title',
-        	name: Ext.calendar.EventMappings.Title.name,
-            fieldLabel: 'Пациент',
-	      	xtype: 'textfield'
-       	},{
-        	xtype: 'hidden',
-         	name: 'StartDate'
-	    },{
-    	   xtype: 'hidden',
-           name: 'EndDate'
-	    },{
-    		xtype: 'hidden',
-        	name: 'CalendarId'
-	    },{
-    		xtype: 'hidden',
-        	name: 'Vacant'
-	    },{
-    		xtype: 'hidden',
-        	name: 'Preorder'
-	    }]});
-    	
-    	this.formPanelCfg = new Ext.FormPanel({
-	        //xtype: 'form',
-        	layout:'border',
-	        bodyStyle: 'background:transparent;padding:5px 10px 10px;',
-    	    bodyBorder: false,
-        	border: false,
-        	height:300,
-        	bubbleEvents:['patientchoice'],
-	        items: [{
-	        	region:'center',
-	        	layout:'border',
-	        	baseCls:'x-border-layout-ct',
-	        	margins:'5 0 5 5',
-	        	defaults:{
-						baseCls:'x-border-layout-ct',
-						border:false
-					},
-	        	items:[this.fieldSet,this.preorderedService]
-	       	 },this.servicePanel]
-    	});
-    	
+    if (config.calendarStore) {
+        this.calendarStore = config.calendarStore;
+        delete config.calendarStore;
 
-    	this.preorderModel = new Ext.data.Record.create([
-		    {name: 'id'},
-		    {name: 'resource_uri'},
-		    {name: 'patient'},
-		    {name: 'timeslot'},
-		    {name: 'comment'},
-		    {name: 'expiration'}
-		]);
+        formPanelCfg.items.push({
+            xtype: 'calendarpicker',
+            id: 'timeslot-calendar',
+            name: 'calendar',
+            anchor: '100%',
+            store: this.calendarStore
+        });
+    };
 
-    	this.preorderStore = new Ext.data.RESTStore({
-			autoLoad : true,
-			apiUrl : get_api_url('preorder'),
-			model: this.preorderModel
-		});
-		
-		this.preorderStore.on('write', function(store, action, result, res, rs){
-			if(action=='create') {
-			    this.preorder = rs;
-			    App.eventManager.fireEvent('preordercreate',rs);
-		    }
-		}, this);
-		
-		this.clearButton = new Ext.Button({
-			iconCls:'silk-cancel',
-			text:'Отменить предзаказ',
-			disabled:true,
-			handler:this.onClear.createDelegate(this, [])
-		});
+    Ext.calendar.TimeslotEditWindow.superclass.constructor.call(this, Ext.apply({
+        titleTextAdd: 'Добавить событие',
+        titleTextEdit: 'Изменить событие',
+        width: 600,
+        autocreate: true,
+        border: true,
+        closeAction: 'hide',
+        modal: false,
+        resizable: false,
+        buttonAlign: 'left',
+        savingMessage: 'Сохранение изменений...',
+        deletingMessage: 'Удаление события...',
+
+        fbar: [{
+            xtype: 'tbtext',
+            text: '<a href="#" id="tblink">Дополнительно...</a>'
+        },
+        '->', {
+            text: 'Сохранить',
+            disabled: false,
+            handler: this.onSave,
+            scope: this
+        },
+        /*{
+            id: 'delete-btn',
+            text: 'Удалить',
+            disabled: false,
+            handler: this.onDelete,
+            scope: this,
+            hideMode: 'offsets'
+        },*/
+        {
+            text: 'Отмена',
+            disabled: false,
+            handler: this.onCancel,
+            scope: this
+        }],
+        items: formPanelCfg
+    },
+    config));
+};
+
+Ext.extend(Ext.calendar.TimeslotEditWindow, Ext.Window, {
+    // private
+    //newId: 10000,
+
+    // private
+    initComponent: function() {
+        Ext.calendar.TimeslotEditWindow.superclass.initComponent.call(this);
+
+        this.formPanel = this.items.items[0];
 
         this.addEvents({
             /**
@@ -168,101 +156,6 @@ Ext.calendar.TimeslotEditWindow = Ext.extend(Ext.Window, {
              */
             editdetails: true
         });
-
-        this.formPanel = this.formPanelCfg;
-
-        
-        if (this.calendarStore) {
-    	    
-        	this.fieldSet.add({
-	            xtype: 'calendarpicker',
-    	        id: 'timeslot-calendar',
-        	    name: 'calendar',
-        	    fieldLabel:'Врач',
-            	anchor: '100%',
-	            store: this.calendarStore
-    	    });
-    	};
-    	
-    	this.ttb = [{
-    		xtype:'button',
-			iconCls:'silk-accept',
-			text:'Выбрать пациента',
-			handler:this.onChoice.createDelegate(this, [])
-		},{
-    		xtype:'button',
-			iconCls:'silk-add',
-			text:'Добавить пациента',
-			handler:this.onAddPatient.createDelegate(this, [])
-		}
-		];
-    	
-	    config = {
-    	    titleTextAdd: 'Добавить событие',
-        	titleTextEdit: 'Изменить событие',
-	        width: 800,
-    	    autocreate: true,
-        	border: true,
-	        closeAction: 'hide',
-    	    modal: false,
-        	resizable: false,
-	        buttonAlign: 'left',
-    	    savingMessage: 'Сохранение изменений...',
-        	deletingMessage: 'Удаление события...',
-        	
-        	tbar: this.ttb,
-
-	        fbar: [
-    	    '->', this.clearButton,'-',{
-        	    text: 'Сохранить',
-            	disabled: false,
-	            handler: this.onSave,
-    	        scope: this
-        	},
-        /*{
-            id: 'delete-btn',
-            text: 'Удалить',
-            disabled: false,
-            handler: this.onDelete,
-            scope: this,
-            hideMode: 'offsets'
-        },*/
-	        {
-    	        text: 'Отмена',
-        	    disabled: false,
-            	handler: this.onCancel,
-	            scope: this
-    	    }],
-        	items:[this.formPanelCfg]
-    	};
-		Ext.apply(this, Ext.apply(this.initialConfig, config));
-        Ext.calendar.TimeslotEditWindow.superclass.initComponent.apply(this, arguments);
-        this.servicePanel.on('serviceclick', this.onServiceClick, this);
-        
-        this.formPanelCfg.on('patientchoice',function(){
-        	var patientWindow;
-        	
-        	var patientGrid = new App.calendar.PatientGrid({
-        		scope:this,
-        		fn:function(record){
-        			var name = record.data.last_name+' '+record.data.first_name;
-        			this.formPanel.form.findField('Title').setValue(name)
-        			this.patient = record;
-					patientWindow.close();
-				}
-       	 	});
-        	
-        	patientWindow = new Ext.Window ({
-        		width:700,
-				height:500,
-				layout:'fit',
-				title:'Пациенты',
-				items:[patientGrid],
-				modal:true,
-				border:false
-    	    });
-        	patientWindow.show();
-        },this)
     },
 
     // private
@@ -271,16 +164,25 @@ Ext.calendar.TimeslotEditWindow = Ext.extend(Ext.Window, {
 
         this.el.addClass('ext-cal-event-win');
 
-        /*Ext.get('tblink').on('click',
+        Ext.get('tblink').on('click',
         function(e) {
             e.stopEvent();
             this.updateRecord();
             this.fireEvent('editdetails', this, this.activeRecord);
         },
-        this);*/
+        this);
         
     },
 
+    /**
+     * Shows the window, rendering it first if necessary, or activates it and brings it to front if hidden.
+	 * @param {Ext.data.Record/Object} o Either a {@link Ext.data.Record} if showing the form
+	 * for an existing event in edit mode, or a plain object containing a StartDate property (and 
+	 * optionally an EndDate property) for showing the form in add mode. 
+     * @param {String/Element} animateTarget (optional) The target element or id from which the window should
+     * animate while opening (defaults to null with no animation)
+     * @return {Ext.Window} this
+     */
     show: function(o, animateTarget, vw) {
         // Work around the CSS day cell height hack needed for initial render in IE8/strict:
         var anim = (Ext.isIE8 && Ext.isStrict) ? null: animateTarget;
@@ -292,9 +194,7 @@ Ext.calendar.TimeslotEditWindow = Ext.extend(Ext.Window, {
         //Ext.getCmp('delete-btn')[o.data && o.data[Ext.calendar.EventMappings.EventId.name] ? 'show': 'hide']();
 
         var rec,
-        f = this.formPanel.getForm();
-        this.preorder = undefined;
-        this.patient = undefined;
+        f = this.formPanel.form;
 
         if (o.data) {
             rec = o;
@@ -308,8 +208,6 @@ Ext.calendar.TimeslotEditWindow = Ext.extend(Ext.Window, {
             else {
                 this.setTitle(this.titleTextEdit);
             }
-           	this.preorderStore.setBaseParam('timeslot',App.uriToId(rec.data['ResourceURI']));
-           	this.preorderStore.load({callback:this.setPreorder,scope:this});
 
             f.loadRecord(rec);
             //this.getForm().findField('start').originalValue = o.data['start']
@@ -342,7 +240,6 @@ Ext.calendar.TimeslotEditWindow = Ext.extend(Ext.Window, {
         }
         //Ext.getCmp('date-range').setValue(rec.data);
         this.activeRecord = rec;
-        
         return this;
     },
 
@@ -388,76 +285,21 @@ Ext.calendar.TimeslotEditWindow = Ext.extend(Ext.Window, {
         	this.activeRecord.set(M.StaffId.name, this.formPanel.form.findField('staff').getValue());
         };
         this.activeRecord.set(M.Vacant.name, Ext.getCmp('timeslot-title').getValue()=='');
-        this.activeRecord.set(M.Timeslot.name, true);
-        
-        var uri = this.activeRecord.data[M.ResourceURI.name];
-        //Если мы выбрали пациента
-        if (this.patient && uri){
-        	if (this.preorder) {
-        		this.preorder.set('patient',this.patient.data.resource_uri);
-        		this.preorder.commit();
-        		this.preorderedService.onPreorderCreate(this.preorder);
-        	} else {
-        		var record = new this.preorderModel();
-        		record.set('patient',this.patient.data.resource_uri);
-        		record.set('timeslot',uri);
-        		var end = this.activeRecord.data[M.EndDate.name];
-        		var day = end.add('d',2);
-        		record.set('expiration', end);
-        		this.preorderStore.add(record);
-        	}
-        } else {
-        	if (this.preorder){
-        		this.preorderedService.onPreorderCreate(this.preorder);
-        	}
-        }
     },
-    
-    setPreorder: function(records,opt,success){
-		if (records[0]) {
-			this.preorder = records[0];
-			this.clearButton.setDisabled(false);
-			this.preorderedService.record = this.preorder; 
-            this.preorderedService.store.setBaseParam('preorder',App.uriToId(this.preorder.data.resource_uri));
-            this.preorderedService.store.load();
-            this.servicePanel.enable();
-		} else {
-			this.clearButton.setDisabled(true);
-			this.servicePanel.disable();
-		}
-	},
 
     // private
     onSave: function() {
         if (!this.formPanel.form.isValid()) {
             return;
         }
-		//console.log('Dirty ',this.formPanel.form.isDirty());   
-		
-		this.updateRecord();		
-		this.steps = this.getSteps();
-		this.tSteps = this.steps;
-		
-		if(this.steps>0) {
-			this.msgBox = Ext.MessageBox.progress('Подождите','Идет сохранение документа!');
-		} else {
-			//this.onClose(true);
-			this.fireEvent(this.isAdd ? 'eventadd': 'eventupdate', this, this.activeRecord);
-		}
-		
-        //Если была нажата кнопка Отменить предзаказ
-        if (this.setRemovePreorder) {
-        	this.setRemovePreorder = false;
-        	this.preorderStore.remove(this.preorder);
-        	
+        this.updateRecord();
+
+        if (!this.activeRecord.dirty) {
+            this.onCancel();
+            return;
         }
 
-//        if (!this.activeRecord.dirty) {
-//            this.onCancel();
-//            return;
-//        }
-
-
+        this.fireEvent(this.isAdd ? 'eventadd': 'eventupdate', this, this.activeRecord);
     },
 
     // private
@@ -465,94 +307,11 @@ Ext.calendar.TimeslotEditWindow = Ext.extend(Ext.Window, {
         this.fireEvent('eventdelete', this, this.activeRecord);
     },
     
-    onAddPatient: function() {
-        var patientWin = new App.patient.PatientWindow({
-			//store:this.store,
-			scope:this,
-			fn:function(record){
-				this.patient = record;
-				var name = record.data.last_name+' '+record.data.first_name;
-        		this.formPanel.form.findField('Title').setValue(name);
-        		this.servicePanel.enable();
-				
-			}
-		});
-		patientWin.show();
-		patientWin.on('savecomplete', function(){
-			patientWin.close();
-		},this);
-    },
-    
     onChoice: function() {
-        var patientWindow;
-        	
-        	var patientGrid = new App.calendar.PatientGrid({
-        		scope:this,
-        		fn:function(record){
-        			var name = record.data.last_name+' '+record.data.first_name;
-        			this.formPanel.form.findField('Title').setValue(name)
-        			this.patient = record;
-        			this.servicePanel.enable();
-					patientWindow.close();
-				}
-       	 	});
-        	
-        	patientWindow = new Ext.Window ({
-        		width:700,
-				height:500,
-				layout:'fit',
-				title:'Пациенты',
-				items:[patientGrid],
-				modal:true,
-				border:false
-    	    });
-        	patientWindow.show();
+        
     },
     
-    onClear: function(){
-       	Ext.Msg.confirm('Предупреждение','Отменить предзаказ?',
-              function(btn){
-    			if (btn=='yes') {
-    				if (this.preorder){
-    					this.clearButton.setDisabled(true);
-   						this.setRemovePreorder = true;
-   						this.formPanel.form.findField('Title').setValue('');
-   						this.onSave();
-   					}
-    			}
-            },this
-        );
-    	
-    	
-    },
-    
-    onServiceClick : function(node) {
-		var a = node.attributes;
-		this.preorderedService.addRow.createDelegate(this.preorderedService, [a])();
-	},
-	
-	popStep: function() {
-		this.steps-=1;
-		if(this.msgBox) {
-			var progress = (this.tSteps-this.steps) / this.tSteps;
-			this.msgBox.updateProgress(progress);
-		}
-		if(this.steps===0) {
-			if(this.msgBox) {
-				this.msgBox.hide();
-			}
-			//this.onClose(true);
-			this.fireEvent(this.isAdd ? 'eventadd': 'eventupdate', this, this.activeRecord);
-		}
-	},
-	
-	getSteps : function() {
-		var steps = 0;
-		
-		this.inlines.each(function(inline,i,l){
-			var s = inline.getSteps();
-			steps+=s;
-		});
-		return steps
-	}
+    onAdd: function() {
+        
+    }
 });
