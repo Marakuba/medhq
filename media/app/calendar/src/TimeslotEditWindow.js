@@ -156,6 +156,8 @@ Ext.extend(Ext.calendar.TimeslotEditWindow, Ext.Window, {
              */
             editdetails: true
         });
+        
+        this.patientGrid = new App.patient.PatientGrid({})
     },
 
     // private
