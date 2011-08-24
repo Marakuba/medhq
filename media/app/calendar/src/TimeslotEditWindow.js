@@ -14,107 +14,46 @@
  * @param {Object} config The config object
  */
 Ext.ns('Ext.calendar');
-Ext.calendar.TimeslotEditWindow = function(config) {
-    var formPanelCfg = {
-        xtype: 'form',
-        labelWidth: 65,
-        frame: false,
-        bodyStyle: 'background:transparent;padding:5px 10px 10px;',
-        bodyBorder: false,
-        border: false,
-        items: [{
-            id: 'timeslot-title',
-            name: Ext.calendar.EventMappings.Title.name,
-            fieldLabel: 'Заголовок',
-            xtype: 'textfield',
-            anchor: '100%'
-        },{
-        	xtype:'button',
-        	text:'...',
-        	headler:this.onChoice.createDelegate(this)
-        },{
-        	xtype:'button',
-        	text:'+',
-        	headler:this.onAdd.createDelegate(this)
-        },{
-            xtype: 'hidden',
-            name: 'StartDate'
-        },{
-            xtype: 'hidden',
-            name: 'EndDate'
-        },{
-            xtype: 'hidden',
-            name: 'CalendarId'
-        },{
-            xtype: 'hidden',
-            name: 'Vacant'
-        }]
-    };
-
-    if (config.calendarStore) {
-        this.calendarStore = config.calendarStore;
-        delete config.calendarStore;
-
-        formPanelCfg.items.push({
-            xtype: 'calendarpicker',
-            id: 'timeslot-calendar',
-            name: 'calendar',
-            anchor: '100%',
-            store: this.calendarStore
-        });
-    };
-
-    Ext.calendar.TimeslotEditWindow.superclass.constructor.call(this, Ext.apply({
-        titleTextAdd: 'Добавить событие',
-        titleTextEdit: 'Изменить событие',
-        width: 600,
-        autocreate: true,
-        border: true,
-        closeAction: 'hide',
-        modal: false,
-        resizable: false,
-        buttonAlign: 'left',
-        savingMessage: 'Сохранение изменений...',
-        deletingMessage: 'Удаление события...',
-
-        fbar: [{
-            xtype: 'tbtext',
-            text: '<a href="#" id="tblink">Дополнительно...</a>'
-        },
-        '->', {
-            text: 'Сохранить',
-            disabled: false,
-            handler: this.onSave,
-            scope: this
-        },
-        /*{
-            id: 'delete-btn',
-            text: 'Удалить',
-            disabled: false,
-            handler: this.onDelete,
-            scope: this,
-            hideMode: 'offsets'
-        },*/
-        {
-            text: 'Отмена',
-            disabled: false,
-            handler: this.onCancel,
-            scope: this
-        }],
-        items: formPanelCfg
-    },
-    config));
-};
-
-Ext.extend(Ext.calendar.TimeslotEditWindow, Ext.Window, {
-    // private
-    //newId: 10000,
-
-    // private
-    initComponent: function() {
-        Ext.calendar.TimeslotEditWindow.superclass.initComponent.call(this);
-
-        this.formPanel = this.items.items[0];
+Ext.calendar.TimeslotEditWindow = Ext.extend(Ext.Window, {
+	initComponent: function() {
+    	this.formPanelCfg = new Ext.FormPanel({
+	        //xtype: 'form',
+    	    labelWidth: 65,
+        	frame: false,
+	        bodyStyle: 'background:transparent;padding:5px 10px 10px;',
+    	    bodyBorder: false,
+        	border: false,
+        	bubbleEvents:['patientchoice'],
+	        items: [{
+    	        id: 'timeslot-title',
+        	    name: Ext.calendar.EventMappings.Title.name,
+            	fieldLabel: 'Заголовок',
+	            xtype: 'textfield',
+    	        anchor: '100%'
+        	},{
+        		xtype:'button',
+	        	text:'...',
+    	    	handler:function(){this.formPanelCfg.fireEvent('patientchoice')},
+        		scope:this
+	        },{
+    	    	xtype:'button',
+        		text:'+',
+        		handler:this.onAdd.createDelegate(this),
+	        	scope:this
+    	    },{
+        	    xtype: 'hidden',
+            	name: 'StartDate'
+	        },{
+    	        xtype: 'hidden',
+        	    name: 'EndDate'
+	        },{
+    	        xtype: 'hidden',
+        	    name: 'CalendarId'
+	        },{
+    	        xtype: 'hidden',
+        	    name: 'Vacant'
+	        }]
+    	});
 
         this.addEvents({
             /**
@@ -156,8 +95,86 @@ Ext.extend(Ext.calendar.TimeslotEditWindow, Ext.Window, {
              */
             editdetails: true
         });
+
+        this.formPanel = this.formPanelCfg;
+
         
-        this.patientGrid = new App.patient.PatientGrid({})
+        if (this.calendarStore) {
+    	    
+        	this.formPanelCfg.add({
+	            xtype: 'calendarpicker',
+    	        id: 'timeslot-calendar',
+        	    name: 'calendar',
+            	anchor: '100%',
+	            store: this.calendarStore
+    	    });
+    	};
+    	
+	    config = {
+    	    titleTextAdd: 'Добавить событие',
+        	titleTextEdit: 'Изменить событие',
+	        width: 600,
+    	    autocreate: true,
+        	border: true,
+	        closeAction: 'hide',
+    	    modal: false,
+        	resizable: false,
+	        buttonAlign: 'left',
+    	    savingMessage: 'Сохранение изменений...',
+        	deletingMessage: 'Удаление события...',
+
+	        fbar: [{
+    	        xtype: 'tbtext',
+        	    text: '<a href="#" id="tblink">Дополнительно...</a>'
+	        },
+    	    '->', {
+        	    text: 'Сохранить',
+            	disabled: false,
+	            handler: this.onSave,
+    	        scope: this
+        	},
+        /*{
+            id: 'delete-btn',
+            text: 'Удалить',
+            disabled: false,
+            handler: this.onDelete,
+            scope: this,
+            hideMode: 'offsets'
+        },*/
+	        {
+    	        text: 'Отмена',
+        	    disabled: false,
+            	handler: this.onCancel,
+	            scope: this
+    	    }],
+        	items: this.formPanelCfg
+    	};
+		Ext.apply(this, Ext.apply(this.initialConfig, config));
+        Ext.calendar.TimeslotEditWindow.superclass.initComponent.apply(this, arguments);
+        
+        this.formPanelCfg.on('patientchoice',function(){
+        	var patientWindow;
+        	
+        	var patientGrid = new App.calendar.PatientGrid({
+        		scope:this,
+        		fn:function(record){
+        			var name = record.data.last_name+' '+record.data.first_name;
+        			this.formPanel.form.findField('Title').setValue(name)
+					patientWindow.close();
+				}
+       	 	});
+        	
+        	patientWindow = new Ext.Window ({
+        		width:700,
+				height:500,
+				layout:'fit',
+				title:'Пациенты',
+				items:[patientGrid],
+				modal:true,
+				border:false
+    	    });
+        	patientWindow.show();
+        },this)
     },
 
     // private
@@ -173,6 +190,8 @@ Ext.extend(Ext.calendar.TimeslotEditWindow, Ext.Window, {
             this.fireEvent('editdetails', this, this.activeRecord);
         },
         this);
+        
+        
         
     },
 
@@ -196,7 +215,7 @@ Ext.extend(Ext.calendar.TimeslotEditWindow, Ext.Window, {
         //Ext.getCmp('delete-btn')[o.data && o.data[Ext.calendar.EventMappings.EventId.name] ? 'show': 'hide']();
 
         var rec,
-        f = this.formPanel.form;
+        f = this.formPanel.getForm();
 
         if (o.data) {
             rec = o;
@@ -307,10 +326,6 @@ Ext.extend(Ext.calendar.TimeslotEditWindow, Ext.Window, {
     // private
     onDelete: function() {
         this.fireEvent('eventdelete', this, this.activeRecord);
-    },
-    
-    onChoice: function() {
-        
     },
     
     onAdd: function() {
