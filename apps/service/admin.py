@@ -22,6 +22,7 @@ from django.conf.urls.defaults import patterns
 import csv
 import datetime
 from django.views.generic.simple import direct_to_template
+from django.db.models.expressions import F
 
 
 class StandardServiceAdmin(TreeEditor):
@@ -150,10 +151,14 @@ class ExtendedServiceInlineAdmin(admin.TabularInline):
     model = ExtendedService
     extra = 1
 
+
+lookups = {}
+lookups[BaseService._meta.right_attr] = F(BaseService._meta.left_attr)+1
+
 class BaseServiceForm(forms.ModelForm):
     
     parent = TreeNodeChoiceField(label=u'Группа', 
-                                 queryset=BaseService.objects.filter(level=0), 
+                                 queryset=BaseService.objects.exclude(base_group__isnull=True, **lookups).order_by(BaseService._meta.tree_id_attr, BaseService._meta.left_attr, 'level'), 
                                  required=False)
     
     class Meta:
@@ -162,6 +167,8 @@ class BaseServiceForm(forms.ModelForm):
 class BaseServiceAdmin(TreeEditor):
     """
     """
+    
+    form = BaseServiceForm
 
 #    class Media:
 #        css = {

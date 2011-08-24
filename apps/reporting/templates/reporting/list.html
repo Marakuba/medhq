@@ -39,6 +39,7 @@ function go(slug){
     var end_date;
     var order__patient;
     var staff__staff;
+    var staff__department;
     var order__referral;
     var execution_place_office;
     var execution_place_filial;
@@ -50,6 +51,7 @@ function go(slug){
     end_date = document.f1.end_date.value;
     order__patient = document.f1.order__patient.options[document.f1.order__patient.selectedIndex].value;
     staff__staff = document.f1.staff__staff.options[document.f1.staff__staff.selectedIndex].value;
+    staff__department = document.f1.staff__department.options[document.f1.staff__department.selectedIndex].value;
     order__referral = document.f1.order__referral.options[document.f1.order__referral.selectedIndex].value;
     execution_place_office = document.f1.execution_place_office.options[document.f1.execution_place_office.selectedIndex].value;
     execution_place_filial = document.f1.execution_place_filial.options[document.f1.execution_place_filial.selectedIndex].value;
@@ -63,6 +65,7 @@ function go(slug){
         +'&end_date='+end_date
         +'&order__patient='+order__patient
         +'&staff__staff='+staff__staff
+        +'&staff__department='+staff__department
         +'&order__referral='+order__referral
         +'&execution_place_office='+execution_place_office
         +'&execution_place_filial='+execution_place_filial

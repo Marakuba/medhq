@@ -116,6 +116,7 @@ INSTALLED_APPS = (
     'constance',
     'debug_toolbar',
     'django_extensions',
+    'django_memcached',
     #'djcelery',
     'feincms',
     'flatblocks',

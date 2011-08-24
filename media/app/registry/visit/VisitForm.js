@@ -21,10 +21,10 @@ App.visit.VisitForm = Ext.extend(Ext.FormPanel, {
 		
 		this.servicePanel = new App.visit.VisitServicePanel({
 	        region: 'east',
-		    collapsible: true,
-		    collapseMode: 'mini',
 		    margins:'5 5 5 0',
 	        width: 300,
+		    collapsible: true,
+		    collapseMode: 'mini',
 	        split: true
 	    });	
 
@@ -420,7 +420,10 @@ App.visit.VisitForm = Ext.extend(Ext.FormPanel, {
 						border:false
 					},
 				    bodyStyle: 'padding:5px',
-	        		items:items
+	        		items:items,
+	    		    collapsible: true,
+	    		    collapseMode: 'mini',
+	    	        split: true
 	        	},this.orderedService]
 			}, this.servicePanel]
 
@@ -436,10 +439,6 @@ App.visit.VisitForm = Ext.extend(Ext.FormPanel, {
 		this.orderedService.on('sumchange', this.updateTotalSum, this);
 		this.servicePanel.on('serviceclick', this.onServiceClick, this);
 		
-	},
-	
-	addRow: function(attrs, cb, scope) {
-		this.orderedService.addRow.createDelegate(this.orderedService, [attrs, undefined, cb, scope])();
 	},
 	
 	printBarcode: function()
@@ -514,12 +513,18 @@ App.visit.VisitForm = Ext.extend(Ext.FormPanel, {
 		}
 	},
 	
+	addRow: function(attrs, cb, scope) {
+		this.orderedService.addRow.createDelegate(this.orderedService, [attrs, undefined, cb, scope])();
+	},
+	
 	onServiceClick : function(node) {
 		var a = node.attributes;
 		if (a.isComplex) {
 			this.cNodes = a.nodes;
+			console.info('orig',this.cNodes);
 			complexAdd = function() {
 				var item = this.cNodes.pop();
+				console.info('after adding',this.cNodes);
 				this.addRow(item, function(){
 					if(this.cNodes.length) {
 						complexAdd.createDelegate(this,[])();

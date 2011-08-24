@@ -251,9 +251,8 @@ App.visit.OrderedServiceInlineGrid = Ext.extend(Ext.grid.EditorGridPanel, {
 			count:1,
 			execution_place:"/api/v1/dashboard/state/"+place  //TODO: replace to App.getApiUrl
 		});
-		this.stopEditing();
 		this.store.add(s);
-		this.startEditing(0, 0);
+		this.getView().focusRow(this.store.getCount()-1);
 	},
 	
 	addRow: function(attrs, can_duplicate, callback, scope) {
@@ -282,10 +281,11 @@ App.visit.OrderedServiceInlineGrid = Ext.extend(Ext.grid.EditorGridPanel, {
 				},
 				scope:this
 			});
-//				var last = this.store.getCount()-1;
-//				this.staffWindow(last,attrs.id);
 		} else {
 			this.addRecord(attrs);
+			if(callback) {
+				Ext.callback(callback, scope);
+			}
 		}
 	},
 	

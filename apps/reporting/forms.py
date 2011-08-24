@@ -5,7 +5,7 @@ from staff.models import Staff
 from visit.models import Referral,CLS
 from service.models import ExecutionPlace
 from visit.settings import PAYMENT_TYPES
-from state.models import State
+from state.models import State, Department
 from pricelist.models import PRICE_TYPES
 from models import StateGroup
 
@@ -39,6 +39,10 @@ class ReportForm(forms.Form):
     staff__staff = forms.ModelChoiceField(label=u'Врач',
                                    queryset=staffs,
                                    required=False)
+    
+    staff__department = forms.ModelChoiceField(label=u'Отделение', 
+                                               queryset=Department.objects.all(), 
+                                               required=False)
 
     order__referral = forms.ModelChoiceField(label=u'Кто направил',
                                       queryset=referrals,
