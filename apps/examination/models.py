@@ -87,3 +87,4 @@ class ExaminationCard(models.Model):
     class Meta:
         verbose_name = u'Карта осмотра'
         verbose_name_plural = u'Карты осмотра'
+        ordering = ('-id',)

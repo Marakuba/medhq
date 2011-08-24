@@ -70,6 +70,16 @@ Ext.calendar.EventMappings = {
         name: 'StaffId',
         mapping: 'sid',
         type: 'string'
+    },
+    Timeslot: {
+        name: 'Timeslot',
+        mapping: 'timeslot',
+        type: 'boolean'
+    },
+    Vacant: {
+        name: 'Vacant',
+        mapping: 'vacant',
+        type: 'boolean'
     }
 };
 
@@ -126,7 +136,9 @@ rec.data[M.Notes.name] = 'Some notes';
     M.IsAllDay,
     M.Reminder,
     M.IsNew,
-    M.StaffId
+    M.StaffId,
+    M.Timeslot,
+    M.Vacant
     ]);
 
     /**
@@ -145,7 +157,9 @@ rec.data[M.Notes.name] = 'Some notes';
         M.IsAllDay,
         M.Reminder,
         M.IsNew,
-        M.StaffId
+        M.StaffId,
+        M.Timeslot,
+        M.Vacant
         ]);
     };
 })();

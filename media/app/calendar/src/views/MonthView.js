@@ -30,7 +30,7 @@ Ext.calendar.MonthView = Ext.extend(Ext.calendar.CalendarView, {
      * @cfg {String} todayText
      * The text to display in the current day's box in the calendar when {@link #showTodayText} is true (defaults to 'Today')
      */
-    todayText: 'Today',
+    todayText: 'Сегодня',
     /**
      * @cfg {Boolean} showHeader
      * True to display a header beneath the navigation bar containing the week names above each week's column, false not to 
@@ -328,7 +328,7 @@ Ext.calendar.MonthView = Ext.extend(Ext.calendar.CalendarView, {
     getEventHeight: function() {
         if (!this.eventHeight) {
             var evt = this.el.select('.ext-cal-evt').first();
-            this.eventHeight = evt ? evt.parent('tr').getHeight() : 18;
+            this.eventHeight = evt ? evt.parent('tr').getHeight() : 32;
         }
         return this.eventHeight;
     },
