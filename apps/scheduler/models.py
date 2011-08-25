@@ -134,19 +134,6 @@ class Preorder(models.Model):
     """
     Модель предварительного заказа
     """
-    patient = models.ForeignKey(Patient)
-    timeslot = models.OneToOneField(Event)
+    patient = models.ForeignKey(Patient, blank = True, null = True)
+    timeslot = models.OneToOneField(Event, blank = True, null = True)
     comment = models.TextField(u'Примечание', blank = True, null = True)
-    expiration = CustomDateTimeField(u'Дата истечения', blank = True, null = True)
-    
-class PreorderedService(models.Model):
-    """
-    Набор услуг предзаказа
-    """
-    preorder = models.ForeignKey(Preorder)
-    created = models.DateTimeField(u'Создано', auto_now_add=True)
-    modified = models.DateTimeField(u'Изменено', auto_now=True)
-    service = models.ForeignKey(BaseService, verbose_name=u'Услуга')
-    count = models.IntegerField(u'Количество', default=1)
-    execution_place = models.ForeignKey(State, verbose_name=u'Место выполнения', 
-                                        default=settings.MAIN_STATE_ID)

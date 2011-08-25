@@ -454,7 +454,7 @@ Ext.calendar.DoctorScheduler = Ext.extend(Ext.Panel, {
 							'eventupdate': {
 								fn: function(win, rec){
 									win.hide();
-									rec.commit();
+									//rec.commit();
                         	        this.showMsg('Event '+ rec.data.Title +' was updated');
 								},
 								scope: this

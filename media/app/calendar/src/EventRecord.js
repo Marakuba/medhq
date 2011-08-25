@@ -14,7 +14,7 @@ Ext.calendar.EventMappings = {
     ResourceURI: {
         name: 'ResourceURI',
         mapping: 'resource_uri',
-        type: 'string'
+        type: 'int'
     },
     EventId: {
         name: 'EventId',
@@ -85,6 +85,11 @@ Ext.calendar.EventMappings = {
         name: 'Vacant',
         mapping: 'vacant',
         type: 'boolean'
+    },
+    Preorder: {
+        name: 'Preorder',
+        mapping: 'preorder',
+        type: 'string'
     }
 };
 
@@ -144,7 +149,8 @@ rec.data[M.Notes.name] = 'Some notes';
     M.IsNew,
     M.StaffId,
     M.Timeslot,
-    M.Vacant
+    M.Vacant,
+    M.Preorder
     ]);
 
     /**
@@ -166,7 +172,8 @@ rec.data[M.Notes.name] = 'Some notes';
         M.IsNew,
         M.StaffId,
         M.Timeslot,
-        M.Vacant
+        M.Vacant,
+        M.Preorder
         ]);
     };
 })();
