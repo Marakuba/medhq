@@ -83,7 +83,7 @@ class Event(models.Model):
     staff = models.ForeignKey(Staff, blank = True, null = True)
     sid = models.PositiveIntegerField(u'ID врача', blank = True, null = True)
     cid = models.PositiveIntegerField(u'ID календаря', blank = True, null = True)
-    title = models.CharField(u'Заголовок', max_length=300)
+    title = models.CharField(u'Заголовок', max_length=300, blank = True, null = True)
     start = CustomDateTimeField(u'Начальная дата', blank = True, null = True)
     end = CustomDateTimeField(u'Конечная дата', blank = True, null = True)
     loc = models.TextField(u'Кабинет', blank = True, null = True)
@@ -123,4 +123,5 @@ class Preorder(models.Model):
     Модель предварительного заказа
     """
     patient = models.ForeignKey(Patient, blank = True, null = True)
-    timeslot = models.OneToOneField(Event)
+    timeslot = models.OneToOneField(Event, blank = True, null = True)
+    comment = models.TextField(u'Примечание', blank = True, null = True)

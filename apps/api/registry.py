@@ -1115,8 +1115,23 @@ class CalendarResource(ExtResource):
             'title':ALL,
         }
         
+class PreorderResource(ExtResource):
+    patient = fields.ForeignKey(PatientResource, 'patient', null=True)
+    event = fields.OneToOneField('apps.api.registry.EventResource','event', null=True)
+    class Meta:
+        queryset = Calendar.objects.all()
+        resource_name = 'preorder'
+        authorization = DjangoAuthorization()
+        filtering = {
+            'patient':ALL,
+            'event':ALL,
+        }
+        
+
+        
 class EventResource(ExtResource):
     staff = fields.ForeignKey(StaffResource, 'staff', null=True)
+    preorder = fields.OneToOneField('apps.api.registry.PreorderResource','preorder', null=True)
     
     def dehydrate(self, bundle):
         bundle.data['start'] = bundle.obj.start.strftime('%a %b %d %Y %H:%M:%S')
@@ -1134,6 +1149,7 @@ class EventResource(ExtResource):
             'start':ALL,
             'end':ALL,
             'timeslot':ALL,
+            'preorder':ALL_WITH_RELATIONS,
         }       
         limit = 1000
 
@@ -1369,6 +1385,7 @@ api.register(IssueResource())
 
 #scheduler
 api.register(CalendarResource())
+api.register(PreorderResource())
 api.register(EventResource())
 
 #interlayer
