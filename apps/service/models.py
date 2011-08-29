@@ -10,6 +10,7 @@ from django.conf.locale import tr
 from django.core.cache import cache
 from django.db.models.signals import post_save
 from mptt.models import MPTTModel
+from state.models import State
 
 
 class ICD10(MPTTModel):
@@ -297,8 +298,12 @@ except mptt.AlreadyRegistered:
 
 
 def clear_service_cache(sender, **kwargs):
-    print "service cache cleared"
-    cache.delete('x-service_list')
+    if settings.SERVICETREE_ONLY_OWN:
+        own_states = State.objects.filter(type=u'b')
+        for state in own_states:
+            cache.delete('service_list_%s' % state.id)
+    else:
+        cache.delete('service_list')
     
     
 post_save.connect(clear_service_cache, sender=BaseService)
