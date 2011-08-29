@@ -74,12 +74,9 @@ App.invoice.InvoiceGrid = Ext.extend(Ext.grid.GridPanel, {
 				iconCls:'silk-pencil',
 				handler:this.onChange.createDelegate(this),
 				scope:this
-			},{
-				text:'Реестр исследований',
-				handler:this.onPrint.createDelegate(this),
-				scope:this
-			},{
-				text:'Реестр пробирок',
+			},'-',{
+				iconCls:'silk-printer',
+				text:'Печать реестра',
 				handler:this.onPrint.createDelegate(this),
 				scope:this
 			}],
@@ -125,9 +122,9 @@ App.invoice.InvoiceGrid = Ext.extend(Ext.grid.GridPanel, {
 	},
 	
 	onPrint: function() {
-//		var id = this.getSelected().data.id;
-//		var url = ['/lab/print/results',id,''].join('/');
-//		window.open(url);
+		var id = this.getSelected().data.id;
+		var url = ['/lab/print/invoice',id,''].join('/');
+		window.open(url);
 	},
 	
 	onCreate: function() {
@@ -146,15 +143,18 @@ App.invoice.InvoiceGrid = Ext.extend(Ext.grid.GridPanel, {
 	onChange: function(rowindex){
 		var record = this.getSelected();
 		if(record) {
-    		this.win = new App.issue.IssueWindow({
-    			record:record,
-    			model:this.store.recordType,
-    			scope:this,
-    			fn:function(record){
-    				//this.store.Record(record);
-    			}
-    		});
-    		this.win.show();
+//    		this.win = new App.issue.IssueWindow({
+//    			record:record,
+//    			model:this.store.recordType,
+//    			scope:this,
+//    			fn:function(record){
+//    				//this.store.Record(record);
+//    			}
+//    		});
+//    		this.win.show();
+			App.eventManager.fireEvent('launchapp','invoicetab',{
+				record:record
+			});
 		}
 	},
 	

@@ -7,6 +7,7 @@ App.invoice.InvoiceTab = Ext.extend(Ext.Panel, {
 		
 		this.store = this.store || new Ext.data.RESTStore({
 			autoLoad : true,
+			autoSave:true,
 			apiUrl : get_api_url('invoice'),
 			model: [
 			    {name: 'id'},
@@ -21,7 +22,14 @@ App.invoice.InvoiceTab = Ext.extend(Ext.Panel, {
 		this.model = this.store.recordType;
 		
 		this.form = new App.invoice.InvoiceForm({
-			
+			model:this.store.recordType,
+			record:this.record,
+			fn:function(record){
+				this.record = record;
+				this.store.insertRecord(record);
+				Ext.callback(this.fn, this.scope || window, [this.record]);
+			},
+			scope:this
 		});
 		
 		this.saveButton = new Ext.Button({
@@ -59,14 +67,17 @@ App.invoice.InvoiceTab = Ext.extend(Ext.Panel, {
 
 	onFormSave: function() {
 		var f = this.form;
-		this.steps = f.getSteps();
-		this.tSteps = this.steps;
-		if(this.steps>0) {
-			this.msgBox = Ext.MessageBox.progress('Подождите','Идет сохранение документа!');
-			f.on('popstep',this.popStep, this);
-			f.onSave();
-		} else {
-			this.onClose(true);
+		if(f.getForm().isValid()) {
+			this.steps = f.getSteps();
+			this.tSteps = this.steps;
+			console.info(this.tSteps);
+			if(this.steps>0) {
+				this.msgBox = Ext.MessageBox.progress('Подождите','Идет сохранение документа!');
+	//			f.on('popstep',this.popStep, this);
+				f.onSave();
+			} else {
+				this.onClose(true);
+			}
 		}
 	},
 	

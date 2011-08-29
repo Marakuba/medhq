@@ -12,11 +12,11 @@ App.invoice.InvoiceForm = Ext.extend(Ext.FormPanel, {
 			border:true
 		});
 		
-		this.invoiceItem.store.on('write', function(){
-			this.fireEvent('popstep');
-		}, this);
-
-		this.inlines.add('invoiceitem', this.invoiceItem);
+//		this.invoiceItem.store.on('write', function(){
+//			this.fireEvent('popstep');
+//		}, this);
+//
+//		this.inlines.add('invoiceitem', this.invoiceItem);
 		
 		config = {
 			layout:{
@@ -30,7 +30,7 @@ App.invoice.InvoiceForm = Ext.extend(Ext.FormPanel, {
 				layout:{
 					type:'hbox',
 				},
-				height:50,
+				height:40,
 				padding:5,
 				border:false,
 				defaults:{
@@ -49,51 +49,34 @@ App.invoice.InvoiceForm = Ext.extend(Ext.FormPanel, {
 					layout:'form',
 					items:[new Ext.form.LazyComboBox({
 			        	fieldLabel:'Лаборатория',
-			        	name:'source_lab',
+			        	name:'state',
 					    minChars:3,
 					    emptyText:'Выберите лабораторию...',
-					    proxyUrl:get_api_url('medstate')
+					    proxyUrl:get_api_url('medstate'),
+					    allowBlank:false
 					})]
-				}]
-			},{
-				layout:{
-					type:'hbox',
-				},
-				height:50,
-				padding:5,
-				border:false,
-				defaults:{
-					border:false,
-					margins:'0 5 0 0',
-					layout:'form',
-					hideLabels:true
-				},
-				items:[{
-					items:[{
-						xtype:'displayfield',
-						value:'Выберите период:'
-					}]
-				},{
-//					layout:'form',
-					items:[{
-						xtype:'datefield',
-						format:'d.m.Y',
-						name:'start_date'
-					}]
-				},{
-//					layout:'form',
-					items:[{
-						xtype:'datefield',
-						format:'d.m.Y',
-						name:'end_date'
-					}]
 				},{
 //					layout:'form',
 					items:[{
 						xtype:'button',
 						text:'Заполнить',
 						handler:function(){
-							this.invoiceItem.pullItems();
+							Ext.Ajax.request({
+								url:'/lab/pull_invoice/',
+								method:'POST',
+								params:{
+									invoice:this.record.id,
+									state:App.uriToId(this.record.data.state)
+								},
+								success:function(response, opts){
+									var obj = Ext.decode(response.responseText);
+									console.dir(obj);
+								},
+								failure:function(response, opts){
+									var obj = Ext.decode(response.responseText);
+									console.dir(obj);
+								}
+							})
 						},
 						scope:this
 					}]
@@ -151,7 +134,7 @@ App.invoice.InvoiceForm = Ext.extend(Ext.FormPanel, {
 		if(this.getForm().isDirty()) {
 	        this.getForm().items.each(function(f){
 	            if(f.isDirty()){
-//	            	console.info('dirty field:',f);
+	            	console.info('dirty field:',f);
 	            }
 	         });
 			steps+=1;

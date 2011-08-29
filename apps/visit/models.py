@@ -251,8 +251,6 @@ class OrderedService(make_operator_object('ordered_service')):
     print_date = models.DateTimeField(u'Время печати', blank=True, null=True)
     sampling = models.ForeignKey('lab.Sampling', 
                                  null=True, blank=True)
-    sample = models.OneToOneField('lab.Sampling', related_name='sample',
-                                 null=True, blank=True)
     
     objects = models.Manager()
 

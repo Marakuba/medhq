@@ -1204,7 +1204,7 @@ class PaymentResource(ExtResource):
         
 class InvoiceResource(ExtResource):
     
-    state = fields.ForeignKey(StateResource, 'state')
+    state = fields.ForeignKey(MedStateResource, 'state')
     
     def dehydrate(self, bundle):
         bundle.data['state_name'] = bundle.obj.state
@@ -1238,7 +1238,7 @@ class InvoiceItemResource(ExtResource):
         bundle.data['barcode'] = s.order.barcode.id
         bundle.data['patient_name'] = s.order.patient.short_name()
         bundle.data['service_name'] = s.service
-        bundle.data['sampling'] = s.sampling
+        bundle.data['sampling'] = s.sampling.tube
         
         return bundle
     

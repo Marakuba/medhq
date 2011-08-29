@@ -259,6 +259,8 @@ class Invoice(make_operator_object('invoice')):
     modified = models.DateTimeField(u'Изменено', auto_now=True)
     state = models.ForeignKey(State)
     
+    objects = models.Manager()
+    
     def __unicode__(self):
         return smart_unicode(self.id)
     

@@ -6,7 +6,7 @@ App.invoice.InvoiceItemGrid = Ext.extend(Ext.grid.GridPanel, {
 		
 		this.store = new Ext.data.RESTStore({
 			autoLoad : false,
-			autoSave : false,
+			autoSave : true,
 			apiUrl : get_api_url('invoiceitem'),
 			model: [
 			    {name: 'id'},
@@ -20,50 +20,33 @@ App.invoice.InvoiceItemGrid = Ext.extend(Ext.grid.GridPanel, {
 			    {name: 'sampling'}
 			]
 		});
-		
-		this.serviceStore = new Ext.data.RESTStore({
-			autoLoad : false,
-			baseParams: {
-				sampling__isnull:false
-			},
-			apiUrl : get_api_url('samplingservice'),
-			model: [
-			    {name: 'id'},
-			    {name: 'resource_uri'},
-			    {name: 'created', type:'date',format:'c'},
-			    {name: 'barcode'},
-			    {name: 'patient_name'},
-			    {name: 'service_name'},
-			    {name: 'sampling'}
-			]
-		});
-		
+		console.info(this.record);
+		if(this.record) {
+			this.store.setBaseParam('invoice',this.record.id);
+			this.store.load();
+		}
+ 		
 		this.columns =  [
 		    {
 		    	header: "Дата",
-		    	width:20,
-		    	sortable: true, 
+		    	width:10,
 		    	dataIndex: 'created',
 		    	renderer:Ext.util.Format.dateRenderer('d.m.Y')
 		    },{
 		    	header: "Заказ", 
-		    	width: 50, 
-		    	sortable: true, 
+		    	width: 8, 
 		    	dataIndex: 'barcode'
 		    },{
 		    	header: "Пациент", 
-		    	width: 50, 
-		    	sortable: true, 
+		    	width: 40, 
 		    	dataIndex: 'patient_name'
 		    },{
 		    	header: "Исследование", 
-		    	width: 25, 
-		    	sortable: true, 
+		    	width: 65, 
 		    	dataIndex: 'service_name'
 		    },{
 		    	header: "Пробирка", 
-		    	width: 25, 
-		    	sortable: true, 
+		    	width: 55, 
 		    	dataIndex: 'sampling'
 		    }
 		];		
