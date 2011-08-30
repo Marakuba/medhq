@@ -47,6 +47,33 @@ Ext.calendar.TimeslotEditWindow = Ext.extend(Ext.Window, {
         	    name: 'Preorder'
 	        }]
     	});
+    	this.preorderModel = new Ext.data.Record.create([
+		    {name: 'id'},
+		    {name: 'resource_uri'},
+		    {name: 'patient'},
+		    {name: 'timeslot'},
+		    {name: 'comment'}
+		]);
+
+    	this.preorderStore = new Ext.data.RESTStore({
+			autoLoad : true,
+			apiUrl : get_api_url('preorder'),
+			model: this.preorderModel,
+			listeners:{
+				write:function(store, action, result, res, rs){
+		    		console.log('Client created!');
+		    		console.log(store);
+		    		console.log(action);
+		    		console.log(result);
+		    		console.log(res);
+		    		console.log(rs);
+		    		if(action=='create') {
+			    		this.preorder = rs
+		    		}
+				},
+				scope:this
+			}
+		});
 
         this.addEvents({
             /**
@@ -205,8 +232,6 @@ Ext.calendar.TimeslotEditWindow = Ext.extend(Ext.Window, {
         },
         this);
         
-        
-        
     },
 
     /**
@@ -230,6 +255,7 @@ Ext.calendar.TimeslotEditWindow = Ext.extend(Ext.Window, {
 
         var rec,
         f = this.formPanel.getForm();
+        this.preorder = undefined;
 
         if (o.data) {
             rec = o;
@@ -242,6 +268,10 @@ Ext.calendar.TimeslotEditWindow = Ext.extend(Ext.Window, {
             }
             else {
                 this.setTitle(this.titleTextEdit);
+            }
+            if (rec.data[Ext.calendar.EventMappings.Preorder.name]) {
+            	this.preorderStore.setBaseParam('event',rec.data['resource_uri']);
+            	this.preorderStore.load({callback:this.setPreorder,scope:this});
             }
 
             f.loadRecord(rec);
@@ -321,13 +351,34 @@ Ext.calendar.TimeslotEditWindow = Ext.extend(Ext.Window, {
         	this.activeRecord.set(M.StaffId.name, this.formPanel.form.findField('staff').getValue());
         };
         this.activeRecord.set(M.Vacant.name, Ext.getCmp('timeslot-title').getValue()=='');
+        this.activeRecord.set(M.Timeslot.name, true);
+        var uri = this.activeRecord.data[M.ResourceURI.name];
+        if (this.patient && uri){
+        	if (this.preorder) {
+        		this.preorder.set('patient',this.patient.data.resource_uri);
+        		this.preorder.commit();
+        	} else {
+        		var record = new this.preorderModel();
+        		record.set('patient',this.patient.data.resource_uri);
+        		record.set('timeslot',uri);
+        		this.preorderStore.add(record);
+        	}
+        }
     },
+    
+    setPreorder: function(records,opt,success){
+		if (records) {
+			var rec = records[0];
+			this.preorder = rec
+		}
+	},
 
     // private
     onSave: function() {
         if (!this.formPanel.form.isValid()) {
             return;
         }
+        
         this.updateRecord();
 
         if (!this.activeRecord.dirty) {

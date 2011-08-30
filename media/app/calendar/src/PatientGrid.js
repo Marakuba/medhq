@@ -111,7 +111,7 @@ App.calendar.PatientGrid = Ext.extend(Ext.grid.GridPanel, {
 				//getRowClass : this.applyRowClass
 			},	
 			listeners: {
-				rowdblclick:this.onPatientEdit.createDelegate(this),
+				rowdblclick:this.onChoice.createDelegate(this, []),
 				scope:this
 			}
 		}
@@ -121,7 +121,7 @@ App.calendar.PatientGrid = Ext.extend(Ext.grid.GridPanel, {
 		App.eventManager.on('globalsearch', this.onGlobalSearch, this);
 //		App.eventManager.on('patientwrite', this.onPatientWrite, this);
 		this.on('patientselect', this.onPatientSelect, this);
-		this.store.on('write', this.onStoreWrite, this);
+		//this.store.on('write', this.onStoreWrite, this);
 	},
 	
 	btnSetDisabled: function(status) {
@@ -161,9 +161,10 @@ App.calendar.PatientGrid = Ext.extend(Ext.grid.GridPanel, {
 	
 	onPatientAdd: function() {
 		this.win = new App.patient.PatientWindow({
-			store:this.store,
+			//store:this.store,
 			scope:this,
 			fn:function(record){
+				Ext.callback(this.fn, this.scope || window, [record]);
 //				this.store.insertRecord(record);
 			}
 		});
@@ -192,7 +193,7 @@ App.calendar.PatientGrid = Ext.extend(Ext.grid.GridPanel, {
 	
 	onStoreWrite: function(store, action, result, res, rs) {
 		if( res.success && this.win ) {
-			this.store.filter('id',rs.data.id);
+			store.filter('id',rs.data.id);
 			this.getSelectionModel().selectFirstRow();
 			this.fireEvent('patientselect',rs);
 		}

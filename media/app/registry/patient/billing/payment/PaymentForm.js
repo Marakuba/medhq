@@ -160,8 +160,8 @@ App.billing.PaymentForm = Ext.extend(Ext.form.FormPanel, {
                                     	combo.store.load({callback:this.setAccount,scope:this});
                                     	combo.enable();
                                     	this.balanceButton.setText(String.format("{0}",record.data.balance));
-                                    	//this.balanceButton.setDisabled(false)
-                                   		this.balanceButton.setDisabled((!(record.data.balance <0 == this.is_income))||(record.data.balance==0));
+                                    	this.balanceButton.setDisabled(this.is_income == (record.data.balance >0));
+                                   		//this.balanceButton.setDisabled((!(record.data.balance <0 == this.is_income))||(record.data.balance==0));
                                     }
 					        	}
 							}),

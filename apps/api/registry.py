@@ -24,7 +24,7 @@ from django.core.exceptions import ObjectDoesNotExist
 from tastypie.exceptions import NotFound
 from examination.models import CardTemplate, ExaminationCard#, TemplateGroup
 from helpdesk.models import Issue, IssueType
-from scheduler.models import Calendar, Event
+from scheduler.models import Calendar, Event, Preorder
 from billing.models import Account, Payment, ClientAccount
 from interlayer.models import ClientItem
 from django.contrib.contenttypes.models import ContentType
@@ -1117,14 +1117,14 @@ class CalendarResource(ExtResource):
         
 class PreorderResource(ExtResource):
     patient = fields.ForeignKey(PatientResource, 'patient', null=True)
-    event = fields.OneToOneField('apps.api.registry.EventResource','event', null=True)
+    timeslot = fields.OneToOneField('apps.api.registry.EventResource','timeslot', null=True)
     class Meta:
-        queryset = Calendar.objects.all()
+        queryset = Preorder.objects.all()
         resource_name = 'preorder'
         authorization = DjangoAuthorization()
         filtering = {
             'patient':ALL,
-            'event':ALL,
+            'timeslot':ALL,
         }
         
 

@@ -97,6 +97,7 @@ class Event(models.Model):
     parent = models.ForeignKey('self', null=True, blank=True, related_name='children')
     
     def save(self, *args, **kwargs):
+        print "YES"
         if not self.timeslot:
             staff = Staff.objects.get(id=self.cid)
             timeslot = timedelta(minutes=staff.doctor.get_timeslot_display() or 30)
