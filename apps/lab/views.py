@@ -1,12 +1,15 @@
 # -*- coding: utf-8 -*-
 from django.shortcuts import get_object_or_404
-from lab.models import LabOrder, Result
+from lab.models import LabOrder, Result, Invoice, InvoiceItem, Sampling
 from service.models import BaseService
 import datetime
 from django.views.generic.simple import direct_to_template
 import simplejson
 from django.http import HttpResponse, HttpResponseBadRequest
 from visit.models import OrderedService
+from state.models import State
+from annoying.decorators import render_to
+from django.db.models.aggregates import Count
 
 def print_results(request, order):
     result_qs = Result.objects.filter(order=order, to_print=True).order_by('analysis__service__%s' % BaseService._meta.tree_id_attr, 
@@ -93,4 +96,63 @@ def revert_results(request):
                                                     'message':u'Исследования были восстановлены'
                                                 }), mimetype='application/json')
     return HttpResponseBadRequest()
+    
+
+def pull_invoice(request):
+    """
+    """
+    if request.method=='POST':
+        invoice_id = request.POST.get('invoice',None)
+        state_id = request.POST.get('state',None)
+        if not state_id:
+            return HttpResponseBadRequest()
+        state = get_object_or_404(State, id=state_id)
+        
+        if invoice_id:
+            invoice = get_object_or_404(Invoice, id=invoice_id)
+        else:
+            return HttpResponseBadRequest()
+#            invoice = Invoice.objects.create(state=state)
+        print request.active_profile.department.state
+        items = OrderedService.objects.filter(order__office=request.active_profile.department.state,
+                                              invoiceitem__isnull=True, 
+                                              sampling__isnull=False, 
+                                              execution_place=state)[:200]
+        print items
+        if items:
+            for item in items:
+                InvoiceItem.objects.create(invoice=invoice, ordered_service=item, operator=request.user)
+    
+            return HttpResponse(simplejson.dumps({
+                                                    'success':True,
+                                                    'message':u'Накладная заполнена успешно'
+                                                }), mimetype='application/json')
+        else:
+            return HttpResponse(simplejson.dumps({
+                                                    'success':False,
+                                                    'message':u'Нет позиций для заполнения'
+                                                }), mimetype='application/json')
+                    
+
+@render_to('print/lab/invoice.html')
+def print_invoice(request, invoice_id):
+    """
+    """
+    invoice = get_object_or_404(Invoice, id=invoice_id)
+    items = invoice.invoiceitem_set.all()
+    vals = items.order_by('ordered_service__sampling').values('ordered_service__sampling').annotate(count=Count('ordered_service__sampling'))
+    vals = [item['ordered_service__sampling'] for item in vals]
+    
+
+    samplings = Sampling.objects.filter(id__in=vals)
+
+    groups = samplings.order_by('tube').values('tube__name').annotate(count=Count('tube'))
+    print groups
+    
+    return {
+        'invoice':invoice,
+        'items':items,
+        'groups':groups,
+        'samplings':samplings
+    }
     

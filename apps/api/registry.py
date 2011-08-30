@@ -8,7 +8,8 @@ from tastypie.api import Api
 from tastypie.authorization import DjangoAuthorization
 from tastypie.constants import ALL, ALL_WITH_RELATIONS
 from lab.models import LabOrder, Sampling, Tube, Result, Analysis, InputList,\
-    Equipment, EquipmentAssay, EquipmentResult, EquipmentTask
+    Equipment, EquipmentAssay, EquipmentResult, EquipmentTask, Invoice,\
+    InvoiceItem
 from service.models import BaseService, LabServiceGroup, ExtendedService, ICD10
 from staff.models import Position, Staff, Doctor
 from state.models import State
@@ -185,6 +186,7 @@ class StateResource(ModelResource):
         limit = 10
         filtering = {
             'id':ALL,
+            'type':ALL,
             'name':('istartswith',)
         }
         
@@ -820,11 +822,14 @@ class SamplingServiceResource(ExtResource):
         bundle.data['service_full_name'] = service.name
         bundle.data['created'] = bundle.obj.order.created
         bundle.data['visit_id'] = bundle.obj.order.id
+        bundle.data['patient_name'] = bundle.obj.order.patient.short_name()
         bundle.data['barcode'] = bundle.obj.order.barcode.id
+        bundle.data['sampling'] = bundle.obj.sampling
         return bundle
     
     class Meta:
         queryset = OrderedService.objects.all()
+        limit = 100
         resource_name = 'samplingservice'
         authorization = DjangoAuthorization()
         filtering = {
@@ -1197,6 +1202,64 @@ class PaymentResource(ExtResource):
             'client_account' : ALL_WITH_RELATIONS,
         }
         
+        
+class InvoiceResource(ExtResource):
+    
+    state = fields.ForeignKey(MedStateResource, 'state')
+    
+    def dehydrate(self, bundle):
+        bundle.data['state_name'] = bundle.obj.state
+        bundle.data['office_name'] = bundle.obj.office
+        bundle.data['operator_name'] = bundle.obj.operator
+        return bundle
+    
+    def obj_create(self, bundle, request=None, **kwargs):
+        kwargs['operator']=request.user
+        kwargs['office']=request.active_profile.department.state
+        result = super(InvoiceResource, self).obj_create(bundle=bundle, request=request, **kwargs)
+        return result
+    
+    class Meta:
+        queryset = Invoice.objects.all()
+        resource_name = 'invoice'
+        authorization = DjangoAuthorization()
+        limit = 100
+        filtering = {
+            'id' : ALL,
+            'state' : ALL_WITH_RELATIONS
+        }
+        
+        
+class InvoiceItemResource(ExtResource):
+    
+    invoice = fields.ForeignKey(InvoiceResource, 'invoice')
+    ordered_service = fields.ToOneField(SamplingServiceResource, 'ordered_service')
+    
+    def dehydrate(self, bundle):
+        s = bundle.obj.ordered_service
+        bundle.data['created'] = s.order.created
+        bundle.data['barcode'] = s.order.barcode.id
+        bundle.data['patient_name'] = s.order.patient.short_name()
+        bundle.data['service_name'] = s.service
+        bundle.data['sampling'] = s.sampling.tube
+        
+        return bundle
+    
+    def obj_create(self, bundle, request=None, **kwargs):
+        kwargs['operator']=request.user
+        result = super(InvoiceItemResource, self).obj_create(bundle=bundle, request=request, **kwargs)
+        return result
+    
+    class Meta:
+        queryset = InvoiceItem.objects.all()
+        resource_name = 'invoiceitem'
+        authorization = DjangoAuthorization()
+        limit = 1000
+        filtering = {
+            'id' : ALL,
+            'invoice' : ALL_WITH_RELATIONS
+        }
+        
 
 api = Api(api_name=get_api_name('dashboard'))
 
@@ -1279,6 +1342,10 @@ api.register(ClientAccountResource())
 api.register(PaymentResource())
 
 api.register(DebtorResource())
+
+
+api.register(InvoiceResource())
+api.register(InvoiceItemResource())
 
 #reporting
 #api.register(ReportResource())
