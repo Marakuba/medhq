@@ -1,52 +1,54 @@
 Ext.ns('App.invoice');
 
-App.invoice.InvoiceGrid = Ext.extend(Ext.grid.GridPanel, {
+App.invoice.InvoiceItemGrid = Ext.extend(Ext.grid.GridPanel, {
 
 	initComponent : function() {
 		
 		this.store = new Ext.data.RESTStore({
-			autoLoad : true,
-			apiUrl : get_api_url('invoice'),
+			autoLoad : false,
+			autoSave : true,
+			apiUrl : get_api_url('invoiceitem'),
 			model: [
 			    {name: 'id'},
 			    {name: 'resource_uri'},
+			    {name: 'invoice'},
+			    {name: 'ordered_service'},
 			    {name: 'created', type:'date',format:'c'},
-			    {name: 'state'},
-			    {name: 'state_name'},
-			    {name: 'operator_name'}
+			    {name: 'barcode'},
+			    {name: 'patient_name'},
+			    {name: 'service_name'},
+			    {name: 'sampling'}
 			]
 		});
-		
+ 		
 		this.columns =  [
 		    {
-		    	header: "№",
-		    	width:8,
-		    	sortable: true, 
-		    	dataIndex: 'id',
-		    },{
 		    	header: "Дата",
-		    	width:20,
-		    	sortable: true, 
+		    	width:10,
 		    	dataIndex: 'created',
 		    	renderer:Ext.util.Format.dateRenderer('d.m.Y')
 		    },{
-		    	header: "Лаборатория", 
-		    	width: 50, 
-		    	sortable: true, 
-		    	dataIndex: 'state_name'
+		    	header: "Заказ", 
+		    	width: 8, 
+		    	dataIndex: 'barcode'
 		    },{
-		    	header: "Оператор", 
-		    	width: 25, 
-		    	sortable: true, 
-		    	dataIndex: 'operator_name'
+		    	header: "Пациент", 
+		    	width: 40, 
+		    	dataIndex: 'patient_name'
+		    },{
+		    	header: "Исследование", 
+		    	width: 65, 
+		    	dataIndex: 'service_name'
+		    },{
+		    	header: "Пробирка", 
+		    	width: 55, 
+		    	dataIndex: 'sampling'
 		    }
 		];		
 		
 
 		
 		var config = {
-			closable:true,
-			title:'Накладные',
 			loadMask : {
 				msg : 'Подождите, идет загрузка...'
 			},
@@ -64,7 +66,7 @@ App.invoice.InvoiceGrid = Ext.extend(Ext.grid.GridPanel, {
 					scope:this
 				}
 			}),
-			tbar: [{
+			/*tbar: [{
 				text:'Создать',
 				iconCls:'silk-add',
 				handler:this.onCreate.createDelegate(this),
@@ -74,9 +76,12 @@ App.invoice.InvoiceGrid = Ext.extend(Ext.grid.GridPanel, {
 				iconCls:'silk-pencil',
 				handler:this.onChange.createDelegate(this),
 				scope:this
-			},'-',{
-				iconCls:'silk-printer',
-				text:'Печать реестра',
+			},{
+				text:'Реестр исследований',
+				handler:this.onPrint.createDelegate(this),
+				scope:this
+			},{
+				text:'Реестр пробирок',
 				handler:this.onPrint.createDelegate(this),
 				scope:this
 			}],
@@ -86,9 +91,8 @@ App.invoice.InvoiceGrid = Ext.extend(Ext.grid.GridPanel, {
 	            displayInfo: true,
 	            displayMsg: 'Показана запись {0} - {1} из {2}',
 	            emptyMsg: "Нет записей"
-	        }),
+	        }),*/
 			listeners: {
-				rowdblclick:this.onChange.createDelegate(this),
 	        	scope:this
 			},
 			view : new Ext.grid.GridView({
@@ -99,13 +103,38 @@ App.invoice.InvoiceGrid = Ext.extend(Ext.grid.GridPanel, {
 		}
 
 		Ext.apply(this, Ext.apply(this.initialConfig, config));
-		App.invoice.InvoiceGrid.superclass.initComponent.apply(this, arguments);
-		App.eventManager.on('invoicecreate', this.onInvoiceCreate, this);
+		App.invoice.InvoiceItemGrid.superclass.initComponent.apply(this, arguments);
+//		App.eventManager.on('globalsearch', this.onGlobalSearch, this);
 		this.store.on('write', this.onStoreWrite, this);
+		this.on('afterrender', function(){
+			if(this.record) {
+				this.store.setBaseParam('invoice',this.record.id);
+				this.store.load();
+			}
+		}, this);
 	},
 	
-	onInvoiceCreate: function(){
-		this.store.load();
+	pullItems: function(){
+		var s = this.store;
+		this.serviceStore.load({
+			params:{
+				sampling__isnull:false
+			},
+			callback: function(r, opts, success){
+				var Item = s.recordType;
+				Ext.each(r, function(item,i){
+					s.add(new Item({
+						created:item.data.created,
+						service_name:item.data.service_name,
+						patient_name:item.data.patient_name,
+						barcode:item.data.barcode,
+						sampling:item.data.sampling
+					}));
+				}, this);
+			},
+			scope:this
+		})
+		
 	},
 	
 	onGlobalSearch: function(v) {
@@ -126,44 +155,9 @@ App.invoice.InvoiceGrid = Ext.extend(Ext.grid.GridPanel, {
 	},
 	
 	onPrint: function() {
-		var id = this.getSelected().data.id;
-		var url = ['/lab/print/invoice',id,''].join('/');
-		window.open(url);
-	},
-	
-	onCreate: function() {
-//		this.win = new App.issue.IssueWindow({
-//			model:this.store.recordType,
-//			scope:this,
-//			fn:function(record){
-//				this.store.insertRecord(record);
-//			}
-//		});
-//		this.win.show();
-		App.eventManager.fireEvent('launchapp','invoicetab',{
-		});
-	},
-	
-	onChange: function(rowindex){
-		var record = this.getSelected();
-		if(record) {
-//    		this.win = new App.issue.IssueWindow({
-//    			record:record,
-//    			model:this.store.recordType,
-//    			scope:this,
-//    			fn:function(record){
-//    				//this.store.Record(record);
-//    			}
-//    		});
-//    		this.win.show();
-			App.eventManager.fireEvent('launchapp','invoicetab',{
-				record:record
-			});
-		}
-	},
-	
-	onDelete: function() {
-		
+//		var id = this.getSelected().data.id;
+//		var url = ['/lab/print/results',id,''].join('/');
+//		window.open(url);
 	},
 	
 	onStoreWrite: function(store, action, result, res, rs) {
@@ -173,4 +167,4 @@ App.invoice.InvoiceGrid = Ext.extend(Ext.grid.GridPanel, {
 
 
 
-Ext.reg('invoicegrid', App.invoice.InvoiceGrid);
+Ext.reg('invoiceitemgrid', App.invoice.InvoiceItemGrid);

@@ -256,8 +256,10 @@ class Sampling(models.Model):
 class Invoice(make_operator_object('invoice')):
     """
     """
+    office = models.ForeignKey(State, verbose_name=u'Офис', limit_choices_to={'type':u'b'}, related_name='office') 
     modified = models.DateTimeField(u'Изменено', auto_now=True)
-    state = models.ForeignKey(State)
+    state = models.ForeignKey(State, related_name='lab')
+    comment = models.TextField(u'Комментарий', blank=True)
     
     objects = models.Manager()
     

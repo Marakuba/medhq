@@ -39,11 +39,19 @@ App.Reports = Ext.extend(Ext.Panel, {
 			    displayField: 'name',
 			    selectOnFocus:true
 			}), new Ext.form.ComboBox({
-				store:new Ext.data.ArrayStore({
-					fields:['id','name'],
-					data:[ [1,'Евромед КИМ'], [6,'Евромед Лузана'] ]
+				store:new Ext.data.JsonStore({
+			    	autoLoad:true,
+			    	baseParams:{
+			    		type:'b'
+			    	},
+					proxy: new Ext.data.HttpProxy({
+						url:get_api_url('state'),
+						method:'GET'
+					}),
+					root:'objects',
+					idProperty:'resource_uri',
+					fields:['resource_uri','name']
 				}),
-				mode:'local',
 				fieldLabel:'Филиал',
 				name:'branch',
 				valueField:'id',

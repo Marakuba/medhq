@@ -24,7 +24,7 @@ App.invoice.InvoiceForm = Ext.extend(Ext.FormPanel, {
 				align:'stretch'
 			},
 			defaults:{
-//				border:false
+				border:false
 			},
 			items:[{
 				layout:{
@@ -58,27 +58,32 @@ App.invoice.InvoiceForm = Ext.extend(Ext.FormPanel, {
 				},{
 //					layout:'form',
 					items:[{
+						id:'invoice-pull-button',
 						xtype:'button',
-						text:'Заполнить',
-						handler:function(){
-							Ext.Ajax.request({
-								url:'/lab/pull_invoice/',
-								method:'POST',
-								params:{
-									invoice:this.record.id,
-									state:App.uriToId(this.record.data.state)
-								},
-								success:function(response, opts){
-									this.invoiceItem.getStore().load();
-								},
-								failure:function(response, opts){
-									var obj = Ext.decode(response.responseText);
-								},
-								scope:this
-							})
+						text:'Заполнить и сохранить',
+						handler:function(field){
+							if(this.getForm().isValid()) {
+								field.disable();
+								if(this.record && !this.record.phantom) {
+									this.pullItems();
+								} else {
+									this._pullDefer = true;
+									this.onSave();
+								}
+							}
 						},
 						scope:this
 					}]
+				}]
+			},{
+				layout:'form',
+				padding:5,
+				items:[{
+					xtype:'textarea',
+					fieldLabel:'Комментарии',
+					anchor:'100%',
+					name:'comment',
+					height:70
 				}]
 			},{
 				flex:1,
@@ -91,11 +96,41 @@ App.invoice.InvoiceForm = Ext.extend(Ext.FormPanel, {
 		
 		Ext.apply(this, Ext.apply(this.initialConfig, config));
 		App.invoice.InvoiceForm.superclass.initComponent.apply(this, arguments);
+		App.eventManager.on('invoicecreate',this.onInvoiceCreate, this);
 		this.on('afterrender', function(){
 			if(this.record) {
 				this.getForm().loadRecord(this.record);
 			}
 		},this);
+	},
+	
+	onInvoiceCreate: function(rec){
+		this.record = rec;
+		this.getForm().loadRecord(this.record);
+		if(this._pullDefer) {
+			this.pullItems();
+			this._pullDefer = false;
+		}
+	},
+	
+	pullItems: function(){
+		Ext.Ajax.request({
+			url:'/lab/pull_invoice/',
+			method:'POST',
+			params:{
+				invoice:this.record.id,
+				state:App.uriToId(this.record.data.state)
+			},
+			success:function(response, opts){
+				this.invoiceItem.getStore().load();
+				Ext.getCmp('invoice-pull-button').enable();
+			},
+			failure:function(response, opts){
+				var obj = Ext.decode(response.responseText);
+				Ext.getCmp('invoice-pull-button').enable();
+			},
+			scope:this
+		})
 	},
 	
 	getRecord: function() {

@@ -88,17 +88,6 @@ App.CentralPanel = Ext.extend(Ext.Panel, {
                     },
                     scope:this            	
                 }]
-            },{
-            	xtype:'buttongroup',
-            	title:'Накладные',
-            	items:[{
-            		text:'Журнал',
-            		scale:'medium',
-            		handler:function(){
-                    	this.launchApp('invoicegrid');
-                    },
-                    scope:this  
-            	}]
             },'->',{
             	text:'Выход',
             	handler:function(){

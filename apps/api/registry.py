@@ -186,6 +186,7 @@ class StateResource(ModelResource):
         limit = 10
         filtering = {
             'id':ALL,
+            'type':ALL,
             'name':('istartswith',)
         }
         
@@ -1208,11 +1209,13 @@ class InvoiceResource(ExtResource):
     
     def dehydrate(self, bundle):
         bundle.data['state_name'] = bundle.obj.state
+        bundle.data['office_name'] = bundle.obj.office
         bundle.data['operator_name'] = bundle.obj.operator
         return bundle
     
     def obj_create(self, bundle, request=None, **kwargs):
         kwargs['operator']=request.user
+        kwargs['office']=request.active_profile.department.state
         result = super(InvoiceResource, self).obj_create(bundle=bundle, request=request, **kwargs)
         return result
     

@@ -75,7 +75,7 @@ App.CentralPanel = Ext.extend(Ext.Panel, {
 				},
 				items:[{
 					iconCls:'med-testtubes',
-					text:'Журнал',
+					text:'Результаты',
 					tooltip:'Журнал результатов анализов',
 					handler:function(){
 						this.launchApp('results');
@@ -126,7 +126,17 @@ App.CentralPanel = Ext.extend(Ext.Panel, {
 					},
 					scope:this
 				}]
-			},'->',{
+			},{
+            	xtype:'buttongroup',
+            	items:[{
+            		text:'Накладные',
+            		scale:'medium',
+            		handler:function(){
+                    	this.launchApp('invoicegrid');
+                    },
+                    scope:this  
+            	}]
+            },'->',{
 				xtype:'buttongroup',
 //				title:'HelpDesk',
 				defaults:{

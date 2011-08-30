@@ -88,6 +88,7 @@
 			</div>
 			<div class="details">
 			<div>Дата: <strong>{{ invoice.created|date:"d.m.Y" }}</strong></div>
+			<div>Офис: <strong>{{ invoice.office }}</strong></div>
 			<div>Лаборатория: <strong>{{ invoice.state }}</strong></div>
 			</div>
 			<table width="100%" class="service-list">
@@ -111,9 +112,6 @@
 					</td>
 				</tr>
 				{% endfor %}
-				<tr>
-					<td colspan="4" class=""><b>ВСЕГО пробирок: {{ samplings.count }}, исследований: {{ items.count }}</b></td>
-				</tr>
 			</table>
 		</td>
 	</tr>
@@ -132,6 +130,10 @@
 		<td class="rt">{{ group.count }}</td>
 	</tr>
 	{% endfor %}
+	<tr>
+		<td class="rt" colspan="2" class=""><b>ВСЕГО пробирок:</b></td>
+		<td class="rt"><b>{{ samplings.count }}</b></td>
+	</tr>
 </table>
 
 <table class="ftr" width="100%">

@@ -1,7 +1,6 @@
 Ext.ns('App.invoice');
 
 
-
 App.invoice.InvoiceTab = Ext.extend(Ext.Panel, {
 	initComponent : function() {
 		
@@ -9,14 +8,7 @@ App.invoice.InvoiceTab = Ext.extend(Ext.Panel, {
 			autoLoad : true,
 			autoSave:true,
 			apiUrl : get_api_url('invoice'),
-			model: [
-			    {name: 'id'},
-			    {name: 'resource_uri'},
-			    {name: 'created', type:'date',format:'c'},
-			    {name: 'state'},
-			    {name: 'state_name'},
-			    {name: 'operator_name'}
-			]
+			model: App.models.Invoice
 		});
 		
 		this.model = this.store.recordType;
@@ -49,8 +41,8 @@ App.invoice.InvoiceTab = Ext.extend(Ext.Panel, {
 			},
 			tbar:['->',{
         		text:'Закрыть',
-				handler:this.onClose.createDelegate(this,[])
-			},this.saveButton],
+				handler:this.onClose.createDelegate(this,[true])
+			}/*,this.saveButton*/],
 	        items:[this.form]
 		}
 
@@ -73,7 +65,7 @@ App.invoice.InvoiceTab = Ext.extend(Ext.Panel, {
 			console.info(this.tSteps);
 			if(this.steps>0) {
 				this.msgBox = Ext.MessageBox.progress('Подождите','Идет сохранение документа!');
-	//			f.on('popstep',this.popStep, this);
+				f.on('popstep',this.popStep, this);
 				f.onSave();
 			} else {
 				this.onClose(true);
