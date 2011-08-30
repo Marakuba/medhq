@@ -14,7 +14,7 @@ Ext.calendar.EventMappings = {
     ResourceURI: {
         name: 'ResourceURI',
         mapping: 'resource_uri',
-        type: 'int'
+        type: 'string'
     },
     EventId: {
         name: 'EventId',

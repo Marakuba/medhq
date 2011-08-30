@@ -401,7 +401,7 @@ Ext.calendar.DoctorScheduler = Ext.extend(Ext.Panel, {
 								fn: function(win, rec){
 									win.hide();
 									rec.data.IsNew = false;
-									this.eventStore.add(rec);
+									//this.eventStore.add(rec);
                     	            this.showMsg('Event '+ rec.data.Title +' was added');
 								},
 								scope: this
@@ -409,7 +409,7 @@ Ext.calendar.DoctorScheduler = Ext.extend(Ext.Panel, {
 							'eventupdate': {
 								fn: function(win, rec){
 									win.hide();
-									rec.commit();
+									//rec.commit();
                     	            this.showMsg('Event '+ rec.data.Title +' was updated');
 								},
 								scope: this
