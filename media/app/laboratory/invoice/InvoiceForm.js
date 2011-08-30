@@ -69,13 +69,12 @@ App.invoice.InvoiceForm = Ext.extend(Ext.FormPanel, {
 									state:App.uriToId(this.record.data.state)
 								},
 								success:function(response, opts){
-									var obj = Ext.decode(response.responseText);
-									console.dir(obj);
+									this.invoiceItem.getStore().load();
 								},
 								failure:function(response, opts){
 									var obj = Ext.decode(response.responseText);
-									console.dir(obj);
-								}
+								},
+								scope:this
 							})
 						},
 						scope:this

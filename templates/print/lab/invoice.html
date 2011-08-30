@@ -119,6 +119,21 @@
 	</tr>
 </table>
 
+<table width="100%" class="service-list">
+				<tr>
+					<th width="2%">№</th>
+					<th>Пробирка</th>
+					<th>Количество</th>
+				</tr>
+	{% for group in groups %}
+	<tr>
+		<td>{{ forloop.counter }}</td>
+		<td>{{ group.tube__name }}</td>
+		<td class="rt">{{ group.count }}</td>
+	</tr>
+	{% endfor %}
+</table>
+
 <table class="ftr" width="100%">
 <tr>
 	<td width="50%">

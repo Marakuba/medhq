@@ -126,7 +126,7 @@ App.invoice.InvoiceTab = Ext.extend(Ext.Panel, {
 	
 	onStoreWrite: function(store, action, result, res, rs) {
 		if(action=='create') {
-			App.eventManager.fireEvent('invoicereate',rs);
+			App.eventManager.fireEvent('invoicecreate',rs);
 		}
 		this.record = rs;
 		this.popStep();

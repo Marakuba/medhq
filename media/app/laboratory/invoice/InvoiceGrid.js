@@ -100,8 +100,12 @@ App.invoice.InvoiceGrid = Ext.extend(Ext.grid.GridPanel, {
 
 		Ext.apply(this, Ext.apply(this.initialConfig, config));
 		App.invoice.InvoiceGrid.superclass.initComponent.apply(this, arguments);
-//		App.eventManager.on('globalsearch', this.onGlobalSearch, this);
+		App.eventManager.on('invoicecreate', this.onInvoiceCreate, this);
 		this.store.on('write', this.onStoreWrite, this);
+	},
+	
+	onInvoiceCreate: function(){
+		this.store.load();
 	},
 	
 	onGlobalSearch: function(v) {

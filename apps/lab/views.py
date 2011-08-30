@@ -113,7 +113,7 @@ def pull_invoice(request):
         else:
             return HttpResponseBadRequest()
 #            invoice = Invoice.objects.create(state=state)
-
+        print request.active_profile.department.state
         items = OrderedService.objects.filter(order__office=request.active_profile.department.state,
                                               invoiceitem__isnull=True, 
                                               sampling__isnull=False, 
@@ -143,11 +143,16 @@ def print_invoice(request, invoice_id):
     vals = items.order_by('ordered_service__sampling').values('ordered_service__sampling').annotate(count=Count('ordered_service__sampling'))
     vals = [item['ordered_service__sampling'] for item in vals]
     
+
     samplings = Sampling.objects.filter(id__in=vals)
+
+    groups = samplings.order_by('tube').values('tube__name').annotate(count=Count('tube'))
+    print groups
     
     return {
         'invoice':invoice,
         'items':items,
+        'groups':groups,
         'samplings':samplings
     }
     
