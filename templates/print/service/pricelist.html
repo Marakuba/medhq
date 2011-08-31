@@ -49,8 +49,11 @@
 </style>
 {% endblock %}
 
-{% block body %}
+{% block header %}
 {% include "print/header.html"%}
+{% endblock %}
+
+{% block body %}
 <table class="header">
 	<tr>
 		<td>{{ state.address_street }}<br>
@@ -90,12 +93,12 @@
 				<tr class="">
 					{% if service.is_leaf_node %}
 						<td class="id">{{ service.id }}</td>
-					{% endif %}
-					<td class="title-{%if service.price %}leaf"{% else %}{{ service.level }}"{%endif%}{% if not service.is_leaf_node %} colspan="3"{% endif %}>
+						<td class="title-leaf">{{ service }}</td>
+						<td class="price">{{ price }}</td>
+					{% else %}
+					<td class="title-{{ service.level }}" colspan="3">
 						{{ service }}
 					</td>
-					{% if service.is_leaf_node %}
-						<td class="price">{{ price }}</td>
 					{% endif %}
 				</tr>
 			{% endif %}

@@ -48,13 +48,9 @@ def price_list_helper(request):
     state = get_object_or_404(State, id=request.GET.get('state', None))
     by_state = request.GET.get('by_state', None)
     if by_state:
-        services = BaseService.objects.filter().order_by(BaseService._meta.tree_id_attr, #@UndefinedVariable
-                                                      'level', 
-                                                      "-"+ BaseService._meta.left_attr) #@UndefinedVariable
+        services = BaseService.objects.filter().order_by(BaseService._meta.tree_id_attr, BaseService._meta.left_attr, 'level') #@UndefinedVariable
     else:
-        services = BaseService.objects.all().order_by(BaseService._meta.tree_id_attr, #@UndefinedVariable
-                                                      'level', 
-                                                      "-"+ BaseService._meta.left_attr) #@UndefinedVariable
+        services = BaseService.objects.all().order_by(BaseService._meta.tree_id_attr, BaseService._meta.left_attr, 'level') #@UndefinedVariable
     st = State.objects.get(id=settings.MAIN_STATE_ID)
     #import pdb; pdb.set_trace()
     if request.GET.get('type')=='print':
