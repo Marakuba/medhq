@@ -52,20 +52,12 @@ App.TemplateGlobalGrid = Ext.extend(Ext.grid.GridPanel, {
 		});
 		
 		this.columns =  [
-<<<<<<< HEAD
 		    {
 		    	header: "Группа", 
 		    	hidden:true,
 		    	sortable: true, 
 		    	dataIndex: 'group_name'
 		    },{
-=======
-			{
-				header: "Название шаблона", 
-				dataIndex:'group_name',
-				hidden:true
-			},{
->>>>>>> 952774d853769aee0060fd54f5a9f1ac2f0750ae
 		    	header: "Название шаблона", 
 		    	width:70,
 		    	sortable: true, 
@@ -136,13 +128,8 @@ App.TemplateGlobalGrid = Ext.extend(Ext.grid.GridPanel, {
 			}],
 			view : new Ext.grid.GroupingView({
 				forceFit : true,
-<<<<<<< HEAD
-				groupTextTpl: "{text}"
-			})			
-=======
 				groupTextTpl:"{[values.rs[0].data['group_name']]}"
 			})
->>>>>>> 952774d853769aee0060fd54f5a9f1ac2f0750ae
 		};
 		
 		this.on('rowdblclick', function(object, rowIndex, e){

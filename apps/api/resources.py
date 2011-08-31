@@ -14,7 +14,9 @@ class ExtResource(ModelResource):
         deserialized = deserialized['objects']
         clean_data = {}
         for k,v in deserialized.iteritems():
-            if v!='':
+            if v=='':
+                clean_data[k] = None
+            else:
                 clean_data[k] = v
         return clean_data
     
@@ -55,6 +57,7 @@ class ExtResource(ModelResource):
         deserialized = self.deserialize(request, request.raw_post_data, format=request.META.get('CONTENT_TYPE', 'application/json'))
         bundle = self.build_bundle(data=dict_strip_unicode_keys(deserialized))
         self.is_valid(bundle, request)
+        #import pdb; pdb.set_trace()
         
         try:
             updated_bundle = self.obj_update(bundle, request=request, pk=kwargs.get('pk'))

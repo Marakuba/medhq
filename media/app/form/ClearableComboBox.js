@@ -45,7 +45,9 @@ Ext.form.ClearableComboBox = Ext.extend(Ext.form.ComboBox, {
     },
 
     onTrigger2Click : function() {this.onTriggerClick()},   // pass to original combobox trigger handler
-    onTrigger1Click : function() {this.reset()}             // clear contents of combobox
+    onTrigger1Click : function() {this.setRawValue('');
+    								this.value = undefined;
+    								var a;}             // clear contents of combobox
 });
 
 Ext.reg('clearablecombobox', Ext.form.ClearableComboBox);

@@ -30,7 +30,7 @@ App.examination.CardTemplateForm = Ext.extend(Ext.form.FormPanel, {
 			})
 		});
 		
-		this.groupComboBox = new Ext.form.LazyComboBox({
+		this.groupComboBox = new Ext.form.LazyClearableComboBox({
 			id:'group-combo',
 			fieldLabel:'Группа',
 			name:'group',
