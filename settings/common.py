@@ -46,6 +46,7 @@ CACHE_BACKEND = 'memcached://127.0.0.1:11211/'
 #JOHNNY_MIDDLEWARE_KEY_PREFIX='jc_medical'
 
 TEMPLATE_LOADERS = (
+    'dbtemplates.loader.Loader',
     'django.template.loaders.filesystem.load_template_source',
     'django.template.loaders.app_directories.load_template_source',
 )
@@ -110,10 +111,12 @@ INSTALLED_APPS = (
     'django.contrib.auth',
     'django.contrib.contenttypes',
     'django.contrib.sessions',
+    'django.contrib.sites',
     
     'autocomplete',
     'compressor',
     'constance',
+    'dbtemplates',
     'debug_toolbar',
     'django_extensions',
     'django_memcached',

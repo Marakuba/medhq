@@ -2,7 +2,14 @@
 from django.utils.encoding import smart_str
 import datetime
 from visit.settings import PAYMENT_TYPES
-from models import GROUP_SERVICE_UZI, GROUP_SERVICE_LAB
+from django.conf import settings
+#from models import GROUP_SERVICE_UZI, GROUP_SERVICE_LAB
+
+try:
+    GROUP_SERVICE_UZI = settings.GROUP_SERVICE_UZI
+    GROUP_SERVICE_LAB = settings.GROUP_SERVICE_LAB
+except:
+    raise u"Нет настроек групп услуг"
 
 class Report():
     """

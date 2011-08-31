@@ -45,9 +45,15 @@ class Staff(make_person_object('staff')):
     #position = models.CharField(u'Должность', max_length=50)
     
     objects = models.Manager()
+    
+    def get_position(self):
+        if not hasattr(self,'_position'):
+            p = self.position_set.all()
+            self._position = len(p) and p[0] or None
+        return self._position.title
         
     def full_name(self):
-        return u"%s %s %s" % (self.last_name, self.first_name, self.mid_name)
+        return u"%s %s %s%s" % (self.last_name, self.first_name, self.mid_name, self.get_position() and u', %s' % self.get_position() or u'')
     
     def short_name(self):
         return u"%s %s.%s" % (self.last_name, self.first_name[0].capitalize(), self.mid_name and u" %s." % self.mid_name[0].capitalize() or u'')

@@ -1,5 +1,3 @@
-{% include "print/header.html"%}
-
 {% extends "print/base.html" %}
 
 {% block extra_head %}
@@ -46,6 +44,8 @@
 {% endblock %}
 
 {% block body %}
+{% include "print/header.html"%}
+
 
 <div id="changelist" class="module">
 <h1>{{ name }}</h1>

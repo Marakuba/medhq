@@ -2,14 +2,20 @@
 from django.db import models
 from service.models import BaseService
 from state.models import State
+from django.conf import settings
 
-GROUP_SERVICE_UZI = 'uzi'
-GROUP_SERVICE_LAB = 'lab'
+#GROUP_SERVICE_UZI = 'uzi'
+#GROUP_SERVICE_LAB = 'lab'
 
-GROUP_SERVICE = (
-    (u'%s' % GROUP_SERVICE_UZI,u'УЗИ'),
-    (u'%s' % GROUP_SERVICE_LAB,u'Лабораторка'),
-)
+#GROUP_SERVICE = (
+#    (u'%s' % GROUP_SERVICE_UZI,u'УЗИ'),
+#    (u'%s' % GROUP_SERVICE_LAB,u'Лабораторка'),
+#)
+
+try:
+    GROUP_SERVICE = settings.GROUP_SERVICE
+except:
+    raise u"Нет настроек групп услуг"
 
 class ServiceGroupPrice_BaseService(models.Model):
     baseservice = models.ForeignKey(BaseService,unique=True)
@@ -34,7 +40,7 @@ class ServiceGroupPrice(models.Model):
 class ServiceGroup(models.Model):
     name = models.CharField(u'Наименование', max_length=3
             , choices = GROUP_SERVICE,unique=True)
-    baseservice = models.ManyToManyField(BaseService, related_name = 'srvicegroup'
+    baseservice = models.ManyToManyField(BaseService, related_name = 'servicegroup'
             , verbose_name = u'Услуги')
 
     class Meta:
