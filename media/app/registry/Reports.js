@@ -50,7 +50,7 @@ App.Reports = Ext.extend(Ext.Panel, {
 					}),
 					root:'objects',
 					idProperty:'resource_uri',
-					fields:['resource_uri','name']
+					fields:['resource_uri','name','id']
 				}),
 				fieldLabel:'Филиал',
 				name:'branch',
@@ -67,7 +67,7 @@ App.Reports = Ext.extend(Ext.Panel, {
 					var vals = this.form.getForm().getValues();
 					var staff = App.uriToId(this.form.getForm().findField('staff__staff').getValue());
 					var branch = this.form.getForm().findField('branch').getValue();
-					window.open(String.format('/old/reporting/staff-daily/print/?start_date={0}&end_date={1}&order__patient=&staff__staff={2}&order__referral=&execution_place_office=&execution_place_filial=&order__payment_type=&price_type=&order__cls=&from_place_filial={3}', 
+					window.open(String.format('/old/reporting/staff-daily/print/?start_date={0}&end_date={1}&order__patient=&staff__staff={2}&staff__department=&order__referral=&execution_place_office=&execution_place_filial=&order__payment_type=&price_type=&order__cls=&from_place_filial={3}', 
 							vals['start_date'], vals['end_date'], staff, branch));
 				},
 				scope:this

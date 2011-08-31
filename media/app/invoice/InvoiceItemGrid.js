@@ -66,26 +66,13 @@ App.invoice.InvoiceItemGrid = Ext.extend(Ext.grid.GridPanel, {
 					scope:this
 				}
 			}),
-			/*tbar: [{
-				text:'Создать',
-				iconCls:'silk-add',
-				handler:this.onCreate.createDelegate(this),
-				scope:this
-			},{
-				text:'Изменить',
-				iconCls:'silk-pencil',
-				handler:this.onChange.createDelegate(this),
-				scope:this
-			},{
-				text:'Реестр исследований',
-				handler:this.onPrint.createDelegate(this),
-				scope:this
-			},{
-				text:'Реестр пробирок',
-				handler:this.onPrint.createDelegate(this),
+			tbar: [{
+				text:'Удалить',
+				iconCls:'silk-delete',
+				handler:this.onRemove.createDelegate(this),
 				scope:this
 			}],
-			bbar: new Ext.PagingToolbar({
+			/*bbar: new Ext.PagingToolbar({
 	            pageSize: 100,
 	            store: this.store,
 	            displayInfo: true,
@@ -148,6 +135,13 @@ App.invoice.InvoiceItemGrid = Ext.extend(Ext.grid.GridPanel, {
 			this.store.setBaseParam(field, value);
 		}
 		this.store.load();
+	},
+	
+	onRemove: function(){
+		var rec = this.getSelected();
+		if(rec) {
+			this.store.remove(rec);
+		}
 	},
 	
 	getSelected: function() {

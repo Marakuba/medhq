@@ -20,7 +20,7 @@ class CustomMenu(Menu):
         ))
         self.children.append(items.MenuItem(
             title=_(u'Регистратура'),
-            url='/dashboard/'
+            url='/webapp/registry/'
         ))
         self.children.append(items.AppList(
             title=_('Applications'),

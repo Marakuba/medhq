@@ -33,7 +33,7 @@ App.CentralPanel = Ext.extend(Ext.Panel, {
 					xtype:'button',
 					scale:'medium'
 				},
-				items:[{
+				items:[/*{
 					xtype:'splitbutton',
 //					text:'Новый пациент',
 					iconCls:'silk-add',
@@ -58,7 +58,7 @@ App.CentralPanel = Ext.extend(Ext.Panel, {
 						},
 						scope:this
 					}]
-				},{
+				},*/{
 					text:'Приемы',
 					tooltip:'Журнал приемов пациентов',
 					handler:function(){
@@ -74,7 +74,7 @@ App.CentralPanel = Ext.extend(Ext.Panel, {
 					scale:'medium'
 				},
 				items:[{
-					iconCls:'med-testtubes',
+//					iconCls:'med-testtubes',
 					text:'Результаты',
 					tooltip:'Журнал результатов анализов',
 					handler:function(){

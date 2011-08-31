@@ -122,7 +122,9 @@ App.invoice.InvoiceForm = Ext.extend(Ext.FormPanel, {
 				state:App.uriToId(this.record.data.state)
 			},
 			success:function(response, opts){
-				this.invoiceItem.getStore().load();
+				var s = this.invoiceItem.getStore();
+				s.setBaseParam('invoice', this.record.id);
+				s.load();
 				Ext.getCmp('invoice-pull-button').enable();
 			},
 			failure:function(response, opts){
