@@ -1,7 +1,7 @@
 {% extends "print/base.html" %}
 
 {% block extra_head %}
-	<link rel="stylesheet" type="text/css" href="css/style.css">
+	<link rel="stylesheet" type="text/css" href="{{ MEDIA_URL }}resources/css/reports.css">
 {% endblock %}
 
 {% block body %}
@@ -18,7 +18,7 @@
 {% endfor %}
 </ul>
             
-<table width="100%">
+<table class="data" width="100%">
     <tbody>
 
         <tr class="header">
