@@ -15,8 +15,13 @@
 		font-weight:bold;
 		background:#DDD;
 	}
-	.title-1, .title-2 {
-		
+	.title-1 {
+		font-size:1.2em;
+		font-weight:bold;
+		background:#DDD;
+	}
+	.title-leaf {
+
 	}
 	.price {
 		text-align:right;
@@ -65,24 +70,36 @@
 <table>
 {% for service in services %}
 	{% if service.level > 0 and not service.is_leaf_node %}
+		{%if service.price %}
+			<tr class="leaf">
+				<td>{{ service.id }}</td>
+				<td>{{ service }}</td>
+				<td class="price">{{ service.first_price }}</td>
+			</tr>
+		{%else%}
+			<tr class="title-1">
+				<td colspan=3>{{ service }}</td>
+			</tr>
+		{%endif%}
+		
 	{% else %}
 
 
-{% with service.first_price as price %}
-{% if not service.is_leaf_node or price %}
-<tr class="">
-	{% if service.is_leaf_node %}
-	<td class="id">{{ service.id }}</td>
-	{% endif %}
-	<td class="title-{{ service.level }}"{% if not service.is_leaf_node %} colspan="3"{% endif %}>
-			{{ service }}
-	</td>
-	{% if service.is_leaf_node %}
-	<td class="price">{{ price }}</td>
-	{% endif %}
-</tr>
-{% endif %}
-{% endwith %}
+		{% with service.first_price as price %}
+			{% if not service.is_leaf_node or price %}
+				<tr class="">
+					{% if service.is_leaf_node %}
+						<td class="id">{{ service.id }}</td>
+					{% endif %}
+					<td class="title-{%if service.price %}leaf"{% else %}{{ service.level }}"{%endif%}{% if not service.is_leaf_node %} colspan="3"{% endif %}>
+						{{ service }}
+					</td>
+					{% if service.is_leaf_node %}
+						<td class="price">{{ price }}</td>
+					{% endif %}
+				</tr>
+			{% endif %}
+		{% endwith %}
 
 	{% endif %}
 
