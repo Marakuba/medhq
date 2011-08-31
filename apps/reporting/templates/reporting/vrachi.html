@@ -1,51 +1,11 @@
 {% extends "print/base.html" %}
 
 {% block extra_head %}
-<style>
-    h1 {
-        text-align:center;
-        margin:0.6cm;
-        font-size:2em;
-    }
-
-    table {
-        width:100%;
-        border:1px solid gray;
-    }
-
-    th {
-        text-align:left;
-    }
-
-    td {
-        border:1px solid #AAA;
-        padding:2px;
-    }
-    .group {
-        background:#cdffd1;
-        font-weight: bold;
-    }
-    .group2 {
-        background:#ffd6d3;
-        font-weight: bold;
-    }
-    .footer {
-        margin-bottom:20px;
-        font-size:1.2em;
-        background:#ccccff;
-    }
-    .number {
-    text-align:center;
-    }
-    .total {
-        background:#ccccff;
-    }
-</style>
+	<link rel="stylesheet" type="text/css" href="css/style.css">
 {% endblock %}
 
 {% block body %}
 {% include "print/header.html"%}
-
 
 <div id="changelist" class="module">
 <h1>{{ name }}</h1>

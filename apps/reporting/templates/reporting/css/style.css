@@ -1,0 +1,56 @@
+	html {
+		font-family: 'Arial';
+		font-size:10pt;
+	}
+    h1 {
+        text-align:center;
+        margin:0.6cm;
+        font-size:2em;
+    }
+
+    table.data {
+    	width:100%;
+        border:1px solid gray;
+    }
+    
+    table.params {
+    }
+    
+    table.params td {
+    	border: 1px solid #AAA;
+    	padding:2px;
+    }
+    
+    table.params td.data {
+    	padding:2px 10px;
+    	background-color:#DDD;
+    	font-weight: bold;
+    }
+
+    table.data th {
+        text-align: center;
+        padding:1px;
+    }
+
+    table.data td {
+        border:1px solid #AAA;
+        padding:2px;
+    }
+    .group {
+        background:#cdffd1;
+        font-weight: bold;
+    }
+    .footer {
+        margin-bottom:20px;
+        font-size:1.2em;
+        background:#ccccff;
+    }
+    .number {
+    	text-align:center;
+    }
+    .total {
+        background:#ccccff;
+    }
+    .right {
+    	text-align:center;
+    }

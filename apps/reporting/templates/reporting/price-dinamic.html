@@ -1,66 +1,11 @@
-{% include "print/header.html"%}
-
 {% extends "print/base.html" %}
 
 {% block extra_head %}
-<style>
-	table {
-		width:100%;
-		border:1px solid gray;
-	}
-	tr {
-		
-	}
-	.group1 {
-	    background:#cdffd1;
-	}
-	.total {
-	    background:#ccccff;
-	}
-	td {
-		border:1px solid #AAA;
-		padding:2px;
-	}
-	.title-0 {
-		font-size:1.8em;
-		font-weight:bold;
-		background:#DDD;
-	}
-	.title-1, .title-2 {
-		
-	}
-	.price {
-		text-align:right;
-		font-weight:bold;
-	}
-	.no-price {
-		background:#ffd6d3;
-	}
-	.headers th {
-		font-size:1.2em;
-		padding:2px;
-		border:1px solid gray;
-	}
-	.header, .header td {
-		border:none;
-	}
-	.header {
-		margin-bottom:20px;
-		font-size:1.2em;
-	}
-	.header .details {
-		width:9.5cm;
-		line-height:140%;
-	}
-	h1 {
-		text-align:center;
-		margin:0.6cm;
-		font-size:2em;
-	}
-</style>
+	<link rel="stylesheet" type="text/css" href="css/style.css">
 {% endblock %}
 
 {% block body %}
+{% include "print/header.html"%}
 
 <div id="changelist" class="module">
 <h1>{{ name }}</h1>
