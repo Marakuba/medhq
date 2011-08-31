@@ -3,6 +3,7 @@ from django import forms
 from django.forms.formsets import formset_factory
 from staff.models import Staff, Position
 from service.models import BaseService, ExtendedService
+from state.models import State
 
 from django.contrib.admin import widgets
 
@@ -26,3 +27,10 @@ class StaffForm(forms.Form):
     staff = forms.ModelMultipleChoiceField(queryset=staff_qs, widget=widgets.FilteredSelectMultiple(u'персонал',True))
     
     
+state_qs = State.objects.filter(type='b')
+class PriceForm(forms.Form):
+    """
+    """
+    state = forms.ModelChoiceField(label=u'Организация',
+                                            queryset=state_qs,
+                                            required=False)

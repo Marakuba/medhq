@@ -68,10 +68,7 @@ class Patient(make_person_object('patient')):
     def update_account(self):
         visits = self.visit_set.all()
         result = visits.aggregate(price=Sum('total_price'), discount=Sum('total_discount'))
-        if result['price'] is not None and result['discount'] is not None:
-            total = result['price']-result['discount']
-        else:
-            total = 0    
+        total = (result['price'] or 0)- (result['discount'] or 0)
         self.billed_account = total
         
         print "set new account value:", total

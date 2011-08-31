@@ -23,6 +23,7 @@ import csv
 import datetime
 from django.views.generic.simple import direct_to_template
 from django.db.models.expressions import F
+from service.forms import PriceForm
 
 
 class StandardServiceAdmin(TreeEditor):
@@ -211,7 +212,8 @@ class BaseServiceAdmin(TreeEditor):
         return response
     
     def pricelist(self, request):
-        extra_context = {'today':datetime.date.today().strftime("%d.%m.%Y")}
+        state = PriceForm()
+        extra_context = {'today':datetime.date.today().strftime("%d.%m.%Y"),'form' : state}
         return direct_to_template(request, "admin/service/pricelist.html", extra_context=extra_context)
         
     def pricelist_print(self, request):
