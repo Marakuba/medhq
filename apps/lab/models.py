@@ -12,7 +12,7 @@ from numeration.models import NumeratorItem
 import logging
 from django.conf import settings
 from django.utils.encoding import smart_unicode
-from core.models import GENDER_TYPES
+from core.models import GENDER_TYPES, make_operator_object
 
 
 
@@ -251,8 +251,42 @@ class Sampling(models.Model):
     class Meta:
         verbose_name = u'забор материала'
         verbose_name_plural = u'забор материалов'
+
+
+class Invoice(make_operator_object('invoice')):
+    """
+    """
+    office = models.ForeignKey(State, verbose_name=u'Офис', limit_choices_to={'type':u'b'}, related_name='office') 
+    modified = models.DateTimeField(u'Изменено', auto_now=True)
+    state = models.ForeignKey(State, related_name='lab')
+    comment = models.TextField(u'Комментарий', blank=True)
+    
+    objects = models.Manager()
+    
+    def __unicode__(self):
+        return smart_unicode(self.id)
+    
+    class Meta:
+        verbose_name = u'накладная'
+        verbose_name_plural = u'накладные'
+        ordering = ('-id',)    
         
         
+class InvoiceItem(make_operator_object('invoice_item')):
+    """
+    """
+    invoice = models.ForeignKey(Invoice, blank=True, null=True)
+    ordered_service = models.OneToOneField('visit.OrderedService')
+    
+    def __unicode__(self):
+        return smart_unicode(self.ordered_service)
+    
+    class Meta:
+        verbose_name = u'позиция накладной'
+        verbose_name_plural = u'позиции накладных'
+        ordering = ('id',)     
+    
+    
 
 class Equipment(models.Model):
     """

@@ -138,8 +138,9 @@ def get_service_tree(request):
     """
     Генерирует дерево в json-формате.
     """
-    _cache_key = request.active_profile and 'service_list_%s' % request.active_profile.state or 'service_list'
+    _cache_key = (settings.SERVICETREE_ONLY_OWN and request.active_profile) and 'service_list_%s' % request.active_profile.state or 'service_list'
     
+    ignored = None
     if settings.SERVICETREE_ONLY_OWN and request.active_profile:
         office = request.active_profile.department.state
         ignored = State.objects.filter(type='b').exclude(id=office.id)

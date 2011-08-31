@@ -1,0 +1,158 @@
+{% extends "print/off_blank.html" %}
+
+{% load lab_tags %} 
+
+{% block title %}Направление{% endblock %}
+
+
+{% block extra_head %}
+
+	
+<style>
+	body {
+		width:21cm;
+	}
+	table.page-frame {
+		width:100%;
+	}
+	table.service-list {
+		margin-top:12pt;
+	}
+	table.service-list td,table.service-list th  {
+		border:1px solid;
+		padding:3px;
+		font-size:10pt;
+	}
+	table.service-list th {
+		background-color:#EEE;
+	}
+	.details {
+		font-size:12pt;
+		line-height:120%;
+		margin:5px 0 10px 0;
+	}
+	td.visit {
+		height:19cm;
+	}
+	td.agreement {
+		border-top:dashed 1px gray;
+		font-size:8pt;
+		line-height:120%;
+	}
+	td.agreement h3 {
+		text-align:center;
+		font-size:10pt;
+		margin-top:6pt;
+		line-height:150%;
+	}
+	td.agreement .indent {
+		margin-bottom:3pt;
+	}
+	td.agreement ol {
+		list-style:decimal inside none;
+	}
+	.underwrites {
+		margin-top:10pt;
+		width:100%;
+	}
+	.title {
+		font-size:16pt;
+		font-weight:bold;
+		text-align:center;
+		margin:8pt 0;
+	}
+	.rt {
+		text-align:right;
+	}
+	
+	table.ftr td {
+		padding:1cm 0;
+	}
+	
+	li {
+		font-size: 9pt;
+	}
+	
+</style>
+{% endblock %}
+
+{% block header %}
+{% endblock %}
+
+{% block body %}
+<table class="page-frame">
+	<tr>
+		<td>
+			<div class="header center">
+				<div class="title">Накладная на передачу биоматериала</div>
+			</div>
+			<div class="details">
+			<div>Дата: <strong>{{ invoice.created|date:"d.m.Y" }}</strong></div>
+			<div>Офис: <strong>{{ invoice.office }}</strong></div>
+			<div>Лаборатория: <strong>{{ invoice.state }}</strong></div>
+			</div>
+			<table width="100%" class="service-list">
+				<tr>
+					<th width="2%">№</th>
+					<th>Пациент</th>
+					<th>Пробирка</th>
+					<th>Исследования</th>
+				</tr>
+				{% for sampling in samplings %}
+				<tr>
+					<td>{{ forloop.counter }}</td>
+					<td>{{ sampling.visit.patient.short_name }}</td>
+					<td>{{ sampling.tube }}</td>
+					<td>
+						<ul>
+					{% for service in sampling.orderedservice_set.all %}
+							<li>{{ forloop.counter }}. {{ service.service }}</li>
+					{% endfor %}
+						</ul>
+					</td>
+				</tr>
+				{% endfor %}
+			</table>
+		</td>
+	</tr>
+</table>
+
+<table width="100%" class="service-list">
+				<tr>
+					<th width="2%">№</th>
+					<th>Пробирка</th>
+					<th>Количество</th>
+				</tr>
+	{% for group in groups %}
+	<tr>
+		<td>{{ forloop.counter }}</td>
+		<td>{{ group.tube__name }}</td>
+		<td class="rt">{{ group.count }}</td>
+	</tr>
+	{% endfor %}
+	<tr>
+		<td class="rt" colspan="2" class=""><b>ВСЕГО пробирок:</b></td>
+		<td class="rt"><b>{{ samplings.count }}</b></td>
+	</tr>
+</table>
+
+<table class="ftr" width="100%">
+<tr>
+	<td width="50%">
+		Биоматериал передал ___________________ /____________/
+	</td>
+	<td width="50%">
+		Получено курьером ___________________ /____________/
+	</td>
+</tr>
+<tr>
+	<td width="50%">
+		Передано курьером ___________________ /____________/
+	</td>
+	<td width="50%">
+		Биоматериал принял ___________________ /____________/
+	</td>
+</tr>
+</table>
+
+{% endblock %}
