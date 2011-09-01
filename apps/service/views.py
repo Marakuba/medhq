@@ -12,6 +12,7 @@ import StringIO
 from xlwt import *
 from django.conf import settings
 from annoying.decorators import render_to
+from django.views.decorators.gzip import gzip_page
 
 def pricelist(request):
 
@@ -42,6 +43,7 @@ def pricelist(request):
     return direct_to_template(request, "print/service/fullpricelist.html", extra_context=extra_context)
     
 
+@gzip_page
 def price_list_helper(request):
     """
     """
