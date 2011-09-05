@@ -177,7 +177,6 @@ def get_service_tree(request):
     
     def tree_iterate(qs):
         
-
         nodes = []
         for base_service in qs.all().order_by(BaseService._meta.tree_id_attr, "-"+BaseService._meta.left_attr): #@UndefinedVariable
             if base_service.is_leaf_node():
