@@ -47,18 +47,19 @@ def pricelist(request):
 def price_list_helper(request):
     """
     """
-    state = get_object_or_404(State, id=request.GET.get('state', None))
+    state = None
     by_state = request.GET.get('by_state', None)
     if by_state:
-        services = BaseService.objects.filter().order_by(BaseService._meta.tree_id_attr, BaseService._meta.left_attr, 'level') #@UndefinedVariable
-    else:
-        services = BaseService.objects.all().order_by(BaseService._meta.tree_id_attr, BaseService._meta.left_attr, 'level') #@UndefinedVariable
+        state = get_object_or_404(State, id=request.GET.get('state', None))
+        
+    services = get_service_tree(state)
+    
     st = State.objects.get(id=settings.MAIN_STATE_ID)
     #import pdb; pdb.set_trace()
     if request.GET.get('type')=='print':
         extra_context = {'services':services,
                          'exec_form':EXECUTION,
-                         'state':state}
+                         'state':state or st}
         return direct_to_template(request, "print/service/pricelist.html", extra_context=extra_context)
     
     elif request.GET.get('type')=='xls':
@@ -154,5 +155,50 @@ def staff_setter(request):
     c = {'form':form}
     
     return c
-    
+
+def get_service_tree(state=None):
+    """
+    Генерирует дерево в json-формате.
+    """
+    def clear_tree(tree=[],empty=False):
+        '''
+        Рекурсивно очищает список, содержащий дерево, от пустых групп
+        empty - признак того, есть ли в текущей группе элементы
+        '''
+        #Если список пуст, удалять больше нечего
+        if len(tree)==0:
+            return []
+        else:
+            node = tree[-1]
+            if (empty or node.is_root_node()) and not node.is_leaf_node():
+                #Если это не группа или один из корней, то говорим, что потомков нет
+                tree = clear_tree(tree[:-1],True) or []
+            else:
+                tree = clear_tree(tree[:-1],False) or []
+            #Если нет потомков и текущий элемент - группа
+            if not node.is_leaf_node() and empty:
+                #удаляем текущий элемент
+                node = None
+            if node:
+                tree.append(node)
+            return tree 
+            
+    ignored = None
+    if state:
+        ignored = State.objects.filter(type='b').exclude(id=state.id)
+
+    nodes = []
+    for base_service in BaseService.objects.all().order_by(BaseService._meta.tree_id_attr, BaseService._meta.left_attr, 'level'): #@UndefinedVariable
+        if base_service.is_leaf_node():
+            items = base_service.extendedservice_set.active()
+            if ignored:
+                items = items.exclude(state__id__in=ignored)
+                    
+            if items.count():
+                nodes.append(base_service)
+        else:
+            nodes.append(base_service)
+            
+    nodes = clear_tree(nodes,True)            
+    return nodes
     
