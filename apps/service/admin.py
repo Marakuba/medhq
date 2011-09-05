@@ -186,8 +186,9 @@ class BaseServiceAdmin(TreeEditor):
     #change_form_template = "admin/tabbed/change_form.html"
     list_display = ('name','short_name',
                     #make_place_column(u'Ек'),make_place_column(u'Ел'),make_place_column(u'К'),make_place_column(u'Д'),
-                    #'execution_time',
+                    'execution_time',
                     'execution_form')
+    list_editable = ('execution_time',)
     inlines = [ExtendedServiceInlineAdmin,AnalysisInlineAdmin]
     #filter_horizontal = ('staff',)
     save_as = True
