@@ -13,6 +13,8 @@ from xlwt import *
 from django.conf import settings
 from annoying.decorators import render_to
 from django.views.decorators.gzip import gzip_page
+from pricelist.models import Price
+from django.db.models import Max
 
 def pricelist(request):
 
@@ -50,8 +52,11 @@ def price_list_helper(request):
     state = None
     by_state = request.GET.get('by_state', None)
     if by_state:
-        state = get_object_or_404(State, id=request.GET.get('state', None))
-        
+        try:
+            state = get_object_or_404(State, id=request.GET.get('state', None))
+        except:
+            state = None
+            
     services = get_service_tree(state)
     
     st = State.objects.get(id=settings.MAIN_STATE_ID)
@@ -184,21 +189,34 @@ def get_service_tree(state=None):
             return tree 
             
     ignored = None
+    args = {}
     if state:
         ignored = State.objects.filter(type='b').exclude(id=state.id)
+        args['extended_service__state']=state.id
 
     nodes = []
+    values = Price.objects.filter(extended_service__is_active=True, price_type='r',**args).\
+        order_by('extended_service__id').\
+        values('extended_service__id','value','extended_service__base_service__id').\
+        annotate(Max('on_date'))
+    result = {}
+    for val in values:
+        result[val['extended_service__base_service__id']] = val
     for base_service in BaseService.objects.all().order_by(BaseService._meta.tree_id_attr, BaseService._meta.left_attr, 'level'): #@UndefinedVariable
         if base_service.is_leaf_node():
-            items = base_service.extendedservice_set.active()
-            if ignored:
-                items = items.exclude(state__id__in=ignored)
-                    
-            if items.count():
+            if result.has_key(base_service.id):
                 nodes.append(base_service)
         else:
             nodes.append(base_service)
             
-    nodes = clear_tree(nodes,True)            
-    return nodes
+    mass = []        
+    nodes = clear_tree(nodes,True)
+    for node in nodes:
+        if result.has_key(node.id):
+            k = [node,result[node.id]['value'] or None]
+        else:
+            k = [node,None]
+        mass.append(k)   
+    #import pdb; pdb.set_trace()
+    return mass
     

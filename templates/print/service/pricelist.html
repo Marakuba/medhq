@@ -72,32 +72,26 @@
 <h1>Прейскурант цен</h1>
 <table>
 {% for service in services %}
-	{% if service.level > 0 and not service.is_leaf_node %}
-		{%if service.price %}
-			<tr class="leaf">
-				<td>{{ service.id }}</td>
-				<td>{{ service }}</td>
-				<td class="price">{{ service.first_price }}</td>
-			</tr>
-		{%else%}
-			<tr class="title-1">
-				<td colspan=3>{{ service }}</td>
-			</tr>
-		{%endif%}
+	{% if service.0.level > 0 and not service.0.is_leaf_node %}
+		
+		<tr class="title-1">
+			<td colspan=3>{{ service.0 }}</td>
+		</tr>
+		
 		
 	{% else %}
 
 
-		{% with service.first_price as price %}
-			{% if not service.is_leaf_node or price %}
+		{% with service.1 as price %}
+			{% if not service.0.is_leaf_node or price %}
 				<tr class="">
-					{% if service.is_leaf_node %}
-						<td class="id">{{ service.id }}</td>
-						<td class="title-leaf">{{ service }}</td>
+					{% if service.0.is_leaf_node %}
+						<td class="id">{{ service.0.id }}</td>
+						<td class="title-leaf">{{ service.0 }}</td>
 						<td class="price">{{ price }}</td>
 					{% else %}
-					<td class="title-{{ service.level }}" colspan="3">
-						{{ service }}
+					<td class="title-{{ service.0.level }}" colspan="3">
+						{{ service.0 }}
 					</td>
 					{% endif %}
 				</tr>
