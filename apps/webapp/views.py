@@ -157,7 +157,7 @@ def get_service_tree(request):
                     "text":"%s [%s]" % (obj.base_service.short_name or obj.base_service.name, price),
                     "price":price
                 }
-                staff_all = obj.base_service.staff.all()
+                staff_all = es.staff.all()
                 if staff_all.count():
                     node['staff'] = [(pos.id,pos.__unicode__()) for pos in staff_all]
                 return node
