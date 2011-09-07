@@ -138,3 +138,4 @@ class Preorder(models.Model):
     patient = models.ForeignKey(Patient, blank = True, null = True)
     timeslot = models.OneToOneField(Event, blank = True, null = True)
     comment = models.TextField(u'Примечание', blank = True, null = True)
+    expiration = CustomDateTimeField(u'Дата истечения', blank = True, null = True)

@@ -74,6 +74,13 @@ Ext.calendar.TimeslotEditWindow = Ext.extend(Ext.Window, {
 				scope:this
 			}
 		});
+		
+		this.clearButton = new Ext.Button({
+			iconCls:'silk-cancel',
+			text:'Отменить предзаказ',
+			disabled:true,
+			handler:this.onClear.createDelegate(this, [])
+		});
 
         this.addEvents({
             /**
@@ -140,12 +147,8 @@ Ext.calendar.TimeslotEditWindow = Ext.extend(Ext.Window, {
 			iconCls:'silk-add',
 			text:'Добавить пациента',
 			handler:this.onAddPatient.createDelegate(this, [])
-		},{
-    		xtype:'button',
-			iconCls:'silk-cancel',
-			text:'Отменить предзаказ',
-			handler:this.onClear.createDelegate(this, [])
-		}
+		},
+		this.clearButton
 		];
     	
 	    config = {
@@ -270,7 +273,7 @@ Ext.calendar.TimeslotEditWindow = Ext.extend(Ext.Window, {
                 this.setTitle(this.titleTextEdit);
             }
             if (rec.data[Ext.calendar.EventMappings.Preorder.name]) {
-            	this.preorderStore.setBaseParam('event',rec.data['resource_uri']);
+            	this.preorderStore.setBaseParam('timeslot',App.uriToId(rec.data['ResourceURI']));
             	this.preorderStore.load({callback:this.setPreorder,scope:this});
             }
 
@@ -360,6 +363,9 @@ Ext.calendar.TimeslotEditWindow = Ext.extend(Ext.Window, {
         		var record = new this.preorderModel();
         		record.set('patient',this.patient.data.resource_uri);
         		record.set('timeslot',uri);
+        		var end = this.formPanel.form.findField('EndDate').getValue();
+        		var day = end.getDate(end)+2;
+        		record.set('expiration', end.setDate(day));
         		this.preorderStore.add(record);
         	}
         }
@@ -368,7 +374,8 @@ Ext.calendar.TimeslotEditWindow = Ext.extend(Ext.Window, {
     setPreorder: function(records,opt,success){
 		if (records) {
 			var rec = records[0];
-			this.preorder = rec
+			this.preorder = rec;
+			this.clearButton.setDisabled(false);
 		}
 	},
 
@@ -436,6 +443,10 @@ Ext.calendar.TimeslotEditWindow = Ext.extend(Ext.Window, {
     },
     
     onClear: function(){
-    	
+    	if (this.preorder){
+    		this.preorderStore.remove(this.preorder);
+    		this.clearButton.setDisabled(true);
+    		this.formPanel.form.findField('Title').setValue('')
+    	}
     }
 });
