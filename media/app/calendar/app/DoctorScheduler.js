@@ -300,99 +300,9 @@ Ext.calendar.DoctorScheduler = Ext.extend(Ext.Panel, {
                             },
                             'dayclick': {
                                 fn: function(vw, dt, ad, el){
-                                	var day = dt.getDay();
-                                	var date = dt.getDate();
-                                	var time = dt.getTime();
-                                	var ind = this.calendarStore.find("CalendarId",this.staff_id);
-                                	var staff = this.calendarStore.getAt(ind);
-                                	var routine = staff.data.Routine;
-                                	var start;
-                                	var end;
-                                	
-                                	//Устанавливаем начальное и конечное время сегодняшней смены
-                                	//Если у врача не указаны соответствующие поля, то берется рабочий день
-                                	//из настроек в календаре
-                                	switch (routine[1]) {
-                                		//любая смена
-                                		case '0':
-                                			//Устанавливаем время работы, какое есть
-                                			start = staff.data.AmSessionStarts || staff.data.PmSessionStarts;
-                                			end = staff.data.AmSessionEnds || staff.data.PmSessionEnds;
-                                			break;
-                                		//первая смена
-                                    	case '1':
-                                    		start = staff.data.AmSessionStarts;
-                                			end = staff.data.AmSessionEnds;
-                                			break;
-                                		//вторая смена
-                                		case '2':
-                                    		start = staff.data.PmSessionStarts;
-                                			end = staff.data.PmSessionEnds;
-                                			break;
-                                		default: 
-                                			start = undefined;
-                                			start = undefined;
-                                			break;
-                                	};
-                                	//Проверяем, работает ли сегодня врач
-                                	//смотрим список дней в тэгах work_days
-                                	var isWorking = true;
-                                	var work_days = staff.data.work_days;
-                                	if (work_days) {
-                                		if (work_days.search(day) === -1) {
-                                			isWorking = false;
-                                		}
-                                	};
-                                	//смотрим четность/нечетность дня в routine
-                                	//0 - любые дни
-                                	//1 - четные
-                                	//2 - нечетные
-                                	switch (routine[0]) {
-                                		case '1':
-                                			if (date % 2 > 0) {
-                                				isWorking = false;
-                                			};
-                                			break;
-                                		case '2':
-                                			if (date % 2 === 0) {
-                                				isWorking = false;
-                                			};
-                                			break;
+                                	if (vw['id']=="app-calendar-month"){
+                                		this.dayClickMW(vw, dt, ad, el)
                                 	}
-                                	
-                                	if (start) {
-                                		start = this.setTimeToDate(start,new Date(dt));
-                                	} else {
-                                		start = new Date();
-                                	};
-                               		if (end) {
-                              				end = this.setTimeToDate(end,new Date(dt));
-                           			} else {
-                           				end = new Date();
-                           				end.add('h',1);
-                           			};
-                           			
-                           			if (isWorking) {
-                           				this.showEditWindow({
-                                        	StartDate: start,
-	                                   		EndDate: end,
-    	                                    IsAllDay: ad
-        	                            }, el,vw);
-                           			} else {
-                           				Ext.Msg.confirm('Предупреждение',staff.data.Title + 
-            							'в этот день не работает. Продолжить?',
-              								function(btn){
-    											if (btn=='yes') {
-    												this.showEditWindow({
-                           								StartDate: start,
-                           								EndDate: end,
-                           								IsAllDay: ad
-                       								}, el, vw);
-    											}
-    										},
-               							this);
-                           			}
-                                    this.clearMsg();
                                 },
                                 scope: this
                             },
@@ -406,7 +316,7 @@ Ext.calendar.DoctorScheduler = Ext.extend(Ext.Panel, {
                             },
                             'eventmove': {
                                 fn: function(vw, rec){
-                                    //rec.commit();
+                                    rec.commit();
                                     var time = rec.data.IsAllDay ? '' : ' \\a\\t g:i a';
                                     this.showMsg('Event '+ rec.data.Title +' was moved to '+rec.data.StartDate.format('F jS'+time));
                                 },
@@ -414,7 +324,7 @@ Ext.calendar.DoctorScheduler = Ext.extend(Ext.Panel, {
                             },
                             'eventresize': {
                                 fn: function(vw, rec){
-                                    //rec.commit();
+                                    rec.commit();
                                     this.showMsg('Event '+ rec.data.Title +' was updated');
                                 },
                                 scope: this
@@ -457,7 +367,7 @@ Ext.calendar.DoctorScheduler = Ext.extend(Ext.Panel, {
 								fn: function(win, rec){
 									win.hide();
 									rec.data.IsNew = false;
-									//this.eventStore.add(rec);
+									this.eventStore.add(rec);
                     	            this.showMsg('Event '+ rec.data.Title +' was added');
 								},
 								scope: this
@@ -590,6 +500,104 @@ Ext.calendar.DoctorScheduler = Ext.extend(Ext.Panel, {
     				}
                	}
             );
+        },
+        
+        dayClickMW: function(vw, dt, ad, el){
+        	var day = dt.getDay();
+			var date = dt.getDate();
+            var time = dt.getTime();
+            var ind = this.calendarStore.find("CalendarId",this.staff_id);
+            var staff = this.calendarStore.getAt(ind);
+            var routine = staff.data.Routine;
+            var start;
+            var end;
+                                	
+            //Устанавливаем начальное и конечное время сегодняшней смены
+            //Если у врача не указаны соответствующие поля, то берется рабочий день
+            //из настроек в календаре
+            switch (routine[1]) {
+            	//любая смена
+                case '0':
+                	//Устанавливаем время работы, какое есть
+                    start = staff.data.AmSessionStarts || staff.data.PmSessionStarts;
+                    end = staff.data.AmSessionEnds || staff.data.PmSessionEnds;
+                    break;
+                //первая смена
+                case '1':
+                	start = staff.data.AmSessionStarts;
+                    end = staff.data.AmSessionEnds;
+                    break;
+                //вторая смена
+                case '2':
+                	start = staff.data.PmSessionStarts;
+                    end = staff.data.PmSessionEnds;
+                    break;
+                default: 
+                	start = undefined;
+                    start = undefined;
+                    break;
+            };
+                
+            //Проверяем, работает ли сегодня врач
+            //смотрим список дней в тэгах work_days
+            var isWorking = true;
+            var work_days = staff.data.work_days;
+            if (work_days) {
+            	if (work_days.search(day) === -1) {
+                	isWorking = false;
+                }
+            };
+                
+            //смотрим четность/нечетность дня в routine
+            //0 - любые дни
+            //1 - четные
+            //2 - нечетные
+            switch (routine[0]) {
+            	case '1':
+                	if (date % 2 > 0) {
+                    	isWorking = false;
+                    };
+                    break;
+                case '2':
+                	if (date % 2 === 0) {
+                    	isWorking = false;
+                    };
+                    break;
+                }
+                                	
+            if (start) {
+            	start = this.setTimeToDate(start,new Date(dt));
+            } else {
+            	start = new Date();
+            };
+            if (end) {
+            	end = this.setTimeToDate(end,new Date(dt));
+            } else {
+            	end = new Date();
+                end.add('h',1);
+            };
+                           			
+            if (isWorking) {
+            	this.showEditWindow({
+                	StartDate: start,
+	                EndDate: end,
+    	            IsAllDay: ad
+        	    }, el,vw);
+            } else {
+            Ext.Msg.confirm('Предупреждение',staff.data.Title + 
+            				'в этот день не работает. Продолжить?',
+				function(btn){
+    				if (btn=='yes') {
+    					this.showEditWindow({
+                        	StartDate: start,
+                           	EndDate: end,
+                           	IsAllDay: ad
+             	       }, el, vw);
+    				}
+    			},
+        	this);
+        	}
+        	this.clearMsg();
         }
     });
 

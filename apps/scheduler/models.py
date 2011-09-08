@@ -97,7 +97,6 @@ class Event(models.Model):
     parent = models.ForeignKey('self', null=True, blank=True, related_name='children')
     
     def save(self, *args, **kwargs):
-        print "YES"
         if not self.timeslot:
             staff = Staff.objects.get(id=self.cid)
             timeslot = timedelta(minutes=staff.doctor.get_timeslot_display() or 30)
@@ -110,6 +109,13 @@ class Event(models.Model):
                                      parent = self, rem = self.rem)
                 start += timeslot
         super(Event, self).save(*args, **kwargs)
+        
+    def delete(self, *args, **kwargs):
+        if not self.timeslot:
+            timeslots = Event.objects.filter(timeslot=True,start__gte=self.start,start__lte=self.end)
+            [timeslot.delete() for timeslot in timeslots]
+        super(Event, self).delete(*args, **kwargs) 
+
             
     class Meta:
         verbose_name = u'смена'
