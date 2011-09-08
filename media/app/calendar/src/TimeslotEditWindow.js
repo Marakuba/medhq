@@ -52,7 +52,8 @@ Ext.calendar.TimeslotEditWindow = Ext.extend(Ext.Window, {
 		    {name: 'resource_uri'},
 		    {name: 'patient'},
 		    {name: 'timeslot'},
-		    {name: 'comment'}
+		    {name: 'comment'},
+		    {name: 'expiration'}
 		]);
 
     	this.preorderStore = new Ext.data.RESTStore({
@@ -259,6 +260,7 @@ Ext.calendar.TimeslotEditWindow = Ext.extend(Ext.Window, {
         var rec,
         f = this.formPanel.getForm();
         this.preorder = undefined;
+        this.patient = undefined;
 
         if (o.data) {
             rec = o;
@@ -272,10 +274,8 @@ Ext.calendar.TimeslotEditWindow = Ext.extend(Ext.Window, {
             else {
                 this.setTitle(this.titleTextEdit);
             }
-            if (rec.data[Ext.calendar.EventMappings.Preorder.name]) {
-            	this.preorderStore.setBaseParam('timeslot',App.uriToId(rec.data['ResourceURI']));
-            	this.preorderStore.load({callback:this.setPreorder,scope:this});
-            }
+           	this.preorderStore.setBaseParam('timeslot',App.uriToId(rec.data['ResourceURI']));
+           	this.preorderStore.load({callback:this.setPreorder,scope:this});
 
             f.loadRecord(rec);
             //this.getForm().findField('start').originalValue = o.data['start']
@@ -363,19 +363,20 @@ Ext.calendar.TimeslotEditWindow = Ext.extend(Ext.Window, {
         		var record = new this.preorderModel();
         		record.set('patient',this.patient.data.resource_uri);
         		record.set('timeslot',uri);
-        		var end = this.formPanel.form.findField('EndDate').getValue();
-        		var day = end.getDate(end)+2;
-        		record.set('expiration', end.setDate(day));
+        		var end = this.activeRecord.data[M.EndDate.name];
+        		var day = end.add('d',2);
+        		record.set('expiration', end);
         		this.preorderStore.add(record);
         	}
         }
     },
     
     setPreorder: function(records,opt,success){
-		if (records) {
-			var rec = records[0];
-			this.preorder = rec;
+		if (records[0]) {
+			this.preorder = records[0];
 			this.clearButton.setDisabled(false);
+		} else {
+			this.clearButton.setDisabled(true);
 		}
 	},
 
@@ -386,11 +387,18 @@ Ext.calendar.TimeslotEditWindow = Ext.extend(Ext.Window, {
         }
         
         this.updateRecord();
+        
+        if (this.setRemovePreorder) {
+        	this.setRemovePreorder = false;
+        	this.preorderStore.remove(this.preorder);
+        	
+        }
 
         if (!this.activeRecord.dirty) {
             this.onCancel();
             return;
         }
+
 
         this.fireEvent(this.isAdd ? 'eventadd': 'eventupdate', this, this.activeRecord);
     },
@@ -444,8 +452,8 @@ Ext.calendar.TimeslotEditWindow = Ext.extend(Ext.Window, {
     
     onClear: function(){
     	if (this.preorder){
-    		this.preorderStore.remove(this.preorder);
     		this.clearButton.setDisabled(true);
+    		this.setRemovePreorder = true;
     		this.formPanel.form.findField('Title').setValue('')
     	}
     }
