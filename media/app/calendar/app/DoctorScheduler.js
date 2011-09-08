@@ -406,7 +406,7 @@ Ext.calendar.DoctorScheduler = Ext.extend(Ext.Panel, {
                             },
                             'eventmove': {
                                 fn: function(vw, rec){
-                                    rec.commit();
+                                    //rec.commit();
                                     var time = rec.data.IsAllDay ? '' : ' \\a\\t g:i a';
                                     this.showMsg('Event '+ rec.data.Title +' was moved to '+rec.data.StartDate.format('F jS'+time));
                                 },
@@ -414,7 +414,7 @@ Ext.calendar.DoctorScheduler = Ext.extend(Ext.Panel, {
                             },
                             'eventresize': {
                                 fn: function(vw, rec){
-                                    rec.commit();
+                                    //rec.commit();
                                     this.showMsg('Event '+ rec.data.Title +' was updated');
                                 },
                                 scope: this

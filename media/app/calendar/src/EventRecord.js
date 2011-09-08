@@ -85,11 +85,6 @@ Ext.calendar.EventMappings = {
         name: 'Vacant',
         mapping: 'vacant',
         type: 'boolean'
-    },
-    Preorder: {
-        name: 'Preorder',
-        mapping: 'preorder',
-        type: 'string'
     }
 };
 
@@ -149,8 +144,7 @@ rec.data[M.Notes.name] = 'Some notes';
     M.IsNew,
     M.StaffId,
     M.Timeslot,
-    M.Vacant,
-    M.Preorder
+    M.Vacant
     ]);
 
     /**
@@ -172,8 +166,7 @@ rec.data[M.Notes.name] = 'Some notes';
         M.IsNew,
         M.StaffId,
         M.Timeslot,
-        M.Vacant,
-        M.Preorder
+        M.Vacant
         ]);
     };
 })();
