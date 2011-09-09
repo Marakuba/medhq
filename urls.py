@@ -33,5 +33,6 @@ urlpatterns = patterns('',
     url(r'^numeration/', include('numeration.urls')),
     url(r'^autocomplete/', include(autocomplete.urls)),
     url(r'^cache/', include('django_memcached.urls')),
+    url(r'^timeslot/haspreorder/(?P<id>\d+)/$', 'scheduler.views.hasPreorder'),
     #(r'helpdesk/', include('helpdesk.urls')),
 )
