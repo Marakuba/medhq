@@ -113,11 +113,15 @@ class Event(models.Model):
                                      parent = self, rem = self.rem)
                 start += timeslot
         super(Event, self).save(*args, **kwargs)
-        
+
     def delete(self, *args, **kwargs):
         if not self.timeslot:
             timeslots = Event.objects.filter(timeslot=True,start__gte=self.start,start__lte=self.end)
-            [timeslot.delete() for timeslot in timeslots]
+            for timeslot in  timeslots:
+                preorders = Preorder.objects.filter(timeslot=timeslot)
+                if preorders:
+                    preorders[0].delete()
+                timeslot.delete()
         super(Event, self).delete(*args, **kwargs) 
 
             

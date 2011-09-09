@@ -1150,7 +1150,6 @@ class PreorderResource(ExtResource):
         
 class EventResource(ExtResource):
     staff = fields.ForeignKey(StaffResource, 'staff', null=True)
-    #preorder = fields.OneToOneField('apps.api.registry.PreorderResource','preorder', null=True)
     
     def dehydrate(self, bundle):
         bundle.data['start'] = bundle.obj.start.strftime('%a %b %d %Y %H:%M:%S')
@@ -1168,7 +1167,6 @@ class EventResource(ExtResource):
             'start':ALL,
             'end':ALL,
             'timeslot':ALL,
-            'preorder':ALL_WITH_RELATIONS,
         }       
         limit = 1000
 
