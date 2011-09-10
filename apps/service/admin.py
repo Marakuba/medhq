@@ -158,6 +158,10 @@ lookups[BaseService._meta.right_attr] = F(BaseService._meta.left_attr)+1
 
 class BaseServiceForm(forms.ModelForm):
     
+    name = forms.CharField(label=u'Полное наименование', required=True, max_length=300, 
+                           widget=forms.TextInput(attrs={'size':100}))
+    short_name = forms.CharField(label=u'Краткое наименование', required=False, max_length=300, 
+                                 widget=forms.TextInput(attrs={'size':100}))
     parent = TreeNodeChoiceField(label=u'Группа', 
                                  queryset=BaseService.objects.exclude(base_group__isnull=True, **lookups).order_by(BaseService._meta.tree_id_attr, BaseService._meta.left_attr, 'level'), 
                                  required=False)

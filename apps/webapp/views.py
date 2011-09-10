@@ -192,7 +192,9 @@ def get_service_tree(request):
                     if price:
                         node = {
                             "id":'%s-%s' % (base_service.id,item.state.id),
-                            "text":"%s [%s]" % (base_service.short_name or base_service.name, price),
+                            "text":"%s %s[%s]" % (base_service.short_name or base_service.name, \
+                                                  base_service.execution_time and u"(%sм) " % base_service.execution_time or u'', \
+                                                  price),
                             "leaf":True,
                             "cls":"multi-line-text-node",
                             "price":price,

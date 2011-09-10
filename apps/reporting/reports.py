@@ -338,6 +338,30 @@ GROUP BY \
   ,TTvis.price  \
 ORDER BY  \
    serv ,cost " % (Report.base_wuery_from_where,Report.bq_exists_lab)
+
+class RreferalUslSumReportOnlyRADIO(RreferalUslSumReport):
+    verbose_name = u'<<Кто направил>> - услуга,колич.,сумма,15%, 20% (только лучевая диагностика)'
+    query_str = "\
+SELECT \
+  Trefrl.name as refrl, \
+  Tserv.id ||' - '||Tserv.name as serv,  \
+  TTvis.price as cost, \
+  sum(TTvis.count) as cnt, \
+  sum(TTvis.count * TTvis.price) as sum,  \
+  round(sum(TTvis.count*TTvis.price*0.15),2) as s15,\
+  round(sum(TTvis.count*TTvis.price*0.20),2) as s20, \
+  round(sum(TTvis.count * TTvis.price * (Tvis.discount_value/100)),2) as disc,  \
+  sum(TTvis.count * TTvis.price) - round(sum(TTvis.count * TTvis.price * (Tvis.discount_value/100)),2) as clean_price \
+%s %s\
+GROUP BY \
+  Trefrl.name  \
+  ,Tserv.id \
+  ,Tserv.name \
+  ,TTvis.price  \
+ORDER BY  \
+   serv ,cost " % (Report.base_wuery_from_where,Report.bq_exists_radio)
+
+
 #YYYY-MM-DD HH24:MI
 #  Tpnt.last_name ||' '|| substr(Tpnt.first_name,1,1)||'.' ||substr(Tpnt.mid_name,1,1)||'.' as pnt, \
 class PaymentPatientReport(Report):
@@ -1230,6 +1254,7 @@ register('patient-place_office-usl-sum-lab-only', PatientPlaceOfficeUslSumLabOnl
 register('referal-usl-sum', RreferalUslSumReport)
 register('referal-usl-sum-uzi', RreferalUslSumReportOnlyUZI)
 register('referal-usl-sum-lab', RreferalUslSumReportOnlyLAB)
+register('referal-usl-sum-radio', RreferalUslSumReportOnlyRADIO)
 register('referal-pnt_usl', RefrlPntUslReport)
 
 register('payment-pnt-serv', PaymentPatientReport)
