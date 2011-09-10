@@ -10,7 +10,6 @@ from django.conf.locale import tr
 from django.core.cache import cache
 from django.db.models.signals import post_save
 from mptt.models import MPTTModel
-from state.models import State
 import datetime
 
 
@@ -193,7 +192,7 @@ class BaseService(models.Model):
         """
         if state:
             try:
-                price = self.extendedservice_set.get(state=state).get_actual_price(date=date)
+                price = self.extendedservice_set.get(state=state, date=date).get_actual_price()
                 return price
             except:
                 return 0
@@ -257,7 +256,7 @@ class ExtendedService(models.Model):
     
     objects = ExtendedServiceManager()
     
-    def get_actual_price(self, date=None):
+    def get_actual_price(self, date):
         try:
             date = date or datetime.date.today()
             price_item = self.price_set.filter(price_type=u'r', on_date__lte=date).latest('on_date')
