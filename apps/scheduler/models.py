@@ -6,7 +6,7 @@ import datetime
 from south.modelsinspector import add_introspection_rules
 from django.utils.encoding import smart_unicode, force_unicode, smart_str
 import time
-from staff.models import Staff
+from staff.models import Staff, Position
 from patient.models import Patient
 from mptt.models import MPTTModel
 from visit.models import BaseService
@@ -99,8 +99,8 @@ class Event(models.Model):
     
     def save(self, *args, **kwargs):
         if not self.timeslot:
-            staff = Staff.objects.get(id=self.cid)
-            timeslot = timedelta(minutes=staff.doctor.get_timeslot_display() or 30)
+            staff = Position.objects.get(id=self.cid)
+            timeslot = timedelta(minutes=staff.staff.doctor.get_timeslot_display() or 30)
             start = self.start
             end = self.end
             while start < end:
