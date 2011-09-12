@@ -85,20 +85,12 @@ App.visit.OrderedServiceInlineGrid = Ext.extend(Ext.grid.EditorGridPanel, {
 		this.columns =  [new Ext.grid.RowNumberer({width: 30}),
 		    {
 		    	header: "МВ",
-		    	width: 3, 
-		    	css:'padding:0px!important;',
+		    	width: 5, 
+		    	css:'padding-bottom:0px',
 		    	dataIndex: 'execution_place', 
 		    	renderer: function(val) {
-		    		colors = {
-		    			"5":"black",
-		    			"1":"green",
-		    			"7":"green",
-		    			"4":"red",
-		    			"6":"green"
-		    		};
 		    		var s = val.split('/');
-		    		return String.format("<span style='font-weight:bolder;font-size:19px;padding:3px 0 0 3px;color:{0}'>+</span>", colors[s[s.length-1]]);
-//		    		return "<img src='"+MEDIA_URL+"resources/images/state_"+s[s.length-1]+".png'>"
+		    		return "<img src='"+MEDIA_URL+"resources/images/state_"+s[s.length-1]+".png'>"
 		    	}
 		    },{
 		    	header: "Услуга", 
@@ -113,7 +105,7 @@ App.visit.OrderedServiceInlineGrid = Ext.extend(Ext.grid.EditorGridPanel, {
 		    	dataIndex: 'staff_name',
 		    	renderer: function(val) {
 		    		return val //? val.staff_name : '';
-		    	}
+		    	},
 		    },{
 		    	header: "Кол-во", 
 		    	width: 10, 
@@ -143,7 +135,6 @@ App.visit.OrderedServiceInlineGrid = Ext.extend(Ext.grid.EditorGridPanel, {
 		];		
 		
 		var config = {
-			id:'ordered-service-inline-grid',
 			loadMask : {
 				msg : 'Подождите, идет загрузка...'
 			},
@@ -251,11 +242,12 @@ App.visit.OrderedServiceInlineGrid = Ext.extend(Ext.grid.EditorGridPanel, {
 			count:1,
 			execution_place:"/api/v1/dashboard/state/"+place  //TODO: replace to App.getApiUrl
 		});
+		this.stopEditing();
 		this.store.add(s);
-		this.getView().focusRow(this.store.getCount()-1);
+		this.startEditing(0, 0);
 	},
 	
-	addRow: function(attrs, can_duplicate, callback, scope) {
+	addRow: function(attrs, can_duplicate) {
 		if(!can_duplicate) {
 			var re = /(.*) \[\d+\]/;
 			res = re.exec(attrs.text);
@@ -267,7 +259,6 @@ App.visit.OrderedServiceInlineGrid = Ext.extend(Ext.grid.EditorGridPanel, {
 		if(attrs.staff){
 			var box = App.visit.StaffBox;
 			box.show({
-				text:attrs.text,
 				staffList:attrs.staff,
 				fn:function(button,rec,opts){
 					if(button=='ok' && rec) {
@@ -275,17 +266,13 @@ App.visit.OrderedServiceInlineGrid = Ext.extend(Ext.grid.EditorGridPanel, {
 						attrs.staff_name = rec.data.staff_name;
 						this.addRecord(attrs);
 					}
-					if(callback) {
-						Ext.callback(callback, scope);
-					}
 				},
 				scope:this
 			});
+//				var last = this.store.getCount()-1;
+//				this.staffWindow(last,attrs.id);
 		} else {
 			this.addRecord(attrs);
-			if(callback) {
-				Ext.callback(callback, scope);
-			}
 		}
 	},
 	

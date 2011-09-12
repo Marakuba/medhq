@@ -9,6 +9,7 @@ import time
 from staff.models import Staff
 from patient.models import Patient
 from mptt.models import MPTTModel
+from visit.models import BaseService
 
 from datetime import timedelta
 
@@ -137,3 +138,11 @@ class Preorder(models.Model):
     timeslot = models.OneToOneField(Event, blank = True, null = True)
     comment = models.TextField(u'Примечание', blank = True, null = True)
     expiration = CustomDateTimeField(u'Дата истечения', blank = True, null = True)
+    
+class PreorderedService(models.Model):
+    """
+    Набор услуг предзаказа
+    """
+    preorder = models.ForeignKey(Preorder)
+    modified = models.DateTimeField(auto_now=True)
+    service = models.ForeignKey(BaseService, verbose_name=u'Услуга')
