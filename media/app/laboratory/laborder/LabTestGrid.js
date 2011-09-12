@@ -164,7 +164,27 @@ App.laborder.LabTestGrid = Ext.extend(Ext.grid.GridPanel, {
 					window.open(String.format('/lab/print/results_by_visit/{0}/{1}/', visit, lab));
 				},
 				scope:this
-			},*/'->']
+			},*/'->',new Ext.CycleButton({
+	            showText: true,
+	            prependText: 'Выполнено:',
+	            items: [{
+	                text:'все',
+	                checked:true,
+	                filterValue:undefined
+	            },{
+	                text:'да',
+	                iconCls:'icon-state-no',
+	                filterValue:false
+	            },{
+	                text:'нет',
+	                iconCls:'icon-state-yes',
+	                filterValue:true
+	            }],
+	            changeHandler:function(btn, item){
+	            	this.storeFilter('executed__isnull',item.filterValue);
+	            },
+	            scope:this
+	        })]
 		}); 
 		
 		var config = {
@@ -173,6 +193,7 @@ App.laborder.LabTestGrid = Ext.extend(Ext.grid.GridPanel, {
 			loadMask : {
 				msg : 'Подождите, идет загрузка...'
 			},
+			closable:true,
 			border : false,
 			store:this.store,
 			columns:this.columns,
@@ -256,10 +277,8 @@ App.laborder.LabTestGrid = Ext.extend(Ext.grid.GridPanel, {
 	
 	storeFilter: function(field, value, autoLoad){
 		var autoLoad = autoLoad==undefined ? true : autoLoad;
-		if(!value) {
-			//console.log(this.store.baseParams[field]);
+		if(value==undefined) {
 			delete this.store.baseParams[field]
-			//this.store.setBaseParam(field, );
 		} else {
 			this.store.setBaseParam(field, value);
 		}
