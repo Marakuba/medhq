@@ -7,5 +7,6 @@ from django import forms
 from examination.models import CardTemplate, ExaminationCard
 
 
+admin.site.register(Equipment)
 admin.site.register(ExaminationCard)
 admin.site.register(CardTemplate)

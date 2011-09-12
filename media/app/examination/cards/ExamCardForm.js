@@ -6,6 +6,8 @@ App.examination.ExamCardForm = Ext.extend(Ext.form.FormPanel, {
 		
 		this.tmp_id = Ext.id();
 		
+		this.concreteFields = ['name','print_name','mbk_diag','conclusion'];
+		
 		this.examModel = App.models.examModel;
 		this.examCardStore = new Ext.data.Store({
 			//autoLoad:true,
@@ -49,88 +51,6 @@ App.examination.ExamCardForm = Ext.extend(Ext.form.FormPanel, {
 		    }
 		});
 		
-		this.prompt = new Ext.Window({
-//            applyTo:'hello-win',
-            layout:'fit',
-            title: 'Выберите поля для переноса',
-            width:400,
-            height:300,
-            closeAction:'hide',
-//            plain: true,
-            items: new Ext.FormPanel({
-                labelWidth: 10, 
-                bodyStyle: 'padding:5px 0px 0',
-                //width: 100,
-//                defaults: {width: 150},
-                //defaultType: 'textfield',
-        
-                items:  [new Ext.form.CheckboxGroup({
-                	id:this.tmp_id+'fieldsGroup',
-    				xtype: 'checkboxgroup',
-    				//fieldLabel: 'Single Column',
-    				//itemCls: 'x-check-group-alt',
-    				vertical:true,
-    				anchor:'100%',
-    				columns: 2,
-    				defaults:{
-    					checked:true
-    				},
-    				items: [
-    					{boxLabel:'Наименование',name:'name'},
-        				{boxLabel:'Заголовок',name:'print_name'},
-						{boxLabel:'Характер заболевания',name:'disease'},
-						{boxLabel:'Жалобы',name:'complaints'},
-						{boxLabel:'История заболевания',name:'history'},
-						{boxLabel:'Анамнез',name:'anamnesis'},
-						{boxLabel:'Объективные данные',name:'objective_data'},	
-						{boxLabel:'Психологический статус',name:'psycho_status'},
-						{boxLabel:'Диагноз МКБ',name:'mbk_diag'},
-						{boxLabel:'Основной диагноз',name:'gen_diag'},
-						{boxLabel:'Сопутствующий диагноз',name:'concomitant_diag'},
-						{boxLabel:'Клинический диагноз',name:'clinical_diag'},
-						{boxLabel:'Осложнения',name:'complication'},
-						{boxLabel:'ЭКГ',name:'ekg'},
-						{boxLabel:'Лечение',name:'treatment'},
-						{boxLabel:'Направление',name:'referral'},
-						{boxLabel:'Заключение',name:'conclusion'},
-						{boxLabel:'Примечание',name:'comment'}
-    				]
-    					
-                })],
-                    
-                buttons: [{
-                    text:'Ok',
-                    scope: this,
-                    handler: function(){
-                    	var arr = Ext.getCmp(this.tmp_id+'fieldsGroup').getValue();
-                    	this.prompt.fireEvent('submit',arr)
-                    }
-                },{
-                    text: 'Отмена',
-                    scope: this,
-                    handler: function(){
-                        this.prompt.hide();
-                    }
-                }]
-            })
-        });
-
-        this.prompt.on('submit', function(arr) {
-        	//Переносим данные из выбранных полей
-        	var field;
-        	for (item in arr){
-        		if (this.tmp_record.data[arr[item]['name']]) {
-        			field = this.getForm().findField(arr[item]['name'])
-        			if (field){
-        				field.setValue(this.tmp_record.data[arr[item]['name']]);
-        			}
-        		}
-        	};
-        	//this.getForm().loadRecord(this.tmp_record);
-			Ext.getCmp(this.tmp_id+'-info-btn').setText('Выбранный шаблон: '+this.tmp_record.data.name);
-			this.prompt.hide();
-        },this);
-		
 		this.mkb = new Ext.form.LazyComboBox({
 			fieldLabel:'Диагноз по МКБ',
 			anchor:'95%',
@@ -153,6 +73,32 @@ App.examination.ExamCardForm = Ext.extend(Ext.form.FormPanel, {
 			emptyText:'Выберите диагноз...',
 			valueField: 'resource_uri',
 			displayField: 'disp_name',
+			selectOnFocus:true
+		});
+		
+		this.equipment = new Ext.form.LazyComboBox({
+			fieldLabel:'Оборудование',
+			anchor:'95%',
+			name:'equipment',
+            allowBlank:true,
+			store: new Ext.data.JsonStore({
+				autoLoad:true,
+				proxy: new Ext.data.HttpProxy({
+					url:get_api_url('exam_equipment'),
+					method:'GET'
+				}),
+				root:'objects',
+				idProperty:'resource_uri',
+				fields:['resource_uri','name','id']
+			}),
+			typeAhead: false,
+			queryParam:'code__istartswith',
+			minChars:3,
+			triggerAction: 'all',
+			emptyText:'Выберите оборудование...',
+			valueField: 'resource_uri',
+			displayField: 'name',
+			editable:false,
 			selectOnFocus:true
 		});
 		
@@ -181,6 +127,7 @@ App.examination.ExamCardForm = Ext.extend(Ext.form.FormPanel, {
 			layout:'form',
 			labelAlign:'top',
 			autoScroll:true,
+			margins:'5 5 5 5',
 			items:[{
 					xtype:'hidden',
 					name:'ordered_service'
@@ -192,6 +139,36 @@ App.examination.ExamCardForm = Ext.extend(Ext.form.FormPanel, {
 					fieldLabel:'Заголовок для печати',
 					name:'print_name',
 					//height:40,
+					anchor:'100%'
+				},this.equipment,{
+					xtype:'textarea',
+					fieldLabel:'Область исследования',
+					name:'area',
+					height: 100,
+					anchor:'100%'
+				},{
+					xtype:'textarea',
+					fieldLabel:'Режим сканирования',
+					name:'scan_mode',
+					height: 100,
+					anchor:'100%'
+				},{
+					xtype:'textfield',
+					fieldLabel:'Толщина реконструктивного среза',
+					name:'thickness',
+//					height: 500,
+					anchor:'100%'
+				},{
+					xtype:'textfield',
+					fieldLabel:'ширина/шаг',
+					name:'width',
+//					height: 500,
+					anchor:'100%'
+				},{
+					xtype:'textarea',
+					fieldLabel:'Контрастное усиление',
+					name:'contrast_enhancement',
+					height: 100,
 					anchor:'100%'
 				},{
 					xtype:'textarea',
@@ -309,6 +286,8 @@ App.examination.ExamCardForm = Ext.extend(Ext.form.FormPanel, {
 			region:'west',
 			width:150,
 			layout:'form',
+			border:false,
+			padding:5,
 			defaults:{
 				height:20,
 				anchor:'100%',
@@ -317,54 +296,95 @@ App.examination.ExamCardForm = Ext.extend(Ext.form.FormPanel, {
 				scope:this
 			},
 			items:[{
+					id:'print_name-btn',
 					text:'Заголовок',
 					handler:this.onFocus.createDelegate(this,['print_name'])
 				},{
+					id:'equipment-btn',
+					text:'Оборудование',
+					handler:this.onFocus.createDelegate(this,['equipment'])
+				},{
+					id:'area-btn',
+					text:'Область исследования',
+					handler:this.onFocus.createDelegate(this,['area'])
+				},{
+					id:'scan_mode-btn',
+					text:'Режим сканирования',
+					handler:this.onFocus.createDelegate(this,['scan_mode'])
+				},{
+					id:'thickness-btn',
+					text:'Толщина среза',
+					handler:this.onFocus.createDelegate(this,['thickness'])
+				},{
+					id:'contrast_enhancement-btn',
+					text:'Контрастное усиление',
+					handler:this.onFocus.createDelegate(this,['contrast_enhancement'])
+				},{
+					id:'disease-btn',
 					text:'Характер заболевания',
 					handler:this.onFocus.createDelegate(this,['disease'])
 				},{
+					id:'disease-btn',
+					text:'Характер заболевания',
+					handler:this.onFocus.createDelegate(this,['disease'])
+				},{
+					id:'complaints-btn',
 					text:'Жалобы',
 					handler:this.onFocus.createDelegate(this,['complaints'])
 				},{
+					id:'history-btn',
 					text:'История заболевания',
 					handler:this.onFocus.createDelegate(this,['history'])
 				},{
+					id:'anamnesis-btn',
 					text:'Анамнез',
 					handler:this.onFocus.createDelegate(this,['anamnesis'])
 				},{
+					id:'objective_data-btn',
 					text:'Объективные данные',
 					handler:this.onFocus.createDelegate(this,['objective_data'])
 				},{
+					id:'psycho_status-btn',
 					text:'Психологический статус',
 					handler:this.onFocus.createDelegate(this,['psycho_status'])
 				},{
+					id:'mbk_diag-btn',
 					text:'Диагноз МКБ',
 					handler:this.onFocus.createDelegate(this,['mbk_diag'])
 				},{
+					id:'gen_diag-btn',
 					text:'Основной диагноз',
 					handler:this.onFocus.createDelegate(this,['gen_diag'])
 				},{
+					id:'concomitant_diag-btn',
 					text:'Сопутствующий диагноз',
 					handler:this.onFocus.createDelegate(this,['concomitant_diag'])
 				},{
+					id:'clinical_diag-btn',
 					text:'Клинический диагноз',
 					handler:this.onFocus.createDelegate(this,['clinical_diag'])
 				},{
+					id:'complication-btn',
 					text:'Осложнения',
 					handler:this.onFocus.createDelegate(this,['complication'])
 				},{
+					id:'ekg-btn',
 					text:'ЭКГ',
 					handler:this.onFocus.createDelegate(this,['ekg'])
 				},{
+					id:'treatment-btn',
 					text:'Лечение',
 					handler:this.onFocus.createDelegate(this,['treatment'])
 				},{
+					id:'referral-btn',
 					text:'Направление',
 					handler:this.onFocus.createDelegate(this,['referral'])
 				},{
+					id:'conclusion-btn',
 					text:'Заключение',
 					handler:this.onFocus.createDelegate(this,['conclusion'])
 				},{
+					id:'comment-btn',
 					text:'Примечание',
 					handler:this.onFocus.createDelegate(this,['comment'])
 				}]
@@ -404,6 +424,9 @@ App.examination.ExamCardForm = Ext.extend(Ext.form.FormPanel, {
 		Ext.apply(this, Ext.apply(this.initialConfig, config));
 		App.examination.ExamCardForm.superclass.initComponent.apply(this, arguments);
 		App.eventManager.on('saveexamcard', this.onSaveExamCard, this);
+		this.on('destroy', function(){
+			App.eventManager.un('saveexamcard', this.onSaveExamCard, this);
+		},this);
 		this.on('afterrender', function(){
 			//if (this.patient) {
 				//this.examCardStore.setBaseParam('ordered_service__order__patient',this.patient)
@@ -419,14 +442,41 @@ App.examination.ExamCardForm = Ext.extend(Ext.form.FormPanel, {
 		},this);
 	},
 	
+	onPromptSubmit: function(arr) {
+    	//Переносим данные из выбранных полей
+    	var field, d, n, state;
+    	for (item in arr){
+    		d = this.tmp_record.data[arr[item]['name']];
+    		if (d) {
+    			field = this.getForm().findField(arr[item]['name']);
+    			if (field){
+    				field.setValue(this.tmp_record.data[arr[item]['name']]);
+    			}
+    		}
+    	};
+		this.menuBar.items.each(function(btn){
+			n = btn.id.split('-')[0];
+			d = this.tmp_record.get(n);
+			state = d!='' && d!=undefined;
+			btn.setVisible(state);
+			this.getForm().findField(n).setVisible(state);
+		},this);
+		
+		Ext.getCmp(this.tmp_id+'-info-btn').setText('Выбранный шаблон: '+this.tmp_record.data.name);
+		if(this.prompt) {
+			this.prompt.close();
+		}
+    },
+	
 	onSaveExamCard: function(record) {
         this.statusbar.setStatus({
         	text: 'Документ успешно сохранён',
-            iconCls: 'silk-status-accept'
+            iconCls: 'silk-status-accept',
+            clear: {
+                wait: 2000,
+                anim: true
+            }
         });
-        (function(){
-			this.statusbar.clearStatus({useDefaults:true});
-		}).defer(2000);
 	},
 	onExamCardCreate: function(record) {
 		this.record = record;
@@ -473,8 +523,12 @@ App.examination.ExamCardForm = Ext.extend(Ext.form.FormPanel, {
 	onChoice: function(){
 		var win = new App.examination.TemplatesWindow({
 			fn: function(record){
-				this.tmp_record = record;
 				if (record){
+					this.tmp_record = record;
+					this.prompt = new App.examination.PromptWindow({
+						tmp_record:record
+					});
+			        this.prompt.on('submit', this.onPromptSubmit,this);
 					this.prompt.show();
 				}
 			},
@@ -487,8 +541,12 @@ App.examination.ExamCardForm = Ext.extend(Ext.form.FormPanel, {
 		var win = new App.examination.CardsWindow({
 			patient:this.patient,
 			fn: function(record){
-				this.tmp_record = record;
 				if (record){
+					this.tmp_record = record;
+					this.prompt = new App.examination.PromptWindow({
+						tmp_record:record
+					});
+			        this.prompt.on('submit', this.onPromptSubmit,this);
 					this.prompt.show();
 				}
 			},
@@ -497,19 +555,7 @@ App.examination.ExamCardForm = Ext.extend(Ext.form.FormPanel, {
 		win.show();
 	},
 	
-	isModified: function() {
-		console.log('is form dirty:', this.getForm().isDirty());
-        
-        this.getForm().items.each(function(f){
-           if(f.isDirty()){
-			console.log('dirty field:',f);
-           }
-        });
-        
-	},
-	
 	onClose: function() {
-		this.isModified();
 		this.destroy();
 	},
 	
@@ -518,7 +564,15 @@ App.examination.ExamCardForm = Ext.extend(Ext.form.FormPanel, {
 	},
 	
 	onFocus: function(name){
-		 this.getForm().findField(name).focus(true,150);
+//		 this.getForm().findField(name).focus(true,150);
+//		console.info(this.workPlace.getSize());
+		var f = this.getForm().findField(name);
+		var el = Ext.getDom(f.wrap ? f.wrap.id : f.id);
+		if(el){
+			var top = (Ext.fly(el).getOffsetsTo(this.workPlace.body)[1]) + this.workPlace.body.dom.scrollTop;
+			this.workPlace.body.scrollTo('top',top-25, { duration:0.4 });
+		}
+		f.focus(false,150);
 	}
 });		
 

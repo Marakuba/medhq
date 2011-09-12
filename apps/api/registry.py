@@ -31,6 +31,7 @@ from django.contrib.contenttypes.models import ContentType
 from examination.models import TemplateGroup
 from tastypie.cache import SimpleCache
 from django.contrib.auth.models import User
+from examination.models import Equipment as ExamEquipment
 
 class UserResource(ModelResource):
 
@@ -928,7 +929,20 @@ class BCPackageResource(ExtResource):
         filtering = {
         }
 
+class ExamEquipmentResource(ExtResource):
+    
+    class Meta:
+        queryset = ExamEquipment.objects.all()
+#        authorization = DjangoAuthorization()
+        resource_name = 'exam_equipment'
+        filtering = {
+            'name':ALL,
+            'id':ALL
+        }
+
 class TemplateGroupResource(ExtResource):
+    
+    equipment = fields.ForeignKey(ExamEquipmentResource, 'equipment', null=True)
     
     class Meta:
         queryset = TemplateGroup.objects.all()
@@ -940,9 +954,11 @@ class TemplateGroupResource(ExtResource):
         }
 
 class CardTemplateResource(ExtResource):
+
     staff = fields.ForeignKey(PositionResource, 'staff', null=True)
     group = fields.ForeignKey(TemplateGroupResource, 'group', null=True)
     mbk_diag = fields.ForeignKey(ICD10Resource, 'mbk_diag', null=True)
+    equipment = fields.ForeignKey(ExamEquipmentResource, 'equipment', null=True)
     
     def dehydrate(self, bundle):
         obj = bundle.obj
@@ -1323,6 +1339,7 @@ api.register(RegExamCardResource())
 api.register(TemplateGroupResource())
 api.register(CardTemplateResource())
 api.register(ExaminationCardResource())
+api.register(ExamEquipmentResource())
 
 #helpdesk
 api.register(IssueTypeResource())

@@ -45,7 +45,14 @@ App.models.tmpModel = new Ext.data.Record.create([
 	{name: 'referral', allowBlank: true},
 	{name: 'conclusion', allowBlank: true},
 	{name: 'group', allowBlank: true},
-	{name: 'group_name', allowBlank: true}
+	{name: 'group_name', allowBlank: true},
+	{name: 'equipment', allowBlank: true},
+	{name: 'equipment_name', allowBlank: true},
+	{name: 'area', allowBlank: true},
+	{name: 'scan_mode', allowBlank: true},
+	{name: 'thickness', allowBlank: true},
+	{name: 'width', allowBlank: true},
+	{name: 'contrast_enhancement', allowBlank: true}
 ]);
 		
 App.models.examModel = new Ext.data.Record.create([
@@ -72,5 +79,12 @@ App.models.examModel = new Ext.data.Record.create([
 	{name: 'view', allowBlank: true},
 	{name: 'conclusion', allowBlank: true},
 	{name: 'group', allowBlank: true},
-	{name: 'staff_id', allowBlank: true}
+	{name: 'staff_id', allowBlank: true},
+	{name: 'equipment', allowBlank: true},
+	{name: 'equipment_name', allowBlank: true},
+	{name: 'area', allowBlank: true},
+	{name: 'scan_mode', allowBlank: true},
+	{name: 'thickness', allowBlank: true},
+	{name: 'width', allowBlank: true},
+	{name: 'contrast_enhancement', allowBlank: true}
 ]);

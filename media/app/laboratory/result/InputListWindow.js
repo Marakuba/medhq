@@ -28,6 +28,7 @@ App.result.InputListWindow = Ext.extend(Ext.Window, {
     	config = {
 			title:'Дополнительно',
 			width:300,
+//			modal:true,
 			autoHeight:true,
 			items: [this.listView]
 		}

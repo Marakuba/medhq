@@ -8,6 +8,20 @@ from visit.models import OrderedService
 from staff.models import Position
 from service.models import ICD10
 
+
+class Equipment(models.Model):
+    """
+    """
+    name = models.CharField(u'Название', max_length=300)
+    
+    def __unicode__(self):
+        return self.name
+    
+    class Meta:
+        verbose_name = u'оборудование'
+        verbose_name_plural = u'оборудование'
+    
+
 class TemplateGroup(models.Model):
     """
     Шаблон карты обследования
@@ -43,6 +57,12 @@ class CardTemplate(models.Model):
     referral = models.TextField(u'Направление', null=True, blank=True)
     conclusion = models.TextField(u'Заключение', null=True, blank=True)
     group = models.ForeignKey(TemplateGroup, null=True, blank=True)
+    equipment = models.ForeignKey(Equipment, verbose_name=u'Оборудование', null=True, blank=True)
+    area = models.TextField(u'Область исследования', null=True, blank=True)
+    scan_mode = models.TextField(u'Режим сканирования', null=True, blank=True)
+    thickness = models.TextField(u'Толщина реконструктивного среза', null=True, blank=True)
+    width = models.TextField(u'ширина/шаг', null=True, blank=True)
+    contrast_enhancement = models.TextField(u'Контрастное усиление', null=True, blank=True)
     
     def __unicode__(self):
         return self.name
@@ -51,6 +71,7 @@ class CardTemplate(models.Model):
         verbose_name = u'Шаблон карты осмотра'
         verbose_name_plural = u'Шаблоны карты осмотра'
         ordering = ('group','staff','id')
+
         
 class ExaminationCard(models.Model):
     """
@@ -79,8 +100,13 @@ class ExaminationCard(models.Model):
     extra_service = models.TextField(u'Дополнительные услуги', null=True, blank=True)
     conclusion = models.TextField(u'Заключение', null=True, blank=True)
     comment = models.TextField(u'Примечание', null=True, blank=True)
+    equipment = models.ForeignKey(Equipment, verbose_name=u'Оборудование', null=True, blank=True)
+    area = models.TextField(u'Область исследования', null=True, blank=True)
+    scan_mode = models.TextField(u'Режим сканирования', null=True, blank=True)
+    thickness = models.TextField(u'Толщина реконструктивного среза', null=True, blank=True)
+    width = models.TextField(u'ширина/шаг', null=True, blank=True)
+    contrast_enhancement = models.TextField(u'Контрастное усиление', null=True, blank=True)
     
-        
     def __unicode__(self):
         return "%s - %s - %s" % (self.created.strftime("%d/%m/%Y"),self.name or self.print_name,self.ordered_service.order.patient.short_name())
     

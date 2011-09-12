@@ -220,12 +220,6 @@ App.examorder.ExamOrderGrid = Ext.extend(Ext.grid.GridPanel, {
 		//this.on('rowcontextmenu', this.onContextMenu, this);
 	},
 	
-	onContextMenu: function(grid, index, e) {
-		console.log(grid);
-		console.log(index);
-		console.log(e);
-	},
-	
 	onOpen: function(mode){
 		var rec = this.getSelected();
 		if(rec) {
