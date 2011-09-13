@@ -444,8 +444,13 @@ App.examination.ExamCardForm = Ext.extend(Ext.form.FormPanel, {
 	
 	onPromptSubmit: function(arr) {
     	//Переносим данные из выбранных полей
-    	var field, d, n, state;
+    	var field, d, n, state, cb=[];
     	for (item in arr){
+    		if (arr[item].getValue) {
+    			if(arr[item].getValue()) {
+    				cb.push(arr[item]['name']);
+    			}
+    		}
     		d = this.tmp_record.data[arr[item]['name']];
     		if (d) {
     			field = this.getForm().findField(arr[item]['name']);
@@ -457,7 +462,7 @@ App.examination.ExamCardForm = Ext.extend(Ext.form.FormPanel, {
 		this.menuBar.items.each(function(btn){
 			n = btn.id.split('-')[0];
 			d = this.tmp_record.get(n);
-			state = d!='' && d!=undefined;
+			state = (d!='' && d!=undefined) || cb.indexOf(n)!=-1;
 			btn.setVisible(state);
 			this.getForm().findField(n).setVisible(state);
 		},this);
