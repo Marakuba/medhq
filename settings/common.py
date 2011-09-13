@@ -123,6 +123,7 @@ INSTALLED_APPS = (
     #'djcelery',
     'feincms',
     'flatblocks',
+    'sorl.thumbnail',
     'south',
     'reversion',
     'tastypie',

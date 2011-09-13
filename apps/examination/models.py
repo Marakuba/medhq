@@ -7,7 +7,8 @@ from django.core.exceptions import ObjectDoesNotExist
 from visit.models import OrderedService
 from staff.models import Position
 from service.models import ICD10
-
+from django.conf import settings
+import Image
 
 class Equipment(models.Model):
     """
@@ -114,3 +115,44 @@ class ExaminationCard(models.Model):
         verbose_name = u'Карта осмотра'
         verbose_name_plural = u'Карты осмотра'
         ordering = ('-id',)
+
+
+class DICOM(models.Model):
+    """
+    """
+    examination_card = models.ForeignKey(ExaminationCard)
+    dicom_file = models.FileField(u'DICOM файл', max_length=500, upload_to=settings.MEDIA_ROOT / 'dicom')
+    
+    def get_image(self):
+        
+        import dicom
+        ds = dicom.read_file(self.dicom_file)
+        
+        bits = ds.BitsAllocated
+        samples = ds.SamplesperPixel
+        if bits == 8 and samples == 1:
+            mode = "L"
+        elif bits == 8 and samples == 3:
+            mode = "RGB"
+        elif bits == 16:
+            mode = "I;16" # not sure about this -- PIL source says is 'experimental' and no documentation. Also, should bytes swap depending on endian of file and system??
+        else:
+            raise TypeError, "Don't know PIL mode for %d BitsAllocated and %d SamplesPerPixel" % (bits, samples)
+        # PIL size = (width, height)
+        size = (ds.Columns, ds.Rows)
+        
+        im = Image.frombuffer(mode, size, ds.PixelData, "raw", mode, 0, 1)
+
+        return im
+    
+    def get_image_url(self):
+        return u"%sdicom/img/dcm_%s.png" % (settings.MEDIA_URL, self.id)
+    
+    def get_image_path(self):
+        return settings.MEDIA_ROOT / 'dicom' / 'img' / "dcm_%s.png" % self.id
+    
+    def save(self, *args, **kwargs):
+        super(DICOM, self).save(*args, **kwargs)
+        img = self.get_image()
+        img.convert('L').save(self.get_image_path())
+

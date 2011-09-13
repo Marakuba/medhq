@@ -28,7 +28,7 @@ from scheduler.models import Calendar, Event
 from billing.models import Account, Payment, ClientAccount
 from interlayer.models import ClientItem
 from django.contrib.contenttypes.models import ContentType
-from examination.models import TemplateGroup
+from examination.models import TemplateGroup, DICOM
 from tastypie.cache import SimpleCache
 from django.contrib.auth.models import User
 from examination.models import Equipment as ExamEquipment
@@ -929,8 +929,8 @@ class BCPackageResource(ExtResource):
         filtering = {
         }
 
+
 class ExamEquipmentResource(ExtResource):
-    
     class Meta:
         queryset = ExamEquipment.objects.all()
 #        authorization = DjangoAuthorization()
@@ -939,6 +939,7 @@ class ExamEquipmentResource(ExtResource):
             'name':ALL,
             'id':ALL
         }
+
 
 class TemplateGroupResource(ExtResource):
     
@@ -1017,6 +1018,26 @@ class RegExamCardResource(ExtResource):
         authorization = DjangoAuthorization()
         filtering = {
             'ordered_service':ALL_WITH_RELATIONS,
+            'id':ALL
+        }
+
+from sorl.thumbnail import get_thumbnail
+
+class DicomResource(ExtResource):
+    
+    examination_card = fields.ForeignKey(ExaminationCardResource, 'examination_card')
+
+    def dehydrate(self, bundle):
+        bundle.data['photo'] = bundle.obj.get_image_url() 
+        bundle.data['thumb'] = get_thumbnail(bundle.obj.get_image_url(),"100x100",crop="center").url
+        return bundle
+
+    class Meta:
+        queryset = DICOM.objects.all()
+#        authorization = DjangoAuthorization()
+        resource_name = 'dicom'
+        filtering = {
+            'examination_card':ALL_WITH_RELATIONS,
             'id':ALL
         }
 
@@ -1340,6 +1361,7 @@ api.register(TemplateGroupResource())
 api.register(CardTemplateResource())
 api.register(ExaminationCardResource())
 api.register(ExamEquipmentResource())
+api.register(DicomResource())
 
 #helpdesk
 api.register(IssueTypeResource())

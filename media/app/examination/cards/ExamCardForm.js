@@ -123,7 +123,7 @@ App.examination.ExamCardForm = Ext.extend(Ext.form.FormPanel, {
 		
 				
 		this.workPlace = new Ext.Panel({
-			region:'center',
+			title:'Основные данные',
 			layout:'form',
 			labelAlign:'top',
 			autoScroll:true,
@@ -407,7 +407,28 @@ App.examination.ExamCardForm = Ext.extend(Ext.form.FormPanel, {
 					handler:this.onClose.createDelegate(this),
 					scope:this
 				}]
-			}),
+			});
+		
+		this.imgStore = new Ext.data.RESTStore({
+			autoLoad : false,
+			apiUrl : get_api_url('dicom'),
+			model: App.models.Dicom
+		});
+		
+		if(this.record) {
+			var s = this.imgStore;
+			s.setBaseParam('examination_card',App.uriToId(this.record.data.resource_uri));
+			s.load();
+		}
+		
+		this.imgTpl = new Ext.XTemplate(
+				'<tpl for=".">',
+	            '<div class="thumb-wrap" id="dcm-{id}">',
+			    '<div class="thumb"><img src="{thumb}" title="{name}"></div>',
+			    '<span class="x-editable"></span></div>',
+	        '</tpl>',
+	        '<div class="x-clear"></div>'
+		);
 		
 		config = {
 			id: 'exam-form',
@@ -419,7 +440,21 @@ App.examination.ExamCardForm = Ext.extend(Ext.form.FormPanel, {
 			closable:true,
 			bbar:this.statusbar,
 			tbar:this.ttb,
-			items:[this.workPlace,this.menuBar]
+			items:[{
+				xtype:'tabpanel',
+				activeTab:0,
+				region:'center',
+				items:[this.workPlace,new Ext.DataView({
+					title:'Изображения',
+		            store: this.imgStore,
+		            tpl: this.imgTpl,
+		            autoHeight:true,
+		            multiSelect: true,
+		            overClass:'x-view-over',
+		            itemSelector:'div.thumb-wrap',
+		            emptyText: 'Нет изображений',
+		        })]
+			},this.menuBar]
 		}
 		Ext.apply(this, Ext.apply(this.initialConfig, config));
 		App.examination.ExamCardForm.superclass.initComponent.apply(this, arguments);
