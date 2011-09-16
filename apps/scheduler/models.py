@@ -10,13 +10,16 @@ from staff.models import Staff, Position
 from patient.models import Patient
 from mptt.models import MPTTModel
 from visit.models import BaseService
+from state.models import State
+from django.conf import settings
+import exceptions
 
 from datetime import timedelta
 
 add_introspection_rules([], ["^scheduler\.models\.CustomDateTimeField"])
 
 def datetimeIterator(from_date=None, to_date=None, delta=timedelta(minutes=30)):
-    from_date = from_date or datetime.now()
+    from_date = from_date or datetime.datetime.now()
     print "timeslot %s" % (delta)
     while to_date is None or from_date <= to_date:
         yield from_date
@@ -41,7 +44,7 @@ class CustomDateTimeField(models.DateTimeField):
                 value, usecs = value.split('.')
                 usecs = int(usecs)
             except ValueError:
-                raise exceptions.ValidationError(self.error_messages['invalid'])
+                raise exceptions.ValueError(self.error_messages['invalid'])
         else:
             usecs = 0
         kwargs = {'microsecond': usecs}
@@ -62,7 +65,7 @@ class CustomDateTimeField(models.DateTimeField):
                         return datetime.datetime(*time.strptime(value, '%m-%d-%Y')[:3],
                                                  **kwargs)
                     except ValueError:
-                        raise exceptions.ValidationError(self.error_messages['invalid'])
+                        raise exceptions.ValueError(self.error_messages['invalid'])
     
 
 class Calendar(models.Model):
@@ -144,5 +147,9 @@ class PreorderedService(models.Model):
     Набор услуг предзаказа
     """
     preorder = models.ForeignKey(Preorder)
-    modified = models.DateTimeField(auto_now=True)
+    created = models.DateTimeField(u'Создано', auto_now_add=True)
+    modified = models.DateTimeField(u'Изменено', auto_now=True)
     service = models.ForeignKey(BaseService, verbose_name=u'Услуга')
+    count = models.IntegerField(u'Количество', default=1)
+    execution_place = models.ForeignKey(State, verbose_name=u'Место выполнения', 
+                                        default=settings.MAIN_STATE_ID)
