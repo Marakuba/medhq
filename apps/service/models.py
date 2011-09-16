@@ -256,7 +256,7 @@ class ExtendedService(models.Model):
     
     objects = ExtendedServiceManager()
     
-    def get_actual_price(self, date):
+    def get_actual_price(self, date=None):
         try:
             date = date or datetime.date.today()
             price_item = self.price_set.filter(price_type=u'r', on_date__lte=date).latest('on_date')
