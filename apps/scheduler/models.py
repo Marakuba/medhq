@@ -10,6 +10,10 @@ from staff.models import Staff, Position
 from patient.models import Patient
 from mptt.models import MPTTModel
 from visit.models import BaseService
+from state.models import State
+from django.conf import settings
+import exceptions
+
 from datetime import timedelta
 
 add_introspection_rules([], ["^scheduler\.models\.CustomDateTimeField"])
@@ -99,7 +103,7 @@ class Event(models.Model):
     def save(self, *args, **kwargs):
         if not self.timeslot:
             staff = Position.objects.get(id=self.cid)
-            timeslot = timedelta(minutes=staff.staff.doctor.get_timeslot_display() or 30)
+            timeslot = timedelta(minutes=staff.doctor.get_timeslot_display() or 30)
             start = self.start
             end = self.end
             while start < end:
@@ -143,5 +147,9 @@ class PreorderedService(models.Model):
     Набор услуг предзаказа
     """
     preorder = models.ForeignKey(Preorder)
-    modified = models.DateTimeField(auto_now=True)
+    created = models.DateTimeField(u'Создано', auto_now_add=True)
+    modified = models.DateTimeField(u'Изменено', auto_now=True)
     service = models.ForeignKey(BaseService, verbose_name=u'Услуга')
+    count = models.IntegerField(u'Количество', default=1)
+    execution_place = models.ForeignKey(State, verbose_name=u'Место выполнения', 
+                                        default=settings.MAIN_STATE_ID)

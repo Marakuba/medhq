@@ -24,7 +24,7 @@ from django.core.exceptions import ObjectDoesNotExist
 from tastypie.exceptions import NotFound
 from examination.models import CardTemplate, ExaminationCard#, TemplateGroup
 from helpdesk.models import Issue, IssueType
-from scheduler.models import Calendar, Event, Preorder
+from scheduler.models import Calendar, Event, Preorder, PreorderedService
 from billing.models import Account, Payment, ClientAccount
 from interlayer.models import ClientItem
 from django.contrib.contenttypes.models import ContentType
@@ -1137,6 +1137,7 @@ class CalendarResource(ExtResource):
 class PreorderResource(ExtResource):
     patient = fields.ForeignKey(PatientResource, 'patient', null=True)
     timeslot = fields.OneToOneField('apps.api.registry.EventResource','timeslot', null=True)
+    
     class Meta:
         queryset = Preorder.objects.all()
         resource_name = 'preorder'
@@ -1146,7 +1147,25 @@ class PreorderResource(ExtResource):
             'timeslot':ALL,
         }
         
-
+class PreorderedServiceResource(ExtResource):
+    """
+    """
+    preorder = fields.ToOneField(PreorderResource, 'preorder', null=True)
+    service = fields.ToOneField(BaseServiceResource, 'service', null=True)
+    
+    def dehydrate(self, bundle):
+        service = bundle.obj.service
+        bundle.data['service_name'] = service.short_name or service.name
+        return bundle
+    
+    class Meta:
+        queryset = PreorderedService.objects.all()
+        resource_name = 'preorderedservice'
+        filtering = {
+            'preorder': ALL_WITH_RELATIONS
+        }
+        limit = 500
+        authorization = DjangoAuthorization()
         
 class EventResource(ExtResource):
     staff = fields.ForeignKey(StaffResource, 'staff', null=True)
