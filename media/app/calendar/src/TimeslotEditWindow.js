@@ -281,15 +281,6 @@ Ext.calendar.TimeslotEditWindow = Ext.extend(Ext.Window, {
         
     },
 
-    /**
-     * Shows the window, rendering it first if necessary, or activates it and brings it to front if hidden.
-	 * @param {Ext.data.Record/Object} o Either a {@link Ext.data.Record} if showing the form
-	 * for an existing event in edit mode, or a plain object containing a StartDate property (and 
-	 * optionally an EndDate property) for showing the form in add mode. 
-     * @param {String/Element} animateTarget (optional) The target element or id from which the window should
-     * animate while opening (defaults to null with no animation)
-     * @return {Ext.Window} this
-     */
     show: function(o, animateTarget, vw) {
         // Work around the CSS day cell height hack needed for initial render in IE8/strict:
         var anim = (Ext.isIE8 && Ext.isStrict) ? null: animateTarget;
@@ -415,6 +406,10 @@ Ext.calendar.TimeslotEditWindow = Ext.extend(Ext.Window, {
         		record.set('expiration', end);
         		this.preorderStore.add(record);
         	}
+        } else {
+        	if (this.preorder){
+        		this.preorderedService.onPreorderCreate(this.preorder);
+        	}
         }
     },
     
@@ -511,12 +506,20 @@ Ext.calendar.TimeslotEditWindow = Ext.extend(Ext.Window, {
     },
     
     onClear: function(){
-    	if (this.preorder){
-    		this.clearButton.setDisabled(true);
-    		this.setRemovePreorder = true;
-    		this.formPanel.form.findField('Title').setValue('');
-    		this.onSave();
-    	}
+       	Ext.Msg.confirm('Предупреждение','Отменить предзаказ?',
+              function(btn){
+    			if (btn=='yes') {
+    				if (this.preorder){
+    					this.clearButton.setDisabled(true);
+   						this.setRemovePreorder = true;
+   						this.formPanel.form.findField('Title').setValue('');
+   						this.onSave();
+   					}
+    			}
+            },this
+        );
+    	
+    	
     },
     
     onServiceClick : function(node) {

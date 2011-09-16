@@ -118,9 +118,6 @@ class Event(models.Model):
         if not self.timeslot:
             timeslots = Event.objects.filter(timeslot=True,start__gte=self.start,start__lte=self.end)
             for timeslot in  timeslots:
-                preorders = Preorder.objects.filter(timeslot=timeslot)
-                if preorders:
-                    preorders[0].delete()
                 timeslot.delete()
         super(Event, self).delete(*args, **kwargs) 
 
@@ -137,8 +134,8 @@ class Preorder(models.Model):
     """
     Модель предварительного заказа
     """
-    patient = models.ForeignKey(Patient, blank = True, null = True)
-    timeslot = models.OneToOneField(Event, blank = True, null = True)
+    patient = models.ForeignKey(Patient)
+    timeslot = models.OneToOneField(Event)
     comment = models.TextField(u'Примечание', blank = True, null = True)
     expiration = CustomDateTimeField(u'Дата истечения', blank = True, null = True)
     
