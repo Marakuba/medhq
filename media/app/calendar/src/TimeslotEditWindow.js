@@ -342,7 +342,7 @@ Ext.calendar.TimeslotEditWindow = Ext.extend(Ext.Window, {
         }
         //Ext.getCmp('date-range').setValue(rec.data);
         this.activeRecord = rec;
-
+        
         return this;
     },
 
@@ -419,9 +419,11 @@ Ext.calendar.TimeslotEditWindow = Ext.extend(Ext.Window, {
 			this.clearButton.setDisabled(false);
 			this.preorderedService.record = this.preorder; 
             this.preorderedService.store.setBaseParam('preorder',App.uriToId(this.preorder.data.resource_uri));
-            this.preorderedService.store.load()
+            this.preorderedService.store.load();
+            this.servicePanel.enable();
 		} else {
 			this.clearButton.setDisabled(true);
+			this.servicePanel.disable();
 		}
 	},
 
@@ -470,7 +472,8 @@ Ext.calendar.TimeslotEditWindow = Ext.extend(Ext.Window, {
 			fn:function(record){
 				this.patient = record;
 				var name = record.data.last_name+' '+record.data.first_name;
-        		this.formPanel.form.findField('Title').setValue(name)
+        		this.formPanel.form.findField('Title').setValue(name);
+        		this.servicePanel.enable();
 				
 			}
 		});
@@ -489,6 +492,7 @@ Ext.calendar.TimeslotEditWindow = Ext.extend(Ext.Window, {
         			var name = record.data.last_name+' '+record.data.first_name;
         			this.formPanel.form.findField('Title').setValue(name)
         			this.patient = record;
+        			this.servicePanel.enable();
 					patientWindow.close();
 				}
        	 	});
