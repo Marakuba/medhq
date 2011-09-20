@@ -3,6 +3,7 @@
 from django.conf.urls.defaults import patterns
 
 
-urlpatterns = patterns('',
-    (r'^card/(?P<card_id>\d+)/$', 'examination.views.cardPrint'),
+urlpatterns = patterns('examination.views',
+    (r'^card/(?P<card_id>\d+)/$', 'cardPrint'),
+    (r'^epicrisis/$', 'epicrisis'),
 )

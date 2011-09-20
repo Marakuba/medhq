@@ -1,0 +1,44 @@
+{% extends "print.html" %}
+
+{% block body %}
+
+<table class="patient">
+	<tr>
+		<td>
+			<table>
+				<tr>
+					<td class="name">Ф.И.О.:</td><td class="bold">{{ card.ordered_service.order.visit.patient.full_name }}</td>
+				</tr>
+				<tr>
+					<td class="name">Дата рождения:</td><td class="bold">{{ card.ordered_service.order.visit.patient.birth_day|date:"d.m.Y" }}</td>
+				</tr>
+				<tr>
+					<td class="name">Дата исследования:</td><td class="bold">{{ card.ordered_service.order.visit.created|date:"d.m.Y H:i" }}</td>
+				</tr>
+			</table>
+		</td>
+	</tr>
+</table>
+
+{% for card in cards %}
+
+{% if card.complaints %}
+	<br> Жалобы
+	<p> {{card.complaints}}</p>
+{% endif %}
+{% if card.objective_data %}
+	<br> Объективные данные
+	<p> {{card.objective_data}}</p>
+{% endif %}
+{% if card.treatment %}
+	<br> Лечение
+	<p> {{card.treatment}}</p>
+{% endif %}
+{% if card.conclusion %}
+	<br> Заключение
+	<p> {{card.conclusion}}</p>
+{% endif %}
+
+{% endfor %}
+
+{% endblock %}

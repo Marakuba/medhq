@@ -445,6 +445,7 @@ App.examination.ExamCardForm = Ext.extend(Ext.form.FormPanel, {
 				activeTab:0,
 				region:'center',
 				items:[this.workPlace,new Ext.DataView({
+					id:'images-view',
 					title:'Изображения',
 		            store: this.imgStore,
 		            tpl: this.imgTpl,
@@ -453,6 +454,16 @@ App.examination.ExamCardForm = Ext.extend(Ext.form.FormPanel, {
 		            overClass:'x-view-over',
 		            itemSelector:'div.thumb-wrap',
 		            emptyText: 'Нет изображений',
+		            listeners:{
+		            	dblclick:function(dv,index,node,e){
+		            		var win = new App.examination.Viewer({
+		            			store:this.imgStore,
+		            			index:index
+		            		});
+		            		win.show();
+		            	},
+		            	scope:this
+		            }
 		        })]
 			},this.menuBar]
 		}

@@ -45,7 +45,7 @@
 
         {% for gr in results.0.0 %}
             <tr class="group">
-                <td colspan=6>{{ gr.0 }}</td>
+                <td colspan=6>{{ gr.0|default:'Не указано' }}</td>
                 <td class="number">{{ gr.1 }}</td>
                 <td class="number">{{ gr.2 }}</td>
                 <td class="number">{{ gr.3 }}</td>
@@ -54,7 +54,7 @@
             {% for gr2row in gr.5 %}            
                 <tr class="group2">
                     <td></td>
-                    <td colspan=5>{{gr2row.0}}</td>
+                    <td colspan=5>{{ gr2row.0|default:'Не указано' }}</td>
                     <td class="number">{{gr2row.1}}</td>
                     <td class="number">{{gr2row.2}}</td>
                     <td class="number">{{gr2row.3}}</td>

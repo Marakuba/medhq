@@ -49,7 +49,7 @@ App.ExamCentralPanel = Ext.extend(Ext.Panel, {
 			},{
                 xtype: 'buttongroup',
                 title: 'Журналы',
-                columns: 2,
+//                columns: 3,
                 defaults: {
                     scale: 'small'
                 },
@@ -69,6 +69,15 @@ App.ExamCentralPanel = Ext.extend(Ext.Panel, {
                     	this.launchApp('allexamgrid');
                     },
                     scope:this
+                },{
+                	text:'Выписка',
+                	scale:'medium',
+                	handler:function(){
+                		var win = new App.examination.EpicrisisWindow({
+                			
+                		});
+                		win.show();
+                	}
                 }]
             },{
                 xtype: 'buttongroup',

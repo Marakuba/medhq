@@ -49,10 +49,6 @@
 </style>
 {% endblock %}
 
-{% block header %}
-{% include "print/header.html"%}
-{% endblock %}
-
 {% block body %}
 <table class="header">
 	<tr>
@@ -62,8 +58,8 @@
 			email: {{ state.email }}
 		</td>
 		<td class="details">
-			Утверждаю _________________ Долгова А.А.<br>
-			Исполнительный директор <br>
+			Утверждаю _________________<br>
+			___________________________<br>
 			{{ state.official_title }}<br>
 			<div>{{ request.GET.date }}г.</div>
 		</td>
@@ -72,32 +68,19 @@
 <h1>Прейскурант цен</h1>
 <table>
 {% for service in services %}
-	{% if service.0.level > 0 and not service.0.is_leaf_node %}
-		
-		<tr class="title-1">
-			<td colspan=3>{{ service.0 }}</td>
+
+	{% if service.0.is_leaf_node %}
+		{% if service.1 %}
+		<tr>
+			<td>{{ service.0.id }}</td>
+			<td>{{ service.0 }}</td>
+			<td>{{ service.1 }}</td>
 		</tr>
-		
-		
+		{% endif %}
 	{% else %}
-
-
-		{% with service.1 as price %}
-			{% if not service.0.is_leaf_node or price %}
-				<tr class="">
-					{% if service.0.is_leaf_node %}
-						<td class="id">{{ service.0.id }}</td>
-						<td class="title-leaf">{{ service.0 }}</td>
-						<td class="price">{{ price }}</td>
-					{% else %}
-					<td class="title-{{ service.0.level }}" colspan="3">
-						{{ service.0 }}
-					</td>
-					{% endif %}
-				</tr>
-			{% endif %}
-		{% endwith %}
-
+		<tr>
+			<td colspan="3" class="title-{{ service.0.level }}">{{ service.0 }}</td>
+		</tr>
 	{% endif %}
 
 {% endfor %}

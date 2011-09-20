@@ -7,6 +7,8 @@ from django.views.generic.simple import direct_to_template
 import simplejson
 from django.http import HttpResponse, HttpResponseBadRequest
 from django.shortcuts import render_to_response, get_object_or_404
+from annoying.decorators import render_to
+from examination.forms import EpicrisisForm
 
 def cardPrint(request,card_id):
     card = get_object_or_404(ExaminationCard, pk=card_id)
@@ -16,3 +18,22 @@ def cardPrint(request,card_id):
     return direct_to_template(request=request, 
                               template="print/exam/exam_card.html",
                               extra_context=ec)
+
+@render_to('print/exam/epicrisis.html')
+def epicrisis(request):
+    """
+    """
+    if request.method=='POST':
+        form = EpicrisisForm(request.POST)
+        if form.is_valid():
+            patient = form.cleaned_data['patient']
+            cards = ExaminationCard.objects.filter(ordered_service__order__patient=patient,
+                                                   created__range=(form.cleaned_data['start_date'],form.cleaned_data['end_date']))
+    
+            return {
+                'patient':patient,
+                'cards':cards
+            }
+        return HttpResponseBadRequest('Form is not valid')
+        
+    return HttpResponseBadRequest('Incorrect method')

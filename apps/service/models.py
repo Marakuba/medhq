@@ -228,6 +228,7 @@ class BaseService(models.Model):
         verbose_name = u"услуга клиники"
         verbose_name_plural = u"услуги клиники"
         ordering = ('name',)
+        
 
 class ExtendedServiceManager(models.Manager):
     """

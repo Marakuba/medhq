@@ -117,6 +117,8 @@ class PatientResource(ExtResource):
         authorization = DjangoAuthorization()
         filtering = {
             'last_name':('istartswith',),
+            'first_name':('istartswith',),
+            'birth_day':ALL_WITH_RELATIONS,
             'id':ALL,
             'full_name':('istartswith',),
             'discount':ALL_WITH_RELATIONS

@@ -32,7 +32,7 @@
         padding:1px;
     }
 
-    table.data td {
+    td {
         border:1px solid #AAA;
         padding:2px;
     }
@@ -40,7 +40,11 @@
         background:#cdffd1;
         font-weight: bold;
     }
-    .footer {
+    .group2 {
+        background:#FCA2A2;
+        font-weight: bold;
+    }
+	.footer {
         margin-bottom:20px;
         font-size:1.2em;
         background:#ccccff;
