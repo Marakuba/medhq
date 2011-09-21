@@ -510,6 +510,10 @@ class BaseServiceResource(ExtResource):
     parent = fields.ForeignKey('self', 'parent', null=True)
     labservice = fields.ForeignKey(LSResource,'labservice', null=True)
     
+    def dehydrate(self, bundle):
+        bundle.data['material_name'] = bundle.obj.material.name
+        return bundle
+    
     class Meta:
         queryset = BaseService.objects.all()
         authorization = DjangoAuthorization()
