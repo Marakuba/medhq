@@ -205,7 +205,9 @@ App.result.ResultGrid = Ext.extend(Ext.grid.EditorGridPanel, {
 					handler: function(){
 						var un = [];
 						var records = [];
-						var q = this.store.query('is_validated', false);
+						var q = this.store.queryBy(function(record,id){
+							return record.data.validation != 1;
+						});
 						q.each(function(rec,i){
 							un.push(rec.data);
 							records.push(rec);
@@ -215,12 +217,21 @@ App.result.ResultGrid = Ext.extend(Ext.grid.EditorGridPanel, {
 							'<tpl for="."><br>{#}. {analysis_name}</tpl><br><br>',
 							'Продолжить?').apply(un),
 							function(btn){
-								if(btn=='yes') {
-									this.store.remove(records);
-									/*q.each(function(rec,i){
-										console.log(rec);
-										this.store.remove(rec);
-									},this);*/	
+								if(btn=='yes' && un.length) {
+									params = {
+										order:App.uriToId(un[0].order)
+									}
+									Ext.Ajax.request({
+										url:'/lab/del_empty_results/',
+										params:params,
+										method:'POST',
+										success:function(response, opts) {
+											this.store.reload();
+										},
+										failure: function(response, opts) {
+										},
+										scope:this
+									});
 								}
 						}, this);
 					},
@@ -228,7 +239,6 @@ App.result.ResultGrid = Ext.extend(Ext.grid.EditorGridPanel, {
 				},{
 					text:'Восстановить',
 					handler:function(){
-						console.dir(this.orderRecord.data);
 						var s = this.store;
 						if (s.getCount()) {
 							order = App.uriToId(s.getAt(0).data.order);
@@ -359,27 +369,32 @@ App.result.ResultGrid = Ext.extend(Ext.grid.EditorGridPanel, {
 //					this.inputlistXY = e.xy;
 //				},
 				beforeedit: function(e) {
-					if(this.win) {
-						this.win.close();
+					if(e.column==7) {
+						var cell = this.getView().getCell(e.row, e.column);
+						if(this.win) {
+							this.win.close();
+						}
+						var analysis = e.record.data.inputlist;
+						if(analysis.length){
+							this.win = new App.result.InputListWindow({
+								analysis:analysis,
+	//							x:cell.offsetLeft,
+	//							y:cell.offsetWidth+10,
+	//							x:this.inputlistXY[0]-350,
+	//							y:this.inputlistXY[1]+20
+							});
+							this.win.on('inputlist', function(val){
+								if(val){
+									e.record.beginEdit();
+									e.record.set('value',val);
+									e.record.set('validation',1);
+									e.record.endEdit();
+								}
+							}, this);
+							this.win.show();
+						}
 					}
-					var analysis = e.record.data.inputlist;
-					if(analysis.length){
-						this.win = new App.result.InputListWindow({
-							analysis:analysis,
-							x:350
-//							x:this.inputlistXY[0]-350,
-//							y:this.inputlistXY[1]+20
-						});
-						this.win.on('inputlist', function(val){
-							if(val){
-								e.record.beginEdit();
-								e.record.set('value',val);
-								e.record.set('validation',1);
-								e.record.endEdit();
-							}
-						}, this);
-						this.win.show();
-					}
+					return true;
 				},
 				afteredit: function(e) {
 					if(e.value) {

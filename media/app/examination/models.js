@@ -2,6 +2,7 @@ Ext.ns('App','App.models');
 
 App.models.ExamService = new Ext.data.Record.create([
     {name: 'id'},
+	{name: 'resource_uri'},
     {name: 'created', type:'date',format:'c'},
     {name: 'executed', type:'date',format:'c'},
     {name: 'printed', type:'date',format:'c'},
@@ -27,6 +28,7 @@ App.models.ExamService = new Ext.data.Record.create([
 
 App.models.tmpModel = new Ext.data.Record.create([
 	{name: 'id'},
+	{name: 'resource_uri'},
 	{name: 'staff', allowBlank: false},
 	{name: 'staff_name', allowBlank: true},
 	{name: 'complaints', allowBlank: true},
@@ -45,11 +47,19 @@ App.models.tmpModel = new Ext.data.Record.create([
 	{name: 'referral', allowBlank: true},
 	{name: 'conclusion', allowBlank: true},
 	{name: 'group', allowBlank: true},
-	{name: 'group_name', allowBlank: true}
+	{name: 'group_name', allowBlank: true},
+	{name: 'equipment', allowBlank: true},
+	{name: 'equipment_name', allowBlank: true},
+	{name: 'area', allowBlank: true},
+	{name: 'scan_mode', allowBlank: true},
+	{name: 'thickness', allowBlank: true},
+	{name: 'width', allowBlank: true},
+	{name: 'contrast_enhancement', allowBlank: true}
 ]);
 		
 App.models.examModel = new Ext.data.Record.create([
 	{name: 'id'},
+	{name: 'resource_uri'},
 	{name: 'created', type:'date',format:'c'},
 	{name: 'modified', type:'date',format:'c'},
 	{name: 'name',allowBlank: true},
@@ -72,5 +82,22 @@ App.models.examModel = new Ext.data.Record.create([
 	{name: 'view', allowBlank: true},
 	{name: 'conclusion', allowBlank: true},
 	{name: 'group', allowBlank: true},
-	{name: 'staff_id', allowBlank: true}
+	{name: 'staff_id', allowBlank: true},
+	{name: 'equipment', allowBlank: true},
+	{name: 'equipment_name', allowBlank: true},
+	{name: 'area', allowBlank: true},
+	{name: 'scan_mode', allowBlank: true},
+	{name: 'thickness', allowBlank: true},
+	{name: 'width', allowBlank: true},
+	{name: 'contrast_enhancement', allowBlank: true}
 ]);
+
+App.models.Dicom = new Ext.data.Record.create([
+   	{name: 'id'},
+	{name: 'resource_uri'},
+	{name: 'examination_card'},
+	{name: 'dicom_file'},
+	{name: 'photo'},
+	{name: 'thumb'}
+]);
+	

@@ -158,6 +158,10 @@ lookups[BaseService._meta.right_attr] = F(BaseService._meta.left_attr)+1
 
 class BaseServiceForm(forms.ModelForm):
     
+    name = forms.CharField(label=u'Полное наименование', required=True, max_length=300, 
+                           widget=forms.TextInput(attrs={'size':100}))
+    short_name = forms.CharField(label=u'Краткое наименование', required=False, max_length=300, 
+                                 widget=forms.TextInput(attrs={'size':100}))
     parent = TreeNodeChoiceField(label=u'Группа', 
                                  queryset=BaseService.objects.exclude(base_group__isnull=True, **lookups).order_by(BaseService._meta.tree_id_attr, BaseService._meta.left_attr, 'level'), 
                                  required=False)
@@ -186,8 +190,9 @@ class BaseServiceAdmin(TreeEditor):
     #change_form_template = "admin/tabbed/change_form.html"
     list_display = ('name','short_name',
                     #make_place_column(u'Ек'),make_place_column(u'Ел'),make_place_column(u'К'),make_place_column(u'Д'),
-                    #'execution_time',
+                    'execution_time',
                     'execution_form')
+    list_editable = ('execution_time',)
     inlines = [ExtendedServiceInlineAdmin,AnalysisInlineAdmin]
     #filter_horizontal = ('staff',)
     save_as = True

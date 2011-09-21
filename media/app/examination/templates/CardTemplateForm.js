@@ -69,6 +69,32 @@ App.examination.CardTemplateForm = Ext.extend(Ext.form.FormPanel, {
 			selectOnFocus:true
 		});
 		
+		this.equipment = new Ext.form.LazyComboBox({
+			fieldLabel:'Оборудование',
+			anchor:'95%',
+			name:'equipment',
+            allowBlank:true,
+			store: new Ext.data.JsonStore({
+				autoLoad:true,
+				proxy: new Ext.data.HttpProxy({
+					url:get_api_url('exam_equipment'),
+					method:'GET'
+				}),
+				root:'objects',
+				idProperty:'resource_uri',
+				fields:['resource_uri','name','id']
+			}),
+			typeAhead: false,
+			queryParam:'code__istartswith',
+			minChars:3,
+			triggerAction: 'all',
+			emptyText:'Выберите оборудование...',
+			valueField: 'resource_uri',
+			displayField: 'name',
+			editable:false,
+			selectOnFocus:true
+		});
+		
 		this.workPlace = new Ext.Panel({
 			region:'center',
 			layout:'form',
@@ -88,8 +114,37 @@ App.examination.CardTemplateForm = Ext.extend(Ext.form.FormPanel, {
 					name:'print_name',
 					anchor:'100%'
 				},
-					this.groupComboBox,
-				{
+				this.groupComboBox,this.equipment,{
+					xtype:'textarea',
+					fieldLabel:'Область исследования',
+					name:'area',
+					height: 100,
+					anchor:'100%'
+				},{
+					xtype:'textarea',
+					fieldLabel:'Режим сканирования',
+					name:'scan_mode',
+					height: 100,
+					anchor:'100%'
+				},{
+					xtype:'textfield',
+					fieldLabel:'Толщина реконструктивного среза',
+					name:'thickness',
+//						height: 500,
+					anchor:'100%'
+				},{
+					xtype:'textfield',
+					fieldLabel:'ширина/шаг',
+					name:'width',
+//						height: 500,
+					anchor:'100%'
+				},{
+					xtype:'textarea',
+					fieldLabel:'Контрастное усиление',
+					name:'contrast_enhancement',
+					height: 100,
+					anchor:'100%'
+				},{
 					xtype:'textarea',
 					fieldLabel:'Жалобы',
 					name:'complaints',
@@ -179,6 +234,26 @@ App.examination.CardTemplateForm = Ext.extend(Ext.form.FormPanel, {
 			items:[{
 					text:'Наименование',
 					handler:this.onFocus.createDelegate(this,['name'])
+				},{
+					id:'equipment-btn',
+					text:'Оборудование',
+					handler:this.onFocus.createDelegate(this,['equipment'])
+				},{
+					id:'area-btn',
+					text:'Область исследования',
+					handler:this.onFocus.createDelegate(this,['area'])
+				},{
+					id:'scan_mode-btn',
+					text:'Режим сканирования',
+					handler:this.onFocus.createDelegate(this,['scan_mode'])
+				},{
+					id:'thickness-btn',
+					text:'Толщина среза',
+					handler:this.onFocus.createDelegate(this,['thickness'])
+				},{
+					id:'contrast_enhancement-btn',
+					text:'Контрастное усиление',
+					handler:this.onFocus.createDelegate(this,['contrast_enhancement'])
 				},{
 					text:'Жалобы',
 					handler:this.onFocus.createDelegate(this,['complaints'])
@@ -320,7 +395,12 @@ App.examination.CardTemplateForm = Ext.extend(Ext.form.FormPanel, {
 	},
 	
 	onFocus: function(name){
-		 this.getForm().findField(name).focus(true,150);
+		var f = this.getForm().findField(name);
+		var el = Ext.getDom(f.wrap ? f.wrap.id : f.id);
+		if(el){
+			var top = (Ext.fly(el).getOffsetsTo(this.workPlace.body)[1]) + this.workPlace.body.dom.scrollTop;
+			this.workPlace.body.scrollTo('top',top-25, { duration:0.4 });
+		}
 	}
 	
 });		

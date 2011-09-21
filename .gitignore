@@ -4,4 +4,6 @@ production.py
 development.py
 manage.py
 medhq_main
+media/cache
+media/dicom
 *.orig

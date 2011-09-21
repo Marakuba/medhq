@@ -7,6 +7,21 @@ from django.core.exceptions import ObjectDoesNotExist
 from visit.models import OrderedService
 from staff.models import Position
 from service.models import ICD10
+from django.conf import settings
+import Image
+
+class Equipment(models.Model):
+    """
+    """
+    name = models.CharField(u'Название', max_length=300)
+    
+    def __unicode__(self):
+        return self.name
+    
+    class Meta:
+        verbose_name = u'оборудование'
+        verbose_name_plural = u'оборудование'
+    
 
 class TemplateGroup(models.Model):
     """
@@ -43,6 +58,12 @@ class CardTemplate(models.Model):
     referral = models.TextField(u'Направление', null=True, blank=True)
     conclusion = models.TextField(u'Заключение', null=True, blank=True)
     group = models.ForeignKey(TemplateGroup, null=True, blank=True)
+    equipment = models.ForeignKey(Equipment, verbose_name=u'Оборудование', null=True, blank=True)
+    area = models.TextField(u'Область исследования', null=True, blank=True)
+    scan_mode = models.TextField(u'Режим сканирования', null=True, blank=True)
+    thickness = models.TextField(u'Толщина реконструктивного среза', null=True, blank=True)
+    width = models.TextField(u'ширина/шаг', null=True, blank=True)
+    contrast_enhancement = models.TextField(u'Контрастное усиление', null=True, blank=True)
     
     def __unicode__(self):
         return self.name
@@ -51,6 +72,7 @@ class CardTemplate(models.Model):
         verbose_name = u'Шаблон карты осмотра'
         verbose_name_plural = u'Шаблоны карты осмотра'
         ordering = ('group','staff','id')
+
         
 class ExaminationCard(models.Model):
     """
@@ -79,8 +101,13 @@ class ExaminationCard(models.Model):
     extra_service = models.TextField(u'Дополнительные услуги', null=True, blank=True)
     conclusion = models.TextField(u'Заключение', null=True, blank=True)
     comment = models.TextField(u'Примечание', null=True, blank=True)
+    equipment = models.ForeignKey(Equipment, verbose_name=u'Оборудование', null=True, blank=True)
+    area = models.TextField(u'Область исследования', null=True, blank=True)
+    scan_mode = models.TextField(u'Режим сканирования', null=True, blank=True)
+    thickness = models.TextField(u'Толщина реконструктивного среза', null=True, blank=True)
+    width = models.TextField(u'ширина/шаг', null=True, blank=True)
+    contrast_enhancement = models.TextField(u'Контрастное усиление', null=True, blank=True)
     
-        
     def __unicode__(self):
         return "%s - %s - %s" % (self.created.strftime("%d/%m/%Y"),self.name or self.print_name,self.ordered_service.order.patient.short_name())
     
@@ -88,3 +115,44 @@ class ExaminationCard(models.Model):
         verbose_name = u'Карта осмотра'
         verbose_name_plural = u'Карты осмотра'
         ordering = ('-id',)
+
+
+class DICOM(models.Model):
+    """
+    """
+    examination_card = models.ForeignKey(ExaminationCard)
+    dicom_file = models.FileField(u'DICOM файл', max_length=500, upload_to=settings.MEDIA_ROOT / 'dicom')
+    
+    def get_image(self):
+        
+        import dicom
+        ds = dicom.read_file(self.dicom_file)
+        
+        bits = ds.BitsAllocated
+        samples = ds.SamplesperPixel
+        if bits == 8 and samples == 1:
+            mode = "L"
+        elif bits == 8 and samples == 3:
+            mode = "RGB"
+        elif bits == 16:
+            mode = "I;16" # not sure about this -- PIL source says is 'experimental' and no documentation. Also, should bytes swap depending on endian of file and system??
+        else:
+            raise TypeError, "Don't know PIL mode for %d BitsAllocated and %d SamplesPerPixel" % (bits, samples)
+        # PIL size = (width, height)
+        size = (ds.Columns, ds.Rows)
+        
+        im = Image.frombuffer(mode, size, ds.PixelData, "raw", mode, 0, 1)
+
+        return im
+    
+    def get_image_url(self):
+        return u"%sdicom/img/dcm_%s.png" % (settings.MEDIA_URL, self.id)
+    
+    def get_image_path(self):
+        return settings.MEDIA_ROOT / 'dicom' / 'img' / "dcm_%s.png" % self.id
+    
+    def save(self, *args, **kwargs):
+        super(DICOM, self).save(*args, **kwargs)
+        img = self.get_image()
+        img.convert('L').save(self.get_image_path())
+

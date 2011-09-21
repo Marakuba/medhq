@@ -8,6 +8,7 @@ from django.conf import settings
 try:
     GROUP_SERVICE_UZI = settings.GROUP_SERVICE_UZI
     GROUP_SERVICE_LAB = settings.GROUP_SERVICE_LAB
+    GROUP_SERVICE_RADIO = settings.GROUP_SERVICE_RADIO
 except:
     raise u"Нет настроек групп услуг"
 
@@ -73,6 +74,24 @@ FROM \
 Where \
  Tsg.name = '%s'\
  and Tsg_Tbs.baseservice_id = TTvis.service_id)" % (GROUP_SERVICE_LAB)
+    
+    bq_exists_radio = u"\
+  and exists (SELECT * \
+FROM \
+  public.reporting_servicegroup Tsg \
+  join public.reporting_servicegroup_baseservice Tsg_Tbs on  Tsg_Tbs.servicegroup_id = Tsg.id \
+Where \
+ Tsg.name = '%s'\
+ and Tsg_Tbs.baseservice_id = TTvis.service_id)" % (GROUP_SERVICE_RADIO)
+
+    bq_notexists_radio = u"\
+  and not exists (SELECT * \
+FROM \
+  public.reporting_servicegroup Tsg \
+  join public.reporting_servicegroup_baseservice Tsg_Tbs on  Tsg_Tbs.servicegroup_id = Tsg.id \
+Where \
+ Tsg.name = '%s'\
+ and Tsg_Tbs.baseservice_id = TTvis.service_id)" % (GROUP_SERVICE_RADIO)
     
     def __init__(self, request):
         """

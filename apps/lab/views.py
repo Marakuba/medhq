@@ -98,6 +98,21 @@ def revert_results(request):
     return HttpResponseBadRequest()
     
 
+def del_empty_results(request):
+    """
+    """
+    if request.method=='POST':
+        lab_order = request.POST.get('order', None)
+        if lab_order:
+            lab_order = get_object_or_404(LabOrder, id=lab_order)
+            Result.objects.filter(order=lab_order).exclude(validation=1).delete()
+            return HttpResponse(simplejson.dumps({
+                                                    'success':True,
+                                                    'message':u'Исследования были очищены'
+                                                }), mimetype='application/json')
+    return HttpResponseBadRequest()
+    
+
 def pull_invoice(request):
     """
     """
