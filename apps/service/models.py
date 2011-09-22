@@ -193,7 +193,7 @@ class BaseService(models.Model):
         """
         if state:
             try:
-                price = self.extendedservice_set.get(state=state, date=date).get_actual_price()
+                price = self.extendedservice_set.get(state=state).get_actual_price(date=date)
                 return price
             except:
                 return 0
