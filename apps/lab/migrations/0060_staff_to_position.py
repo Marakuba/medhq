@@ -1,21 +1,25 @@
 # encoding: utf-8
 import datetime
 from south.db import db
-from south.v2 import SchemaMigration
+from south.v2 import DataMigration
 from django.db import models
 
-class Migration(SchemaMigration):
+class Migration(DataMigration):
 
     def forwards(self, orm):
-        
-        # Adding field 'LabOrder.old_staff'
-        db.add_column('lab_laborder', 'old_staff', self.gf('django.db.models.fields.related.ForeignKey')(blank=True, related_name='old_staff', null=True, to=orm['staff.Staff']), keep_default=False)
+        for laborder in orm.LabOrder.objects.all():
+            if laborder.staff:
+#                print laborder.staff
+                pos = laborder.staff.position_set.latest('id')
+                if pos:
+#                    print "\t",pos
+                    laborder.new_staff = pos
+                    laborder.save()
+            
 
 
     def backwards(self, orm):
-        
-        # Deleting field 'LabOrder.old_staff'
-        db.delete_column('lab_laborder', 'old_staff_id')
+        "Write your backwards methods here."
 
 
     models = {
@@ -147,10 +151,10 @@ class Migration(SchemaMigration):
             'is_printed': ('django.db.models.fields.BooleanField', [], {'default': 'False'}),
             'lab_group': ('django.db.models.fields.related.ForeignKey', [], {'to': "orm['service.LabServiceGroup']", 'null': 'True', 'blank': 'True'}),
             'laboratory': ('django.db.models.fields.related.ForeignKey', [], {'related_name': "'laboratory'", 'to': "orm['state.State']"}),
-            'old_staff': ('django.db.models.fields.related.ForeignKey', [], {'blank': 'True', 'related_name': "'old_staff'", 'null': 'True', 'to': "orm['staff.Staff']"}),
+            'new_staff': ('django.db.models.fields.related.ForeignKey', [], {'blank': 'True', 'related_name': "'position'", 'null': 'True', 'to': "orm['staff.Position']"}),
             'print_date': ('django.db.models.fields.DateTimeField', [], {'null': 'True', 'blank': 'True'}),
             'printed_by': ('django.db.models.fields.related.ForeignKey', [], {'to': "orm['auth.User']", 'null': 'True', 'blank': 'True'}),
-            'staff': ('django.db.models.fields.related.ForeignKey', [], {'blank': 'True', 'related_name': "'staff'", 'null': 'True', 'to': "orm['staff.Staff']"}),
+            'staff': ('django.db.models.fields.related.ForeignKey', [], {'blank': 'True', 'related_name': "'old_staff'", 'null': 'True', 'to': "orm['staff.Staff']"}),
             'status': ('django.db.models.fields.related.ForeignKey', [], {'to': "orm['workflow.Status']", 'null': 'True', 'blank': 'True'}),
             'visit': ('django.db.models.fields.related.ForeignKey', [], {'to': "orm['visit.Visit']", 'null': 'True', 'blank': 'True'})
         },
@@ -177,7 +181,7 @@ class Migration(SchemaMigration):
             'analysis': ('django.db.models.fields.related.ForeignKey', [], {'to': "orm['lab.Analysis']"}),
             'id': ('django.db.models.fields.AutoField', [], {'primary_key': 'True'}),
             'input_list': ('django.db.models.fields.related.ForeignKey', [], {'to': "orm['lab.InputList']", 'null': 'True', 'blank': 'True'}),
-            'is_validated': ('django.db.models.fields.BooleanField', [], {'default': 'False'}),
+            'is_validated': ('django.db.models.fields.BooleanField', [], {'default': 'True'}),
             'modified': ('django.db.models.fields.DateTimeField', [], {'auto_now': 'True', 'blank': 'True'}),
             'modified_by': ('django.db.models.fields.related.ForeignKey', [], {'to': "orm['auth.User']", 'null': 'True', 'blank': 'True'}),
             'order': ('django.db.models.fields.related.ForeignKey', [], {'to': "orm['lab.LabOrder']"}),
@@ -193,7 +197,7 @@ class Migration(SchemaMigration):
         'lab.sampling': {
             'Meta': {'object_name': 'Sampling'},
             'code': ('django.db.models.fields.IntegerField', [], {'null': 'True', 'blank': 'True'}),
-            'created': ('django.db.models.fields.DateTimeField', [], {'default': 'datetime.datetime(2011, 9, 20, 11, 46, 1, 816664)'}),
+            'created': ('django.db.models.fields.DateTimeField', [], {'default': 'datetime.datetime(2011, 9, 22, 12, 27, 34, 290252)'}),
             'id': ('django.db.models.fields.AutoField', [], {'primary_key': 'True'}),
             'is_barcode': ('django.db.models.fields.BooleanField', [], {'default': 'False'}),
             'laboratory': ('django.db.models.fields.related.ForeignKey', [], {'to': "orm['state.State']"}),
@@ -241,7 +245,7 @@ class Migration(SchemaMigration):
             'prefix': ('django.db.models.fields.CharField', [], {'max_length': '10', 'blank': 'True'}),
             'reset_on': ('django.db.models.fields.IntegerField', [], {'default': '0'}),
             'tag': ('django.db.models.fields.CharField', [], {'max_length': '20'}),
-            'valid_till': ('django.db.models.fields.DateTimeField', [], {'default': 'datetime.datetime(2011, 9, 20, 11, 46, 1, 788513)'})
+            'valid_till': ('django.db.models.fields.DateTimeField', [], {'default': 'datetime.datetime(2011, 9, 22, 12, 27, 34, 262252)'})
         },
         'numeration.numeratoritem': {
             'Meta': {'ordering': "('-id',)", 'object_name': 'NumeratorItem'},

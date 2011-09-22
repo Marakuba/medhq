@@ -23,7 +23,7 @@ App.results.Grid = Ext.extend(Ext.grid.GridPanel, {
 		    {name: 'visit_id'},
 		    {name: 'barcode'},
 		    {name: 'patient_name'},
-		    {name: 'lab_name'},
+		    {name: 'laboratory_name'},
 		    {name: 'staff_name'}
 		]);
 		
@@ -99,7 +99,7 @@ App.results.Grid = Ext.extend(Ext.grid.GridPanel, {
 		    	header: "Лаборатория", 
 		    	width: 35, 
 		    	sortable: true, 
-		    	dataIndex: 'lab_name'
+		    	dataIndex: 'laboratory_name'
 		    },{
 		    	header: "Врач", 
 		    	width: 35, 
@@ -231,7 +231,7 @@ App.results.Grid = Ext.extend(Ext.grid.GridPanel, {
 					toggleGroup:'ex-place-cls',
 					text:'Все',
 					pressed: true,
-					handler:this.storeFilter.createDelegate(this,['execution_place'])
+					handler:this.storeFilter.createDelegate(this,['laboratory'])
 				});
 				var jsonResponse = Ext.util.JSON.decode(resp.responseText);
 				Ext.each(jsonResponse.objects, function(item,i){
@@ -240,7 +240,7 @@ App.results.Grid = Ext.extend(Ext.grid.GridPanel, {
 						enableToggle:true,
 						toggleGroup:'ex-place-cls',
 						text:item.name,
-						handler:this.storeFilter.createDelegate(this,['execution_place',item.id])
+						handler:this.storeFilter.createDelegate(this,['laboratory',item.id])
 					});
 				}, this);
 				//this.ttb.addSeparator();
