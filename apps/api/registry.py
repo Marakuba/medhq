@@ -14,7 +14,7 @@ from service.models import BaseService, LabServiceGroup, ExtendedService, ICD10
 from staff.models import Position, Staff, Doctor
 from state.models import State, Department
 from django.conf import settings
-from pricelist.models import Discount
+from pricelist.models import Discount, Price, PriceType
 from api.utils import none_to_empty
 from api.resources import ExtResource, ComplexQuery
 from api import get_api_name
@@ -585,8 +585,25 @@ class ExtendedServiceResource(ModelResource):
             'staff':ALL_WITH_RELATIONS,
             'name':ALL
         }
+        
+class PriceTypeResource(ModelResource):
+    class Meta:
+        queryset = PriceType.objects.all()
+        resource_name = 'pricetype'
+        filtering = {
+            'id':ALL,
+        }
 
-
+class PriceResource(ModelResource):
+    extended_service = fields.ForeignKey(ExtendedServiceResource,'extended_service',null=True)
+    type = fields.ForeignKey(PriceTypeResource,'type',null=True)
+    
+    class Meta:
+        queryset = Price.objects.all()
+        resource_name = 'price'
+        filtering = {
+            'id':ALL,
+        }
 
 class AnalysisResource(ModelResource):
     """
@@ -1605,6 +1622,8 @@ api.register(DoctorResource())
 
 #pricelist
 api.register(DiscountResource())
+api.register(PriceResource())
+api.register(PriceTypeResource())
 
 #numeration
 api.register(BarcodeResource())
