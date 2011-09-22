@@ -27,6 +27,7 @@ App.models.LabService = new Ext.data.Record.create([
 App.models.LabOrder = new Ext.data.Record.create([
 	{name: 'id'},
 	{name: 'created', type:'date',format:'c'},
+	{name: 'visit_created', type:'date',format:'c'},
 	{name: 'executed', type:'date',format:'c'},
 	{name: 'visit'},
 	{name: 'barcode'},

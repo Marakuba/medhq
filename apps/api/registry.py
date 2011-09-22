@@ -345,6 +345,7 @@ class LabOrderResource(ExtResource):
         laborder = bundle.obj
         bundle.data['laboratory_name'] = laborder.laboratory
         if laborder.visit:
+            bundle.data['visit_created'] = laborder.visit.created
             bundle.data['visit_id'] = laborder.visit.id
             bundle.data['barcode'] = laborder.visit.barcode.id
             bundle.data['patient_name'] = laborder.visit.patient.full_name()

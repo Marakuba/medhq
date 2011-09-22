@@ -12,8 +12,8 @@ App.laboratory.LabOrderGrid = Ext.extend(Ext.grid.GridPanel, {
 		});
 
 		this.fields = [
-  		    ['start_date','visit__created__gte','Дата с'],
-  		    ['end_date','visit__created__lte','по'],
+  		    ['start_date','visit__created__gte','Дата с','Y-m-d 00:00'],
+  		    ['end_date','visit__created__lte','по','Y-m-d 23:59'],
   		    ['laboratory','laboratory','Лаборатория'],
   		    ['staff','staff','Врач'],
   		    ['patient','visit__patient','Пациент']
@@ -28,7 +28,7 @@ App.laboratory.LabOrderGrid = Ext.extend(Ext.grid.GridPanel, {
 		    	header: "Дата", 
 		    	width: 10, 
 		    	sortable: true, 
-		    	dataIndex: 'created',
+		    	dataIndex: 'visit_created',
 		    	renderer:Ext.util.Format.dateRenderer('d.m.Y')
 		    },{
 		    	header: "Пациент", 

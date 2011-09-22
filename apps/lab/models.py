@@ -171,7 +171,7 @@ class LabOrder(models.Model):
     class Meta:
         verbose_name = u'заказ'
         verbose_name_plural = u'заказы'
-        ordering = ('-created',)
+        ordering = ('-visit__created',)
 
 
 PASS_STATUS = (

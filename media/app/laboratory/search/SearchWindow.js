@@ -142,7 +142,11 @@ App.laboratory.SearchWindow = Ext.extend(Ext.Window, {
 			for(k in this.filtersConfig) {
 				var field = f.findField(k);
 				if(field) {
-					field[field.forceValue ? 'forceValue' : 'setValue'](this.filtersConfig[k][0]);
+					var val = this.filtersConfig[k][0];
+					if(field.getXType()=='datefield'){
+						val = Date.parseDate(val,'Y-m-d H:i');
+					}
+					field[field.forceValue ? 'forceValue' : 'setValue'](val);
 				}
 			}
 
@@ -163,8 +167,8 @@ App.laboratory.SearchWindow = Ext.extend(Ext.Window, {
 					this.filtersConfig[field[0]][1] = rec.get(ff.displayField);
 				}
 				if(v instanceof Date) {
-					this.filtersConfig[field[0]] = [v.format('Y-m-d'), v.format('d.m.Y')];
-					v = v.format('Y-m-d');
+					this.filtersConfig[field[0]] = [v.format(field[3] || 'Y-m-d'), v.format('d.m.Y')];
+					v = v.format(field[3] || 'Y-m-d');
 				}
 				this.store.setBaseParam(field[1], v);
 			} else {
