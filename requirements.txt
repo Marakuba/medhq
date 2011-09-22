@@ -17,6 +17,11 @@ South
 psycopg2
 python-memcached
 django-extensions
+django-flatblocks
+django-memcached
+django-dbtemplates
+django-constance
+redis
 xlwt
 django-tagging
 -e git+git://github.com/dottedmag/path.py.git#egg=path_py

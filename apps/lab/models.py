@@ -191,7 +191,7 @@ class Result(models.Model):
     test_form = models.CharField(u"Форма", max_length=6, blank=True, null=True, choices=TEST_FORM)
     to_print = models.BooleanField(u'Печатать', default=True)
     input_list = models.ForeignKey(InputList, blank=True, null=True, verbose_name=u'Дополнительное значение')
-    is_validated = models.BooleanField(u'V', default=False)
+    is_validated = models.BooleanField(u'V', default=True)
     validation = models.IntegerField(u'Статус валидации', choices=PASS_STATUS, default=0)
     sample = models.ForeignKey('Sampling', blank=True, null=True)
     status = models.ForeignKey(Status, blank=True, null=True)

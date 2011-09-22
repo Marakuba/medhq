@@ -6,16 +6,20 @@ import datetime
 from south.modelsinspector import add_introspection_rules
 from django.utils.encoding import smart_unicode, force_unicode, smart_str
 import time
-from staff.models import Staff
+from staff.models import Staff, Position
 from patient.models import Patient
 from mptt.models import MPTTModel
+from visit.models import BaseService
+from state.models import State
+from django.conf import settings
+import exceptions
 
 from datetime import timedelta
 
 add_introspection_rules([], ["^scheduler\.models\.CustomDateTimeField"])
 
 def datetimeIterator(from_date=None, to_date=None, delta=timedelta(minutes=30)):
-    from_date = from_date or datetime.now()
+    from_date = from_date or datetime.datetime.now()
     print "timeslot %s" % (delta)
     while to_date is None or from_date <= to_date:
         yield from_date
@@ -40,7 +44,7 @@ class CustomDateTimeField(models.DateTimeField):
                 value, usecs = value.split('.')
                 usecs = int(usecs)
             except ValueError:
-                raise exceptions.ValidationError(self.error_messages['invalid'])
+                raise exceptions.ValueError(self.error_messages['invalid'])
         else:
             usecs = 0
         kwargs = {'microsecond': usecs}
@@ -61,7 +65,7 @@ class CustomDateTimeField(models.DateTimeField):
                         return datetime.datetime(*time.strptime(value, '%m-%d-%Y')[:3],
                                                  **kwargs)
                     except ValueError:
-                        raise exceptions.ValidationError(self.error_messages['invalid'])
+                        raise exceptions.ValueError(self.error_messages['invalid'])
     
 
 class Calendar(models.Model):
@@ -83,7 +87,7 @@ class Event(models.Model):
     staff = models.ForeignKey(Staff, blank = True, null = True)
     sid = models.PositiveIntegerField(u'ID врача', blank = True, null = True)
     cid = models.PositiveIntegerField(u'ID календаря', blank = True, null = True)
-    title = models.CharField(u'Заголовок', max_length=300)
+    title = models.CharField(u'Заголовок', max_length=300, blank = True, null = True)
     start = CustomDateTimeField(u'Начальная дата', blank = True, null = True)
     end = CustomDateTimeField(u'Конечная дата', blank = True, null = True)
     loc = models.TextField(u'Кабинет', blank = True, null = True)
@@ -98,8 +102,8 @@ class Event(models.Model):
     
     def save(self, *args, **kwargs):
         if not self.timeslot:
-            staff = Staff.objects.get(id=self.cid)
-            timeslot = timedelta(minutes=staff.doctor.get_timeslot_display() or 30)
+            staff = Position.objects.get(id=self.cid)
+            timeslot = timedelta(minutes=staff.staff.doctor.get_timeslot_display() or 30)
             start = self.start
             end = self.end
             while start < end:
@@ -109,6 +113,14 @@ class Event(models.Model):
                                      parent = self, rem = self.rem)
                 start += timeslot
         super(Event, self).save(*args, **kwargs)
+
+    def delete(self, *args, **kwargs):
+        if not self.timeslot:
+            timeslots = Event.objects.filter(timeslot=True,start__gte=self.start,start__lte=self.end)
+            for timeslot in  timeslots:
+                timeslot.delete()
+        super(Event, self).delete(*args, **kwargs) 
+
             
     class Meta:
         verbose_name = u'смена'
@@ -122,5 +134,19 @@ class Preorder(models.Model):
     """
     Модель предварительного заказа
     """
-    patient = models.ForeignKey(Patient, blank = True, null = True)
+    patient = models.ForeignKey(Patient)
     timeslot = models.OneToOneField(Event)
+    comment = models.TextField(u'Примечание', blank = True, null = True)
+    expiration = CustomDateTimeField(u'Дата истечения', blank = True, null = True)
+    
+class PreorderedService(models.Model):
+    """
+    Набор услуг предзаказа
+    """
+    preorder = models.ForeignKey(Preorder)
+    created = models.DateTimeField(u'Создано', auto_now_add=True)
+    modified = models.DateTimeField(u'Изменено', auto_now=True)
+    service = models.ForeignKey(BaseService, verbose_name=u'Услуга')
+    count = models.IntegerField(u'Количество', default=1)
+    execution_place = models.ForeignKey(State, verbose_name=u'Место выполнения', 
+                                        default=settings.MAIN_STATE_ID)

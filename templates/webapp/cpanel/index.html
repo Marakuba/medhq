@@ -4,8 +4,6 @@
 
 {% block head %}
 	<link rel="icon" type="image/ico" href="{{ MEDIA_URL }}resources/favicon.ico" />
-{% load compress %}
-{% compress css %}
 
     <!-- ExtJS -->
     <link rel="stylesheet" type="text/css" href="{{ MEDIA_URL }}extjs/resources/css/ext-all.css"/>
@@ -33,8 +31,7 @@
 		}
 	</style>
 
-{% endcompress %}
-{% compress js %}
+
     <!-- LIBS -->
     <script type="text/javascript" src="{{ MEDIA_URL }}extjs/adapter/ext/ext-base.js"></script>
     <!-- ENDLIBS -->
@@ -56,7 +53,6 @@
 	</script>
 
 
-{% endcompress %}
 
 {% endblock %}
 

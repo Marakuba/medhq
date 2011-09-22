@@ -312,6 +312,24 @@ Ext.extend(Ext.calendar.EventEditWindow, Ext.Window, {
 
     // private
     onDelete: function() {
-        this.fireEvent('eventdelete', this, this.activeRecord);
+    	Ext.Ajax.request({
+        	url: '/timeslot/haspreorder/'+ this.activeRecord.data.EventId + '/',
+			success: function(answer,opt){
+				if (answer.responseText=='YES'){
+					Ext.Msg.confirm('Внимание!','В выбранной смене есть предварительная запись. Всё равно удалить?',
+						function(btn){
+							if (btn=='yes'){
+								this.fireEvent('eventdelete', this, this.activeRecord);
+							}
+						},
+					this)
+				} else {
+					if (answer.responseText=='NO') {
+						this.fireEvent('eventdelete', this, this.activeRecord);
+					}
+				}
+			},
+			scope:this
+        })
     }
 });

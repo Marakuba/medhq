@@ -11,6 +11,7 @@ from django.core.cache import cache
 from django.db.models.signals import post_save
 from mptt.models import MPTTModel
 from state.models import State
+import datetime
 
 
 class ICD10(MPTTModel):
@@ -187,12 +188,12 @@ class BaseService(models.Model):
                 return self.execution_place.get(id=settings.MAIN_STATE_ID)
         return place
     
-    def price(self, state=None):
+    def price(self, state=None, date=None):
         """
         """
         if state:
             try:
-                price = self.extendedservice_set.get(state=state).get_actual_price()
+                price = self.extendedservice_set.get(state=state, date=date).get_actual_price()
                 return price
             except:
                 return 0
@@ -256,9 +257,10 @@ class ExtendedService(models.Model):
     
     objects = ExtendedServiceManager()
     
-    def get_actual_price(self):
+    def get_actual_price(self, date=None):
         try:
-            price_item = self.price_set.filter(price_type=u'r').latest('on_date')
+            date = date or datetime.date.today()
+            price_item = self.price_set.filter(price_type=u'r', on_date__lte=date).latest('on_date')
             return int(price_item.value.normalize())
         except:
             return None

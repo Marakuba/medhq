@@ -113,7 +113,7 @@ App.visit.OrderedServiceInlineGrid = Ext.extend(Ext.grid.EditorGridPanel, {
 		    	dataIndex: 'staff_name',
 		    	renderer: function(val) {
 		    		return val //? val.staff_name : '';
-		    	},
+		    	}
 		    },{
 		    	header: "Кол-во", 
 		    	width: 10, 

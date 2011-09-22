@@ -114,7 +114,6 @@ INSTALLED_APPS = (
     'django.contrib.sites',
     
     'autocomplete',
-    'compressor',
     'constance',
     'dbtemplates',
     'debug_toolbar',

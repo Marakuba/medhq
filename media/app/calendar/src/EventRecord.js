@@ -11,6 +11,11 @@
  */
 Ext.ns('Ext.calendar');
 Ext.calendar.EventMappings = {
+    ResourceURI: {
+        name: 'ResourceURI',
+        mapping: 'resource_uri',
+        type: 'string'
+    },
     EventId: {
         name: 'EventId',
         mapping: 'id',
@@ -125,6 +130,7 @@ rec.data[M.Notes.name] = 'Some notes';
     var M = Ext.calendar.EventMappings;
 
     Ext.calendar.EventRecord = Ext.data.Record.create([
+    M.ResourceURI,
     M.EventId,
     M.CalendarId,
     M.Title,
@@ -146,6 +152,7 @@ rec.data[M.Notes.name] = 'Some notes';
      */
     Ext.calendar.EventRecord.reconfigure = function() {
         Ext.calendar.EventRecord = Ext.data.Record.create([
+        M.ResourceURI,
         M.EventId,
         M.CalendarId,
         M.Title,

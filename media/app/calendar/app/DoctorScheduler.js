@@ -243,7 +243,7 @@ Ext.calendar.DoctorScheduler = Ext.extend(Ext.Panel, {
                         listeners: {
                             'eventclick': {
                                 fn: function(vw, rec, el){
-                                    this.showEditWindow(rec, el);
+                                    this.showEditWindow(rec, el, vw);
                                     this.clearMsg();
                                 },
                                 scope: this
@@ -300,99 +300,9 @@ Ext.calendar.DoctorScheduler = Ext.extend(Ext.Panel, {
                             },
                             'dayclick': {
                                 fn: function(vw, dt, ad, el){
-                                	var day = dt.getDay();
-                                	var date = dt.getDate();
-                                	var time = dt.getTime();
-                                	var ind = this.calendarStore.find("CalendarId",this.staff_id);
-                                	var staff = this.calendarStore.getAt(ind);
-                                	var routine = staff.data.Routine;
-                                	var start;
-                                	var end;
-                                	
-                                	//Устанавливаем начальное и конечное время сегодняшней смены
-                                	//Если у врача не указаны соответствующие поля, то берется рабочий день
-                                	//из настроек в календаре
-                                	switch (routine[1]) {
-                                		//любая смена
-                                		case '0':
-                                			//Устанавливаем время работы, какое есть
-                                			start = staff.data.AmSessionStarts || staff.data.PmSessionStarts;
-                                			end = staff.data.AmSessionEnds || staff.data.PmSessionEnds;
-                                			break;
-                                		//первая смена
-                                    	case '1':
-                                    		start = staff.data.AmSessionStarts;
-                                			end = staff.data.AmSessionEnds;
-                                			break;
-                                		//вторая смена
-                                		case '2':
-                                    		start = staff.data.PmSessionStarts;
-                                			end = staff.data.PmSessionEnds;
-                                			break;
-                                		default: 
-                                			start = undefined;
-                                			start = undefined;
-                                			break;
-                                	};
-                                	//Проверяем, работает ли сегодня врач
-                                	//смотрим список дней в тэгах work_days
-                                	var isWorking = true;
-                                	var work_days = staff.data.work_days;
-                                	if (work_days) {
-                                		if (work_days.search(day) === -1) {
-                                			isWorking = false;
-                                		}
-                                	};
-                                	//смотрим четность/нечетность дня в routine
-                                	//0 - любые дни
-                                	//1 - четные
-                                	//2 - нечетные
-                                	switch (routine[0]) {
-                                		case '1':
-                                			if (date % 2 > 0) {
-                                				isWorking = false;
-                                			};
-                                			break;
-                                		case '2':
-                                			if (date % 2 === 0) {
-                                				isWorking = false;
-                                			};
-                                			break;
+                                	if (vw['id']=="app-calendar-month"){
+                                		this.dayClickMW(vw, dt, ad, el)
                                 	}
-                                	
-                                	if (start) {
-                                		start = this.setTimeToDate(start,new Date(dt));
-                                	} else {
-                                		start = new Date();
-                                	};
-                               		if (end) {
-                              				end = this.setTimeToDate(end,new Date(dt));
-                           			} else {
-                           				end = new Date();
-                           				end.add('h',1);
-                           			};
-                           			
-                           			if (isWorking) {
-                           				this.showEditWindow({
-                                        	StartDate: start,
-	                                   		EndDate: end,
-    	                                    IsAllDay: ad
-        	                            }, el);
-                           			} else {
-                           				Ext.Msg.confirm('Предупреждение',staff.data.Title + 
-            							'в этот день не работает. Продолжить?',
-              								function(btn){
-    											if (btn=='yes') {
-    												this.showEditWindow({
-                           								StartDate: start,
-                           								EndDate: end,
-                           								IsAllDay: ad
-                       								}, el);
-    											}
-    										},
-               							this);
-                           			}
-                                    this.clearMsg();
                                 },
                                 scope: this
                             },
@@ -446,46 +356,96 @@ Ext.calendar.DoctorScheduler = Ext.extend(Ext.Panel, {
         // This makes it very easy to swap it out with a different type of window or custom view, or omit
         // it altogether. Because of this, it's up to the application code to tie the pieces together.
         // Note that this function is called from various event handlers in the CalendarPanel above.
-		showEditWindow : function(rec, animateTarget){
-	        if(!this.editWin){
-	            this.editWin = new Ext.calendar.EventEditWindow({
-                    calendarStore: this.calendarStore,
-					listeners: {
-						'eventadd': {
-							fn: function(win, rec){
-								win.hide();
-								rec.data.IsNew = false;
-								this.eventStore.add(rec);
-                                this.showMsg('Event '+ rec.data.Title +' was added');
+		showEditWindow : function(rec, animateTarget, vw){
+			if (vw['id']=="app-calendar-month"){
+	        	if(!this.editWin){
+	        	
+	            	this.editWin = new Ext.calendar.EventEditWindow({
+                    	calendarStore: this.calendarStore,
+						listeners: {
+							'eventadd': {
+								fn: function(win, rec){
+									win.hide();
+									rec.data.IsNew = false;
+									this.eventStore.add(rec);
+                    	            this.showMsg('Event '+ rec.data.Title +' was added');
+								},
+								scope: this
 							},
-							scope: this
-						},
-						'eventupdate': {
-							fn: function(win, rec){
-								win.hide();
-								rec.commit();
-                                this.showMsg('Event '+ rec.data.Title +' was updated');
+							'eventupdate': {
+								fn: function(win, rec){
+									win.hide();
+									//rec.commit();
+                    	            this.showMsg('Event '+ rec.data.Title +' was updated');
+								},
+								scope: this
 							},
-							scope: this
-						},
-						'eventdelete': {
-							fn: function(win, rec){
-								this.eventStore.remove(rec);
-								win.hide();
-                                this.showMsg('Event '+ rec.data.Title +' was deleted');
+							'eventdelete': {
+								fn: function(win, rec){
+									this.eventStore.remove(rec);
+									win.hide();
+                    	            this.showMsg('Event '+ rec.data.Title +' was deleted');
+								},
+								scope: this
 							},
-							scope: this
-						},
-                        'editdetails': {
-                            fn: function(win, rec){
-                                win.hide();
-                                App.calendarPanel.showEditForm(rec);
-                            }
-                        }
-					}
-                });
-	        }
-	        this.editWin.show(rec, animateTarget);
+    	                    'editdetails': {
+        	                    fn: function(win, rec){
+            	                    win.hide();
+                	                App.calendarPanel.showEditForm(rec);
+                    	        }
+                        	}
+						}
+    	            });
+    	            this.editWin.show(rec, animateTarget);
+	        	} else {
+	        		this.editWin.show(rec, animateTarget);
+	        	}
+	        	
+	        	
+	        		
+	        } else {
+	        	if(!this.timeslotWin){
+	        		this.timeslotWin = new Ext.calendar.TimeslotEditWindow({
+                    	calendarStore: this.calendarStore,
+						listeners: {
+							'eventadd': {
+								fn: function(win, rec){
+									win.hide();
+									rec.data.IsNew = false;
+									this.eventStore.add(rec);
+                        	        this.showMsg('Event '+ rec.data.Title +' was added');
+								},
+								scope: this
+							},
+							'eventupdate': {
+								fn: function(win, rec){
+									win.hide();
+									//rec.commit();
+                        	        this.showMsg('Event '+ rec.data.Title +' was updated');
+								},
+								scope: this
+							},
+							'eventdelete': {
+								fn: function(win, rec){
+									this.eventStore.remove(rec);
+									win.hide();
+                        	        this.showMsg('Event '+ rec.data.Title +' was deleted');
+								},
+								scope: this
+							},
+        	                'editdetails': {
+            	                fn: function(win, rec){
+                	                win.hide();
+                    	            App.calendarPanel.showEditForm(rec);
+                        	    }
+	                        }	
+						}
+        	        });
+        	        this.timeslotWin.show(rec, animateTarget);
+	        	} else {
+	        		this.timeslotWin.show(rec, animateTarget);
+	        	}
+	        } 
 		},
         
         // The CalendarPanel itself supports the standard Panel title config, but that title
@@ -540,6 +500,104 @@ Ext.calendar.DoctorScheduler = Ext.extend(Ext.Panel, {
     				}
                	}
             );
+        },
+        
+        dayClickMW: function(vw, dt, ad, el){
+        	var day = dt.getDay();
+			var date = dt.getDate();
+            var time = dt.getTime();
+            var ind = this.calendarStore.find("CalendarId",this.staff_id);
+            var staff = this.calendarStore.getAt(ind);
+            var routine = staff.data.Routine;
+            var start;
+            var end;
+                                	
+            //Устанавливаем начальное и конечное время сегодняшней смены
+            //Если у врача не указаны соответствующие поля, то берется рабочий день
+            //из настроек в календаре
+            switch (routine[1]) {
+            	//любая смена
+                case '0':
+                	//Устанавливаем время работы, какое есть
+                    start = staff.data.AmSessionStarts || staff.data.PmSessionStarts;
+                    end = staff.data.AmSessionEnds || staff.data.PmSessionEnds;
+                    break;
+                //первая смена
+                case '1':
+                	start = staff.data.AmSessionStarts;
+                    end = staff.data.AmSessionEnds;
+                    break;
+                //вторая смена
+                case '2':
+                	start = staff.data.PmSessionStarts;
+                    end = staff.data.PmSessionEnds;
+                    break;
+                default: 
+                	start = undefined;
+                    start = undefined;
+                    break;
+            };
+                
+            //Проверяем, работает ли сегодня врач
+            //смотрим список дней в тэгах work_days
+            var isWorking = true;
+            var work_days = staff.data.work_days;
+            if (work_days) {
+            	if (work_days.search(day) === -1) {
+                	isWorking = false;
+                }
+            };
+                
+            //смотрим четность/нечетность дня в routine
+            //0 - любые дни
+            //1 - четные
+            //2 - нечетные
+            switch (routine[0]) {
+            	case '1':
+                	if (date % 2 > 0) {
+                    	isWorking = false;
+                    };
+                    break;
+                case '2':
+                	if (date % 2 === 0) {
+                    	isWorking = false;
+                    };
+                    break;
+                }
+                                	
+            if (start) {
+            	start = this.setTimeToDate(start,new Date(dt));
+            } else {
+            	start = new Date();
+            };
+            if (end) {
+            	end = this.setTimeToDate(end,new Date(dt));
+            } else {
+            	end = new Date();
+                end.add('h',1);
+            };
+                           			
+            if (isWorking) {
+            	this.showEditWindow({
+                	StartDate: start,
+	                EndDate: end,
+    	            IsAllDay: ad
+        	    }, el,vw);
+            } else {
+            Ext.Msg.confirm('Предупреждение',staff.data.Title + 
+            				'в этот день не работает. Продолжить?',
+				function(btn){
+    				if (btn=='yes') {
+    					this.showEditWindow({
+                        	StartDate: start,
+                           	EndDate: end,
+                           	IsAllDay: ad
+             	       }, el, vw);
+    				}
+    			},
+        	this);
+        	}
+        	this.clearMsg();
         }
     });
 
