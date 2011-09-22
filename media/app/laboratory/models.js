@@ -24,6 +24,22 @@ App.models.LabService = new Ext.data.Record.create([
     {name: 'staff_name'}
 ]);
 
+App.models.LabOrder = new Ext.data.Record.create([
+	{name: 'id'},
+	{name: 'created', type:'date',format:'c'},
+	{name: 'executed', type:'date',format:'c'},
+	{name: 'visit'},
+	{name: 'barcode'},
+	{name: 'laboratory'},
+	{name: 'laboratory_name'},
+	{name: 'staff'},
+	{name: 'staff_name'},
+	{name: 'patient_name'},
+	{name: 'is_completed', type:'bool'},
+	{name: 'comment'},
+	{name: 'print_date', type:'date',format:'c'},
+	{name: 'printed_by_name'}
+]);
 
 App.models.EquipmentAssay = new Ext.data.Record.create([
     {name: 'id'},

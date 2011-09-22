@@ -27,29 +27,20 @@ App.CentralPanel = Ext.extend(Ext.Panel, {
                     scale: 'small'
                 },
                 items: [{
-                	xtype:'splitbutton',
+                	xtype:'button',
                     text: 'Заказы',
                     scale:'medium',
                     iconAlign: 'top',
                     handler: function(){
-                    	this.launchApp('labservicegrid');
+                    	this.launchApp('labboard');
                     },
-                    menu:[{
-                        text: 'Заказы по услугам',
-                        scale:'medium',
-                        iconAlign: 'top',
-                        handler: function(){
-                        	this.launchApp('labtestgrid');
-                        },
-                        scope:this
-                    }],
                     scope:this
                 },{
                     text: 'Тесты',
                     scale:'medium',
                     iconAlign: 'top',
                     handler: function(){
-                    	this.launchApp('resultgrid');
+                    	this.launchApp('labtestgrid');
                     },
                     scope:this
                 }]

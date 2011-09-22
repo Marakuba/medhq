@@ -6,4 +6,5 @@ manage.py
 medhq_main
 media/cache
 media/dicom
+media/libs
 *.orig

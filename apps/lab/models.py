@@ -4,7 +4,7 @@ from django.db import models
 from service.models import BaseService, LabServiceGroup
 from lab.vars import OPERATORS, FACTOR_FIELDS, RESULTS, TEST_FORM
 from state.models import State
-from staff.models import Staff
+from staff.models import Staff, Position
 import datetime
 from workflow.models import Status
 from django.contrib.auth.models import User
@@ -137,7 +137,9 @@ class LabOrder(models.Model):
                               blank=True, null=True) 
     laboratory = models.ForeignKey(State, verbose_name=u'Лаборатория', related_name='laboratory')
     lab_group = models.ForeignKey(LabServiceGroup, blank=True, null=True)
-    staff = models.ForeignKey(Staff, verbose_name=u'Врач', blank=True, null=True)
+    staff = models.ForeignKey(Position, verbose_name=u'Врач', blank=True, null=True, related_name='position')
+    old_staff = models.ForeignKey(Staff, verbose_name=u'Врач', blank=True, null=True, related_name='old_staff')
+    executed = models.DateTimeField(u'Дата выполнения', blank=True, null=True)
     is_completed = models.BooleanField(u'Выполнен', default=False)
     is_printed = models.BooleanField(u'Печать', default=False)
     status = models.ForeignKey(Status, blank=True, null=True)

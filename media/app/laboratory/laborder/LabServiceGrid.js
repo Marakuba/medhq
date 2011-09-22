@@ -13,7 +13,7 @@ App.laborder.LabServiceGrid = Ext.extend(Ext.grid.GridPanel, {
 		    	width: 8, 
 		    	hidden:true,
 		    	dataIndex: 'key'
-		    },{
+		    },/*{
 		    	width: 1, 
 		    	sortable: true, 
 		    	dataIndex: 'is_completed', 
@@ -21,7 +21,7 @@ App.laborder.LabServiceGrid = Ext.extend(Ext.grid.GridPanel, {
 		    		flag = record.data.executed ? 'yes' : 'no';
 		    		return "<img src='"+MEDIA_URL+"admin/img/admin/icon-"+flag+".gif'>"
 		    	}
-		    },{
+		    },*/{
 		    	header: "№ заказа", 
 		    	width: 8, 
 		    	hidden:true,
@@ -126,35 +126,21 @@ App.laborder.LabServiceGrid = Ext.extend(Ext.grid.GridPanel, {
 				}
 			},'-',{
 				xtype:'splitbutton',
-				text:'Открыть',
-				handler:this.onOpen.createDelegate(this, [this.singleModeFunc]),
-				menu:{
+				text:'Открыть заказ',
+				handler:this.onOpen.createDelegate(this, [this.laborderModeFunc]),
+/*				menu:{
 					items:[{
-						id:'all-by-visit',
-						text:'Все тесты по заказу и лаборатории',
-						handler:this.onOpen.createDelegate(this,[ this.laborderModeFunc ])
-					},{
 						id:'all-by-lab',
 						text:'Все тесты по заказу',
 						handler:this.onOpen.createDelegate(this,[ this.orderModeFunc ])
-					}/*,{
-						id:'all-by-group',
-						text:'Все тесты по группе',
-						handler:this.onOpen.createDelegate(this,['lab_group','order__lab_group'])
-					}*/]
-				},
+					},{
+						id:'all-by-visit',
+						text:'Открыть исследование',
+						handler:this.onOpen.createDelegate(this,[ this.singleModeFunc ])
+					}]
+				},*/
 				scope:this
-			},'-',/*{
-				text:'Печать',
-				iconCls:'silk-printer',
-				handler:function(){
-					var rec = this.getSelected();
-					var visit = App.uriToId(rec.data.order);
-					var lab = App.uriToId(rec.data.execution_place);
-					window.open(String.format('/lab/print/results_by_visit/{0}/{1}/', visit, lab));
-				},
-				scope:this
-			},*/'->',new Ext.CycleButton({
+			},'->',new Ext.CycleButton({
 	            showText: true,
 	            prependText: 'Выполнено:',
 	            items: [{
@@ -191,7 +177,7 @@ App.laborder.LabServiceGrid = Ext.extend(Ext.grid.GridPanel, {
 			}),
 	        tbar:this.ttb,
 			listeners: {
-				rowdblclick:this.onOpen.createDelegate(this, [this.singleModeFunc])
+				rowdblclick:this.onOpen.createDelegate(this, [this.laborderModeFunc])
 			},
 /*			bbar: new Ext.PagingToolbar({
 	            pageSize: 20,

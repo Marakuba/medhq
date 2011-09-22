@@ -16,6 +16,9 @@
 	<link rel="stylesheet" type="text/css" href="{{ MEDIA_URL }}extjs/ux/css/Spinner.css" rel="stylesheet" />
 	<link rel="stylesheet" type="text/css" href="{{ MEDIA_URL }}extjs/ux/css/RowEditor.css" rel="stylesheet" />
 	
+    <!-- Growl -->
+    <link rel="stylesheet" type="text/css" href="{{ MEDIA_URL }}libs/growl/css/ext/ux/Growl.css"/>
+
 	<style>
 	</style>
 
@@ -33,7 +36,9 @@
     <!-- ENDLIBS -->
 
     <script type="text/javascript" src="{{ MEDIA_URL }}extjs/ext-all-debug.js"></script>
-    <!--<script type="text/javascript" src="{{ MEDIA_URL }}extjs/src/debug.js"></script>-->
+
+    <!-- Growl -->
+    <script type="text/javascript" src="{{ MEDIA_URL }}libs/growl/js/ext/ux/Growl.js"></script>
 
     <script type="text/javascript" src="{{ MEDIA_URL }}extjs/ux/RowEditor.js"></script>
     <script type="text/javascript" src="{{ MEDIA_URL }}extjs/ux/CheckColumn.js"></script> 
@@ -49,16 +54,20 @@
     <script type="text/javascript" src="{{ MEDIA_URL }}app/laboratory/backends.js"></script>
     <script type="text/javascript" src="{{ MEDIA_URL }}app/laboratory/models.js"></script>
 
+    <script type="text/javascript" src="{{ MEDIA_URL }}app/laboratory/search/SearchWindow.js"></script>
+
+    <script type="text/javascript" src="{{ MEDIA_URL }}app/laboratory/laborder/LabBoard.js"></script>
+    <script type="text/javascript" src="{{ MEDIA_URL }}app/laboratory/laborder/LabOrderGrid.js"></script>
+    <script type="text/javascript" src="{{ MEDIA_URL }}app/laboratory/laborder/LabServiceGrid.js"></script>
+    <script type="text/javascript" src="{{ MEDIA_URL }}app/laboratory/laborder/LabTestGrid.js"></script>
+
     <script type="text/javascript" src="{{ MEDIA_URL }}app/laboratory/equipment/EquipmentGrid.js"></script>
     <script type="text/javascript" src="{{ MEDIA_URL }}app/laboratory/equipment/EquipmentTaskGrid.js"></script>
     <script type="text/javascript" src="{{ MEDIA_URL }}app/laboratory/equipment/EquipmentResultGrid.js"></script>
     <script type="text/javascript" src="{{ MEDIA_URL }}app/laboratory/equipment/EquipmentAssayGrid.js"></script>
 
-    <script type="text/javascript" src="{{ MEDIA_URL }}app/laboratory/result/Grid.js"></script>
+    <script type="text/javascript" src="{{ MEDIA_URL }}app/laboratory/result/ResultGrid.js"></script>
     <script type="text/javascript" src="{{ MEDIA_URL }}app/laboratory/result/InputListWindow.js"></script>
-
-    <script type="text/javascript" src="{{ MEDIA_URL }}app/laboratory/laborder/LabServiceGrid.js"></script>
-    <script type="text/javascript" src="{{ MEDIA_URL }}app/laboratory/laborder/LabTestGrid.js"></script>
 
     <script type="text/javascript" src="{{ MEDIA_URL }}app/laboratory/EventManager.js"></script>
     <script type="text/javascript" src="{{ MEDIA_URL }}app/laboratory/CentralPanel.js"></script>

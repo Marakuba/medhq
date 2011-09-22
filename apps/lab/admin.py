@@ -27,11 +27,11 @@ class ResultInlineForm(forms.ModelForm):
 
 class ResultInline(admin.TabularInline):
     model = Result
-    readonly_fields = ('presence',)
+    readonly_fields = ('presence','sample')
     extra = 0
     can_delete = False
     #exclude = ('presence',)
-    fields = ('is_validated','value','input_list','test_form','to_print')
+    fields = ('is_validated','value','input_list','test_form','to_print','sample')
     form = ResultInlineForm
     template = 'admin/lab/laborder/edit_inline/tabular.html'
 

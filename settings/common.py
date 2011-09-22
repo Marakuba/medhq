@@ -71,7 +71,7 @@ MIDDLEWARE_CLASSES = (
     'django.contrib.auth.middleware.AuthenticationMiddleware',
     'webapp.middleware.ActiveProfileMiddleware',
     'reversion.middleware.RevisionMiddleware',
-    #'medhq.apps.core.middleware.SQLLogMiddleware'
+#    'medhq.apps.core.middleware.SQLLogMiddleware'
 )
 
 INSTALLED_APPS = (

@@ -248,8 +248,11 @@ def get_service_tree(request):
 
 @gzip_page
 def service_tree(request):
-    _cached_tree = get_service_tree(request)
-    return HttpResponse(_cached_tree, mimetype="application/json")
+    resp = get_service_tree(request)
+    cb = request.GET.get('cb')
+    if cb:
+        resp = u'%s(%s)' % (cb,resp)
+    return HttpResponse(resp, mimetype="application/json")
 
 from collections import defaultdict
 
@@ -317,7 +320,7 @@ def barcodeimg(request):
     return HttpResponse(tmp_file.getvalue(),'image/png')
 
 
-def groups(request):
+def get_groups(request):
     """
     """
     def tree_iterate(qs):
@@ -340,8 +343,17 @@ def groups(request):
     if not _cached_tree:
         _cached_tree = simplejson.dumps(tree_iterate(BaseService.tree.root_nodes()))
         #cache.set('ancestors_list', _cached_tree, 60*60)
+
+
+@gzip_page
+def groups(request):
     
-    return HttpResponse(_cached_tree,'application/json')
+    resp = get_groups(request)
+    cb = request.GET.get('cb')
+    if cb:
+        resp = u'%s(%s)' % (cb,resp)
+    
+    return HttpResponse(resp,'application/json')
 
 
 

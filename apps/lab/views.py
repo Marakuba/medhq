@@ -45,10 +45,14 @@ def print_results(request, order):
     }
     
     NOW = datetime.datetime.now()
-    if order.is_completed and not order.print_date:
-        order.is_printed = True
-        order.print_date = NOW
-        order.save()
+    
+    preview = request.GET.get('preview')
+    
+    if not preview:
+        if order.is_completed and not order.print_date:
+            order.is_printed = True
+            order.print_date = NOW
+            order.save()
         
     services = order.visit.orderedservice_set.filter(executed__isnull=False, print_date__isnull=True)
     services.update(print_date=NOW)
@@ -77,20 +81,16 @@ def revert_results(request):
     """
     """
     if request.method=='POST':
-        lab_order = request.POST.get('order', None)
-        ordered_service = request.POST.get('service', None)
+        lab_order = request.POST.get('laborder', None)
         
-        if lab_order and ordered_service:
+        if lab_order:
             lab_order = get_object_or_404(LabOrder, id=lab_order)
-            ordered_service = get_object_or_404(OrderedService, id=ordered_service)
-            c=[]
-            for item in ordered_service.service.analysis_set.all():
-                result, created = Result.objects.get_or_create(order=lab_order,
-                                                               analysis=item, 
-                                                               sample=ordered_service.sampling)
-                if created:
-                    c.append(result)
-                    print result
+            ordered_services = lab_order.visit.orderedservice_set.all()
+            for ordered_service in ordered_services:
+                for item in ordered_service.service.analysis_set.all():
+                    result, created = Result.objects.get_or_create(order=lab_order,
+                                                                   analysis=item, 
+                                                                   sample=ordered_service.sampling)
             return HttpResponse(simplejson.dumps({
                                                     'success':True,
                                                     'message':u'Исследования были восстановлены'
@@ -98,17 +98,25 @@ def revert_results(request):
     return HttpResponseBadRequest()
     
 
-def del_empty_results(request):
+def confirm_results(request):
     """
     """
     if request.method=='POST':
         lab_order = request.POST.get('order', None)
         if lab_order:
             lab_order = get_object_or_404(LabOrder, id=lab_order)
-            Result.objects.filter(order=lab_order).exclude(validation=1).delete()
+            Result.objects.filter(order=lab_order, validation=0).delete()
+            Result.objects.filter(order=lab_order, validation=-1).update(validation=1)
+            lab_order.is_completed = True
+            for result in lab_order.result_set.all():
+                if not result.is_completed():
+                    lab_order.is_completed = False
+                    break
+            lab_order.save()
+            msg = lab_order.is_completed and u'Лабораторный ордер подтвержден' or u'Присутствуют пустые значения. Лабораторный ордер не подтвержден'
             return HttpResponse(simplejson.dumps({
-                                                    'success':True,
-                                                    'message':u'Исследования были очищены'
+                                                    'success':lab_order.is_completed,
+                                                    'message':msg
                                                 }), mimetype='application/json')
     return HttpResponseBadRequest()
     

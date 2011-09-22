@@ -36,7 +36,7 @@ from examination.models import Equipment as ExamEquipment
 class UserResource(ModelResource):
 
     class Meta:
-        queryset = User.objects.all()
+        queryset = User.objects.select_related().all()
         limit = 1000
         resource_name = 'user'
         
@@ -333,32 +333,37 @@ class RefundResource(ExtResource):
         }
         
 
-class LabOrderResource(ModelResource):
+class LabOrderResource(ExtResource):
     """
     """
     visit = fields.ToOneField(VisitResource, 'visit', null=True)
     laboratory = fields.ForeignKey(MedStateResource, 'laboratory', null=True)
     lab_group = fields.ForeignKey(LabServiceGroupResource, 'lab_group', null=True)
+    staff = fields.ForeignKey('api.registry.PositionResource', 'staff', null=True)
     
     def dehydrate(self, bundle):
         laborder = bundle.obj
-        bundle.data['lab_name'] = laborder.laboratory
-        bundle.data['lab_group_name'] = laborder.lab_group
+        bundle.data['laboratory_name'] = laborder.laboratory
         if laborder.visit:
             bundle.data['visit_id'] = laborder.visit.id
             bundle.data['barcode'] = laborder.visit.barcode.id
             bundle.data['patient_name'] = laborder.visit.patient.full_name()
-        bundle.data['staff_name'] = laborder.staff and laborder.staff.short_name() or ''
+        bundle.data['staff_name'] = laborder.staff and laborder.staff.staff.short_name() or ''
         return bundle
     
     class Meta:
-        queryset = LabOrder.objects.all()
+        queryset = LabOrder.objects.select_related().all()
         resource_name = 'laborder'
+        authorization = DjangoAuthorization()
+        limit = 100
         filtering = {
+            'id':ALL,
             'created':ALL_WITH_RELATIONS,
             'visit':ALL_WITH_RELATIONS,
+            'staff':ALL_WITH_RELATIONS,
             'laboratory':ALL_WITH_RELATIONS,
-            'lab_group':ALL_WITH_RELATIONS
+            'lab_group':ALL_WITH_RELATIONS,
+            'is_completed':ALL
         }
         
 class BaseServiceResource(ModelResource):
@@ -404,7 +409,7 @@ class AnalysisResource(ModelResource):
     service = fields.ForeignKey(BaseServiceResource, 'service')
     
     class Meta:
-        queryset = Analysis.objects.all()
+        queryset = Analysis.objects.select_related().all()
         resource_name = 'analysis'
         filtering = {
             'service':ALL_WITH_RELATIONS
@@ -416,6 +421,7 @@ class ResultResource(ExtResource):
     order = fields.ForeignKey(LabOrderResource, 'order')
     analysis = fields.ForeignKey(AnalysisResource,'analysis')
     modified_by = fields.ForeignKey(UserResource, 'modified_by', null=True)
+    sample = fields.ForeignKey('api.registry.SamplingResource', 'sample', null=True)
     
     def obj_update(self, bundle, request=None, **kwargs):
         kwargs['modified_by']=request.user
@@ -435,7 +441,7 @@ class ResultResource(ExtResource):
         return bundle
     
     class Meta:
-        queryset = Result.objects.all().order_by('-order__visit__id',)
+        queryset = Result.objects.select_related().all()#.order_by('-order__visit__id',)
         authorization = DjangoAuthorization()
         resource_name = 'result'
         limit = 100
@@ -467,7 +473,7 @@ class PositionResource(ModelResource):
         return bundle
     
     class Meta:
-        queryset = Position.objects.all()
+        queryset = Position.objects.select_related().all()
         resource_name = 'position'
         limit = 200
         filtering = {
