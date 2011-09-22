@@ -511,7 +511,7 @@ class BaseServiceResource(ExtResource):
     labservice = fields.ForeignKey(LSResource,'labservice', null=True)
     
     def dehydrate(self, bundle):
-        bundle.data['material_name'] = bundle.obj.material.name
+        bundle.data['material_name'] = bundle.obj.material and bundle.obj.material.name or ''
         return bundle
     
     class Meta:
