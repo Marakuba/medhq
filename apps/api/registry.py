@@ -540,6 +540,7 @@ class StaffResource(ModelResource):
         filtering = {
             'last_name':('istartswith',),
             'id':ALL
+#            'parent':ALL_WITH_RELATIONS
         }
 
 class PositionResource(ModelResource):
