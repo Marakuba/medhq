@@ -603,6 +603,7 @@ class PriceResource(ModelResource):
         resource_name = 'price'
         filtering = {
             'id':ALL,
+            'extended_service':ALL_WITH_RELATIONS
         }
 
 class AnalysisResource(ModelResource):
