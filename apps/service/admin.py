@@ -149,6 +149,7 @@ class ExtendedServiceAdmin(admin.ModelAdmin):
 
 class ExtendedServiceInlineAdmin(admin.TabularInline):
     
+    template = "admin/service/tabular.html"
     model = ExtendedService
     extra = 1
 
