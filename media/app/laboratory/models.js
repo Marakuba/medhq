@@ -54,6 +54,8 @@ App.models.EquipmentAssay = new Ext.data.Record.create([
 App.models.EquipmentResult = new Ext.data.Record.create([
     {name: 'id'},
     {name: 'resource_uri'},
+	{name: 'created', type:'date',format:'c'},
+    {name: 'equipment_name'},
     {name: 'order'},
     {name: 'assay'},
     {name: 'result'},
@@ -79,6 +81,7 @@ App.models.EquipmentTask = new Ext.data.Record.create([
     {name: 'service_name'},
     {name: 'patient_name'},
     {name: 'order'},
+    {name: 'status'},
     {name: 'completed', type:'date', format:'c'},
     {name: 'created', type:'date', format:'c'}
 ]);

@@ -159,9 +159,9 @@ App.result.ResultGrid = Ext.extend(Ext.grid.EditorGridPanel, {
 		
 		this.printBtn = new Ext.Button({
 			iconCls:'silk-printer',
-			disabled:true,
+//			disabled:true,
 			handler:function(){
-				var rec = this.getSelected();
+				var rec = this.labOrderRecord;
 				if(rec) {
 					var url = String.format('/lab/print/results/{0}/?preview=yes', rec.id);
 					window.open(url);
@@ -483,3 +483,21 @@ App.result.ResultGrid = Ext.extend(Ext.grid.EditorGridPanel, {
 
 
 Ext.reg('resultgrid',App.result.ResultGrid);
+
+
+
+
+/*
+ * 
+ * 
+while 1:
+    # wait for next client to connect
+    connection, address = s.accept() # connection is a new socket
+    while 1:
+        data = connection.recv(1024) # receive up to 1K bytes
+        if data:
+            connection.send('echo -> ' + data)
+        else:
+            break
+    connection.close()
+ */

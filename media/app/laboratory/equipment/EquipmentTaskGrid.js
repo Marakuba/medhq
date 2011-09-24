@@ -38,6 +38,11 @@ App.equipment.EquipmentTaskGrid = Ext.extend(Ext.grid.EditorGridPanel, {
 		    		return "<img src='"+MEDIA_URL+"admin/img/admin/icon-"+flag+".gif'>" 
 		    			+ (val ? Ext.util.Format.date(val,'d.m.Y') : '');
 		    	}
+		    },{
+		    	header: "Статус", 
+		    	width: 8, 
+		    	sortable: true, 
+		    	dataIndex: 'status_name'
 		    }
 		];		
 		
@@ -67,9 +72,14 @@ App.equipment.EquipmentTaskGrid = Ext.extend(Ext.grid.EditorGridPanel, {
 			}],
 			listeners: {
 			},
-			viewConfig : {
-				forceFit : true
-			}			
+			view : new Ext.grid.GridView({
+				forceFit : true,
+				emptyText: 'Нет записей',
+				getRowClass: function(record, index) {
+		            var s = record.get('status');
+		            return String.format('x-equipment-task-{0}',s);
+		        }
+			})
 		}
 
 		Ext.apply(this, Ext.apply(this.initialConfig, config));

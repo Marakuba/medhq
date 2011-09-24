@@ -323,14 +323,22 @@ class EquipmentAssay(models.Model):
         verbose_name = u'аппаратное исследование'
         verbose_name_plural = u'аппаратные исследования'    
         
+ET_STATUS = (
+    (u'wait', u'Ожидание'),
+    (u'proc', u'В работе'),
+    (u'done', u'Выполнен'),
+    (u'disc', u'Отменен'),
+)
 
 class EquipmentTask(models.Model):
     """
     """
     created = models.DateTimeField(auto_now_add=True)
+    created_by = models.ForeignKey(User, blank=True, null=True)
     equipment_assay = models.ForeignKey(EquipmentAssay)
     ordered_service = models.ForeignKey('visit.OrderedService')
     completed = models.DateTimeField(u'Выполнено', null=True, blank=True)
+    status = models.CharField(u'Статус', max_length=5, choices=ET_STATUS, default=u'wait')
     
     def __unicode__(self):
         return smart_unicode( u"%s - %s" % (self.ordered_service, self.equipment_assay) )
@@ -339,9 +347,12 @@ class EquipmentTask(models.Model):
         verbose_name = u'задание для анализаторов'
         verbose_name_plural = u'задания для анализаторов' 
 
+
 class EquipmentResult(models.Model):
     """
     """
+    created = models.DateTimeField(u'Получено', auto_now_add=True)
+    equipment = models.ForeignKey(Equipment, verbose_name=u'Анализатор')
     order = models.CharField(u'Заказ', max_length=20)
     assay = models.CharField(u'Исследование', max_length=20)
     result = models.CharField(u'Результат', max_length=100)
