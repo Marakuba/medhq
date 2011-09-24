@@ -343,7 +343,8 @@ def get_groups(request):
     if not _cached_tree:
         _cached_tree = simplejson.dumps(tree_iterate(BaseService.tree.root_nodes()))
         #cache.set('ancestors_list', _cached_tree, 60*60)
-
+    
+    return _cached_tree
 
 @gzip_page
 def groups(request):

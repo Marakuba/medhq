@@ -15,6 +15,7 @@ from annoying.decorators import render_to
 from django.views.decorators.gzip import gzip_page
 from pricelist.models import Price
 from django.db.models import Max
+from constance import config
 
 def pricelist(request):
 
@@ -45,10 +46,14 @@ def pricelist(request):
     return direct_to_template(request, "print/service/fullpricelist.html", extra_context=extra_context)
     
 
-@gzip_page
 def price_list_helper(request):
     """
     """
+    
+    import sys
+    
+    sys.setrecursionlimit(3000)
+    
     state = None
     by_state = request.GET.get('by_state', None)
     if by_state:
@@ -60,7 +65,7 @@ def price_list_helper(request):
     services = get_service_tree(state)
     
     st = State.objects.get(id=settings.MAIN_STATE_ID)
-    #import pdb; pdb.set_trace()
+
     if request.GET.get('type')=='print':
         extra_context = {'services':services,
                          'exec_form':EXECUTION,
@@ -74,15 +79,141 @@ def price_list_helper(request):
         ws = wb.add_sheet(u'Услуги клиники')
         #ws.insert_bitmap(settings.MEDIA_ROOT / 'resources' / 'images' / 'offlogo_w.bmp', 10, 2)
         
+#        fnt = Font()
+#        fnt.height = 240
+#        fnt.bold = True
+#        
+#        borders = Borders()
+#        borders.left = 2
+#        borders.right = 2
+#        borders.top = 2
+#        borders.bottom = 2
+#        
+#        title_al = Alignment()
+#        title_al.vert = Alignment.VERT_CENTER
+#        
+#        price_al = Alignment()
+#        price_al.horz = Alignment.HORZ_RIGHT
+#        
+#        ptrn = Pattern()
+##        ptrn.pattern = Pattern.SOLID_PATTERN
+#        ptrn.back_colour = 'red'
+#
+#        title_style = XFStyle()
+#        title_style.font = fnt
+#        title_style.borders = borders
+#        title_style.alignment = title_al
+#        title_style.pattern = ptrn
+#        
+#        service_style = XFStyle()
+#        service_style.borders = borders
+#
+#        price_style = XFStyle()
+#        price_style.borders = borders
+#        price_style.alignment = price_al
+
+
+        ws.row(0).height = 1500
+        
+        fnt = Font()
+        fnt.name = 'Impact'
+        fnt.height = 400
+        fnt.colour_index = 58
+#        fnt.bold = True        
+        
+        alg = Alignment()
+        alg.vert = Alignment.VERT_CENTER
+        
+        head_style = XFStyle()
+        head_style.font = fnt
+        head_style.alignment = alg
+
+        ws.write_merge(0,0,1,3,state and state.official_title or config.BRAND, head_style)
+        
+####### Headers
+        
+        fnt = Font()
+        fnt.height = 240
+        fnt.bold = True        
+        
+        head_style = XFStyle()
+        head_style.font = fnt
+
+        if state:        
+            ws.write_merge(3,3,0,1,u"""%s
+    телефон: %s
+    факс: %s
+    email: %s""" % ( state.address_street, state.phones, state.fax, state.email), head_style)
+    
+            alg = Alignment()
+            alg.horz = Alignment.HORZ_RIGHT
+            
+            head_style.alignment = alg 
+            ws.write_merge(3,3,2,3,u"""Утверждаю
+    ________________________
+    %s
+    %sг.""" % (state.official_title, request.GET.get('date')), head_style)
+            ws.row(3).height = 1200
+        
+        
+        
+        fnt = Font()
+        fnt.name = 'Calibri'
+        fnt.height = 380
+        fnt.bold = True        
+
+        alg = Alignment()
+        alg.vert = Alignment.VERT_CENTER
+        alg.horz = Alignment.HORZ_CENTER
+        
+        head_style = XFStyle()
+        head_style.font = fnt        
+        head_style.alignment = alg
+
+        
+        ws.write_merge(7,7,0,3,u'Прейскурант цен',head_style)
+        ws.row(7).height = 480
+
+        fnt = Font()
+        fnt.name = 'Calibri'
+        fnt.height = 220
+        fnt.bold = True        
+        fnt.colour_index = 1
+
+        alg = Alignment()
+        alg.wrap = Alignment.WRAP_AT_RIGHT
+        alg.vert = Alignment.VERT_CENTER
+        alg.horz = Alignment.HORZ_CENTER
+
+        ptrn = Pattern()
+        ptrn.pattern = Pattern.SOLID_PATTERN
+        ptrn.pattern_fore_colour = 17
+
+        head_style = XFStyle()
+        head_style.font = fnt         
+        head_style.alignment = alg
+        head_style.pattern = ptrn
+        
+        ws.write(8,0,u'Код услуги',head_style)
+        ws.write_merge(8,8,1,2,u'Наименование услуги',head_style)
+        ws.write(8,3,u'Цена',head_style)
+        
+        ws.row(8).height = 620
+#### COLORS
+
+
+
+#### SERVICES
+        
         fnt = Font()
         fnt.height = 240
         fnt.bold = True
         
         borders = Borders()
-        borders.left = 2
-        borders.right = 2
-        borders.top = 2
-        borders.bottom = 2
+        borders.left = 1
+        borders.right = 1
+        borders.top = 1
+        borders.bottom = 1
         
         title_al = Alignment()
         title_al.vert = Alignment.VERT_CENTER
@@ -91,8 +222,8 @@ def price_list_helper(request):
         price_al.horz = Alignment.HORZ_RIGHT
         
         ptrn = Pattern()
-#        ptrn.pattern = Pattern.SOLID_PATTERN
-        ptrn.back_colour = 'red'
+        ptrn.pattern = Pattern.SOLID_PATTERN
+        ptrn.pattern_fore_colour = 3
 
         title_style = XFStyle()
         title_style.font = fnt
@@ -100,21 +231,34 @@ def price_list_helper(request):
         title_style.alignment = title_al
         title_style.pattern = ptrn
         
+        
+        s_align = Alignment()
+        s_align.wrap = Alignment.WRAP_AT_RIGHT
+        s_align.vert = Alignment.VERT_CENTER
+        s_align.horz = Alignment.HORZ_LEFT
+                
         service_style = XFStyle()
         service_style.borders = borders
+        service_style.alignment = s_align
 
         price_style = XFStyle()
         price_style.borders = borders
         price_style.alignment = price_al
         
+        cursor = 9
+
+
+        
         for i, service in enumerate(services):
-            if service.is_leaf_node():
-                ws.write(i,0, service.id, service_style)
-                ws.write(i,1, service.name, service_style)
-                ws.write(i,2, service.price(st), price_style)
-            elif service.level in (0,1) and not service.is_leaf_node():
-                ws.write_merge(i,i,0,2,service.name,title_style)
-                ws.row(i).height=350
+            if service[0].is_leaf_node() and service[1]:
+                ws.write(cursor,0, service[0].id, service_style)
+                ws.write_merge(cursor,cursor,1,2, service[0].name, service_style)
+                ws.write(cursor,3, service[1], price_style)
+            else:
+                ws.write_merge(cursor,cursor,0,3,service[0].name,title_style)
+                ws.row(cursor).height=350
+            cursor +=1
+            
         ws.col(0).width = 1900
         ws.col(1).width = 20000
         ws.col(2).width = 1500
@@ -122,7 +266,7 @@ def price_list_helper(request):
         wb.save(myfile)
         myfile.seek(0)
         response =  HttpResponse(myfile, mimetype='application/vnd.ms-excel')
-        response['Content-Disposition'] = 'attachment; filename=EM_pricelist.xls' 
+        response['Content-Disposition'] = 'attachment; filename=pricelist.xls' 
         return response
 
 
