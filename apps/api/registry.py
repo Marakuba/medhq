@@ -1,6 +1,6 @@
 # -*- coding: utf-8 -*-
 
-from tastypie.resources import ModelResource
+from tastypie.resources import ExtResource
 from patient.models import Patient, InsurancePolicy
 from visit.models import Visit, Referral, OrderedService
 from tastypie import fields
@@ -37,14 +37,14 @@ from tastypie.authentication import ApiKeyAuthentication
 from patient.utils import smartFilter
 from django.db.models.query_utils import Q
 
-class UserResource(ModelResource):
+class UserResource(ExtResource):
 
     class Meta:
         queryset = User.objects.select_related().all()
         limit = 1000
         resource_name = 'user'
         
-class ICD10Resource(ModelResource):
+class ICD10Resource(ExtResource):
     
     parent = fields.ForeignKey('self','parent', null=True)
     
@@ -83,7 +83,7 @@ class ICD10Resource(ModelResource):
         }
 
 
-class DiscountResource(ModelResource):
+class DiscountResource(ExtResource):
 
     def dehydrate(self, bundle):
         bundle.data['name'] = "%s, %s" % (bundle.obj.name, bundle.obj.value)
@@ -106,7 +106,7 @@ class ClientItemResource(ExtResource):
     class Meta:
         queryset = ClientItem.objects.all()
         resource_name = 'clientitem'
-        authorization = DjangoAuthorization()
+        authorization = Authorization()
         filtering = {
             'client' : ALL_WITH_RELATIONS,
         }
@@ -150,7 +150,7 @@ class PatientResource(ExtResource):
         queryset = Patient.objects.select_related().all() #@UndefinedVariable
         resource_name = 'patient'
         default_format = 'application/json'
-        authorization = DjangoAuthorization()
+        authorization = Authorization()
         filtering = {
             'last_name':('istartswith',),
             'first_name':('istartswith',),
@@ -186,7 +186,7 @@ class DebtorResource(ExtResource):
         queryset = Patient.objects.filter(balance__lt = 0) #@UndefinedVariable
         resource_name = 'debtor'
         default_format = 'application/json'
-        authorization = DjangoAuthorization()
+        authorization = Authorization()
         filtering = {
             'last_name':('istartswith',),
             'id':ALL,
@@ -205,14 +205,14 @@ class ReferralResource(ExtResource):
         queryset = Referral.objects.all() #@UndefinedVariable
         resource_name = 'referral'
         limit = 200
-        authorization = DjangoAuthorization()
+        authorization = Authorization()
         filtering = {
             'name':('istartswith',)
         }
         
 
         
-class LabResource(ModelResource):
+class LabResource(ExtResource):
 
     class Meta:
         queryset = State.objects.filter(type__in=('m','b')).exclude(id=settings.MAIN_STATE_ID) 
@@ -223,7 +223,7 @@ class LabResource(ModelResource):
         }
         
 
-class MedStateResource(ModelResource):
+class MedStateResource(ExtResource):
 
     class Meta:
         queryset = State.objects.filter(type__in=('m','b')).order_by('type','id',)
@@ -235,7 +235,7 @@ class MedStateResource(ModelResource):
         }
         
 
-class OwnStateResource(ModelResource):
+class OwnStateResource(ExtResource):
 
     class Meta:
         queryset = State.objects.filter(type__in=('b',)).order_by('id',)
@@ -247,7 +247,7 @@ class OwnStateResource(ModelResource):
         }
         
 
-class StateResource(ModelResource):
+class StateResource(ExtResource):
 
     class Meta:
         queryset = State.objects.all() 
@@ -260,7 +260,7 @@ class StateResource(ModelResource):
         }
         
         
-class LabServiceGroupResource(ModelResource):
+class LabServiceGroupResource(ExtResource):
     
     def build_filters(self, filters=None):
         if filters is None:
@@ -297,7 +297,7 @@ class InsuranceStateResource(ExtResource):
     class Meta:
         queryset = State.objects.filter(type='i') 
         resource_name = 'insurance_state'
-        authorization = DjangoAuthorization()
+        authorization = Authorization()
         limit = 50
         filtering = {
             'name':('istartswith',)
@@ -321,7 +321,7 @@ class InsurancePolicyResource(ExtResource):
     class Meta:
         queryset = InsurancePolicy.objects.all() 
         resource_name = 'insurance_policy'
-        authorization = DjangoAuthorization()
+        authorization = Authorization()
         limit = 50
         filtering = {
             'id':ALL,
@@ -330,7 +330,7 @@ class InsurancePolicyResource(ExtResource):
         }
         
 
-class BarcodeResource(ModelResource):
+class BarcodeResource(ExtResource):
     """
     """
     class Meta:
@@ -391,7 +391,7 @@ class VisitResource(ExtResource):
     class Meta:
         queryset = Visit.objects.filter(cls__in=(u'п',u'б'))
         resource_name = 'visit'
-        authorization = DjangoAuthorization()
+        authorization = Authorization()
         filtering = {
             'patient': ALL_WITH_RELATIONS,
             'barcode': ALL_WITH_RELATIONS,
@@ -428,7 +428,7 @@ class RefundResource(ExtResource):
     class Meta:
         queryset = Visit.objects.filter(cls__in=(u'в',))
         resource_name = 'refund'
-        authorization = DjangoAuthorization()
+        authorization = Authorization()
         filtering = {
             'patient': ALL_WITH_RELATIONS,
             'id':ALL,
@@ -483,7 +483,7 @@ class LabOrderResource(ExtResource):
     class Meta:
         queryset = LabOrder.objects.select_related().all()
         resource_name = 'laborder'
-        authorization = DjangoAuthorization()
+        authorization = Authorization()
         limit = 100
         filtering = {
             'id':ALL,
@@ -505,7 +505,7 @@ class LSResource(ExtResource):
             'is_manual':ALL,
         }
         
-class MaterialResource(ModelResource):
+class MaterialResource(ExtResource):
     """
     """
     
@@ -517,7 +517,7 @@ class MaterialResource(ModelResource):
             'name':ALL,
         }        
         
-class BaseServiceResource(ModelResource):
+class BaseServiceResource(ExtResource):
     """
     """
     parent = fields.ForeignKey('self', 'parent', null=True)
@@ -540,7 +540,7 @@ class BaseServiceResource(ModelResource):
             'material':ALL_WITH_RELATIONS
         }
         
-class StaffResource(ModelResource):
+class StaffResource(ExtResource):
     """
     """
     def dehydrate(self, bundle):
@@ -558,7 +558,7 @@ class StaffResource(ModelResource):
 #            'parent':ALL_WITH_RELATIONS
         }
 
-class PositionResource(ModelResource):
+class PositionResource(ExtResource):
     """
     """
     staff = fields.ForeignKey(StaffResource, 'staff')
@@ -577,7 +577,7 @@ class PositionResource(ModelResource):
             'staff':ALL_WITH_RELATIONS,
         }
 
-class ExtendedServiceResource(ModelResource):
+class ExtendedServiceResource(ExtResource):
     """
     """
     base_service = fields.ForeignKey(BaseServiceResource, 'base_service')
@@ -602,7 +602,7 @@ class ExtendedServiceResource(ModelResource):
             'name':ALL
         }
         
-class PriceTypeResource(ModelResource):
+class PriceTypeResource(ExtResource):
     class Meta:
         queryset = PriceType.objects.all()
         resource_name = 'pricetype'
@@ -610,7 +610,7 @@ class PriceTypeResource(ModelResource):
             'id':ALL,
         }
 
-class PriceResource(ModelResource):
+class PriceResource(ExtResource):
     extended_service = fields.ForeignKey(ExtendedServiceResource,'extended_service',null=True)
     type = fields.ForeignKey(PriceTypeResource,'type',null=True)
     
@@ -622,7 +622,7 @@ class PriceResource(ModelResource):
             'extended_service':ALL_WITH_RELATIONS
         }
 
-class AnalysisResource(ModelResource):
+class AnalysisResource(ExtResource):
     """
     """
     service = fields.ForeignKey(BaseServiceResource, 'service')
@@ -672,7 +672,7 @@ class ResultResource(ExtResource):
         }
         
 
-class InputListResource(ModelResource):
+class InputListResource(ExtResource):
     """
     """
     
@@ -682,7 +682,6 @@ class InputListResource(ModelResource):
         filtering = {
             'name':ALL
         }
-
 
 class DoctorResource(ExtResource):
     """
@@ -696,7 +695,7 @@ class DoctorResource(ExtResource):
             'id':ALL
         }
         
-class StaffSchedResource(ModelResource):
+class StaffSchedResource(ExtResource):
     """
     """
     #doctor = fields.ToOneField(DoctorResource, 'doctor', null=True)
@@ -741,7 +740,7 @@ class DepartmentResource(ExtResource):
             'name':ALL,
         }
         
-class PosSchedResource(ModelResource):
+class PosSchedResource(ExtResource):
     """
     """
     #doctor = fields.ToOneField(DoctorResource, 'doctor', null=True)
@@ -769,7 +768,7 @@ class PosSchedResource(ModelResource):
             'id':ALL
         }
 
-class TubeResource(ModelResource):
+class TubeResource(ExtResource):
     """
     """
     class Meta:
@@ -779,7 +778,7 @@ class TubeResource(ModelResource):
             'name':ALL
         }
 
-#class AnalysisResource(ModelResource):
+#class AnalysisResource(ExtResource):
 #    """
 #    """
 #    class Meta:
@@ -790,7 +789,7 @@ class TubeResource(ModelResource):
 #        }
 
 
-class NumeratorItemResource(ModelResource):
+class NumeratorItemResource(ExtResource):
     """
     """
     class Meta:
@@ -821,7 +820,7 @@ class SamplingResource(ExtResource):
     
     class Meta:
         queryset = Sampling.objects.all()
-        authorization = DjangoAuthorization()
+        authorization = Authorization()
         resource_name = 'sampling'
         limit = 100
         filtering = {
@@ -830,7 +829,7 @@ class SamplingResource(ExtResource):
             'number':ALL_WITH_RELATIONS
         }
 
-class BarcodedSamplingResource(ModelResource):
+class BarcodedSamplingResource(ExtResource):
     """
     """
     visit = fields.ForeignKey(VisitResource, 'visit')
@@ -884,7 +883,7 @@ class OrderedServiceResource(ExtResource):
     class Meta:
         queryset = OrderedService.objects.all()
         resource_name = 'orderedservice'
-        authorization = DjangoAuthorization()
+        authorization = Authorization()
         limit = 100
         filtering = {
             'order': ALL_WITH_RELATIONS,
@@ -912,7 +911,7 @@ class LabServiceResource(ExtResource):
     class Meta:
         queryset = OrderedService.objects.filter(service__labservice__is_manual=True) #all lab services
         resource_name = 'labservice'
-        authorization = DjangoAuthorization()
+        authorization = Authorization()
         limit = 50
         filtering = {
             'created': ALL_WITH_RELATIONS,
@@ -962,7 +961,7 @@ class LabTestResource(ExtResource):
     class Meta:
         queryset = OrderedService.objects.select_related().filter(service__lab_group__isnull=False).order_by('service','-created') #all lab services
         resource_name = 'labtest'
-        authorization = DjangoAuthorization()
+        authorization = Authorization()
         limit = 10000
         filtering = {
             'order': ALL_WITH_RELATIONS,
@@ -1016,7 +1015,7 @@ class ExamServiceResource(ExtResource):
     class Meta:
         queryset = OrderedService.objects.filter(service__lab_group__isnull=True)
         resource_name = 'examservice'
-        authorization = DjangoAuthorization()
+        authorization = Authorization()
         filtering = {
             'order': ALL_WITH_RELATIONS,
             'sampling': ALL_WITH_RELATIONS,
@@ -1063,7 +1062,7 @@ class SamplingServiceResource(ExtResource):
         queryset = OrderedService.objects.all()
         limit = 100
         resource_name = 'samplingservice'
-        authorization = DjangoAuthorization()
+        authorization = Authorization()
         filtering = {
             'order': ALL_WITH_RELATIONS,
             'sampling': ALL_WITH_RELATIONS
@@ -1101,7 +1100,7 @@ class ServiceBasketResource(ExtResource):
             'order': ALL_WITH_RELATIONS
         }
         limit = 500
-        authorization = DjangoAuthorization()
+        authorization = Authorization()
         
 
 class RefundBasketResource(ExtResource):
@@ -1133,7 +1132,7 @@ class RefundBasketResource(ExtResource):
             'order': ALL_WITH_RELATIONS
         }
         limit = 500
-        authorization = DjangoAuthorization()
+        authorization = Authorization()
 
 
 class BCPackageResource(ExtResource):
@@ -1156,7 +1155,7 @@ class BCPackageResource(ExtResource):
     
     class Meta:
         queryset = BarcodePackage.objects.all()
-        authorization = DjangoAuthorization()
+        authorization = Authorization()
         resource_name = 'barcodepackage'
         filtering = {
         }
@@ -1165,7 +1164,7 @@ class BCPackageResource(ExtResource):
 class ExamEquipmentResource(ExtResource):
     class Meta:
         queryset = ExamEquipment.objects.all()
-#        authorization = DjangoAuthorization()
+#        authorization = Authorization()
         resource_name = 'exam_equipment'
         filtering = {
             'name':ALL,
@@ -1179,7 +1178,7 @@ class TemplateGroupResource(ExtResource):
     
     class Meta:
         queryset = TemplateGroup.objects.all()
-        authorization = DjangoAuthorization()
+        authorization = Authorization()
         resource_name = 'templategroup'
         filtering = {
             'name':ALL,
@@ -1204,7 +1203,7 @@ class CardTemplateResource(ExtResource):
         queryset = CardTemplate.objects.all()
         resource_name = 'cardtemplate'
         default_format = 'application/json'
-        authorization = DjangoAuthorization()
+        authorization = Authorization()
         filtering = {
             'name':ALL,
             'staff':ALL_WITH_RELATIONS,
@@ -1227,7 +1226,7 @@ class ExaminationCardResource(ExtResource):
         queryset = ExaminationCard.objects.all()
         resource_name = 'examcard'
         default_format = 'application/json'
-        authorization = DjangoAuthorization()
+        authorization = Authorization()
         filtering = {
             'ordered_service':ALL_WITH_RELATIONS,
             'id':ALL,
@@ -1248,7 +1247,7 @@ class RegExamCardResource(ExtResource):
         queryset = ExaminationCard.objects.all()
         resource_name = 'regexamcard'
         default_format = 'application/json'
-        authorization = DjangoAuthorization()
+        authorization = Authorization()
         filtering = {
             'ordered_service':ALL_WITH_RELATIONS,
             'id':ALL
@@ -1267,7 +1266,7 @@ class DicomResource(ExtResource):
 
     class Meta:
         queryset = DICOM.objects.all()
-#        authorization = DjangoAuthorization()
+#        authorization = Authorization()
         resource_name = 'dicom'
         filtering = {
             'examination_card':ALL_WITH_RELATIONS,
@@ -1280,7 +1279,7 @@ class EquipmentResource(ExtResource):
     class Meta:
         queryset = Equipment.objects.all()
         resource_name = 'equipment'
-        authorization = DjangoAuthorization()
+        authorization = Authorization()
         filtering = {
             'name':ALL,
             'slug':ALL,
@@ -1299,7 +1298,7 @@ class EquipmentAssayResource(ExtResource):
     class Meta:
         queryset = EquipmentAssay.objects.all()
         resource_name = 'equipmentassay'
-        authorization = DjangoAuthorization()
+        authorization = Authorization()
         filtering = {
             'equipment':ALL_WITH_RELATIONS,
             'service':ALL_WITH_RELATIONS,
@@ -1321,7 +1320,7 @@ class EquipmentTaskResource(ExtResource):
     class Meta:
         queryset = EquipmentTask.objects.all()
         resource_name = 'equipmenttask'
-        authorization = DjangoAuthorization()
+        authorization = Authorization()
         filtering = {
             'equipment':ALL_WITH_RELATIONS,
             'service':ALL_WITH_RELATIONS,
@@ -1337,7 +1336,7 @@ class EquipmentResultResource(ExtResource):
     class Meta:
         queryset = EquipmentResult.objects.all()
         resource_name = 'equipmentresult'
-        authorization = DjangoAuthorization()
+        authorization = Authorization()
         filtering = {
             'order':ALL,
             'assay':ALL,
@@ -1348,7 +1347,7 @@ class CalendarResource(ExtResource):
     class Meta:
         queryset = Calendar.objects.all()
         resource_name = 'calendar'
-        authorization = DjangoAuthorization()
+        authorization = Authorization()
         filtering = {
             'title':ALL,
         }
@@ -1361,7 +1360,7 @@ class PreorderResource(ExtResource):
     class Meta:
         queryset = Preorder.objects.all()
         resource_name = 'preorder'
-        authorization = DjangoAuthorization()
+        authorization = Authorization()
         filtering = {
             'patient':ALL_WITH_RELATIONS,
             'timeslot':ALL,
@@ -1391,12 +1390,13 @@ class ExtPreorderResource(ExtResource):
     class Meta:
         queryset = Preorder.objects.all().order_by('-timeslot__start')
         resource_name = 'extpreorder'
-        authorization = DjangoAuthorization()
         filtering = {
             'patient':ALL,
             'start':ALL,
             'timeslot':ALL_WITH_RELATIONS,
         }
+        limit = 500
+        authorization = Authorization()
         
 class EventResource(ExtResource):
     staff = fields.ForeignKey(StaffResource, 'staff', null=True)
@@ -1411,7 +1411,7 @@ class EventResource(ExtResource):
     class Meta:
         queryset = Event.objects.all()
         resource_name = 'event'
-        authorization = DjangoAuthorization()
+        authorization = Authorization()
         filtering = {
             'title':ALL,
             'id':ALL,
@@ -1431,7 +1431,7 @@ class IssueTypeResource(ExtResource):
         queryset = IssueType.objects.all()
         resource_name = 'issuetype'
         limit = 100
-        authorization = DjangoAuthorization()
+        authorization = Authorization()
         filtering = {
             'name':ALL
         }        
@@ -1457,7 +1457,7 @@ class IssueResource(ExtResource):
         queryset = Issue.objects.all()
         resource_name = 'issue'
         limit = 100
-        authorization = DjangoAuthorization()
+        authorization = Authorization()
         filtering = {
             'type':ALL_WITH_RELATIONS,
             'level':ALL,
@@ -1470,7 +1470,7 @@ class ContentTypeResource(ExtResource):
     class Meta:
         queryset = ContentType.objects.all()
         resource_name = 'contenttype'
-        authorization = DjangoAuthorization()
+        authorization = Authorization()
         allowed_methods = ['get']
 
 class AccountResource(ExtResource):
@@ -1478,7 +1478,7 @@ class AccountResource(ExtResource):
     class Meta:
         queryset = Account.objects.all()
         resource_name = 'account'
-        authorization = DjangoAuthorization()
+        authorization = Authorization()
         
 class ClientAccountResource(ExtResource):
     client_item = fields.ForeignKey(ClientItemResource, 'client_item')
@@ -1493,7 +1493,7 @@ class ClientAccountResource(ExtResource):
     class Meta:
         queryset = ClientAccount.objects.all().select_related()
         resource_name = 'clientaccount'
-        authorization = DjangoAuthorization()
+        authorization = Authorization()
         filtering = {
             'client_item' : ALL_WITH_RELATIONS,
         }
@@ -1517,7 +1517,7 @@ class PaymentResource(ExtResource):
     class Meta:
         queryset = Payment.objects.all()
         resource_name = 'payment'
-        authorization = DjangoAuthorization()
+        authorization = Authorization()
         limit = 1000
         filtering = {
             'id' : ALL,
@@ -1545,7 +1545,7 @@ class InvoiceResource(ExtResource):
     class Meta:
         queryset = Invoice.objects.all()
         resource_name = 'invoice'
-        authorization = DjangoAuthorization()
+        authorization = Authorization()
         limit = 100
         filtering = {
             'id' : ALL,
@@ -1576,7 +1576,7 @@ class InvoiceItemResource(ExtResource):
     class Meta:
         queryset = InvoiceItem.objects.all()
         resource_name = 'invoiceitem'
-        authorization = DjangoAuthorization()
+        authorization = Authorization()
         limit = 1000
         filtering = {
             'id' : ALL,
