@@ -10,7 +10,8 @@ from tastypie.constants import ALL, ALL_WITH_RELATIONS
 from lab.models import LabOrder, Sampling, Tube, Result, Analysis, InputList,\
     Equipment, EquipmentAssay, EquipmentResult, EquipmentTask, Invoice,\
     InvoiceItem, LabService
-from service.models import BaseService, LabServiceGroup, ExtendedService, ICD10
+from service.models import BaseService, LabServiceGroup, ExtendedService, ICD10,\
+    Material
 from staff.models import Position, Staff, Doctor
 from state.models import State, Department
 from django.conf import settings
@@ -504,11 +505,24 @@ class LSResource(ExtResource):
             'is_manual':ALL,
         }
         
-class BaseServiceResource(ExtResource):
+class MaterialResource(ModelResource):
+    """
+    """
+    
+    class Meta:
+        queryset = Material.objects.all()
+        resource_name = 'material'
+        filtering = {
+            'id':ALL,
+            'name':ALL,
+        }        
+        
+class BaseServiceResource(ModelResource):
     """
     """
     parent = fields.ForeignKey('self', 'parent', null=True)
     labservice = fields.ForeignKey(LSResource,'labservice', null=True)
+    material = fields.ForeignKey(MaterialResource, 'material', null=True)
     
     def dehydrate(self, bundle):
         bundle.data['material_name'] = bundle.obj.material and bundle.obj.material.name or ''
@@ -522,7 +536,8 @@ class BaseServiceResource(ExtResource):
             'id':ALL,
             'name':ALL,
             'parent':ALL_WITH_RELATIONS,
-            'labservice':ALL_WITH_RELATIONS
+            'labservice':ALL_WITH_RELATIONS,
+            'material':ALL_WITH_RELATIONS
         }
         
 class StaffResource(ModelResource):
@@ -1609,6 +1624,7 @@ api.register(BaseServiceResource())
 api.register(ExtendedServiceResource())
 api.register(LabServiceGroupResource())
 api.register(ICD10Resource())
+api.register(MaterialResource())
 
 #state
 api.register(PositionResource())
