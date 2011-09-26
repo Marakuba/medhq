@@ -988,7 +988,7 @@ class CardTemplateResource(ExtResource):
             'staff':ALL_WITH_RELATIONS,
             'id':ALL
         }
-        limit = 1000
+        limit = 25
         
 class ExaminationCardResource(ExtResource):
     ordered_service = fields.ForeignKey(OrderedServiceResource, 'ordered_service', null=True)

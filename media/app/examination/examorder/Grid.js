@@ -200,7 +200,7 @@ App.examorder.ExamOrderGrid = Ext.extend(Ext.grid.GridPanel, {
 				rowdblclick:this.onOpen.createDelegate(this, ['order'])
 			},
 			bbar: new Ext.PagingToolbar({
-	            pageSize: 20,
+	            pageSize: 25,
 	            store: this.store,
 	            displayInfo: true,
 	            displayMsg: 'Показана запись {0} - {1} из {2}',

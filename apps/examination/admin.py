@@ -17,8 +17,14 @@ class ExaminationCardAdmin(admin.ModelAdmin):
     """
     exclude = ('ordered_service',)
     inlines = [DICOMAdmin]
+    
+class CardTemplateAdmin(admin.ModelAdmin):
+    """
+    """
+    list_display = ('name','staff','group')
+    list_filter = ('group','staff',)
 
 
 admin.site.register(Equipment)
 admin.site.register(ExaminationCard, ExaminationCardAdmin)
-admin.site.register(CardTemplate)
+admin.site.register(CardTemplate, CardTemplateAdmin)

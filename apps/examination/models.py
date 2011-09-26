@@ -71,7 +71,7 @@ class CardTemplate(models.Model):
     class Meta:
         verbose_name = u'Шаблон карты осмотра'
         verbose_name_plural = u'Шаблоны карты осмотра'
-        ordering = ('group','staff','id')
+        ordering = ('group','staff','name')
 
         
 class ExaminationCard(models.Model):
