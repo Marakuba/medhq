@@ -1390,6 +1390,7 @@ api.register(PosSchedResource())
 api.register(StateResource())
 api.register(MedStateResource())
 api.register(InsuranceStateResource())
+api.register(DoctorResource())
 
 #pricelist
 api.register(DiscountResource())
