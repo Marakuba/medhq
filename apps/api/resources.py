@@ -3,10 +3,12 @@
 from tastypie.resources import ModelResource
 from tastypie.utils.dict import dict_strip_unicode_keys
 from django.http import HttpResponse
+from tastypie.utils.mime import build_content_type
 
 class ExtResource(ModelResource):
     """
     """
+
     def deserialize(self, request, data, format='application/json'):
         """
         """
@@ -31,10 +33,23 @@ class ExtResource(ModelResource):
                        'message':message or u'Операция выполнена успешно',
                        'objects':bundle.data} 
         serialized = self.serialize(request, bundle, desired_format)
-        return HttpResponse(content=serialized, 
+        response = HttpResponse(content=serialized, 
                             content_type="text/html",#build_content_type(desired_format),
                             status=status)
-       
+        return response
+    
+    def create_response(self, request, data):
+        """
+        Extracts the common "which-format/serialize/return-response" cycle.
+        
+        Mostly a useful shortcut/hook.
+        """
+        desired_format = self.determine_format(request)
+        serialized = self.serialize(request, data, desired_format)
+        response = HttpResponse(content=serialized, 
+                            content_type=build_content_type(desired_format))
+        return response
+    
     def post_list(self, request, **kwargs):
         deserialized = self.deserialize(request, request.raw_post_data, format=request.META.get('CONTENT_TYPE', 'application/json'))
         bundle = self.build_bundle(data=dict_strip_unicode_keys(deserialized))
@@ -57,7 +72,6 @@ class ExtResource(ModelResource):
         deserialized = self.deserialize(request, request.raw_post_data, format=request.META.get('CONTENT_TYPE', 'application/json'))
         bundle = self.build_bundle(data=dict_strip_unicode_keys(deserialized))
         self.is_valid(bundle, request)
-        #import pdb; pdb.set_trace()
         
         try:
             updated_bundle = self.obj_update(bundle, request=request, pk=kwargs.get('pk'))

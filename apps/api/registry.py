@@ -5,7 +5,7 @@ from patient.models import Patient, InsurancePolicy
 from visit.models import Visit, Referral, OrderedService
 from tastypie import fields
 from tastypie.api import Api
-from tastypie.authorization import DjangoAuthorization
+from tastypie.authorization import DjangoAuthorization, Authorization
 from tastypie.constants import ALL, ALL_WITH_RELATIONS
 from lab.models import LabOrder, Sampling, Tube, Result, Analysis, InputList,\
     Equipment, EquipmentAssay, EquipmentResult, EquipmentTask, Invoice,\
@@ -32,6 +32,7 @@ from examination.models import TemplateGroup, DICOM
 from tastypie.cache import SimpleCache
 from django.contrib.auth.models import User
 from examination.models import Equipment as ExamEquipment
+from tastypie.authentication import ApiKeyAuthentication
 
 class UserResource(ModelResource):
 
@@ -367,24 +368,24 @@ class LabOrderResource(ExtResource):
             'is_completed':ALL
         }
         
-class BaseServiceResource(ModelResource):
+class BaseServiceResource(ExtResource):
     """
     """
-    #order = fields.ToOneField(VisitResource, 'order')
-    
+    parent = fields.ForeignKey('self', 'parent', null=True)
     class Meta:
         queryset = BaseService.objects.all()
+        authorization = DjangoAuthorization()
         resource_name = 'baseservice'
         filtering = {
             'id':ALL,
-            'name':ALL
+            'name':ALL,
+            'parent':ALL_WITH_RELATIONS
         }
 
 
 class ExtendedServiceResource(ModelResource):
     """
     """
-    #order = fields.ToOneField(VisitResource, 'order')
     base_service = fields.ForeignKey(BaseServiceResource, 'base_service')
     state = fields.ForeignKey(StateResource, 'state')
 
