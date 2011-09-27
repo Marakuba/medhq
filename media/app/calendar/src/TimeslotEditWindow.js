@@ -72,7 +72,7 @@ Ext.calendar.TimeslotEditWindow = Ext.extend(Ext.Window, {
 	    this.fieldSet = new Ext.FormPanel({
 	    	//layout:'column',
 	    	baseCls:'x-border-layout-ct',
-	    	labelWidth: 65,
+	    	labelWidth: 100,
 	    	frame: false,
 	    	region:'center',
 	    	margins:'5 0 5 5',
@@ -96,7 +96,12 @@ Ext.calendar.TimeslotEditWindow = Ext.extend(Ext.Window, {
     		xtype: 'hidden',
         	name: 'Preorder'
 	    },
-	    this.serviceCombo
+	    this.serviceCombo,
+	    {
+    		xtype: 'textarea',
+    		fieldLabel:'Комментарий',
+        	name: 'comment'
+	    }
 	    ]});
     	
     	this.formPanelCfg = new Ext.FormPanel({
@@ -116,13 +121,13 @@ Ext.calendar.TimeslotEditWindow = Ext.extend(Ext.Window, {
 		    {name: 'resource_uri'},
 		    {name: 'patient'},
 		    {name: 'timeslot'},
+		    {name: 'service'},
 		    {name: 'comment'},
-		    {name: 'expiration'},
-		    {name: 'service'}
+		    {name: 'expiration'}
 		]);
 
     	this.preorderStore = new Ext.data.RESTStore({
-			autoLoad : true,
+			autoLoad : false,
 			apiUrl : get_api_url('preorder'),
 			model: this.preorderModel
 		});
@@ -130,7 +135,7 @@ Ext.calendar.TimeslotEditWindow = Ext.extend(Ext.Window, {
 		this.preorderStore.on('write', function(store, action, result, res, rs){
 			if(action=='create') {
 			    this.preorder = rs;
-			    App.eventManager.fireEvent('preordercreate',rs);
+			    //App.eventManager.fireEvent('preordercreate',rs);
 		    }
 		}, this);
 		
@@ -145,7 +150,7 @@ Ext.calendar.TimeslotEditWindow = Ext.extend(Ext.Window, {
 			disabled:true,
 			iconCls:'silk-accept',
 			text:'Выбрать услугу',
-			handler:this.onChoiceService.createDelegate(this, [])
+			handler:this.onServiceChoice.createDelegate(this, [])
 		})
 
         this.addEvents({
@@ -196,6 +201,7 @@ Ext.calendar.TimeslotEditWindow = Ext.extend(Ext.Window, {
         	
         	this.calendarPicker = new Ext.calendar.CalendarPicker({
         		name: 'calendar',
+        		hidden:true,
         	    fieldLabel:'Врач',
             	anchor: '100%',
 	            store: this.calendarStore
@@ -208,13 +214,13 @@ Ext.calendar.TimeslotEditWindow = Ext.extend(Ext.Window, {
     		xtype:'button',
 			iconCls:'silk-accept',
 			text:'Выбрать пациента',
-			handler:this.onChoice.createDelegate(this, [])
+			handler:this.onPatientChoice.createDelegate(this, [])
 		},{
     		xtype:'button',
 			iconCls:'silk-add',
 			text:'Добавить пациента',
 			handler:this.onAddPatient.createDelegate(this, [])
-		}
+		},this.serviceButton
 		];
     	
 	    config = {
@@ -452,12 +458,16 @@ Ext.calendar.TimeslotEditWindow = Ext.extend(Ext.Window, {
         	if (this.preorder) {
         		this.preorder.set('patient',this.patient.data.resource_uri);
         		this.preorder.set('service',this.serviceCombo.getValue());
+        		this.preorder.set('comment',this.formPanel.form.findField('comment').getValue());
+        		console.log('serv ',this.serviceCombo.getValue())
         		this.preorder.commit();
+//        		this.preorderStore.commitChanges();
 //        		this.preorderedService.onPreorderCreate(this.preorder);
         	} else {
         		var record = new this.preorderModel();
         		record.set('patient',this.patient.data.resource_uri);
         		record.set('service',this.serviceCombo.getValue());
+        		record.set('comment',this.formPanel.form.findField('comment').getValue());
         		record.set('timeslot',uri);
         		var end = this.activeRecord.data[M.EndDate.name];
         		var day = end.add('d',2);
@@ -467,19 +477,25 @@ Ext.calendar.TimeslotEditWindow = Ext.extend(Ext.Window, {
         } else {
         	if (this.preorder){
         		this.preorder.set('service',this.serviceCombo.getValue());
+        		console.log('serv ',this.preorder.data.service);
+        		this.preorder.set('comment',this.formPanel.form.findField('comment').getValue());
+        		//this.preorderStore.commitChanges();
         		this.preorder.commit();
         	}
-        }
+        };
     },
     
     setPreorder: function(records,opt,success){
 		if (records[0]) {
 			this.preorder = records[0];
 			this.clearButton.setDisabled(false);
+			this.serviceButton.setDisabled(false);
 			this.serviceCombo.setValue(this.preorder.data.service); 
+			this.formPanel.form.findField('comment').setValue(this.preorder.data.comment);
             this.serviceCombo.enable();
 		} else {
 			this.clearButton.setDisabled(true);
+			this.serviceButton.setDisabled(true);
 			this.serviceCombo.disable();
 		}
 	},
@@ -529,7 +545,9 @@ Ext.calendar.TimeslotEditWindow = Ext.extend(Ext.Window, {
 			fn:function(record){
 				this.patient = record;
 				var name = record.data.last_name+' '+record.data.first_name;
-        		this.formPanel.form.findField('Title').setValue(name)
+        		this.formPanel.form.findField('Title').setValue(name);
+        		this.serviceButton.setDisabled(false);
+        		this.serviceCombo.enable();
 				
 			}
 		});
@@ -539,7 +557,7 @@ Ext.calendar.TimeslotEditWindow = Ext.extend(Ext.Window, {
 		},this);
     },
     
-    onChoice: function() {
+    onPatientChoice: function() {
         var patientWindow;
         	
         var patientGrid = new App.calendar.PatientGrid({
@@ -549,6 +567,7 @@ Ext.calendar.TimeslotEditWindow = Ext.extend(Ext.Window, {
        			this.formPanel.form.findField('Title').setValue(name)
        			this.patient = record;
        			this.serviceCombo.enable();
+       			this.serviceButton.setDisabled(false);
 				patientWindow.close();
 			}
        	 });
@@ -604,7 +623,27 @@ Ext.calendar.TimeslotEditWindow = Ext.extend(Ext.Window, {
 		return steps
 	},
 	
-	onChoiceService : function() {
-		
+	onServiceChoice : function() {
+        var serviceWindow;
+    	
+        var serviceGrid = new App.calendar.ServiceChoiceGrid({
+       		scope:this,
+       		store:this.serviceStore,
+       		fn:function(record){
+       			this.serviceCombo.setValue(record.data.resource_uri)
+				serviceWindow.close();
+			}
+       	 });
+        	
+       	serviceWindow = new Ext.Window ({
+       		width:700,
+			height:500,
+			layout:'fit',
+			title:'Услуги клиники',
+			items:[serviceGrid],
+			modal:true,
+			border:false
+    	});
+       	serviceWindow.show();
 	}
 });

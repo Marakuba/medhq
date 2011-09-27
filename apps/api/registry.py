@@ -429,6 +429,7 @@ class ExtendedServiceResource(ModelResource):
         bundle.data['staff'] = bundle.obj.staff and [[staff.id,staff] for staff in bundle.obj.staff.all()] or None
         bundle.data['state_name'] = bundle.obj.state.name
         bundle.data['service_name'] = bundle.obj.base_service.name
+        bundle.data['price'] = bundle.obj.get_actual_price()
         return bundle
     
     class Meta:

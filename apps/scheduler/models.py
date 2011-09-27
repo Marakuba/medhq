@@ -146,3 +146,10 @@ class Preorder(models.Model):
     visit = models.OneToOneField(Visit, null=True)
     service = models.ForeignKey(ExtendedService, null=True)
 
+    class Meta:
+        verbose_name = u'предзаказ'
+        verbose_name_plural = u'предзаказы'
+        ordering = ('id',)
+        
+    def __unicode__(self):
+        return self.patient
