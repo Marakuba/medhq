@@ -1,6 +1,6 @@
 # -*- coding: utf-8 -*-
 
-from tastypie.resources import ExtResource
+from api.resources import ExtResource
 from patient.models import Patient, InsurancePolicy
 from visit.models import Visit, Referral, OrderedService
 from tastypie import fields
