@@ -73,8 +73,8 @@ class ICD10Resource(ExtResource):
         queryset = ICD10.objects.all() 
         limit = 20000
         fields = ('id',)
+        authorization = Authorization()
         resource_name = 'icd10'
-        authorization = DjangoAuthorization()
         filtering = {
             'id':ALL,
             'name':('istartswith',),
@@ -91,6 +91,7 @@ class DiscountResource(ExtResource):
     
     class Meta:
         queryset = Discount.objects.exclude(type=u'arc') 
+        authorization = Authorization()
         resource_name = 'discount'
         filtering = {
             'id':ALL,
@@ -216,6 +217,7 @@ class LabResource(ExtResource):
 
     class Meta:
         queryset = State.objects.filter(type__in=('m','b')).exclude(id=settings.MAIN_STATE_ID) 
+        authorization = Authorization()
         resource_name = 'lab'
         limit = 10
         filtering = {
@@ -227,6 +229,7 @@ class MedStateResource(ExtResource):
 
     class Meta:
         queryset = State.objects.filter(type__in=('m','b')).order_by('type','id',)
+        authorization = Authorization()
         resource_name = 'medstate'
         limit = 20
         filtering = {
@@ -251,6 +254,7 @@ class StateResource(ExtResource):
 
     class Meta:
         queryset = State.objects.all() 
+        authorization = Authorization()
         resource_name = 'state'
         limit = 10
         filtering = {
@@ -278,6 +282,7 @@ class LabServiceGroupResource(ExtResource):
 
     class Meta:
         queryset = LabServiceGroup.objects.all() 
+        authorization = Authorization()
         resource_name = 'labgroup'
         limit = 10
         filtering = {
@@ -335,6 +340,7 @@ class BarcodeResource(ExtResource):
     """
     class Meta:
         queryset = Barcode.objects.all()
+        authorization = Authorization()
         resource_name = 'barcode'
         filtering = {
         }
@@ -511,6 +517,7 @@ class MaterialResource(ExtResource):
     
     class Meta:
         queryset = Material.objects.all()
+        authorization = Authorization()
         resource_name = 'material'
         filtering = {
             'id':ALL,
@@ -532,6 +539,7 @@ class BaseServiceResource(ExtResource):
         queryset = BaseService.objects.all()
         authorization = DjangoAuthorization()
         resource_name = 'baseservice'
+        authorization = Authorization()
         filtering = {
             'id':ALL,
             'name':ALL,
@@ -593,6 +601,7 @@ class ExtendedServiceResource(ExtResource):
     
     class Meta:
         queryset = ExtendedService.objects.all()
+        authorization = Authorization()
         resource_name = 'extendedservice'
         filtering = {
             'id':ALL,
@@ -605,6 +614,7 @@ class ExtendedServiceResource(ExtResource):
 class PriceTypeResource(ExtResource):
     class Meta:
         queryset = PriceType.objects.all()
+        authorization = Authorization()
         resource_name = 'pricetype'
         filtering = {
             'id':ALL,
@@ -616,6 +626,7 @@ class PriceResource(ExtResource):
     
     class Meta:
         queryset = Price.objects.all()
+        authorization = Authorization()
         resource_name = 'price'
         filtering = {
             'id':ALL,
@@ -629,6 +640,7 @@ class AnalysisResource(ExtResource):
     
     class Meta:
         queryset = Analysis.objects.select_related().all()
+        authorization = Authorization()
         resource_name = 'analysis'
         filtering = {
             'service':ALL_WITH_RELATIONS
@@ -678,6 +690,7 @@ class InputListResource(ExtResource):
     
     class Meta:
         queryset = InputList.objects.all()
+        authorization = Authorization()
         resource_name = 'inputlist'
         filtering = {
             'name':ALL
@@ -689,6 +702,7 @@ class DoctorResource(ExtResource):
     staff = fields.ToOneField(StaffResource, 'staff')
     class Meta:
         queryset = Doctor.objects.all()
+        authorization = Authorization()
         resource_name = 'doctor'
         limit = 100
         filtering = {
@@ -715,6 +729,7 @@ class StaffSchedResource(ExtResource):
     
     class Meta:
         queryset = Staff.objects.filter(doctor__isnull = False)
+        authorization = Authorization()
         resource_name = 'staffsched'
         limit = 100
         filtering = {
@@ -761,6 +776,7 @@ class PosSchedResource(ExtResource):
     
     class Meta:
         queryset = Position.objects.filter(staff__doctor__isnull = False)
+        authorization = Authorization()
         resource_name = 'possched'
         limit = 100
         filtering = {
@@ -773,6 +789,7 @@ class TubeResource(ExtResource):
     """
     class Meta:
         queryset = Tube.objects.all()
+        authorization = Authorization()
         resource_name = 'tube'
         filtering = {
             'name':ALL
@@ -794,6 +811,7 @@ class NumeratorItemResource(ExtResource):
     """
     class Meta:
         queryset = NumeratorItem.objects.all()
+        authorization = Authorization()
         resource_name = 'numerator'
         filtering = {
         }
@@ -845,6 +863,7 @@ class BarcodedSamplingResource(ExtResource):
     
     class Meta:
         queryset = Sampling.objects.filter(number__isnull=True)
+        authorization = Authorization()
         resource_name = 'bc_sampling'
         limit = 100
         filtering = {
@@ -1164,7 +1183,7 @@ class BCPackageResource(ExtResource):
 class ExamEquipmentResource(ExtResource):
     class Meta:
         queryset = ExamEquipment.objects.all()
-#        authorization = Authorization()
+        authorization = Authorization()
         resource_name = 'exam_equipment'
         filtering = {
             'name':ALL,
@@ -1266,7 +1285,7 @@ class DicomResource(ExtResource):
 
     class Meta:
         queryset = DICOM.objects.all()
-#        authorization = Authorization()
+        authorization = Authorization()
         resource_name = 'dicom'
         filtering = {
             'examination_card':ALL_WITH_RELATIONS,
