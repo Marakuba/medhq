@@ -328,7 +328,7 @@ def get_groups(request):
         """
         """
         nodes = []
-        for item in qs.filter(is_active=True).order_by(BaseService._meta.tree_id_attr, "-"+BaseService._meta.left_attr):
+        for item in qs.all().order_by(BaseService._meta.tree_id_attr, "-"+BaseService._meta.left_attr):
             if not item.is_leaf_node():
                 node = {"id":item.id,
                         "text":item.short_name or item.name,
@@ -365,7 +365,7 @@ def children(request, parent_id=None):
     nodes = []
 
     def tree_iterate(qs):
-        for item in qs.filter(is_active=True).order_by(BaseService._meta.tree_id_attr, "-"+BaseService._meta.left_attr): #@UndefinedVariable
+        for item in qs.all().order_by(BaseService._meta.tree_id_attr, "-"+BaseService._meta.left_attr): #@UndefinedVariable
             nodes.append(item.id)
             if not item.is_leaf_node():
                 tree_iterate(item.get_children())

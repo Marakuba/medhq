@@ -24,7 +24,7 @@ from django.core.exceptions import ObjectDoesNotExist
 from tastypie.exceptions import NotFound
 from examination.models import CardTemplate, ExaminationCard#, TemplateGroup
 from helpdesk.models import Issue, IssueType
-from scheduler.models import Calendar, Event, Preorder, PreorderedService
+from scheduler.models import Calendar, Event, Preorder
 from billing.models import Account, Payment, ClientAccount
 from interlayer.models import ClientItem
 from django.contrib.contenttypes.models import ContentType
@@ -382,16 +382,53 @@ class BaseServiceResource(ExtResource):
             'name':ALL,
             'parent':ALL_WITH_RELATIONS
         }
+        
+class StaffResource(ModelResource):
+    """
+    """
+    def dehydrate(self, bundle):
+        bundle.data['name'] = bundle.obj.short_name()
+        bundle.data['title'] = bundle.obj.short_name()
+        return bundle
+    
+    class Meta:
+        queryset = Staff.objects.all()
+        resource_name = 'staff'
+        limit = 100
+        filtering = {
+            'last_name':('istartswith',),
+            'id':ALL
+        }
 
+class PositionResource(ModelResource):
+    """
+    """
+    staff = fields.ForeignKey(StaffResource, 'staff')
+    def dehydrate(self, bundle):
+        bundle.data['text'] = bundle.obj.__unicode__()
+        bundle.data['name'] = bundle.obj.__unicode__()
+        return bundle
+    
+    class Meta:
+        queryset = Position.objects.all()
+        resource_name = 'position'
+        limit = 200
+        filtering = {
+            'title':('istartswith',),
+            'staff':ALL_WITH_RELATIONS,
+        }
 
 class ExtendedServiceResource(ModelResource):
     """
     """
     base_service = fields.ForeignKey(BaseServiceResource, 'base_service')
+    staff = fields.ManyToManyField(PositionResource, 'staff',null=True)
     state = fields.ForeignKey(StateResource, 'state')
 
     def dehydrate(self, bundle):
         bundle.data['staff'] = bundle.obj.staff and [[staff.id,staff] for staff in bundle.obj.staff.all()] or None
+        bundle.data['state_name'] = bundle.obj.state.name
+        bundle.data['service_name'] = bundle.obj.base_service.name
         return bundle
     
     class Meta:
@@ -401,6 +438,7 @@ class ExtendedServiceResource(ModelResource):
             'id':ALL,
             'base_service':ALL_WITH_RELATIONS,
             'state':ALL_WITH_RELATIONS,
+            'staff':ALL_WITH_RELATIONS,
             'name':ALL
         }
 
@@ -466,40 +504,6 @@ class InputListResource(ModelResource):
             'name':ALL
         }
 
-
-class PositionResource(ModelResource):
-    """
-    """
-    def dehydrate(self, bundle):
-        bundle.data['text'] = bundle.obj.__unicode__()
-        bundle.data['name'] = bundle.obj.__unicode__()
-        bundle.data['title'] = bundle.obj.staff.short_name()
-        return bundle
-    
-    class Meta:
-        queryset = Position.objects.select_related().all()
-        resource_name = 'position'
-        limit = 200
-        filtering = {
-            'title':('istartswith',)
-        }
-
-class StaffResource(ModelResource):
-    """
-    """
-    def dehydrate(self, bundle):
-        bundle.data['name'] = bundle.obj.short_name()
-        bundle.data['title'] = bundle.obj.short_name()
-        return bundle
-    
-    class Meta:
-        queryset = Staff.objects.all()
-        resource_name = 'staff'
-        limit = 100
-        filtering = {
-            'last_name':('istartswith',),
-            'id':ALL
-        }
 
 class DoctorResource(ExtResource):
     """
@@ -1137,35 +1141,37 @@ class CalendarResource(ExtResource):
 class PreorderResource(ExtResource):
     patient = fields.ForeignKey(PatientResource, 'patient', null=True)
     timeslot = fields.OneToOneField('apps.api.registry.EventResource','timeslot', null=True)
+    service = fields.ForeignKey(ExtendedServiceResource, 'service', null=True)
     
     class Meta:
         queryset = Preorder.objects.all()
         resource_name = 'preorder'
         authorization = DjangoAuthorization()
         filtering = {
-            'patient':ALL,
+            'patient':ALL_WITH_RELATIONS,
             'timeslot':ALL,
+            'service':ALL_WITH_RELATIONS
         }
         
-class PreorderedServiceResource(ExtResource):
-    """
-    """
-    preorder = fields.ToOneField(PreorderResource, 'preorder', null=True)
-    service = fields.ToOneField(BaseServiceResource, 'service', null=True)
+class ExtPreorderResource(ExtResource):
+    patient = fields.ForeignKey(PatientResource, 'patient', null=True)
+    timeslot = fields.OneToOneField('apps.api.registry.EventResource','timeslot', null=True)
+    visit = fields.OneToOneField(VisitResource,'visit',null=True)
     
     def dehydrate(self, bundle):
-        service = bundle.obj.service
-        bundle.data['service_name'] = service.short_name or service.name
+        obj = bundle.obj
+        bundle.data['start'] = obj.timeslot.start
+        bundle.data['staff'] = obj.timeslot.staff
         return bundle
     
     class Meta:
-        queryset = PreorderedService.objects.all()
-        resource_name = 'preorderedservice'
-        filtering = {
-            'preorder': ALL_WITH_RELATIONS
-        }
-        limit = 500
+        queryset = Preorder.objects.all()
+        resource_name = 'extpreorder'
         authorization = DjangoAuthorization()
+        filtering = {
+            'patient':ALL,
+            'timeslot':ALL,
+        }
         
 class EventResource(ExtResource):
     staff = fields.ForeignKey(StaffResource, 'staff', null=True)
@@ -1423,8 +1429,8 @@ api.register(IssueResource())
 #scheduler
 api.register(CalendarResource())
 api.register(PreorderResource())
+api.register(ExtPreorderResource())
 api.register(EventResource())
-api.register(PreorderedServiceResource())
 
 #interlayer
 api.register(ClientItemResource())

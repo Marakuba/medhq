@@ -404,47 +404,43 @@ Ext.calendar.DoctorScheduler = Ext.extend(Ext.Panel, {
 	        	
 	        		
 	        } else {
-	        	if(!this.timeslotWin){
-	        		this.timeslotWin = new Ext.calendar.TimeslotEditWindow({
-                    	calendarStore: this.calendarStore,
-						listeners: {
-							'eventadd': {
-								fn: function(win, rec){
-									win.hide();
-									rec.data.IsNew = false;
-									this.eventStore.add(rec);
-                        	        this.showMsg('Event '+ rec.data.Title +' was added');
-								},
-								scope: this
+	        	this.timeslotWin = new Ext.calendar.TimeslotEditWindow({
+	        		staff_id : this.staff_id,
+                   	calendarStore: this.calendarStore,
+					listeners: {
+						'eventadd': {
+							fn: function(win, rec){
+								win.hide();
+								rec.data.IsNew = false;
+								this.eventStore.add(rec);
+                       	        this.showMsg('Event '+ rec.data.Title +' was added');
 							},
-							'eventupdate': {
-								fn: function(win, rec){
-									win.hide();
-									//rec.commit();
-                        	        this.showMsg('Event '+ rec.data.Title +' was updated');
-								},
-								scope: this
+							scope: this
+						},
+						'eventupdate': {
+							fn: function(win, rec){
+								win.hide();
+                                this.showMsg('Event '+ rec.data.Title +' was updated');
 							},
-							'eventdelete': {
-								fn: function(win, rec){
-									this.eventStore.remove(rec);
-									win.hide();
-                        	        this.showMsg('Event '+ rec.data.Title +' was deleted');
-								},
-								scope: this
+							scope: this
+						},
+						'eventdelete': {
+							fn: function(win, rec){
+								this.eventStore.remove(rec);
+								win.hide();
+                        	    this.showMsg('Event '+ rec.data.Title +' was deleted');
 							},
-        	                'editdetails': {
-            	                fn: function(win, rec){
-                	                win.hide();
-                    	            App.calendarPanel.showEditForm(rec);
-                        	    }
-	                        }	
-						}
-        	        });
-        	        this.timeslotWin.show(rec, animateTarget);
-	        	} else {
-	        		this.timeslotWin.show(rec, animateTarget);
-	        	}
+							scope: this
+						},
+        	            'editdetails': {
+                            fn: function(win, rec){
+               	                win.hide();
+                   	            App.calendarPanel.showEditForm(rec);
+                       	    }
+	                    }	
+					}
+        	    });
+        	    this.timeslotWin.show(rec, animateTarget);
 	        } 
 		},
         

@@ -12,9 +12,11 @@ from mptt.models import MPTTModel
 from visit.models import BaseService
 from state.models import State
 from django.conf import settings
+from visit.models import Visit
 import exceptions
 
 from datetime import timedelta
+from service.models import ExtendedService
 
 add_introspection_rules([], ["^scheduler\.models\.CustomDateTimeField"])
 
@@ -141,15 +143,6 @@ class Preorder(models.Model):
     timeslot = models.OneToOneField(Event, blank = True, null = True)
     comment = models.TextField(u'Примечание', blank = True, null = True)
     expiration = CustomDateTimeField(u'Дата истечения', blank = True, null = True)
-    
-class PreorderedService(models.Model):
-    """
-    Набор услуг предзаказа
-    """
-    preorder = models.ForeignKey(Preorder)
-    created = models.DateTimeField(u'Создано', auto_now_add=True)
-    modified = models.DateTimeField(u'Изменено', auto_now=True)
-    service = models.ForeignKey(BaseService, verbose_name=u'Услуга')
-    count = models.IntegerField(u'Количество', default=1)
-    execution_place = models.ForeignKey(State, verbose_name=u'Место выполнения', 
-                                        default=settings.MAIN_STATE_ID)
+    visit = models.OneToOneField(Visit, null=True)
+    service = models.ForeignKey(ExtendedService, null=True)
+
