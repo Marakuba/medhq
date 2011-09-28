@@ -20,6 +20,7 @@ App.registry.PreorderGrid = Ext.extend(Ext.grid.GridPanel, {
 				    {name: 'price'},
 				    {name: 'staff'},
 				    {name: 'staff_name'},
+				    {name: 'execution_place'},
 				    {name: 'start', type: 'date',format:'c'}
 				]
 		});
@@ -46,7 +47,7 @@ App.registry.PreorderGrid = Ext.extend(Ext.grid.GridPanel, {
 		    	width: 35, 
 		    	sortable: true, 
 		    	dataIndex: 'start',
-		    	renderer:Ext.util.Format.dateRenderer('H:m / d.m.Y')
+		    	renderer:Ext.util.Format.dateRenderer('H:i / d.m.Y')
 		    }
 		];		
 		

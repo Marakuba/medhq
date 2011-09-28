@@ -148,9 +148,9 @@ class Preorder(models.Model):
     
     def get_position(self):
         staff = self.timeslot.cid
-        staff_name = Staff.objects.get(id=staff).short_name()
+        #staff_name = Staff.objects.get(id=staff).short_name()
         pos = self.service.staff.filter(staff=staff)[0]
-        return (pos.id,staff_name)
+        return (pos.id,pos.staff.short_name())
 
     class Meta:
         verbose_name = u'предзаказ'
