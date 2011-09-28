@@ -146,11 +146,9 @@ class Preorder(models.Model):
     visit = models.OneToOneField(Visit, null=True)
     service = models.ForeignKey(ExtendedService, null=True)
     
-    def get_position(self):
-        staff = self.timeslot.cid
-        #staff_name = Staff.objects.get(id=staff).short_name()
-        pos = self.service.staff.filter(staff=staff)[0]
-        return (pos.id,pos.staff.short_name())
+    def get_staff_name(self):
+        staff_name = Position.objects.get(id=self.timeslot.cid).staff.short_name()
+        return staff_name
 
     class Meta:
         verbose_name = u'предзаказ'
