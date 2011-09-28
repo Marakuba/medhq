@@ -44,7 +44,7 @@ App.visit.VisitForm = Ext.extend(Ext.FormPanel, {
     			idProperty:'resource_uri',
     			fields:['resource_uri','name','number','state_name','start_date','end_date']
     		}),
-		    displayField: 'name',
+		    displayField: 'name'
 //		    itemSelector: 'div.x-combo-list-item',
 //		    tpl:new Ext.XTemplate(
 //		    	'<tpl for="."><div class="x-combo-list-item">',
@@ -567,6 +567,36 @@ App.visit.VisitForm = Ext.extend(Ext.FormPanel, {
 	getSum : function() {
 		var sum = this.getForm().findField('total_sum_field').getValue();
 		return sum;
+	},
+	
+	onPreorderChoice : function(){
+		var preorderWindow;
+    	
+        var preorderGrid = new App.registry.PreorderGrid({
+       		scope:this,
+       		patient : this.patientRecord,
+       		fn:function(record){
+       			//this.serviceCombo.setValue(record.data.resource_uri)
+       			record.set('service',App.getApiUrl('baseservice',record.data.service))
+       			record.set('staff',App.getApiUrl('position',record.data.staff))
+       			record.set('execution_place',App.getApiUrl('state',record.data.execution_place))
+       			record.set('count',1)
+       			this.orderedService.store.add(record);
+				preorderWindow.close();
+			}
+       	 });
+        	
+       	preorderWindow = new Ext.Window ({
+       		width:700,
+			height:500,
+			layout:'fit',
+			title:'Предзаказы',
+			items:[preorderGrid],
+			modal:true,
+			border:false
+    	});
+    	preorderGrid.store.setBaseParam('patient',App.uriToId(this.patientRecord.data.resource_uri));
+       	preorderWindow.show();
 	}
 	
 });

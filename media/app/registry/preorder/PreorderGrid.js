@@ -1,54 +1,54 @@
-Ext.ns('App','App.preorder');
+Ext.ns('App','App.registry');
 
-App.preorder.PreorderGrid = Ext.extend(Ext.grid.GridPanel, {
+App.registry.PreorderGrid = Ext.extend(Ext.grid.GridPanel, {
 
 	initComponent : function() {
 		
 		this.store = new Ext.data.RESTStore({
-			autoLoad : true,
+			autoLoad : false,
+			autoSave : false,
 			apiUrl : get_api_url('extpreorder'),
 			model: [
-				    {name: 'id'},
+					{name: 'id'},
 				    {name: 'resource_uri'},
 				    {name: 'patient'},
+				    {name: 'patient_name'},
 				    {name: 'timeslot'},
 				    {name: 'comment'},
-				    {name: 'start'},
+				    {name: 'service'},
+				    {name: 'service_name'},
+				    {name: 'price'},
+				    {name: 'staff'},
+				    {name: 'staff_name'},
+				    {name: 'start', type: 'date',format:'c'}
 				]
 		});
 		
 		this.columns =  [
 		    {
-		    	header: "Фамилия", 
+		    	header: "Пациент", 
 		    	width: 45, 
 		    	sortable: true, 
-		    	dataIndex: 'last_name'
+		    	dataIndex: 'patient_name',
+		    	hide: this.patient ? true : false
 		    },{
-		    	header: "Имя", 
-		    	width: 45, 
+		    	header: "Услуга", 
+		    	width: 70, 
 		    	sortable: true, 
-		    	dataIndex: 'first_name'
+		    	dataIndex: 'service_name'
 		    },{
-		    	header: "Отчество", 
-		    	width: 45, 
+		    	header: "Цена", 
+		    	width: 70, 
 		    	sortable: true, 
-		    	dataIndex: 'mid_name'
+		    	dataIndex: 'price'
 		    },{
-		    	header: "Д.р.", 
+		    	header: "Время", 
 		    	width: 35, 
 		    	sortable: true, 
-		    	dataIndex: 'birth_day',
-		    	renderer:Ext.util.Format.dateRenderer('d.m.Y')
+		    	dataIndex: 'start',
+		    	renderer:Ext.util.Format.dateRenderer('H:m / d.m.Y')
 		    }
 		];		
-		
-		this.editButton = new Ext.Button({
-			iconCls:'silk-pencil',
-			text:'Изменить',
-			disabled:true,
-			handler:this.onPatientEdit.createDelegate(this),
-			scope:this
-		});
 		
 		this.choiceButton = new Ext.Button({
 			iconCls:'silk-accept',
@@ -69,24 +69,19 @@ App.preorder.PreorderGrid = Ext.extend(Ext.grid.GridPanel, {
 				singleSelect : true,
 				listeners: {
                     rowselect: function(sm, row, rec) {
-                    	this.fireEvent('patientselect', rec);
+                    	this.fireEvent('serviceselect', rec);
 //                        Ext.getCmp("patient-quick-form").getForm().loadRecord(rec);
                     	this.btnSetDisabled(false);
                     },
                     rowdeselect: function(sm, row, rec) {
-                    	this.fireEvent('patientdeselect', rec);
+                    	this.fireEvent('serviceselect', rec);
 //                        Ext.getCmp("patient-quick-form").getForm().reset();
                     	this.btnSetDisabled(true);
                     },
                     scope:this
                 }
 			}),
-			tbar:[this.choiceButton,{
-				xtype:'button',
-				iconCls:'silk-add',
-				text:'Новый пациент',
-				handler:this.onPatientAdd.createDelegate(this, [])
-			},this.editButton],
+			tbar:[this.choiceButton],
 	        bbar: new Ext.PagingToolbar({
 	            pageSize: 20,
 	            store: this.store,
@@ -105,89 +100,24 @@ App.preorder.PreorderGrid = Ext.extend(Ext.grid.GridPanel, {
 		}
 
 		Ext.apply(this, Ext.apply(this.initialConfig, config));
-		App.preorder.PreorderGrid.superclass.initComponent.apply(this, arguments);
+		App.registry.PreorderGrid.superclass.initComponent.apply(this, arguments);
 		App.eventManager.on('globalsearch', this.onGlobalSearch, this);
 //		App.eventManager.on('patientwrite', this.onPatientWrite, this);
-		this.on('patientselect', this.onPatientSelect, this);
+		this.on('serviceselect', this.onServiceSelect, this);
+		this.on('afterrender', function(){this.store.load()}, this);
 		//this.store.on('write', this.onStoreWrite, this);
 	},
 	
 	btnSetDisabled: function(status) {
-        this.editButton.setDisabled(status);
         this.choiceButton.setDisabled(status);
 	},
 	
-	onPatientSelect: function(){
+	onServiceSelect: function(){
 //		this.btnSetDisable(false);
 	},
 	
 	getSelected: function() {
 		return this.getSelectionModel().getSelected()
-	},
-	
-	getAbsoluteUrl: function(id) {
-		return "/admin/patient/patient/"+id+"/";
-	},
-	
-	goToSlug: function(slug) {
-		var s = this.getSelected().data.id;
-		var url = this.getAbsoluteUrl(s)+slug+"/";
-		window.open(url);
-	},
-	
-	onGlobalSearch: function(v){
-		var s = this.store;
-		s.baseParams = { format:'json' };
-		vi = parseInt(v);
-		if (!isNaN(vi)){
-			s.setBaseParam('visit_id', vi);
-		} else {
-			s.setBaseParam('last_name__istartswith', v);
-		}
-		s.load();
-	},
-	
-	onPatientAdd: function() {
-		this.win = new App.patient.PatientWindow({
-			//store:this.store,
-			scope:this,
-			fn:function(record){
-				Ext.callback(this.fn, this.scope || window, [record]);
-//				this.store.insertRecord(record);
-			}
-		});
-		this.win.show();
-		this.win.on('savecomplete', function(){
-			this.win.close();
-		},this);
-	},
-	
-	onPatientEdit: function() {
-		var record = this.getSelected();
-		if(record) {
-    		this.win = new App.patient.PatientWindow({
-    			record:record,
-    			store:this.store,
-    			scope:this,
-    			fn:function(record){
-    			}
-    		});
-    		this.win.show();
-    		this.win.on('savecomplete', function(){
-    			this.win.close();
-    		},this);
-		}	
-	},
-	
-	onStoreWrite: function(store, action, result, res, rs) {
-		if( res.success && this.win ) {
-			store.filter('id',rs.data.id);
-			this.getSelectionModel().selectFirstRow();
-			this.fireEvent('patientselect',rs);
-		}
-//		if(action=='create') {
-//			App.eventManager.fireEvent('patientcreate',rs);
-//		}
 	},
 	
 	onChoice: function() {
@@ -201,4 +131,4 @@ App.preorder.PreorderGrid = Ext.extend(Ext.grid.GridPanel, {
 
 
 
-Ext.reg('preordergrid', App.preorder.PreorderGrid);
+Ext.reg('preordergrid', App.registry.PreorderGrid);

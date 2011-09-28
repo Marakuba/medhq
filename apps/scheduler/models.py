@@ -145,6 +145,12 @@ class Preorder(models.Model):
     expiration = CustomDateTimeField(u'Дата истечения', blank = True, null = True)
     visit = models.OneToOneField(Visit, null=True)
     service = models.ForeignKey(ExtendedService, null=True)
+    
+    def get_position(self):
+        staff = self.timeslot.cid
+        staff_name = Staff.objects.get(id=staff).short_name()
+        pos = self.service.staff.filter(staff=staff)[0]
+        return (pos.id,staff_name)
 
     class Meta:
         verbose_name = u'предзаказ'

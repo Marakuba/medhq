@@ -10,7 +10,7 @@ App.MEDIA_URL = MEDIA_URL || '/media/';
 /*
  * API_URL
  */
-App.API_URL = '/api';
+App.API_URL = '/api/v1/dashboard';
 
 /*
  * Generates api url

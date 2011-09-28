@@ -1158,11 +1158,20 @@ class ExtPreorderResource(ExtResource):
     patient = fields.ForeignKey(PatientResource, 'patient', null=True)
     timeslot = fields.OneToOneField('apps.api.registry.EventResource','timeslot', null=True)
     visit = fields.OneToOneField(VisitResource,'visit',null=True)
+    service = fields.ForeignKey(ExtendedServiceResource, 'service', null=True)
     
     def dehydrate(self, bundle):
         obj = bundle.obj
+        if obj.service:
+            staff_id,staff_name = obj.get_position()
+        bundle.data['service_name'] = obj.service and obj.service.base_service.name
+        bundle.data['patient_name'] = obj.patient.full_name()
+        bundle.data['execution_place'] = obj.service and obj.service.state.id
+        bundle.data['staff'] = obj.service and staff_id
+        bundle.data['staff_name'] = obj.service and staff_name
+        bundle.data['price'] = obj.service and obj.service.get_actual_price()
         bundle.data['start'] = obj.timeslot.start
-        bundle.data['staff'] = obj.timeslot.staff
+        bundle.data['service'] = obj.service and obj.service.base_service.id
         return bundle
     
     class Meta:
@@ -1171,6 +1180,7 @@ class ExtPreorderResource(ExtResource):
         authorization = DjangoAuthorization()
         filtering = {
             'patient':ALL,
+            'start':ALL,
             'timeslot':ALL,
         }
         

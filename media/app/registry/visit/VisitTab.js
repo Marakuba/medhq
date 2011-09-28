@@ -85,7 +85,15 @@ App.visit.VisitTab = Ext.extend(Ext.Panel, {
 //			    split: true,
 				//baseCls:'x-border-layout-ct',
 			},
-			tbar:[this.getPatientTitle(),'->',{
+			tbar:[this.getPatientTitle(),
+			      {
+					xtype:'button',
+					iconCls:'silk-accept',
+					text:'Выбрать предзаказ',
+					handler: this.form.onPreorderChoice.createDelegate(this.form,[]),
+					scope:this
+			      },
+			      '->',{
         		text:'Закрыть',
 				handler:this.onClose.createDelegate(this,[])
 			},this.saveButton,this.payButton],
