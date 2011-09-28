@@ -30,6 +30,7 @@ App.models.LabOrder = new Ext.data.Record.create([
 	{name: 'visit_created', type:'date',format:'c'},
 	{name: 'executed', type:'date',format:'c'},
 	{name: 'visit'},
+	{name: 'visit_is_cito', type:'boolean'},
 	{name: 'barcode'},
 	{name: 'laboratory'},
 	{name: 'laboratory_name'},

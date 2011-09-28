@@ -31,6 +31,7 @@ App.visit.VisitGrid = Ext.extend(Ext.grid.GridPanel, {
 		    {name: 'operator_name', allowBlank: false},
 		    {name: 'patient_name', allowBlank: false},
 		    {name: 'is_billed', allowBlank: false, type:'boolean'},
+		    {name: 'is_cito', allowBlank: true, type:'boolean'},
 		    {name: 'referral_name', allowBlank: false}
 		]);
 		

@@ -155,7 +155,8 @@ def get_service_tree(request):
                 node = {
                     "id":'%s-%s' % (obj.base_service.id,obj.execution_place.id),
                     "text":"%s [%s]" % (obj.base_service.short_name or obj.base_service.name, price),
-                    "price":price
+                    "price":price,
+                    "c":obj.count or 1
                 }
                 staff_all = es.staff.all()
                 if staff_all.count():

@@ -347,6 +347,7 @@ class LabOrderResource(ExtResource):
         bundle.data['laboratory_name'] = laborder.laboratory
         if laborder.visit:
             bundle.data['visit_created'] = laborder.visit.created
+            bundle.data['visit_is_cito'] = laborder.visit.is_cito
             bundle.data['visit_id'] = laborder.visit.id
             bundle.data['barcode'] = laborder.visit.barcode.id
             bundle.data['patient_name'] = laborder.visit.patient.full_name()
@@ -472,6 +473,7 @@ class PositionResource(ModelResource):
     def dehydrate(self, bundle):
         bundle.data['text'] = bundle.obj.__unicode__()
         bundle.data['name'] = bundle.obj.__unicode__()
+        bundle.data['title'] = bundle.obj.staff.short_name()
         return bundle
     
     class Meta:

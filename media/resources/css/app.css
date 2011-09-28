@@ -133,3 +133,18 @@
 .x-equipment-task-wait {
 	background-color: #FCF4BD;
 }
+
+.x-grid3-col-order b,.x-grid3-col-staff b {
+	display:block;
+}
+
+.x-grid3-col-laboratory b {
+	font-weight:normal;
+	display:block;
+}
+
+.x-grid3-col-laboratory span {
+	color:red;
+	font-weight: bold;
+	text-align: right;
+}

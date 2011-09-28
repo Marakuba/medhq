@@ -6,16 +6,16 @@ App.laboratory.LabBoard = Ext.extend(Ext.Panel, {
 	initComponent: function() {
 		this.LabOrderGrid = new App.laboratory.LabOrderGrid({
 			id:'lab-order-grid',
-			region:'center'
+			region:'west',
+			split:true,
+			width:510,
 		});
 		this.ResultGrid = new App.result.ResultGrid({
 			id:'lab-result-grid',
 			closable:false
 		});
 		this.ResultCard = new Ext.Panel({
-			region:'east',
-			split:true,
-			width:510,
+			region:'center',
 			border:false,
 			title:'Результаты',
 			layout:'fit',
@@ -41,12 +41,24 @@ App.laboratory.LabBoard = Ext.extend(Ext.Panel, {
 		}
 		Ext.apply(this, Ext.apply(this.initialConfig, config));
 		App.laboratory.LabBoard.superclass.initComponent.apply(this, arguments);
+		App.eventManager.on('globalsearch', this.onGlobalSearch, this);
 		
 		this.LabOrderGrid.getSelectionModel().on('rowselect', function(sm,i,rec){
+			this.ResultCard.enable();
 			this.ResultCard.setTitle(String.format('Результаты: {0}', rec.data.patient_name));
 			this.ResultGrid.setActiveRecord(rec);
 		}, this);
-	}
+		
+		this.LabOrderGrid.on('updatefilters', function(){
+			this.ResultCard.disable();
+		}, this);
+	},
+
+	onGlobalSearch: function(v) {
+		this.ResultCard.disable();
+	},
+	
+
 	
 });
 

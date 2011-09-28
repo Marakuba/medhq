@@ -14,6 +14,7 @@ class PromotionItemAdmin(admin.TabularInline):
 class PromotionAdmin(admin.ModelAdmin):
     """
     """    
+    save_as = True
     inlines = [PromotionItemAdmin]
     
 admin.site.register(Promotion, PromotionAdmin)

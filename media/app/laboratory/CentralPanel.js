@@ -36,11 +36,12 @@ App.CentralPanel = Ext.extend(Ext.Panel, {
                     },
                     scope:this
                 },{
-                    text: 'Тесты',
+                    text: 'Реестр тестов',
                     scale:'medium',
                     iconAlign: 'top',
                     handler: function(){
-                    	this.launchApp('labtestgrid');
+                    	var win = new App.laboratory.RegisterWindow({});
+                    	win.show(this.getEl());
                     },
                     scope:this
                 }]

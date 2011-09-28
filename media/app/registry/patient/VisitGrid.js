@@ -31,6 +31,7 @@ App.patient.VisitGrid = Ext.extend(Ext.grid.GridPanel, {
 				    {name: 'menopause'},
 				    {name: 'diagnosis'},
 				    {name: 'is_billed', type:'boolean'},
+				    {name: 'is_cito', allowBlank: true, type:'boolean'},
 				    {name: 'referral_name'},
 				    {name: 'office_name'}
 				],

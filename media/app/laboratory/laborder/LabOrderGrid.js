@@ -20,32 +20,49 @@ App.laboratory.LabOrderGrid = Ext.extend(Ext.grid.GridPanel, {
   		];
 		   		
 		this.columns =  [{
+				id: 'order',
 		    	header: "Заказ", 
-		    	width: 6, 
+		    	width: 9, 
 		    	sortable: true, 
-		    	dataIndex: 'barcode'
+		    	dataIndex: 'barcode',
+		    	renderer:function(v,opts,rec) {
+		    		return String.format("<div><b>{0}</b><span>{1}</span></div>", 
+		    				v, Ext.util.Format.date(rec.data.visit_created,'d.m.y')) 
+		    	}
 		    },{
 		    	header: "Дата", 
 		    	width: 10, 
 		    	sortable: true, 
+		    	hidden:true,
 		    	dataIndex: 'visit_created',
 		    	renderer:Ext.util.Format.dateRenderer('d.m.Y')
 		    },{
 		    	header: "Пациент", 
-		    	width: 40, 
+		    	width: 38, 
 		    	sortable: true, 
 		    	dataIndex: 'patient_name'
 		    },{
+		    	id:'laboratory',
 		    	header: "Лаборатория", 
-		    	width: 15,
-		    	dataIndex: 'laboratory_name'
+		    	width: 18,
+		    	dataIndex: 'laboratory_name',
+		    	renderer:function(v,opts,rec) {
+		    		return String.format("<div><b>{0}</b><span>{1}</span></div>", 
+		    				v, rec.data.visit_is_cito ? 'cito' : '') 
+		    	}
 		    },{
-		    	header: "Врач", 
-		    	width: 15,
-		    	dataIndex: 'staff_name'
+		    	id:'staff',
+		    	header: "Выполнено", 
+		    	width: 16,
+		    	dataIndex: 'staff_name',
+		    	renderer:function(v,opts,rec) {
+		    		return String.format("<div><b>{0}</b><span>{1}</span></div>", 
+		    				v, Ext.util.Format.date(rec.data.executed,'d.m.y')) 
+		    	}
 		    },{
 		    	header: "Выполнено", 
 		    	width: 11, 
+		    	hidden:true,
 		    	sortable: true, 
 		    	dataIndex: 'executed',
 		    	renderer:Ext.util.Format.dateRenderer('d.m.Y H:i')
@@ -141,7 +158,7 @@ App.laboratory.LabOrderGrid = Ext.extend(Ext.grid.GridPanel, {
 	            pageSize: 100,
 	            store: this.store,
 	            displayInfo: true,
-	            displayMsg: 'Показана запись {0} - {1} из {2}',
+	            displayMsg: '{0} - {1} | {2}',
 	            emptyMsg: "Нет записей",
 	            items:['-',this.filterText]
 	        }),
@@ -166,14 +183,17 @@ App.laboratory.LabOrderGrid = Ext.extend(Ext.grid.GridPanel, {
 	},
 	
 	updateFilters : function(filters) {
-		Ext.each(this.fields, function(field){
-			if(filters[field[0]]) {
-				this.storeFilter(field[1], filters[field[0]][0], false);
-			} else {
-				delete this.store.baseParams[field[1]];
-			}
-		}, this);
-		this.updateFilterStatus(filters);
+		this.fireEvent('updatefilters');
+		if(filters) {
+			Ext.each(this.fields, function(field){
+				if(filters[field[0]]) {
+					this.storeFilter(field[1], filters[field[0]][0], false);
+				} else {
+					delete this.store.baseParams[field[1]];
+				}
+			}, this);
+			this.updateFilterStatus(filters);
+		}
 		this.store.load();
 	},
 	

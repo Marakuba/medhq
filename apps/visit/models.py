@@ -127,6 +127,7 @@ class Visit(make_operator_object('visit')):
                                      max_digits=10, decimal_places=2, 
                                      default=0, null=True, blank=True)
     is_billed = models.BooleanField(u'Проведен', default=False)
+    is_cito = models.BooleanField(u'Cito', default=False)
     comment = models.TextField(u'Дополнительная информация, комментарии',
                                null=True, blank=True)
     
