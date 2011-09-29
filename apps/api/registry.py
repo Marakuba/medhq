@@ -1179,7 +1179,7 @@ class ExtPreorderResource(ExtResource):
         filtering = {
             'patient':ALL,
             'start':ALL,
-            'timeslot':ALL,
+            'timeslot':ALL_WITH_RELATIONS,
         }
         
 class EventResource(ExtResource):

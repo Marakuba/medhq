@@ -98,7 +98,11 @@ App.calendar.PatientGrid = Ext.extend(Ext.grid.GridPanel, {
 				iconCls:'silk-add',
 				text:'Новый пациент',
 				handler:this.onPatientAdd.createDelegate(this, [])
-			},this.editButton],
+			},this.editButton,
+			{
+				xtype:'gsearchfield',
+				stripCharsRe:new RegExp('[\;\?]')
+			}],
 	        bbar: new Ext.PagingToolbar({
 	            pageSize: 20,
 	            store: this.store,
@@ -119,6 +123,9 @@ App.calendar.PatientGrid = Ext.extend(Ext.grid.GridPanel, {
 		Ext.apply(this, Ext.apply(this.initialConfig, config));
 		App.calendar.PatientGrid.superclass.initComponent.apply(this, arguments);
 		App.eventManager.on('globalsearch', this.onGlobalSearch, this);
+		this.on('destroy', function(){
+			App.eventManager.un('globalsearch', this.onGlobalSearch, this);
+		},this);
 //		App.eventManager.on('patientwrite', this.onPatientWrite, this);
 		this.on('patientselect', this.onPatientSelect, this);
 		//this.store.on('write', this.onStoreWrite, this);
@@ -151,9 +158,7 @@ App.calendar.PatientGrid = Ext.extend(Ext.grid.GridPanel, {
 		var s = this.store;
 		s.baseParams = { format:'json' };
 		vi = parseInt(v);
-		if (!isNaN(vi)){
-			s.setBaseParam('visit_id', vi);
-		} else {
+		if (isNaN(vi)){
 			s.setBaseParam('last_name__istartswith', v);
 		}
 		s.load();

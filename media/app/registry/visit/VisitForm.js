@@ -576,12 +576,17 @@ App.visit.VisitForm = Ext.extend(Ext.FormPanel, {
        		scope:this,
        		patient : this.patientRecord,
        		fn:function(record){
-       			//this.serviceCombo.setValue(record.data.resource_uri)
-       			record.set('service',App.getApiUrl('baseservice',record.data.service))
-       			record.set('staff',App.getApiUrl('position',record.data.staff))
-       			record.set('execution_place',App.getApiUrl('state',record.data.execution_place))
-       			record.set('count',1)
-       			this.orderedService.store.add(record);
+       			var p = new this.orderedService.store.recordType()
+//       			Ext.apply(p,record);
+       			p.set('price',record.data.price);
+       			p.set('staff_name',record.data.staff_name);
+       			p.set('service_name',record.data.service_name);
+       			p.set('service',App.getApiUrl('baseservice',record.data.service));
+       			p.set('staff',App.getApiUrl('position',record.data.staff));
+       			p.set('execution_place',App.getApiUrl('state',record.data.execution_place));
+       			p.set('count',1);
+       			p.data['id'] = '';
+       			this.orderedService.store.add(p);
 				preorderWindow.close();
 			}
        	 });
@@ -595,6 +600,8 @@ App.visit.VisitForm = Ext.extend(Ext.FormPanel, {
 			modal:true,
 			border:false
     	});
+    	var today = new Date();
+    	preorderGrid.store.setBaseParam('timeslot__start__gte',today.format('Y-m-d 00:00'));
     	preorderGrid.store.setBaseParam('patient',App.uriToId(this.patientRecord.data.resource_uri));
        	preorderWindow.show();
 	}
