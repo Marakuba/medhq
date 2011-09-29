@@ -45,6 +45,16 @@ Ext.calendar.TimeslotEditWindow = Ext.extend(Ext.Window, {
 				]
 		});
 		
+		this.patientStore = new Ext.data.RESTStore({
+			autoLoad : false,
+			apiUrl : get_api_url('patient'),
+			model: [
+				    {name: 'resource_uri'},
+				    {name: 'short_name'},
+				    {name: 'full_name'}
+				]
+		});
+		
 //		this.inlines.add('preorderedservice', this.preorderedService);
 		
 		/*this.servicePanel = new App.visit.VisitServicePanel({
@@ -63,6 +73,21 @@ Ext.calendar.TimeslotEditWindow = Ext.extend(Ext.Window, {
         	store:this.serviceStore,
 		    displayField: 'service_name'
 		});
+		
+		this.patientCombo = new Ext.form.LazyComboBox({
+        	fieldLabel:'Пациент',
+			anchor:'98%',
+        	store:this.patientStore,
+		    displayField: 'full_name',
+		    queryParam:'last_name__istartswith',
+		    listeners:{
+		    	'select':function(combo,record,index){
+		    		this.formPanel.form.findField('Title').setValue(record.data.short_name);
+		    		this.serviceCombo.enable();
+		    	},
+		    	scope:this
+		    }
+		});
 	    
 		this.titleField = new Ext.form.TextField({
 			name: Ext.calendar.EventMappings.Title.name,
@@ -80,7 +105,11 @@ Ext.calendar.TimeslotEditWindow = Ext.extend(Ext.Window, {
 	    	defaults:{
 	    		anchor:'100%'
 	    	},
-	    	items:[this.titleField,{
+	    	items:[
+    	{
+    	   xtype: 'hidden',
+           name: 'Title'
+    	},{
         	xtype: 'hidden',
          	name: 'StartDate'
 	    },{
@@ -96,6 +125,7 @@ Ext.calendar.TimeslotEditWindow = Ext.extend(Ext.Window, {
     		xtype: 'hidden',
         	name: 'Preorder'
 	    },
+	    this.patientCombo,
 	    this.serviceCombo,
 	    {
     		xtype: 'textarea',
@@ -490,7 +520,8 @@ Ext.calendar.TimeslotEditWindow = Ext.extend(Ext.Window, {
 			this.preorder = records[0];
 			this.clearButton.setDisabled(false);
 			this.serviceButton.setDisabled(false);
-			this.serviceCombo.setValue(this.preorder.data.service); 
+			this.serviceCombo.setValue(this.preorder.data.service);
+			this.patientCombo.setValue(this.preorder.data.patient);
 			this.formPanel.form.findField('comment').setValue(this.preorder.data.comment);
             this.serviceCombo.enable();
 		} else {
@@ -564,7 +595,8 @@ Ext.calendar.TimeslotEditWindow = Ext.extend(Ext.Window, {
        		scope:this,
        		fn:function(record){
        			var name = record.data.last_name+' '+record.data.first_name;
-       			this.formPanel.form.findField('Title').setValue(name)
+       			this.formPanel.form.findField('Title').setValue(record.data.short_name);
+       			this.patientCombo.setValue(record.data.resource_uri);
        			this.patient = record;
        			this.serviceCombo.enable();
        			this.serviceButton.setDisabled(false);

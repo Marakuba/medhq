@@ -91,6 +91,7 @@ class PatientResource(ExtResource):
     def dehydrate(self, bundle):
         bundle.data['discount_name'] = bundle.obj.discount and bundle.obj.discount or u'0%'
         bundle.data['full_name'] = bundle.obj.full_name()
+        bundle.data['short_name'] = bundle.obj.short_name()
         return bundle
 
     def obj_create(self, bundle, request=None, **kwargs):

@@ -12,6 +12,7 @@ App.calendar.PatientGrid = Ext.extend(Ext.grid.GridPanel, {
 				    {name: 'resource_uri'},
 				    {name: 'first_name', allowBlank: false},
 				    {name: 'mid_name'},
+				    {name: 'short_name'},
 				    {name: 'last_name', allowBlank: false},
 				    {name: 'gender', allowBlank: false},
 				    {name: 'mobile_phone'},
