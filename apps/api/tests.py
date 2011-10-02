@@ -5,6 +5,7 @@
 
 from django.utils import unittest
 from django.test.client import Client
+import datetime
 
 class ApiTest(unittest.TestCase):
     
@@ -23,10 +24,40 @@ class ApiTest(unittest.TestCase):
         response = client.get('/api/v1/dashboard/clientitem')
         self.assertEqual(response.status_code, 200)
     
-    def test_patient(self):
+    def test_patient_read(self):
         client = Client()
         response = client.get('/api/v1/dashboard/patient')
         self.assertEqual(response.status_code, 200)
+    
+#    def test_patient_create(self):
+#        client = Client()
+#        
+#        LAST_NAME = u'Смит'
+#        FIRST_NAME = u'Джон'
+#        MID_NAME = u'К'
+#        BIRTH_DAY = datetime.date.today().strftime('%Y-%m-%dT%H:%m:%s')
+#        GENDER = u'М'
+#        MOBILE_PHONE = '112'
+#        EMAIL = u'john.k.smith@medhq.ru'
+#        INITIAL_ACCOUNT = 100
+#        HOME_ADDRESS_STREET = u'Цветочный бульвар, 15'
+#        
+#        data = {
+#            'format':'json',
+#            'objects':{
+#                'last_name':LAST_NAME,
+#                'first_name':FIRST_NAME,
+#                'mid_name':MID_NAME,
+#                'birth_day':BIRTH_DAY,
+#                'gender':GENDER,
+#                'mobile_phone':MOBILE_PHONE,
+#                'email':EMAIL,
+#                'initial_account':INITIAL_ACCOUNT,
+#                'home_address_street':HOME_ADDRESS_STREET
+#            }
+#        }
+#        response = client.post('/api/v1/dashboard/patient')
+#        self.assertEqual(response.status_code, 200)
     
     def test_debtor(self):
         client = Client()
