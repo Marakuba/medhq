@@ -10,6 +10,63 @@ from visit.models import OrderedService
 from state.models import State
 from annoying.decorators import render_to
 from django.db.models.aggregates import Count
+from collections import defaultdict
+import operator
+
+@render_to('print/lab/register.html')
+def print_register(request):
+    allowed_lookups = {
+        'visit__created__gte':u'Дата с',
+        'visit__created__lte':u'Дата по',
+        'laboratory':u'Лаборатория',
+        'visit__patient':u'Пациент',
+        'visit__is_cito':u'cito'
+    }
+    lookups = {}
+    
+    for k,v in request.GET.iteritems():
+        if k in allowed_lookups:
+            lookups['order__%s' % k] = v
+
+    status = request.GET.get('is_completed', None)
+    if status:
+        if status in ['0','1']:
+            lookups['order__is_completed'] = bool(int(status))
+    
+    results = Result.objects.filter(**lookups) \
+        .order_by('analysis__service__name',
+                  'order__visit__created',
+                  'order__visit__patient__last_name') \
+        .values('analysis__service__name',
+                'order__visit__created',
+                'order__visit__barcode__id',
+                'order__is_completed',
+                'order__visit__patient__last_name',
+                'order__visit__patient__first_name',
+                'order__visit__patient__mid_name') \
+        .annotate(count=Count('analysis__service__name'))
+
+        
+    r = defaultdict(list)
+    for result in results:
+        r[result['analysis__service__name']].append([ u'%s %s %s' % (result['order__visit__patient__last_name'],\
+                                                                     result['order__visit__patient__first_name'],\
+                                                                     result['order__visit__patient__mid_name'],\
+                                                                     ), 
+                                                     result['order__visit__created'].strftime("%d.%m.%Y"),\
+                                                     result['order__is_completed'] ])
+    result_list = []
+    for k in sorted(r.keys()):
+        tmp_list = sorted(r[k], key=operator.itemgetter(0))
+        last = tmp_list[-1]
+        for i in range(len(tmp_list)-2, -1, -1):
+            if last[0] == tmp_list[i][0]:
+                del tmp_list[i]
+            else:
+                last = tmp_list[i]
+        result_list.append( [ k, tmp_list ] )
+    return {'result_list':result_list}
+
 
 def print_results(request, order):
     result_qs = Result.objects.filter(order=order, to_print=True).order_by('analysis__service__%s' % BaseService._meta.tree_id_attr, 
@@ -85,14 +142,21 @@ def revert_results(request):
         
         if lab_order:
             lab_order = get_object_or_404(LabOrder, id=lab_order)
-            ordered_services = lab_order.visit.orderedservice_set.all()
+            ordered_services = lab_order.visit.orderedservice_set.filter(execution_place=lab_order.laboratory)
             for ordered_service in ordered_services:
                 for item in ordered_service.service.analysis_set.all():
                     result, created = Result.objects.get_or_create(order=lab_order,
                                                                    analysis=item, 
                                                                    sample=ordered_service.sampling)
+            for result in lab_order.result_set.all():
+                if not result.is_completed():
+                    lab_order.is_completed = False
+                    break
+            lab_order.save()
+
             return HttpResponse(simplejson.dumps({
                                                     'success':True,
+                                                    'status':lab_order.is_completed,
                                                     'message':u'Исследования были восстановлены'
                                                 }), mimetype='application/json')
     return HttpResponseBadRequest()

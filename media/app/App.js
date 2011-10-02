@@ -1,6 +1,7 @@
 Ext.ns('App');
 Ext.ns('Ext');
 
+
 /*
  * MEDIA_URL passing from server
  */

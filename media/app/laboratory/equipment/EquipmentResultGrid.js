@@ -9,21 +9,30 @@ App.equipment.EquipmentResultGrid = Ext.extend(Ext.grid.GridPanel, {
 		this.store = this.backend.store;
 		
 		this.columns =  [{
-		    	header: "Заказ", 
-		    	width: 10,
-		    	dataIndex: 'order'
-		    }, {
-		    	header: "Исследование", 
-		    	width: 10,
-		    	dataIndex: 'assay'
-		    }, {
-		    	header: "Результат", 
-		    	width: 20,
-		    	dataIndex: 'result'
-		    }, {
-		    	header: "Ед.изм.", 
-		    	width: 20,
-		    	dataIndex: 'measurement'
+	    	header: "Получено", 
+	    	width: 10,
+	    	dataIndex: 'created',
+	    	renderer: Ext.util.Format.dateRenderer('d.m.Y')
+	    },{
+	    	header: "Анализатор", 
+	    	width: 10,
+	    	dataIndex: 'equipment_name'
+	    },{
+	    	header: "Заказ", 
+	    	width: 10,
+	    	dataIndex: 'order'
+	    }, {
+	    	header: "Исследование", 
+	    	width: 10,
+	    	dataIndex: 'assay'
+	    }, {
+	    	header: "Результат", 
+	    	width: 20,
+	    	dataIndex: 'result'
+	    }, {
+	    	header: "Ед.изм.", 
+	    	width: 20,
+	    	dataIndex: 'measurement'
 		}];		
 		
 		var config = {

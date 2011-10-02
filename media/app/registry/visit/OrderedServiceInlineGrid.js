@@ -248,7 +248,7 @@ App.visit.OrderedServiceInlineGrid = Ext.extend(Ext.grid.EditorGridPanel, {
 			price:attrs.price,
 			staff:attrs.staff_id ? "/api/v1/dashboard/staff/"+attrs.staff_id : null,
 			staff_name:attrs.staff_name || '',
-			count:1,
+			count:attrs.c || 1,
 			execution_place:"/api/v1/dashboard/state/"+place  //TODO: replace to App.getApiUrl
 		});
 		this.store.add(s);

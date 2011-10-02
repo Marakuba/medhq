@@ -1,0 +1,68 @@
+{% extends "print.html" %}
+
+{% load flatblock_tags %}
+
+{% block title %}Реестр исследований{% endblock %}
+
+
+{% block body %}
+
+<style>
+	h1 {
+		font-size:18pt;
+		padding:6pt 0;
+	}
+	
+	table {
+	}
+	
+	td, th {
+		border:1px solid gray;
+		padding:1px;
+	}
+	th {
+		background-color:#DDD;
+		vertical-align: middle;
+	}
+	td.analysis {
+		border:none;
+		padding:5px 1px 3px 1px;
+		font-weight: bold;
+		font-size: 13pt;
+	}
+	td.num {
+		width:1cm;
+	}
+	td.date {
+		width:2cm;
+		text-align: center;
+	}
+	tr.complete {
+		background-color: #D3FFC7;
+	}
+</style>
+
+<h1>Реестр исследований</h1>
+
+<table>
+	<tr>
+		<th>№ п/п</th>
+		<th>Исследование / Пациент</th>
+		<th>Дата</th>
+	</tr>
+	{% for result in result_list %}
+	<tr>
+		<td colspan="3" class="analysis">{{ result.0 }}</td>
+	</tr>
+		{% for row in result.1 %}
+		<tr{% if row.2 %} class="complete"{% endif %}>
+			<td class="num">{{ forloop.counter }}</td>
+			<td>{{ row.0 }}</td>
+			<td class="date">{{ row.1 }}</td>
+		</tr>
+		{% endfor %}
+	{% endfor %}
+
+</table>
+
+{% endblock %}

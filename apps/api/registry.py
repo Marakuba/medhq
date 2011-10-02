@@ -347,6 +347,7 @@ class LabOrderResource(ExtResource):
         bundle.data['laboratory_name'] = laborder.laboratory
         if laborder.visit:
             bundle.data['visit_created'] = laborder.visit.created
+            bundle.data['visit_is_cito'] = laborder.visit.is_cito
             bundle.data['visit_id'] = laborder.visit.id
             bundle.data['barcode'] = laborder.visit.barcode.id
             bundle.data['patient_name'] = laborder.visit.patient.full_name()
@@ -472,6 +473,7 @@ class PositionResource(ModelResource):
     def dehydrate(self, bundle):
         bundle.data['text'] = bundle.obj.__unicode__()
         bundle.data['name'] = bundle.obj.__unicode__()
+        bundle.data['title'] = bundle.obj.staff.short_name()
         return bundle
     
     class Meta:
@@ -1090,6 +1092,7 @@ class EquipmentTaskResource(ExtResource):
     ordered_service = fields.ForeignKey(OrderedServiceResource, 'ordered_service')
     
     def dehydrate(self, bundle):
+        bundle.data['status_name'] = bundle.obj.get_status_display()
         bundle.data['equipment_name'] = bundle.obj.equipment_assay.equipment
         bundle.data['service_name'] = bundle.obj.ordered_service.service
         bundle.data['patient_name'] = bundle.obj.ordered_service.order.patient
@@ -1107,7 +1110,11 @@ class EquipmentTaskResource(ExtResource):
 
 
 class EquipmentResultResource(ExtResource):
-    
+
+    def dehydrate(self, bundle):
+        bundle.data['equipment_name'] = bundle.obj.equipment
+        return bundle
+        
     class Meta:
         queryset = EquipmentResult.objects.all()
         resource_name = 'equipmentresult'

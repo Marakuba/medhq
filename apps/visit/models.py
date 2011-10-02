@@ -17,7 +17,7 @@ from pricelist.models import Discount
 from django.db.models.aggregates import Sum
 from numeration.models import Barcode  #, generate_numerator
 from django.db.models.signals import post_save, post_delete
-from lab.models import Sampling, LabOrder, Result
+from lab.models import Sampling, LabOrder, Result, EquipmentTask
 import logging
 from django.utils.encoding import smart_unicode
 from visit.settings import CANCEL_STATUSES
@@ -127,6 +127,7 @@ class Visit(make_operator_object('visit')):
                                      max_digits=10, decimal_places=2, 
                                      default=0, null=True, blank=True)
     is_billed = models.BooleanField(u'Проведен', default=False)
+    is_cito = models.BooleanField(u'Cito', default=False)
     comment = models.TextField(u'Дополнительная информация, комментарии',
                                null=True, blank=True)
     
@@ -315,6 +316,13 @@ class OrderedService(make_operator_object('ordered_service')):
             if sampling:
                 self.sampling = sampling
                 self.save()
+            
+            ### Generating AssayTask
+            
+            assays = s.equipmentassay_set.filter(is_active=True)
+            print "assays", assays
+            for assay in assays:
+                EquipmentTask.objects.create(equipment_assay=assay, ordered_service=self)
                 
     def get_absolute_url(self):
         return u"/admin/visit/orderedservice/%s/" % self.id

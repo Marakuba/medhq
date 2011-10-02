@@ -101,7 +101,7 @@ App.result.ResultGrid = Ext.extend(Ext.grid.EditorGridPanel, {
 		    			icon = "yes.gif";
 		    		};
 		    		return String.format("<img src='{0}resources/images/icon-{1}'>", MEDIA_URL, icon);
-		    	},
+		    	}
 //		    	editor: this.statusCmb
 			},{
 		    	header: "Исследование",
@@ -152,16 +152,25 @@ App.result.ResultGrid = Ext.extend(Ext.grid.EditorGridPanel, {
 		
 		this.staffField = new Ext.form.LazyComboBox({
 			emptyText:'врач',
-			proxyUrl:get_api_url('position'),
-//			displayField:'title',
+			store: new Ext.data.JsonStore({
+				autoLoad:false,
+				proxy: new Ext.data.HttpProxy({
+					url:get_api_url('position'),
+					method:'GET'
+				}),
+				root:'objects',
+				idProperty:'resource_uri',
+				fields:['resource_uri','name','title']
+			}),
+			displayField:'title',
 			width:120
 		});
 		
 		this.printBtn = new Ext.Button({
 			iconCls:'silk-printer',
-			disabled:true,
+//			disabled:true,
 			handler:function(){
-				var rec = this.getSelected();
+				var rec = this.labOrderRecord;
 				if(rec) {
 					var url = String.format('/lab/print/results/{0}/?preview=yes', rec.id);
 					window.open(url);
@@ -270,6 +279,8 @@ App.result.ResultGrid = Ext.extend(Ext.grid.EditorGridPanel, {
 											},
 											method:'POST',
 											success:function(response, opts) {
+												var r = Ext.decode(response.responseText);
+												this.labOrderRecord.set('is_completed',r.status);
 												this.store.reload();
 											},
 											failure: function(response, opts) {
@@ -455,7 +466,7 @@ App.result.ResultGrid = Ext.extend(Ext.grid.EditorGridPanel, {
 	},
 	
 	onGlobalSearch: function(v) {
-		this.disable();
+//		this.disable();
 	},
 	
 	storeFilter: function(field, value){
@@ -483,3 +494,21 @@ App.result.ResultGrid = Ext.extend(Ext.grid.EditorGridPanel, {
 
 
 Ext.reg('resultgrid',App.result.ResultGrid);
+
+
+
+
+/*
+ * 
+ * 
+while 1:
+    # wait for next client to connect
+    connection, address = s.accept() # connection is a new socket
+    while 1:
+        data = connection.recv(1024) # receive up to 1K bytes
+        if data:
+            connection.send('echo -> ' + data)
+        else:
+            break
+    connection.close()
+ */

@@ -319,6 +319,17 @@ App.visit.VisitForm = Ext.extend(Ext.FormPanel, {
 			}
 		};		
 		
+		this.cito = {
+	            layout: 'form',
+	            border:false,
+//	            columnWidth:0.5,
+	            items:[{
+					boxLabel:'Cito',
+					xtype:'checkbox',
+					name:'is_cito'
+				}]
+			};
+		
 		this.defaultItems = [{
 			xtype:'hidden',
 			name:'patient',
@@ -348,7 +359,8 @@ App.visit.VisitForm = Ext.extend(Ext.FormPanel, {
 	        			},
 	        			this.menstruation, 
 	        			this.diagnosis,
-	        			this.comment
+	        			this.comment,
+	        			this.cito
 	        		]
         		},{
         			flex:60,
@@ -387,7 +399,8 @@ App.visit.VisitForm = Ext.extend(Ext.FormPanel, {
 	        			},
 	        			this.menstruation, 
 	        			this.diagnosis,
-	        			this.comment
+	        			this.comment,
+	        			this.cito
 	        		]
         		}]       	
 		}
@@ -521,10 +534,8 @@ App.visit.VisitForm = Ext.extend(Ext.FormPanel, {
 		var a = node.attributes;
 		if (a.isComplex) {
 			this.cNodes = a.nodes;
-			console.info('orig',this.cNodes);
 			complexAdd = function() {
 				var item = this.cNodes.pop();
-				console.info('after adding',this.cNodes);
 				this.addRow(item, function(){
 					if(this.cNodes.length) {
 						complexAdd.createDelegate(this,[])();
