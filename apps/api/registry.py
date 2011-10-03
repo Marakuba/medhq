@@ -545,6 +545,7 @@ class BaseServiceResource(ExtResource):
             'name':ALL,
             'parent':ALL_WITH_RELATIONS,
             'labservice':ALL_WITH_RELATIONS,
+            'is_group':ALL,
             'material':ALL_WITH_RELATIONS
         }
         
