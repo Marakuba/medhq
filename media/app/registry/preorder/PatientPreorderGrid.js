@@ -1,6 +1,6 @@
 Ext.ns('App','App.registry');
 
-App.registry.PreorderGrid = Ext.extend(Ext.grid.GridPanel, {
+App.registry.PatientPreorderGrid = Ext.extend(Ext.grid.GridPanel, {
 
 	initComponent : function() {
 		
@@ -21,7 +21,6 @@ App.registry.PreorderGrid = Ext.extend(Ext.grid.GridPanel, {
 				    {name: 'staff'},
 				    {name: 'staff_name'},
 				    {name: 'execution_place'},
-				    {name: 'patient_phone'},
 				    {name: 'start', type: 'date',format:'c'}
 				]
 		});
@@ -49,20 +48,14 @@ App.registry.PreorderGrid = Ext.extend(Ext.grid.GridPanel, {
 		    	sortable: true, 
 		    	dataIndex: 'start',
 		    	renderer:Ext.util.Format.dateRenderer('H:i / d.m.Y')
-		    },{
-		    	header: "Телефон", 
-		    	width: 35, 
-		    	sortable: false, 
-		    	dataIndex: 'patient_phone',
-		    	renderer:Ext.util.Format.dateRenderer('H:i / d.m.Y')
 		    }
 		];		
 		
-		this.visitButton = new Ext.Button({
-			iconCls:'silk-add',
+		this.choiceButton = new Ext.Button({
+			iconCls:'silk-accept',
 			disabled:true,
-			text:'Оформить заказ',
-			handler:this.onVisitAdd.createDelegate(this, []),
+			text:'Выбрать',
+			handler:this.onChoice.createDelegate(this, []),
 			scope:this
 		});
 		
@@ -114,8 +107,8 @@ App.registry.PreorderGrid = Ext.extend(Ext.grid.GridPanel, {
 		}
 
 		Ext.apply(this, Ext.apply(this.initialConfig, config));
-		App.registry.PreorderGrid.superclass.initComponent.apply(this, arguments);
-//		App.eventManager.on('globalsearch', this.onGlobalSearch, this);
+		App.registry.PatientPreorderGrid.superclass.initComponent.apply(this, arguments);
+		App.eventManager.on('globalsearch', this.onGlobalSearch, this);
 //		App.eventManager.on('patientwrite', this.onPatientWrite, this);
 		this.on('serviceselect', this.onServiceSelect, this);
 		this.on('afterrender', function(){this.store.load()}, this);
@@ -134,7 +127,7 @@ App.registry.PreorderGrid = Ext.extend(Ext.grid.GridPanel, {
 		return this.getSelectionModel().getSelected()
 	},
 	
-	onVositAdd: function() {
+	onChoice: function() {
         var record = this.getSelectionModel().getSelected();
         if (record.data.service) {
         	Ext.callback(this.fn, this.scope || window, [record]);
@@ -145,4 +138,4 @@ App.registry.PreorderGrid = Ext.extend(Ext.grid.GridPanel, {
 
 
 
-Ext.reg('preordergrid', App.registry.PreorderGrid);
+Ext.reg('patientpreordergrid', App.registry.PatientPreorderGrid);

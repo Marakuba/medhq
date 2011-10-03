@@ -572,7 +572,7 @@ App.visit.VisitForm = Ext.extend(Ext.FormPanel, {
 	onPreorderChoice : function(){
 		var preorderWindow;
     	
-        var preorderGrid = new App.registry.PreorderGrid({
+        var preorderGrid = new App.registry.PatientPreorderGrid({
        		scope:this,
        		patient : this.patientRecord,
        		fn:function(record){

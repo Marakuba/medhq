@@ -83,6 +83,7 @@ Ext.calendar.TimeslotEditWindow = Ext.extend(Ext.Window, {
 		    listeners:{
 		    	'select':function(combo,record,index){
 		    		this.formPanel.form.findField('Title').setValue(record.data.short_name);
+		    		this.patient = record;
 		    		this.serviceCombo.enable();
 		    	},
 		    	scope:this

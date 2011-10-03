@@ -82,7 +82,7 @@ App.CentralPanel = Ext.extend(Ext.Panel, {
 					},
 					scope:this
 				}]
-			},{
+			/*},{
 				xtype:'buttongroup',
 //				title:'Штрих-коды',
 				defaults:{
@@ -95,6 +95,20 @@ App.CentralPanel = Ext.extend(Ext.Panel, {
 				},{
 					text:'Дубликат',
 					tooltip:'Печать дубликата'
+				}]*/
+			},{
+				xtype:'buttongroup',
+//				title:'Календарь',
+				defaults:{
+					xtype:'button',
+					scale:'medium'
+				},
+				items:[{
+					text:'Календарь',
+					tooltip:'Управление расписанием врачей'
+				},{
+					text:'Предзаказы',
+					tooltip:'Управление предзаказами'
 				}]
 			},{
 				xtype:'buttongroup',
