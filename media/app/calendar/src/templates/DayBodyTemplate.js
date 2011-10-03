@@ -75,7 +75,7 @@ Ext.extend(Ext.calendar.DayBodyTemplate, Ext.XTemplate, {
         times = [];
         dt = new Date().clearTime();
         for(i=0; i<24; i++){
-            times.push(dt.format('ga'));
+            times.push(dt.format('H:i'));
             dt = dt.add(Date.HOUR, 1);
         }
         
