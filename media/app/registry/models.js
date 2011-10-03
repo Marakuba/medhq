@@ -49,3 +49,22 @@ App.models.visitModel = new Ext.data.Record.create([
 	{name: 'is_billed', allowBlank: false, type:'boolean'},
 	{name: 'referral_name', allowBlank: false}
 ]);
+
+App.models.preorderModel = new Ext.data.Record.create([
+    {name: 'id'},
+	{name: 'resource_uri'},
+	{name: 'patient'},
+	{name: 'patient_name'},
+	{name: 'timeslot'},
+	{name: 'comment'},
+	{name: 'visit'},
+	{name: 'service'},
+	{name: 'base_service'},
+	{name: 'service_name'},
+	{name: 'price'},
+	{name: 'staff'},
+	{name: 'staff_name'},
+	{name: 'execution_place'},
+	{name: 'patient_phone'},
+	{name: 'start', type: 'date',format:'c'}
+]);

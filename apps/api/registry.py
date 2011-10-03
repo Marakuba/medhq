@@ -1170,12 +1170,12 @@ class ExtPreorderResource(ExtResource):
         bundle.data['staff_name'] = obj.get_staff_name()
         bundle.data['price'] = obj.service and obj.service.get_actual_price()
         bundle.data['start'] = obj.timeslot.start
-        bundle.data['service'] = obj.service and obj.service.base_service.id
+        bundle.data['base_service'] = obj.service and obj.service.base_service.id
         bundle.data['patient_phone'] = obj.patient.mobile_phone
         return bundle
     
     class Meta:
-        queryset = Preorder.objects.all()
+        queryset = Preorder.objects.all().order_by('-timeslot__start')
         resource_name = 'extpreorder'
         authorization = DjangoAuthorization()
         filtering = {

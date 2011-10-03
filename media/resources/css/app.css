@@ -22,7 +22,7 @@
 .x-tree-node-anchor {
 	white-space:normal;
 }
-.helpdesk-row-body {
+.helpdesk-row-body, .preorder-actual-row-body {
 	padding:5px;
 	color:#385F95
 }
@@ -147,4 +147,17 @@
 	color:red;
 	font-weight: bold;
 	text-align: right;
+}
+
+.preorder-actual-row-body {
+	background:#EEFBEC;
+}
+
+.preorder-deactive-row-body {
+	background:#F3F3F3;
+	color:#9F9D95
+}
+
+.preorder-visited-row-body {
+	background:#FCFD8E;
 }

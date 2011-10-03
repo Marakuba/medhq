@@ -105,10 +105,18 @@ App.CentralPanel = Ext.extend(Ext.Panel, {
 				},
 				items:[{
 					text:'Календарь',
-					tooltip:'Управление расписанием врачей'
+					tooltip:'Управление расписанием врачей',
+					handler:function(){
+						this.launchApp('preordergrid');
+					},
+					scope:this
 				},{
 					text:'Предзаказы',
-					tooltip:'Управление предзаказами'
+					tooltip:'Управление предзаказами',
+					handler:function(){
+						this.launchApp('preordergrid');
+					},
+					scope:this
 				}]
 			},{
 				xtype:'buttongroup',

@@ -4,25 +4,11 @@ App.registry.PatientPreorderGrid = Ext.extend(Ext.grid.GridPanel, {
 
 	initComponent : function() {
 		
-		this.store = new Ext.data.RESTStore({
+		this.store = this.store || new Ext.data.RESTStore({
 			autoLoad : false,
 			autoSave : false,
 			apiUrl : get_api_url('extpreorder'),
-			model: [
-					{name: 'id'},
-				    {name: 'resource_uri'},
-				    {name: 'patient'},
-				    {name: 'patient_name'},
-				    {name: 'timeslot'},
-				    {name: 'comment'},
-				    {name: 'service'},
-				    {name: 'service_name'},
-				    {name: 'price'},
-				    {name: 'staff'},
-				    {name: 'staff_name'},
-				    {name: 'execution_place'},
-				    {name: 'start', type: 'date',format:'c'}
-				]
+			model: App.models.preorderModel
 		});
 		
 		this.columns =  [
@@ -93,11 +79,15 @@ App.registry.PatientPreorderGrid = Ext.extend(Ext.grid.GridPanel, {
 			viewConfig : {
 				forceFit : true,
 				getRowClass: function(record, index) {
-            		var c = record.get('service');
-            		
-            		if (c) {
-                		return 'helpdesk-row-body';
+            		var service = record.get('service');
+            		var visit = record.get('visit');
+            		if (visit) {
+                		return 'preorder-visited-row-body';
             		};
+            		if (service) {
+                		return 'preorder-actual-row-body';
+            		};
+            		return 'preorder-deactive-row-body';
         		}
 			},	
 			listeners: {
@@ -129,7 +119,7 @@ App.registry.PatientPreorderGrid = Ext.extend(Ext.grid.GridPanel, {
 	
 	onChoice: function() {
         var record = this.getSelectionModel().getSelected();
-        if (record.data.service) {
+        if (record.data.service && !record.data.visit) {
         	Ext.callback(this.fn, this.scope || window, [record]);
         };
     }

@@ -4,32 +4,19 @@ App.registry.PreorderGrid = Ext.extend(Ext.grid.GridPanel, {
 
 	initComponent : function() {
 		
+		var today = new Date();
+		
 		this.store = new Ext.data.RESTStore({
 			autoLoad : false,
 			autoSave : false,
 			apiUrl : get_api_url('extpreorder'),
-			model: [
-					{name: 'id'},
-				    {name: 'resource_uri'},
-				    {name: 'patient'},
-				    {name: 'patient_name'},
-				    {name: 'timeslot'},
-				    {name: 'comment'},
-				    {name: 'service'},
-				    {name: 'service_name'},
-				    {name: 'price'},
-				    {name: 'staff'},
-				    {name: 'staff_name'},
-				    {name: 'execution_place'},
-				    {name: 'patient_phone'},
-				    {name: 'start', type: 'date',format:'c'}
-				]
+			model: App.models.preorderModel
 		});
 		
 		this.columns =  [
 		    {
 		    	header: "Пациент", 
-		    	width: 45, 
+		    	width: 60, 
 		    	sortable: true, 
 		    	dataIndex: 'patient_name',
 		    	hide: this.patient ? true : false
@@ -40,7 +27,7 @@ App.registry.PreorderGrid = Ext.extend(Ext.grid.GridPanel, {
 		    	dataIndex: 'service_name'
 		    },{
 		    	header: "Цена", 
-		    	width: 70, 
+		    	width: 20, 
 		    	sortable: true, 
 		    	dataIndex: 'price'
 		    },{
@@ -53,8 +40,7 @@ App.registry.PreorderGrid = Ext.extend(Ext.grid.GridPanel, {
 		    	header: "Телефон", 
 		    	width: 35, 
 		    	sortable: false, 
-		    	dataIndex: 'patient_phone',
-		    	renderer:Ext.util.Format.dateRenderer('H:i / d.m.Y')
+		    	dataIndex: 'patient_phone'
 		    }
 		];		
 		
@@ -67,6 +53,8 @@ App.registry.PreorderGrid = Ext.extend(Ext.grid.GridPanel, {
 		});
 		
 		var config = {
+			id:'preorder-grid',
+			title:'Предзаказы',
 			loadMask : {
 				msg : 'Подождите, идет загрузка...'
 			},
@@ -89,7 +77,7 @@ App.registry.PreorderGrid = Ext.extend(Ext.grid.GridPanel, {
                     scope:this
                 }
 			}),
-			tbar:[this.choiceButton],
+			tbar:[this.visitButton],
 	        bbar: new Ext.PagingToolbar({
 	            pageSize: 20,
 	            store: this.store,
@@ -100,16 +88,22 @@ App.registry.PreorderGrid = Ext.extend(Ext.grid.GridPanel, {
 			viewConfig : {
 				forceFit : true,
 				getRowClass: function(record, index) {
-            		var c = record.get('service');
-            		
-            		if (c) {
-                		return 'helpdesk-row-body';
+            		var service = record.get('service');
+            		var visit = record.get('visit');
+            		var today = new Date();
+            		var actual = (record.data.start.getDate() >= today.getDate()) 
+            		if (visit) {
+                		return 'preorder-visited-row-body';
             		};
+            		if (service && actual) {
+                		return 'preorder-actual-row-body';
+            		};
+            		return 'preorder-deactive-row-body';
         		}
 			},	
 			listeners: {
-				rowdblclick:this.onChoice.createDelegate(this, []),
-				scope:this
+//				rowdblclick:this.onVisit.createDelegate(this, []),
+//				scope:this
 			}
 		}
 
@@ -123,7 +117,7 @@ App.registry.PreorderGrid = Ext.extend(Ext.grid.GridPanel, {
 	},
 	
 	btnSetDisabled: function(status) {
-        this.choiceButton.setDisabled(status);
+        this.visitButton.setDisabled(status);
 	},
 	
 	onServiceSelect: function(){
@@ -134,9 +128,9 @@ App.registry.PreorderGrid = Ext.extend(Ext.grid.GridPanel, {
 		return this.getSelectionModel().getSelected()
 	},
 	
-	onVositAdd: function() {
+	onVisitAdd: function() {
         var record = this.getSelectionModel().getSelected();
-        if (record.data.service) {
+        if (record.data.service && !record.data.visit) {
         	Ext.callback(this.fn, this.scope || window, [record]);
         };
     }

@@ -6,6 +6,17 @@ App.visit.VisitForm = Ext.extend(Ext.FormPanel, {
 
 		this.inlines = new Ext.util.MixedCollection({});
 		
+		this.preorderStore = new Ext.data.RESTStore({
+			autoLoad : false,
+			autoSave : true,
+			writer: new Ext.data.JsonWriter({
+					    encode: false,
+					    writeAllFields: false
+					}),
+			apiUrl : get_api_url('extpreorder'),
+			model: App.models.preorderModel
+		});
+		
 		this.orderedService = new App.visit.OrderedServiceInlineGrid({
 			record:this.record,
 			type:this.type,
@@ -575,18 +586,23 @@ App.visit.VisitForm = Ext.extend(Ext.FormPanel, {
         var preorderGrid = new App.registry.PatientPreorderGrid({
        		scope:this,
        		patient : this.patientRecord,
+       		store : this.preorderStore,
        		fn:function(record){
        			var p = new this.orderedService.store.recordType()
 //       			Ext.apply(p,record);
+       			p.beginEdit();
+       			p.set('preorder',record.data.resource_uri);
        			p.set('price',record.data.price);
        			p.set('staff_name',record.data.staff_name);
        			p.set('service_name',record.data.service_name);
-       			p.set('service',App.getApiUrl('baseservice',record.data.service));
+       			p.set('service',App.getApiUrl('baseservice',record.data.base_service));
        			p.set('staff',App.getApiUrl('position',record.data.staff));
        			p.set('execution_place',App.getApiUrl('state',record.data.execution_place));
        			p.set('count',1);
        			p.data['id'] = '';
+       			p.beginEdit();
        			this.orderedService.store.add(p);
+       			this.orderedService.preorder = record;
 				preorderWindow.close();
 			}
        	 });

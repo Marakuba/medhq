@@ -31,7 +31,8 @@ App.visit.OrderedServiceInlineGrid = Ext.extend(Ext.grid.EditorGridPanel, {
 		    {name: 'count', allowBlank: false},
 		    {name: 'price', allowBlank: false},
 		    {name: 'execution_place', allowBlank: false},
-		    {name: 'total', allowBlank: true}
+		    {name: 'total', allowBlank: true},
+		    {name: 'preorder', allowBlank: true}
 		]);
 		
 		this.writer = new Ext.data.JsonWriter({
@@ -105,6 +106,9 @@ App.visit.OrderedServiceInlineGrid = Ext.extend(Ext.grid.EditorGridPanel, {
 		    	width: 50, 
 		    	sortable: true, 
 		    	dataIndex: 'service_name' 
+		    },{
+		    	hidden:true,
+		    	dataIndex: 'preorder' 
 		    },{
 		    	header: "Врач", 
 		    	width: 30, 
@@ -344,6 +348,12 @@ App.visit.OrderedServiceInlineGrid = Ext.extend(Ext.grid.EditorGridPanel, {
 				item.beginEdit();
 				item.set('order', this.record.data.resource_uri);
 				item.endEdit();
+				var preorder = item.data.preorder;
+				if (preorder) {
+//					this.preorder.beginEdit();
+					this.preorder.set('visit',this.record.data.resource_uri)
+//					this.preorder.endEdit();
+				}
 			}, this);
 			this.store.save();
 		} else {
