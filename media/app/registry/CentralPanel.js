@@ -107,14 +107,14 @@ App.CentralPanel = Ext.extend(Ext.Panel, {
 					text:'Календарь',
 					tooltip:'Управление расписанием врачей',
 					handler:function(){
-						this.launchApp('preordergrid');
+						this.launchApp('doctorscheduler',{closable:true});
 					},
 					scope:this
 				},{
 					text:'Предзаказы',
 					tooltip:'Управление предзаказами',
 					handler:function(){
-						this.launchApp('preordergrid');
+						this.launchApp('preordergrid',{closable:true});
 					},
 					scope:this
 				}]

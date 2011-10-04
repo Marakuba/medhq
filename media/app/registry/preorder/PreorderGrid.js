@@ -91,11 +91,11 @@ App.registry.PreorderGrid = Ext.extend(Ext.grid.GridPanel, {
             		var service = record.get('service');
             		var visit = record.get('visit');
             		var today = new Date();
-            		var actual = (record.data.start.getDate() >= today.getDate()) 
+            		var actual = record.data.start.clearTime() >= today.clearTime();
             		if (visit) {
                 		return 'preorder-visited-row-body';
             		};
-            		if (service && actual) {
+            		if (!(service == undefined) && actual) {
                 		return 'preorder-actual-row-body';
             		};
             		return 'preorder-deactive-row-body';

@@ -25,9 +25,19 @@
 
     <!-- APP -->
     <link rel="stylesheet" type="text/css" href="{{ MEDIA_URL }}resources/css/app.css"/>
+    <link rel="stylesheet" type="text/css" href="{{ MEDIA_URL }}app/calendar/resources/css/calendar.css"/>
+    <link rel="stylesheet" type="text/css" href="{{ MEDIA_URL }}app/calendar/resources/css/examples.css"/>
 
     <!-- FAM -->
     <link rel="stylesheet" type="text/css" href="{{ MEDIA_URL }}resources/css/silk.css"/>
+    <link rel="stylesheet" type="text/css" href="{{ MEDIA_URL }}extjs/ux/css/Spinner.css" rel="stylesheet" />
+	<link rel="stylesheet" type="text/css" href="{{ MEDIA_URL }}extjs/ux/css/RowEditor.css" rel="stylesheet" />
+    
+     <!-- GIF -->
+    <link rel="stylesheet" type="text/css" href="{{ MEDIA_URL }}app/calendar/resources/images/default/bg.gif"/>
+    <link rel="stylesheet" type="text/css" href="{{ MEDIA_URL }}app/calendar/resources/images/default/page-prev.gif"/>
+    <link rel="stylesheet" type="text/css" href="{{ MEDIA_URL }}app/calendar/resources/images/default/arrow.gif"/>
+    <link rel="stylesheet" type="text/css" href="{{ MEDIA_URL }}app/calendar/resources/images/default/page-next.gif"/>
 
     <!-- LIBS -->
     <script type="text/javascript" src="{{ MEDIA_URL }}extjs/adapter/ext/ext-base.js"></script>
@@ -47,6 +57,7 @@
     <script type="text/javascript" src="{{ MEDIA_URL }}extjs/ux/Spinner.js"></script>
     <script type="text/javascript" src="{{ MEDIA_URL }}extjs/ux/SpinnerField.js"></script>
     <script type="text/javascript" src="{{ MEDIA_URL }}extjs/ux/statusbar/StatusBar.js"></script>
+    <script type="text/javascript" src="{{ MEDIA_URL }}extjs/ux/CheckColumn.js"></script> 
 
     <script type="text/javascript" src="{{ MEDIA_URL }}app/ux/InputTextMask.js"></script> 
 	
@@ -69,6 +80,49 @@
 
 	<!-- APP -->
 	
+	<!-- calendar -->
+	<script type="text/javascript" src="{{ MEDIA_URL }}app/calendar/EventManager.js"></script>
+	<script type="text/javascript" src="{{ MEDIA_URL }}app/calendar/src/Ext.calendar.js"></script>
+    
+    <script type="text/javascript" src="{{ MEDIA_URL }}app/calendar/src/templates/BoxLayoutTemplate.js"></script>
+    <script type="text/javascript" src="{{ MEDIA_URL }}app/calendar/src/templates/DayBodyTemplate.js"></script>
+    <script type="text/javascript" src="{{ MEDIA_URL }}app/calendar/src/templates/DayHeaderTemplate.js"></script>
+    <script type="text/javascript" src="{{ MEDIA_URL }}app/calendar/src/templates/DayViewTemplate.js"></script>
+    <script type="text/javascript" src="{{ MEDIA_URL }}app/calendar/src/templates/MonthViewTemplate.js"></script>
+    
+    <script type="text/javascript" src="{{ MEDIA_URL }}app/calendar/src/dd/CalendarDD.js"></script>
+    <script type="text/javascript" src="{{ MEDIA_URL }}app/calendar/src/dd/CalendarScrollManager.js"></script>
+    <script type="text/javascript" src="{{ MEDIA_URL }}app/calendar/src/dd/DayViewDD.js"></script>
+    <script type="text/javascript" src="{{ MEDIA_URL }}app/calendar/src/dd/StatusProxy.js"></script>
+    
+    <script type="text/javascript" src="{{ MEDIA_URL }}app/calendar/src/EventRecord.js"></script>
+    <script type="text/javascript" src="{{ MEDIA_URL }}app/calendar/src/views/MonthDayDetailView.js"></script>
+    <script type="text/javascript" src="{{ MEDIA_URL }}app/calendar/src/widgets/CalendarPicker.js"></script>
+    <script type="text/javascript" src="{{ MEDIA_URL }}app/calendar/src/widgets/StaffPicker.js"></script>
+    <script type="text/javascript" src="{{ MEDIA_URL }}app/calendar/src/widgets/StaffGrid.js"></script>
+    <script type="text/javascript" src="{{ MEDIA_URL }}app/calendar/src/WeekEventRenderer.js"></script>
+    <script type="text/javascript" src="{{ MEDIA_URL }}app/calendar/src/views/CalendarView.js"></script>
+    <script type="text/javascript" src="{{ MEDIA_URL }}app/calendar/src/views/MonthView.js"></script>
+    <script type="text/javascript" src="{{ MEDIA_URL }}app/calendar/src/views/DayView.js"></script>
+    <script type="text/javascript" src="{{ MEDIA_URL }}app/calendar/src/views/DayHeaderView.js"></script>
+    <script type="text/javascript" src="{{ MEDIA_URL }}app/calendar/src/views/DayBodyView.js"></script>
+    <script type="text/javascript" src="{{ MEDIA_URL }}app/calendar/src/views/WeekView.js"></script>
+    
+    <script type="text/javascript" src="{{ MEDIA_URL }}app/calendar/src/widgets/DateRangeField.js"></script>
+    <script type="text/javascript" src="{{ MEDIA_URL }}app/calendar/src/widgets/ReminderField.js"></script>
+    
+    <script type="text/javascript" src="{{ MEDIA_URL }}app/calendar/app/timeslot/ServiceGrid.js"></script>
+    <script type="text/javascript" src="{{ MEDIA_URL }}app/calendar/app/timeslot/PatientGrid.js"></script>
+    <script type="text/javascript" src="{{ MEDIA_URL }}app/calendar/app/timeslot/PreorderedServiceInlineGrid.js"></script>
+    
+	<script type="text/javascript" src="{{ MEDIA_URL }}app/calendar/src/EventEditForm.js"></script>
+    <script type="text/javascript" src="{{ MEDIA_URL }}app/calendar/src/EventEditWindow.js"></script>
+    <script type="text/javascript" src="{{ MEDIA_URL }}app/calendar/app/timeslot/TimeslotEditForm.js"></script>
+    <script type="text/javascript" src="{{ MEDIA_URL }}app/calendar/app/timeslot/TimeslotEditWindow.js"></script>
+    <script type="text/javascript" src="{{ MEDIA_URL }}app/calendar/src/CalendarPanel.js"></script>
+    <script type="text/javascript" src="{{ MEDIA_URL }}app/calendar/app/DoctorScheduler.js"></script>
+    
+	<!-- registry -->
     <script type="text/javascript" src="{{ MEDIA_URL }}app/invoice/models.js"></script>
     <script type="text/javascript" src="{{ MEDIA_URL }}app/invoice/InvoiceItemGrid.js"></script>
     <script type="text/javascript" src="{{ MEDIA_URL }}app/invoice/InvoiceForm.js"></script>
