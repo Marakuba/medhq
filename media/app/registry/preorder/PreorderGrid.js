@@ -4,7 +4,7 @@ App.registry.PreorderGrid = Ext.extend(Ext.grid.GridPanel, {
 
 	initComponent : function() {
 		
-		var today = new Date();
+		this.start_date = new Date();
 		
 		this.store = new Ext.data.RESTStore({
 			autoLoad : false,
@@ -25,6 +25,11 @@ App.registry.PreorderGrid = Ext.extend(Ext.grid.GridPanel, {
 		    	width: 70, 
 		    	sortable: true, 
 		    	dataIndex: 'service_name'
+		     },{
+		    	header: "Врач", 
+		    	width: 70, 
+		    	sortable: true, 
+		    	dataIndex: 'staff_name'
 		    },{
 		    	header: "Цена", 
 		    	width: 20, 
@@ -50,6 +55,18 @@ App.registry.PreorderGrid = Ext.extend(Ext.grid.GridPanel, {
 			text:'Оформить заказ',
 			handler:this.onVisitAdd.createDelegate(this, []),
 			scope:this
+		});
+		
+		this.startDateField = new Ext.form.DateField({
+			format:'d.m.Y',
+			value:this.start_date,
+			listeners: {
+				select: function(df, date){
+					this.start_date = date;
+					this.storeFilter('timeslot__start__range',String.format('{0},{1}',this.start_date.format('Y-m-d 00:00'),this.start_date.format('Y-m-d 23:59')));
+				},
+				scope:this
+			}
 		});
 		
 		var config = {
@@ -78,13 +95,22 @@ App.registry.PreorderGrid = Ext.extend(Ext.grid.GridPanel, {
                 }
 			}),
 			tbar:[this.visitButton],
-	        bbar: new Ext.PagingToolbar({
-	            pageSize: 20,
-	            store: this.store,
-	            displayInfo: true,
-	            displayMsg: 'Записи {0} - {1} из {2}',
-	            emptyMsg: "Нет записей"
-	        }),
+	        bbar: {
+            	cls: 'ext-cal-toolbar',
+            	border: true,
+            	buttonAlign: 'center',
+            	items: [{
+//	                id: this.id + '-tb-prev',
+                	handler: this.onPrevClick,
+                	scope: this,
+                	iconCls: 'x-tbar-page-prev'
+            	},this.startDateField,{
+//	                id: this.id + '-tb-next',
+                	handler: this.onNextClick,
+                	scope: this,
+                	iconCls: 'x-tbar-page-next'
+            	}]
+        	},
 			viewConfig : {
 				forceFit : true,
 				getRowClass: function(record, index) {
@@ -112,7 +138,10 @@ App.registry.PreorderGrid = Ext.extend(Ext.grid.GridPanel, {
 //		App.eventManager.on('globalsearch', this.onGlobalSearch, this);
 //		App.eventManager.on('patientwrite', this.onPatientWrite, this);
 		this.on('serviceselect', this.onServiceSelect, this);
-		this.on('afterrender', function(){this.store.load()}, this);
+		this.on('afterrender', function(){
+			this.store.setBaseParam('timeslot__start__range',String.format('{0},{1}',this.start_date.format('Y-m-d 00:00'),this.start_date.format('Y-m-d 23:59')))
+			this.store.load()}, 
+		this);
 		//this.store.on('write', this.onStoreWrite, this);
 	},
 	
@@ -133,8 +162,28 @@ App.registry.PreorderGrid = Ext.extend(Ext.grid.GridPanel, {
         if (record.data.service && !record.data.visit) {
         	Ext.callback(this.fn, this.scope || window, [record]);
         };
-    }
+    },
+    
+    storeFilter: function(field, value){
+		if(!value) {
+			delete this.store.baseParams[field]
+		} else {
+			this.store.setBaseParam(field, value);
+		}
+		this.store.load();
+	},
 	
+	onPrevClick: function(){
+		this.start_date = this.start_date.add(Date.DAY,-1);
+		this.startDateField.setValue(this.start_date);
+		this.storeFilter('timeslot__start__range',String.format('{0},{1}',this.start_date.format('Y-m-d 00:00'),this.start_date.format('Y-m-d 23:59')));
+	},
+	
+	onNextClick: function(){
+		this.start_date = this.start_date.add(Date.DAY,1);
+		this.startDateField.setValue(this.start_date);
+		this.storeFilter('timeslot__start__range',String.format('{0},{1}',this.start_date.format('Y-m-d 00:00'),this.start_date.format('Y-m-d 23:59')));
+	}
 });
 
 

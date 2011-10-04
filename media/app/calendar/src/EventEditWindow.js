@@ -76,10 +76,10 @@ Ext.calendar.EventEditWindow = function(config) {
         savingMessage: 'Сохранение изменений...',
         deletingMessage: 'Удаление события...',
 
-        fbar: [{
+        fbar: [/*{
             xtype: 'tbtext',
             text: '<a href="#" id="tblink">Дополнительно...</a>'
-        },
+        },*/
         '->', {
             text: 'Сохранить',
             disabled: false,
@@ -163,13 +163,13 @@ Ext.extend(Ext.calendar.EventEditWindow, Ext.Window, {
 
         this.el.addClass('ext-cal-event-win');
 
-        Ext.get('tblink').on('click',
+/*        Ext.get('tblink').on('click',
         function(e) {
             e.stopEvent();
             this.updateRecord();
             this.fireEvent('editdetails', this, this.activeRecord);
         },
-        this);
+        this);*/
         
     },
 
@@ -183,16 +183,7 @@ Ext.extend(Ext.calendar.EventEditWindow, Ext.Window, {
      * @return {Ext.Window} this
      */
     show: function(o, animateTarget) {
-    	/*if (this.calendarStore) {
-    		var a = Ext.getCmp('calendar').getValue();
-    		Ext.Msg.alert('w','есть');
-    	}
-    	Ext.Msg.confirm('Изменился тип цены','Пересчитать цены?',
-    		function(btn){
-    			if (btn=='yes') {
-    				
-    			}
-    		});*/
+
         // Work around the CSS day cell height hack needed for initial render in IE8/strict:
         var anim = (Ext.isIE8 && Ext.isStrict) ? null: animateTarget;
 
