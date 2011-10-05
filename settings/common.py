@@ -43,6 +43,8 @@ SECRET_KEY = 'ud)-iik%3k(6%p_tzbt-e-kvgvekxi4-y+!xjnhpl0_e)_3gat'
 
 CACHE_BACKEND = 'memcached://127.0.0.1:11211/'
 
+DBTEMPLATES_CACHE_BACKEND = 'memcached://127.0.0.1:11211/'
+
 #JOHNNY_MIDDLEWARE_KEY_PREFIX='jc_medical'
 
 TEMPLATE_LOADERS = (
