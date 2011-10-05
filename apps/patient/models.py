@@ -99,7 +99,7 @@ class Patient(make_person_object('patient')):
     class Meta:
         verbose_name = u"Пациент"
         verbose_name_plural = u"Пациенты"
-        ordering = ('last_name',)
+        ordering = ('last_name','first_name','mid_name')
         
 
 class InsurancePolicy(make_operator_object('insurance_policy')):

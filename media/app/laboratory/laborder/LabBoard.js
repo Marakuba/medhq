@@ -35,6 +35,7 @@ App.laboratory.LabBoard = Ext.extend(Ext.Panel, {
 		});
 		
 		config = {
+			id:'lab-board-app',
 			title:'Панель заказов',
 			layout:'border',
 			items:[this.LabOrderGrid,this.ResultCard]
