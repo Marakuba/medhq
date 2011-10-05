@@ -167,7 +167,8 @@ Ext.calendar.TimeslotEditWindow = Ext.extend(Ext.Window, {
 			if(action=='create') {
 			    this.preorder = rs;
 			    //App.eventManager.fireEvent('preordercreate',rs);
-		    }
+		    };
+		    App.calendar.eventManager.fireEvent('preorderwrite',rs);
 		}, this);
 		
 		this.clearButton = new Ext.Button({

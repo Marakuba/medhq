@@ -53,6 +53,7 @@ App.visit.VisitTab = Ext.extend(Ext.Panel, {
 			model:this.model,
         	record:this.record,
         	patientRecord:this.patientRecord,
+        	preorderRecord:this.preorderRecord,
         	type:this.type,
 			fn:function(record){
 				this.record = record;

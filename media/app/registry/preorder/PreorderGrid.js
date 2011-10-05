@@ -8,9 +8,15 @@ App.registry.PreorderGrid = Ext.extend(Ext.grid.GridPanel, {
 		
 		this.store = new Ext.data.RESTStore({
 			autoLoad : false,
-			autoSave : false,
+			autoSave : true,
 			apiUrl : get_api_url('extpreorder'),
 			model: App.models.preorderModel
+		});
+		this.patientStore = new Ext.data.RESTStore({
+			autoLoad : false,
+			autoSave : false,
+			apiUrl : get_api_url('patient'),
+			model: App.models.patientModel
 		});
 		
 		this.columns =  [
@@ -53,7 +59,7 @@ App.registry.PreorderGrid = Ext.extend(Ext.grid.GridPanel, {
 			iconCls:'silk-add',
 			disabled:true,
 			text:'Оформить заказ',
-			handler:this.onVisitAdd.createDelegate(this, []),
+			handler:this.onVisitButtonClick.createDelegate(this, []),
 			scope:this
 		});
 		
@@ -84,7 +90,7 @@ App.registry.PreorderGrid = Ext.extend(Ext.grid.GridPanel, {
                     rowselect: function(sm, row, rec) {
                     	this.fireEvent('serviceselect', rec);
 //                        Ext.getCmp("patient-quick-form").getForm().loadRecord(rec);
-                    	this.btnSetDisabled(false);
+//                    	this.btnSetDisabled(false);
                     },
                     rowdeselect: function(sm, row, rec) {
                     	this.fireEvent('serviceselect', rec);
@@ -121,7 +127,7 @@ App.registry.PreorderGrid = Ext.extend(Ext.grid.GridPanel, {
             		if (visit) {
                 		return 'preorder-visited-row-body';
             		};
-            		if (!(service == undefined) && actual) {
+            		if (actual) {
                 		return 'preorder-actual-row-body';
             		};
             		return 'preorder-deactive-row-body';
@@ -136,10 +142,21 @@ App.registry.PreorderGrid = Ext.extend(Ext.grid.GridPanel, {
 		Ext.apply(this, Ext.apply(this.initialConfig, config));
 		App.registry.PreorderGrid.superclass.initComponent.apply(this, arguments);
 //		App.eventManager.on('globalsearch', this.onGlobalSearch, this);
-//		App.eventManager.on('patientwrite', this.onPatientWrite, this);
+		this.store.on('write', function(){
+			var record = this.getSelected();
+			if (record){
+				if (record.data.visit){
+					this.visitButton.setDisabled(true);
+				}
+			}
+			//this.store.load();
+		}, this);
 		this.on('serviceselect', this.onServiceSelect, this);
 		this.on('afterrender', function(){
 			this.store.setBaseParam('timeslot__start__range',String.format('{0},{1}',this.start_date.format('Y-m-d 00:00'),this.start_date.format('Y-m-d 23:59')))
+			this.store.load()}, 
+		this);
+		App.calendar.eventManager.on('preorderwrite', function(){
 			this.store.load()}, 
 		this);
 		//this.store.on('write', this.onStoreWrite, this);
@@ -149,19 +166,75 @@ App.registry.PreorderGrid = Ext.extend(Ext.grid.GridPanel, {
         this.visitButton.setDisabled(status);
 	},
 	
-	onServiceSelect: function(){
+	onServiceSelect: function(record){
 //		this.btnSetDisable(false);
+//		var record = this.getSelectionModel().getSelected();
+        var today = new Date();
+        var actual = record.data.start.clearTime() >= today.clearTime();
+        if (!record.data.visit && actual) {
+        	this.visitButton.setDisabled(false);
+        } else {
+        	this.visitButton.setDisabled(true);
+        };
 	},
 	
 	getSelected: function() {
 		return this.getSelectionModel().getSelected()
 	},
 	
-	onVisitAdd: function() {
-        var record = this.getSelectionModel().getSelected();
-        if (record.data.service && !record.data.visit) {
-        	Ext.callback(this.fn, this.scope || window, [record]);
-        };
+	onVisitButtonClick: function() {
+        var record = this.getSelected();
+        if (record) {
+        	var today = new Date();
+        	var actual = record.data.start.clearTime() >= today.clearTime();
+        	if (record.data.visit){
+        		Ext.Msg.alert('Уведомление','Предзаказ уже был оформлен')
+        		return
+        	};
+        	if (!record.data.visit && actual) {
+        		if (!record.data.service){
+			    	Ext.Msg.confirm(
+						'Создать приём?',
+						'В выбранном предзаказе не указана услуга. Создать приём всё равно?',
+						function(btn){
+							if (btn=='yes'){
+								this.visitAdd(record)
+							}
+						},
+						this
+					);
+        		} else {
+   	    			this.visitAdd(record);
+        		}
+    	    };
+        } else {
+        	Ext.Msg.alert('Уведомление','Не выбран ни один предзаказ')
+        }
+    },
+    
+    visitAdd : function(record) {
+    	this.record = record;
+    	if (!record){
+    		Ext.msg.alert('Ошибка','Не указан предзаказ');
+    		return
+    	};
+    	if (!record.data.patient){
+    		Ext.msg.alert('Ошибка','Не указан пациент');
+    		return
+    	};
+    	this.patientStore.setBaseParam('id',App.uriToId(record.data.patient));
+    	this.patientStore.load({callback:function(records,opt,success){
+    		if (!records) {
+    			Ext.msg.alert('Ошибка','Не указан пациент');
+    			return
+    		};
+    		this.patientRecord = records[0];
+    		App.eventManager.fireEvent('launchapp','visittab',{
+				preorderRecord:this.record,
+				patientRecord:this.patientRecord,
+				type:'visit'
+			});
+    	},scope:this});
     },
     
     storeFilter: function(field, value){
@@ -170,19 +243,29 @@ App.registry.PreorderGrid = Ext.extend(Ext.grid.GridPanel, {
 		} else {
 			this.store.setBaseParam(field, value);
 		}
-		this.store.load();
+		this.store.load({callback:function(){
+			var record = this.getSelected();
+			if (record){
+				this.onServiceSelect(record);
+			} else {
+				this.btnSetDisabled(true);
+			};
+		},scope:this});
+		this.btnSetDisabled(true);
 	},
 	
 	onPrevClick: function(){
 		this.start_date = this.start_date.add(Date.DAY,-1);
 		this.startDateField.setValue(this.start_date);
 		this.storeFilter('timeslot__start__range',String.format('{0},{1}',this.start_date.format('Y-m-d 00:00'),this.start_date.format('Y-m-d 23:59')));
+		this.btnSetDisabled(true);
 	},
 	
 	onNextClick: function(){
 		this.start_date = this.start_date.add(Date.DAY,1);
 		this.startDateField.setValue(this.start_date);
 		this.storeFilter('timeslot__start__range',String.format('{0},{1}',this.start_date.format('Y-m-d 00:00'),this.start_date.format('Y-m-d 23:59')));
+		this.btnSetDisabled(true);
 	}
 });
 

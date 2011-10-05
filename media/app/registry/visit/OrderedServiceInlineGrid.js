@@ -349,7 +349,7 @@ App.visit.OrderedServiceInlineGrid = Ext.extend(Ext.grid.EditorGridPanel, {
 				item.set('order', this.record.data.resource_uri);
 				item.endEdit();
 				var preorder = item.data.preorder;
-				if (preorder) {
+				if (this.preorder && this.preorder.data.staff==App.uriToId(item.data.staff)) {
 //					this.preorder.beginEdit();
 					this.preorder.set('visit',this.record.data.resource_uri)
 //					this.preorder.endEdit();

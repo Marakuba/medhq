@@ -1,6 +1,7 @@
-Ext.ns('App');
+Ext.ns('App','App.calendar');
 
-App.eventManager = new Ext.util.Observable();
-App.eventManager.addEvents('nodeclick');
-App.eventManager.addEvents('preordercreate');
-App.eventManager.addEvents('globalsearch');
+App.calendar.eventManager = new Ext.util.Observable();
+App.calendar.eventManager.addEvents('nodeclick');
+App.calendar.eventManager.addEvents('preordercreate');
+App.calendar.eventManager.addEvents('preorderwrite');
+App.calendar.eventManager.addEvents('globalsearch');

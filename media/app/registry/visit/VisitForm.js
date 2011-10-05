@@ -66,7 +66,7 @@ App.visit.VisitForm = Ext.extend(Ext.FormPanel, {
 		
 		if(this.patientRecord) {
 			this.policyCmb.getStore().setBaseParam('patient',this.patientRecord.data.id);
-		}
+		};
 		
 		this.policyBar = new Ext.Panel({
 //			id:'policy-bar',
@@ -458,6 +458,9 @@ App.visit.VisitForm = Ext.extend(Ext.FormPanel, {
 		this.on('afterrender', function(){
 			if(this.record) {
 				this.getForm().loadRecord(this.record);
+			};
+			if (this.preorderRecord && this.preorderRecord.data.service){
+				this.addPreorderService(this.preorderRecord)
 			}
 		},this);
 		this.orderedService.on('sumchange', this.updateTotalSum, this);
@@ -581,45 +584,46 @@ App.visit.VisitForm = Ext.extend(Ext.FormPanel, {
 	},
 	
 	onPreorderChoice : function(){
-		var preorderWindow;
-    	
-        var preorderGrid = new App.registry.PatientPreorderGrid({
+        this.preorderGrid = new App.registry.PatientPreorderGrid({
        		scope:this,
        		patient : this.patientRecord,
        		store : this.preorderStore,
-       		fn:function(record){
-       			var p = new this.orderedService.store.recordType()
-//       			Ext.apply(p,record);
-       			p.beginEdit();
-       			p.set('preorder',record.data.resource_uri);
-       			p.set('price',record.data.price);
-       			p.set('staff_name',record.data.staff_name);
-       			p.set('service_name',record.data.service_name);
-       			p.set('service',App.getApiUrl('baseservice',record.data.base_service));
-       			p.set('staff',App.getApiUrl('position',record.data.staff));
-       			p.set('execution_place',App.getApiUrl('state',record.data.execution_place));
-       			p.set('count',1);
-       			p.data['id'] = '';
-       			p.beginEdit();
-       			this.orderedService.store.add(p);
-       			this.orderedService.preorder = record;
-				preorderWindow.close();
-			}
+       		fn:this.addPreorderService
        	 });
         	
-       	preorderWindow = new Ext.Window ({
+       	this.preorderWindow = new Ext.Window ({
        		width:700,
 			height:500,
 			layout:'fit',
 			title:'Предзаказы',
-			items:[preorderGrid],
+			items:[this.preorderGrid],
 			modal:true,
 			border:false
     	});
     	var today = new Date();
-    	preorderGrid.store.setBaseParam('timeslot__start__gte',today.format('Y-m-d 00:00'));
-    	preorderGrid.store.setBaseParam('patient',App.uriToId(this.patientRecord.data.resource_uri));
-       	preorderWindow.show();
+    	this.preorderGrid.store.setBaseParam('timeslot__start__gte',today.format('Y-m-d 00:00'));
+    	this.preorderGrid.store.setBaseParam('patient',App.uriToId(this.patientRecord.data.resource_uri));
+       	this.preorderWindow.show();
+	},
+	
+	addPreorderService : function(record) {
+		var p = new this.orderedService.store.recordType()
+		p.beginEdit();
+		p.set('preorder',record.data.resource_uri);
+		p.set('price',record.data.price);
+		p.set('staff_name',record.data.staff_name);
+		p.set('service_name',record.data.service_name);
+		p.set('service',App.getApiUrl('baseservice',record.data.base_service));
+		p.set('staff',App.getApiUrl('position',record.data.staff));
+		p.set('execution_place',App.getApiUrl('state',record.data.execution_place));
+		p.set('count',1);
+		p.data['id'] = '';
+		p.beginEdit();
+		this.orderedService.store.add(p);
+		this.orderedService.preorder = record;
+		if (this.preorderWindow){
+			this.preorderWindow.close();
+		}
 	}
 	
 });

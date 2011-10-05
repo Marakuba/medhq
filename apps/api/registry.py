@@ -66,6 +66,7 @@ class DiscountResource(ModelResource):
         queryset = Discount.objects.exclude(type=u'arc') 
         resource_name = 'discount'
         filtering = {
+            'id':ALL,
             'name':('istartswith',)
         }
 
