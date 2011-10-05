@@ -3,6 +3,7 @@ from django.db import models
 from service.models import BaseService
 from state.models import State
 from django.conf import settings
+from django.contrib.auth.models import Group
 
 #GROUP_SERVICE_UZI = 'uzi'
 #GROUP_SERVICE_LAB = 'lab'
@@ -70,3 +71,17 @@ class StateGroup(models.Model):
     def __unicode__(self):
         return u'%s'  %(self.name)
 
+
+class Report(models.Model):
+    """
+    """
+    name = models.CharField(u'Название', max_length=300)
+    module = models.CharField(u'Модуль', max_length=100)
+    is_active = models.BooleanField(u'Активен', default=True)
+    
+
+class ReportPermission(models.Model):
+    """
+    """
+    group = models.ForeignKey(Group)
+    reports = models.ManyToManyField(Report, blank=True, null=True)

@@ -68,3 +68,8 @@ class ReportForm(forms.Form):
                                             choices=[('',u'---------')]+list(PRICE_TYPES),
                                              required=False,
                                              help_text = 'только для отчетов по ценам')
+
+    details = forms.BooleanField(label=u'Показывать детально',
+                                 initial=True,
+                                 required=False,
+                                 help_text=u'отображать или нет детальные сведения в отчетах с группами')

@@ -9,8 +9,11 @@ SITE_ROOT = PROJECT_ROOT.dirname()
 sys.path.append(SITE_ROOT)
 sys.path.append(PROJECT_ROOT / 'apps')
 sys.path.append(PROJECT_ROOT / 'libs')
+sys.path.append(PROJECT_ROOT / 'custom')
 
 MEDIA_ROOT = PROJECT_ROOT / 'media'
+CUSTOMS_ROOT = PROJECT_ROOT / 'custom'
+REPORTS_DIR = 'reports'
 UPLOAD_DIR = MEDIA_ROOT / 'photo'
 TEMPLATE_DIRS = [PROJECT_ROOT / 'templates']
 
@@ -88,7 +91,6 @@ INSTALLED_APPS = (
     'sentry',
     'sentry.client',
 
-    'api',
     'core',
     'helpdesk',
     'webapp',
@@ -148,6 +150,8 @@ TASTYPIE_ALLOW_MISSING_SLASH = True
 APPEND_SLASH = False
 
 SESSION_EXPIRE_AT_BROWSER_CLOSE = True
+
+DBTEMPLATES_USE_CODEMIRROR = True
 
 
 #import djcelery

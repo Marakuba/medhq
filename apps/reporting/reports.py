@@ -6,6 +6,7 @@ from reporting import register, Report
 from visit.settings import PAYMENT_TYPES
 from visit.forms import CashReportForm, LabReportForm
 from django.conf import settings
+from django.contrib.auth.models import Permission
 
 class VrachReport(Report):
     verbose_name = u'Врач - количество,сумма..'
@@ -232,7 +233,11 @@ SELECT \
   round(sum(TTvis.count*TTvis.price*0.15),2) as s15,\
   round(sum(TTvis.count*TTvis.price*0.20),2) as s20, \
   round(sum(TTvis.count * TTvis.price * (Tvis.discount_value/100)),2) as disc,  \
-  sum(TTvis.count * TTvis.price) - round(sum(TTvis.count * TTvis.price * (Tvis.discount_value/100)),2) as clean_price \
+  sum(TTvis.count * TTvis.price) - round(sum(TTvis.count * TTvis.price * (Tvis.discount_value/100)),2) as clean_price, \
+  round(sum(TTvis.count*TTvis.price*0.05),2) as s05, \
+  round(sum(TTvis.count*300),2) as c300, \
+  round(sum(TTvis.count*100),2) as c100, \
+  round(sum(TTvis.count*50),2) as c50 \
 %s %s \
 GROUP BY \
   Trefrl.name  \
@@ -246,6 +251,7 @@ ORDER BY  \
     def make(self,results):
 
         vl = self.struct(results)
+        print vl
         #...
         tvv = map(lambda x: [
             x[0]                            # gr.0
@@ -255,6 +261,10 @@ ORDER BY  \
             ,sum(map(lambda y: y[5],x[1]))  # gr.4
             ,sum(map(lambda y: 0 if y[6] == None else y[6],x[1]))  # gr.4
             ,sum(map(lambda y: y[3] - (0 if y[6] == None else y[6]),x[1]))  # gr.4
+            ,sum(map(lambda y: y[8],x[1]))  # gr.4
+            ,sum(map(lambda y: y[9],x[1]))  # gr.4
+            ,sum(map(lambda y: y[10],x[1]))  # gr.4
+            ,sum(map(lambda y: y[11],x[1]))  # gr.4
             ,x[1:]                          # gr.5!!!!
         ] ,vl)    
         #...
@@ -264,11 +274,16 @@ ORDER BY  \
         t.append(sum(map(lambda x: x[2],tvv)))                  #results.0.2
         t.append(sum(map(lambda x: x[3],tvv)))                  #results.0.3
         t.append(sum(map(lambda x: x[4],tvv)))                  #results.0.4
-        t.append(sum(map(lambda x: 0 if x[5] == None else x[5],tvv)))                  #results.0.4
-        t.append(sum(map(lambda x: x[2] - (0 if x[5] == None else x[5]),tvv)))                  #results.0.4
+        t.append(sum(map(lambda x: 0 if x[5] == None else x[5],tvv)))                  #results.0.5
+        t.append(sum(map(lambda x: x[2] - (0 if x[5] == None else x[5]),tvv)))                  #results.0.6
+        t.append(sum(map(lambda x: x[7],tvv)))                  #results.0.7
+        t.append(sum(map(lambda x: x[8],tvv)))                  #results.0.8
+        t.append(sum(map(lambda x: x[9],tvv)))                  #results.0.9
+        t.append(sum(map(lambda x: x[10],tvv)))                  #results.0.10
         tt = []
         tt.append(t)
         return tt
+
 
 class RreferalUslSumReportOnlyUZI(Report):
     verbose_name = u'<<Кто направил>> - услуга,колич.,сумма,10% (только УЗИ)'
@@ -329,7 +344,11 @@ SELECT \
   round(sum(TTvis.count*TTvis.price*0.15),2) as s15,\
   round(sum(TTvis.count*TTvis.price*0.20),2) as s20, \
   round(sum(TTvis.count * TTvis.price * (Tvis.discount_value/100)),2) as disc,  \
-  sum(TTvis.count * TTvis.price) - round(sum(TTvis.count * TTvis.price * (Tvis.discount_value/100)),2) as clean_price \
+  sum(TTvis.count * TTvis.price) - round(sum(TTvis.count * TTvis.price * (Tvis.discount_value/100)),2) as clean_price, \
+  round(sum(TTvis.count*TTvis.price*0.05),2) as s05, \
+  round(sum(TTvis.count*300),2) as c300, \
+  round(sum(TTvis.count*100),2) as c100, \
+  round(sum(TTvis.count*50),2) as c50 \
 %s %s\
 GROUP BY \
   Trefrl.name  \
@@ -351,7 +370,11 @@ SELECT \
   round(sum(TTvis.count*TTvis.price*0.15),2) as s15,\
   round(sum(TTvis.count*TTvis.price*0.20),2) as s20, \
   round(sum(TTvis.count * TTvis.price * (Tvis.discount_value/100)),2) as disc,  \
-  sum(TTvis.count * TTvis.price) - round(sum(TTvis.count * TTvis.price * (Tvis.discount_value/100)),2) as clean_price \
+  sum(TTvis.count * TTvis.price) - round(sum(TTvis.count * TTvis.price * (Tvis.discount_value/100)),2) as clean_price, \
+  round(sum(TTvis.count*TTvis.price*0.05),2) as s05, \
+  round(sum(TTvis.count*300),2) as c300, \
+  round(sum(TTvis.count*100),2) as c100, \
+  round(sum(TTvis.count*50),2) as c50 \
 %s %s\
 GROUP BY \
   Trefrl.name  \
