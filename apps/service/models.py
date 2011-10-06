@@ -11,6 +11,7 @@ from django.core.cache import cache
 from django.db.models.signals import post_save
 from mptt.models import MPTTModel
 import datetime
+from state.models import State
 
 
 class ICD10(MPTTModel):
@@ -187,12 +188,12 @@ class BaseService(models.Model):
                 return self.execution_place.get(id=settings.MAIN_STATE_ID)
         return place
     
-    def price(self, state=None, date=None):
+    def price(self, state=None, date=None, payment_type=u'н'):
         """
         """
         if state:
             try:
-                price = self.extendedservice_set.get(state=state, date=date).get_actual_price()
+                price = self.extendedservice_set.get(state=state).get_actual_price(date=date, payment_type=payment_type)
                 return price
             except:
                 return 0
@@ -256,10 +257,10 @@ class ExtendedService(models.Model):
     
     objects = ExtendedServiceManager()
     
-    def get_actual_price(self, date=None):
+    def get_actual_price(self, date=None, payment_type=u'н'):
         try:
             date = date or datetime.date.today()
-            price_item = self.price_set.filter(price_type=u'r', on_date__lte=date).latest('on_date')
+            price_item = self.price_set.filter(price_type=u'r', payment_type=payment_type, on_date__lte=date).latest('on_date')
             return int(price_item.value.normalize())
         except:
             return None
@@ -303,9 +304,16 @@ def clear_service_cache(sender, **kwargs):
     if settings.SERVICETREE_ONLY_OWN:
         own_states = State.objects.filter(type=u'b')
         for state in own_states:
-            cache.delete('service_list_%s' % state.id)
+            _state_key = u'service_list_%s' % state.id
+            cache.delete(u'%s' % (_state_key,) )
+            cache.delete(u'%s_%s' % (_state_key,u'н') )
+            cache.delete(u'%s_%s' % (_state_key,u'б') )
+            cache.delete(u'%s_%s' % (_state_key,u'д') )
     else:
-        cache.delete('service_list')
+        cache.delete(u'service_list_н')
+        cache.delete(u'service_list_д')
+        cache.delete(u'service_list_б')
+        cache.delete(u'service_list')
     
     
 post_save.connect(clear_service_cache, sender=BaseService)

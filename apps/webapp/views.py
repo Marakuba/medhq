@@ -138,8 +138,8 @@ def get_service_tree(request):
     """
     Генерирует дерево в json-формате.
     """
-    _cache_key = (settings.SERVICETREE_ONLY_OWN and request.active_profile) and 'service_list_%s' % request.active_profile.state or 'service_list'
-    
+    payment_type = request.GET.get('payment_type',u'н')
+    _cache_key = (settings.SERVICETREE_ONLY_OWN and request.active_profile) and 'service_list_%s_%s' % (request.active_profile.state, payment_type) or ('service_list_%s' % payment_type)
     ignored = None
     if settings.SERVICETREE_ONLY_OWN and request.active_profile:
         office = request.active_profile.department.state
@@ -151,7 +151,7 @@ def get_service_tree(request):
             try:
                 bs = obj.base_service
                 es = bs.extendedservice_set.get(state=obj.execution_place)
-                price = es.get_actual_price()
+                price = es.get_actual_price(payment_type=payment_type)
                 node = {
                     "id":'%s-%s' % (obj.base_service.id,obj.execution_place.id),
                     "text":"%s [%s]" % (obj.base_service.short_name or obj.base_service.name, price),
@@ -189,7 +189,7 @@ def get_service_tree(request):
                     
 
                 for item in items:
-                    price = item.get_actual_price()
+                    price = item.get_actual_price(payment_type=payment_type)
                     if price:
                         node = {
                             "id":'%s-%s' % (base_service.id,item.state.id),

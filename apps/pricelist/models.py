@@ -6,6 +6,7 @@ from state.models import State
 from service.models import BaseService, ExtendedService
 from django.utils.encoding import smart_unicode
 import datetime
+from visit.settings import PAYMENT_TYPES
 
 
 class PriceType(models.Model):
@@ -28,6 +29,9 @@ class Price(models.Model):
     service = models.ForeignKey(BaseService, blank=True, null=True)
     extended_service = models.ForeignKey(ExtendedService, blank=True, null=True) 
     type = models.ForeignKey(PriceType, verbose_name=u'Тип цены', blank=True, null=True)
+    payment_type = models.CharField(u'Способ оплаты', max_length=1, 
+                                    default=u'н', 
+                                    choices=PAYMENT_TYPES)
     price_type = models.CharField(u'Тип цены!', max_length=1, choices=PRICE_TYPES)
     value = models.DecimalField(u'Сумма, руб.', max_digits=10, decimal_places=2,
                                 null=True)
