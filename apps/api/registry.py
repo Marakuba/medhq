@@ -12,7 +12,7 @@ from lab.models import LabOrder, Sampling, Tube, Result, Analysis, InputList,\
     InvoiceItem
 from service.models import BaseService, LabServiceGroup, ExtendedService, ICD10
 from staff.models import Position, Staff, Doctor
-from state.models import State
+from state.models import State, Department
 from django.conf import settings
 from pricelist.models import Discount
 from api.utils import none_to_empty
@@ -547,10 +547,24 @@ class StaffSchedResource(ModelResource):
             'id':ALL
         }
 
+class DepartmentResource(ExtResource):
+    """
+    """
+    state = fields.ToOneField(StateResource, 'state')
+    class Meta:
+        queryset = Department.objects.all()
+        resource_name = 'department'
+        limit = 100
+        filtering = {
+            'id':ALL,
+            'name':ALL,
+        }
+        
 class PosSchedResource(ModelResource):
     """
     """
     #doctor = fields.ToOneField(DoctorResource, 'doctor', null=True)
+    department = fields.ForeignKey(DepartmentResource, 'department', null=True)
     
     def dehydrate(self, bundle):
         bundle.data['name'] = bundle.obj.staff.short_name()
@@ -1414,6 +1428,7 @@ api.register(StaffResource())
 api.register(StaffSchedResource())
 api.register(PosSchedResource())
 api.register(StateResource())
+api.register(DepartmentResource())
 api.register(MedStateResource())
 api.register(InsuranceStateResource())
 api.register(DoctorResource())

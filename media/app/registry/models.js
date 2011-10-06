@@ -62,6 +62,7 @@ App.models.preorderModel = new Ext.data.Record.create([
 	{name: 'base_service'},
 	{name: 'service_name'},
 	{name: 'price'},
+	{name: 'department'},
 	{name: 'staff'},
 	{name: 'staff_name'},
 	{name: 'execution_place'},

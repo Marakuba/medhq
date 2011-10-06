@@ -16,7 +16,8 @@ Ext.calendar.StaffGrid = Ext.extend(Ext.grid.GridPanel, {
 		}, [
 		    {name: 'id'},
 		    {name: 'name'},
-		    {name: 'title'}
+		    {name: 'title'},
+		    {name: 'department'}
 		]);
 
 		this.store = new Ext.data.Store({
@@ -47,12 +48,51 @@ Ext.calendar.StaffGrid = Ext.extend(Ext.grid.GridPanel, {
 				//anchor:'100%',
 		    	sortable: true, 
 		    	dataIndex: 'title'
+		    },{
+		    //	header: " Должность", 
+		    	//width: 8,
+				//anchor:'100%',
+		    	hidden:true,
+		    	sortable: true, 
+		    	dataIndex: 'department'
 		    }
 		];		
 		
 		this.store.on('load',function(){
 			this.getSelectionModel().selectFirstRow(0);
 		},this);
+		
+		this.departmentStore = new Ext.data.RESTStore({
+			autoLoad : true,
+			apiUrl : get_api_url('department'),
+			model: [
+				    {name: 'resource_uri'},
+				    {name: 'name'},
+				    {name: 'id'}
+				]
+		});
+		
+		this.departmentCB = new Ext.form.LazyClearableComboBox({
+        	fieldLabel:'Отдел',
+			width:150,
+			forceSelection:true,
+        	store:this.departmentStore,
+		    displayField: 'name',
+		    queryParam:'name__istartswith',
+		    listeners:{
+		    	'select':function(combo,record,index){
+		    		if (record) {
+		    			this.store.filter('department',record.data.resource_uri);
+		    		} else {
+		    			this.store.clearFilter()
+		    		}
+		    	},
+		    	'clearclick': function() {
+		    		this.store.clearFilter();
+		    	},
+		    	scope:this
+		    }
+		});
 
 		var config = {
 			//title:'Врачи',
@@ -63,7 +103,8 @@ Ext.calendar.StaffGrid = Ext.extend(Ext.grid.GridPanel, {
 			border : false,
 			store:this.store,
 			//height:500,
-			columns:this.columns
+			columns:this.columns,
+			tbar: [this.departmentCB]
 			//sm : new Ext.grid.RowSelectionModel({
 				//singleSelect : true
 			//})

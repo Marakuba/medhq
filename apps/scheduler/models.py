@@ -6,6 +6,7 @@ import datetime
 from south.modelsinspector import add_introspection_rules
 from django.utils.encoding import smart_unicode, force_unicode, smart_str
 import time
+from visit.settings import PAYMENT_TYPES
 from staff.models import Staff, Position
 from patient.models import Patient
 from mptt.models import MPTTModel
@@ -145,6 +146,9 @@ class Preorder(models.Model):
     expiration = CustomDateTimeField(u'Дата истечения', blank = True, null = True)
     visit = models.OneToOneField(Visit, null=True)
     service = models.ForeignKey(ExtendedService, null=True)
+    payment_type = models.CharField(u'Способ оплаты', max_length=1, 
+                                    default=u'н', 
+                                    choices=PAYMENT_TYPES)
     
     def get_staff_name(self):
         staff_name = Position.objects.get(id=self.timeslot.cid).staff.short_name()

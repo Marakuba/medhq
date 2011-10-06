@@ -460,7 +460,11 @@ App.visit.VisitForm = Ext.extend(Ext.FormPanel, {
 				this.getForm().loadRecord(this.record);
 			};
 			if (this.preorderRecord && this.preorderRecord.data.service){
-				this.addPreorderService(this.preorderRecord)
+				this.addPreorderService(this.preorderRecord);
+				if (this.preorderRecord.data.payment_type){
+					this.paymentTypeCB.setValue(this.preorderRecord.data.payment_type);
+					this.paymentTypeCB.fireEvent('select');
+				}
 			}
 		},this);
 		this.orderedService.on('sumchange', this.updateTotalSum, this);

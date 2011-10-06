@@ -77,12 +77,13 @@ Ext.calendar.TimeslotEditWindow = Ext.extend(Ext.Window, {
 		this.patientCombo = new Ext.form.LazyComboBox({
         	fieldLabel:'Пациент',
 			anchor:'98%',
+			hideTrigger:true,
         	store:this.patientStore,
 		    displayField: 'full_name',
 		    queryParam:'last_name__istartswith',
 		    listeners:{
 		    	'select':function(combo,record,index){
-		    		this.formPanel.form.findField('Title').setValue(record.data.short_name);
+		    		this.formPanel.form.findField('Title').setValue(' ');
 		    		this.patient = record;
 		    		this.serviceCombo.enable();
 		    	},
@@ -95,7 +96,88 @@ Ext.calendar.TimeslotEditWindow = Ext.extend(Ext.Window, {
             fieldLabel: 'Пациент'
 		});
 		
-	    this.fieldSet = new Ext.FormPanel({
+	    
+    	
+
+    	this.preorderModel = new Ext.data.Record.create([
+		    {name: 'id'},
+		    {name: 'resource_uri'},
+		    {name: 'patient'},
+		    {name: 'timeslot'},
+		    {name: 'service'},
+		    {name: 'comment'},
+		    {name: 'expiration'},
+		    {name: 'payment_type'}
+		]);
+
+    	this.preorderStore = new Ext.data.RESTStore({
+			autoLoad : false,
+			apiUrl : get_api_url('preorder'),
+			model: this.preorderModel
+		});
+		
+		this.preorderStore.on('write', function(store, action, result, res, rs){
+			if(action=='create') {
+			    this.preorder = rs;
+			    //App.eventManager.fireEvent('preordercreate',rs);
+		    };
+		    App.calendar.eventManager.fireEvent('preorderwrite',rs);
+		}, this);
+		
+		this.clearButton = new Ext.Button({
+			iconCls:'silk-cancel',
+			text:'Отменить предзаказ',
+			disabled:true,
+			handler:this.onClear.createDelegate(this, [])
+		});
+		
+		this.serviceButton = new Ext.Button({
+			disabled:true,
+			iconCls:'silk-accept',
+			text:'Выбрать услугу',
+			handler:this.onServiceChoice.createDelegate(this, [])
+		});
+		
+		this.paymentTypeCB = new Ext.form.ComboBox({
+			fieldLabel:'Форма оплаты',
+			disabled:true,
+			name:'payment_type',
+			store:new Ext.data.ArrayStore({
+				fields:['id','title'],
+				data: [
+					['н','Наличная оплата'],
+					['б','Безналичный перевод'],
+					['д','ДМС']]
+			}),
+			typeAhead: true,
+			triggerAction: 'all',
+			valueField:'id',
+			displayField:'title',
+			mode: 'local',
+			forceSelection:true,
+			selectOnFocus:true,
+			editable:false,
+			anchor:'98%',
+			value:'н'
+			/*listeners: {
+				select:function(combo,rec,i){
+//					var pb = Ext.getCmp('policy-bar');
+//					var vpc = Ext.getCmp('visit-policy-cmb');
+					if(rec.data.id=='д') {
+						this.policyCmb.allowBlank = false;
+						this.policyBar.show();
+					} else {
+						this.policyCmb.allowBlank = true;
+						this.policyCmb.reset();
+						this.policyBar.hide();
+					}
+					
+				},
+				scope:this
+			}*/
+		});
+
+		this.fieldSet = new Ext.FormPanel({
 	    	//layout:'column',
 	    	baseCls:'x-border-layout-ct',
 	    	labelWidth: 100,
@@ -128,6 +210,7 @@ Ext.calendar.TimeslotEditWindow = Ext.extend(Ext.Window, {
 	    },
 	    this.patientCombo,
 	    this.serviceCombo,
+	    this.paymentTypeCB,
 	    {
     		xtype: 'textarea',
     		fieldLabel:'Комментарий',
@@ -146,45 +229,6 @@ Ext.calendar.TimeslotEditWindow = Ext.extend(Ext.Window, {
 	        items: [this.fieldSet]
     	});
     	
-
-    	this.preorderModel = new Ext.data.Record.create([
-		    {name: 'id'},
-		    {name: 'resource_uri'},
-		    {name: 'patient'},
-		    {name: 'timeslot'},
-		    {name: 'service'},
-		    {name: 'comment'},
-		    {name: 'expiration'}
-		]);
-
-    	this.preorderStore = new Ext.data.RESTStore({
-			autoLoad : false,
-			apiUrl : get_api_url('preorder'),
-			model: this.preorderModel
-		});
-		
-		this.preorderStore.on('write', function(store, action, result, res, rs){
-			if(action=='create') {
-			    this.preorder = rs;
-			    //App.eventManager.fireEvent('preordercreate',rs);
-		    };
-		    App.calendar.eventManager.fireEvent('preorderwrite',rs);
-		}, this);
-		
-		this.clearButton = new Ext.Button({
-			iconCls:'silk-cancel',
-			text:'Отменить предзаказ',
-			disabled:true,
-			handler:this.onClear.createDelegate(this, [])
-		});
-		
-		this.serviceButton = new Ext.Button({
-			disabled:true,
-			iconCls:'silk-accept',
-			text:'Выбрать услугу',
-			handler:this.onServiceChoice.createDelegate(this, [])
-		})
-
         this.addEvents({
             /**
              * @event eventadd
@@ -304,7 +348,7 @@ Ext.calendar.TimeslotEditWindow = Ext.extend(Ext.Window, {
         		scope:this,
         		fn:function(record){
         			var name = record.data.last_name+' '+record.data.first_name;
-        			this.formPanel.form.findField('Title').setValue(name)
+        			this.formPanel.form.findField('Title').setValue(' ')
         			this.patient = record;
 					patientWindow.close();
 				}
@@ -490,6 +534,7 @@ Ext.calendar.TimeslotEditWindow = Ext.extend(Ext.Window, {
         	if (this.preorder) {
         		this.preorder.set('patient',this.patient.data.resource_uri);
         		this.preorder.set('service',this.serviceCombo.getValue());
+        		this.preorder.set('payment_type',this.paymentTypeCB.getValue());
         		this.preorder.set('comment',this.formPanel.form.findField('comment').getValue());
         		console.log('serv ',this.serviceCombo.getValue())
         		this.preorder.commit();
@@ -499,6 +544,7 @@ Ext.calendar.TimeslotEditWindow = Ext.extend(Ext.Window, {
         		var record = new this.preorderModel();
         		record.set('patient',this.patient.data.resource_uri);
         		record.set('service',this.serviceCombo.getValue());
+        		record.set('payment_type',this.paymentTypeCB.getValue());
         		record.set('comment',this.formPanel.form.findField('comment').getValue());
         		record.set('timeslot',uri);
         		var end = this.activeRecord.data[M.EndDate.name];
@@ -509,7 +555,7 @@ Ext.calendar.TimeslotEditWindow = Ext.extend(Ext.Window, {
         } else {
         	if (this.preorder){
         		this.preorder.set('service',this.serviceCombo.getValue());
-        		console.log('serv ',this.preorder.data.service);
+        		this.preorder.set('payment_type',this.paymentTypeCB.getValue());
         		this.preorder.set('comment',this.formPanel.form.findField('comment').getValue());
         		//this.preorderStore.commitChanges();
         		this.preorder.commit();
@@ -522,14 +568,17 @@ Ext.calendar.TimeslotEditWindow = Ext.extend(Ext.Window, {
 			this.preorder = records[0];
 			this.clearButton.setDisabled(false);
 			this.serviceButton.setDisabled(false);
-			this.serviceCombo.setValue(this.preorder.data.service);
-			this.patientCombo.setValue(this.preorder.data.patient);
+			this.serviceCombo.forceValue(this.preorder.data.service);
+			this.patientCombo.forceValue(this.preorder.data.patient);
+			this.paymentTypeCB.setValue(this.preorder.data.payment_type);
 			this.formPanel.form.findField('comment').setValue(this.preorder.data.comment);
             this.serviceCombo.enable();
+            this.paymentTypeCB.enable();
 		} else {
 			this.clearButton.setDisabled(true);
 			this.serviceButton.setDisabled(true);
 			this.serviceCombo.disable();
+			this.paymentTypeCB.disable();
 		}
 	},
 
@@ -578,9 +627,10 @@ Ext.calendar.TimeslotEditWindow = Ext.extend(Ext.Window, {
 			fn:function(record){
 				this.patient = record;
 				var name = record.data.last_name+' '+record.data.first_name;
-        		this.formPanel.form.findField('Title').setValue(name);
+        		this.formPanel.form.findField('Title').setValue(' ');
         		this.serviceButton.setDisabled(false);
         		this.serviceCombo.enable();
+        		this.paymentTypeCB.enable();
 				
 			}
 		});
@@ -597,10 +647,11 @@ Ext.calendar.TimeslotEditWindow = Ext.extend(Ext.Window, {
        		scope:this,
        		fn:function(record){
        			var name = record.data.last_name+' '+record.data.first_name;
-       			this.formPanel.form.findField('Title').setValue(record.data.short_name);
-       			this.patientCombo.setValue(record.data.resource_uri);
+       			this.formPanel.form.findField('Title').setValue(' ');
+       			this.patientCombo.forceValue(record.data.resource_uri);
        			this.patient = record;
        			this.serviceCombo.enable();
+       			this.paymentTypeCB.enable();
        			this.serviceButton.setDisabled(false);
 				patientWindow.close();
 			}

@@ -51,6 +51,7 @@ Ext.form.ClearableComboBox = Ext.extend(Ext.form.ComboBox, {
     	this.value = '';
     	this.reset();
     	var a;
+    	this.fireEvent('clearclick')
     }             // clear contents of combobox
 });
 
