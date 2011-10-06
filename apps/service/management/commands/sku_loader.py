@@ -48,7 +48,8 @@ class Command(BaseCommand):
 #                        params['parent'] = group_object
             if id:
                 try:
-                    service = BaseService.objects.get(**params)
+                    service = BaseService.objects.get(id=id)
+                    BaseService.objects.update(name=name, short_name=short_name)
                 except ObjectDoesNotExist:
                     print u'Услуга "%s" не найдена'
                     continue
@@ -56,7 +57,7 @@ class Command(BaseCommand):
                 service = BaseService.objects.create(name=name, short_name=short_name)
                 print u'Создана услуга:', service
             
-            if price!='' and state!='':
+            if state!='':
                 
                 state_object = _state_cache.get(state, None)
                 if not state_object:
@@ -64,19 +65,22 @@ class Command(BaseCommand):
                                                                         print_name=state, 
                                                                         official_title=state, 
                                                                         type=u'm')
-                    print u"Добавлена организация", state_object
+                    print u"Добавлена организация:", state_object
                     if created:
                         _state_cache[state] = state_object
                     
                 extended_service, created = ExtendedService.objects.get_or_create(base_service=service, 
                                                                                   state=state_object)
                 if created:
-                    print u'Добавлена расширенная услуга', extended_service
+                    print u'Добавлена расширенная услуга:', extended_service
                 
-                if price!=0:
+                if price:
                     new_price, created = Price.objects.get_or_create(extended_service=extended_service,
                                                                      payment_type=pt, 
                                                                      price_type=u'r', 
                                                                      value=price)
                     if created:
-                        print u'Установлена цена', price
+                        print u'Установлена цена:', price
+                else:
+                    extended_service.is_active = False
+                    extended_service.save()
