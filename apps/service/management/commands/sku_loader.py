@@ -22,8 +22,10 @@ class Command(BaseCommand):
         _service_cache = {}
         _state_cache = {}
         
+        table.next()
+        
         for row in table:
-            id, group_id, group, name, short_name, state, price = [unicode(col.strip(),'utf-8') for col in row]
+            id, group_id, group_name, name, short_name, state, price = [unicode(col.strip(),'utf-8') for col in row]
             if name=='' and short_name=='':
                 continue
             
@@ -47,14 +49,27 @@ class Command(BaseCommand):
 #                    if group_object:
 #                        params['parent'] = group_object
             if id:
+                print "ID", id
                 try:
-                    service = BaseService.objects.get(id=id)
-                    BaseService.objects.update(name=name, short_name=short_name)
+                    service = BaseService.objects.get(id=int(id))
+                    service.name = name
+                    service.short_name = short_name
+                    service.save()
                 except ObjectDoesNotExist:
                     print u'Услуга "%s" не найдена'
                     continue
             else:
-                service = BaseService.objects.create(name=name, short_name=short_name)
+                
+                group = None
+                if group_id:
+                    group = _service_cache.get(group_id, None)
+                    if not group:
+                        try:
+                            group = BaseService.objects.get(id=int(group_id))
+                        except:
+                            pass
+                        
+                service = BaseService.objects.create(parent=group, name=name, short_name=short_name)
                 print u'Создана услуга:', service
             
             if state!='':
@@ -63,11 +78,10 @@ class Command(BaseCommand):
                 if not state_object:
                     state_object, created = State.objects.get_or_create(name=state, 
                                                                         print_name=state, 
-                                                                        official_title=state, 
-                                                                        type=u'm')
+                                                                        official_title=state)
                     print u"Добавлена организация:", state_object
-                    if created:
-                        _state_cache[state] = state_object
+#                    if created:
+                    _state_cache[state] = state_object
                     
                 extended_service, created = ExtendedService.objects.get_or_create(base_service=service, 
                                                                                   state=state_object)
