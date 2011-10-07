@@ -95,9 +95,6 @@ Ext.calendar.TimeslotEditWindow = Ext.extend(Ext.Window, {
 			name: Ext.calendar.EventMappings.Title.name,
             fieldLabel: 'Пациент'
 		});
-		
-	    
-    	
 
     	this.preorderModel = new Ext.data.Record.create([
 		    {name: 'id'},
@@ -159,32 +156,14 @@ Ext.calendar.TimeslotEditWindow = Ext.extend(Ext.Window, {
 			editable:false,
 			anchor:'98%',
 			value:'н'
-			/*listeners: {
-				select:function(combo,rec,i){
-//					var pb = Ext.getCmp('policy-bar');
-//					var vpc = Ext.getCmp('visit-policy-cmb');
-					if(rec.data.id=='д') {
-						this.policyCmb.allowBlank = false;
-						this.policyBar.show();
-					} else {
-						this.policyCmb.allowBlank = true;
-						this.policyCmb.reset();
-						this.policyBar.hide();
-					}
-					
-				},
-				scope:this
-			}*/
 		});
 
 		this.fieldSet = new Ext.FormPanel({
-	    	//layout:'column',
 	    	baseCls:'x-border-layout-ct',
 	    	labelWidth: 100,
 	    	frame: false,
 	    	region:'center',
 	    	margins:'5 0 5 5',
-	    	//width:'400',
 	    	defaults:{
 	    		anchor:'100%'
 	    	},
@@ -219,7 +198,6 @@ Ext.calendar.TimeslotEditWindow = Ext.extend(Ext.Window, {
 	    ]});
     	
     	this.formPanelCfg = new Ext.FormPanel({
-	        //xtype: 'form',
         	layout:'border',
 	        bodyStyle: 'background:transparent;padding:5px 10px 10px;',
     	    bodyBorder: false,
@@ -340,6 +318,31 @@ Ext.calendar.TimeslotEditWindow = Ext.extend(Ext.Window, {
 		Ext.apply(this, Ext.apply(this.initialConfig, config));
         Ext.calendar.TimeslotEditWindow.superclass.initComponent.apply(this, arguments);
 //        this.servicePanel.on('serviceclick', this.onServiceClick, this);
+        
+        this.formPanelCfg.on('afterrender',function(form){
+        	var cfg = {
+                    shadow: false,
+                    completeOnEnter: true,
+                    cancelOnEsc: true,
+                    updateEl: true,
+                    ignoreNoChange: true
+                };
+
+                var labelEditor = new Ext.Editor(Ext.apply({
+                    alignment: 'l-l',
+                    field: {
+                        allowBlank: false,
+                        xtype: 'textfield',
+                        width: 90,
+                        selectOnFocus: true
+                    }
+                }, cfg));
+                form.body.on('dblclick', function(e, t){
+                    labelEditor.startEdit(t);
+                }, null, {
+                    delegate: 'label.x-form-item-label'
+                });
+        })
         
         this.formPanelCfg.on('patientchoice',function(){
         	var patientWindow;

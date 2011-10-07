@@ -124,11 +124,16 @@ App.registry.PreorderGrid = Ext.extend(Ext.grid.GridPanel, {
         	},
 			viewConfig : {
 				forceFit : true,
-				getRowClass: function(record, index) {
+				showPreview:true,
+				enableRowBody:true,
+				getRowClass: function(record, index, p, store) {
             		var service = record.get('service');
             		var visit = record.get('visit');
             		var today = new Date();
             		var actual = record.data.start.clearTime() >= today.clearTime();
+            		if (record.data.comment){
+            			p.body = '<p class="helpdesk-row-body"> Комментарий: '+record.data.comment+'</p>';
+            		};
             		if (visit) {
                 		return 'preorder-visited-row-body';
             		};
