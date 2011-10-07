@@ -56,7 +56,7 @@ class Department(models.Model):
     name = models.CharField(u"Наименование", max_length=200)
     
     def __unicode__(self):
-        return u"%s - %s" % (self.name,self.state)
+        return u"%s / %s" % (self.name,self.state)
     
     class Meta:
         verbose_name = u"отделение/консультация"

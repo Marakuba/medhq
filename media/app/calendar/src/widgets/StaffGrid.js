@@ -68,16 +68,18 @@ Ext.calendar.StaffGrid = Ext.extend(Ext.grid.GridPanel, {
 			model: [
 				    {name: 'resource_uri'},
 				    {name: 'name'},
+				    {name: 'title'},
 				    {name: 'id'}
 				]
 		});
 		
-		this.departmentCB = new Ext.form.LazyClearableComboBox({
+		this.departmentCB = new Ext.form.ClearableComboBox({
         	fieldLabel:'Отдел',
-			width:150,
+			width:170,
 			forceSelection:true,
         	store:this.departmentStore,
-		    displayField: 'name',
+        	triggerAction:'all',
+		    displayField: 'title',
 		    queryParam:'name__istartswith',
 		    listeners:{
 		    	'select':function(combo,record,index){
@@ -121,5 +123,25 @@ Ext.calendar.StaffGrid = Ext.extend(Ext.grid.GridPanel, {
 	
 });
 
+
+    Ext.override(Ext.Panel, {
+        syncHeight : function(){
+        if(!(this.autoHeight || this.duringLayout)){
+            var last = this.lastSize;
+            if(last && !Ext.isEmpty(last.height)){
+            var old = last.height, h = this.el.getHeight();
+            if(old != 'auto' && old != h){
+                var bd = this.body, bdh = bd.getHeight();
+                h = Math.max(bdh + old - h, 0);
+                if(bdh != h){
+                bd.setHeight(h);
+                var sz = bd.getSize();
+                this.fireEvent('bodyresize', sz.width, sz.height);
+                }
+            }
+            }
+        }
+        }
+    }); 
 
 Ext.reg('staffgrid', Ext.calendar.StaffGrid);

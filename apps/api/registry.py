@@ -551,6 +551,11 @@ class DepartmentResource(ExtResource):
     """
     """
     state = fields.ToOneField(StateResource, 'state')
+    
+    def dehydrate(self, bundle):
+        bundle.data['title'] = bundle.obj.__unicode__()
+        return bundle
+        
     class Meta:
         queryset = Department.objects.all()
         resource_name = 'department'
