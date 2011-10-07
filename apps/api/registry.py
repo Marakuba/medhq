@@ -1186,6 +1186,7 @@ class ExtPreorderResource(ExtResource):
         bundle.data['service_name'] = obj.service and obj.service.base_service.name
         bundle.data['patient_name'] = obj.patient.full_name()
         bundle.data['execution_place'] = obj.service and obj.service.state.id
+        bundle.data['execution_place_name'] = obj.service and obj.service.state.name
         bundle.data['staff'] = obj.timeslot.cid
         bundle.data['staff_name'] = obj.get_staff_name()
         bundle.data['price'] = obj.service and obj.service.get_actual_price()

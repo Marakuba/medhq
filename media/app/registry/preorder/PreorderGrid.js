@@ -42,6 +42,11 @@ App.registry.PreorderGrid = Ext.extend(Ext.grid.GridPanel, {
 		    	sortable: true, 
 		    	dataIndex: 'price'
 		    },{
+		    	header: "Место выполнения", 
+		    	width: 40, 
+		    	sortable: true, 
+		    	dataIndex: 'execution_place_name'
+		    },{
 		    	header: "Время", 
 		    	width: 35, 
 		    	sortable: true, 
@@ -126,6 +131,12 @@ App.registry.PreorderGrid = Ext.extend(Ext.grid.GridPanel, {
             		var actual = record.data.start.clearTime() >= today.clearTime();
             		if (visit) {
                 		return 'preorder-visited-row-body';
+            		};
+            		if (!actual) {
+                		return 'preorder-deactive-row-body';
+            		};
+            		if (!(state == record.data.execution_place) && record.data.service) {
+            			return 'preorder-other-place-row-body';
             		};
             		if (actual) {
                 		return 'preorder-actual-row-body';
@@ -215,11 +226,15 @@ App.registry.PreorderGrid = Ext.extend(Ext.grid.GridPanel, {
     visitAdd : function(record) {
     	this.record = record;
     	if (!record){
-    		Ext.msg.alert('Ошибка','Не указан предзаказ');
+    		Ext.Msg.alert('Ошибка!','Не указан предзаказ!');
     		return
     	};
     	if (!record.data.patient){
-    		Ext.msg.alert('Ошибка','Не указан пациент');
+    		Ext.Msg.alert('Ошибка!','Не указан пациент!');
+    		return
+    	};
+    	if (!(state == record.data.execution_place) && record.data.service){
+    		Ext.Msg.alert('Ошибка!','Вы не можете работать с этой организацией!');
     		return
     	};
     	this.patientStore.setBaseParam('id',App.uriToId(record.data.patient));

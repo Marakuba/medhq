@@ -212,7 +212,7 @@ Ext.calendar.DoctorScheduler = Ext.extend(Ext.Panel, {
                         border: false,
                         id:'app-calendar',
                         region: 'center',
-                        activeItem: 2, // month view
+                        activeItem: 1, // week view
                         
                         // CalendarPanel supports view-specific configs that are passed through to the 
                         // underlying views to make configuration possible without explicitly having to 
@@ -362,6 +362,7 @@ Ext.calendar.DoctorScheduler = Ext.extend(Ext.Panel, {
 	        	
 	            	this.editWin = new Ext.calendar.EventEditWindow({
                     	calendarStore: this.calendarStore,
+                    	modal:true,
 						listeners: {
 							'eventadd': {
 								fn: function(win, rec){
@@ -406,6 +407,7 @@ Ext.calendar.DoctorScheduler = Ext.extend(Ext.Panel, {
 	        } else {
 	        	this.timeslotWin = new Ext.calendar.TimeslotEditWindow({
 	        		staff_id : this.staff_id,
+	        		modal:true,
                    	calendarStore: this.calendarStore,
 					listeners: {
 						'eventadd': {
