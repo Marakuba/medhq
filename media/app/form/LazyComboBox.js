@@ -57,7 +57,19 @@ Ext.form.LazyComboBox = Ext.extend(Ext.form.ComboBox, {
 	
 	forceValue:function(value) {
 		this._cachedValue = value;
-		this.store.load();
+		this.store.load({
+			params: {
+				id:App.uriToId(value)
+			},
+			callback: function(r, opts, success){
+				if(r.length) {
+					this.setValue(this._cachedValue);
+					this.originalValue = this.getValue();
+					this.fireEvent('forceload',this,value);
+				}
+			},
+			scope:this
+		});
 	}
 });
 
@@ -119,7 +131,19 @@ Ext.form.LazyClearableComboBox = Ext.extend(Ext.form.ClearableComboBox, {
 
 	forceValue:function(value) {
 		this._cachedValue = value;
-		this.store.load();
+		this.store.load({
+			params: {
+				id:App.uriToId(value)
+			},
+			callback: function(r, opts, success){
+				if(r.length) {
+					this.setValue(this._cachedValue);
+					this.originalValue = this.getValue();
+					this.fireEvent('forceload',this,value);
+				}
+			},
+			scope:this
+		});
 	}
 });
 

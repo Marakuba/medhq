@@ -306,7 +306,7 @@ Ext.calendar.TimeslotEditWindow = Ext.extend(Ext.Window, {
     	    autocreate: true,
         	border: true,
 	        //closeAction: 'hide',
-    	    modal: false,
+    	    modal: true,
         	resizable: false,
 	        buttonAlign: 'left',
     	    savingMessage: 'Сохранение изменений...',

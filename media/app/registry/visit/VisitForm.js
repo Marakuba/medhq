@@ -281,15 +281,7 @@ App.visit.VisitForm = Ext.extend(Ext.FormPanel, {
 				select:function(combo,rec,i){
 //					var pb = Ext.getCmp('policy-bar');
 //					var vpc = Ext.getCmp('visit-policy-cmb');
-					if(rec.data.id=='д') {
-						this.policyCmb.allowBlank = false;
-						this.policyBar.show();
-					} else {
-						this.policyCmb.allowBlank = true;
-						this.policyCmb.reset();
-						this.policyBar.hide();
-					}
-					
+					this.onPaymentTypeChoice(rec.data.id);
 				},
 				scope:this
 			}
@@ -463,7 +455,7 @@ App.visit.VisitForm = Ext.extend(Ext.FormPanel, {
 				this.addPreorderService(this.preorderRecord);
 				if (this.preorderRecord.data.payment_type){
 					this.paymentTypeCB.setValue(this.preorderRecord.data.payment_type);
-					this.paymentTypeCB.fireEvent('select');
+					this.onPaymentTypeChoice(this.preorderRecord.data.payment_type);
 				}
 			}
 		},this);
@@ -627,6 +619,17 @@ App.visit.VisitForm = Ext.extend(Ext.FormPanel, {
 		this.orderedService.preorder = record;
 		if (this.preorderWindow){
 			this.preorderWindow.close();
+		}
+	},
+	
+	onPaymentTypeChoice : function(type){
+		if(type=='д') {
+			this.policyCmb.allowBlank = false;
+			this.policyBar.show();
+		} else {
+			this.policyCmb.allowBlank = true;
+			this.policyCmb.reset();
+			this.policyBar.hide();
 		}
 	}
 	

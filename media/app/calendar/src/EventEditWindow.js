@@ -70,7 +70,7 @@ Ext.calendar.EventEditWindow = function(config) {
         autocreate: true,
         border: true,
         closeAction: 'hide',
-        modal: false,
+        modal: true,
         resizable: false,
         buttonAlign: 'left',
         savingMessage: 'Сохранение изменений...',
