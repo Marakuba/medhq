@@ -102,6 +102,7 @@ Ext.calendar.TimeslotEditWindow = Ext.extend(Ext.Window, {
 		    listeners:{
 		    	'select':function(combo,record,index){
 		    		this.formPanel.form.findField('Title').setValue(' ');
+		    		this.formPanel.form.findField('vacant').setValue(false);
 		    		this.setPatient(record.data.resource_uri);
 		    		this.serviceCombo.enable();
 		    		this.serviceButton.setDisabled(false);
@@ -111,10 +112,10 @@ Ext.calendar.TimeslotEditWindow = Ext.extend(Ext.Window, {
 		    }
 		});
 	    
-		this.titleField = new Ext.form.TextField({
+		/*this.titleField = new Ext.form.TextField({
 			name: Ext.calendar.EventMappings.Title.name,
             fieldLabel: 'Пациент'
-		});
+		});*/
 
     	this.preorderModel = new Ext.data.Record.create([
 		    {name: 'id'},
@@ -189,7 +190,7 @@ Ext.calendar.TimeslotEditWindow = Ext.extend(Ext.Window, {
 		this.patientEditor = new Ext.Editor(Ext.apply({
                 alignment: 'l-l',
                 field: {
-                    allowBlank: false,
+                    allowBlank: true,
                     xtype: 'textfield',
                     width: 90,
                     selectOnFocus: true
@@ -206,11 +207,11 @@ Ext.calendar.TimeslotEditWindow = Ext.extend(Ext.Window, {
 		
 		 this.tpl = new Ext.XTemplate(
     		'<tpl for=".">',
-	        	'{full_name}',
-	        	' тел.: ','<span id="mobile_phone">','{mobile_phone}','</span>',
-	        	' email: ','<span id="email">','{email}','</span>',
-	        	' дата рождения: ','<span id="birth_day">','{birth_day}','</span>',
-	    	'</tpl>'
+	        	' тел.: ','<span id="mobile_phone">','{mobile_phone:this.nullFormatter}','</span>',
+	        	' email: ','<span id="email">','{email:this.nullFormatter}','</span>',
+	        	' дата рождения: ','<span id="birth_day">','{birth_day:date("d.m.Y")}','</span>',
+	    	'</tpl>',
+	    	{nullFormatter: function(v) { return v ? v : '<em>не указано</em>'; }}
 		);
 		
 		this.dw =  new Ext.DataView({
@@ -256,7 +257,7 @@ Ext.calendar.TimeslotEditWindow = Ext.extend(Ext.Window, {
         	name: 'CalendarId'
 	    },{
     		xtype: 'hidden',
-        	name: 'Vacant'
+        	name: 'vacant'
 	    },{
     		xtype: 'hidden',
         	name: 'Preorder'
@@ -494,7 +495,7 @@ Ext.calendar.TimeslotEditWindow = Ext.extend(Ext.Window, {
 
         Ext.calendar.TimeslotEditWindow.superclass.show.call(this, anim,
         function() {
-            this.titleField.focus(false, 100);
+//            this.titleField.focus(false, 100);
         });
         //Ext.getCmp('delete-btn')[o.data && o.data[Ext.calendar.EventMappings.EventId.name] ? 'show': 'hide']();
 
@@ -598,21 +599,26 @@ Ext.calendar.TimeslotEditWindow = Ext.extend(Ext.Window, {
         if (this.staffStore) {
         	this.activeRecord.set(M.StaffId.name, this.formPanel.form.findField('staff').getValue());
         };
-        this.activeRecord.set(M.Vacant.name, this.titleField.getValue()=='');
+//        this.activeRecord.set(M.vacant.name, this.formPanel.form.findField('Title')=='');
+        var vacant = this.formPanel.form.findField('vacant').getValue();
+        this.activeRecord.set('Vacant',vacant=='true'?true:false)
         this.activeRecord.set(M.Timeslot.name, true);
         
         var uri = this.activeRecord.data[M.ResourceURI.name];
         //Если мы выбрали пациента
         if (this.patient && uri){
         	if (this.preorder) {
-        		this.preorder.set('patient',this.patient.data.resource_uri);
-        		this.preorder.set('service',this.serviceCombo.getValue());
-        		this.preorder.set('payment_type',this.paymentTypeCB.getValue());
-        		this.preorder.set('comment',this.formPanel.form.findField('comment').getValue());
-        		console.log('serv ',this.serviceCombo.getValue())
-        		this.preorder.commit();
-//        		this.preorderStore.commitChanges();
-//        		this.preorderedService.onPreorderCreate(this.preorder);
+        		//Если была нажата кнопка Отменить предзаказ
+      			if (this.setRemovePreorder) {
+      			  	this.setRemovePreorder = false;
+        			this.preorderStore.remove(this.preorder);
+        		} else {
+	        		this.preorder.set('patient',this.patient.data.resource_uri);
+	        		this.preorder.set('service',this.serviceCombo.getValue());
+	        		this.preorder.set('payment_type',this.paymentTypeCB.getValue());
+	        		this.preorder.set('comment',this.formPanel.form.findField('comment').getValue());
+	        		this.preorder.commit();
+        		}
         	} else {
         		var record = new this.preorderModel();
         		record.set('patient',this.patient.data.resource_uri);
@@ -676,12 +682,7 @@ Ext.calendar.TimeslotEditWindow = Ext.extend(Ext.Window, {
 			this.fireEvent(this.isAdd ? 'eventadd': 'eventupdate', this, this.activeRecord);
 		}
 		
-        //Если была нажата кнопка Отменить предзаказ
-        if (this.setRemovePreorder) {
-        	this.setRemovePreorder = false;
-        	this.preorderStore.remove(this.preorder);
-        	
-        }
+        
 
 //        if (!this.activeRecord.dirty) {
 //            this.onCancel();
@@ -706,6 +707,7 @@ Ext.calendar.TimeslotEditWindow = Ext.extend(Ext.Window, {
        			this.setPatient(record.data.resource_uri);
        			this.patientCombo.forceValue(record.data.resource_uri);
         		this.formPanel.form.findField('Title').setValue(' ');
+        		this.formPanel.form.findField('vacant').setValue(false);
         		this.serviceButton.setDisabled(false);
         		this.serviceCombo.enable();
         		this.paymentTypeCB.enable();
@@ -729,6 +731,7 @@ Ext.calendar.TimeslotEditWindow = Ext.extend(Ext.Window, {
        			}
        			this.patientCombo.forceValue(record.data.resource_uri);
        			this.formPanel.form.findField('Title').setValue(' ');
+       			this.formPanel.form.findField('vacant').setValue(false);
        			this.setPatient(record.data.resource_uri);
        			this.serviceCombo.enable();
        			this.paymentTypeCB.enable();
@@ -750,12 +753,21 @@ Ext.calendar.TimeslotEditWindow = Ext.extend(Ext.Window, {
     },
     
     onClear: function(){
-    	if (this.preorder){
-    		this.clearButton.setDisabled(true);
-    		this.setRemovePreorder = true;
-    		this.formPanel.form.findField('Title').setValue('');
-    		this.onSave();
-    	}
+       	Ext.Msg.confirm('Предупреждение','Отменить предзаказ?',
+              function(btn){
+    			if (btn=='yes') {
+    				if (this.preorder){
+    					this.clearButton.setDisabled(true);
+   						this.setRemovePreorder = true;
+   						this.formPanel.form.findField('Title').setValue('');
+   						this.formPanel.form.findField('vacant').setValue(true);
+   						this.onSave();
+   					}
+    			}
+            },this
+        );
+    	
+    	
     },
     
     setPatient : function(patient_uri){
