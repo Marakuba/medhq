@@ -398,6 +398,8 @@ def get_groups(request):
         for item in qs.all().order_by(BaseService._meta.tree_id_attr, "-"+BaseService._meta.left_attr):
             if not item.is_leaf_node():
                 node = {"id":item.id,
+                        "expanded":not item.get_children(),
+                        "loaded":not item.get_children(),
                         "text":item.short_name or item.name,
                         "leaf":True}
                 children = tree_iterate(item.get_children())
