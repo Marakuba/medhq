@@ -17,7 +17,7 @@ from state.models import State
 class ICD10(MPTTModel):
     name = models.CharField(u'Наименование', max_length=512)
     code = models.CharField(u'Код', max_length=20)
-    description = models.CharField(u'Дополнительное описание', max_length=500)
+    description = models.TextField(u'Дополнительное описание')
     parent = models.ForeignKey('self', null=True, blank=True, related_name='children')
 
     def __unicode__(self):
@@ -138,6 +138,7 @@ class BaseService(models.Model):
     #is_lab = models.BooleanField(u'В направление')
     partnership = models.BooleanField(u'В направление')
     version = models.PositiveIntegerField(u'Версия', default=0, null=True, blank=True)
+    is_group = models.BooleanField(u'Это группа',default=False)
     
     ### будет пересмотрено позже
     execution_place = models.ManyToManyField('state.State', 

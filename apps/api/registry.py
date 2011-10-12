@@ -45,16 +45,22 @@ class UserResource(ModelResource):
         
 class ICD10Resource(ModelResource):
     
+    parent = fields.ForeignKey('self','parent', null=True)
+    
     def dehydrate(self, bundle):
         bundle.data['disp_name'] = "%s, %s" % (bundle.obj.code, bundle.obj.name)
+        bundle.data['isLeaf'] = bundle.obj.is_leaf_node()
         return bundle
     
     class Meta:
         queryset = ICD10.objects.all() 
+        limit = 20000
+        fields = ('id',)
         resource_name = 'icd10'
         filtering = {
             'name':('istartswith',),
-            'code':('istartswith',)
+            'code':('istartswith',),
+            'parent':ALL_WITH_RELATIONS
         }
 
 
