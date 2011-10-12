@@ -164,13 +164,13 @@ App.patient.PatientGrid = Ext.extend(Ext.grid.GridPanel, {
 	
 	onGlobalSearch: function(v){
 		var s = this.store;
-		s.baseParams = { format:'json' };
-		vi = parseInt(v);
-		if (!isNaN(vi)){
-			s.setBaseParam('visit_id', vi);
-		} else {
+//		s.baseParams = { format:'json' };
+//		vi = parseInt(v);
+//		if (!isNaN(vi)){
+//			s.setBaseParam('visit_id', vi);
+//		} else {
 			s.setBaseParam('search', v);
-		}
+//		}
 		s.load();
 	},
 	

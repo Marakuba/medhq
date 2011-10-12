@@ -7,20 +7,20 @@ import datetime
 def smartFilter(request,prefix=''):
     if prefix:
         prefix+='__'
-    args = request.split(' ')
+    req_args = request.split(' ')
     accept_args = {}
     #удаляем пустые элементы
-    while args.count(''):
-        args.remove('')
+    while req_args.count(''):
+        req_args.remove('')
     #если параметр не один, значит возможно среди них есть дата
     date_arg = None
     p = re.compile('\d{2}(-|/|\.)?\d{2}(-|/|\.)?\d{4}$')
     formats = ['%d.%m.%Y','%d/%m/%Y','%d-%m-%Y','%d%m%Y',]
     params = ['last_name__istartswith','first_name__istartswith','mid_name__istartswith']
-    if len(args) > 1:
-        d = args[-1]
+    if len(req_args) > 1:
+        d = req_args[-1]
         if p.match(d):
-            args.pop()
+            req_args.pop()
             for f in formats:
                 try: 
                     date_arg = time.strptime(d, f)
@@ -31,8 +31,8 @@ def smartFilter(request,prefix=''):
     #если последний элемент строки - дата
     if date_arg:
         accept_args[prefix+'birth_day'] = date_arg
-    if len(args) > 3:
-        args = args[:3]
-    for i,arg in enumerate(args):
+    if len(req_args) > 3:
+        req_args = req_args[:3]
+    for i,arg in enumerate(req_args):
         accept_args[prefix+params[i]] = arg
     return accept_args
