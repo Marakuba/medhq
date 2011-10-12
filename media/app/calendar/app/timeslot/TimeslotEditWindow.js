@@ -98,7 +98,7 @@ Ext.calendar.TimeslotEditWindow = Ext.extend(Ext.Window, {
 			hideTrigger:true,
         	store:this.patientSelectedStore,
 		    displayField: 'full_name',
-		    queryParam:'last_name__istartswith',
+		    queryParam:'search',
 		    listeners:{
 		    	'select':function(combo,record,index){
 		    		this.formPanel.form.findField('Title').setValue(' ');
