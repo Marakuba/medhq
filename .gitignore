@@ -8,3 +8,4 @@ media/cache
 media/dicom
 media/libs
 *.orig
+custom/
