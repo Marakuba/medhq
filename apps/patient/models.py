@@ -95,7 +95,7 @@ class Patient(make_person_object('patient')):
         self.balance = (float(orders['amount__sum'] or 0) + float(discount['total_discount__sum'] or 0) - float( sales['total_price__sum'] or 0 )) or 0
         print 'sales %s' % (sales['total_price__sum'])
         self.save()
-    
+        
     class Meta:
         verbose_name = u"Пациент"
         verbose_name_plural = u"Пациенты"

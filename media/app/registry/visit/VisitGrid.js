@@ -314,7 +314,7 @@ App.visit.VisitGrid = Ext.extend(Ext.grid.GridPanel, {
 		if (!isNaN(vi)){
 			s.setBaseParam('barcode__id__exact', vi);
 		} else {
-			s.setBaseParam('patient__last_name__istartswith', v);
+			s.setBaseParam('search', v);
 		}
 		s.reload();
 	}

@@ -139,7 +139,7 @@ App.cashier.DebtorGrid = Ext.extend(Ext.grid.GridPanel, {
 		if (!isNaN(vi)){
 			s.setBaseParam('visit_id', vi);
 		} else {
-			s.setBaseParam('last_name__istartswith', v);
+			s.setBaseParam('search', v);
 		}
 		s.load();
 	},

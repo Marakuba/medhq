@@ -160,7 +160,7 @@ App.calendar.PatientGrid = Ext.extend(Ext.grid.GridPanel, {
 		s.baseParams = { format:'json' };
 		vi = parseInt(v);
 		if (isNaN(vi)){
-			s.setBaseParam('last_name__istartswith', v);
+			s.setBaseParam('search', v);
 		}
 		s.load();
 	},

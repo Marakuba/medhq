@@ -231,12 +231,12 @@ App.laboratory.LabOrderGrid = Ext.extend(Ext.grid.GridPanel, {
 			}
 			var vi = parseInt(v);
 			if (isNaN(vi)) {
-				this.storeFilter('visit__patient__last_name__istartswith', v);
+				this.storeFilter('search', v);
 			} else {
 				this.storeFilter('visit__barcode', vi);
 			}
 		} else {
-			delete this.store.baseParams['visit__patient__last_name__istartswith'];
+			delete this.store.baseParams['search'];
 			delete this.store.baseParams['visit__barcode'];
 			this.store.load();
 		}

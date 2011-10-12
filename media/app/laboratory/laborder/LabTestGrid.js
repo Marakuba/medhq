@@ -264,12 +264,12 @@ App.laborder.LabTestGrid = Ext.extend(Ext.grid.GridPanel, {
 			}
 			var vi = parseInt(v);
 			if (isNaN(vi)) {
-				this.storeFilter('order__patient__last_name__istartswith', v);
+				this.storeFilter('search', v);
 			} else {
 				this.storeFilter('order__barcode', vi);
 			}
 		} else {
-			delete this.store.baseParams['order__patient__last_name__istartswith'];
+			delete this.store.baseParams['search'];
 			delete this.store.baseParams['order__barcode'];
 			this.store.load();
 		}

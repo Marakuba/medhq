@@ -33,6 +33,7 @@ from tastypie.cache import SimpleCache
 from django.contrib.auth.models import User
 from examination.models import Equipment as ExamEquipment
 from tastypie.authentication import ApiKeyAuthentication
+from patient.utils import smartFilter
 
 class UserResource(ModelResource):
 
@@ -110,6 +111,11 @@ class PatientResource(ExtResource):
             visit = get_object_or_404(Visit, barcode__id=filters['visit_id'])
 
             orm_filters = {"pk__exact": visit.patient.id }
+            
+        if "search" in filters:
+
+            orm_filters.update(smartFilter(filters['search']))
+
 
         return orm_filters
 
@@ -131,6 +137,23 @@ class DebtorResource(ExtResource):
     
     discount = fields.ForeignKey(DiscountResource, 'discount', null=True)
     client_item = fields.OneToOneField(ClientItemResource, 'client_item', null=True)
+    
+    def build_filters(self, filters=None):
+        if filters is None:
+            filters = {}
+
+        orm_filters = super(PatientResource, self).build_filters(filters)
+
+        if "visit_id" in filters:
+            visit = get_object_or_404(Visit, barcode__id=filters['visit_id'])
+
+            orm_filters = {"pk__exact": visit.patient.id }
+            
+        if "search" in filters:
+
+            orm_filters.update(smartFilter(filters['search']))
+
+        return orm_filters
     
     class Meta:
         queryset = Patient.objects.filter(balance__lt = 0) #@UndefinedVariable
@@ -198,6 +221,20 @@ class StateResource(ModelResource):
         
         
 class LabServiceGroupResource(ModelResource):
+    
+    def build_filters(self, filters=None):
+        if filters is None:
+            filters = {}
+
+        orm_filters = super(PatientResource, self).build_filters(filters)
+
+            
+        if "search" in filters:
+
+            orm_filters.update(smartFilter(filters['search'],'order__patient'))
+
+
+        return orm_filters
 
     class Meta:
         queryset = LabServiceGroup.objects.all() 
@@ -288,6 +325,19 @@ class VisitResource(ExtResource):
         
         return none_to_empty(bundle)
     
+    def build_filters(self, filters=None):
+        if filters is None:
+            filters = {}
+
+        orm_filters = super(VisitResource, self).build_filters(filters)
+
+        if "search" in filters:
+
+            orm_filters.update(smartFilter(filters['search'],'patient'))
+
+
+        return orm_filters
+    
     class Meta:
         queryset = Visit.objects.filter(cls__in=(u'п',u'б'))
         resource_name = 'visit'
@@ -355,6 +405,19 @@ class LabOrderResource(ExtResource):
             bundle.data['patient_name'] = laborder.visit.patient.full_name()
         bundle.data['staff_name'] = laborder.staff and laborder.staff.staff.short_name() or ''
         return bundle
+    
+    def build_filters(self, filters=None):
+        if filters is None:
+            filters = {}
+
+        orm_filters = super(LabOrderResource, self).build_filters(filters)
+
+        if "search" in filters:
+
+            orm_filters.update(smartFilter(filters['search'],'visit__patient'))
+
+
+        return orm_filters
     
     class Meta:
         queryset = LabOrder.objects.select_related().all()
@@ -739,6 +802,19 @@ class LabServiceResource(ExtResource):
         bundle.data['key'] = u"%s_%s" % (bundle.obj.order.id, bundle.obj.execution_place.id) 
         return bundle
     
+    def build_filters(self, filters=None):
+        if filters is None:
+            filters = {}
+
+        orm_filters = super(LabOrderResource, self).build_filters(filters)
+
+        if "search" in filters:
+
+            orm_filters.update(smartFilter(filters['search'],'order__patient'))
+
+
+        return orm_filters
+    
     class Meta:
         queryset = OrderedService.objects.filter(service__lab_group__isnull=False) #all lab services
         resource_name = 'labservice'
@@ -778,6 +854,19 @@ class LabTestResource(ExtResource):
         bundle.data['laboratory'] = bundle.obj.execution_place
         bundle.data['key'] = u"%s_%s" % (order.id, bundle.obj.execution_place.id) 
         return bundle
+    
+    def build_filters(self, filters=None):
+        if filters is None:
+            filters = {}
+
+        orm_filters = super(PatientResource, self).build_filters(filters)
+            
+        if "search" in filters:
+
+            orm_filters.update(smartFilter(filters['search']),'order__patient')
+
+
+        return orm_filters
     
     class Meta:
         queryset = OrderedService.objects.select_related().filter(service__lab_group__isnull=False).order_by('service','-created') #all lab services
@@ -819,6 +908,19 @@ class ExamServiceResource(ExtResource):
         bundle.data['laboratory'] = bundle.obj.execution_place
         bundle.data['key'] = u"%s_%s" % (bundle.obj.order.id, bundle.obj.execution_place.id) 
         return bundle
+    
+    def build_filters(self, filters=None):
+        if filters is None:
+            filters = {}
+
+        orm_filters = super(ExamServiceResource, self).build_filters(filters)
+
+        if "search" in filters:
+
+            orm_filters.update(smartFilter(filters['search'],'order__patient'))
+
+
+        return orm_filters
     
     class Meta:
         queryset = OrderedService.objects.filter(service__lab_group__isnull=True)

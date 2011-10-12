@@ -80,4 +80,37 @@ class ExtResource(ModelResource):
             updated_bundle = self.obj_create(bundle, request=request, pk=kwargs.get('pk'))
             return self.build_response(request, updated_bundle) #return HttpCreated(location=self.get_resource_uri(updated_bundle))
         
+    def full_hydrate(self, bundle):
+        """
+        Given a populated bundle, distill it and turn it back into
+        a full-fledged object instance.
+        """
+        if bundle.obj is None:
+            bundle.obj = self._meta.object_class()
+        
+        for field_name, field_object in self.fields.items():
+            if field_object.attribute:
+                value = field_object.hydrate(bundle)
+                
+                if value is not None or field_object.null:
+                    # We need to avoid populating M2M data here as that will
+                    # cause things to blow up.
+                    if not getattr(field_object, 'is_related', False):
+                        setattr(bundle.obj, field_object.attribute, value)
+                    elif not getattr(field_object, 'is_m2m', False):
+                        if value is not None:
+                            setattr(bundle.obj, field_object.attribute, value.obj)
+                        elif field_object.fk_resource is None:
+                            continue
+                        else:
+                            setattr(bundle.obj, field_object.attribute, None)
+            # Check for an optional method to do further hydration.
+            method = getattr(self, "hydrate_%s" % field_name, None)
+            
+            if method:
+                bundle = method(bundle)
+        
+        bundle = self.hydrate(bundle)
+        return bundle
+        
     
