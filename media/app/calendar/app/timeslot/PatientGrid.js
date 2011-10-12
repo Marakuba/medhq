@@ -158,10 +158,7 @@ App.calendar.PatientGrid = Ext.extend(Ext.grid.GridPanel, {
 	onGlobalSearch: function(v){
 		var s = this.store;
 		s.baseParams = { format:'json' };
-		vi = parseInt(v);
-		if (isNaN(vi)){
-			s.setBaseParam('search', v);
-		}
+		s.setBaseParam('search', v);
 		s.load();
 	},
 	

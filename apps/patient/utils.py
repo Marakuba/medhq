@@ -17,7 +17,7 @@ def smartFilter(request,prefix=''):
     p = re.compile('\d{2}(-|/|\.)?\d{2}(-|/|\.)?\d{4}$')
     formats = ['%d.%m.%Y','%d/%m/%Y','%d-%m-%Y','%d%m%Y',]
     params = ['last_name__istartswith','first_name__istartswith','mid_name__istartswith']
-    if len(req_args) > 1:
+    if req_args:
         d = req_args[-1]
         if p.match(d):
             req_args.pop()
