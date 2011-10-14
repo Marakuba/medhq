@@ -16,7 +16,7 @@ from state.models import State, Department
 from django.conf import settings
 from pricelist.models import Discount
 from api.utils import none_to_empty
-from api.resources import ExtResource
+from api.resources import ExtResource, ComplexQuery
 from api import get_api_name
 from numeration.models import BarcodePackage, NumeratorItem, Barcode
 from django.shortcuts import get_object_or_404
@@ -34,6 +34,7 @@ from django.contrib.auth.models import User
 from examination.models import Equipment as ExamEquipment
 from tastypie.authentication import ApiKeyAuthentication
 from patient.utils import smartFilter
+from django.db.models.query_utils import Q
 
 class UserResource(ModelResource):
 
@@ -107,20 +108,21 @@ class PatientResource(ExtResource):
 
         orm_filters = super(PatientResource, self).build_filters(filters)
 
-        if "visit_id" in filters:
-            visit = get_object_or_404(Visit, barcode__id=filters['visit_id'])
-
-            orm_filters = {"pk__exact": visit.patient.id }
-            
         if "search" in filters:
-
-            orm_filters.update(smartFilter(filters['search']))
-
-
+            smart_filters = smartFilter(filters['search'])
+            if len(smart_filters.keys())==1:
+                try:
+                    orm_filters = ComplexQuery( Q(visit__barcode__id=int(filters['search'])) | Q(**smart_filters), \
+                                      **orm_filters)
+                except:
+                    orm_filters.update(**smart_filters)
+            else:
+                orm_filters.update(**smart_filters)
+            
         return orm_filters
 
     class Meta:
-        queryset = Patient.objects.all() #@UndefinedVariable
+        queryset = Patient.objects.select_related().all() #@UndefinedVariable
         resource_name = 'patient'
         default_format = 'application/json'
         authorization = DjangoAuthorization()
@@ -332,8 +334,17 @@ class VisitResource(ExtResource):
         orm_filters = super(VisitResource, self).build_filters(filters)
 
         if "search" in filters:
+            smart_filters = smartFilter(filters['search'], 'patient')
+            if len(smart_filters.keys())==1:
+                try:
+                    orm_filters = ComplexQuery( Q(barcode__id=int(filters['search'])) | Q(**smart_filters), \
+                                      **orm_filters)
+                except:
+                    orm_filters.update(**smart_filters)
+            else:
+                orm_filters.update(**smart_filters)
 
-            orm_filters.update(smartFilter(filters['search'],'patient'))
+#            orm_filters.update(smartFilter(filters['search'],'patient'))
 
 
         return orm_filters
@@ -413,8 +424,17 @@ class LabOrderResource(ExtResource):
         orm_filters = super(LabOrderResource, self).build_filters(filters)
 
         if "search" in filters:
+            smart_filters = smartFilter(filters['search'],'visit__patient')
+            if len(smart_filters.keys())==1:
+                try:
+                    orm_filters = ComplexQuery( Q(visit__barcode__id=int(filters['search'])) | Q(**smart_filters), \
+                                      **orm_filters)
+                except:
+                    orm_filters.update(**smart_filters)
+            else:
+                orm_filters.update(**smart_filters)
 
-            orm_filters.update(smartFilter(filters['search'],'visit__patient'))
+#            orm_filters.update(smartFilter(filters['search'],'visit__patient'))
 
 
         return orm_filters

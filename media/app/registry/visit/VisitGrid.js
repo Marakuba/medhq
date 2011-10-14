@@ -175,6 +175,46 @@ App.visit.VisitGrid = Ext.extend(Ext.grid.GridPanel, {
 		    }
 		];		
 		
+		this.ttb = new Ext.Toolbar({
+			items:[{
+				xtype:'button',
+				iconCls:'silk-printer',
+				text:'Печать',
+				handler:this.onPrint.createDelegate(this, [])
+			},'->','Период',{
+				id:'visits-start-date-filter',
+				xtype:'datefield',
+				format:'d.m.Y',
+				name:'start_date',
+				listeners: {
+					select: function(df, date){
+						this.storeFilter('created__gte',date.format('Y-m-d 00:00'));
+					},
+					scope:this
+				}
+			},{
+				id:'visits-end-date-filter',
+				xtype:'datefield',
+				format:'d.m.Y',
+				name:'end_date',
+				listeners: {
+					select: function(df, date){
+						this.storeFilter('created__lte',date.format('Y-m-d 23:59'));
+					},
+					scope:this
+				}
+			},{
+				text:'Очистить',
+				handler:function(){
+					Ext.getCmp('visits-start-date-filter').reset();
+					Ext.getCmp('visits-end-date-filter').reset();
+					this.storeFilter('created__lte',undefined);
+					this.storeFilter('created__gte',undefined);
+				},
+				scope:this
+			},'-']
+		});
+		
 		var config = {
 			loadMask : {
 				msg : 'Подождите, идет загрузка...'
@@ -188,62 +228,7 @@ App.visit.VisitGrid = Ext.extend(Ext.grid.GridPanel, {
 			listeners: {
 				rowdblclick:this.onPrint.createDelegate(this, [])
 			},
-			tbar:[{
-					xtype:'button',
-					iconCls:'silk-printer',
-					text:'Печать',
-					handler:this.onPrint.createDelegate(this, [])
-				},'->','Период',{
-					id:'visits-start-date-filter',
-					xtype:'datefield',
-					format:'d.m.Y',
-					name:'start_date',
-					listeners: {
-						select: function(df, date){
-							this.storeFilter('created__gte',date.format('Y-m-d 00:00'));
-						},
-						scope:this
-					}
-				},{
-					id:'visits-end-date-filter',
-					xtype:'datefield',
-					format:'d.m.Y',
-					name:'end_date',
-					listeners: {
-						select: function(df, date){
-							this.storeFilter('created__lte',date.format('Y-m-d 23:59'));
-						},
-						scope:this
-					}
-				},{
-					text:'Очистить',
-					handler:function(){
-						Ext.getCmp('visits-start-date-filter').reset();
-						Ext.getCmp('visits-end-date-filter').reset();
-						this.storeFilter('created__lte',undefined);
-						this.storeFilter('created__gte',undefined);
-					},
-					scope:this
-				},'-','Офис:',{
-					xtype:'button',
-					enableToggle:true,
-					toggleGroup:'visit-cls',
-					text:'Все',
-					pressed: true,
-					handler:this.storeFilter.createDelegate(this,['office',undefined])
-				},{
-					xtype:'button',
-					enableToggle:true,
-					toggleGroup:'visit-cls',
-					text:'Евромед (КИМ)',
-					handler:this.storeFilter.createDelegate(this,['office',1])
-				},{
-					xtype:'button',
-					enableToggle:true,
-					toggleGroup:'visit-cls',
-					text:'Евромед (Лузана)',
-					handler:this.storeFilter.createDelegate(this,['office',6])
-				}],
+			tbar:this.ttb,
 	        bbar: new Ext.PagingToolbar({
 	            pageSize: 20,
 	            store: this.store,
@@ -274,6 +259,45 @@ App.visit.VisitGrid = Ext.extend(Ext.grid.GridPanel, {
 		App.visit.VisitGrid.superclass.initComponent.apply(this, arguments);
 		App.eventManager.on('globalsearch', this.onGlobalSearch, this);
 		this.store.load();		
+		this.initToolbar();
+	},
+	
+	
+	initToolbar: function(){
+		// laboratory
+		Ext.Ajax.request({
+			url:get_api_url('medstate'),
+			method:'GET',
+			success:function(resp, opts) {
+				this.ttb.add({
+					xtype:'tbtext',
+					text:'Офис: '
+				});
+				this.ttb.add({
+					xtype:'button',
+					enableToggle:true,
+					toggleGroup:'ex-place-cls',
+					text:'Все',
+					pressed: true,
+					handler:this.storeFilter.createDelegate(this,['office'])
+				});
+				var jsonResponse = Ext.util.JSON.decode(resp.responseText);
+				Ext.each(jsonResponse.objects, function(item,i){
+					this.ttb.add({
+						xtype:'button',
+						enableToggle:true,
+						toggleGroup:'ex-place-cls',
+						text:item.name,
+						handler:this.storeFilter.createDelegate(this,['office',item.id])
+					});
+				}, this);
+				//this.ttb.addSeparator();
+				//this.ttb.add();
+				//this.ttb.add()
+				this.ttb.doLayout();
+			},
+			scope:this
+		});
 	},
 
 	storeFilter: function(field, value){
@@ -310,13 +334,8 @@ App.visit.VisitGrid = Ext.extend(Ext.grid.GridPanel, {
 	onGlobalSearch: function(v){
 		var s = this.store;
 		s.baseParams = { format:'json' };
-		vi = parseInt(v);
-		if (!isNaN(vi)){
-			s.setBaseParam('barcode__id__exact', vi);
-		} else {
-			s.setBaseParam('search', v);
-		}
-		s.reload();
+		s.setBaseParam('search', v);
+		s.load();
 	}
 	
 });

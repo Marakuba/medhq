@@ -157,7 +157,7 @@ App.registry.PreorderGrid = Ext.extend(Ext.grid.GridPanel, {
 
 		Ext.apply(this, Ext.apply(this.initialConfig, config));
 		App.registry.PreorderGrid.superclass.initComponent.apply(this, arguments);
-//		App.eventManager.on('globalsearch', this.onGlobalSearch, this);
+		App.eventManager.on('globalsearch', this.onGlobalSearch, this);
 		this.store.on('write', function(){
 			var record = this.getSelected();
 			if (record){
@@ -176,6 +176,13 @@ App.registry.PreorderGrid = Ext.extend(Ext.grid.GridPanel, {
 			this.store.load()}, 
 		this);
 		//this.store.on('write', this.onStoreWrite, this);
+	},
+
+	onGlobalSearch: function(v){
+		var s = this.store;
+		s.baseParams = { format:'json' };
+		s.setBaseParam('search', v);
+		s.load();
 	},
 	
 	btnSetDisabled: function(status) {

@@ -4,6 +4,21 @@ from tastypie.resources import ModelResource
 from tastypie.utils.dict import dict_strip_unicode_keys
 from django.http import HttpResponse
 from tastypie.utils.mime import build_content_type
+from tastypie.exceptions import BadRequest
+from django.db.models.query_utils import Q
+
+class ComplexQuery(object):
+
+    def __init__(self, *args, **kwargs):
+        self.complex = args
+        self.applicable = kwargs
+    
+    def get_complexes(self):
+        return self.complex
+    
+    def get_applicable(self):
+        return self.applicable
+    
 
 class ExtResource(ModelResource):
     """
@@ -112,5 +127,30 @@ class ExtResource(ModelResource):
         
         bundle = self.hydrate(bundle)
         return bundle
+    
+    def obj_get_list(self, request=None, **kwargs):
+        """
+        A ORM-specific implementation of ``obj_get_list``.
         
+        Takes an optional ``request`` object, whose ``GET`` dictionary can be
+        used to narrow the query.
+        """
+        filters = {}
+        
+        if hasattr(request, 'GET'):
+            # Grab a mutable copy.
+            filters = request.GET.copy()
+            
+        # Update with the provided kwargs.
+        filters.update(kwargs)
+        applicable_filters = self.build_filters(filters=filters)
+        
+        try:
+            if isinstance(applicable_filters, ComplexQuery):
+                base_object_list = self.get_object_list(request).filter(*applicable_filters.get_complexes(),**applicable_filters.get_applicable())
+            elif isinstance(applicable_filters, dict):
+                base_object_list = self.get_object_list(request).filter(**applicable_filters)
+            return self.apply_authorization_limits(request, base_object_list)
+        except ValueError, e:
+            raise BadRequest("Invalid resource lookup data provided (mismatched type).")
     

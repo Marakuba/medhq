@@ -23,6 +23,7 @@ App.CentralPanel = Ext.extend(Ext.Panel, {
 //				title: '№ заказа или фамилия',
 				padding:5,
 				items:[{
+					id:'global-search-field',
 					xtype:'gsearchfield',
 					stripCharsRe:new RegExp('[\;\?]')
 				}]
@@ -218,6 +219,17 @@ App.CentralPanel = Ext.extend(Ext.Panel, {
 		App.CentralPanel.superclass.initComponent.apply(this, arguments);
 		App.eventManager.on('launchapp', this.launchApp, this);
 		App.eventManager.on('closeapp', this.closeApp, this);
+		this.on('afterrender', function(){
+			Ext.QuickTips.register({
+				autoHide:false,
+			    target: 'global-search-field',
+			    title: 'Новый поиск!',
+			    text: 'Вводите поисковый запрос следующего вида:<br><b>фамилия имя отчество дата рождения</b>',
+			    width: 300,
+			    dismissDelay: 30000 // Hide after 10 seconds hover
+			});
+
+		});
 	},
 	
 	closeApp: function(appId) {
