@@ -45,16 +45,40 @@ class UserResource(ModelResource):
         
 class ICD10Resource(ModelResource):
     
+    parent = fields.ForeignKey('self','parent', null=True)
+    
     def dehydrate(self, bundle):
-        bundle.data['disp_name'] = "%s, %s" % (bundle.obj.code, bundle.obj.name)
+        bundle.data['text'] = "%s, %s" % (bundle.obj.code, bundle.obj.name)
+        bundle.data['parent'] =  bundle.obj.parent and bundle.obj.parent.id
+        if bundle.obj.is_leaf_node():
+            bundle.data['leaf'] = bundle.obj.is_leaf_node()
         return bundle
+    
+
+    def build_filters(self, filters=None):
+        if filters is None:
+            filters = {}
+
+        orm_filters = super(ICD10Resource, self).build_filters(filters)
+
+        if "parent" in filters:
+            if filters['parent']=='root':
+                del orm_filters['parent__exact']
+                orm_filters['parent__isnull'] = True
+
+        return orm_filters
     
     class Meta:
         queryset = ICD10.objects.all() 
+        limit = 20000
+        fields = ('id',)
         resource_name = 'icd10'
+        authorization = DjangoAuthorization()
         filtering = {
+            'id':ALL,
             'name':('istartswith',),
-            'code':('istartswith',)
+            'code':('istartswith',),
+            'parent':ALL_WITH_RELATIONS
         }
 
 

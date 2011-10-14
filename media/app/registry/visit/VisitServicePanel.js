@@ -20,6 +20,9 @@ App.visit.VisitServicePanel = Ext.extend(Ext.tree.TreePanel,{
 				}
 	        },
 	        loader:new Ext.tree.TreeLoader({
+				baseParams:{
+					payment_type:'н'
+				},
 	        	dataUrl:'/webapp/service_tree/',
 	        	requestMethod:'GET',
 	        	listeners:{
