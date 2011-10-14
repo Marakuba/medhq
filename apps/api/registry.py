@@ -54,6 +54,20 @@ class ICD10Resource(ModelResource):
             bundle.data['leaf'] = bundle.obj.is_leaf_node()
         return bundle
     
+
+    def build_filters(self, filters=None):
+        if filters is None:
+            filters = {}
+
+        orm_filters = super(ICD10Resource, self).build_filters(filters)
+
+        if "parent" in filters:
+            if filters['parent']=='root':
+                del orm_filters['parent__exact']
+                orm_filters['parent__isnull'] = True
+
+        return orm_filters
+    
     class Meta:
         queryset = ICD10.objects.all() 
         limit = 20000

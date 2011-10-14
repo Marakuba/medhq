@@ -26,6 +26,7 @@ class ICD10(MPTTModel):
     class Meta:
         verbose_name = u"МКБ"
         verbose_name_plural = u"МКБ"
+        ordering = ('code',)
 
 
 class StandardService(models.Model):

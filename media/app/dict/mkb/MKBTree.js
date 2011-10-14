@@ -10,7 +10,7 @@ App.dict.MKBTree = Ext.extend(Ext.tree.TreePanel, {
                 root:  new Ext.tree.AsyncTreeNode({
 	            	expanded: false,
 	            	text:'МКБ',
-	            	id:'12258'
+	            	id:'root'
                 }),
                 width:250,
                 split:true,
