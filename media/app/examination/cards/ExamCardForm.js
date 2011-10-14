@@ -1,4 +1,5 @@
 Ext.ns('App.examination');
+Ext.ns('App.dict');
 
 App.examination.ExamCardForm = Ext.extend(Ext.form.FormPanel, {
 
@@ -53,27 +54,33 @@ App.examination.ExamCardForm = Ext.extend(Ext.form.FormPanel, {
 		
 		this.mkb = new Ext.form.LazyComboBox({
 			fieldLabel:'Диагноз по МКБ',
+			hideTrigger:true,
 			anchor:'95%',
 			name:'mbk_diag',
             allowBlank:true,
 			store: new Ext.data.JsonStore({
-				autoLoad:true,
+				autoLoad:false,
 				proxy: new Ext.data.HttpProxy({
 					url:get_api_url('icd10'),
 					method:'GET'
 				}),
 				root:'objects',
 				idProperty:'resource_uri',
-				fields:['resource_uri','disp_name','id','code']
+				fields:['resource_uri','text','id']
 			}),
-			typeAhead: true,
-			queryParam:'code__istartswith',
-			minChars:3,
-			triggerAction: 'all',
+//			typeAhead: true,
+			readOnly:true,
+			//queryParam:'code__istartswith',
+//			minChars:3,
+//			triggerAction: 'all',
 			emptyText:'Выберите диагноз...',
 			valueField: 'resource_uri',
-			displayField: 'disp_name',
-			selectOnFocus:true
+			displayField: 'text',
+//			selectOnFocus:true,
+			listeners:{
+				'click': this.openTree,
+				scope:this
+			}
 		});
 		
 		this.equipment = new Ext.form.LazyComboBox({
@@ -206,7 +213,11 @@ App.examination.ExamCardForm = Ext.extend(Ext.form.FormPanel, {
 					name:'psycho_status',
 					height:500,
 					anchor:'100%'
-				},this.mkb,
+				},this.mkb,{
+					xtype:'button',
+					text:'Выбрать',
+					handler: this.openTree.createDelegate(this)
+				},
 				{
 					xtype:'htmleditor',
 					fieldLabel:'Основной диагноз',
@@ -615,8 +626,6 @@ App.examination.ExamCardForm = Ext.extend(Ext.form.FormPanel, {
 	},
 	
 	onFocus: function(name){
-//		 this.getForm().findField(name).focus(true,150);
-//		console.info(this.workPlace.getSize());
 		var f = this.getForm().findField(name);
 		var el = Ext.getDom(f.wrap ? f.wrap.id : f.id);
 		if(el){
@@ -624,6 +633,19 @@ App.examination.ExamCardForm = Ext.extend(Ext.form.FormPanel, {
 			this.workPlace.body.scrollTo('top',top-25, { duration:0.4 });
 		}
 		f.focus(false,150);
+	},
+	
+	openTree : function(){
+		if (!this.mkbWin){
+			this.mkbWin = new App.dict.MKBWindow({
+				fn: function(node){
+					this.mkb.forceValue(node.attributes.resource_uri);
+					this.mkbWin.hide();
+				},
+				scope:this
+			})
+		}
+		this.mkbWin.show();
 	}
 });		
 
