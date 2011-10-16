@@ -10,28 +10,9 @@ App.laboratory.LabBoard = Ext.extend(Ext.Panel, {
 			split:true,
 			width:510,
 		});
-		this.ResultGrid = new App.result.ResultGrid({
-			id:'lab-result-grid',
-			closable:false
-		});
-		this.ResultCard = new Ext.Panel({
-			region:'center',
-			border:false,
-			title:'Результаты',
-			layout:'fit',
-/*			tools:[{
-				id:'help',
-				handler:function(){
-				},
-				scope:this,
-				qtip:'Посмотреть информацию о работе с данным разделом'
-			}],*/
-			items:new Ext.TabPanel({
-				border:false,
-				tabPosition:'bottom',
-				activeTab:0,
-				items:[this.ResultGrid]
-			})
+
+		this.ResultCard = new App.result.ResultCard({
+			region:'center'
 		});
 		
 		config = {
@@ -46,8 +27,7 @@ App.laboratory.LabBoard = Ext.extend(Ext.Panel, {
 		
 		this.LabOrderGrid.getSelectionModel().on('rowselect', function(sm,i,rec){
 			this.ResultCard.enable();
-			this.ResultCard.setTitle(String.format('Результаты: {0}', rec.data.patient_name));
-			this.ResultGrid.setActiveRecord(rec);
+			this.ResultCard.setActiveRecord(rec);
 		}, this);
 		
 		this.LabOrderGrid.on('updatefilters', function(){

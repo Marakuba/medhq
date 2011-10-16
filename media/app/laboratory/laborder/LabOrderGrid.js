@@ -14,6 +14,7 @@ App.laboratory.LabOrderGrid = Ext.extend(Ext.grid.GridPanel, {
 		this.fields = [
   		    ['start_date','visit__created__gte','Дата с','Y-m-d 00:00'],
   		    ['end_date','visit__created__lte','по','Y-m-d 23:59'],
+ 		    ['office','visit__office','Офис'],
   		    ['laboratory','laboratory','Лаборатория'],
   		    ['staff','staff','Врач'],
   		    ['patient','visit__patient','Пациент']
@@ -43,12 +44,12 @@ App.laboratory.LabOrderGrid = Ext.extend(Ext.grid.GridPanel, {
 		    	dataIndex: 'patient_name'
 		    },{
 		    	id:'laboratory',
-		    	header: "Лаборатория", 
+		    	header: "Лаб. / Оператор", 
 		    	width: 18,
 		    	dataIndex: 'laboratory_name',
 		    	renderer:function(v,opts,rec) {
-		    		return String.format("<div><b>{0}</b><span>{1}</span></div>", 
-		    				v, rec.data.visit_is_cito ? 'cito' : '') 
+		    		return String.format("<div><b>{0}</b><p>{1}</p></div>", 
+		    				v, rec.data.operator_name) 
 		    	}
 		    },{
 		    	id:'staff',

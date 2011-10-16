@@ -151,6 +151,7 @@ App.patient.PatientForm = Ext.extend(Ext.form.FormPanel, {
 						name:'birth_day',
 						format:'d.m.Y',
 						plugins:[new Ext.ux.netbox.InputTextMask('99.99.9999')],
+						minValue:new Date(1901,1,1),
                     	fieldLabel: 'Дата рождения',
                     	allowBlank:false
 					},{

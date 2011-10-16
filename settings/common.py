@@ -165,6 +165,7 @@ SESSION_EXPIRE_AT_BROWSER_CLOSE = True
 
 CONSTANCE_CONFIG = {
     'BRAND': (u'', 'company brand'),
+    'PRICE_BY_PAYMENT_TYPE':(False,'Индивидуальные цены по каждому способу оплаты')
 }
 
 MAIN_STATE_ID = 1 

@@ -385,3 +385,7 @@ def children(request, parent_id=None):
         _cached_children = simplejson.dumps(nodes)
 
     return HttpResponse(_cached_children, 'application/json')
+
+@render_to('webapp/settings/app.js')
+def js_settings(request):
+    return {}

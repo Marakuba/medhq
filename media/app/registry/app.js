@@ -6,7 +6,7 @@ Ext.onReady(function(){
 	
 	Ext.Ajax.defaultHeaders = {Accept:'application/json'};
 	
-	App.settings.reloadPriceByPaymentType = true;
+//	App.settings.reloadPriceByPaymentType = false;
 	
 	var centralPanel = new App.CentralPanel({
 	});

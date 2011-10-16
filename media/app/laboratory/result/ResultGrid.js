@@ -39,6 +39,7 @@ App.result.ResultGrid = Ext.extend(Ext.grid.EditorGridPanel, {
 		    writeAllFields: true
 		});
 		this.store = new Ext.data.GroupingStore({
+			autoSave:false,
 			autoLoad:false,
 		    baseParams: {
 		    	format:'json'
@@ -138,162 +139,7 @@ App.result.ResultGrid = Ext.extend(Ext.grid.EditorGridPanel, {
 		    }
 		];		
 		
-		this.dateField = new Ext.form.DateField({
-			emptyText:'дата',
-			format:'d.m.Y',
-			width:80
-		});
-		
-		this.timeField = new Ext.form.TimeField({
-			emptyText:'время',
-			width:55,
-			format:'H:i'
-		});
-		
-		this.staffField = new Ext.form.LazyComboBox({
-			emptyText:'врач',
-			store: new Ext.data.JsonStore({
-				autoLoad:false,
-				proxy: new Ext.data.HttpProxy({
-					url:get_api_url('position'),
-					method:'GET'
-				}),
-				root:'objects',
-				idProperty:'resource_uri',
-				fields:['resource_uri','name','title']
-			}),
-			displayField:'title',
-			width:120
-		});
-		
-		this.printBtn = new Ext.Button({
-			iconCls:'silk-printer',
-//			disabled:true,
-			handler:function(){
-				var rec = this.labOrderRecord;
-				if(rec) {
-					var url = String.format('/lab/print/results/{0}/?preview=yes', rec.id);
-					window.open(url);
-				}
-			},
-			scope:this
-		});
-		
-		this.ttb = new Ext.Toolbar({ 
-			items:[this.dateField, this.timeField, {
-//					text:'Сейчас',
-					iconCls:'silk-date-go',
-					tooltip:'Устанавливает текущую дату и время',
-					handler:function(){
-						var now = new Date();
-						this.dateField.setValue(now);
-						this.timeField.setValue(now);
-					},
-					scope:this
-				},
-			
-				this.staffField, {
-//					text:'Текущий',
-					iconCls:'silk-user-go',
-					tooltip:'Текущий пользователь',
-					handler:function(){
-						this.staffField.setValue(String.format('/api/v1/dashboard/position/{0}', active_profile));
-					},
-					scope:this
-				},
-				
-			new Ext.Toolbar.Separator(), {
-					iconCls:'icon-save',
-//					text:'Сохранить черновик',
-					handler:function(){
-						if(this.labOrderRecord){
-							this.saveSDT(this.labOrderRecord);
-						}
-					},
-					scope:this
-				},this.printBtn,'-',{
-					iconCls:'silk-accept',
-					text:'Подтвердить',
-					handler: function(){
-						if(this.labOrderRecord){
-							this.saveSDT(this.labOrderRecord);
-						}
-						var un = [];
-						var records = [];
-						var q = this.store.queryBy(function(record,id){
-							return record.data.validation == 0;
-						});
-						q.each(function(rec,i){
-							un.push(rec.data);
-							records.push(rec);
-						},this);		
-						Ext.MessageBox.confirm('Предупреждение!',
-							new Ext.XTemplate('Внимание, данная операция приведет к удалению всех тестов, которые не были помечены как отвалидированные: ',
-							'<tpl for="."><br>{#}. {analysis_name}</tpl><br><br>',
-							'Продолжить?').apply(un),
-							function(btn){
-								if(btn=='yes') {
-									params = {
-										order:this.labOrderRecord.id
-									}
-									Ext.Ajax.request({
-										url:'/lab/confirm_results/',
-										params:params,
-										method:'POST',
-										success:function(response, opts) {
-											var r = Ext.decode(response.responseText);
-											this.store.reload();
-											if(r.success) {
-												this.labOrderRecord.set('is_completed',true);
-												Ext.ux.Growl.notify({
-											        title: "Успешная операция!", 
-											        message: r.message,
-											        iconCls: "x-growl-accept",
-											        alignment: "tr-tr",
-											        offset: [-10, 10]
-											    })
-											}
-										},
-										failure: function(response, opts) {
-										},
-										scope:this
-									});
-								}
-						}, this);
-					},
-					scope:this
-				},'->',{
-//					text:'Восстановить',
-					iconCls:'silk-arrow-undo',
-					handler:function(){
-						var s = this.store;
-						if (s.getCount()) {
-							Ext.MessageBox.confirm('Подтверждение',
-								'Восстановить все тесты?',
-								function(btn){
-									if(btn=='yes') {
-										Ext.Ajax.request({
-											url:'/lab/revert_results/',
-											params:{
-												laborder:this.labOrderRecord.id
-											},
-											method:'POST',
-											success:function(response, opts) {
-												var r = Ext.decode(response.responseText);
-												this.labOrderRecord.set('is_completed',r.status);
-												this.store.reload();
-											},
-											failure: function(response, opts) {
-											},
-											scope:this
-										});
-									}
-							}, this);
-						}
-					},
-					scope:this
-				}]
-		}); 
+
 		
 	    this.infoBBar = new Ext.Toolbar({
 	    	items:[{
@@ -331,14 +177,15 @@ App.result.ResultGrid = Ext.extend(Ext.grid.EditorGridPanel, {
 			sm : new Ext.grid.RowSelectionModel({
 				singleSelect : false
 			}),
-	        tbar:this.ttb,
-			bbar: this.infoBBar,
+//	        tbar:this.ttb,
+//			bbar: this.infoBBar,
 			listeners: {
 				afteredit: function(e) {
 					if(e.column==4) {
-						e.record.beginEdit();
+//						e.record.beginEdit();
 						e.record.set('validation',e.value ? 1 : 0);
-						e.record.endEdit();
+//						e.record.endEdit();
+						this.store.save();
 					}
 				},
 				rowcontextmenu: function(grid,rowindex, e) {
@@ -434,35 +281,7 @@ App.result.ResultGrid = Ext.extend(Ext.grid.EditorGridPanel, {
 		this.store.setBaseParam('order',this.labOrderRecord.id);
 		this.store.load();
 
-		var d = this.labOrderRecord.data;
-		if(d.staff) {
-			this.staffField.setValue(d.staff);
-		} else {
-			this.staffField.setRawValue('');
-			this.staffField.originalValue='';
-			this.staffField.reset();
-		}
-		this.dateField.setValue(d.executed);
-		this.timeField.setValue(d.executed);
-		
 		this.enable();
-	},
-	
-	saveSDT: function(rec) {
-		var d = this.dateField.getValue();
-		var t = this.timeField.getValue().split(':');
-		if (d) {
-			d = d.add(Date.HOUR, t[0]).add(Date.MINUTE,t[1]);
-		}
-		var staff = this.staffField.getValue();
-		if(rec) {
-			rec.beginEdit();
-			rec.set('executed',d ? d : '');
-			if(staff) {
-				rec.set('staff',staff);
-			}
-			rec.endEdit();
-		}
 	},
 	
 	onGlobalSearch: function(v) {
@@ -480,14 +299,7 @@ App.result.ResultGrid = Ext.extend(Ext.grid.EditorGridPanel, {
 	
 	getSelected: function() {
 		return this.getSelectionModel().getSelected()
-	},
-	
-	onPrint: function() {
-		var id = this.getSelected().data.id;
-		var url = ['/lab/print/results',id,''].join('/');
-		window.open(url);
 	}
-
 	
 });
 

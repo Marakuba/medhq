@@ -74,8 +74,8 @@
 	
 
 </table>
-{% if order.is_completed and order.comment %}
-<div class="comment">{{ order.comment }}</div>
+{% if order.is_completed or preview %}
+<div class="comment">{% autoescape off %}{{ order.comment }}{% endautoescape %}</div>
 {% endif %}
 <div class="print_time">{{ order.print_date_display }}</div>
 {% endif %}

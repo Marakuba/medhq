@@ -52,6 +52,23 @@ App.laboratory.SearchWindow = Ext.extend(Ext.Window, {
 					}
 				}]
 			},new Ext.form.LazyClearableComboBox({
+				fieldLabel:'Офис',
+				name:'office',
+				anchor:'100%',
+				valueField:'id',
+				store:new Ext.data.RESTStore({
+					autoLoad : true,
+					apiUrl : get_api_url('ownstate'),
+					model: ['id','name']
+				}),
+			    minChars:2,
+			    emptyText:'Выберите офис...',
+			    listeners:{
+			    	select: function(combo, rec,i) {
+			    	},
+			    	scope:this
+			    }
+			}),new Ext.form.LazyClearableComboBox({
 				fieldLabel:'Лаборатория',
 				name:'laboratory',
 				anchor:'100%',
@@ -111,7 +128,7 @@ App.laboratory.SearchWindow = Ext.extend(Ext.Window, {
 		config = {
 			title:'Поиск',
 			width:400,
-			height:200,
+			height:210,
 			items:[this.form],
 			buttonAlign: 'left',
 			fbar:[{

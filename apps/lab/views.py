@@ -96,14 +96,15 @@ def print_results(request, order):
     if set_len>1:
         result_list.append({'class':'blank','object':cur_service.gen_ref_interval or ' '})
 
+    preview = request.GET.get('preview')
+    
     ec = {
             'order':order,
-            'results':result_list
+            'results':result_list,
+            'preview':preview
     }
     
     NOW = datetime.datetime.now()
-    
-    preview = request.GET.get('preview')
     
     if not preview:
         if order.is_completed and not order.print_date:

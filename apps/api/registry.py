@@ -168,7 +168,7 @@ class DebtorResource(ExtResource):
         if filters is None:
             filters = {}
 
-        orm_filters = super(PatientResource, self).build_filters(filters)
+        orm_filters = super(DebtorResource, self).build_filters(filters)
 
         if "visit_id" in filters:
             visit = get_object_or_404(Visit, barcode__id=filters['visit_id'])
@@ -229,6 +229,19 @@ class MedStateResource(ModelResource):
         resource_name = 'medstate'
         limit = 20
         filtering = {
+            'id':ALL,
+            'name':('istartswith',)
+        }
+        
+
+class OwnStateResource(ModelResource):
+
+    class Meta:
+        queryset = State.objects.filter(type__in=('b',)).order_by('id',)
+        resource_name = 'ownstate'
+        limit = 20
+        filtering = {
+            'id':ALL,
             'name':('istartswith',)
         }
         
@@ -252,7 +265,7 @@ class LabServiceGroupResource(ModelResource):
         if filters is None:
             filters = {}
 
-        orm_filters = super(PatientResource, self).build_filters(filters)
+        orm_filters = super(LabServiceGroupResource, self).build_filters(filters)
 
             
         if "search" in filters:
@@ -310,6 +323,7 @@ class InsurancePolicyResource(ExtResource):
         authorization = DjangoAuthorization()
         limit = 50
         filtering = {
+            'id':ALL,
             'patient':ALL_WITH_RELATIONS,
             'insurance_state':ALL_WITH_RELATIONS
         }
@@ -438,6 +452,7 @@ class LabOrderResource(ExtResource):
             bundle.data['visit_id'] = laborder.visit.id
             bundle.data['barcode'] = laborder.visit.barcode.id
             bundle.data['patient_name'] = laborder.visit.patient.full_name()
+            bundle.data['operator_name'] = laborder.visit.operator
         bundle.data['staff_name'] = laborder.staff and laborder.staff.staff.short_name() or ''
         return bundle
     
@@ -523,6 +538,7 @@ class PositionResource(ModelResource):
         resource_name = 'position'
         limit = 200
         filtering = {
+            'id':ALL,
             'title':('istartswith',),
             'staff':ALL_WITH_RELATIONS,
         }
@@ -850,7 +866,7 @@ class LabServiceResource(ExtResource):
         if filters is None:
             filters = {}
 
-        orm_filters = super(LabOrderResource, self).build_filters(filters)
+        orm_filters = super(LabServiceResource, self).build_filters(filters)
 
         if "search" in filters:
 
@@ -903,7 +919,7 @@ class LabTestResource(ExtResource):
         if filters is None:
             filters = {}
 
-        orm_filters = super(PatientResource, self).build_filters(filters)
+        orm_filters = super(LabTestResource, self).build_filters(filters)
             
         if "search" in filters:
 
@@ -1582,6 +1598,7 @@ api.register(PosSchedResource())
 api.register(StateResource())
 api.register(DepartmentResource())
 api.register(MedStateResource())
+api.register(OwnStateResource())
 api.register(InsuranceStateResource())
 api.register(DoctorResource())
 

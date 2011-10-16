@@ -37,6 +37,7 @@ App.models.LabOrder = new Ext.data.Record.create([
 	{name: 'staff'},
 	{name: 'staff_name'},
 	{name: 'patient_name'},
+	{name: 'operator_name'},
 	{name: 'is_completed', type:'bool'},
 	{name: 'comment'},
 	{name: 'print_date', type:'date',format:'c'},

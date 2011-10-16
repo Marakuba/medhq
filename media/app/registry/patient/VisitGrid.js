@@ -251,7 +251,8 @@ App.patient.VisitGrid = Ext.extend(Ext.grid.GridPanel, {
 	            }]*/
 	        }),
 			viewConfig : {
-				forceFit : true
+				forceFit : true,
+				emptyText: 'Нет записей'
 				//getRowClass : this.applyRowClass
 			}
 			

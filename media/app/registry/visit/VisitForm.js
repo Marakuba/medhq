@@ -279,9 +279,7 @@ App.visit.VisitForm = Ext.extend(Ext.FormPanel, {
 			value:'н',
 			listeners: {
 				select:function(combo,rec,i){
-//					var pb = Ext.getCmp('policy-bar');
-//					var vpc = Ext.getCmp('visit-policy-cmb');
-					this.onPaymentTypeChoice(rec.data.id);
+					this.onPaymentTypeChoice(rec);
 				},
 				scope:this
 			}
@@ -622,8 +620,13 @@ App.visit.VisitForm = Ext.extend(Ext.FormPanel, {
 		}
 	},
 	
-	onPaymentTypeChoice : function(type){
-		if(type=='д') {
+	onPaymentTypeChoice : function(rec){
+		if(App.settings.reloadPriceByPaymentType) {
+			var sp = this.servicePanel;
+			sp.getLoader().baseParams['payment_type'] = rec.data.id;
+			sp.getLoader().load(sp.getRootNode())
+		}
+		if(rec.data.id=='д') {
 			this.policyCmb.allowBlank = false;
 			this.policyBar.show();
 		} else {

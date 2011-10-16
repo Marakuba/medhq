@@ -289,11 +289,6 @@ class ApiTest(unittest.TestCase):
         response = client.get('/api/v1/dashboard/preorder')
         self.assertEqual(response.status_code, 200)
     
-    def test_preorderedservice(self):
-        client = Client()
-        response = client.get('/api/v1/dashboard/preorderedservice')
-        self.assertEqual(response.status_code, 200)
-    
     def test_event(self):
         client = Client()
         response = client.get('/api/v1/dashboard/event')

@@ -22,6 +22,7 @@ import logging
 from django.utils.encoding import smart_unicode
 from visit.settings import CANCEL_STATUSES
 from django.core.exceptions import ObjectDoesNotExist
+from constance import config
 
 logger = logging.getLogger()
 hdlr = logging.FileHandler(settings.LOG_FILE)
@@ -259,7 +260,8 @@ class OrderedService(make_operator_object('ordered_service')):
         return u"%s - %s" % (self.order.patient, self.service)
     
     def save(self, *args, **kwargs):
-        price = self.service.price(self.execution_place, self.order.created, payment_type=self.order.payment_type)
+        pt = config.PRICE_BY_PAYMENT_TYPE and self.order.payment_type or u'н'
+        price = self.service.price(self.execution_place, self.order.created, payment_type=pt)
         opr = OPERATIONS[self.order.cls]
         self.price = price*opr
         self.total_price = price*self.count

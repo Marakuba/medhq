@@ -7,6 +7,7 @@ App.laboratory.RegisterWindow = Ext.extend(Ext.Window, {
  		    ['start_date','visit__created__gte','Y-m-d 00:00'],
  		    ['end_date','visit__created__lte','Y-m-d 23:59'],
  		    ['laboratory','laboratory'],
+ 		    ['office','visit__office'],
  		    ['patient','visit__patient'],
  		    ['is_completed','is_completed'],
  		    ['cito','visit__is_cito']
@@ -43,6 +44,23 @@ App.laboratory.RegisterWindow = Ext.extend(Ext.Window, {
 					}
 				}]
 			},new Ext.form.LazyClearableComboBox({
+				fieldLabel:'Офис',
+				name:'office',
+				anchor:'100%',
+				valueField:'id',
+				store:new Ext.data.RESTStore({
+					autoLoad : true,
+					apiUrl : get_api_url('ownstate'),
+					model: ['id','name']
+				}),
+			    minChars:2,
+			    emptyText:'Выберите офис...',
+			    listeners:{
+			    	select: function(combo, rec,i) {
+			    	},
+			    	scope:this
+			    }
+			}),new Ext.form.LazyClearableComboBox({
 				fieldLabel:'Лаборатория',
 				name:'laboratory',
 				anchor:'100%',

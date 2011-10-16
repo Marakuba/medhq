@@ -143,10 +143,11 @@
 	display:block;
 }
 
-.x-grid3-col-laboratory span {
-	color:red;
+.x-grid3-col-laboratory p {
+	color:#081B85;
 	font-weight: bold;
 	text-align: right;
+	padding-right:5px;
 }
 
 .preorder-actual-row-body {
