@@ -46,8 +46,9 @@ function go(slug){
     var execution_place_office;
     var execution_place_filial;
     var order__payment_type;
-        var order__cls;
-        var from_place_filial;
+    var order__cls;
+    var from_place_filial;
+    var details;
 
     start_date = document.f1.start_date.value;
     end_date = document.f1.end_date.value;
@@ -61,6 +62,7 @@ function go(slug){
     price_type = document.f1.price_type.options[document.f1.price_type.selectedIndex].value;    
     order__cls = document.f1.order__cls.options[document.f1.order__cls.selectedIndex].value;    
     from_place_filial = document.f1.from_place_filial.options[document.f1.from_place_filial.selectedIndex].value;    
+    details = $('#id_details').attr('checked');    
 
     window.open('/old/reporting/'+slug+'/print/?'
         +'start_date='+start_date
@@ -75,6 +77,7 @@ function go(slug){
         +'&price_type='+price_type
         +'&order__cls='+order__cls
         +'&from_place_filial='+from_place_filial
+        + (details ? '&details=да' : '')
     );
 
 

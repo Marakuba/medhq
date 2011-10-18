@@ -58,3 +58,18 @@
     .right {
     	text-align:center;
     }
+    table.legend {
+    	display:none;
+    	border:none;
+    	margin:10px 0px;
+    }
+    
+    table.legend td {
+    	border:none;
+    	vertical-align: middle;
+    }
+    table.legend td.color {
+    	border:1px dotted gray;
+    	width:30px;
+    	height:30px;
+    }
