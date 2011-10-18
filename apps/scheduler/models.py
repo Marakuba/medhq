@@ -106,7 +106,7 @@ class Event(models.Model):
     def save(self, *args, **kwargs):
         if not self.timeslot:
             staff = Position.objects.get(id=self.cid)
-            timeslot = timedelta(minutes=staff.doctor.get_timeslot_display() or 30)
+            timeslot = timedelta(minutes=staff.staff.doctor.get_timeslot_display() or 30)
             start = self.start
             end = self.end
             while start < end:

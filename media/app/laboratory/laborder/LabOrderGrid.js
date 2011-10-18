@@ -27,8 +27,8 @@ App.laboratory.LabOrderGrid = Ext.extend(Ext.grid.GridPanel, {
 		    	sortable: true, 
 		    	dataIndex: 'barcode',
 		    	renderer:function(v,opts,rec) {
-		    		return String.format("<div><b>{0}</b><span>{1}</span></div>", 
-		    				v, Ext.util.Format.date(rec.data.visit_created,'d.m.y')) 
+		    		return String.format("<div><b>{0}</b><span>{1}</span><br><span>{2}</span></div>", 
+		    				v, Ext.util.Format.date(rec.data.visit_created,'d.m.y'), Ext.util.Format.date(rec.data.visit_created,'H:i')) 
 		    	}
 		    },{
 		    	header: "Дата", 
