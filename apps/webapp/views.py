@@ -19,6 +19,9 @@ from lab.models import Sampling
 from django.views.decorators.gzip import gzip_page
 from promotion.models import Promotion
 from state.models import State
+from pricelist.models import Price
+from django.db.models import Max
+from staff.models import Position
 
 
 def auth(request, authentication_form=AuthenticationForm):
@@ -133,10 +136,10 @@ def calendar(request):
 def helpdesk(request):
     return {}
     
-
-def get_service_tree(request):
+"""
+def get_serv_tree(request):
     """
-    Генерирует дерево в json-формате.
+#    Генерирует дерево в json-формате.
     """
     payment_type = request.GET.get('payment_type',u'н')
     _cache_key = (settings.SERVICETREE_ONLY_OWN and request.active_profile) and 'service_list_%s_%s' % (request.active_profile.state, payment_type) or ('service_list_%s' % payment_type)
@@ -242,6 +245,176 @@ def get_service_tree(request):
             tree.append(node)
         
         tree.extend(tree_iterate(BaseService.tree.root_nodes())) #@UndefinedVariable
+        _cached_tree = simplejson.dumps(tree)
+        cache.set(_cache_key, _cached_tree, 24*60*60*30)
+
+    return _cached_tree
+"""
+def get_service_tree(request):
+    """
+    Генерирует дерево в json-формате.
+    """
+    payment_type = request.GET.get('payment_type',u'н')
+    _cache_key = (settings.SERVICETREE_ONLY_OWN and request.active_profile) and 'service_list_%s_%s' % (request.active_profile.state, payment_type) or ('service_list_%s' % payment_type)
+    
+    if settings.SERVICETREE_ONLY_OWN and request.active_profile:
+        state = request.active_profile.department.state
+        
+    args = {}
+    if state:
+        args['extended_service__state']=state.id
+
+    nodes = []
+    values = Price.objects.filter(extended_service__is_active=True, price_type='r',**args).\
+        order_by('extended_service__id').\
+        values('extended_service__id','extended_service__state__id','extended_service__staff__id','value','extended_service__base_service__id').\
+        annotate(Max('on_date'))
+    result = {}
+    for val in values:
+        result[val['extended_service__base_service__id']] = val
+        
+    def promo_dict(obj):
+        
+        def node_dict(obj):
+            try:
+                bs = obj.base_service
+                es = bs.extendedservice_set.get(state=obj.execution_place)
+                price = es.get_actual_price(payment_type=payment_type)
+                node = {
+                    "id":'%s-%s' % (obj.base_service.id,obj.execution_place.id),
+                    "text":"%s [%s]" % (obj.base_service.short_name or obj.base_service.name, price),
+                    "price":price,
+                    "c":obj.count or 1
+                }
+                staff_all = es.staff.all()
+                if staff_all.count():
+                    node['staff'] = [(pos.id,pos.__unicode__()) for pos in staff_all]
+                return node
+            except Exception, err:
+                print err
+                return None
+            
+        return {
+            'id':obj.id,#u'%s_%s' % (obj.base_service.id, obj.execution_place.id),
+            'text':obj.name,#obj.base_service.short_name or obj.base_service.name,
+            'leaf':True,
+            'nodes':[node_dict(node) for node in obj.promotionitem_set.all()],
+            'discount':obj.discount and obj.discount.id or None,
+            'isComplex':True
+        }
+                
+    def clear_tree(tree=[],child_list=[]):
+        '''
+        Рекурсивно очищает список, содержащий дерево, от пустых групп;
+        Одеревенезирует этот список.
+        empty - признак того, есть ли в текущей группе элементы
+        child_list - двумерный список всех детей для еще не найденных родителей.
+        '''
+        #Если список пуст, удалять больше нечего
+        if len(tree)==0:
+            return (child_list and child_list[0]) or []
+        else:
+            node = tree[-1]
+            
+            bro = []
+            childs = []
+            
+            for item in child_list:
+#                if node.name == 'Gr1':
+#                    import pdb; pdb.set_trace()
+                #Если список детей <> [] и либо item[0] и текущий node - корни дерева, либо относятся к одному родителю
+                if item and ((not item[0]['parent'] and not node.parent) or (node.parent and item[0]['parent'] == node.parent.id)):
+                    # то это братья
+                    bro = item
+                if item and item[0]['parent']==node.id and not node.is_leaf_node():
+                    childs = item
+            
+            if not node.is_leaf_node() and not childs:
+                #удаляем текущий элемент
+                node = None
+            else:
+                if node.is_leaf_node():
+                    staff_all = Position.objects.filter(extendedservice=result[node.id]['extended_service__id'])
+                    node = {
+                            "id":'%s-%s' % (node.id,result[node.id]['extended_service__state__id']),
+                            "text":"%s %s[%s]" % (node.short_name or node.name, \
+                                                  node.execution_time and u"(%sм) " % node.execution_time or u'', \
+                                                  result[node.id]['value']),
+                            "cls":"multi-line-text-node",
+                            "price":result[node.id]['value'],
+                            "iconCls":"ex-place-%s" % result[node.id]['extended_service__state__id'],
+                            "parent":node.parent and node.parent.id,
+                            "leaf":True}
+                    
+                    if staff_all.count():
+                        node['staff'] = [(pos.id,pos.__unicode__()) for pos in staff_all]
+                        
+                        nodes.append(node)
+                else: 
+                    node = {
+                            "id":node.id,
+                            "leaf":False,
+                            'text': "%s" % (node.short_name or node.name,),
+                            'singleClickExpand':True,
+                            "parent":node.parent and node.parent.id,
+                            'children':childs
+                            }
+                #Если есть братья, добавляем текущий элемент к списку братьев
+                #Иначе создаём новый список братьев, в котором текущий элемент будет первым братом
+                
+                if bro:
+                    bro = bro.insert(0,node)
+                else: 
+                    child_list.insert(0,[node])
+                    
+                #Если есть список дочерних элементов и текущий элемент - их родитель,
+                #то удаляем этот список из общего списка детей, за ненадобностью    
+                if childs and node['leaf'] == False:
+                    child_list.remove(childs)
+                    
+            tree = clear_tree(tree[:-1],child_list) or []
+            
+#            if node:
+#                tree.append(node)
+            return tree 
+        
+    for base_service in BaseService.objects.all().order_by(BaseService._meta.tree_id_attr, BaseService._meta.left_attr, 'level'): #@UndefinedVariable
+        if base_service.is_leaf_node():
+            if result.has_key(base_service.id):
+                nodes.append(base_service)
+        else:
+            nodes.append(base_service)
+                    
+    #mass = []        
+#    nodes = clear_tree(nodes,[])
+#    for node in nodes:
+#        if result.has_key(node.id):
+#            k = [node,result[node['id']]['value'] or None]
+#        else:
+#            k = [node,None]
+#        mass.append(k)   
+    #import pdb; pdb.set_trace()
+#    return nodes
+
+    if request.GET.get('refresh'):
+        _cached_tree = None
+    else:
+        _cached_tree = cache.get(_cache_key)
+        
+    if not _cached_tree:
+        tree = []
+        promotions = Promotion.objects.actual()
+        if promotions.count():
+            node = {
+                'id':'promotions',
+                'text':u'Акции / Комплексные обследования',
+                'children':[promo_dict(promo) for promo in promotions],
+                'leaf':False,
+                'singleClickExpand':True
+            }
+            tree.append(node)
+        s = clear_tree(nodes,[])
+        tree.extend(s) #@UndefinedVariable
         _cached_tree = simplejson.dumps(tree)
         cache.set(_cache_key, _cached_tree, 24*60*60*30)
 

@@ -16,6 +16,7 @@ from django.views.decorators.gzip import gzip_page
 from pricelist.models import Price
 from django.db.models import Max
 from constance import config
+from staff.models import Position
 
 def pricelist(request):
 
@@ -363,4 +364,3 @@ def get_service_tree(state=None):
         mass.append(k)   
     #import pdb; pdb.set_trace()
     return mass
-    
