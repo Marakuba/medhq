@@ -566,6 +566,17 @@ class StaffResource(ExtResource):
             'id':ALL
 #            'parent':ALL_WITH_RELATIONS
         }
+        
+class TubeResource(ExtResource):
+    """
+    """
+    class Meta:
+        queryset = Tube.objects.all()
+        authorization = Authorization()
+        resource_name = 'tube'
+        filtering = {
+            'name':ALL
+        }
 
 class PositionResource(ExtResource):
     """
@@ -592,6 +603,7 @@ class ExtendedServiceResource(ExtResource):
     base_service = fields.ForeignKey(BaseServiceResource, 'base_service')
     staff = fields.ManyToManyField(PositionResource, 'staff',null=True)
     state = fields.ForeignKey(StateResource, 'state')
+    tube = fields.ForeignKey(TubeResource, 'tube')
 
     def dehydrate(self, bundle):
         bundle.data['staff'] = bundle.obj.staff and [[staff.id,staff] for staff in bundle.obj.staff.all()] or None
@@ -783,17 +795,6 @@ class PosSchedResource(ExtResource):
         filtering = {
             'last_name':('istartswith',),
             'id':ALL
-        }
-
-class TubeResource(ExtResource):
-    """
-    """
-    class Meta:
-        queryset = Tube.objects.all()
-        authorization = Authorization()
-        resource_name = 'tube'
-        filtering = {
-            'name':ALL
         }
 
 #class AnalysisResource(ExtResource):
