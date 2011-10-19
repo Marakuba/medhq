@@ -604,7 +604,7 @@ class ExtendedServiceResource(ExtResource):
     staff = fields.ManyToManyField(PositionResource, 'staff',null=True)
     state = fields.ForeignKey(StateResource, 'state')
     tube = fields.ForeignKey(TubeResource, 'tube',null=True)
-    staff = fields.ToManyField('api.registry.StaffResource','staff')
+    staff = fields.ToManyField('api.registry.StaffResource','staff',null=True)
     
     def dehydrate(self, bundle):
         bundle.data['staff'] = bundle.obj.staff and [[staff.id,staff] for staff in bundle.obj.staff.all()] or None
