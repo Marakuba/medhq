@@ -37,12 +37,12 @@ App.ServiceTreeGrid = Ext.extend(Ext.ux.tree.TreeGrid,{
 	        columns:[{
 	        	header:'Наименование',
 	        	dataIndex:'text',
-	        	width:this.large ? 700 : 200
+	        	width:this.large ? 700 : 180
 	        },{
 	        	header:'Цена',
 	        	dataIndex:'price',
 	        	width:50,
-	        	align:'left'
+	        	align:'right'
 	        },{
 	        	header:'Время вып-я',
 	        	dataIndex:'exec_time',
@@ -53,6 +53,7 @@ App.ServiceTreeGrid = Ext.extend(Ext.ux.tree.TreeGrid,{
 	        listeners:{
 	        	click:function(node,e){
 	        		if(node.leaf) {
+	        			node.attributes['shiftKey'] = e.shiftKey;
 	        			this.fireEvent('serviceclick', node);
 	        		}
 	        	}

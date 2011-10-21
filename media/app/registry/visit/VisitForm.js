@@ -537,7 +537,7 @@ App.visit.VisitForm = Ext.extend(Ext.FormPanel, {
 	},
 	
 	addRow: function(attrs, cb, scope) {
-		this.orderedService.addRow.createDelegate(this.orderedService, [attrs, undefined, cb, scope])();
+		this.orderedService.addRow.createDelegate(this.orderedService, [attrs, attrs.shiftKey, cb, scope])();
 	},
 	
 	onServiceClick : function(node) {
