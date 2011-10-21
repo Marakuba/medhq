@@ -159,6 +159,20 @@ App.CentralPanel = Ext.extend(Ext.Panel, {
                     },
                     scope:this  
             	}]
+            },{
+            	xtype:'buttongroup',
+            	items:[{
+            		text:'Услуги',
+            		scale:'medium',
+            		handler:function(){
+                    	this.launchApp('servicetreegrid',
+                    		{id:'service-tree',
+                    		title:"Услуги",
+                    		closable:true,
+                    		large:true});
+                    },
+                    scope:this  
+            	}]
             },'->',{
 				xtype:'buttongroup',
 //				title:'HelpDesk',

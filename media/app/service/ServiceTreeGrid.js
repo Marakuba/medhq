@@ -37,7 +37,7 @@ App.ServiceTreeGrid = Ext.extend(Ext.ux.tree.TreeGrid,{
 	        columns:[{
 	        	header:'Наименование',
 	        	dataIndex:'text',
-	        	width:150
+	        	width:this.large ? 700 : 200
 	        },{
 	        	header:'Цена',
 	        	dataIndex:'price',
