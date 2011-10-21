@@ -30,7 +30,7 @@ App.visit.VisitForm = Ext.extend(Ext.FormPanel, {
 		this.inlines.add('orderedservice', this.orderedService);
 		
 		
-		this.servicePanel = new App.visit.VisitServicePanel({
+		this.servicePanel = new App.ServiceTreeGrid({
 	        region: 'east',
 		    margins:'5 5 5 0',
 	        width: 300,
