@@ -340,9 +340,9 @@ def get_service_tree(request):
                             "id":'%s-%s' % (node.id,result[node.id]['extended_service__state__id']),
                             "text":"%s" % (node.short_name or node.name),
                             "cls":"multi-line-text-node",
-                            "price":result[node.id]['value'],
                             "exec_time":"%s" % (node.execution_time and u"%s мин" % node.execution_time or u''),
 #                            "state_name":state.name,
+                            "price":str(result[node.id]['value']),
                             "iconCls":"ex-place-%s" % result[node.id]['extended_service__state__id'],
                             "parent":node.parent and node.parent.id,
                             "leaf":True}
