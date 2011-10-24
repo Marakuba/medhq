@@ -245,7 +245,7 @@ class ReferralAdmin(admin.ModelAdmin):
     """
     exclude = ('operator',)
     list_display = ('__unicode__','name','agent','visit_count')
-    list_editable = ('name',)
+    list_editable = ('name','agent',)
     
     def visit_count(self, obj):
         return obj.visit_set.all().count()
@@ -267,7 +267,7 @@ class ReferralAgentAdmin(admin.ModelAdmin):
     """
     """
     exclude = ('operator',)
-    inlines = [ReferralListAdmin]
+#    inlines = [ReferralListAdmin]
     list_display = ('__unicode__','name')
     list_editable = ('name',)
     
