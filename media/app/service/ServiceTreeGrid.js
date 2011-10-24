@@ -37,15 +37,18 @@ App.ServiceTreeGrid = Ext.extend(Ext.ux.tree.TreeGrid,{
 	        columns:[{
 	        	header:'Наименование',
 	        	dataIndex:'text',
+	        	sortable:false,
 	        	width:this.large ? 700 : 180
 	        },{
 	        	header:'Цена',
 	        	dataIndex:'price',
+	        	sortable:false,
 	        	width:50,
 	        	align:'right'
 	        },{
 	        	header:'Время вып-я',
 	        	dataIndex:'exec_time',
+	        	sortable:false,
 //	        	hidden:true,
 	        	width:50,
 	        	align:'left'
