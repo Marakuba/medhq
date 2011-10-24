@@ -34,14 +34,33 @@ logger.setLevel(logging.NOTSET)
 
 
 
-
-class Referral(make_operator_object('referral')):
+class ReferralAgent(make_operator_object('referralagent')):
     """
     """
     name = models.CharField(u'Ф.И.О. врача и наименование организации', 
                             max_length=200, 
                             help_text=u'Образец заполнения: Иванова И.И., гор.больница №1.')
     
+    objects = models.Manager()
+    
+    def __unicode__(self):
+        return u"%s" % (self.name,)
+    
+    class Meta:
+        verbose_name = u'агент'
+        verbose_name_plural = u'агенты'
+        ordering = ('name',)
+
+
+class Referral(make_operator_object('referral')):
+    """
+    """
+    name = models.CharField(u'Наименование агента', 
+                            max_length=200, 
+                            help_text=u'')
+    
+    agent = models.ForeignKey(ReferralAgent, null=True, blank = True, verbose_name=u'Агент')
+
     objects = models.Manager()
     
     def __unicode__(self):

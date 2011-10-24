@@ -10,7 +10,7 @@ from service.models import BaseService
 from django.conf.urls.defaults import patterns, url
 from django.views.generic.simple import direct_to_template
 from django.shortcuts import get_object_or_404
-from visit.models import Referral, PlainVisit, ReferralVisit
+from visit.models import Referral, PlainVisit, ReferralVisit, ReferralAgent
 from django.http import HttpResponse
 import StringIO
 import csv
@@ -244,12 +244,33 @@ class ReferralAdmin(admin.ModelAdmin):
     """
     """
     exclude = ('operator',)
-    list_display = ('__unicode__','name','visit_count')
-    list_editable = ('name',)
+    list_display = ('__unicode__','name','agent','visit_count')
+    list_editable = ('name','agent',)
     
     def visit_count(self, obj):
         return obj.visit_set.all().count()
     visit_count.short_description = u'Визиты'
+    
+    def save_model(self, request, obj, form, change):
+        if not change:
+            obj.operator=request.user
+        obj.save()
+        
+class ReferralListAdmin(admin.TabularInline):
+    """
+    """
+    model = Referral
+    fields = ('name',)
+    extra = 0
+        
+class ReferralAgentAdmin(admin.ModelAdmin):
+    """
+    """
+    exclude = ('operator',)
+#    inlines = [ReferralListAdmin]
+    list_display = ('__unicode__','name')
+    list_editable = ('name',)
+    
     
     def save_model(self, request, obj, form, change):
         if not change:
@@ -261,4 +282,5 @@ admin.site.register(PlainVisit, PlainVisitAdmin)
 admin.site.register(ReferralVisit, ReferralVisitAdmin)
 admin.site.register(Visit, VisitAdmin)
 admin.site.register(Referral, ReferralAdmin)
+admin.site.register(ReferralAgent, ReferralAgentAdmin)
 admin.site.register(OrderedService)
