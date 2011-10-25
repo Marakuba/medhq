@@ -96,6 +96,7 @@ Ext.calendar.TimeslotEditWindow = Ext.extend(Ext.Window, {
         	fieldLabel:'Пациент',
 			anchor:'98%',
 			hideTrigger:true,
+			selectOnFocus:false,
         	store:this.patientSelectedStore,
 		    displayField: 'full_name',
 		    queryParam:'search',

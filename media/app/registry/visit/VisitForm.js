@@ -453,7 +453,9 @@ App.visit.VisitForm = Ext.extend(Ext.FormPanel, {
 				this.addPreorderService(this.preorderRecord);
 				if (this.preorderRecord.data.payment_type){
 					this.paymentTypeCB.setValue(this.preorderRecord.data.payment_type);
-					this.onPaymentTypeChoice(this.preorderRecord.data.payment_type);
+					var ind = this.paymentTypeCB.store.find("id",this.preorderRecord.data.payment_type)
+					var rec = this.paymentTypeCB.store.getAt(ind)
+					this.onPaymentTypeChoice(rec);
 				}
 			}
 		},this);
