@@ -6,8 +6,10 @@ import datetime
 from django.core.exceptions import ObjectDoesNotExist
 from visit.models import OrderedService
 from staff.models import Position
-from service.models import ICD10
+from service.models import ICD10, BaseService
 from django.conf import settings
+from mptt.models import MPTTModel
+
 import Image
 
 class Equipment(models.Model):
@@ -91,7 +93,9 @@ class ExaminationCard(models.Model):
     objective_data = models.TextField(u'Объективные данные', null=True, blank=True)
     psycho_status = models.TextField(u'Психологический/неврологический статус', null=True, blank=True)
     gen_diag = models.TextField(u'Основной диагноз', null=True, blank=True)
-    mbk_diag = models.ForeignKey(ICD10, null=True, blank=True)
+    mbk_diag = models.ForeignKey(ICD10, null=True, blank=True, related_name='mkb')
+    diagnosis = models.TextField(u'Диагноз', null=True, blank=True)
+    icd = models.ForeignKey(ICD10, null=True, blank=True)
     complication= models.TextField(u'Осложнения', null=True, blank=True)
     ekg = models.TextField(u'ЭКГ', null=True, blank=True)
     concomitant_diag= models.TextField(u'Сопутствующий диагноз', null=True, blank=True)
@@ -108,6 +112,7 @@ class ExaminationCard(models.Model):
     width = models.TextField(u'ширина/шаг', null=True, blank=True)
     contrast_enhancement = models.TextField(u'Контрастное усиление', null=True, blank=True)
     
+    
     def __unicode__(self):
         return "%s - %s - %s" % (self.created.strftime("%d/%m/%Y"),self.name or self.print_name,self.ordered_service.order.patient.short_name())
     
@@ -116,6 +121,36 @@ class ExaminationCard(models.Model):
         verbose_name_plural = u'Карты осмотра'
         ordering = ('-id',)
 
+class ExaminationDetail(models.Model):
+    exam_card = models.OneToOneField(ExaminationCard)
+    equipment = models.ForeignKey(Equipment, verbose_name=u'Оборудование', null=True, blank=True)
+    area = models.TextField(u'Область исследования', null=True, blank=True)
+    scan_mode = models.TextField(u'Режим сканирования', null=True, blank=True)
+    thickness = models.TextField(u'Толщина реконструктивного среза', null=True, blank=True)
+    width = models.TextField(u'ширина/шаг', null=True, blank=True)
+    contrast_enhancement = models.TextField(u'Контрастное усиление', null=True, blank=True)
+    
+    def __unicode__(self):
+        return self.exam_card.name
+    
+    class Meta:
+        verbose_name = u'Дополнительная информация карты осмотра'
+        verbose_name_plural = u'Дополнительная информация карты осмотра'
+        ordering = ('-id',)
+    
+class Glossary(MPTTModel):
+    parent = models.ForeignKey('self', null=True, blank=True)
+    base_service = models.ForeignKey(BaseService, null=True, blank=True)
+    staff = models.ForeignKey(Position, null=True, blank=True)
+    text = models.TextField(u'Текст', null=True, blank=True)
+    
+    def __unicode__(self):
+        return self.text
+    
+    class Meta:
+        verbose_name = u'Глоссарий'
+        verbose_name_plural = u'Глоссарий'
+        ordering = ('-id',)
 
 class DICOM(models.Model):
     """
