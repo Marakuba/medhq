@@ -145,42 +145,11 @@ class ExaminationDetail(models.Model):
         verbose_name = u'Дополнительная информация карты осмотра'
         verbose_name_plural = u'Дополнительная информация карты осмотра'
         ordering = ('-id',)
-        
-class Card(models.Model):
-    name = models.TextField(u'Рабочее наименование', null=True, blank=True)
-    print_name = models.TextField(u'Заголовок для печати', null=True, blank=True)
-    created = models.DateTimeField(u'Дата создания', auto_now_add=True)
-    modified = models.DateTimeField(auto_now=True)
-    print_date = models.DateTimeField(u'Время печати', blank=True, null=True)
-    ordered_service = models.ForeignKey(OrderedService,blank=True, null=True)
-    assistant = models.ForeignKey(Position, verbose_name=u'Лаборант', null=True, blank=True)
-    data = models.TextField(u'Данные', null=True, blank=True)
-    
-    def __unicode__(self):
-        return "%s - %s - %s" % (self.created.strftime("%d/%m/%Y"),self.name or self.print_name,self.ordered_service.order.patient.short_name())
-    
-    class Meta:
-        verbose_name = u'Карта осмотра'
-        verbose_name_plural = u'Карты осмотра'
-        ordering = ('-id',)
-        
-class Template(models.Model):
-    name = models.TextField(u'Рабочее наименование', null=True, blank=True)
-    print_name = models.TextField(u'Заголовок для печати', null=True, blank=True)
-    created = models.DateTimeField(u'Дата создания', auto_now_add=True)
-    modified = models.DateTimeField(auto_now=True)
-    print_date = models.DateTimeField(u'Время печати', blank=True, null=True)
-    base_service = models.ForeignKey(BaseService, null=True, blank=True)
-    staff = models.ForeignKey(Staff, null=True, blank=True)
-    data = models.TextField(u'Данные', null=True, blank=True)
-    
     
 class Glossary(MPTTModel):
     parent = models.ForeignKey('self', null=True, blank=True)
     base_service = models.ForeignKey(BaseService, null=True, blank=True)
-    template = models.ForeignKey(Template, null=True, blank=True)
-    staff = models.ForeignKey(Staff, null=True, blank=True)
-    section = models.TextField(u'Раздел', null=True, blank=True)
+    staff = models.ForeignKey(Position, null=True, blank=True)
     text = models.TextField(u'Текст', null=True, blank=True)
     
     def __unicode__(self):
@@ -190,31 +159,6 @@ class Glossary(MPTTModel):
         verbose_name = u'Глоссарий'
         verbose_name_plural = u'Глоссарий'
         ordering = ('-id',)
-        
-class FieldSet(models.Model):
-    name = models.TextField(u'Имя')
-    order = models.IntegerField(u'Порядок')
-    title = models.TextField(u'Заголовок')
-    
-    def __unicode__(self):
-        return self.title
-    
-    class Meta:
-        verbose_name = u'Набор полей'
-        verbose_name_plural = u'Наборы полей'
-        ordering = ('order',)
-        
-class SubSection(models.Model):
-    section = models.ForeignKey(FieldSet)
-    title = models.TextField(u'Заголовок')
-    
-    def __unicode__(self):
-        return self.title
-    
-    class Meta:
-        verbose_name = u'Подраздел'
-        verbose_name_plural = u'Подразделы'
-        ordering = ('title',)
 
 class DICOM(models.Model):
     """
