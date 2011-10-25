@@ -1,6 +1,6 @@
 # -*- coding: utf-8 -*-
 
-from django.db import models
+from django.db import models, transaction
 from django.contrib.auth.models import User
 import datetime
 from south.modelsinspector import add_introspection_rules
@@ -14,6 +14,7 @@ from visit.models import BaseService
 from state.models import State
 from django.conf import settings
 from visit.models import Visit
+from django.db.models.signals import pre_delete
 import exceptions
 
 from datetime import timedelta
@@ -141,7 +142,7 @@ class Preorder(models.Model):
     Модель предварительного заказа
     """
     patient = models.ForeignKey(Patient, blank = True, null = True)
-    timeslot = models.OneToOneField(Event, blank = True, null = True)
+    timeslot = models.OneToOneField(Event, blank = True, null = True, related_name='preord')
     comment = models.TextField(u'Примечание', blank = True, null = True)
     expiration = CustomDateTimeField(u'Дата истечения', blank = True, null = True)
     visit = models.OneToOneField(Visit, null=True)
@@ -161,3 +162,21 @@ class Preorder(models.Model):
         
     def __unicode__(self):
         return self.patient
+    
+    
+### SIGNALS
+
+@transaction.commit_on_success
+def PreorderPreDelete(sender, **kwargs):
+    """
+    """
+    obj = kwargs['instance']
+    timeslot = obj.timeslot
+    timeslot.vacant=True
+    timeslot.save()
+    #visit
+    #p = visit.patient
+    #p.billed_account -= obj.total_price
+    #p.save()
+    
+pre_delete.connect(PreorderPreDelete, sender=Preorder)

@@ -12,6 +12,19 @@ App.registry.PreorderGrid = Ext.extend(Ext.grid.GridPanel, {
 			apiUrl : get_api_url('extpreorder'),
 			model: App.models.preorderModel
 		});
+		
+		this.eventModel = new Ext.data.Record.create([
+			{name: 'id'},
+		    {name: 'resource_uri'},
+		    {name: 'vacancy', allowBlank: false}
+		]);
+
+		this.eventStore = new Ext.data.RESTStore({
+			autoLoad : false,
+			autoSave : true,
+			apiUrl : get_api_url('event'),
+			model: this.eventModel
+		});
 		this.patientStore = new Ext.data.RESTStore({
 			autoLoad : false,
 			autoSave : false,
@@ -68,6 +81,14 @@ App.registry.PreorderGrid = Ext.extend(Ext.grid.GridPanel, {
 			scope:this
 		});
 		
+		this.clearButton = new Ext.Button({
+			iconCls:'silk-cancel',
+			disabled:true,
+			text:'Отменить предзаказ',
+			handler:this.onDelPreorderClick.createDelegate(this, []),
+			scope:this
+		});
+		
 		this.startDateField = new Ext.form.DateField({
 			format:'d.m.Y',
 			value:this.start_date,
@@ -105,7 +126,7 @@ App.registry.PreorderGrid = Ext.extend(Ext.grid.GridPanel, {
                     scope:this
                 }
 			}),
-			tbar:[this.visitButton],
+			tbar:[this.visitButton,this.clearButton],
 	        bbar: {
             	cls: 'ext-cal-toolbar',
             	border: true,
@@ -187,6 +208,7 @@ App.registry.PreorderGrid = Ext.extend(Ext.grid.GridPanel, {
 	
 	btnSetDisabled: function(status) {
         this.visitButton.setDisabled(status);
+        this.clearButton.setDisabled(status);
 	},
 	
 	onServiceSelect: function(record){
@@ -199,6 +221,7 @@ App.registry.PreorderGrid = Ext.extend(Ext.grid.GridPanel, {
         } else {
         	this.visitButton.setDisabled(true);
         };
+        this.clearButton.setDisabled(false);
 	},
 	
 	getSelected: function() {
@@ -233,6 +256,21 @@ App.registry.PreorderGrid = Ext.extend(Ext.grid.GridPanel, {
         } else {
         	Ext.Msg.alert('Уведомление','Не выбран ни один предзаказ')
         }
+    },
+    
+    onDelPreorderClick : function() {
+    	var record = this.getSelected();
+    	if (!record) {
+    		return false
+    	};
+    	this.eventStore.setBaseParam('preord',App.uriToId(record.data.id))
+    	this.eventStore.load({calback:function(records){
+    		if (records[0]){
+    			records[0]['vacancy'] = true
+    		}
+    	},scope:this})
+    	this.store.remove(record)
+    	
     },
     
     visitAdd : function(record) {

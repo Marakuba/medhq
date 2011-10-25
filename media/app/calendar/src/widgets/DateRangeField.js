@@ -42,6 +42,7 @@ Ext.calendar.DateRangeField = Ext.extend(Ext.form.Field, {
             });
             this.startTime = new Ext.form.TimeField({
                 id: this.id + '-start-time',
+                format:'H:i',
                 hidden: this.showTimes === false,
                 labelWidth: 0,
                 hideLabel: true,
@@ -57,6 +58,7 @@ Ext.calendar.DateRangeField = Ext.extend(Ext.form.Field, {
             });
             this.endTime = new Ext.form.TimeField({
                 id: this.id + '-end-time',
+                format:'H:i',
                 hidden: this.showTimes === false,
                 labelWidth: 0,
                 hideLabel: true,
