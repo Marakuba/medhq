@@ -37,9 +37,9 @@ logger.setLevel(logging.NOTSET)
 class ReferralAgent(make_operator_object('referralagent')):
     """
     """
-    name = models.CharField(u'Ф.И.О. врача и наименование организации', 
+    name = models.CharField(u'Наименование агента', 
                             max_length=200, 
-                            help_text=u'Образец заполнения: Иванова И.И., гор.больница №1.')
+                            help_text=u'')
     
     objects = models.Manager()
     
@@ -55,9 +55,9 @@ class ReferralAgent(make_operator_object('referralagent')):
 class Referral(make_operator_object('referral')):
     """
     """
-    name = models.CharField(u'Наименование агента', 
+    name = models.CharField(u'Ф.И.О. врача и наименование организации', 
                             max_length=200, 
-                            help_text=u'')
+                            help_text=u'Образец заполнения: Иванова И.И., гор.больница №1.')
     
     agent = models.ForeignKey(ReferralAgent, null=True, blank = True, verbose_name=u'Агент')
 
