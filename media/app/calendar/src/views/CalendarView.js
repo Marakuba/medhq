@@ -134,7 +134,9 @@ Ext.calendar.CalendarView = Ext.extend(Ext.BoxComponent, {
     // must be implemented by a subclass
     // private
     initComponent: function() {
-        this.setStartDate(this.startDate || new Date(),undefined,false);
+        //this.setStartDate(this.startDate || new Date(),undefined,false);
+    	this.startDate = this.startDate ? this.startDate.clearTime() : new Date();
+    	this.setViewBounds(this.startDate);
 
         Ext.calendar.CalendarView.superclass.initComponent.call(this);
 
