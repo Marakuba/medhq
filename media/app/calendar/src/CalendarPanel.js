@@ -75,6 +75,9 @@ Ext.calendar.CalendarPanel = Ext.extend(Ext.Panel, {
      * Alternate text to use for the 'Month' nav bar button.
      */
     monthText: 'Месяц',
+    
+    startHour:0,
+    endHour:24,
 
     // private
     layoutConfig: {
@@ -274,6 +277,8 @@ Ext.calendar.CalendarPanel = Ext.extend(Ext.Panel, {
         if (this.showDayView) {
             var day = Ext.apply({
                 xtype: 'dayview',
+                startHour:this.startHour,
+                endHour:this.endHour,
                 title: this.dayText,
                 showToday: this.showToday,
                 showTodayText: this.showTodayText,
@@ -292,7 +297,9 @@ Ext.calendar.CalendarPanel = Ext.extend(Ext.Panel, {
                 title: this.weekText,
                 showToday: this.showToday,
                 showTodayText: this.showTodayText,
-                showTime: this.showTime
+                showTime: this.showTime,
+                startHour:this.startHour,
+                endHour:this.endHour
             },
             this.weekViewCfg);
 
@@ -308,6 +315,8 @@ Ext.calendar.CalendarPanel = Ext.extend(Ext.Panel, {
                 showToday: this.showToday,
                 showTodayText: this.showTodayText,
                 showTime: this.showTime,
+                endHour:this.endHour,
+                title: this.dayText,
                 listeners: {
                     'weekclick': {
                         fn: function(vw, dt) {

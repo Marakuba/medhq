@@ -63,18 +63,23 @@ Ext.extend(Ext.calendar.DayBodyTemplate, Ext.XTemplate, {
     applyTemplate : function(o){
         this.today = new Date().clearTime();
         this.dayCount = this.dayCount || 1;
+        this.startHour = this.startHour ? this.startHour : 0;
+        this.endHour = this.endHour ? this.endHour : 24;
         
         var i = 0, days = [],
             dt = o.viewStart.clone(),
             times;
-            
+        
+        dt = dt.add(Date.DAY, 1);
+        
         for(; i<this.dayCount; i++){
             days[i] = dt.add(Date.DAY, i);
         }
 
         times = [];
         dt = new Date().clearTime();
-        for(i=0; i<24; i++){
+        dt = dt.add(Date.HOUR, this.startHour);
+        for(i=this.startHour; i<this.endHour; i++){
             times.push(dt.format('H:i'));
             dt = dt.add(Date.HOUR, 1);
         }
