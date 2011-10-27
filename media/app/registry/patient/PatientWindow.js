@@ -34,8 +34,7 @@ App.patient.PatientWindow = Ext.extend(Ext.Window, {
 			record:this.record,
 			fn:function(record){
 				this.record = record;
-				this.store.insertRecord(record);
-				Ext.callback(this.fn, this.scope || window, [this.record]);
+				this.store.insertRecord(this.record);
 			},
 			scope:this			
 		});
@@ -107,6 +106,7 @@ App.patient.PatientWindow = Ext.extend(Ext.Window, {
 				this.msgBox.hide();
 			}
 			this.fireEvent('savecomplete');
+			Ext.callback(this.fn, this.scope || window, [this.record]);
 			if(this.inCard) {
 				App.eventManager.fireEvent('launchapp','patientcard',{
 					record:this.record

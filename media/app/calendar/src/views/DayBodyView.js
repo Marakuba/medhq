@@ -133,7 +133,7 @@ Ext.calendar.DayBodyView = Ext.extend(Ext.calendar.CalendarView, {
         Ext.calendar.DayBodyView.superclass.afterRender.call(this);
 
         // default scroll position to 7am:
-        this.scrollTo(1 * 42);
+//        this.scrollTo(1 * 42);
     },
 
     // private
