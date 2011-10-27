@@ -103,7 +103,7 @@ Ext.calendar.DayViewDropZone = Ext.extend(Ext.calendar.DropZone, {
             this.dragStartDate = Ext.calendar.Date.min(this.dragCreateDt, curr);
             this.dragEndDate = endDt || Ext.calendar.Date.max(this.dragCreateDt, curr);
 
-            dt = this.dragStartDate.format('g:ia-') + this.dragEndDate.format('g:ia');
+            dt = this.dragStartDate.format('H:i-') + this.dragEndDate.format('H:i');
         }
         else {
             evtEl = Ext.get(data.ddel);
@@ -120,7 +120,7 @@ Ext.calendar.DayViewDropZone = Ext.extend(Ext.calendar.DropZone, {
                 else {
                     box.y = n.timeBox.y;
                 }
-                dt = n.date.format('n/j g:ia');
+                dt = n.date.format('n/j H:i');
                 box.x = n.el.getLeft();
 
                 this.shim(n.date, box);
@@ -148,7 +148,7 @@ Ext.calendar.DayViewDropZone = Ext.extend(Ext.calendar.DropZone, {
                     StartDate: start,
                     EndDate: end
                 };
-                dt = start.format('g:ia-') + end.format('g:ia');
+                dt = start.format('H:i-') + end.format('H:i');
                 text = this.resizeText;
             }
         }

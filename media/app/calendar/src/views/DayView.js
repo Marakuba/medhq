@@ -52,6 +52,9 @@ Ext.calendar.DayView = Ext.extend(Ext.Container, {
      */
     dayCount: 1,
     
+    startHour:0,
+    endHour:24,
+    
     // private
     initComponent : function(){
         // rendering more than 7 days per view is not supported
@@ -63,6 +66,8 @@ Ext.calendar.DayView = Ext.extend(Ext.Container, {
         cfg.todayText = this.todayText;
         cfg.dayCount = this.dayCount;
         cfg.wekkCount = 1; 
+        cfg.startHour = this.startHour;
+        cfg.endHour = this.endHour;
         
         var header = Ext.applyIf({
             xtype: 'dayheaderview',

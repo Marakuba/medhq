@@ -11,6 +11,10 @@
 Ext.ns('Ext.calendar');
 Ext.calendar.DoctorScheduler = Ext.extend(Ext.Panel, {
         initComponent: function(){
+        	this.startHour = 8; //эти настройки отвечают за количество часов, отображаемых
+        	this.endHour = 20;//в дне или неделе. Обрабатывается в файле DayBodyTemplate и DayBodyView
+        	
+        	
             this.calendarStore = new Ext.data.JsonStore({
                 storeId: 'calendarStore',
                 root: 'objects',
@@ -208,6 +212,8 @@ Ext.calendar.DoctorScheduler = Ext.extend(Ext.Panel, {
                         xtype: 'calendarpanel',
                         eventStore: this.eventStore,
                         staffStore: this.staffStore,
+                        startHour:this.startHour ? this.startHour : 0,
+    					endHour:this.endHour ? this.endHour : 24,
                         calendarStore: this.calendarStore,
                         border: false,
                         id:'app-calendar',
@@ -317,7 +323,7 @@ Ext.calendar.DoctorScheduler = Ext.extend(Ext.Panel, {
                             'eventmove': {
                                 fn: function(vw, rec){
                                     rec.commit();
-                                    var time = rec.data.IsAllDay ? '' : ' \\a\\t g:i a';
+                                    var time = rec.data.IsAllDay ? '' : ' \\a\\t H:i';
                                     this.showMsg('Event '+ rec.data.Title +' was moved to '+rec.data.StartDate.format('F jS'+time));
                                 },
                                 scope: this

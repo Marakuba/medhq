@@ -126,7 +126,7 @@ Ext.extend(Ext.calendar.BoxLayoutTemplate, Ext.XTemplate, {
         var dt = new Date().format('l, F j, Y'),
             todayText = this.showTodayText !== false ? this.todayText : '',
             timeText = this.showTime !== false ? ' <span id="'+this.id+'-clock" class="ext-cal-dtitle-time">' + 
-                    new Date().format('g:i a') + '</span>' : '',
+                    new Date().format('H:i') + '</span>' : '',
             separator = todayText.length > 0 || timeText.length > 0 ? ' &mdash; ' : '';
         
         if(this.dayCount == 1){

@@ -121,6 +121,8 @@ Ext.calendar.DayBodyView = Ext.extend(Ext.calendar.CalendarView, {
                 dayCount: this.dayCount,
                 showTodayText: this.showTodayText,
                 todayText: this.todayText,
+                startHour:this.startHour,
+                endHour:this.endHour,
                 showTime: this.showTime
             });
         }
@@ -131,7 +133,7 @@ Ext.calendar.DayBodyView = Ext.extend(Ext.calendar.CalendarView, {
         Ext.calendar.DayBodyView.superclass.afterRender.call(this);
 
         // default scroll position to 7am:
-        this.scrollTo(7 * 42);
+        this.scrollTo(1 * 42);
     },
 
     // private
@@ -255,7 +257,7 @@ Ext.calendar.DayBodyView = Ext.extend(Ext.calendar.CalendarView, {
         data._isRecurring = evt.Recurrence && evt.Recurrence != '';
         data._isReminder = evt[M.Reminder.name] && evt[M.Reminder.name] != '';
         var title = evt[M.Title.name];
-        data.Title = (evt[M.IsAllDay.name] ? '': evt[M.StartDate.name].format('g:ia ')) + (!title || title.length == 0 ? '': title);
+        data.Title = (evt[M.IsAllDay.name] ? '': evt[M.StartDate.name].format('H:i')) + (!title || title.length == 0 ? '': title);
 
         return Ext.applyIf(data, evt);
     },
@@ -265,8 +267,8 @@ Ext.calendar.DayBodyView = Ext.extend(Ext.calendar.CalendarView, {
         var heightFactor = 0.7,
             start = evt[Ext.calendar.EventMappings.StartDate.name],
             end = evt[Ext.calendar.EventMappings.EndDate.name],
-            startMins = start.getHours() * 60 + start.getMinutes(),
-            endMins = end.getHours() * 60 + end.getMinutes(),
+            startMins = start.getHours() * 60 + start.getMinutes() - this.startHour * 60,
+            endMins = end.getHours() * 60 + end.getMinutes() - this.startHour * 60,
             diffMins = endMins - startMins;
 
         evt._left = 0;
@@ -305,6 +307,9 @@ Ext.calendar.DayBodyView = Ext.extend(Ext.calendar.CalendarView, {
                 item = evt.data || evt.event.data;
                 if (item._renderAsAllDay) {
                     continue;
+                }
+                if ((item.StartDate.getHours() < this.startHour) || (item.StartDate.getHours() >= this.endHour)) {
+                	continue;
                 }
                 Ext.apply(item, {
                     cls: 'ext-cal-ev',
