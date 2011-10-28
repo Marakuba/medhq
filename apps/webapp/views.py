@@ -263,7 +263,8 @@ def get_service_tree(request):
         
     args = {}
     if state:
-        args['extended_service__state']=state.id
+        #args['extended_service__state']=state.id
+        args['extended_service__branches']=state.id
 
     nodes = []
     values = Price.objects.filter(extended_service__is_active=True, price_type='r',**args).\
