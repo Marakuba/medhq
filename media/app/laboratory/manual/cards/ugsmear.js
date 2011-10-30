@@ -33,11 +33,13 @@ App.cards.UgSmear = Ext.extend(App.cards.BaseCard,{
 					header:'Шейка матки',
 					dataIndex:'valC',
 					width:15,
+					hidden:this.is_male,
 					editor:this.editor
 				},{
 					header:'Влагалище',
 					dataIndex:'valV',
 					width:15,
+					hidden:this.is_male,
 					editor:this.editor
 				}],
 				store:this.gs,
@@ -47,7 +49,6 @@ App.cards.UgSmear = Ext.extend(App.cards.BaseCard,{
 			    		var rec = this.store.getAt(rowIndex);
 			    		var inputlist = rec.data.inputlist;
 			    		ed.field.getStore().loadData(inputlist);
-//			    		console.info(ed);
 			    	}
 			    	return ed;
 			    }
@@ -89,6 +90,10 @@ App.cards.UgSmear = Ext.extend(App.cards.BaseCard,{
 			})
 		}
 	},
+	
+	onSave: function(){
+		
+	}
 	
 });
 
