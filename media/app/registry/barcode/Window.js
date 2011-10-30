@@ -9,7 +9,7 @@ App.barcode.PrintWindow = Ext.extend(Ext.Window, {
 		});
 		
 		config = {
-			title:'Печать штрих-кодов, прием №'+this.record.data.barcode,
+			title:'Печать штрих-кодов, прием №'+this.record.data.barcode_id,
 			width:600,
 			autoHeight:true,
 			items: this.grid,
@@ -20,7 +20,7 @@ App.barcode.PrintWindow = Ext.extend(Ext.Window, {
 					this.fireEvent('submit');
 					if(ws) {
 						c = this.grid.getCount();
-						params = [this.record.data.barcode,"KIM",c];
+						params = [this.record.data.barcode_id,"KIM",c];
 						ws.send(params.join("::"));
 					}
 					//var url = "/numeration/forvisit/" + this.visitId + "/";

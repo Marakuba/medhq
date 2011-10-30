@@ -51,9 +51,6 @@
     <!-- LIBS -->
     <script type="text/javascript" src="{{ MEDIA_URL }}extjs/adapter/ext/ext-base.js"></script>
     
-    <script type="text/javascript" src="{{ MEDIA_URL }}web-socket-js/swfobject.js"></script>
-    <script type="text/javascript" src="{{ MEDIA_URL }}web-socket-js/web_socket.js"></script>
-    
     <!-- ENDLIBS -->
 
     <script type="text/javascript" src="{{ MEDIA_URL }}extjs/ext-all{% if debug %}-debug{% endif %}.js"></script>
@@ -218,7 +215,7 @@
     <script type="text/javascript" src="{{ MEDIA_URL }}app/registry/app.js"></script>
 
 
-<!--     <script type="text/javascript" src="{{ MEDIA_URL }}resources/js/web-socket-js/swfobject.js"></script>
+    <script type="text/javascript" src="{{ MEDIA_URL }}resources/js/web-socket-js/swfobject.js"></script>
   <script type="text/javascript" src="{{ MEDIA_URL }}resources/js/web-socket-js/web_socket.js"></script>
 
 <script type="text/javascript">
@@ -236,8 +233,8 @@
 
       // Connect to Web Socket.
       // Change host/port here to your own Web Socket server.
-      // ws = new WebSocket("ws://192.168.1.204:8888/");
-      /*ws = new WebSocket("ws://127.0.0.1:8000/");
+      ws = new WebSocket("ws://192.168.1.204:8888/");
+      //ws = new WebSocket("ws://127.0.0.1:8000/");
 
       // Set event handlers.
       ws.onopen = function() {
@@ -252,31 +249,10 @@
       };
       ws.onerror = function() {
         console.log("printserver error");
-      };*/
-
+      };
     }
     
-    function onSubmit() {
-      var input = document.getElementById("input");
-      // You can send message to the Web Socket using ws.send.
-      ws.send(input.value);
-      output("send: " + input.value);
-      input.value = "";
-      input.focus();
-    }
-    
-    function onCloseClick() {
-      ws.close();
-    }
-    
-    function output(str) {
-      var log = document.getElementById("log");
-      var escaped = str.replace(/&/, "&amp;").replace(/</, "&lt;").
-        replace(/>/, "&gt;").replace(/"/, "&quot;"); // "
-      log.innerHTML = escaped + "<br>" + log.innerHTML;
-    }
-
-  </script> -->
+  </script>
 
 {% endblock %}
 

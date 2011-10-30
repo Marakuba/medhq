@@ -4,6 +4,8 @@ Ext.onReady(function(){
 	
 	Ext.QuickTips.init();
 	
+	websocket_init();
+	
 	Ext.Ajax.defaultHeaders = {Accept:'application/json'};
 	
 //	App.settings.reloadPriceByPaymentType = false;
