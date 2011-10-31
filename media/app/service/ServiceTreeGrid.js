@@ -8,12 +8,13 @@ App.ServiceTreeGrid = Ext.extend(Ext.ux.tree.TreeGrid,{
 //			renderTo:'service-tree',
 //			width:480,
 //			height:400,
+			border:false,
 		    rootVisible: false,
 		    lines: false,
 		    header: false,
 	        animCollapse:false,
 	        animate: false,
-	        containerScroll: true,
+	        containerScroll: false,
 	        autoScroll: true,
 	        rootVisible: false,
 	        loader:new Ext.ux.tree.TreeGridLoader({
@@ -28,6 +29,7 @@ App.ServiceTreeGrid = Ext.extend(Ext.ux.tree.TreeGrid,{
 	        		scope:this
 	        	}
 	        }),
+	        enableSort: false,
 //	        root:{
 //		        nodeType: 'async',
 //		        text: 'Услуги клиники',
@@ -43,16 +45,16 @@ App.ServiceTreeGrid = Ext.extend(Ext.ux.tree.TreeGrid,{
 	        	header:'Цена',
 	        	dataIndex:'price',
 	        	sortable:false,
-	        	width:50,
+	        	width:80,
 	        	align:'right'
-	        },{
+	        }/*,{
 	        	header:'Время вып-я',
 	        	dataIndex:'exec_time',
 	        	sortable:false,
 //	        	hidden:true,
 	        	width:50,
 	        	align:'left'
-	        }],
+	        }*/],
 	        listeners:{
 	        	click:function(node,e){
 	        		if(node.leaf) {
