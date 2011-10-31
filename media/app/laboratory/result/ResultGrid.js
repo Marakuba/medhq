@@ -42,7 +42,8 @@ App.result.ResultGrid = Ext.extend(Ext.grid.EditorGridPanel, {
 			autoSave:false,
 			autoLoad:false,
 		    baseParams: {
-		    	format:'json'
+		    	format:'json',
+		    	analysis__service__labservice__is_manual:false
 		    },
 		    paramNames: {
 			    start : 'offset',
@@ -57,6 +58,12 @@ App.result.ResultGrid = Ext.extend(Ext.grid.EditorGridPanel, {
 		    remoteSort: true,
 		    groupField:'service_name'
 		});
+		
+//		this.baseTitle = 'Тесты';
+//
+//		this.store.on('load',function(store, records, options){
+//			this.setTitle(String.format("{0} ({1})", this.baseTitle, records.length));
+//		},this);
 		
 		this.statusCmb = new Ext.form.ComboBox({
 			store:new Ext.data.ArrayStore({

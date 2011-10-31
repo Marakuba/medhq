@@ -3,12 +3,16 @@ Ext.ns('App.cards');
 App.cards.UgSmear = Ext.extend(App.cards.BaseCard,{
 	initComponent: function(){
 		
-		this.editor = new App.fields.InputList({
-			
-		});
+		this.mode = 'column';
+		
+		this.mappings['Уретра'] = 'valU';
+		this.mappings['Шейка матки'] = 'valC';
+		this.mappings['Влагалище'] = 'valV';
+		
+		this.editor = new App.fields.InputList();
 		
 		this.gs = new Ext.data.ArrayStore({
-			fields:['name','code','inputlist','valU','valC','valV']
+			fields:['name','code','inputlistvalU','inputlistvalC','inputlistvalV','valU','valC','valV']
 		});
 		
 		this.grid = new Ext.grid.EditorGridPanel({
@@ -33,13 +37,13 @@ App.cards.UgSmear = Ext.extend(App.cards.BaseCard,{
 					header:'Шейка матки',
 					dataIndex:'valC',
 					width:15,
-					hidden:this.is_male,
+					hidden:this.record.data.is_male,
 					editor:this.editor
 				},{
 					header:'Влагалище',
 					dataIndex:'valV',
 					width:15,
-					hidden:this.is_male,
+					hidden:this.record.data.is_male,
 					editor:this.editor
 				}],
 				store:this.gs,
@@ -47,7 +51,7 @@ App.cards.UgSmear = Ext.extend(App.cards.BaseCard,{
 			    	var ed = this.config[colIndex].getCellEditor(rowIndex);
 			    	if( colIndex>=1 && colIndex<=3 ) {
 			    		var rec = this.store.getAt(rowIndex);
-			    		var inputlist = rec.data.inputlist;
+			    		var inputlist = rec.get(String.format('inputlist{0}',this.config[colIndex].dataIndex));
 			    		ed.field.getStore().loadData(inputlist);
 			    	}
 			    	return ed;
@@ -69,30 +73,13 @@ App.cards.UgSmear = Ext.extend(App.cards.BaseCard,{
 		Ext.apply(this, Ext.apply(this.initialConfig, config));
 		App.cards.UgSmear.superclass.initComponent.apply(this, arguments);
 		
-		if(this.record && this.service) {
-			this.store.setBaseParam('order',this.record.id);
-			this.store.setBaseParam('analysis__service',this.service);
-			this.store.load({
-				callback:function(r, opts, success){
-					var gs = this.grid.getStore();
-					var Test = gs.recordType;
-					gs.removeAll();
-					Ext.each(r, function(rec){
-						var new_rec = new Test({
-							name:rec.get('analysis_name'),
-							code:rec.get('analysis_code'),
-							inputlist:rec.get('inputlist'),
-						});
-						gs.add(new_rec);
-					}, this);
-				},
-				scope:this
-			})
-		}
 	},
 	
-	onSave: function(){
-		
+	processRow : function(rec, vals){
+		var idx = String.format('inputlist{0}',this.mappings[vals[1]]);
+		var obj = {};
+		obj[idx] = rec.get('inputlist');
+		return obj
 	}
 	
 });

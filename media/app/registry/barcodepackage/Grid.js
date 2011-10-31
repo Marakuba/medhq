@@ -122,6 +122,7 @@ App.barcodepackage.Grid = Ext.extend(Ext.grid.GridPanel, {
 		];		
 		
 		var config = {
+			title:'Серии штрих-кодов',
 			loadMask : {
 				msg : 'Подождите, идет загрузка...'
 			},
