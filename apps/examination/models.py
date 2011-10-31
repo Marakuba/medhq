@@ -111,6 +111,7 @@ class ExaminationCard(models.Model):
     thickness = models.TextField(u'Толщина реконструктивного среза', null=True, blank=True)
     width = models.TextField(u'ширина/шаг', null=True, blank=True)
     contrast_enhancement = models.TextField(u'Контрастное усиление', null=True, blank=True)
+    assistant = models.ForeignKey(Position, verbose_name=u'Лаборант', null=True, blank=True)
     
     
     def __unicode__(self):
