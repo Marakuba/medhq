@@ -24,6 +24,7 @@ import datetime
 from django.views.generic.simple import direct_to_template
 from django.db.models.expressions import F
 from service.forms import PriceForm
+from lab.admin import LabServiceInline
 
 
 class StandardServiceAdmin(TreeEditor):
@@ -194,7 +195,7 @@ class BaseServiceAdmin(TreeEditor):
                     'execution_time',
                     'execution_form')
     list_editable = ('execution_time',)
-    inlines = [ExtendedServiceInlineAdmin,AnalysisInlineAdmin]
+    inlines = [ExtendedServiceInlineAdmin,AnalysisInlineAdmin,LabServiceInline]
     #filter_horizontal = ('staff',)
     save_as = True
     exclude = ('standard_service','normal_tubes','transport_tubes','staff','individual_tube')

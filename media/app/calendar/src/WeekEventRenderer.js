@@ -97,7 +97,7 @@ Ext.calendar.WeekEventRenderer = function() {
                                     //skip non-starting span cells
                                     var item = evt.data || evt.event.data;
                                     item._weekIndex = w;
-                                    //item._renderAsAllDay = item[Ext.calendar.EventMappings.IsAllDay.name] || evt.isSpanStart;
+                                    item._renderAsAllDay = item[Ext.calendar.EventMappings.IsAllDay.name] || evt.isSpanStart;
                                     item.spanLeft = item[Ext.calendar.EventMappings.StartDate.name].getTime() < startOfWeek.getTime();
                                     item.spanRight = item[Ext.calendar.EventMappings.EndDate.name].getTime() > endOfWeek.getTime();
                                     item.spanCls = (item.spanLeft ? (item.spanRight ? 'ext-cal-ev-spanboth':

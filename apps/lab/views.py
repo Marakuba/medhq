@@ -67,9 +67,24 @@ def print_register(request):
         result_list.append( [ k, tmp_list ] )
     return {'result_list':result_list}
 
+MANUAL_TEST_CONFIG = {
+    'sperm':{
+        'mode':'group',
+        'template':'print/lab/manual/sperm.html',
+        'delimiter':'::'
+    },
+    'ugsmear':{
+        'mode':'column',
+        'template':'print/lab/manual/ugsmear.html',
+        'delimiter':'::',
+        'columns':[u'Уретра',u'Шейка матки',u'Влагалище']
+    }
+}
+
+from django.template import loader, RequestContext
 
 def print_results(request, order):
-    result_qs = Result.objects.filter(order=order, to_print=True).order_by('analysis__service__%s' % BaseService._meta.tree_id_attr, 
+    result_qs = Result.objects.filter(analysis__service__labservice__is_manual=False, order=order, to_print=True).order_by('analysis__service__%s' % BaseService._meta.tree_id_attr, 
                 '-analysis__service__%s' % BaseService._meta.left_attr,
                 'analysis__order')
     
@@ -98,12 +113,6 @@ def print_results(request, order):
 
     preview = request.GET.get('preview')
     
-    ec = {
-            'order':order,
-            'results':result_list,
-            'preview':preview
-    }
-    
     NOW = datetime.datetime.now()
     
     if not preview:
@@ -114,6 +123,67 @@ def print_results(request, order):
         
     services = order.visit.orderedservice_set.filter(executed__isnull=False, print_date__isnull=True)
     services.update(print_date=NOW)
+    
+    
+    #### Рендеринг ручных тестов
+    
+    manuals = []
+    
+    ordered_services = order.visit.orderedservice_set.filter(service__labservice__is_manual=True)
+    for os in ordered_services:
+        code = os.service.labservice.code
+        if not MANUAL_TEST_CONFIG.has_key(code):
+            continue
+        
+        cfg = MANUAL_TEST_CONFIG[code]
+        mc = {
+            'service':os.service
+        }
+        
+        results = order.result_set.filter(analysis__service=os.service)
+        if cfg['mode']=='group':
+            manual_result_list = []
+            cur_group = None
+            for result in results:
+                name, group = result.analysis.name.split(cfg['delimiter'])
+                if cur_group!=group:
+                    cur_group = group
+                    print cur_group
+                    manual_result_list.append({'class':'service','name':cur_group})
+                manual_result_list.append({'class':'result','name':name,'object':result})
+            
+            mc['results'] = manual_result_list
+
+            
+        elif cfg['mode']=='column':
+            mc['columns'] = cfg['columns']
+            data = {}
+            manual_result_list = []
+            
+            for result in results:
+                name, col = result.analysis.name.split(cfg['delimiter'])
+                if not data.has_key(name):
+                    data[name] = [result.analysis.order,name,{},result]
+                data[name][2][col] = result.value
+            
+            for item in sorted(data.values(),key=operator.itemgetter(0)):
+                values = []
+                for c in cfg['columns']:
+                    values.append(item[2][c])
+                manual_result_list.append({'class':'result','name':item[1],'values':values,'object':item[3]})
+            
+            mc['results'] = manual_result_list
+            
+        c = RequestContext(request, mc)
+        t = loader.get_template(cfg['template'])
+        manuals.append(t.render(c))
+    
+    ec = {
+            'order':order,
+            'results':result_list,
+            'preview':preview,
+            'manuals':manuals
+    }
     
     return direct_to_template(request=request, 
                               template="print/lab/results.html",
@@ -170,7 +240,7 @@ def confirm_results(request):
         lab_order = request.POST.get('order', None)
         if lab_order:
             lab_order = get_object_or_404(LabOrder, id=lab_order)
-            Result.objects.filter(order=lab_order, validation=0).delete()
+            Result.objects.filter(analysis__service__labservice__is_manual=False, order=lab_order, validation=0).delete()
             Result.objects.filter(order=lab_order, validation=-1).update(validation=1)
             lab_order.is_completed = True
             for result in lab_order.result_set.all():
