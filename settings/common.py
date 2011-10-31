@@ -67,7 +67,7 @@ TEMPLATE_CONTEXT_PROCESSORS = (
 
 ROOT_URLCONF = 'medhq.urls'
 
-MIDDLEWARE_CLASSES = (
+MIDDLEWARE_CLASSES = [
 #    'debug_toolbar.middleware.DebugToolbarMiddleware',
     #'johnny.middleware.LocalStoreClearMiddleware',
     #'johnny.middleware.QueryCacheMiddleware',
@@ -75,9 +75,8 @@ MIDDLEWARE_CLASSES = (
     'django.contrib.sessions.middleware.SessionMiddleware',
     'django.contrib.auth.middleware.AuthenticationMiddleware',
     'webapp.middleware.ActiveProfileMiddleware',
-    'reversion.middleware.RevisionMiddleware',
-#    'medhq.apps.core.middleware.SQLLogMiddleware'
-)
+    'reversion.middleware.RevisionMiddleware'
+]
 
 INSTALLED_APPS = (
     #'reversion',

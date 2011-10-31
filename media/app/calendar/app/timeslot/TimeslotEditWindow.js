@@ -97,7 +97,7 @@ Ext.calendar.TimeslotEditWindow = Ext.extend(Ext.Window, {
 			anchor:'98%',
 			hideTrigger:true,
 			allowBlank:false,
-			selectOnFocus:false,
+			autoSelect:false,
         	store:this.patientSelectedStore,
 		    displayField: 'full_name',
 		    queryParam:'search',
@@ -702,13 +702,14 @@ Ext.calendar.TimeslotEditWindow = Ext.extend(Ext.Window, {
     onAddPatient: function() {
         var patientWin = new App.patient.PatientWindow({
 			scope:this,
+			model:App.models.patientModel,
 			fn:function(record){
 				if (!record){
        				return 0;
        			}
        			this.setPatient(record.data.resource_uri);
        			this.patientCombo.forceValue(record.data.resource_uri);
-        		this.formPanel.form.findField('Title').setValue(' ');
+//        		this.formPanel.form.findField('Title').setValue(' ');
         		this.formPanel.form.findField('vacant').setValue(false);
         		this.serviceButton.setDisabled(false);
         		this.serviceCombo.enable();

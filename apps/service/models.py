@@ -248,6 +248,10 @@ class ExtendedService(models.Model):
     state = models.ForeignKey('state.State', 
                               verbose_name=u'Учреждение',
                               limit_choices_to = {'type__in':(u'm',u'b')})
+    branches = models.ManyToManyField('state.State', 
+                              verbose_name=u'Филиалы',
+                              limit_choices_to = {'type__in':(u'b')},
+                              related_name = 'branches')
     tube = models.ForeignKey('lab.Tube', 
                              related_name='tube', 
                              null=True, blank=True)

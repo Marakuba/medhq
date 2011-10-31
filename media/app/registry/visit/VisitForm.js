@@ -30,7 +30,7 @@ App.visit.VisitForm = Ext.extend(Ext.FormPanel, {
 		this.inlines.add('orderedservice', this.orderedService);
 		
 		
-		this.servicePanel = new App.visit.VisitServicePanel({
+		this.servicePanel = new App.ServiceTreeGrid({
 	        region: 'east',
 		    margins:'5 5 5 0',
 	        width: 300,
@@ -537,7 +537,7 @@ App.visit.VisitForm = Ext.extend(Ext.FormPanel, {
 	},
 	
 	addRow: function(attrs, cb, scope) {
-		this.orderedService.addRow.createDelegate(this.orderedService, [attrs, undefined, cb, scope])();
+		this.orderedService.addRow.createDelegate(this.orderedService, [attrs, attrs.shiftKey, cb, scope])();
 	},
 	
 	onServiceClick : function(node) {
