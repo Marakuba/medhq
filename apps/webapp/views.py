@@ -137,120 +137,6 @@ def helpdesk(request):
     return {}
     
 
-
-#def get_serv_tree(request):
-#    """
-#    Генерирует дерево в json-формате.
-#    """
-#    payment_type = request.GET.get('payment_type',u'н')
-#    _cache_key = (settings.SERVICETREE_ONLY_OWN and request.active_profile) and 'service_list_%s_%s' % (request.active_profile.state, payment_type) or ('service_list_%s' % payment_type)
-#    ignored = None
-#    if settings.SERVICETREE_ONLY_OWN and request.active_profile:
-#        office = request.active_profile.department.state
-#        ignored = State.objects.filter(type='b').exclude(id=office.id)
-#
-#    def promo_dict(obj):
-#        
-#        def node_dict(obj):
-#            try:
-#                bs = obj.base_service
-#                es = bs.extendedservice_set.get(state=obj.execution_place)
-#                price = es.get_actual_price(payment_type=payment_type)
-#                node = {
-#                    "id":'%s-%s' % (obj.base_service.id,obj.execution_place.id),
-#                    "text":"%s [%s]" % (obj.base_service.short_name or obj.base_service.name, price),
-#                    "price":price,
-#                    "c":obj.count or 1
-#                }
-#                staff_all = es.staff.all()
-#                if staff_all.count():
-#                    node['staff'] = [(pos.id,pos.__unicode__()) for pos in staff_all]
-#                return node
-#            except Exception, err:
-#                print err
-#                return None
-#            
-#        return {
-#            'id':obj.id,#u'%s_%s' % (obj.base_service.id, obj.execution_place.id),
-#            'text':obj.name,#obj.base_service.short_name or obj.base_service.name,
-#            'leaf':True,
-#            'nodes':[node_dict(node) for node in obj.promotionitem_set.all()],
-#            'discount':obj.discount and obj.discount.id or None,
-#            'isComplex':True
-#        }
-#    
-#    
-#    def tree_iterate(qs):
-#        
-#        nodes = []
-#        for base_service in qs.all().order_by(BaseService._meta.tree_id_attr, "-"+BaseService._meta.left_attr): #@UndefinedVariable
-#            if base_service.is_leaf_node():
-#                """
-#                """
-#                items = base_service.extendedservice_set.active()
-#                if ignored:
-#                    items = items.exclude(state__id__in=ignored)
-#                    
-#
-#                for item in items:
-#                    price = item.get_actual_price(payment_type=payment_type)
-#                    if price:
-#                        node = {
-#                            "id":'%s-%s' % (base_service.id,item.state.id),
-#                            "text":"%s %s[%s]" % (base_service.short_name or base_service.name, \
-#                                                  base_service.execution_time and u"(%sм) " % base_service.execution_time or u'', \
-#                                                  price),
-#                            "leaf":True,
-#                            "cls":"multi-line-text-node",
-#                            "price":price,
-#                            #"place":,
-#                            "iconCls":"ex-place-%s" % item.state.id
-#                        }
-#                        staff_all = item.staff.all()
-#                        if staff_all.count():
-#                            node['staff'] = [(pos.id,pos.__unicode__()) for pos in item.staff.all()]
-#                        
-#                        nodes.append(node)
-#
-#            else:
-#                """
-#                """
-#                node = {
-#                    'id':base_service.id,
-#                    'text': "%s" % (base_service.short_name or base_service.name,),
-#                    'children':tree_iterate(base_service.get_children()),
-#                    'leaf':False,
-#                    'singleClickExpand':True
-#                }
-#                nodes.append(node)
-#                
-#        return nodes
-#    
-#    
-#    if request.GET.get('refresh'):
-#        _cached_tree = None
-#    else:
-#        _cached_tree = cache.get(_cache_key)
-#        
-#    if not _cached_tree:
-#        tree = []
-#        promotions = Promotion.objects.actual()
-#        if promotions.count():
-#            node = {
-#                'id':'promotions',
-#                'text':u'Акции / Комплексные обследования',
-#                'children':[promo_dict(promo) for promo in promotions],
-#                'leaf':False,
-#                'singleClickExpand':True
-#            }
-#            tree.append(node)
-#        
-#        tree.extend(tree_iterate(BaseService.tree.root_nodes())) #@UndefinedVariable
-#        _cached_tree = simplejson.dumps(tree)
-#        cache.set(_cache_key, _cached_tree, 24*60*60*30)
-
-#    return _cached_tree
-
 def get_service_tree(request):
     """
     Генерирует дерево в json-формате.
@@ -273,7 +159,11 @@ def get_service_tree(request):
         annotate(Max('on_date'))
     result = {}
     for val in values:
-        result[val['extended_service__base_service__id']] = val
+        if result.has_key(val['extended_service__base_service__id']):
+            result[val['extended_service__base_service__id']][val['extended_service__id']] = val
+        else:
+            result[val['extended_service__base_service__id']] = {}
+            result[val['extended_service__base_service__id']][val['extended_service__id']] = val
         
     def promo_dict(obj):
         
@@ -336,22 +226,22 @@ def get_service_tree(request):
                 node = None
             else:
                 if node.is_leaf_node():
-                    staff_all = Position.objects.filter(extendedservice=result[node.id]['extended_service__id'])
-                    node = {
-                            "id":'%s-%s' % (node.id,result[node.id]['extended_service__state__id']),
-                            "text":"%s" % (node.short_name or node.name),
-                            "cls":"multi-line-text-node",
-                            "price":str(result[node.id]['value']),
-                            "exec_time":"%s" % (node.execution_time and u"%s мин" % node.execution_time or u''),
-#                            "state_name":state.name,
-                            "iconCls":"ex-place-%s" % result[node.id]['extended_service__state__id'],
-                            "parent":node.parent and node.parent.id,
-                            "leaf":True}
-                    
-                    if staff_all.count():
-                        node['staff'] = [(pos.id,pos.__unicode__()) for pos in staff_all]
+                    for service in result[node.id]:
+                        staff_all = Position.objects.filter(extendedservice=service)
+                        node = {
+                                "id":'%s-%s' % (node.id,result[node.id][service]['extended_service__state__id']),
+                                "text":"%s" % (node.short_name or node.name),
+                                "cls":"multi-line-text-node",
+                                "price":str(result[node.id][service]['value']),
+                                "exec_time":"%s" % (node.execution_time and u"%s мин" % node.execution_time or u''),
+                                "iconCls":"ex-place-%s" % result[node.id][service]['extended_service__state__id'],
+                                "parent":node.parent and node.parent.id,
+                                "leaf":True}
                         
-                        nodes.append(node)
+                        if staff_all.count():
+                            node['staff'] = [(pos.id,pos.__unicode__()) for pos in staff_all]
+                            
+                            nodes.append(node)
                 else: 
                     node = {
                             "id":node.id,
