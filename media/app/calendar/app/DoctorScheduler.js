@@ -375,15 +375,12 @@ Ext.calendar.DoctorScheduler = Ext.extend(Ext.Panel, {
 									win.hide();
 									rec.data.IsNew = false;
 									this.eventStore.add(rec);
-                    	            this.showMsg('Event '+ rec.data.Title +' was added');
 								},
 								scope: this
 							},
 							'eventupdate': {
 								fn: function(win, rec){
 									win.hide();
-									//rec.commit();
-                    	            this.showMsg('Event '+ rec.data.Title +' was updated');
 								},
 								scope: this
 							},
@@ -391,7 +388,6 @@ Ext.calendar.DoctorScheduler = Ext.extend(Ext.Panel, {
 								fn: function(win, rec){
 									this.eventStore.remove(rec);
 									win.hide();
-                    	            this.showMsg('Event '+ rec.data.Title +' was deleted');
 								},
 								scope: this
 							},
@@ -421,14 +417,12 @@ Ext.calendar.DoctorScheduler = Ext.extend(Ext.Panel, {
 								win.hide();
 								rec.data.IsNew = false;
 								this.eventStore.add(rec);
-                       	        this.showMsg('Event '+ rec.data.Title +' was added');
 							},
 							scope: this
 						},
 						'eventupdate': {
 							fn: function(win, rec){
 								win.hide();
-                                this.showMsg('Event '+ rec.data.Title +' was updated');
 							},
 							scope: this
 						},
@@ -436,7 +430,6 @@ Ext.calendar.DoctorScheduler = Ext.extend(Ext.Panel, {
 							fn: function(win, rec){
 								this.eventStore.remove(rec);
 								win.hide();
-                        	    this.showMsg('Event '+ rec.data.Title +' was deleted');
 							},
 							scope: this
 						},
