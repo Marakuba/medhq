@@ -1,0 +1,46 @@
+{% load lab_tags flatblock_tags %}
+
+<table class="header">
+	<tr>
+		<td class="brand">{{ config.BRAND|upper }}</td>
+		<td class="info">{% flatblock "address.lab" %}
+		</td>
+	</tr>
+	<tr>
+		<td colspan="2" class="worktime">Время работы: пн-пт 08:00-19-00, сб: 09:00-14:00</td>
+	</tr>
+</table>
+
+<table class="patient">
+	<tr>
+		<td>
+			<table>
+				<tr>
+					<td class="name">Ф.И.О.:</td><td class="bold">{{ order.visit.patient.full_name }}</td>
+				</tr>
+				<tr>
+					<td class="name">Дата рождения:</td><td class="bold">{{ order.visit.patient.birth_day|date:"d.m.Y" }}</td>
+				</tr>
+				<tr>
+					<td class="name">Дата исследования:</td><td class="bold">{{ order.visit.created|date:"d.m.Y H:i" }}</td>
+				</tr>
+				{% if order.visit.pregnancy_week %}
+				<tr>
+					<td class="name">Срок беременности:</td><td class="bold">{{ order.visit.pregnancy_week }} нед.</td>
+				</tr>
+				{% endif %}
+				{% if order.visit.menses_day %}
+				<tr>
+					<td class="name">День цикла:</td><td class="bold">{{ order.visit.menses_day }}</td>
+				</tr>
+				{% endif %}
+			</table>
+		</td>
+		<td align="right">
+			Заказ: <strong>{{ order.id|zid:"5" }}</strong><br>
+			Врач: <strong>{{ order.staff.id|zid:"5" }}</strong><br>
+			Направившее учреждение: <strong>{{ order.visit.referral.id|zid:"5" }}</strong><br>
+			
+		</td>
+	</tr>
+</table>

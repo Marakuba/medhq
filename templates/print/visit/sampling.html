@@ -113,8 +113,8 @@
 				{% endfor %}
 				<tr>
 					<td colspan="3" class="rt">Всего:</td>
-					<td class="rt">{{ tubes_count.sum }}</td>
-					<td class="rt">{{ bc_count.sum }}</td>
+					<td class="rt">{{ tubes_count.sum|default:"0" }}</td>
+					<td class="rt">{{ bc_count.sum|default:"0" }}</td>
 				</tr>
 			</table>
 		</td>

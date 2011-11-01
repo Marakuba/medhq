@@ -83,7 +83,7 @@ App.CentralPanel = Ext.extend(Ext.Panel, {
 					},
 					scope:this
 				}]
-			/*},{
+			},{
 				xtype:'buttongroup',
 //				title:'Штрих-коды',
 				defaults:{
@@ -92,11 +92,15 @@ App.CentralPanel = Ext.extend(Ext.Panel, {
 				},
 				items:[{
 					text:'Серии',
-					tooltip:'Создание и печать серий штрих-кодов'
+					tooltip:'Создание и печать серий штрих-кодов',
+					handler:function(){
+						this.launchApp('barcodepackagegrid');
+					},
+					scope:this
 				},{
 					text:'Дубликат',
 					tooltip:'Печать дубликата'
-				}]*/
+				}]
 			},{
 				xtype:'buttongroup',
 //				title:'Календарь',

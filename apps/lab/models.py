@@ -24,6 +24,17 @@ hdlr.setFormatter(formatter)
 logger.addHandler(hdlr)
 logger.setLevel(logging.NOTSET)
 
+class LabService(models.Model):
+    """
+    """
+    base_service = models.OneToOneField(BaseService)
+    is_manual = models.BooleanField(u'Ручное исследование', default=False)
+    code = models.CharField(u'Код ручного исследования', max_length=10, blank=True)
+    
+    class Meta:
+        verbose_name = u'лабораторная услуга'
+        verbose_name_plural = u'лабораторные услуги'
+
 
 class Tube(models.Model):
     """
@@ -207,6 +218,8 @@ class Result(models.Model):
         return u"%s (%s)" % (self.analysis, self.analysis.service)
     
     def is_completed(self):
+        if self.analysis.service.labservice.is_manual:
+            return True
         if self.value or self.input_list or not self.to_print:
             return True
         return False

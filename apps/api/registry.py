@@ -9,7 +9,7 @@ from tastypie.authorization import DjangoAuthorization, Authorization
 from tastypie.constants import ALL, ALL_WITH_RELATIONS
 from lab.models import LabOrder, Sampling, Tube, Result, Analysis, InputList,\
     Equipment, EquipmentAssay, EquipmentResult, EquipmentTask, Invoice,\
-    InvoiceItem
+    InvoiceItem, LabService
 from service.models import BaseService, LabServiceGroup, ExtendedService, ICD10
 from staff.models import Position, Staff, Doctor
 from state.models import State, Department
@@ -451,6 +451,7 @@ class LabOrderResource(ExtResource):
             bundle.data['visit_is_cito'] = laborder.visit.is_cito
             bundle.data['visit_id'] = laborder.visit.id
             bundle.data['barcode'] = laborder.visit.barcode.id
+            bundle.data['is_male'] = laborder.visit.patient.gender==u'М'
             bundle.data['patient_name'] = laborder.visit.patient.full_name()
             bundle.data['operator_name'] = laborder.visit.operator
         bundle.data['staff_name'] = laborder.staff and laborder.staff.staff.short_name() or ''
@@ -493,10 +494,22 @@ class LabOrderResource(ExtResource):
             'is_completed':ALL
         }
         
+class LSResource(ExtResource):
+    
+    class Meta:
+        queryset = LabService.objects.all()
+        authorization = DjangoAuthorization()
+        resource_name = 'ls'
+        filtering = {
+            'is_manual':ALL,
+        }
+        
 class BaseServiceResource(ExtResource):
     """
     """
     parent = fields.ForeignKey('self', 'parent', null=True)
+    labservice = fields.ForeignKey(LSResource,'labservice', null=True)
+    
     class Meta:
         queryset = BaseService.objects.all()
         authorization = DjangoAuthorization()
@@ -504,7 +517,8 @@ class BaseServiceResource(ExtResource):
         filtering = {
             'id':ALL,
             'name':ALL,
-            'parent':ALL_WITH_RELATIONS
+            'parent':ALL_WITH_RELATIONS,
+            'labservice':ALL_WITH_RELATIONS
         }
         
 class StaffResource(ModelResource):
@@ -602,13 +616,14 @@ class ResultResource(ExtResource):
         bundle.data['service_name'] = obj.analysis.service
         bundle.data['laboratory'] = obj.order.laboratory
         bundle.data['analysis_name'] = obj.analysis
+        bundle.data['analysis_code'] = obj.analysis.code
         bundle.data['inputlist'] = [[input.name] for input in obj.analysis.input_list.all()]
         bundle.data['measurement'] = obj.analysis.measurement
         bundle.data['modified_by_name'] = obj.modified_by
         return bundle
     
     class Meta:
-        queryset = Result.objects.select_related().all()#.order_by('-order__visit__id',)
+        queryset = Result.objects.select_related().filter() #analysis__service__labservice__is_manual=False
         authorization = DjangoAuthorization()
         resource_name = 'result'
         limit = 100
@@ -842,50 +857,23 @@ class LabServiceResource(ExtResource):
     """
     """
     order = fields.ToOneField(VisitResource, 'order')
-    execution_place = fields.ToOneField(StateResource, 'execution_place')
     service = fields.ToOneField(BaseServiceResource, 'service')
     staff = fields.ToOneField(PositionResource, 'staff', null=True)
-    sampling = fields.ForeignKey(SamplingResource, 'sampling', null=True)
 
     def dehydrate(self, bundle):
         service = bundle.obj.service
         bundle.data['service_name'] = service.short_name or service.name
-        bundle.data['service_full_name'] = service.name
-        bundle.data['lab_group'] = service.lab_group
-        bundle.data['created'] = bundle.obj.order.created
-        bundle.data['printed'] = bundle.obj.print_date
-        bundle.data['barcode'] = bundle.obj.order.barcode.id
-        bundle.data['patient'] = bundle.obj.order.patient.full_name()
-        bundle.data['patient_age'] = bundle.obj.order.patient.full_age()
-        bundle.data['staff_name'] = bundle.obj.staff
-        bundle.data['laboratory'] = bundle.obj.execution_place
-        bundle.data['key'] = u"%s_%s" % (bundle.obj.order.id, bundle.obj.execution_place.id) 
+        bundle.data['service_code'] = service.labservice and service.labservice.code or ''
         return bundle
     
-    def build_filters(self, filters=None):
-        if filters is None:
-            filters = {}
-
-        orm_filters = super(LabServiceResource, self).build_filters(filters)
-
-        if "search" in filters:
-
-            orm_filters.update(smartFilter(filters['search'],'order__patient'))
-
-
-        return orm_filters
-    
     class Meta:
-        queryset = OrderedService.objects.filter(service__lab_group__isnull=False) #all lab services
+        queryset = OrderedService.objects.filter(service__labservice__is_manual=True) #all lab services
         resource_name = 'labservice'
         authorization = DjangoAuthorization()
         limit = 500
         filtering = {
             'created': ALL_WITH_RELATIONS,
             'order': ALL_WITH_RELATIONS,
-            'sampling': ALL_WITH_RELATIONS,
-            'execution_place': ALL_WITH_RELATIONS,
-            'executed':ALL
         }
         
         
@@ -1588,6 +1576,7 @@ api.register(EquipmentResultResource())
 api.register(EquipmentTaskResource())
 
 #service
+api.register(LSResource())
 api.register(BaseServiceResource())
 api.register(ExtendedServiceResource())
 api.register(LabServiceGroupResource())
