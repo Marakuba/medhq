@@ -148,7 +148,6 @@ def print_results(request, order):
                 name, group = result.analysis.name.split(cfg['delimiter'])
                 if cur_group!=group:
                     cur_group = group
-                    print cur_group
                     manual_result_list.append({'class':'service','name':cur_group})
                 manual_result_list.append({'class':'result','name':name,'object':result})
             

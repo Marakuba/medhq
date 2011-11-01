@@ -14,7 +14,7 @@ App.ux.tree.ColspanNodeUI = Ext.extend(Ext.ux.tree.TreeGridNodeUI,{
                 '<tr ext:tree-node-id="', n.id ,'" class="x-tree-node-el x-tree-node-leaf ', a.cls, '">',
                     '<td class="x-treegrid-col"',n.isLeaf() ? '': ' colspan="'+cols.length+'"', '>',
                         '<span class="x-tree-node-indent">', this.indentMarkup, "</span>",
-                        '<img src="' + this.emptyIcon + '" class="',n.isLeaf() ? '' : 'x-tree-ec-icon x-tree-elbow','" />',
+                        '<img src="' + this.emptyIcon + '" class="x-tree-ec-icon x-tree-elbow" />',
                         '<img src="', a.icon || this.emptyIcon, '" class="x-tree-node-icon', (a.icon ? " x-tree-node-inline-icon" : ""), (a.iconCls ? " "+a.iconCls : ""), '" unselectable="on" />',
                         '<a hidefocus="on" class="x-tree-node-anchor" href="', a.href ? a.href : '#', '" tabIndex="1" ',
                             a.hrefTarget ? ' target="'+a.hrefTarget+'"' : '', '>',
