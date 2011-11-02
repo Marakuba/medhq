@@ -212,7 +212,8 @@ def revert_results(request):
         
         if lab_order:
             lab_order = get_object_or_404(LabOrder, id=lab_order)
-            ordered_services = lab_order.visit.orderedservice_set.filter(execution_place=lab_order.laboratory)
+            ordered_services = lab_order.visit.orderedservice_set.filter(execution_place=lab_order.laboratory,
+                                                                         service__lab_group=lab_order.lab_group)
             for ordered_service in ordered_services:
                 for item in ordered_service.service.analysis_set.all():
                     result, created = Result.objects.get_or_create(order=lab_order,

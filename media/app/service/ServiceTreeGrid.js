@@ -22,8 +22,6 @@ App.ux.tree.ColspanNodeUI = Ext.extend(Ext.ux.tree.TreeGridNodeUI,{
                     '</td>'
         ];
         
-        console.info(n,n.isLeaf());
-        
         if(n.isLeaf()){
 	        for(i = 1, len = cols.length; i < len; i++){
 	            c = cols[i];
