@@ -1,5 +1,6 @@
 Ext.ns('App');
 Ext.ns('App.services');
+Ext.ns('App.examination');
 
 App.ExamCentralPanel = Ext.extend(Ext.Panel, {
 	
@@ -78,6 +79,13 @@ App.ExamCentralPanel = Ext.extend(Ext.Panel, {
                 		});
                 		win.show();
                 	}
+                },{text: 'Конструктор',
+                    scale:'medium',
+                    iconAlign: 'top',
+                    handler: function(){
+                    	this.launchApp('editor');
+                    },
+                    scope:this
                 }]
             },{
                 xtype: 'buttongroup',
