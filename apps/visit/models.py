@@ -300,7 +300,7 @@ class OrderedService(make_operator_object('ordered_service')):
         visit = self.order
         s = self.service
         ext_service = self.service.extendedservice_set.get(state=self.execution_place)
-        if s.is_lab() and not s.is_manual():
+        if s.is_lab():
             
             sampling, created = Sampling.objects.get_or_create(visit=visit,
                                                                laboratory=self.execution_place,
@@ -316,23 +316,23 @@ class OrderedService(make_operator_object('ordered_service')):
                 logger.info('sampling id%s %s found' % (sampling.id,sampling.__unicode__()) )
             
             
-    
-            lab_order, created = LabOrder.objects.get_or_create(visit=visit,  
-                                                                laboratory=self.execution_place,
-                                                                lab_group=s.lab_group)
-            if created:
-                logger.info('laborder %s created' % lab_order.id)
-            else:
-                logger.info('laborder %s found' % lab_order.id)
-                
-            for item in self.service.analysis_set.all():
-                result, created = Result.objects.get_or_create(order=lab_order,
-                                                               analysis=item, 
-                                                               sample=sampling)
+            if not s.is_manual():
+                lab_order, created = LabOrder.objects.get_or_create(visit=visit,  
+                                                                    laboratory=self.execution_place,
+                                                                    lab_group=s.lab_group)
                 if created:
-                    logger.info('result id%s %s created' % (result.id,result.__unicode__()) )
+                    logger.info('laborder %s created' % lab_order.id)
                 else:
-                    logger.info('result id%s %s found' % (result.id,result.__unicode__()) )
+                    logger.info('laborder %s found' % lab_order.id)
+                    
+                for item in self.service.analysis_set.all():
+                    result, created = Result.objects.get_or_create(order=lab_order,
+                                                                   analysis=item, 
+                                                                   sample=sampling)
+                    if created:
+                        logger.info('result id%s %s created' % (result.id,result.__unicode__()) )
+                    else:
+                        logger.info('result id%s %s found' % (result.id,result.__unicode__()) )
     
             if sampling:
                 self.sampling = sampling
