@@ -23,6 +23,10 @@ App.patient.PatientCard = Ext.extend(Ext.TabPanel, {
 				layout:'fit',
 				xtype:'patientlabgrid'
 			},{
+				title:'Исследования',
+				layout:'fit',
+				xtype:'patientmanualgrid'
+			},{
 				title:'Оказанные услуги',
 				layout:'fit',
 				xtype:'patientservicegrid'

@@ -125,69 +125,82 @@ def print_results(request, order):
     services.update(print_date=NOW)
     
     
-    #### Рендеринг ручных тестов
-    
-    manuals = []
-    
-    ordered_services = order.visit.orderedservice_set.filter(service__labservice__is_manual=True)
-    for os in ordered_services:
-        code = os.service.labservice.code
-        if not MANUAL_TEST_CONFIG.has_key(code):
-            continue
-        
-        cfg = MANUAL_TEST_CONFIG[code]
-        mc = {
-            'service':os.service
-        }
-        
-        results = order.result_set.filter(analysis__service=os.service)
-        if cfg['mode']=='group':
-            manual_result_list = []
-            cur_group = None
-            for result in results:
-                name, group = result.analysis.name.split(cfg['delimiter'])
-                if cur_group!=group:
-                    cur_group = group
-                    manual_result_list.append({'class':'service','name':cur_group})
-                manual_result_list.append({'class':'result','name':name,'object':result})
-            
-            mc['results'] = manual_result_list
-
-            
-        elif cfg['mode']=='column':
-            mc['columns'] = cfg['columns']
-            data = {}
-            manual_result_list = []
-            
-            for result in results:
-                name, col = result.analysis.name.split(cfg['delimiter'])
-                if not data.has_key(name):
-                    data[name] = [result.analysis.order,name,{},result]
-                data[name][2][col] = result.value
-            
-            for item in sorted(data.values(),key=operator.itemgetter(0)):
-                values = []
-                for c in cfg['columns']:
-                    values.append(item[2][c])
-                manual_result_list.append({'class':'result','name':item[1],'values':values,'object':item[3]})
-            
-            mc['results'] = manual_result_list
-            
-        c = RequestContext(request, mc)
-        t = loader.get_template(cfg['template'])
-        manuals.append(t.render(c))
-    
     ec = {
             'order':order,
             'results':result_list,
             'preview':preview,
-            'manuals':manuals
     }
     
     return direct_to_template(request=request, 
                               template="print/lab/results.html",
                               extra_context=ec)
 
+def print_manuals(request, object_id):
+    """
+    """
+    os = get_object_or_404(OrderedService, pk=object_id)
+    
+    #### Рендеринг ручных тестов
+    
+    manuals = []
+    
+    code = os.service.labservice.code
+    if not MANUAL_TEST_CONFIG.has_key(code):
+        raise
+    
+    cfg = MANUAL_TEST_CONFIG[code]
+    mc = {
+        'service':os.service,
+        'object':os,
+        'order':os.order
+    }
+    
+    results = Result.objects.filter(order__visit=os.order, analysis__service=os.service)
+    if cfg['mode']=='group':
+        manual_result_list = []
+        cur_group = None
+        for result in results:
+            name, group = result.analysis.name.split(cfg['delimiter'])
+            if cur_group!=group:
+                cur_group = group
+                manual_result_list.append({'class':'service','name':cur_group})
+            manual_result_list.append({'class':'result','name':name,'object':result})
+        
+        mc['results'] = manual_result_list
+
+        
+    elif cfg['mode']=='column':
+        mc['columns'] = cfg['columns']
+        data = {}
+        manual_result_list = []
+        
+        for result in results:
+            name, col = result.analysis.name.split(cfg['delimiter'])
+            if not data.has_key(name):
+                data[name] = [result.analysis.order,name,{},result]
+            data[name][2][col] = result.value
+        
+        for item in sorted(data.values(),key=operator.itemgetter(0)):
+            values = []
+            for c in cfg['columns']:
+                values.append(item[2][c])
+            manual_result_list.append({'class':'result','name':item[1],'values':values,'object':item[3]})
+        
+        mc['results'] = manual_result_list
+        
+    preview = request.GET.get('preview')
+    
+    NOW = datetime.datetime.now()
+    
+    if not preview:
+        if os.executed and not os.print_date:
+            os.print_date = NOW
+            os.save()
+        
+    return direct_to_template(request=request, 
+                              template=cfg['template'],
+                              extra_context=mc)
+    
 
 def results(request, object_id):
     """

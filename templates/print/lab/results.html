@@ -47,10 +47,4 @@
 <div class="print_time">{{ order.print_date_display }}</div>
 {% endif %}
 
-{% for manual in manuals %}
-<div style="page-break-before: always;"></div>
-{% include "print/lab/results_header.html" %}
-{{ manual }}
-{% endfor %}
-
 {% endblock %}

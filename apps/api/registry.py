@@ -862,15 +862,20 @@ class LabServiceResource(ExtResource):
 
     def dehydrate(self, bundle):
         service = bundle.obj.service
+        bundle.data['staff_name'] = bundle.obj.staff and bundle.obj.staff.short_name() or ''
         bundle.data['service_name'] = service.short_name or service.name
         bundle.data['service_code'] = service.labservice and service.labservice.code or ''
+        bundle.data['patient_name'] = bundle.obj.order.patient.full_name()
+        bundle.data['operator_name'] = bundle.obj.order.operator
+        bundle.data['laboratory'] = bundle.obj.execution_place
+        bundle.data['barcode'] = bundle.obj.order.barcode.id
         return bundle
     
     class Meta:
         queryset = OrderedService.objects.filter(service__labservice__is_manual=True) #all lab services
         resource_name = 'labservice'
         authorization = DjangoAuthorization()
-        limit = 500
+        limit = 50
         filtering = {
             'created': ALL_WITH_RELATIONS,
             'order': ALL_WITH_RELATIONS,

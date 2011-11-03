@@ -212,15 +212,15 @@ def get_service_tree(request):
             childs = []
             
             for item in child_list:
-#                if node.name == 'Gr1':
-#                    import pdb; pdb.set_trace()
                 #Если список детей <> [] и либо item[0] и текущий node - корни дерева, либо относятся к одному родителю
                 if item and ((not item[0]['parent'] and not node.parent) or (node.parent and item[0]['parent'] == node.parent.id)):
                     # то это братья
                     bro = item
-                if item and item[0]['parent']==node.id and not node.is_leaf_node():
+                if item and not node.is_leaf_node() and item[0]['parent']==node.id:
                     childs = item
-            
+#            if node.name == 'Gr1':
+#                import pdb; pdb.set_trace()                    
+            tree_nodes = []
             if not node.is_leaf_node() and not childs:
                 #удаляем текущий элемент
                 node = None
@@ -228,7 +228,7 @@ def get_service_tree(request):
                 if node.is_leaf_node():
                     for service in result[node.id]:
                         staff_all = Position.objects.filter(extendedservice=service)
-                        node = {
+                        tree_node = {
                                 "id":'%s-%s' % (node.id,result[node.id][service]['extended_service__state__id']),
                                 "text":"%s" % (node.short_name or node.name),
                                 "cls":"multi-line-text-node",
@@ -239,11 +239,11 @@ def get_service_tree(request):
                                 "leaf":True}
                         
                         if staff_all.count():
-                            node['staff'] = [(pos.id,pos.__unicode__()) for pos in staff_all]
-                            
-                        nodes.append(node)
+                            tree_node['staff'] = [(pos.id,pos.__unicode__()) for pos in staff_all]
+                        tree_nodes.append(tree_node)    
+                        #nodes.append(tree_node)
                 else: 
-                    node = {
+                    tree_node = {
                             "id":node.id,
                             "leaf":False,
                             'text': "%s" % (node.short_name or node.name,),
@@ -253,15 +253,17 @@ def get_service_tree(request):
                             }
                 #Если есть братья, добавляем текущий элемент к списку братьев
                 #Иначе создаём новый список братьев, в котором текущий элемент будет первым братом
+                    tree_nodes.append(tree_node) 
                 
                 if bro:
-                    bro = bro.insert(0,node)
+                    for tr in tree_nodes:
+                        bro.insert(0,tr)
                 else: 
-                    child_list.insert(0,[node])
-                    
+                    child_list.insert(0,tree_nodes)
+                
                 #Если есть список дочерних элементов и текущий элемент - их родитель,
                 #то удаляем этот список из общего списка детей, за ненадобностью    
-                if childs and node['leaf'] == False:
+                if childs and tree_nodes[0]['leaf'] == False:
                     child_list.remove(childs)
                     
             tree = clear_tree(tree[:-1],child_list) or []
@@ -297,16 +299,16 @@ def get_service_tree(request):
         tree = []
         promotions = Promotion.objects.actual()
         if promotions.count():
-            node = {
+            tree_node = {
                 'id':'promotions',
                 'text':u'Акции / Комплексные обследования',
                 'children':[promo_dict(promo) for promo in promotions],
                 'leaf':False,
                 'singleClickExpand':True
             }
-            tree.append(node)
-#        s = clear_tree(nodes,[])
-#        tree.extend(s) 
+            tree.append(tree_node)
+        s = clear_tree(nodes,[])
+        tree.extend(s) #@UndefinedVariable
         _cached_tree = simplejson.dumps(tree)
         cache.set(_cache_key, _cached_tree, 24*60*60*30)
 

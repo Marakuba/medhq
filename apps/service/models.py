@@ -177,6 +177,11 @@ class BaseService(models.Model):
         #return "%s %s" % (self.code, self.name)
         return self.name 
     
+    def is_manual(self):
+        if self.labservice:
+            return self.labservice.is_manual
+        return False
+    
     def is_lab(self):
         return self.lab_group is not None
     

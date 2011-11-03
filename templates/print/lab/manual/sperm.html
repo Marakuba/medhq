@@ -1,3 +1,13 @@
+{% extends "print.html" %}
+
+{% load lab_tags flatblock_tags %}
+
+{% block title %}{{ order }} - Результаты{% endblock %}
+
+{% block body %}
+
+
+{% include "print/lab/manual/header.html" %}
 <table class="results">
 	<tr>
 		<td colspan="4" class="group">{{ service }}</td>
@@ -33,3 +43,11 @@
 	
 
 </table>
+
+
+{% if order.is_completed or preview %}
+<div class="comment">{% autoescape off %}{{ order.comment }}{% endautoescape %}</div>
+{% endif %}
+<div class="print_time">{{ order.printed }}</div>
+
+{% endblock %}

@@ -174,10 +174,6 @@ App.result.ResultCard = Ext.extend(Ext.Panel, {
 			}]
 		});
 		
-		this.ManualService = new App.manual.ManualGrid({
-			
-		});
-		
 		config = {
 			border:false,
 			title:'Результаты',
@@ -194,7 +190,7 @@ App.result.ResultCard = Ext.extend(Ext.Panel, {
 				border:false,
 				tabPosition:'bottom',
 				activeTab:0,
-				items:[this.ResultGrid,this.ResultComment,this.ManualService]
+				items:[this.ResultGrid,this.ResultComment]
 			})
 		}
 		
@@ -217,7 +213,6 @@ App.result.ResultCard = Ext.extend(Ext.Panel, {
 		this.timeField.setValue(d.executed);
 		this.setTitle(String.format('Результаты: {0}', rec.data.patient_name));
 		this.ResultGrid.setActiveRecord(rec);
-		this.ManualService.setActiveRecord(rec);
 		this.items.itemAt(0).setActiveTab(0);
 		this.ResultComment.getForm().findField('comment').setValue(rec.data.comment);
 	},

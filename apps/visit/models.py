@@ -300,7 +300,7 @@ class OrderedService(make_operator_object('ordered_service')):
         visit = self.order
         s = self.service
         ext_service = self.service.extendedservice_set.get(state=self.execution_place)
-        if s.is_lab():
+        if s.is_lab() and not s.is_manual():
             
             sampling, created = Sampling.objects.get_or_create(visit=visit,
                                                                laboratory=self.execution_place,

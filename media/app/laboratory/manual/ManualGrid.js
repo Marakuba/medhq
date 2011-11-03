@@ -4,27 +4,128 @@ App.manual.ManualGrid = Ext.extend(Ext.grid.GridPanel, {
 
 	initComponent : function() {
 		
-		this.baseTitle = 'Ручные исследования';
-		
 		this.store = new Ext.data.RESTStore({
 			autoSave : true,
-			autoLoad : false,
+			autoLoad : true,
 			apiUrl : get_api_url('labservice'),
 			model: App.models.LabService
 		});
 		
-		this.store.on('load',function(store, records, options){
-			this.setTitle(String.format("{0} ({1})", this.baseTitle, records.length));
-		},this);
+//		this.store.on('load',function(store, records, options){
+//			this.setTitle(String.format("{0} ({1})", this.baseTitle, records.length));
+//		},this);
+
+		
+		this.dateField = new Ext.form.DateField({
+			emptyText:'дата',
+			format:'d.m.Y',
+			width:80
+		});
+		
+		this.timeField = new Ext.form.TimeField({
+			emptyText:'время',
+			width:55,
+			format:'H:i'
+		});
+		
+		this.staffField = new Ext.form.LazyComboBox({
+			emptyText:'врач',
+			store: new Ext.data.JsonStore({
+				autoLoad:true,
+				proxy: new Ext.data.HttpProxy({
+					url:get_api_url('position'),
+					method:'GET'
+				}),
+				root:'objects',
+				idProperty:'resource_uri',
+				fields:['resource_uri','name','title']
+			}),
+			displayField:'name',
+			width:120
+		});
+		
+		this.printBtn = new Ext.Button({
+			iconCls:'silk-printer',
+			handler:function(){
+				var rec = this.getSelectionModel().getSelected();
+				if(rec) {
+					var url = String.format('/lab/print/manualresults/{0}/?preview=yes', rec.id);
+					window.open(url);
+				}
+			},
+			scope:this
+		});
+		
+		this.ttb = new Ext.Toolbar({ 
+			items:[this.dateField, this.timeField, {
+					iconCls:'silk-date-go',
+					tooltip:'Устанавливает текущую дату и время',
+					handler:function(){
+						var now = new Date();
+						this.dateField.setValue(now);
+						this.timeField.setValue(now);
+					},
+					scope:this
+				},
+			
+				this.staffField, {
+					iconCls:'silk-user-go',
+					tooltip:'Текущий пользователь',
+					handler:function(){
+						this.staffField.setValue(String.format('/api/v1/dashboard/position/{0}', active_profile));
+					},
+					scope:this
+				},'-',{
+					iconCls:'silk-accept',
+					text:'Подтвердить',
+					handler: function(){
+						var rec = this.getSelectionModel().getSelected();
+						if(rec) {
+							this.saveSDT(rec);
+						}
+					},
+					scope:this
+				},'-', this.printBtn,'->',{
+					iconCls:'x-tbar-loading',
+					handler:function(){
+						this.store.load();
+					},
+					scope:this
+				}]
+		}); 		
 		
 		this.columns =  [{
-	    	header: "Название", 
+	    	header: "Заказ", 
+	    	width: 8,
+	    	dataIndex: 'barcode'
+	    },{
+	    	header: "Дата", 
+	    	width: 12,
+	    	dataIndex: 'created',
+	    	renderer:Ext.util.Format.dateRenderer('d.m.Y H:i')
+	    },{
+	    	header: "Пациент", 
+	    	width: 50,
+	    	dataIndex: 'patient_name',
+	    	renderer:function(v){
+	    		return String.format("<b>{0}</b>",v);
+	    	}
+	    },{
+	    	header: "Наименование исследования", 
 	    	width: 50,
 	    	dataIndex: 'service_name',
 	    },{
-	    	header: "Код", 
-	    	width: 50,
-	    	dataIndex: 'service_code',
+	    	header: "Лаборатория", 
+	    	width: 15,
+	    	dataIndex: 'laboratory',
+	    },{
+	    	header: "Врач", 
+	    	width: 15,
+	    	dataIndex: 'staff_name',
+	    },{
+	    	header: "Оператор", 
+	    	width: 12,
+	    	dataIndex: 'operator_name',
 	    }];		
 		
 		var config = {
@@ -40,17 +141,14 @@ App.manual.ManualGrid = Ext.extend(Ext.grid.GridPanel, {
 			sm : new Ext.grid.RowSelectionModel({
 				singleSelect : true
 			}),
-			tbar:[/*{
-				iconCls:'silk-add',
-				text:'Добавить',
-				handler:this.onAdd.createDelegate(this)
-			},*/'->',{
-				iconCls:'x-tbar-loading',
-				handler:function(){
-					this.store.load();
-				},
-				scope:this
-			}],
+			tbar:this.ttb,
+			bbar: new Ext.PagingToolbar({
+	            pageSize: 50,
+	            store: this.store,
+	            displayInfo: true,
+	            displayMsg: '{0} - {1} | {2}',
+	            emptyMsg: "Нет записей"
+	        }),
 			listeners: {
 				rowdblclick:function(grid,i,e){
 					var rec = grid.getStore().getAt(i);
@@ -58,7 +156,7 @@ App.manual.ManualGrid = Ext.extend(Ext.grid.GridPanel, {
 					if(Ext.ComponentMgr.isRegistered(serviceCode)){
 						var cmp = Ext.ComponentMgr.types[serviceCode];
 						var win = new cmp({
-							record:this.labOrderRecord,
+							record:rec,
 							service:App.uriToId(rec.data.service)
 						});
 						win.show();
@@ -68,13 +166,34 @@ App.manual.ManualGrid = Ext.extend(Ext.grid.GridPanel, {
 				}
 			},
 			viewConfig : {
-				forceFit : true
+				forceFit : true,
+				getRowClass: function(record, index) {
+		            var c = record.get('executed');
+		            return c ? 'x-lab-complete' : 'x-lab-incomplete';
+		        }
 			}			
 		}
 
 		Ext.apply(this, Ext.apply(this.initialConfig, config));
 		App.manual.ManualGrid.superclass.initComponent.apply(this, arguments);
 		
+	},
+	
+	saveSDT: function(rec) {
+		var d = this.dateField.getValue();
+		var t = this.timeField.getValue().split(':');
+		if (d) {
+			d = d.add(Date.HOUR, t[0]).add(Date.MINUTE,t[1]);
+		}
+		var staff = this.staffField.getValue();
+		if(rec) {
+			rec.beginEdit();
+			rec.set('executed', d ? d : '');
+			if(staff) {
+				rec.set('staff', staff);
+			}
+			rec.endEdit();
+		}
 	},
 	
 	setActiveRecord: function(rec) {

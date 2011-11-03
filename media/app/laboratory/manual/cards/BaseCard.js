@@ -177,8 +177,8 @@ App.cards.BaseCard = Ext.extend(Ext.Window,{
 	
 	loadData : function() {
 		if(this.record && this.service) {
-			this.store.setBaseParam('order',this.record.id);
-			this.store.setBaseParam('analysis__service',this.service);
+			this.store.setBaseParam( 'order__visit', App.uriToId(this.record.data.order) );
+			this.store.setBaseParam( 'analysis__service', this.service );
 			this.store.load({
 				callback: this.processData.createDelegate(this),
 				scope:this
