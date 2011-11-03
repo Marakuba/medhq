@@ -15,7 +15,6 @@
  * @constructor
  * @param {Object} config The config object
  */
-Ext.ns('Ext.calendar');
 Ext.calendar.DayBodyTemplate = function(config){
     
     Ext.apply(this, config);
@@ -63,15 +62,13 @@ Ext.extend(Ext.calendar.DayBodyTemplate, Ext.XTemplate, {
     applyTemplate : function(o){
         this.today = new Date().clearTime();
         this.dayCount = this.dayCount || 1;
-        this.startHour = this.startHour ? this.startHour : 0;
-        this.endHour = this.endHour ? this.endHour : 24;
+        this.startHour = this.startHour || 0;
+        this.endHour = this.endHour || 24;
         
         var i = 0, days = [],
             dt = o.viewStart.clone(),
             times;
-        
-        dt = dt.add(Date.DAY, 1);
-        
+            
         for(; i<this.dayCount; i++){
             days[i] = dt.add(Date.DAY, i);
         }
