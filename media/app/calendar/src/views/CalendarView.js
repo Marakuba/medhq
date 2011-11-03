@@ -23,7 +23,7 @@ Ext.calendar.CalendarView = Ext.extend(Ext.BoxComponent, {
      * @cfg {Number} startDay
      * The 0-based index for the day on which the calendar week begins (0=Sunday, which is the default)
      */
-    startDay: 0,
+    startDay: 1,
     /**
      * @cfg {Boolean} spansHavePriority
      * Allows switching between two different modes of rendering events that span multiple days. When true,

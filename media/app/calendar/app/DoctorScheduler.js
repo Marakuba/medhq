@@ -218,7 +218,7 @@ Ext.calendar.DoctorScheduler = Ext.extend(Ext.Panel, {
                         border: false,
                         id:'app-calendar',
                         region: 'center',
-                        activeItem: 0, // week view
+                        activeItem: 1, // week view
                         
                         // CalendarPanel supports view-specific configs that are passed through to the 
                         // underlying views to make configuration possible without explicitly having to 
