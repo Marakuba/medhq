@@ -601,10 +601,10 @@ class ExtendedServiceResource(ExtResource):
     """
     """
     base_service = fields.ForeignKey(BaseServiceResource, 'base_service')
-    staff = fields.ManyToManyField(PositionResource, 'staff',null=True)
     state = fields.ForeignKey(StateResource, 'state')
     tube = fields.ForeignKey(TubeResource, 'tube',null=True)
     staff = fields.ToManyField('api.registry.StaffResource','staff',null=True)
+    branches = fields.ToManyField('api.registry.StateResource','branches',null=True)
     
     def dehydrate(self, bundle):
         bundle.data['staff'] = bundle.obj.staff and [[staff.id,staff] for staff in bundle.obj.staff.all()] or None
