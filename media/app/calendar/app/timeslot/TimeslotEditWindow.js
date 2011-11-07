@@ -69,7 +69,7 @@ Ext.calendar.TimeslotEditWindow = Ext.extend(Ext.Window, {
 				    {name: 'full_name'},
 				    {name: 'mobile_phone'},
 				    {name: 'email'},
-				    {name: 'birth_day',format:'c'}
+				    {name: 'birth_day',type:'date',format:'d.m.Y'}
 				]
 		});
 		
@@ -98,7 +98,7 @@ Ext.calendar.TimeslotEditWindow = Ext.extend(Ext.Window, {
 			hideTrigger:true,
 			allowBlank:false,
 			autoSelect:false,
-        	store:this.patientSelectedStore,
+        	store:this.patientStore,
 		    displayField: 'full_name',
 		    queryParam:'search',
 		    listeners:{
@@ -198,7 +198,7 @@ Ext.calendar.TimeslotEditWindow = Ext.extend(Ext.Window, {
                     selectOnFocus: true
                 },
                 listeners: {
-                        beforecomplete: function(ed, value){
+                        complete: function(ed, value){
                         	var fieldName = ed.boundEl.id
                             this.patient.set(fieldName,value);
                             return true;
@@ -777,8 +777,8 @@ Ext.calendar.TimeslotEditWindow = Ext.extend(Ext.Window, {
     	if (!patient_uri){
     		return 0;
     	};
-    	this.patientStore.setBaseParam('id',App.uriToId(patient_uri));
-		this.patientStore.load(
+    	this.patientSelectedStore.setBaseParam('id',App.uriToId(patient_uri));
+		this.patientSelectedStore.load(
 			{
 				callback: function(records){
 					if (records){

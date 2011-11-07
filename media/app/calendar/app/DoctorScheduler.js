@@ -166,8 +166,8 @@ Ext.calendar.DoctorScheduler = Ext.extend(Ext.Panel, {
                	            	var start = new Date();
 	                   	        this.calendarStore.setBaseParam('id',this.staff_id);
 		                   	    this.eventStore.setBaseParam('cid',this.staff_id);
-   	    	                	this.calendarStore.load();
 	    	                    App.calendarPanel.setStartDate(start);
+	    	                    //this.calendarStore.load();
     	        	        },
 	                	scope: this
     	            	}	
@@ -262,19 +262,19 @@ Ext.calendar.DoctorScheduler = Ext.extend(Ext.Panel, {
                             },
                             'eventadd': {
                                 fn: function(cp, rec){
-                                    this.showMsg('Event '+ rec.data.Title +' was added');
+//                                    this.showMsg('Event '+ rec.data.Title +' was added');
                                 },
                                 scope: this
                             },
                             'eventupdate': {
                                 fn: function(cp, rec){
-                                    this.showMsg('Event '+ rec.data.Title +' was updated');
+//                                    this.showMsg('Event '+ rec.data.Title +' was updated');
                                 },
                                 scope: this
                             },
                             'eventdelete': {
                                 fn: function(cp, rec){
-                                    this.showMsg('Event '+ rec.data.Title +' was deleted');
+//                                    this.showMsg('Event '+ rec.data.Title +' was deleted');
                                 },
                                 scope: this
                             },
@@ -289,18 +289,24 @@ Ext.calendar.DoctorScheduler = Ext.extend(Ext.Panel, {
                                     if(this.editWin){
                                         this.editWin.hide();
                                     };
+                                    this.eventStore.setBaseParam('start_gte',dateInfo.viewStart.format('Y-m-d'));
+                                    this.eventStore.setBaseParam('end_lte',dateInfo.viewEnd.format('Y-m-d'));
                                     if (vw.xtype == "monthview") {
                                     	this.eventStore.setBaseParam('timeslot',false);
-                                    	this.eventStore.load();
+//                                    	this.eventStore.load();
                                     } else {
                                     	this.eventStore.setBaseParam('timeslot',true);
-                                    	this.eventStore.load();
-                                    }
+//                                    	this.eventStore.load();
+                                    };
+//                                    App.calendarPanel.setStartDate(dateInfo.viewStart);
+                                    this.eventStore.load();
                                     if(dateInfo !== null){
                                         // will be null when switching to the event edit form so ignore
                                         Ext.getCmp('app-nav-picker').setValue(dateInfo.activeDate);
                                         this.updateTitle(dateInfo.viewStart, dateInfo.viewEnd);
                                     }
+                                    delete this.eventStore.baseParams['start_gte'];
+                                    delete this.eventStore.baseParams['end_lte'];
                                 },
                                 scope: this
                             },
@@ -324,21 +330,21 @@ Ext.calendar.DoctorScheduler = Ext.extend(Ext.Panel, {
                                 fn: function(vw, rec){
                                     rec.commit();
                                     var time = rec.data.IsAllDay ? '' : ' \\a\\t H:i';
-                                    this.showMsg('Event '+ rec.data.Title +' was moved to '+rec.data.StartDate.format('F jS'+time));
+//                                    this.showMsg('Event '+ rec.data.Title +' was moved to '+rec.data.StartDate.format('F jS'+time));
                                 },
                                 scope: this
                             },
                             'eventresize': {
                                 fn: function(vw, rec){
                                     rec.commit();
-                                    this.showMsg('Event '+ rec.data.Title +' was updated');
+//                                    this.showMsg('Event '+ rec.data.Title +' was updated');
                                 },
                                 scope: this
                             },
                             'eventdelete': {
                                 fn: function(win, rec){
                                     this.eventStore.remove(rec);
-                                    this.showMsg('Event '+ rec.data.Title +' was deleted');
+//                                    this.showMsg('Event '+ rec.data.Title +' was deleted');
                                 },
                                 scope: this
                             },
