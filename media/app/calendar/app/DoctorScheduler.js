@@ -373,6 +373,9 @@ Ext.calendar.DoctorScheduler = Ext.extend(Ext.Panel, {
         // it altogether. Because of this, it's up to the application code to tie the pieces together.
         // Note that this function is called from various event handlers in the CalendarPanel above.
 		showEditWindow : function(rec, animateTarget, vw){
+			if (!vw){
+				return false
+			};
 			if (vw['id']=="app-calendar-month"){
 	        	if(!this.editWin){
 	        	
