@@ -10,6 +10,7 @@ App.laboratory.LabOrderGrid = Ext.extend(Ext.grid.GridPanel, {
 			apiUrl : get_api_url('laborder'),
 			model: App.models.LabOrder
 		});
+		this.store.setBaseParam('is_manual',false);
 
 		this.fields = [
   		    ['start_date','visit__created__gte','Дата с','Y-m-d 00:00'],

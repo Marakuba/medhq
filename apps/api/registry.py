@@ -491,7 +491,8 @@ class LabOrderResource(ExtResource):
             'staff':ALL_WITH_RELATIONS,
             'laboratory':ALL_WITH_RELATIONS,
             'lab_group':ALL_WITH_RELATIONS,
-            'is_completed':ALL
+            'is_completed':ALL,
+            'is_manual':ALL
         }
         
 class LSResource(ExtResource):

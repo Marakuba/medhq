@@ -154,6 +154,7 @@ class LabOrder(models.Model):
     executed = models.DateTimeField(u'Дата выполнения', blank=True, null=True)
     is_completed = models.BooleanField(u'Выполнен', default=False)
     is_printed = models.BooleanField(u'Печать', default=False)
+    is_manual = models.BooleanField(u'Ручные исследования', default=False)
     status = models.ForeignKey(Status, blank=True, null=True)
     print_date = models.DateTimeField(u'Дата печати', blank=True, null=True)
     printed_by = models.ForeignKey(User, blank=True, null=True)
