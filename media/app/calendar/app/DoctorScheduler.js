@@ -100,7 +100,8 @@ Ext.calendar.DoctorScheduler = Ext.extend(Ext.Panel, {
 		    this.eventStore = new Ext.data.Store({
 		        id: 'eventStore',
 		        baseParams: {
-		    		format:'json'
+		    		format:'json',
+		    		timeslot:true
 			    },
 			    restful: true,
 			    autoSave:true,
@@ -166,8 +167,9 @@ Ext.calendar.DoctorScheduler = Ext.extend(Ext.Panel, {
                	            	var start = new Date();
 	                   	        this.calendarStore.setBaseParam('id',this.staff_id);
 		                   	    this.eventStore.setBaseParam('cid',this.staff_id);
-	    	                    App.calendarPanel.setStartDate(start);
-	    	                    //this.calendarStore.load();
+//	    	                    App.calendarPanel.setStartDate(start);
+	    	                    App.calendarPanel.fireViewChange()
+	    	                    this.calendarStore.load();
     	        	        },
 	                	scope: this
     	            	}	
@@ -289,24 +291,26 @@ Ext.calendar.DoctorScheduler = Ext.extend(Ext.Panel, {
                                     if(this.editWin){
                                         this.editWin.hide();
                                     };
-                                    this.eventStore.setBaseParam('start_gte',dateInfo.viewStart.format('Y-m-d'));
-                                    this.eventStore.setBaseParam('end_lte',dateInfo.viewEnd.format('Y-m-d'));
-                                    if (vw.xtype == "monthview") {
-                                    	this.eventStore.setBaseParam('timeslot',false);
+//                                    this.eventStore.setBaseParam('start__gte',dateInfo.viewStart.format('Y-m-d'));
+//                                    this.eventStore.setBaseParam('end__lte',dateInfo.viewEnd.add(Date.Day,1).format('Y-m-d'));
+//                                    if (vw.xtype == "monthview") {
+//                                    	this.eventStore.setBaseParam('timeslot',false);
 //                                    	this.eventStore.load();
-                                    } else {
-                                    	this.eventStore.setBaseParam('timeslot',true);
+//                                    } else {
+//                                    	this.eventStore.setBaseParam('timeslot',true);
 //                                    	this.eventStore.load();
-                                    };
+//                                    };
 //                                    App.calendarPanel.setStartDate(dateInfo.viewStart);
-                                    this.eventStore.load();
+                                    if (vw.body) {
+                                    	vw.body.setStartDate(dateInfo.viewStart,true,false)
+                                    }
                                     if(dateInfo !== null){
                                         // will be null when switching to the event edit form so ignore
                                         Ext.getCmp('app-nav-picker').setValue(dateInfo.activeDate);
                                         this.updateTitle(dateInfo.viewStart, dateInfo.viewEnd);
                                     }
-                                    delete this.eventStore.baseParams['start_gte'];
-                                    delete this.eventStore.baseParams['end_lte'];
+//                                    delete this.eventStore.baseParams['start__gte'];
+//                                    delete this.eventStore.baseParams['end__lte'];
                                 },
                                 scope: this
                             },
@@ -369,6 +373,9 @@ Ext.calendar.DoctorScheduler = Ext.extend(Ext.Panel, {
         // it altogether. Because of this, it's up to the application code to tie the pieces together.
         // Note that this function is called from various event handlers in the CalendarPanel above.
 		showEditWindow : function(rec, animateTarget, vw){
+			if (!vw){
+				return false
+			};
 			if (vw['id']=="app-calendar-month"){
 	        	if(!this.editWin){
 	        	

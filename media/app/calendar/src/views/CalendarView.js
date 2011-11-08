@@ -72,7 +72,7 @@ Ext.calendar.CalendarView = Ext.extend(Ext.BoxComponent, {
      * @cfg {Boolean} enableDD
      * True to enable drag and drop in the calendar view (the default), false to disable it
      */
-    enableDD: true,
+    enableDD: false,
     /**
      * @cfg {Boolean} monitorResize
      * True to monitor the browser's resize event (the default), false to ignore it. If the calendar view is rendered
@@ -190,7 +190,7 @@ Ext.calendar.CalendarView = Ext.extend(Ext.BoxComponent, {
              * range selection). The callback is already created in the proper scope, so it simply needs to be executed as a standard
              * function call (e.g., callback()).
              */
-            rangeselect: true,
+            rangeselect: false,
             /**
              * @event eventmove
              * Fires after an event element is dragged by the user and dropped in a new position
@@ -198,13 +198,13 @@ Ext.calendar.CalendarView = Ext.extend(Ext.BoxComponent, {
              * @param {Ext.calendar.EventRecord} rec The {@link Ext.calendar.EventRecord record} for the event that was moved with
              * updated start and end dates
              */
-            eventmove: true,
+            eventmove: false,
             /**
              * @event initdrag
              * Fires when a drag operation is initiated in the view
              * @param {Ext.calendar.CalendarView} this
              */
-            initdrag: true,
+            initdrag: false,
             /**
              * @event dayover
              * Fires while the mouse is over a day element 
@@ -457,15 +457,15 @@ Ext.calendar.CalendarView = Ext.extend(Ext.BoxComponent, {
 
     // private
     onEventDrop: function(rec, dt) {
-        if (Ext.calendar.Date.compare(rec.data[Ext.calendar.EventMappings.StartDate.name], dt) === 0) {
-            // no changes
-            return;
-        }
-        var diff = dt.getTime() - rec.data[Ext.calendar.EventMappings.StartDate.name].getTime();
-        rec.set(Ext.calendar.EventMappings.StartDate.name, dt);
-        rec.set(Ext.calendar.EventMappings.EndDate.name, rec.data[Ext.calendar.EventMappings.EndDate.name].add(Date.MILLI, diff));
-
-        this.fireEvent('eventmove', this, rec);
+//        if (Ext.calendar.Date.compare(rec.data[Ext.calendar.EventMappings.StartDate.name], dt) === 0) {
+//            // no changes
+//            return;
+//        }
+//        var diff = dt.getTime() - rec.data[Ext.calendar.EventMappings.StartDate.name].getTime();
+//        rec.set(Ext.calendar.EventMappings.StartDate.name, dt);
+//        rec.set(Ext.calendar.EventMappings.EndDate.name, rec.data[Ext.calendar.EventMappings.EndDate.name].add(Date.MILLI, diff));
+//
+//        this.fireEvent('eventmove', this, rec);
     },
 
     // private
@@ -478,7 +478,7 @@ Ext.calendar.CalendarView = Ext.extend(Ext.BoxComponent, {
         o[Ext.calendar.EventMappings.StartDate.name] = start;
         o[Ext.calendar.EventMappings.EndDate.name] = end;
 
-        this.fireEvent('rangeselect', this, o, this.onCalendarEndDragComplete.createDelegate(this, [onComplete]));
+//        this.fireEvent('rangeselect', this, o, this.onCalendarEndDragComplete.createDelegate(this, [onComplete]));
     },
 
     // private
@@ -710,11 +710,11 @@ Ext.calendar.CalendarView = Ext.extend(Ext.BoxComponent, {
     setStartDate: function(start, refresh, load) {
         this.startDate = start.clearTime();
         this.setViewBounds(start);
-        if (load !== false) {
+        if (load) {
         	this.store.load({
 	            params: {
-    	            start_gte: this.viewStart.format('m-d-Y'),
-        	        end_lte: this.viewEnd.format('m-d-Y')
+    	            start__gte: this.viewStart.format('Y-m-d'),
+        	        end__lte: this.viewEnd.add(Date.DAY,1).format('Y-m-d')
 	            }
     	    });
         };

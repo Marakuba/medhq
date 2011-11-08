@@ -197,6 +197,7 @@ Ext.extend(Ext.calendar.EventEditWindow, Ext.Window, {
         f = this.formPanel.form;
 
         if (o.data) {
+        	Ext.getCmp('date-range').disable();
             rec = o;
             this.isAdd = !!rec.data[Ext.calendar.EventMappings.IsNew.name];
             if (this.isAdd) {
@@ -212,6 +213,7 @@ Ext.extend(Ext.calendar.EventEditWindow, Ext.Window, {
             f.loadRecord(rec);
         }
         else {
+        	Ext.getCmp('date-range').enable();
             this.isAdd = true;
             this.setTitle(this.titleTextAdd);
 
