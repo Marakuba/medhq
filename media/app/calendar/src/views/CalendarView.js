@@ -710,11 +710,11 @@ Ext.calendar.CalendarView = Ext.extend(Ext.BoxComponent, {
     setStartDate: function(start, refresh, load) {
         this.startDate = start.clearTime();
         this.setViewBounds(start);
-        if (load !== false) {
+        if (load) {
         	this.store.load({
 	            params: {
-    	            start_gte: this.viewStart.format('m-d-Y'),
-        	        end_lte: this.viewEnd.format('m-d-Y')
+    	            start__gte: this.viewStart.format('Y-m-d'),
+        	        end__lte: this.viewEnd.add(Date.DAY,1).format('Y-m-d')
 	            }
     	    });
         };
