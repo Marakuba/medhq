@@ -108,6 +108,7 @@ App.registry.PreorderGrid = Ext.extend(Ext.grid.GridPanel, {
 				msg : 'Подождите, идет загрузка...'
 			},
 			border: false,
+			emptyText:'На эту дату предзаказов нет',
 			store:this.store,
 			columns:this.columns,
 			sm : new Ext.grid.RowSelectionModel({
