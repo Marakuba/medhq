@@ -382,6 +382,8 @@ Ext.calendar.DoctorScheduler = Ext.extend(Ext.Panel, {
 	            	this.editWin = new Ext.calendar.EventEditWindow({
                     	calendarStore: this.calendarStore,
                     	modal:true,
+                    	startHour:this.startHour,
+                    	endHour:this.endHour,
 						listeners: {
 							'eventadd': {
 								fn: function(win, rec){

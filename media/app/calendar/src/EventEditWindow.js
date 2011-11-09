@@ -15,6 +15,18 @@
  */
 Ext.ns('Ext.calendar');
 Ext.calendar.EventEditWindow = function(config) {
+	this.startHour = this.startHour ? this.startHour : 0;
+	this.endHour = this.endHour ? this.endHour : 24;
+	this.titleField = new Ext.form.TextField({
+		name: Ext.calendar.EventMappings.Title.name,
+		fieldLabel: 'Заголовок',
+		anchor: '100%'
+	});
+	this.dateRangeField = new Ext.calendar.DateRangeField({
+		anchor: '100%',
+        fieldLabel: 'Когда'
+	});
+	
     var formPanelCfg = {
         xtype: 'form',
         labelWidth: 65,
@@ -22,32 +34,20 @@ Ext.calendar.EventEditWindow = function(config) {
         bodyStyle: 'background:transparent;padding:5px 10px 10px;',
         bodyBorder: false,
         border: false,
-        items: [{
-            id: 'title',
-            name: Ext.calendar.EventMappings.Title.name,
-            fieldLabel: 'Заголовок',
-            xtype: 'textfield',
-            anchor: '100%'
-        },
-        {
-            xtype: 'daterangefield',
-            id: 'date-range',
-            anchor: '100%',
-            fieldLabel: 'Когда'
-        }]
+        items: [this.titleField, this.dateRangeField]
     };
 
     if (config.calendarStore) {
         this.calendarStore = config.calendarStore;
         delete config.calendarStore;
+        
+        this.doctor = new Ext.calendar.CalendarPicker({
+			name: 'calendar',
+	        anchor: '100%',
+	        store: this.calendarStore
+		});
 
-        formPanelCfg.items.push({
-            xtype: 'calendarpicker',
-            id: 'calendar',
-            name: 'calendar',
-            anchor: '100%',
-            store: this.calendarStore
-        });
+        formPanelCfg.items.push(this.doctor);
     };
     
     if (config.staffStore) {
@@ -69,7 +69,7 @@ Ext.calendar.EventEditWindow = function(config) {
         width: 600,
         autocreate: true,
         border: true,
-        closeAction: 'hide',
+        closeAction: 'close',
         modal: true,
         resizable: false,
         buttonAlign: 'left',
@@ -189,7 +189,7 @@ Ext.extend(Ext.calendar.EventEditWindow, Ext.Window, {
 
         Ext.calendar.EventEditWindow.superclass.show.call(this, anim,
         function() {
-            Ext.getCmp('title').focus(false, 100);
+            this.titleField.focus(false, 100);
         });
         Ext.getCmp('delete-btn')[o.data && o.data[Ext.calendar.EventMappings.EventId.name] ? 'show': 'hide']();
 
@@ -197,7 +197,7 @@ Ext.extend(Ext.calendar.EventEditWindow, Ext.Window, {
         f = this.formPanel.form;
 
         if (o.data) {
-        	Ext.getCmp('date-range').disable();
+        	this.dateRangeField.disable();
             rec = o;
             this.isAdd = !!rec.data[Ext.calendar.EventMappings.IsNew.name];
             if (this.isAdd) {
@@ -213,7 +213,7 @@ Ext.extend(Ext.calendar.EventEditWindow, Ext.Window, {
             f.loadRecord(rec);
         }
         else {
-        	Ext.getCmp('date-range').enable();
+        	this.dateRangeField.enable();
             this.isAdd = true;
             this.setTitle(this.titleTextAdd);
 
@@ -234,12 +234,12 @@ Ext.extend(Ext.calendar.EventEditWindow, Ext.Window, {
         }
 
         if (this.calendarStore) {
-            Ext.getCmp('calendar').setValue(rec.data[Ext.calendar.EventMappings.CalendarId.name]);
+            this.doctor.setValue(rec.data[Ext.calendar.EventMappings.CalendarId.name]);
         };
         if (this.staffStore) {
             Ext.getCmp('staff').setValue(rec.data[Ext.calendar.EventMappings.StaffId.name]);
         }
-        Ext.getCmp('date-range').setValue(rec.data);
+        this.dateRangeField.setValue(rec.data);
         this.activeRecord = rec;
 
         return this;
@@ -275,7 +275,7 @@ Ext.extend(Ext.calendar.EventEditWindow, Ext.Window, {
     // private
     updateRecord: function() {
         var f = this.formPanel.form,
-        dates = Ext.getCmp('date-range').getValue(),
+        dates = this.dateRangeField.getValue(),
         M = Ext.calendar.EventMappings;
 
         f.updateRecord(this.activeRecord);

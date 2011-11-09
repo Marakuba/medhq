@@ -23,6 +23,10 @@ Ext.calendar.DateRangeField = Ext.extend(Ext.form.Field, {
      * The text to display as the label for the all day checkbox (defaults to 'All day')
      */
     allDayText: 'Весь день',
+    
+    startHour: String.format("{0}:00",this.startHour,'00'),
+    
+    endHour: String.format("{0}:00",this.endHour,'24'),
 
     // private
     onRender: function(ct, position) {
@@ -45,6 +49,8 @@ Ext.calendar.DateRangeField = Ext.extend(Ext.form.Field, {
                 format:'H:i',
                 hidden: this.showTimes === false,
                 labelWidth: 0,
+//                minValue: this.startHour,
+//                maxValue: this.endHour,
                 hideLabel: true,
                 width: 90,
                 listeners: {
@@ -61,6 +67,8 @@ Ext.calendar.DateRangeField = Ext.extend(Ext.form.Field, {
                 format:'H:i',
                 hidden: this.showTimes === false,
                 labelWidth: 0,
+//                minValue: this.startHour,
+//                maxValue: this.endHour,
                 hideLabel: true,
                 width: 90,
                 listeners: {
