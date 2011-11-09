@@ -33,6 +33,8 @@ Ext.calendar.TimeslotEditWindow = Ext.extend(Ext.Window, {
 			this.popStep();
 		}, this);*/
 		
+		this.patientFields = new Array("mobile_phone","email","birth_day");
+		
 		this.serviceStore = new Ext.data.RESTStore({
 			autoLoad : false,
 			apiUrl : get_api_url('extendedservice'),
@@ -196,11 +198,13 @@ Ext.calendar.TimeslotEditWindow = Ext.extend(Ext.Window, {
 		
 		 this.tpl = new Ext.XTemplate(
     		'<tpl for=".">',
-	        	' тел.: ','<span id="mobile_phone">','{mobile_phone:this.nullFormatter}','</span>',
-	        	' email: ','<span id="email">','{email:this.nullFormatter}','</span>',
-	        	' дата рождения: ','<span id="birth_day">','{birth_day:date("d.m.Y")}','</span>',
+	        	' тел.: ','<span id="mobile_phone" class = "mobile_phone"> {mobile_phone:this.nullFormatter}</span>',
+	        	' email: ','<span id="email" class = "email">{email:this.nullFormatter}</span>',
+	        	' дата рождения: ','<span id="birth_day" class = "birth_day">','{birth_day:date("d.m.Y")}','</span>',
 	    	'</tpl>',
-	    	{nullFormatter: function(v) { return v ? v : '<em>не указано</em>'; }}
+	    	{nullFormatter: function(v) 
+	    		{ return v ? v : 'не указано'; }
+	    	}
 		);
 		
 		this.dw =  new Ext.DataView({
@@ -847,8 +851,14 @@ Ext.calendar.TimeslotEditWindow = Ext.extend(Ext.Window, {
 	},
 	
 	onPatientPanelClick : function(a,p,c) {
-		if (!(p.id==(this.id+'patient-panel'))){
-			this.patientEditor.startEdit(p)
+		if (!p.classList.length){
+			return false;
+		};
+		var g = p.classList[0];
+		for(var i = 0; i < this.patientFields.length; i++) { 
+			if (g == this.patientFields[i]){
+				this.patientEditor.startEdit(p)
+			}
 		}
 	}
 });
