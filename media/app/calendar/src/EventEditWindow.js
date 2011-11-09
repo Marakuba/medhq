@@ -239,6 +239,7 @@ Ext.extend(Ext.calendar.EventEditWindow, Ext.Window, {
         if (this.staffStore) {
             Ext.getCmp('staff').setValue(rec.data[Ext.calendar.EventMappings.StaffId.name]);
         }
+        
         this.dateRangeField.setValue(rec.data);
         this.activeRecord = rec;
 

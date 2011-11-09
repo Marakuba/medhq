@@ -73,17 +73,6 @@ Ext.calendar.TimeslotEditWindow = Ext.extend(Ext.Window, {
 				]
 		});
 		
-//		this.inlines.add('preorderedservice', this.preorderedService);
-		
-		/*this.servicePanel = new App.visit.VisitServicePanel({
-	        region: 'east',
-		    collapsible: true,
-		    collapseMode: 'mini',
-		    margins:'5 5 5 0',
-	        width: 200,
-	        split: true
-	    });*/
-		
 		this.serviceCombo = new Ext.form.LazyClearableComboBox({
         	fieldLabel:'Услуга',
         	disabled:true,
@@ -109,15 +98,13 @@ Ext.calendar.TimeslotEditWindow = Ext.extend(Ext.Window, {
 		    		this.serviceCombo.enable();
 		    		this.serviceButton.setDisabled(false);
 		    		this.paymentTypeCB.enable();
+		    		this.tpl.overwrite(this.patientPanel.body,record.data);
+//		    		this.patientPanel.body.highlight('#c3daf9', {block:false})
 		    	},
 		    	scope:this
 		    }
 		});
 	    
-		/*this.titleField = new Ext.form.TextField({
-			name: Ext.calendar.EventMappings.Title.name,
-            fieldLabel: 'Пациент'
-		});*/
 
     	this.preorderModel = new Ext.data.Record.create([
 		    {name: 'id'},
@@ -218,7 +205,7 @@ Ext.calendar.TimeslotEditWindow = Ext.extend(Ext.Window, {
 		
 		this.dw =  new Ext.DataView({
 	        store: this.patientSelectedStore,
-	        tpl: this.tpl,
+	        //tpl: this.tpl,
 	        id:'patient-dw',
 	        autoHeight:true,
 	        multiSelect: true,
@@ -271,10 +258,26 @@ Ext.calendar.TimeslotEditWindow = Ext.extend(Ext.Window, {
     		xtype: 'textarea',
     		fieldLabel:'Комментарий',
         	name: 'comment'
-	    },
-	    this.dw
+	    }
+	    
 	    ]});
     	
+	    this.patientPanel = new Ext.Panel({
+	    	id : this.id + 'patient-panel',
+	    	region:'south',
+	    	frame: false,
+	    	html:'нет данных',
+	    	bodyBorder: false,
+	    	bodyStyle: 'background:transparent',
+	    	listeners: {
+		        render: function(p) {
+		            // Append the Panel to the click handler's argument list.
+		            p.getEl().on('click', this.onPatientPanelClick.createDelegate(this, [p], true));
+		        },
+		        scope:this
+		    }
+	    })
+	    
     	this.formPanelCfg = new Ext.FormPanel({
         	layout:'border',
 	        bodyStyle: 'background:transparent;padding:5px 10px 10px;',
@@ -282,7 +285,7 @@ Ext.calendar.TimeslotEditWindow = Ext.extend(Ext.Window, {
         	border: false,
         	height:200,
         	bubbleEvents:['patientchoice'],
-	        items: [this.fieldSet]
+	        items: [this.fieldSet,this.patientPanel]
     	});
     	
         this.addEvents({
@@ -513,6 +516,11 @@ Ext.calendar.TimeslotEditWindow = Ext.extend(Ext.Window, {
         if (o.data) {
             rec = o;
             this.isAdd = !!rec.data[Ext.calendar.EventMappings.IsNew.name];
+            this.patientStore.on('load',function(store,records,obj){
+            	if (records){
+            		this.tpl.overwrite(this.patientPanel.body,records[0].data);
+            	};
+            },this,{single:true});
             if (this.isAdd) {
                 // Enable adding the default record that was passed in
                 // if it's new even if the user makes no changes
@@ -836,5 +844,11 @@ Ext.calendar.TimeslotEditWindow = Ext.extend(Ext.Window, {
 			border:false
     	});
        	serviceWindow.show();
+	},
+	
+	onPatientPanelClick : function(a,p,c) {
+		if (!(p.id==(this.id+'patient-panel'))){
+			this.patientEditor.startEdit(p)
+		}
 	}
 });
