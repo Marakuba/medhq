@@ -12,6 +12,7 @@ from interlayer.models import ClientItem
 from billing.models import Payment, Account, ClientAccount
 from django.db.models.signals import post_save
 from visit.models import Visit
+from crm.models import AdSource
 
 
 class Patient(make_person_object('patient')):
@@ -25,6 +26,7 @@ class Patient(make_person_object('patient')):
     doc = models.CharField(u'Документ', max_length=30, blank=True)
     client_item = models.OneToOneField(ClientItem, null=True, blank= True, related_name = 'client')
     balance = models.FloatField(u'Баланс', blank=True, null=True)
+    ad_source = models.ForeignKey(AdSource, blank=True, null=True)
     
     objects = models.Manager()
     
