@@ -37,7 +37,8 @@ App.patient.LabGrid = Ext.extend(Ext.grid.GridPanel, {
 		this.store = new Ext.data.Store({
 		    id: 'laborder-store',
 		    baseParams: {
-		    	format:'json'
+		    	format:'json',
+		    	is_manual:false
 		    },
 		    paramNames: {
 			    start : 'offset',  // The parameter name which specifies the start row
@@ -157,7 +158,7 @@ App.patient.LabGrid = Ext.extend(Ext.grid.GridPanel, {
 		id = rec.id;
 		this.patientId = id;
 		var s = this.store;
-		s.baseParams = {format:'json','visit__patient': id};
+		s.setBaseParam('visit__patient', id);
 		s.load();
 	},
 	
