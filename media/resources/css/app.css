@@ -167,3 +167,8 @@
 	background:#FFDFDF;
 }
 
+.warn {
+	color:red;
+	font-weight: bold;
+}
+
