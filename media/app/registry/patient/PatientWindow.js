@@ -7,24 +7,7 @@ App.patient.PatientWindow = Ext.extend(Ext.Window, {
 		this.store = this.store || new Ext.data.RESTStore({
 			autoLoad : true,
 			apiUrl : get_api_url('patient'),
-			model: [
-				    {name: 'id'},
-				    {name: 'resource_uri'},
-				    {name: 'first_name', allowBlank: false},
-				    {name: 'mid_name'},
-				    {name: 'last_name', allowBlank: false},
-				    {name: 'gender', allowBlank: false},
-				    {name: 'mobile_phone'},
-				    {name: 'home_address_street'},
-				    {name: 'email'},
-				    {name: 'birth_day', allowBlank: false, type:'date'},
-				    {name: 'discount'},
-				    {name: 'discount_name'},
-				    {name: 'initial_account'},
-				    {name: 'billed_account'},
-				    {name: 'doc'},
-				    {name: 'hid_card'}
-				]
+			model: App.models.Patient
 		});
 		
 		this.model = this.store.recordType;
@@ -42,7 +25,7 @@ App.patient.PatientWindow = Ext.extend(Ext.Window, {
 		config = {
 			title:'Пациент',
 			width:650,
-			height:450,
+			height:480,
 			layout:'fit',
 			items:this.form,
 			modal:true,

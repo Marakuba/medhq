@@ -54,8 +54,18 @@ App.Patients = Ext.extend(Ext.Panel, {
 
 	},
 	
-	titleTpl : new Ext.Template(
-		'Пациент: {last_name} {first_name} {mid_name}. Скидка: {discount_name}. Общая сумма: {billed_account}. Баланс: <FONT COLOR="red"> {balance} </FONT>'
+	titleTpl : new Ext.XTemplate(
+		'Пациент: ',
+		'{last_name} {first_name} {mid_name}. ',
+		'Скидка: {discount_name}. ',
+		'Общая сумма: {billed_account}. ',
+		'Баланс: <FONT COLOR="red">{balance}</FONT>. ',
+		'{ad_source_name:this.isEmpty}',
+		{
+			isEmpty:function(v){
+				return v ? '' : '<span class="warn">Спросить источник рекламы!</span>'
+			}
+		}
 	),
 	
 	patientSelect: function(rec){

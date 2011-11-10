@@ -7,26 +7,7 @@ App.patient.PatientGrid = Ext.extend(Ext.grid.GridPanel, {
 		this.store = new Ext.data.RESTStore({
 			autoLoad : true,
 			apiUrl : get_api_url('patient'),
-			model: [
-				    {name: 'id'},
-				    {name: 'resource_uri'},
-				    {name: 'first_name', allowBlank: false},
-				    {name: 'mid_name'},
-				    {name: 'last_name', allowBlank: false},
-				    {name: 'gender', allowBlank: false},
-				    {name: 'mobile_phone'},
-				    {name: 'home_address_street'},
-				    {name: 'email'},
-				    {name: 'birth_day', allowBlank: false, type:'date'},
-				    {name: 'discount'},
-				    {name: 'discount_name'},
-				    {name: 'client_item'},
-				    {name: 'balance'},
-				    {name: 'initial_account'},
-				    {name: 'billed_account'},
-				    {name: 'doc'},
-				    {name: 'hid_card'}
-				]
+			model: App.models.Patient
 		});
 		
 		this.columns =  [

@@ -35,6 +35,7 @@ from examination.models import Equipment as ExamEquipment
 from tastypie.authentication import ApiKeyAuthentication
 from patient.utils import smartFilter
 from django.db.models.query_utils import Q
+from crm.models import AdSource
 
 class UserResource(ModelResource):
 
@@ -110,8 +111,23 @@ class ClientItemResource(ExtResource):
             'client' : ALL_WITH_RELATIONS,
         }
         
+class AdSourceResource(ExtResource):
+    
+#    def dehydrate(self, bundle):
+#        return bundle
+    
+    class Meta:
+        queryset = AdSource.objects.all()
+        resource_name = 'adsource'
+        authorization = DjangoAuthorization()
+        filtering = {
+            'id' : ALL,
+            'name' : ALL,
+        }
+        
 class PatientResource(ExtResource):
     
+    ad_source = fields.ForeignKey(AdSourceResource, 'ad_source', null=True)
     discount = fields.ForeignKey(DiscountResource, 'discount', null=True)
     client_item = fields.OneToOneField(ClientItemResource, 'client_item', null=True)
 
@@ -119,6 +135,7 @@ class PatientResource(ExtResource):
         bundle.data['discount_name'] = bundle.obj.discount and bundle.obj.discount or u'0%'
         bundle.data['full_name'] = bundle.obj.full_name()
         bundle.data['short_name'] = bundle.obj.short_name()
+        bundle.data['ad_source_name'] = bundle.obj.ad_source and bundle.obj.ad_source or u''
         return bundle
 
     def obj_create(self, bundle, request=None, **kwargs):
@@ -1640,6 +1657,11 @@ api.register(DebtorResource())
 
 api.register(InvoiceResource())
 api.register(InvoiceItemResource())
+
+
+#crm
+api.register(AdSourceResource())
+
 
 #reporting
 #api.register(ReportResource())

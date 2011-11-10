@@ -112,6 +112,7 @@ App.patient.PatientForm = Ext.extend(Ext.form.FormPanel, {
 				items:[{
 					columnWidth:.5,
 					layout:'form',
+					labelWidth:115,
 					items:[{
 						xtype:'textfield',
 						name:'last_name',
@@ -140,9 +141,15 @@ App.patient.PatientForm = Ext.extend(Ext.form.FormPanel, {
 					},{
 						xtype:'numberfield',
 						name:'initial_account',
-                    	fieldLabel: 'Первоначальная сумма',
+                    	fieldLabel: 'Начальная сумма',
                     	value:0
-					}]
+					},new Ext.form.LazyClearableComboBox({
+			        	fieldLabel:'Источник рекламы',
+			        	width:170,
+//						anchor:'80%',
+			        	name:'ad_source',
+			        	proxyUrl:get_api_url('adsource')
+					})]
 				},{
 					columnWidth:.5,
 					layout:'form',

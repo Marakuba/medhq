@@ -90,6 +90,7 @@ INSTALLED_APPS = (
     'sentry',
     'sentry.client',
 
+    'crm',
     'core',
     'helpdesk',
     'webapp',
