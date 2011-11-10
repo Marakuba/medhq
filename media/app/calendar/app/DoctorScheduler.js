@@ -421,7 +421,7 @@ Ext.calendar.DoctorScheduler = Ext.extend(Ext.Panel, {
 				listeners: {
 					'eventadd': {
 						fn: function(win, rec){
-							win.hide();
+							win.close();
 							rec.data.IsNew = false;
 							this.eventStore.add(rec);
 						},
@@ -429,20 +429,20 @@ Ext.calendar.DoctorScheduler = Ext.extend(Ext.Panel, {
 					},
 					'eventupdate': {
 						fn: function(win, rec){
-							win.hide();
+							win.close();
 						},
 						scope: this
 					},
 					'eventdelete': {
 						fn: function(win, rec){
 							this.eventStore.remove(rec);
-							win.hide();
+							win.close();
 						},
 						scope: this
 					},
     	            'editdetails': {
                         fn: function(win, rec){
-           	                win.hide();
+           	                win.close();
                	            App.calendarPanel.showEditForm(rec);
                    	    }
                     }	
