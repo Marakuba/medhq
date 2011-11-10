@@ -24,12 +24,11 @@ Ext.calendar.DateRangeField = Ext.extend(Ext.form.Field, {
      */
     allDayText: 'Весь день',
     
-    startHour: String.format("{0}:00",this.startHour,'00'),
-    
-    endHour: String.format("{0}:00",this.endHour,'24'),
-
     // private
     onRender: function(ct, position) {
+    	this.startHour = String.format("{0}:00",this.startHour,'00');
+    	this.endHour = String.format("{0}:00",this.endHour,'23');
+    	
         if (!this.el) {
             this.startDate = new Ext.form.DateField({
                 id: this.id + '-start-date',
@@ -49,8 +48,8 @@ Ext.calendar.DateRangeField = Ext.extend(Ext.form.Field, {
                 format:'H:i',
                 hidden: this.showTimes === false,
                 labelWidth: 0,
-//                minValue: this.startHour,
-//                maxValue: this.endHour,
+                minValue: this.startHour,
+                maxValue: this.endHour,
                 hideLabel: true,
                 width: 90,
                 listeners: {
@@ -67,8 +66,8 @@ Ext.calendar.DateRangeField = Ext.extend(Ext.form.Field, {
                 format:'H:i',
                 hidden: this.showTimes === false,
                 labelWidth: 0,
-//                minValue: this.startHour,
-//                maxValue: this.endHour,
+                minValue: this.startHour,
+                maxValue: this.endHour,
                 hideLabel: true,
                 width: 90,
                 listeners: {
