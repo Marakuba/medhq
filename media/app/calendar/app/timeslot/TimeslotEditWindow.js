@@ -85,6 +85,7 @@ Ext.calendar.TimeslotEditWindow = Ext.extend(Ext.Window, {
 		
 		this.patientCombo = new Ext.form.LazyComboBox({
         	fieldLabel:'Пациент',
+        	name: 'patient',
 			anchor:'98%',
 			hideTrigger:true,
 			allowBlank:false,
@@ -521,7 +522,7 @@ Ext.calendar.TimeslotEditWindow = Ext.extend(Ext.Window, {
             rec = o;
             this.isAdd = !!rec.data[Ext.calendar.EventMappings.IsNew.name];
             this.patientStore.on('load',function(store,records,obj){
-            	if (records){
+            	if (records.length){
             		this.tpl.overwrite(this.patientPanel.body,records[0].data);
             	};
             },this,{single:true});
@@ -680,9 +681,10 @@ Ext.calendar.TimeslotEditWindow = Ext.extend(Ext.Window, {
 
     // private
     onSave: function() {
-        if (!this.formPanel.form.isValid()) {
-            return;
-        }
+        if (!this.patient) {
+        	Ext.Msg.alert('Предупреждение!','Пациент не выбран! Проверьте правильность ввода')
+            return false;
+        };
 		//console.log('Dirty ',this.formPanel.form.isDirty());   
 		
 		this.updateRecord();		
@@ -793,7 +795,7 @@ Ext.calendar.TimeslotEditWindow = Ext.extend(Ext.Window, {
 		this.patientSelectedStore.load(
 			{
 				callback: function(records){
-					if (records){
+					if (records.length){
 						this.patient = records[0]
 					}
 				},
