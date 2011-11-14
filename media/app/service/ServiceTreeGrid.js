@@ -173,7 +173,6 @@ App.ServiceTreeGrid = Ext.extend(Ext.ux.tree.TreeGrid,{
 		
 		var re = new RegExp(Ext.escapeRe(text), 'i');
 		this.filter.filterBy(function(n){
-			//console.log(n.text,re.test(n.text));
 			return !n.isLeaf() || re.test(n.text); //!n.attributes.isClass || 
 		});
 		
