@@ -22,7 +22,10 @@ class Command(BaseCommand):
         shifts = Event.objects.filter(timeslot = False)
         for s in shifts:
             staff = Position.objects.get(id=s.cid)
-            timeslot = timedelta(minutes=staff.staff.doctor.get_timeslot_display() or 30)
+            try:
+                timeslot = timedelta(minutes=staff.staff.doctor.get_timeslot_display() or 30)
+            except:
+                continue
             start = s.start
             end = s.end
             timeslots = Event.objects.filter(timeslot = True,start__gte = start, start__lte=end,cid = s.cid)
