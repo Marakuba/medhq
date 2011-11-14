@@ -120,7 +120,7 @@ class Event(models.Model):
 
     def delete(self, *args, **kwargs):
         if not self.timeslot:
-            timeslots = Event.objects.filter(timeslot=True,start__gte=self.start,start__lte=self.end)
+            timeslots = Event.objects.filter(timeslot=True,start__gte=self.start,start__lte=self.end, cid = self.cid)
             for timeslot in  timeslots:
                 preorders = Preorder.objects.filter(timeslot=timeslot)
                 if preorders:
