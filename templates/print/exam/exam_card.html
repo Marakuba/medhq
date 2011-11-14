@@ -45,7 +45,7 @@
 	</tr>
 </table>
 <br>
-{% if card.disease %}
+{% if card.disease and 'disease' in to_print  %}
 	<br> Характер заболевания
 	<p> {{card.disease}}</p>
 {% endif %}
@@ -53,7 +53,7 @@
 	<br> Жалобы
 	<p> {{card.complaints}}</p>
 {% endif %}
-{% if card.history %}
+{% if card.history and 'history' in to_print %}
 	<br> История настоящего заболевания
 	<p> {{card.history}}</p>
 {% endif %}
