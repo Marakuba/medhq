@@ -45,9 +45,7 @@
 </table>
 
 
-{% if order.is_completed or preview %}
-<div class="comment">{% autoescape off %}{{ order.comment }}{% endautoescape %}</div>
-{% endif %}
-<div class="print_time">{{ order.printed }}</div>
+<div class="comment">{% autoescape off %}{{ laborder.comment }}{% endautoescape %}</div>
+<div class="print_time">{{ object.print_date }}</div>
 
 {% endblock %}
