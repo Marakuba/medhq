@@ -28,8 +28,7 @@ from scheduler.models import Calendar, Event, Preorder, getToday
 from billing.models import Account, Payment, ClientAccount
 from interlayer.models import ClientItem
 from django.contrib.contenttypes.models import ContentType
-from examination.models import TemplateGroup, DICOM, Card, Template, FieldSet,\
-    SubSection
+from examination.models import TemplateGroup, DICOM, Card, Template
 from tastypie.cache import SimpleCache
 from django.contrib.auth.models import User
 from examination.models import Equipment as ExamEquipment
@@ -1250,53 +1249,16 @@ class TemplateResource(ExtResource):
     base_service = fields.ForeignKey(BaseServiceResource, 'base_service',null=True)
     staff = fields.ForeignKey(StaffResource, 'staff', null=True)
     
-    def dehydrate(self, bundle):
-        obj = bundle.obj
-        bundle.data['service_name'] = obj.base_service and obj.base_service.name
-        return bundle
-    
     class Meta:
         queryset = Template.objects.all()
-        resource_name = 'examtemplate'
+        resource_name = 'template'
         default_format = 'application/json'
         authorization = DjangoAuthorization()
         filtering = {
             'base_service':ALL_WITH_RELATIONS,
             'id':ALL,
-            'print_name':ALL,
-            'staff':ALL_WITH_RELATIONS
+            'name':ALL
         }
-        
-class FieldSetResource(ExtResource):
-    
-    class Meta:
-        queryset = FieldSet.objects.all().order_by('order')
-        resource_name = 'examfieldset'
-        default_format = 'application/json'
-        authorization = DjangoAuthorization()
-        filtering = {
-            'name':ALL,
-            'order':ALL
-        }
-        
-class SubSectionResource(ExtResource):
-    section = fields.ForeignKey(FieldSetResource,'section')
-    
-    def dehydrate(self, bundle):
-        obj = bundle.obj
-        bundle.data['section_name'] = obj.section.name
-        return bundle
-    
-    class Meta:
-        queryset = SubSection.objects.all().order_by('section')
-        resource_name = 'examsubsection'
-        default_format = 'application/json'
-        authorization = DjangoAuthorization()
-        filtering = {
-            'section':ALL_WITH_RELATIONS,
-            'order':ALL
-        }
-        
 class RegExamCardResource(ExtResource):
     ordered_service = fields.ForeignKey(OrderedServiceResource, 'ordered_service', null=True)
     

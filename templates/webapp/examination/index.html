@@ -18,29 +18,7 @@
 	<link rel="stylesheet" type="text/css" href="{{ STATIC_URL }}extjs/ux/css/Spinner.css" rel="stylesheet" />
 	<link rel="stylesheet" type="text/css" href="{{ STATIC_URL }}extjs/ux/css/RowEditor.css" rel="stylesheet" />
 	
-	 <!-- GIF -->
-    <link rel="stylesheet" type="text/css" href="{{ STATIC_URL }}app/calendar/resources/images/default/bg.gif"/>
-    <link rel="stylesheet" type="text/css" href="{{ STATIC_URL }}app/calendar/resources/images/default/page-prev.gif"/>
-    <link rel="stylesheet" type="text/css" href="{{ STATIC_URL }}app/calendar/resources/images/default/arrow.gif"/>
-    <link rel="stylesheet" type="text/css" href="{{ STATIC_URL }}app/calendar/resources/images/default/page-next.gif"/>
-    
-	<style type="text/css" media="all">
-	    .ext-cal-dayview .ext-cal-body-ct .ext-cal-bg-tbl {
-		    height: 504px;
-		}
-		
-		.ext-cal-day-col-gutter {
-		    height: 504px;
-		}
-
-    	.x-tree-node-anchor {
-    		white-space: normal;
-    	}
-    	
-    	.ext-cal-hd-ad-inner {
-			height:50px;
-		}
-		
+	<style>
     	body, button, input, select, textarea { 
     		font-family: Arial,Helvetica,Helvetica Neue,Verdana,sans-serif; 
     		color: #222;
@@ -69,10 +47,6 @@
     		background-color: #FFF9A8;
     	}
     	
-    	.placeholder .section.not-printable {
-    		border:1px dotted gray;
-    	}
-    	
     	.placeholder .section:hover {
     		border:1px dashed #879DFF;
     	}
@@ -88,15 +62,9 @@
     		font-size:10pt;
     	}
     	
-    	.placeholder .content.empty-body {
+    	.placeholder .content.empty {
     		color:#CCC;
     		font-size:8pt;
-    		font-style: italic;
-    	}
-    	
-    	.placeholder .title.empty-header {
-    		color:#CCC;
-    		font-size:14pt;
     		font-style: italic;
     	}
     	
@@ -106,10 +74,6 @@
 
     	.header-editor {
     		height:20pt;
-    	}
-    	
-    	.help-node {
-    		font-style: italic;
     	}
     </style>
 
@@ -258,6 +222,33 @@
     <script type="text/javascript" src="{{ MEDIA_URL }}app/examination/MainPanel.js"></script>
     <script type="text/javascript" src="{{ MEDIA_URL }}app/examination/app.js"></script>
     
+    <!-- Editor app -->>
+    <script type="text/javascript" src="{{ MEDIA_URL }}app/registry/ServicePanel.js"></script>
+    <script type="text/javascript" src="{{ MEDIA_URL }}app/examination/editor/TemplateBody.js"></script>
+    <script type="text/javascript" src="{{ MEDIA_URL }}app/examination/editor/StartPanel.js"></script>
+    <script type="text/javascript" src="{{ MEDIA_URL }}app/examination/editor/Editor.js"></script>
+    <script type="text/javascript" src="{{ MEDIA_URL }}app/examination/editor/card.js"></script>
+    
+    <script type="text/javascript" src="{{ MEDIA_URL }}app/examination/templates/CardTemplateWindow.js"></script>
+    <script type="text/javascript" src="{{ MEDIA_URL }}app/examination/templates/CardTemplateForm.js"></script>
+    <script type="text/javascript" src="{{ MEDIA_URL }}app/examination/templates/TemplateGrid.js"></script>
+    <script type="text/javascript" src="{{ MEDIA_URL }}app/examination/templates/TemplateGlobalGrid.js"></script>
+    <script type="text/javascript" src="{{ MEDIA_URL }}app/examination/templates/TemplateBackend.js"></script>
+    <script type="text/javascript" src="{{ MEDIA_URL }}app/examination/templates/TemplatesWindow.js"></script>
+    <script type="text/javascript" src="{{ MEDIA_URL }}app/examination/templates/GroupGrid.js"></script>
+    
+    <script type="text/javascript" src="{{ MEDIA_URL }}app/examination/cards/Viewer.js"></script>
+    <script type="text/javascript" src="{{ MEDIA_URL }}app/examination/cards/EpicrisisWindow.js"></script>
+    <script type="text/javascript" src="{{ MEDIA_URL }}app/examination/cards/PromptWindow.js"></script>
+    <script type="text/javascript" src="{{ MEDIA_URL }}app/examination/cards/ExamCardWindow.js"></script>
+    <script type="text/javascript" src="{{ MEDIA_URL }}app/examination/cards/CardsWindow.js"></script>
+    <script type="text/javascript" src="{{ MEDIA_URL }}app/examination/cards/ExamCardForm.js"></script>
+    <script type="text/javascript" src="{{ MEDIA_URL }}app/examination/cards/ExamCardGrid.js"></script>
+    <script type="text/javascript" src="{{ MEDIA_URL }}app/examination/cards/ExamBackend.js"></script>
+    <script type="text/javascript" src="{{ MEDIA_URL }}app/examination/cards/AllExamGrid.js"></script>
+    
+    <script type="text/javascript" src="{{ MEDIA_URL }}app/dict/mkb/MKBTree.js"></script>
+    <script type="text/javascript" src="{{ MEDIA_URL }}app/dict/mkb/MKBWindow.js"></script>
 
 {% include "webapp/includes/active_profile.html" %}
 
