@@ -190,6 +190,20 @@ class Glossary(MPTTModel):
         verbose_name = u'Глоссарий'
         verbose_name_plural = u'Глоссарий'
         ordering = ('-id',)
+        
+class FieldSet(models.Model):
+    name = models.TextField(u'Наименование')
+    order = models.IntegerField(u'Порядок')
+    title = models.TextField(u'Заголовок')
+    
+    def __unicode__(self):
+        return self.name
+    
+    class Meta:
+        verbose_name = u'Набор полей'
+        verbose_name_plural = u'Наборы полей'
+        ordering = ('-id',)
+    
 
 class DICOM(models.Model):
     """
