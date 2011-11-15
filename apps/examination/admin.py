@@ -4,7 +4,7 @@ from django.contrib import admin
 
 from models import *
 from django import forms
-from examination.models import CardTemplate, ExaminationCard
+from examination.models import CardTemplate, ExaminationCard, FieldSet
 
 class DICOMAdmin(admin.TabularInline):
     """
@@ -43,5 +43,6 @@ class CardTemplateAdmin(admin.ModelAdmin):
 
 
 admin.site.register(Equipment)
+admin.site.register(FieldSet)
 admin.site.register(ExaminationCard, ExaminationCardAdmin)
 admin.site.register(CardTemplate, CardTemplateAdmin)

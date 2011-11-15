@@ -28,7 +28,7 @@ from scheduler.models import Calendar, Event, Preorder
 from billing.models import Account, Payment, ClientAccount
 from interlayer.models import ClientItem
 from django.contrib.contenttypes.models import ContentType
-from examination.models import TemplateGroup, DICOM, Card, Template
+from examination.models import TemplateGroup, DICOM, Card, Template, FieldSet
 from tastypie.cache import SimpleCache
 from django.contrib.auth.models import User
 from examination.models import Equipment as ExamEquipment
@@ -1256,6 +1256,19 @@ class TemplateResource(ExtResource):
             'id':ALL,
             'name':ALL
         }
+        
+class FieldSetResource(ExtResource):
+    
+    class Meta:
+        queryset = FieldSet.objects.all().order_by('order')
+        resource_name = 'examfieldset'
+        default_format = 'application/json'
+        authorization = DjangoAuthorization()
+        filtering = {
+            'name':ALL_WITH_RELATIONS,
+            'order':ALL
+        }
+        
 class RegExamCardResource(ExtResource):
     ordered_service = fields.ForeignKey(OrderedServiceResource, 'ordered_service', null=True)
     
@@ -1676,6 +1689,7 @@ api.register(CardTemplateResource())
 api.register(ExaminationCardResource())
 api.register(ExamEquipmentResource())
 api.register(DicomResource())
+api.register(FieldSetResource())
 
 #helpdesk
 api.register(IssueTypeResource())
