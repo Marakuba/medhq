@@ -39,12 +39,12 @@ class RemoteState(models.Model):
     domain_url = models.URLField(u'URL', verify_exists=False)
     
     class Meta:
-        verbose_name = u'объект синхронизации'
-        verbose_name_plural = u'объекты синхронизации'
+        verbose_name = u'внешняя лаборатория'
+        verbose_name_plural = u'внешние лаборатории'
         ordering = ('-created',)
 
     def __unicode__(self):
-        return smart_unicode("<<SyncObject>>")
+        return smart_unicode("<<RemoteLab>>")
     
 
 TRANSACTION_TYPES = (

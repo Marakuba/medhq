@@ -108,6 +108,7 @@ INSTALLED_APPS = [
     'reporting',
     'service',
     'promotion',
+    'remoting',
     'staff',
     'state',
     'pricelist',
