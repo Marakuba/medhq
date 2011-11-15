@@ -31,8 +31,13 @@ App.cards.Spermogram = Ext.extend(App.cards.BaseCard,{
 		    groupField:'group'
 		});
 		
+		this.commentField = new Ext.form.TextArea({
+			anchor:'100% 100%',
+		});
+		
 		this.grid = new Ext.grid.EditorGridPanel({
 			clicksToEdit:1,
+			flex:1,
 			loadMask : {
 				msg : 'Подождите, идет загрузка...'
 			},
@@ -77,12 +82,36 @@ App.cards.Spermogram = Ext.extend(App.cards.BaseCard,{
 		
 		config = {
 			title:'Спермограмма',
-			layout:'fit',
-			items:[this.grid]
+			layout:{
+				type:'vbox',
+				align:'stretch'
+			},
+			items:[this.grid,{
+				layout:'form',
+				height:100,
+				hideLabels:true,
+				border:false,
+				padding:5,
+				title:'Комментарий',
+				items:[this.commentField]
+			}]
 		}
 		Ext.apply(this, Ext.apply(this.initialConfig, config));
 		App.cards.Spermogram.superclass.initComponent.apply(this, arguments);
-		
+		this.on('laborderload', this.onLabOrderLoad, this);
+	},
+	
+	onLabOrderLoad : function(){
+		if(this.labOrderRecord){
+			this.commentField.setValue(this.labOrderRecord.get('comment'));
+		}
+	},
+	
+	onSave : function(){
+		if(this.labOrderRecord) {
+			this.labOrderRecord.set('comment', this.commentField.getValue());
+		}
+		App.cards.Spermogram.superclass.onSave.call(this, arguments);
 	},
 	
 	processRow : function(rec, vals){
