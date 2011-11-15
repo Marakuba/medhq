@@ -40,6 +40,64 @@
     	.ext-cal-hd-ad-inner {
 			height:50px;
 		}
+		
+    	body, button, input, select, textarea { 
+    		font-family: Arial,Helvetica,Helvetica Neue,Verdana,sans-serif; 
+    		color: #222;
+    		background-color: #DDD; 
+    	}
+    	
+    	#ct {
+    	}
+    	
+    	.placeholder {
+    		background-color: white;
+    		padding:10px;
+    		width:900px;
+    		margin:20px auto;
+    		box-shadow:2px 2px 2px #AAA;
+    		-moz-user-select: none;
+    		cursor: default;
+    	}
+    	
+    	.placeholder .section {
+    		border:1px solid white;
+    		padding:5px;
+    	}
+    	
+    	.placeholder .section.private {
+    		background-color: #FFF9A8;
+    	}
+    	
+    	.placeholder .section:hover {
+    		border:1px dashed #879DFF;
+    	}
+    	
+    	.placeholder .title span, .header-editor {
+    		font-weight:bold;
+    		font-size:18pt;
+    	}
+    	
+    	.placeholder .content {
+    		margin:10px 0;
+    		min-height: 60px;
+    		font-size:10pt;
+    	}
+    	
+    	.placeholder .content.empty {
+    		color:#CCC;
+    		font-size:8pt;
+    		font-style: italic;
+    	}
+    	
+    	.text-editor {
+    		font-size:10pt;
+    	}
+
+    	.header-editor {
+    		height:20pt;
+    	}
+>>>>>>> EXCARD:в конструкторе добавляются вкладки и тикеты
     </style>
 
 	<script type="text/javascript">
@@ -146,7 +204,9 @@
     <!-- Editor app -->
     <script type="text/javascript" src="{{ MEDIA_URL }}app/registry/ServicePanel.js"></script>
     <script type="text/javascript" src="{{ MEDIA_URL }}app/examination/editor/TemplateBody.js"></script>
+    <script type="text/javascript" src="{{ MEDIA_URL }}app/examination/editor/StartPanel.js"></script>
     <script type="text/javascript" src="{{ MEDIA_URL }}app/examination/editor/Editor.js"></script>
+    <script type="text/javascript" src="{{ MEDIA_URL }}app/examination/editor/card.js"></script>
     
     <script type="text/javascript" src="{{ STATIC_URL }}app/examination/cards/Viewer.js"></script>
     <script type="text/javascript" src="{{ STATIC_URL }}app/examination/cards/EpicrisisWindow.js"></script>

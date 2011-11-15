@@ -5,12 +5,19 @@ from core.models import make_operator_object
 import datetime
 from django.core.exceptions import ObjectDoesNotExist
 from visit.models import OrderedService
-from staff.models import Position
+from staff.models import Position, Staff
 from service.models import ICD10, BaseService
 from django.conf import settings
 from mptt.models import MPTTModel
 
 import Image
+
+SECTIONS = (
+    (u'anamnesis',u'УЗИ'),
+    (u'к',u'Консультация'),
+    (u'п',u'Процедурный кабинет'),
+    (u'д',u'Другое'),
+)
 
 class Equipment(models.Model):
     """
@@ -138,11 +145,42 @@ class ExaminationDetail(models.Model):
         verbose_name = u'Дополнительная информация карты осмотра'
         verbose_name_plural = u'Дополнительная информация карты осмотра'
         ordering = ('-id',)
+        
+class Card(models.Model):
+    name = models.TextField(u'Рабочее наименование', null=True, blank=True)
+    print_name = models.TextField(u'Заголовок для печати', null=True, blank=True)
+    created = models.DateTimeField(u'Дата создания', auto_now_add=True)
+    modified = models.DateTimeField(auto_now=True)
+    print_date = models.DateTimeField(u'Время печати', blank=True, null=True)
+    ordered_service = models.ForeignKey(OrderedService,blank=True, null=True)
+    assistant = models.ForeignKey(Position, verbose_name=u'Лаборант', null=True, blank=True)
+    data = models.TextField(u'Данные', null=True, blank=True)
+    
+    def __unicode__(self):
+        return "%s - %s - %s" % (self.created.strftime("%d/%m/%Y"),self.name or self.print_name,self.ordered_service.order.patient.short_name())
+    
+    class Meta:
+        verbose_name = u'Карта осмотра'
+        verbose_name_plural = u'Карты осмотра'
+        ordering = ('-id',)
+        
+class Template(models.Model):
+    name = models.TextField(u'Рабочее наименование', null=True, blank=True)
+    print_name = models.TextField(u'Заголовок для печати', null=True, blank=True)
+    created = models.DateTimeField(u'Дата создания', auto_now_add=True)
+    modified = models.DateTimeField(auto_now=True)
+    print_date = models.DateTimeField(u'Время печати', blank=True, null=True)
+    base_service = models.ForeignKey(BaseService)
+    staff = models.ForeignKey(Staff)
+    data = models.TextField(u'Данные', null=True, blank=True)
+    
     
 class Glossary(MPTTModel):
     parent = models.ForeignKey('self', null=True, blank=True)
     base_service = models.ForeignKey(BaseService, null=True, blank=True)
-    staff = models.ForeignKey(Position, null=True, blank=True)
+    template = models.ForeignKey(Template, null=True, blank=True)
+    staff = models.ForeignKey(Staff, null=True, blank=True)
+    section = models.TextField(u'Раздел', null=True, blank=True)
     text = models.TextField(u'Текст', null=True, blank=True)
     
     def __unicode__(self):
