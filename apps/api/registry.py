@@ -28,7 +28,7 @@ from scheduler.models import Calendar, Event, Preorder
 from billing.models import Account, Payment, ClientAccount
 from interlayer.models import ClientItem
 from django.contrib.contenttypes.models import ContentType
-from examination.models import TemplateGroup, DICOM
+from examination.models import TemplateGroup, DICOM, Card, Template
 from tastypie.cache import SimpleCache
 from django.contrib.auth.models import User
 from examination.models import Equipment as ExamEquipment
@@ -1218,7 +1218,44 @@ class ExaminationCardResource(ExtResource):
             'name':ALL
         }
         #limit = 1000
+        
+class CardResource(ExtResource):
+    
+    ordered_service = fields.ForeignKey(OrderedServiceResource, 'ordered_service', null=True)
+    assistant = fields.ForeignKey(PositionResource, 'assistant', null = True)
 
+    def dehydrate(self, bundle):
+        obj = bundle.obj
+        bundle.data['view'] = obj.__unicode__()
+        bundle.data['staff_id'] = obj.ordered_service.staff.id
+        return bundle
+    
+    class Meta:
+        queryset = Card.objects.all()
+        resource_name = 'card'
+        default_format = 'application/json'
+        authorization = DjangoAuthorization()
+        filtering = {
+            'ordered_service':ALL_WITH_RELATIONS,
+            'id':ALL,
+            'name':ALL
+        }
+        
+class TemplateResource(ExtResource):
+    
+    base_service = fields.ForeignKey(BaseServiceResource, 'base_service',null=True)
+    staff = fields.ForeignKey(StaffResource, 'staff', null=True)
+    
+    class Meta:
+        queryset = Template.objects.all()
+        resource_name = 'template'
+        default_format = 'application/json'
+        authorization = DjangoAuthorization()
+        filtering = {
+            'base_service':ALL_WITH_RELATIONS,
+            'id':ALL,
+            'name':ALL
+        }
 class RegExamCardResource(ExtResource):
     ordered_service = fields.ForeignKey(OrderedServiceResource, 'ordered_service', null=True)
     
