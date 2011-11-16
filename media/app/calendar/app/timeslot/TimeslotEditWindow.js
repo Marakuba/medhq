@@ -81,7 +81,13 @@ Ext.calendar.TimeslotEditWindow = Ext.extend(Ext.Window, {
 			anchor:'98%',
         	store:this.serviceStore,
         	queryParam:'base_service__name__icontains',
-		    displayField: 'service_name'
+		    displayField: 'service_name',
+		    listeners:{
+		    	'select':function(combo,record,index){
+		    		this.service = record;
+		    	},
+		    	scope:this
+		    }
 		});
 		
 		this.patientCombo = new Ext.form.LazyComboBox({
@@ -606,19 +612,18 @@ Ext.calendar.TimeslotEditWindow = Ext.extend(Ext.Window, {
         var f = this.formPanel.form,
         //dates = Ext.getCmp('date-range').getValue(),
         M = Ext.calendar.EventMappings;
-
-        f.updateRecord(this.activeRecord);
-        this.activeRecord.set(M.StartDate.name, this.formPanel.form.findField('StartDate').getValue());
-        this.activeRecord.set(M.EndDate.name, this.formPanel.form.findField('EndDate').getValue());
-        //this.activeRecord.set(M.IsAllDay.name, dates[2]);
-        this.activeRecord.set(M.CalendarId.name, this.formPanel.form.findField('calendar').getValue());
-        if (this.staffStore) {
-        	this.activeRecord.set(M.StaffId.name, this.formPanel.form.findField('staff').getValue());
-        };
-//        this.activeRecord.set(M.vacant.name, this.formPanel.form.findField('Title')=='');
+//        f.updateRecord(this.activeRecord);
+//        this.activeRecord.set(M.StartDate.name, this.formPanel.form.findField('StartDate').getValue());
+//        this.activeRecord.set(M.EndDate.name, this.formPanel.form.findField('EndDate').getValue());
+//        //this.activeRecord.set(M.IsAllDay.name, dates[2]);
+//        this.activeRecord.set(M.CalendarId.name, this.formPanel.form.findField('calendar').getValue());
+//        if (this.staffStore) {
+//        	this.activeRecord.set(M.StaffId.name, this.formPanel.form.findField('staff').getValue());
+//        };
+////        this.activeRecord.set(M.vacant.name, this.formPanel.form.findField('Title')=='');
         var vacant = this.formPanel.form.findField('vacant').getValue();
         this.activeRecord.set('Vacant',vacant=='true'?true:false)
-        this.activeRecord.set(M.Timeslot.name, true);
+//        this.activeRecord.set(M.Timeslot.name, true);
         
         var uri = this.activeRecord.data[M.ResourceURI.name];
         //Если мы выбрали пациента
@@ -682,9 +687,15 @@ Ext.calendar.TimeslotEditWindow = Ext.extend(Ext.Window, {
 
     // private
     onSave: function() {
-        if (!this.patient) {
-        	Ext.Msg.alert('Предупреждение!','Пациент не выбран! Проверьте правильность ввода')
+        if (!this.patient || !(this.patient.data.resource_uri == this.patientCombo.getValue())) {
+        	Ext.Msg.alert('Предупреждение!','Пациент не выбран или введён некорректно!')
             return false;
+        } else {
+        	var serv = this.serviceCombo.getValue(); 
+	        if (serv && !this.service){
+	        	Ext.Msg.alert('Предупреждение!','Выбрана некорректная услуга!')
+	            return false;
+	        };
         };
 		//console.log('Dirty ',this.formPanel.form.isDirty());   
 		
@@ -837,6 +848,7 @@ Ext.calendar.TimeslotEditWindow = Ext.extend(Ext.Window, {
        		store:this.serviceStore,
        		fn:function(record){
        			this.serviceCombo.forceValue(record.data.resource_uri)
+       			this.service = this.service;
 				serviceWindow.close();
 			}
        	 });
