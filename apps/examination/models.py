@@ -192,18 +192,29 @@ class Glossary(MPTTModel):
         ordering = ('-id',)
         
 class FieldSet(models.Model):
-    name = models.TextField(u'Наименование')
+    name = models.TextField(u'Имя')
     order = models.IntegerField(u'Порядок')
     title = models.TextField(u'Заголовок')
     
     def __unicode__(self):
-        return self.name
+        return self.title
     
     class Meta:
         verbose_name = u'Набор полей'
         verbose_name_plural = u'Наборы полей'
-        ordering = ('-id',)
+        ordering = ('id',)
+        
+class SubSection(models.Model):
+    section = models.ForeignKey(FieldSet)
+    title = models.TextField(u'Заголовок')
     
+    def __unicode__(self):
+        return self.title
+    
+    class Meta:
+        verbose_name = u'Подраздел'
+        verbose_name_plural = u'Подразделы'
+        ordering = ('-id',)
 
 class DICOM(models.Model):
     """
