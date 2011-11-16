@@ -11,8 +11,8 @@
 Ext.ns('Ext.calendar');
 Ext.calendar.DoctorScheduler = Ext.extend(Ext.Panel, {
     initComponent: function(){
-    	this.startHour = 8; //эти настройки отвечают за количество часов, отображаемых
-    	this.endHour = 20;//в дне или неделе. Обрабатывается в файле DayBodyTemplate и DayBodyView
+    	this.startHour = App.settings.startHour; //эти настройки отвечают за количество часов, отображаемых
+    	this.endHour = App.settings.endHour;//в дне или неделе. Обрабатывается в файле DayBodyTemplate и DayBodyView
     	
         this.calendarStore = new Ext.data.JsonStore({
             storeId: 'calendarStore',

@@ -28,3 +28,10 @@ def make_analysis(obj, analysises):
             new_analysis.input_mask = new_input_mask
         new_analysis.save()
         print u"Добавлен анализ:", new_analysis
+
+
+def revert_tree_objects(obj):
+    children = obj.get_children()
+    for child in children:
+        child.move_to(obj, position='first-child')
+        revert_tree_objects(child)

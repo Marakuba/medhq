@@ -169,7 +169,9 @@ DBTEMPLATES_USE_CODEMIRROR = True
 
 CONSTANCE_CONFIG = {
     'BRAND': (u'', 'company brand'),
-    'PRICE_BY_PAYMENT_TYPE':(False,'Индивидуальные цены по каждому способу оплаты')
+    'PRICE_BY_PAYMENT_TYPE':(False,'Индивидуальные цены по каждому способу оплаты'),
+    'START_HOUR':(8,u'Начало работы'),
+    'END_HOUR':(20,u'Окончание работы'),
 }
 
 MAIN_STATE_ID = 1 
