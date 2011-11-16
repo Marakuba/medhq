@@ -80,6 +80,7 @@ Ext.calendar.TimeslotEditWindow = Ext.extend(Ext.Window, {
         	disabled:true,
 			anchor:'98%',
         	store:this.serviceStore,
+        	queryParam:'base_service__name__icontains',
 		    displayField: 'service_name'
 		});
 		
@@ -456,7 +457,7 @@ Ext.calendar.TimeslotEditWindow = Ext.extend(Ext.Window, {
         	var serviceGrid = new App.calendar.serviceGrid({
         		scope:this,
         		fn:function(record){
-        			this.serviceCombo.setValue(record.data.resource_uri)
+        			this.serviceCombo.forceValue(record.data.resource_uri)
 					serviceWindow.close();
 				}
        	 	});
@@ -835,7 +836,7 @@ Ext.calendar.TimeslotEditWindow = Ext.extend(Ext.Window, {
        		scope:this,
        		store:this.serviceStore,
        		fn:function(record){
-       			this.serviceCombo.setValue(record.data.resource_uri)
+       			this.serviceCombo.forceValue(record.data.resource_uri)
 				serviceWindow.close();
 			}
        	 });
