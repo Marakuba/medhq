@@ -214,7 +214,7 @@ class SubSection(models.Model):
     class Meta:
         verbose_name = u'Подраздел'
         verbose_name_plural = u'Подразделы'
-        ordering = ('-id',)
+        ordering = ('title',)
 
 class DICOM(models.Model):
     """

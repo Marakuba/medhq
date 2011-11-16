@@ -45,6 +45,12 @@ App.examination.TemplateBody = Ext.extend(Ext.TabPanel, {
 			scope:this
 		});
 		
+		this.emptySubSec = {
+			text:'Произвольный',
+			handler:this.onAddSubSection.createDelegate(this,['Заголовок']),
+			scope:this
+		};
+		
 		Ext.Ajax.request({
 			url:App.getApiUrl('examsubsection'),
 			success:function(response, opts){
@@ -57,6 +63,10 @@ App.examination.TemplateBody = Ext.extend(Ext.TabPanel, {
 					};
 					this.subSecBtns[rec.section_name].push(item);
 				},this);
+				
+				for (rec in this.subSecBtns) {
+					this.subSecBtns[rec].push(this.emptySubSec);
+				}
 			},
 			scope:this
 		});
@@ -83,7 +93,9 @@ App.examination.TemplateBody = Ext.extend(Ext.TabPanel, {
 			tbar:this.ttb
 		},
 		this.on('tabchange',function(panel,tab){
-			this.fillSubSecMenu(tab.btn);
+			if (tab){
+				this.fillSubSecMenu(tab.btn);
+			};
 		},this);
 
 		Ext.apply(this, Ext.apply(this.initialConfig, config));
