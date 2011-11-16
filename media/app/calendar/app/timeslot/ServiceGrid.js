@@ -44,6 +44,11 @@ App.calendar.ServiceChoiceGrid = Ext.extend(Ext.grid.GridPanel, {
 			scope:this
 		});
 		
+		this.searchField = new Ext.ux.form.SearchField({
+            store: this.store ? this.store : this.serveceStore,
+            paramName:'base_service__name__icontains'
+        });
+		
 		var config = {
 			loadMask : {
 				msg : 'Подождите, идет загрузка...'
@@ -63,7 +68,7 @@ App.calendar.ServiceChoiceGrid = Ext.extend(Ext.grid.GridPanel, {
                     scope:this
                 }
 			}),
-			tbar:[this.choiceButton],
+			tbar:[this.choiceButton,this.searchField],
 	        bbar: new Ext.PagingToolbar({
 	            pageSize: 20,
 	            store: this.store ? this.store : this.serveceStore,
