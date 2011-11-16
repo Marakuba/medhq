@@ -1199,6 +1199,7 @@ class ExaminationCardResource(ExtResource):
     
     def dehydrate(self, bundle):
         obj = bundle.obj
+        bundle.data['name'] = obj.print_name or obj.ordered_service.service
         bundle.data['view'] = obj.__unicode__()
         bundle.data['staff_id'] = obj.ordered_service.staff.id
         return bundle

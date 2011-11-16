@@ -60,7 +60,7 @@ App.ExamCardGrid = Ext.extend(Ext.grid.GridPanel, {
 		    	dataIndex: 'name' 
 		    },{
 		    	header: "Дата создания", 
-		    	width:70,
+		    	width:30,
 		    	sortable: true, 
 		    	dataIndex: 'created' ,
 		    	renderer:function(val, meta, record) {
@@ -69,7 +69,7 @@ App.ExamCardGrid = Ext.extend(Ext.grid.GridPanel, {
 		    	}
 		    },{
 		    	header: "Дата изменения", 
-		    	width:70,
+		    	width:30,
 		    	sortable: true, 
 		    	dataIndex: 'modified',
 		    	renderer:function(val, meta, record) {
