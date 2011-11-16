@@ -28,7 +28,8 @@ from scheduler.models import Calendar, Event, Preorder
 from billing.models import Account, Payment, ClientAccount
 from interlayer.models import ClientItem
 from django.contrib.contenttypes.models import ContentType
-from examination.models import TemplateGroup, DICOM, Card, Template, FieldSet
+from examination.models import TemplateGroup, DICOM, Card, Template, FieldSet,\
+    SubSection
 from tastypie.cache import SimpleCache
 from django.contrib.auth.models import User
 from examination.models import Equipment as ExamEquipment
@@ -1265,7 +1266,25 @@ class FieldSetResource(ExtResource):
         default_format = 'application/json'
         authorization = DjangoAuthorization()
         filtering = {
-            'name':ALL_WITH_RELATIONS,
+            'name':ALL,
+            'order':ALL
+        }
+        
+class SubSectionResource(ExtResource):
+    section = fields.ForeignKey(FieldSetResource,'section')
+    
+    def dehydrate(self, bundle):
+        obj = bundle.obj
+        bundle.data['section_name'] = obj.section.name
+        return bundle
+    
+    class Meta:
+        queryset = SubSection.objects.all().order_by('section')
+        resource_name = 'examsubsection'
+        default_format = 'application/json'
+        authorization = DjangoAuthorization()
+        filtering = {
+            'section':ALL_WITH_RELATIONS,
             'order':ALL
         }
         
@@ -1690,6 +1709,7 @@ api.register(ExaminationCardResource())
 api.register(ExamEquipmentResource())
 api.register(DicomResource())
 api.register(FieldSetResource())
+api.register(SubSectionResource())
 
 #helpdesk
 api.register(IssueTypeResource())
