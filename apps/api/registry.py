@@ -1193,6 +1193,8 @@ class CardTemplateResource(ExtResource):
         limit = 25
         
 class ExaminationCardResource(ExtResource):
+    
+    assistant = fields.ForeignKey(PositionResource, 'assistant', null=True)
     ordered_service = fields.ForeignKey(OrderedServiceResource, 'ordered_service', null=True)
     mbk_diag = fields.ForeignKey(ICD10Resource, 'mbk_diag', null=True)
     equipment = fields.ForeignKey(ExamEquipmentResource, 'equipment', null=True)
@@ -1200,6 +1202,7 @@ class ExaminationCardResource(ExtResource):
     def dehydrate(self, bundle):
         obj = bundle.obj
         bundle.data['name'] = obj.print_name or obj.ordered_service.service
+        bundle.data['assistant_name'] = obj.assistant and obj.assistant or u''
         bundle.data['view'] = obj.__unicode__()
         bundle.data['staff_id'] = obj.ordered_service.staff.id
         return bundle

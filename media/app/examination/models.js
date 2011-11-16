@@ -90,7 +90,9 @@ App.models.examModel = new Ext.data.Record.create([
 	{name: 'thickness', allowBlank: true},
 	{name: 'width', allowBlank: true},
 	{name: 'contrast_enhancement', allowBlank: true},
-	{name: 'comment'}
+	{name: 'comment'},
+	{name: 'assistant'},
+	{name: 'assistant_name'}
 ]);
 
 App.models.Dicom = new Ext.data.Record.create([
