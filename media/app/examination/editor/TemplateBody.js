@@ -6,11 +6,15 @@ App.examination.TemplateBody = Ext.extend(Ext.TabPanel, {
 	initComponent: function(){
 		
 		this.menuBtns = {};
+		this.subSecBtns = {}
 		
 		this.sectionMenu = new Ext.menu.Menu({
 			items:[]
 		});
 		
+		this.subSectionMenu = new Ext.menu.Menu({
+			items:[]
+		});
 		
 		this.newTab = Ext.extend(Ext.Panel,{
 			title:'Новый раздел',
@@ -32,6 +36,7 @@ App.examination.TemplateBody = Ext.extend(Ext.TabPanel, {
 						scope:this
 					};
 					this.sectionMenu.insert(rec.order,this.menuBtns[rec.name])
+					this.subSecBtns[rec.name] = []
 				},this);
 			},
 			failure:function(response, opts){
@@ -40,7 +45,23 @@ App.examination.TemplateBody = Ext.extend(Ext.TabPanel, {
 			scope:this
 		});
 		
-		this.addSecBtn = new Ext.SplitButton({
+		Ext.Ajax.request({
+			url:App.getApiUrl('examsubsection'),
+			success:function(response, opts){
+				var obj = Ext.decode(response.responseText);
+				Ext.each(obj.objects,function(rec){
+					var item = {
+						text:rec.title,
+						handler:this.onAddSubSection.createDelegate(this,[rec.title]),
+						scope:this
+					};
+					this.subSecBtns[rec.section_name].push(item);
+				},this);
+			},
+			scope:this
+		});
+		
+		this.addSecBtn = new Ext.Button({
 			text:'Добавить раздел',
 			menu:this.sectionMenu,
 			scope:this
@@ -49,8 +70,8 @@ App.examination.TemplateBody = Ext.extend(Ext.TabPanel, {
 		this.addSubSecBtn = new Ext.Button({
 			iconCls:'silk-add',
 			text:'Добавить подраздел',
-			disabled:true,
-			handler:this.onAddSubsection.createDelegate(this, [])
+			menu:this.subSectionMenu,
+			disabled:true
 		});
 		
 		this.ttb = [this.addSecBtn, this.addSubSecBtn]
@@ -60,7 +81,11 @@ App.examination.TemplateBody = Ext.extend(Ext.TabPanel, {
 			margins:'5 0 5 5',
 			items:[],
 			tbar:this.ttb
-		}
+		},
+		this.on('tabchange',function(panel,tab){
+			this.fillSubSecMenu(tab.btn);
+		},this);
+
 		Ext.apply(this, Ext.apply(this.initialConfig, config));
 		App.examination.TemplateBody.superclass.initComponent.apply(this, arguments);
 	},
@@ -70,7 +95,6 @@ App.examination.TemplateBody = Ext.extend(Ext.TabPanel, {
 			title:title,
 			btn:btn,
 			order:order,
-			btn:btn,
 			listeners:{
 				'close': function(p){
 					this.sectionMenu.insert(p.order,this.menuBtns[p.btn]);
@@ -88,12 +112,21 @@ App.examination.TemplateBody = Ext.extend(Ext.TabPanel, {
 		};
 		this.addSubSecBtn.enable();
 		this.setActiveTab(new_tab);
+//		this.fillSubSecMenu(btn);
 		this.doLayout();
 	},
 	
-	onAddSubsection: function(){
+	fillSubSecMenu : function(section) {
+		this.subSectionMenu.removeAll(true);
+		Ext.each(this.subSecBtns[section],function(btn){
+			this.subSectionMenu.add(btn);
+		},this)
+	},
+	
+	onAddSubSection: function(title){
 		var cur_tab = this.getActiveTab();
 		var new_ticket = new Ext.ux.form.Ticket();
+		new_ticket.title = title;
 		cur_tab.add(new_ticket);
 		this.doLayout();
 	}
