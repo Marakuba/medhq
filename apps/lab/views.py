@@ -156,6 +156,11 @@ def print_manuals(request, object_id):
     }
     
     results = Result.objects.filter(order__visit=os.order, analysis__service=os.service)
+    
+    if len(results):
+        lab_order = results[0].order
+        mc['laborder'] = lab_order
+        
     if cfg['mode']=='group':
         manual_result_list = []
         cur_group = None

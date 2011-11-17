@@ -12,6 +12,10 @@ App.auth.Form = Ext.extend(Ext.form.FormPanel, {
 				xtype: 'textfield'
 			},
 			items:[{
+				xtype:'hidden',
+				name:'next',
+				value:next
+			},{
 				fieldLabel:'Логин',
 				name:'username',
 				listeners: {

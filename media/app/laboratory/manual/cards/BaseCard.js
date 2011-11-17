@@ -39,6 +39,14 @@ App.cards.BaseCard = Ext.extend(Ext.Window,{
 
 	
 	initComponent : function(){
+		
+		this.labOrderStore = new Ext.data.RESTStore({
+			autoSave : true,
+			autoLoad : false,
+			apiUrl : get_api_url('laborder'),
+			model: App.models.LabOrder
+		});
+		
 		this.proxy = new Ext.data.HttpProxy({
 		    url: get_api_url('result')
 		});
@@ -131,6 +139,21 @@ App.cards.BaseCard = Ext.extend(Ext.Window,{
 		var Result = gs.recordType;
 		gs.removeAll();
 		
+		if(r.length) {
+			var orderId = App.uriToId(r[0].data.order);
+			this.labOrderStore.load({
+				params:{
+					id:orderId
+				},
+				callback:function(r, opts, success){
+					if(r.length){
+						this.labOrderRecord = r[0];
+						this.fireEvent('laborderload',this.labOrderRecord);
+					}
+				},
+				scope:this
+			})
+		}
 		
 		/*
 		 * Обработка колоночного режима

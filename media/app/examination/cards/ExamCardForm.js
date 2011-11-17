@@ -111,6 +111,26 @@ App.examination.ExamCardForm = Ext.extend(Ext.form.FormPanel, {
 			selectOnFocus:true
 		});
 		
+		this.assistant = new Ext.form.LazyClearableComboBox({
+			fieldLabel:'Лаборант',
+			name:'assistant',
+			anchor:'50%',
+			valueField:'resource_uri',
+			queryParam : 'staff__last_name__istartswith',
+			store:new Ext.data.RESTStore({
+				autoLoad : true,
+				apiUrl : get_api_url('position'),
+				model: ['id','name','resource_uri']
+			}),
+		    minChars:2,
+		    emptyText:'Выберите врача...',
+		    listeners:{
+		    	select: function(combo, rec,i) {
+		    	},
+		    	scope:this
+		    }
+		});
+		
 		this.examComboBox = new Ext.form.ComboBox({
 			id:'exam-combo',
 			fieldLabel:'Другие карты осмотра',
@@ -154,11 +174,15 @@ App.examination.ExamCardForm = Ext.extend(Ext.form.FormPanel, {
 					}]
 				},{
 					xtype:'textfield',
-					fieldLabel:'Заголовок для печати',
+//					fieldLabel:'Заголовок для печати',
 					name:'print_name',
 					//height:40,
 					anchor:'100%'
 				},{
+					xtype:'displayfield',
+					value:'Лаборант',
+					flex:1
+				},this.assistant, {
 					layout:'hbox',
 					baseCls:'x-form-item',
 					items:[{

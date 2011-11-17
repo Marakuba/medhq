@@ -25,6 +25,9 @@
 
     <script type="text/javascript" src="{{ MEDIA_URL }}app/auth/app.js"></script>
 
+	<script>
+		var next = '{{ request.GET.next }}';
+	</script>
 
 {% endblock %}
 

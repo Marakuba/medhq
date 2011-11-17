@@ -22,7 +22,7 @@ App.CentralPanel = Ext.extend(Ext.Panel, {
 			},{
                 xtype: 'buttongroup',
                 title: 'Журналы',
-                columns: 2,
+//                columns: 2,
                 defaults: {
                     scale: 'small'
                 },

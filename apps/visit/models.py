@@ -315,11 +315,17 @@ class OrderedService(make_operator_object('ordered_service')):
             else:
                 logger.info('sampling id%s %s found' % (sampling.id,sampling.__unicode__()) )
             
-            
-            lab_order, created = LabOrder.objects.get_or_create(visit=visit,  
-                                                                laboratory=self.execution_place,
-                                                                lab_group=s.lab_group,
-                                                                is_manual=s.is_manual())
+            if s.is_manual():
+                lab_order = LabOrder.objects.create(visit=visit,  
+                                                    laboratory=self.execution_place,
+                                                    lab_group=s.lab_group,
+                                                    is_manual=s.is_manual())
+                created = True
+            else:
+                lab_order, created = LabOrder.objects.get_or_create(visit=visit,  
+                                                                    laboratory=self.execution_place,
+                                                                    lab_group=s.lab_group,
+                                                                    is_manual=s.is_manual())
             if created:
                 logger.info('laborder %s created' % lab_order.id)
             else:

@@ -60,7 +60,8 @@ def auth(request, authentication_form=AuthenticationForm):
             try:
                 profile = user.get_profile()
                 active_profile = profile.position_set.all()[0]
-                response['redirect_to'] = u'/webapp/setactiveprofile/%d/' % active_profile.id
+                next = request.POST.get('next',None)
+                response['redirect_to'] = u'/webapp/setactiveprofile/%d/%s' % (active_profile.id, next and u'?redirect_to=%s' % next or u'')
             except Exception, err:
                 print err
                 pass
