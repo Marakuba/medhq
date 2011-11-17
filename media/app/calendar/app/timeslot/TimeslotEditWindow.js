@@ -692,7 +692,7 @@ Ext.calendar.TimeslotEditWindow = Ext.extend(Ext.Window, {
             return false;
         } else {
         	var serv = this.serviceCombo.getValue(); 
-	        if (serv && !this.service){
+	        if (serv && !this.service && !this.setRemovePreorder){
 	        	Ext.Msg.alert('Предупреждение!','Выбрана некорректная услуга!')
 	            return false;
 	        };
