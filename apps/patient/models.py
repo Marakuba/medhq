@@ -75,15 +75,15 @@ class Patient(make_person_object('patient')):
         
         print "set new account value:", total
         
-        if not self.discount or self.discount.type in (u'accum',):
-            full_total = total + self.initial_account
-            if not self.discount or full_total > self.discount.max:
-                new_discount = Discount.objects.filter(type__iexact=u'accum', min__lte=full_total, max__gte=full_total)
-                if new_discount.count():
-                    self.discount = new_discount[0]
-                    print "set new discount:", new_discount[0]
-                else:
-                    print "no discounts for current value!"
+#        if not self.discount or self.discount.type in (u'accum',):
+#            full_total = total + self.initial_account
+#            if not self.discount or full_total > self.discount.max:
+#                new_discount = Discount.objects.filter(type__iexact=u'accum', min__lte=full_total, max__gte=full_total)
+#                if new_discount.count():
+#                    self.discount = new_discount[0]
+#                    print "set new discount:", new_discount[0]
+#                else:
+#                    print "no discounts for current value!"
         #commit all changes
         self.save()
     

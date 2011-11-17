@@ -88,8 +88,7 @@ class Event(models.Model):
     """
     Модель смены врача
     """
-    staff = models.ForeignKey(Staff, blank = True, null = True)
-    sid = models.PositiveIntegerField(u'ID врача', blank = True, null = True)
+    staff = models.ForeignKey(Position, blank = True, null = True)
     cid = models.PositiveIntegerField(u'ID календаря', blank = True, null = True)
     title = models.CharField(u'Заголовок', max_length=300, blank = True, null = True)
     start = CustomDateTimeField(u'Начальная дата', blank = True, null = True)
@@ -104,6 +103,7 @@ class Event(models.Model):
     n = models.BooleanField(u'Новое событие', default = True)
     parent = models.ForeignKey('self', null=True, blank=True, related_name='children')
     
+    @transaction.commit_on_success
     def save(self, *args, **kwargs):
         if not self.timeslot and not self.id:
             staff = Position.objects.get(id=self.cid)
@@ -116,6 +116,11 @@ class Event(models.Model):
                                      end = start+timeslot, timeslot = True, vacant = True, n = False, \
                                      parent = self, rem = self.rem)
                 start += timeslot
+        try:
+            st = Position.objects.get(id = self.cid)
+            self.staff = st
+        except:
+            print 'Event save Error! Position %s not found' % (self.cid)
         super(Event, self).save(*args, **kwargs)
 
     def delete(self, *args, **kwargs):
@@ -128,15 +133,15 @@ class Event(models.Model):
                 timeslot.delete()
         super(Event, self).delete(*args, **kwargs) 
 
+
+    def __unicode__(self):
+        return '%s-%s' % (self.staff.staff.last_name,self.start)
             
     class Meta:
         verbose_name = u'смена'
         verbose_name_plural = u'смены'
         ordering = ('cid',)
         
-    def __unicode__(self):
-        return self.title
-    
 class Preorder(models.Model):
     """
     Модель предварительного заказа
@@ -145,8 +150,8 @@ class Preorder(models.Model):
     timeslot = models.OneToOneField(Event, blank = True, null = True, related_name='preord')
     comment = models.TextField(u'Примечание', blank = True, null = True)
     expiration = CustomDateTimeField(u'Дата истечения', blank = True, null = True)
-    visit = models.OneToOneField(Visit, null=True)
-    service = models.ForeignKey(ExtendedService, null=True)
+    visit = models.OneToOneField(Visit, blank = True, null=True)
+    service = models.ForeignKey(ExtendedService, blank = True, null=True)
     payment_type = models.CharField(u'Способ оплаты', max_length=1, 
                                     default=u'н', 
                                     choices=PAYMENT_TYPES)
@@ -154,6 +159,17 @@ class Preorder(models.Model):
     def get_staff_name(self):
         staff_name = Position.objects.get(id=self.timeslot.cid).staff.short_name()
         return staff_name
+    
+    @transaction.commit_on_success
+    def save(self, *args, **kwargs):
+        self.timeslot.vacant = False
+        self.timeslot.save()
+        super(Preorder, self).save(*args, **kwargs) 
+        
+    def delete(self, *args, **kwargs):
+        self.timeslot.vacant = True 
+        self.timeslot.save()
+        super(Preorder, self).delete(*args, **kwargs) 
 
     class Meta:
         verbose_name = u'предзаказ'
@@ -161,7 +177,7 @@ class Preorder(models.Model):
         ordering = ('id',)
         
     def __unicode__(self):
-        return self.patient
+        return self.patient.full_name()
     
     
 ### SIGNALS

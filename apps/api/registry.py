@@ -1379,7 +1379,7 @@ class ExtPreorderResource(ExtResource):
         }
         
 class EventResource(ExtResource):
-    staff = fields.ForeignKey(StaffResource, 'staff', null=True)
+    staff = fields.ForeignKey(PositionResource, 'staff', null=True)
     #preord = fields.ToOneField('apps.api.registry.PreorderResource', 'preord', null=True)
     
     def dehydrate(self, bundle):

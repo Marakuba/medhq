@@ -848,7 +848,7 @@ Ext.calendar.TimeslotEditWindow = Ext.extend(Ext.Window, {
        		store:this.serviceStore,
        		fn:function(record){
        			this.serviceCombo.forceValue(record.data.resource_uri)
-       			this.service = this.service;
+       			this.service = record;
 				serviceWindow.close();
 			}
        	 });
