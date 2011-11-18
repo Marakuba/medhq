@@ -1402,7 +1402,8 @@ class EventResource(ExtResource):
             'cid':ALL,
             'start':ALL,
             'end':ALL,
-            'timeslot':ALL
+            'timeslot':ALL,
+            'vacant':ALL
             
         }       
         limit = 1000

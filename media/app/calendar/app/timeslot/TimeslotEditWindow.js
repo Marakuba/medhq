@@ -75,6 +75,21 @@ Ext.calendar.TimeslotEditWindow = Ext.extend(Ext.Window, {
 				]
 		});
 		
+		this.freeTimeslotStore = new Ext.data.RESTStore({
+			autoLoad : false,
+			autoSave : true,
+			apiUrl : get_api_url('event'),
+			model: [
+				    {name: 'resource_uri'},
+				    {name: 'start',type:'date',format:'c'},
+				    {name: 'end',type:'date',format:'c'},
+				    {name: 'vacancy'},
+				    {name: 'timeslot'},
+				    {name: 'cid'},
+				    {name: 'staff'}
+				]
+		}); 
+		
 		this.serviceCombo = new Ext.form.LazyClearableComboBox({
         	fieldLabel:'Услуга',
         	disabled:true,
@@ -146,6 +161,13 @@ Ext.calendar.TimeslotEditWindow = Ext.extend(Ext.Window, {
 			text:'Отменить предзаказ',
 			disabled:true,
 			handler:this.onClear.createDelegate(this, [])
+		});
+		
+		this.moveButton = new Ext.Button({
+//			iconCls:'silk-cancel',
+			text:'Перенести предзаказ',
+			disabled:false,
+			handler:this.onMovePreorder.createDelegate(this, [])
 		});
 		
 		this.serviceButton = new Ext.Button({
@@ -385,7 +407,7 @@ Ext.calendar.TimeslotEditWindow = Ext.extend(Ext.Window, {
         	tbar: this.ttb,
 
 	        fbar: [
-    	    '->', this.clearButton,'-',{
+    	    '->',this.moveButton, this.clearButton,'-',{
         	    text: 'Сохранить',
             	disabled: false,
 	            handler: this.onSave,
@@ -667,6 +689,7 @@ Ext.calendar.TimeslotEditWindow = Ext.extend(Ext.Window, {
 		if (records[0]) {
 			this.preorder = records[0];
 			this.clearButton.setDisabled(false);
+			this.moveButton.setDisabled(false);
 			this.serviceButton.setDisabled(false);
 			if (this.preorder.data.service) {
 				this.serviceCombo.forceValue(this.preorder.data.service);
@@ -679,6 +702,7 @@ Ext.calendar.TimeslotEditWindow = Ext.extend(Ext.Window, {
             this.paymentTypeCB.enable();
 		} else {
 			this.clearButton.setDisabled(true);
+			this.moveButton.setDisabled(true);
 			this.serviceButton.setDisabled(true);
 			this.serviceCombo.disable();
 			this.paymentTypeCB.disable();
@@ -787,6 +811,7 @@ Ext.calendar.TimeslotEditWindow = Ext.extend(Ext.Window, {
     			if (btn=='yes') {
     				if (this.preorder){
     					this.clearButton.setDisabled(true);
+    					this.moveButton.setDisabled(true);
    						this.setRemovePreorder = true;
    						this.formPanel.form.findField('Title').setValue('');
    						this.formPanel.form.findField('vacant').setValue(true);
@@ -797,6 +822,37 @@ Ext.calendar.TimeslotEditWindow = Ext.extend(Ext.Window, {
         );
     	
     	
+    },
+    
+    onMovePreorder: function(){
+    	var freeTimeslotWindow;
+        	
+        var freeTimeslotGrid = new App.calendar.VacantTimeslotGrid({
+       		scope:this,
+       		store:this.freeTimeslotStore,
+       		fn:function(record){
+       			if (!record){
+       				return false;
+       			};
+       			this.activeRecord.set('Vacant',true);
+       			this.preorder.set('timeslot',record.data.resource_uri);
+       			record.set('vacant',false);
+       			this.activeRecord.store.load();
+				freeTimeslotWindow.close();
+				this.fireEvent(this.isAdd ? 'eventadd': 'eventupdate', this, this.activeRecord);
+			}
+       	 });
+        	
+       	freeTimeslotWindow = new Ext.Window ({
+       		width:700,
+			height:500,
+			layout:'fit',
+			title:'Свободные часы работы',
+			items:[freeTimeslotGrid],
+			modal:true,
+			border:false
+    	});
+       	freeTimeslotWindow.show();
     },
     
     setPatient : function(patient_uri){
