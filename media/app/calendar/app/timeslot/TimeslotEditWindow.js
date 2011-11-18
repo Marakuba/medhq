@@ -43,6 +43,7 @@ Ext.calendar.TimeslotEditWindow = Ext.extend(Ext.Window, {
 				    {name: 'resource_uri'},
 				    {name: 'service_name'},
 				    {name: 'state_name'},
+				    {name: 'state'},
 				    {name: 'price'}
 				]
 		});
@@ -388,7 +389,7 @@ Ext.calendar.TimeslotEditWindow = Ext.extend(Ext.Window, {
 			iconCls:'silk-add',
 			text:'Добавить пациента',
 			handler:this.onAddPatient.createDelegate(this, [])
-		},this.serviceButton
+		},this.serviceButton,'->'
 		];
     	
 	    config = {
