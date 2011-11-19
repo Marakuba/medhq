@@ -101,6 +101,10 @@ App.registry.PreorderGrid = Ext.extend(Ext.grid.GridPanel, {
 			}
 		});
 		
+		 this.ttb = new Ext.Toolbar({
+			items:[this.visitButton,this.clearButton,'->']
+		});
+		
 		var config = {
 			id:'preorder-grid',
 			title:'Предзаказы',
@@ -127,7 +131,7 @@ App.registry.PreorderGrid = Ext.extend(Ext.grid.GridPanel, {
                     scope:this
                 }
 			}),
-			tbar:[this.visitButton,this.clearButton],
+			tbar:this.ttb,
 	        bbar: {
             	cls: 'ext-cal-toolbar',
             	border: true,
@@ -175,7 +179,9 @@ App.registry.PreorderGrid = Ext.extend(Ext.grid.GridPanel, {
 //				rowdblclick:this.onVisit.createDelegate(this, []),
 //				scope:this
 			}
-		}
+		};
+		
+		this.initToolbar();
 
 		Ext.apply(this, Ext.apply(this.initialConfig, config));
 		App.registry.PreorderGrid.superclass.initComponent.apply(this, arguments);
@@ -332,6 +338,51 @@ App.registry.PreorderGrid = Ext.extend(Ext.grid.GridPanel, {
 		this.startDateField.setValue(this.start_date);
 		this.storeFilter('timeslot__start__range',String.format('{0},{1}',this.start_date.format('Y-m-d 00:00'),this.start_date.format('Y-m-d 23:59')));
 		this.btnSetDisabled(true);
+	},
+	
+	initToolbar: function(){
+		// laboratory
+		Ext.Ajax.request({
+			url:get_api_url('medstate'),
+			method:'GET',
+			success:function(resp, opts) {
+				this.ttb.add({
+					xtype:'button',
+					enableToggle:true,
+					toggleGroup:'ex-place-cls',
+					text:'Без услуги',
+					pressed: false,
+					handler:this.storeFilter.createDelegate(this,['service__isnull',true])
+				});
+				this.ttb.add({
+					xtype:'tbtext',
+					text:'Организация: '
+				});
+				this.ttb.add({
+					xtype:'button',
+					enableToggle:true,
+					toggleGroup:'ex-place-cls',
+					text:'Все',
+					pressed: true,
+					handler:this.storeFilter.createDelegate(this,['service__state'])
+				});
+				var jsonResponse = Ext.util.JSON.decode(resp.responseText);
+				Ext.each(jsonResponse.objects, function(item,i){
+					this.ttb.add({
+						xtype:'button',
+						enableToggle:true,
+						toggleGroup:'ex-place-cls',
+						text:item.name,
+						handler:this.storeFilter.createDelegate(this,['service__state',item.id])
+					});
+				}, this);
+				//this.ttb.addSeparator();
+				//this.ttb.add();
+				//this.ttb.add()
+				this.ttb.doLayout();
+			},
+			scope:this
+		});
 	}
 });
 

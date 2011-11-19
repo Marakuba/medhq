@@ -1380,6 +1380,7 @@ class ExtPreorderResource(ExtResource):
             'patient':ALL,
             'start':ALL,
             'timeslot':ALL_WITH_RELATIONS,
+            'service':ALL_WITH_RELATIONS,
         }
         
 class EventResource(ExtResource):
