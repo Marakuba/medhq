@@ -229,6 +229,8 @@ class Visit(make_operator_object('visit')):
 class PlainVisit(Visit):
     """
     """
+    def get_ad_source(self):
+        return self.patient.ad_source.name
     
     class Meta:
         proxy=True

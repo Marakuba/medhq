@@ -218,7 +218,7 @@ class PlainVisitAdmin(AutocompleteAdmin, admin.ModelAdmin):
     """
     inlines = [OrderedServiceFullAdmin]
     actions = [export_into_1c]
-    list_display = ('__unicode__','created','office','referral','operator')
+    list_display = ('__unicode__','created','office','referral','operator','get_ad_source')
     list_filter = ('office',)
     date_hierarchy = 'created'
     search_fields = ('patient__last_name','id')
@@ -280,7 +280,7 @@ class ReferralAgentAdmin(admin.ModelAdmin):
 
 admin.site.register(PlainVisit, PlainVisitAdmin)
 admin.site.register(ReferralVisit, ReferralVisitAdmin)
-admin.site.register(Visit, VisitAdmin)
+#admin.site.register(Visit, VisitAdmin)
 admin.site.register(Referral, ReferralAdmin)
 admin.site.register(ReferralAgent, ReferralAgentAdmin)
 admin.site.register(OrderedService)
