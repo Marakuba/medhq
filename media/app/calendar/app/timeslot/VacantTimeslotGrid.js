@@ -66,6 +66,9 @@ App.calendar.VacantTimeslotGrid = Ext.extend(Ext.grid.GridPanel, {
 //                        Ext.getCmp("patient-quick-form").getForm().reset();
                     	this.btnSetDisabled(true);
                     },
+                    dblclick: function(e) {
+                    	this.onChoice();
+                    }, 
                     scope:this
                 }
 			}),

@@ -550,6 +550,7 @@ Ext.calendar.TimeslotEditWindow = Ext.extend(Ext.Window, {
 
         if (o.data) {
             rec = o;
+            this.freeTimeslotStore.setBaseParam('cid',rec.data.CalendarId);
             this.isAdd = !!rec.data[Ext.calendar.EventMappings.IsNew.name];
             this.patientStore.on('load',function(store,records,obj){
             	if (records.length){

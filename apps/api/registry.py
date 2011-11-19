@@ -1393,7 +1393,7 @@ class EventResource(ExtResource):
         return bundle
     
     class Meta:
-        queryset = Event.objects.all()
+        queryset = Event.objects.all().order_by('start')
         resource_name = 'event'
         authorization = DjangoAuthorization()
         filtering = {
