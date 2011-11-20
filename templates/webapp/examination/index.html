@@ -69,6 +69,10 @@
     		background-color: #FFF9A8;
     	}
     	
+    	.placeholder .section.not-printable {
+    		border:1px dotted gray;
+    	}
+    	
     	.placeholder .section:hover {
     		border:1px dashed #879DFF;
     	}
@@ -84,9 +88,15 @@
     		font-size:10pt;
     	}
     	
-    	.placeholder .content.empty {
+    	.placeholder .content.empty-body {
     		color:#CCC;
     		font-size:8pt;
+    		font-style: italic;
+    	}
+    	
+    	.placeholder .title.empty-header {
+    		color:#CCC;
+    		font-size:14pt;
     		font-style: italic;
     	}
     	
@@ -97,7 +107,6 @@
     	.header-editor {
     		height:20pt;
     	}
->>>>>>> EXCARD:в конструкторе добавляются вкладки и тикеты
     </style>
 
 	<script type="text/javascript">
@@ -121,9 +130,11 @@
 
     <script type="text/javascript" src="/webapp/settings/"></script>
 
-    
-    <script type="text/javascript" src="{{ STATIC_URL }}extjs/ux/RowEditor.js"></script>
-    <script type="text/javascript" src="{{ STATIC_URL }}extjs/ux/CheckColumn.js"></script> 
+    <script type="text/javascript" src="{{ MEDIA_URL }}extjs/ux/RowEditor.js"></script>
+    <script type="text/javascript" src="{{ MEDIA_URL }}extjs/ux/CheckColumn.js"></script> 
+
+    <script type="text/javascript" src="{{ MEDIA_URL }}extjs/ux/PortalColumn.js"></script> 
+    <script type="text/javascript" src="{{ MEDIA_URL }}extjs/ux/Portal.js"></script> 
     
     <script type="text/javascript" src="{{ STATIC_URL }}app/registry/models.js"></script>
     <script type="text/javascript" src="{{ STATIC_URL }}app/registry/EventManager.js"></script>
