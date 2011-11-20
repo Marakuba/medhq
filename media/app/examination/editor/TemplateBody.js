@@ -1,5 +1,21 @@
 Ext.ns('App.examination');
 
+App.examination.TicketTab = Ext.extend(Ext.ux.Portal,{
+	title:'Новый раздел',
+	autoScroll:true,
+	cls: 'placeholder',
+	bubbleEvents:['beforeticketremove','ticketremove','ticketdataupdate'],
+	closable: true,
+	getData: function(){
+		var data = [];
+		this.items.itemAt(0).items.each(function(item){
+			if(item.getData){
+				data.push(item.getData());
+			}
+		},this);
+		return data
+	},
+});
 
 App.examination.TemplateBody = Ext.extend(Ext.TabPanel, {
 	
@@ -14,13 +30,6 @@ App.examination.TemplateBody = Ext.extend(Ext.TabPanel, {
 		
 		this.subSectionMenu = new Ext.menu.Menu({
 			items:[]
-		});
-		
-		this.newTab = Ext.extend(Ext.Panel,{
-			title:'Новый раздел',
-			autoScroll:true,
-			cls: 'placeholder',
-			closable: true
 		});
 		
 		Ext.Ajax.request({
@@ -84,7 +93,15 @@ App.examination.TemplateBody = Ext.extend(Ext.TabPanel, {
 			disabled:true
 		});
 		
-		this.ttb = [this.addSecBtn, this.addSubSecBtn]
+		this.ttb = [this.addSecBtn, this.addSubSecBtn,{
+			text:'get Data',
+			handler:function(){
+				var tab = this.getActiveTab();
+				Ext.MessageBox.alert('get Data','look in Firebug');
+				console.info(tab.getData());
+			},
+			scope:this
+		}]
 			
 		config = {
 			region:'center',
@@ -97,13 +114,29 @@ App.examination.TemplateBody = Ext.extend(Ext.TabPanel, {
 				this.fillSubSecMenu(tab.btn);
 			};
 		},this);
+		
+		this.on('beforeticketremove', function(ticket){
+			/* тут можно узнать что тикет будет удален
+			 * если не надо удалять - можно вернуть false
+			 */
+			return true
+		},this);
+
+		this.on('ticketremove', function(ticket){
+			// а тут тикет уже удален 
+		},this);
+
+		this.on('ticketdataupdate', function(ticket, data){
+			// в тикете обновились данные 
+			console.dir(data);
+		},this);
 
 		Ext.apply(this, Ext.apply(this.initialConfig, config));
 		App.examination.TemplateBody.superclass.initComponent.apply(this, arguments);
 	},
 	
 	onAddSection: function(btn,title,order){
-		var new_tab = this.insert(order,new this.newTab({
+		var new_tab = this.insert(order,new App.examination.TicketTab({
 			title:title,
 			btn:btn,
 			order:order,
@@ -118,6 +151,11 @@ App.examination.TemplateBody = Ext.extend(Ext.TabPanel, {
 				scope:this
 			}
 		}));
+		new_tab.add({
+			xtype:'portalcolumn',
+			columnWidth:1,
+			anchor:'100%'
+		})
 		this.sectionMenu.remove(btn);
 		if (this.sectionMenu.items.length == 0) {
 			this.addSecBtn.disable();
@@ -137,9 +175,14 @@ App.examination.TemplateBody = Ext.extend(Ext.TabPanel, {
 	
 	onAddSubSection: function(title){
 		var cur_tab = this.getActiveTab();
-		var new_ticket = new Ext.ux.form.Ticket();
-		new_ticket.title = title;
-		cur_tab.add(new_ticket);
+		var new_ticket = new Ext.ux.form.Ticket({
+			data:{
+				title:title,
+				printable:true,
+				private:false
+			}
+		});
+		cur_tab.items.itemAt(0).add(new_ticket);
 		this.doLayout();
 	}
 
