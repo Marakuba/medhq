@@ -5,7 +5,14 @@ Ext.ns('Ext.ux');
 App.examination.Editor = Ext.extend(Ext.Panel, {
 	initComponent : function() {
 		
-		this.serviceTree = new App.ServicePanel.Tree({
+		this.tmpStore = new Ext.data.RESTStore({
+			autoSave: true,
+			autoLoad : false,
+			apiUrl : get_api_url('extendedservice'),
+			model: App.models.Template
+		});
+		
+		this.serviceTree = new App.visit.VisitServicePanel({
 			layout: 'fit',
 			region:'west',
 			width:250,
@@ -53,14 +60,27 @@ App.examination.Editor = Ext.extend(Ext.Panel, {
 			]
 		};
 		
-		this.startPanel.on('opentmp',function(){
-			this.contentPanel.remove(this.startPanel);
-			this.contentPanel.add(this.tmpBody);
-			this.contentPanel.doLayout();
-		},this)
-								
+		this.startPanel.on('opentmp',function(source){
+			if (!source){
+				this.record = new this.tmpStore.model();
+				this.contentPanel.remove(this.startPanel);
+				this.tmpBody.record = this.record;
+				this.contentPanel.add(this.tmpBody);
+				this.contentPanel.doLayout();
+			}
+		},this);
+		
 		Ext.apply(this, Ext.apply(this.initialConfig, config));
 		App.examination.Editor.superclass.initComponent.apply(this, arguments);
+		
+		this.serviceTree.on('serviceclick',this.onServiceClick,this);
+	},
+	
+	onServiceClick: function(attrs){
+		var ids = attrs.id.split('-');
+		var id = ids[0];
+		this.service = '';
+		
 	}
 });
 

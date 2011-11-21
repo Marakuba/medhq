@@ -107,6 +107,7 @@ App.models.Dicom = new Ext.data.Record.create([
 App.models.Template = new Ext.data.Record.create([
    	{name: 'id'},
 	{name: 'resource_uri'},
+	{name: 'name'},
 	{name: 'print_name'},
 	{name: 'print_date'},
 	{name: 'base_service'},
@@ -117,25 +118,10 @@ App.models.Template = new Ext.data.Record.create([
 App.models.Card = new Ext.data.Record.create([
    	{name: 'id'},
 	{name: 'resource_uri'},
+	{name: 'name'},
 	{name: 'print_name'},
 	{name: 'print_date'},
 	{name: 'ordered_service'},
 	{name: 'assistant'},
 	{name: 'data'}
-]);
-
-App.models.FieldSet = new Ext.data.Record.create([
-   	{name: 'id'},
-	{name: 'resource_uri'},
-	{name: 'name'},
-	{name: 'order'},
-	{name: 'title'}
-]);
-
-App.models.SubSection = new Ext.data.Record.create([
-   	{name: 'id'},
-	{name: 'resource_uri'},
-	{name: 'section'},
-	{name: 'section_name'},
-	{name: 'title'}
 ]);
