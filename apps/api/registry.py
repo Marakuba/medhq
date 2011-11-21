@@ -1252,7 +1252,7 @@ class TemplateResource(ExtResource):
     
     class Meta:
         queryset = Template.objects.all()
-        resource_name = 'template'
+        resource_name = 'examtemplate'
         default_format = 'application/json'
         authorization = DjangoAuthorization()
         filtering = {
@@ -1760,6 +1760,8 @@ api.register(ExamEquipmentResource())
 api.register(DicomResource())
 api.register(FieldSetResource())
 api.register(SubSectionResource())
+api.register(TemplateResource())
+api.register(CardResource())
 
 #helpdesk
 api.register(IssueTypeResource())
