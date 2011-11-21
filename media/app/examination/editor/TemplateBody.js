@@ -131,8 +131,10 @@ App.examination.TemplateBody = Ext.extend(Ext.TabPanel, {
 		},this);
 
 		this.on('ticketremove', function(ticket){
-			// а тут тикет уже удален 
-			this.updateRecord();
+			// а тут тикет уже удален
+			var tab = this.getActiveTab();
+			this.removeTicket(tab.tabName,ticket.title)
+			
 		},this);
 
 		this.on('ticketdataupdate', function(ticket, data){
@@ -156,7 +158,8 @@ App.examination.TemplateBody = Ext.extend(Ext.TabPanel, {
 					this.addSecBtn.enable();
 					if (this.items.length == 1) {
 						this.addSubSecBtn.disable();
-					}
+					};
+					this.updateRecord();
 				},
 				scope:this
 			}
@@ -174,6 +177,7 @@ App.examination.TemplateBody = Ext.extend(Ext.TabPanel, {
 		this.setActiveTab(new_tab);
 //		this.fillSubSecMenu(tabName);
 		this.doLayout();
+		this.updateRecord();
 		return new_tab;
 	},
 	
@@ -209,13 +213,39 @@ App.examination.TemplateBody = Ext.extend(Ext.TabPanel, {
 		this.record.set('data', data);
 	},
 	
-	loadData: function(data){
-		data = Ext.decode(data);
+	loadData: function(recData){
+		if (!recData){
+			return false
+		}
+		var data = Ext.decode(recData);
 		for (section in data) {
-			var sec = this.addSecBtn.menu.findById(section);
+			var sec = this.menuBtns[section];
 			var tab = this.onAddSection(section,sec.text,sec.order);
+			Ext.each(data[section],function(ticket,i){
+				var new_ticket = new Ext.ux.form.Ticket({
+					data:{
+						title:ticket.title,
+						printable:ticket.printable,
+						private:ticket.private,
+						text:ticket.text
+					},
+					html: ticket.text
+				});
+				tab.items.itemAt(0).add(new_ticket);
+			});
+			this.doLayout();
 		};
 		
+	},
+	
+	removeTicket:function(section,ticketTitle){
+		var data = Ext.encode(this.record.data.data);
+		Ext.each(data[section],function(ticket,i){
+			if (ticket.title === ticketTitle){
+				data[section].pop(i);
+			}
+		});
+		this.record.set('data',data);
 	}
 
 });
