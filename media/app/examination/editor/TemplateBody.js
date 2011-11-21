@@ -104,6 +104,10 @@ App.examination.TemplateBody = Ext.extend(Ext.TabPanel, {
 			text:'updateRecord()',
 			handler:this.updateRecord.createDelegate(this),
 			scope:this
+		},{
+			text:'loadData()',
+			handler:this.loadData.createDelegate(this,[this.record.data.data]),
+			scope:this
 		}
 		]
 			
@@ -170,6 +174,7 @@ App.examination.TemplateBody = Ext.extend(Ext.TabPanel, {
 		this.setActiveTab(new_tab);
 //		this.fillSubSecMenu(tabName);
 		this.doLayout();
+		return new_tab;
 	},
 	
 	fillSubSecMenu : function(section) {
@@ -200,10 +205,16 @@ App.examination.TemplateBody = Ext.extend(Ext.TabPanel, {
 				data[tab.tabName] = tab.getData();
 			}
 		};
+		data = Ext.encode(data);
 		this.record.set('data', data);
 	},
 	
 	loadData: function(data){
+		data = Ext.decode(data);
+		for (section in data) {
+			var sec = this.addSecBtn.menu.findById(section);
+			var tab = this.onAddSection(section,sec.text,sec.order);
+		};
 		
 	}
 
