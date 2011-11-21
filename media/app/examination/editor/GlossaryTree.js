@@ -5,6 +5,7 @@ App.examination.GlossaryTree = Ext.extend(Ext.tree.TreePanel,{
 	initComponent:function(){
 		this.hiddenPkgs = [];
 		config = {
+			title:'Глоссарий',
 		    rootVisible: false,
 		    lines: false,
 		    header: false,
@@ -51,12 +52,6 @@ App.examination.GlossaryTree = Ext.extend(Ext.tree.TreePanel,{
 	        		}
 	        	}
 	        },
-	        keys:{
-	        	key:Ext.EventObject.F3,
-	        	fn:function(){
-	        		console.dir(arguments);
-	        	}
-	        },
 		    tbar: [new Ext.form.TextField({
 		    	id:'service-tree-filter',
 		        width: 250,
@@ -88,9 +83,21 @@ App.examination.GlossaryTree = Ext.extend(Ext.tree.TreePanel,{
 		Ext.apply(this, Ext.apply(this.initialConfig, config));
 		App.ServicePanel.Tree.superclass.initComponent.apply(this, arguments);
 		
-	    this.getSelectionModel().on('beforeselect', function(sm, node){
-	        return node.isLeaf();
+//	    this.getSelectionModel().on('beforeselect', function(sm, node){
+//        return node.isLeaf();
+//    });
+	    this.getSelectionModel().on('selectionchange', function(sm, node){
+	    	if(this.lastHelpNode) {
+	    		this.lastHelpNode.remove();
+	    	};
+	    	this.lastHelpNode = new Ext.tree.TreeNode({
+	    		text:'Создать новый элемент',
+	    		iconCls:'silk-add',
+	    		cls:'help-node'
+	    	});
+	    	node.insertBefore(this.lastHelpNode, node.firstChild);
 	    });
+
 	},
 	
 	filterTree: function(t, e){
@@ -122,4 +129,4 @@ App.examination.GlossaryTree = Ext.extend(Ext.tree.TreePanel,{
 	}
 });
 
-Ext.reg('servicepanel', App.ServicePanel.Tree);
+Ext.reg('glossarytree', App.examination.GlossaryTree);
