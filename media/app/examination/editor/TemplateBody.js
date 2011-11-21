@@ -145,6 +145,13 @@ App.examination.TemplateBody = Ext.extend(Ext.TabPanel, {
 
 		Ext.apply(this, Ext.apply(this.initialConfig, config));
 		App.examination.TemplateBody.superclass.initComponent.apply(this, arguments);
+		
+		this.on('afterrender',function(){
+			if (this.record.data.data) {
+//				this.loadData(this.record.data.data);
+//				this.activate(0);
+			}
+		},this)
 	},
 	
 	onAddSection: function(tabName,title,order){
@@ -202,12 +209,15 @@ App.examination.TemplateBody = Ext.extend(Ext.TabPanel, {
 	},
 	
 	updateRecord: function(){
-		var data = {};
+		var data = [];
 		for (var i =0; i< this.items.length; i++) {
 			var tab = this.items.items[i];
+			var section = {};
 			if (tab.getData){
-				data[tab.tabName] = tab.getData();
-			}
+				section['section'] = tab.tabName;
+				section['tickets'] = tab.getData();
+			};
+			data.push(section);
 		};
 		data = Ext.encode(data);
 		this.record.set('data', data);
@@ -218,10 +228,10 @@ App.examination.TemplateBody = Ext.extend(Ext.TabPanel, {
 			return false
 		}
 		var data = Ext.decode(recData);
-		for (section in data) {
-			var sec = this.menuBtns[section];
-			var tab = this.onAddSection(section,sec.text,sec.order);
-			Ext.each(data[section],function(ticket,i){
+		Ext.each(data,function(section){
+			var sec = this.menuBtns[section.section];
+			var tab = this.onAddSection(section.section,sec.text,sec.order);
+			Ext.each(section.tickets,function(ticket,i){
 				var new_ticket = new Ext.ux.form.Ticket({
 					data:{
 						title:ticket.title,
@@ -232,9 +242,9 @@ App.examination.TemplateBody = Ext.extend(Ext.TabPanel, {
 					html: ticket.text
 				});
 				tab.items.itemAt(0).add(new_ticket);
-			});
+			},this);
 			this.doLayout();
-		};
+		},this);
 		
 	},
 	
@@ -245,7 +255,7 @@ App.examination.TemplateBody = Ext.extend(Ext.TabPanel, {
 				data[section].pop(i);
 			}
 		});
-		this.record.set('data',data);
+		this.record.set('data',Ext.encode(data));
 	}
 
 });
