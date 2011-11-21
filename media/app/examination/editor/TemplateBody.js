@@ -97,11 +97,15 @@ App.examination.TemplateBody = Ext.extend(Ext.TabPanel, {
 			text:'get Data',
 			handler:function(){
 				var tab = this.getActiveTab();
-				Ext.MessageBox.alert('get Data','look in Firebug');
 				console.info(tab.getData());
 			},
 			scope:this
-		}]
+		},{
+			text:'updateRecord()',
+			handler:this.updateRecord.createDelegate(this),
+			scope:this
+		}
+		]
 			
 		config = {
 			region:'center',
@@ -111,7 +115,7 @@ App.examination.TemplateBody = Ext.extend(Ext.TabPanel, {
 		},
 		this.on('tabchange',function(panel,tab){
 			if (tab){
-				this.fillSubSecMenu(tab.btn);
+				this.fillSubSecMenu(tab.tabName);
 			};
 		},this);
 		
@@ -124,25 +128,27 @@ App.examination.TemplateBody = Ext.extend(Ext.TabPanel, {
 
 		this.on('ticketremove', function(ticket){
 			// а тут тикет уже удален 
+			this.updateRecord();
 		},this);
 
 		this.on('ticketdataupdate', function(ticket, data){
 			// в тикете обновились данные 
 			console.dir(data);
+			this.updateRecord();
 		},this);
 
 		Ext.apply(this, Ext.apply(this.initialConfig, config));
 		App.examination.TemplateBody.superclass.initComponent.apply(this, arguments);
 	},
 	
-	onAddSection: function(btn,title,order){
+	onAddSection: function(tabName,title,order){
 		var new_tab = this.insert(order,new App.examination.TicketTab({
 			title:title,
-			btn:btn,
+			tabName:tabName,
 			order:order,
 			listeners:{
 				'close': function(p){
-					this.sectionMenu.insert(p.order,this.menuBtns[p.btn]);
+					this.sectionMenu.insert(p.order,this.menuBtns[p.tabName]);
 					this.addSecBtn.enable();
 					if (this.items.length == 1) {
 						this.addSubSecBtn.disable();
@@ -156,20 +162,20 @@ App.examination.TemplateBody = Ext.extend(Ext.TabPanel, {
 			columnWidth:1,
 			anchor:'100%'
 		})
-		this.sectionMenu.remove(btn);
+		this.sectionMenu.remove(tabName);
 		if (this.sectionMenu.items.length == 0) {
 			this.addSecBtn.disable();
 		};
 		this.addSubSecBtn.enable();
 		this.setActiveTab(new_tab);
-//		this.fillSubSecMenu(btn);
+//		this.fillSubSecMenu(tabName);
 		this.doLayout();
 	},
 	
 	fillSubSecMenu : function(section) {
 		this.subSectionMenu.removeAll(true);
-		Ext.each(this.subSecBtns[section],function(btn){
-			this.subSectionMenu.add(btn);
+		Ext.each(this.subSecBtns[section],function(tabName){
+			this.subSectionMenu.add(tabName);
 		},this)
 	},
 	
@@ -184,6 +190,21 @@ App.examination.TemplateBody = Ext.extend(Ext.TabPanel, {
 		});
 		cur_tab.items.itemAt(0).add(new_ticket);
 		this.doLayout();
+	},
+	
+	updateRecord: function(){
+		var data = {};
+		for (var i =0; i< this.items.length; i++) {
+			var tab = this.items.items[i];
+			if (tab.getData){
+				data[tab.tabName] = tab.getData();
+			}
+		};
+		this.record.set('data', data);
+	},
+	
+	loadData: function(data){
+		
 	}
 
 });
