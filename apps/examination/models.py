@@ -170,8 +170,8 @@ class Template(models.Model):
     created = models.DateTimeField(u'Дата создания', auto_now_add=True)
     modified = models.DateTimeField(auto_now=True)
     print_date = models.DateTimeField(u'Время печати', blank=True, null=True)
-    base_service = models.ForeignKey(BaseService)
-    staff = models.ForeignKey(Staff)
+    base_service = models.ForeignKey(BaseService, null=True, blank=True)
+    staff = models.ForeignKey(Staff, null=True, blank=True)
     data = models.TextField(u'Данные', null=True, blank=True)
     
     

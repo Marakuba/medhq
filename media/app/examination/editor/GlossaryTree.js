@@ -83,20 +83,34 @@ App.examination.GlossaryTree = Ext.extend(Ext.tree.TreePanel,{
 		Ext.apply(this, Ext.apply(this.initialConfig, config));
 		App.ServicePanel.Tree.superclass.initComponent.apply(this, arguments);
 		
-//	    this.getSelectionModel().on('beforeselect', function(sm, node){
-//        return node.isLeaf();
-//    });
-	    this.getSelectionModel().on('selectionchange', function(sm, node){
-	    	if(this.lastHelpNode) {
-	    		this.lastHelpNode.remove();
-	    	};
-	    	this.lastHelpNode = new Ext.tree.TreeNode({
-	    		text:'Создать новый элемент',
-	    		iconCls:'silk-add',
-	    		cls:'help-node'
-	    	});
-	    	node.insertBefore(this.lastHelpNode, node.firstChild);
+		this.te = new Ext.tree.TreeEditor(this);
+		
+		this.te.on('beforestartedit',function(ed, boundEl, value) {
+					return ed.editNode.attributes.helper || false;
+//					if (ed.editNode.leaf)
+//						return false;
+				});
+		
+//		this.on('click', this.te.onNodeDblClick);
+		
+	    this.getSelectionModel().on('beforeselect', function(sm, node){
+//	        return node.attributes.helper;
 	    });
+	    this.getSelectionModel().on('selectionchange', function(sm, node){
+	    	if(this.lastHelpNode && this.lastHelpNode!=node) {
+	    		this.lastHelpNode.remove();
+	    	} else {
+	    	}
+	    	if(this.lastHelpNode!=node) {
+		    	this.lastHelpNode = new Ext.tree.TreeNode({
+		    		text:'Создать новый элемент',
+		    		iconCls:'silk-add',
+		    		cls:'help-node',
+		    		helper:true
+		    	});
+		    	node.insertBefore(this.lastHelpNode, node.firstChild);
+	    	}
+	    }, this);
 
 	},
 	
