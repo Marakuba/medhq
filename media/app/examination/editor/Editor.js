@@ -12,6 +12,20 @@ App.examination.Editor = Ext.extend(Ext.Panel, {
 			model: App.models.Template
 		});
 		
+		this.fieldSetStore = new Ext.data.RESTStore({
+			autoSave: false,
+			autoLoad : true,
+			apiUrl : get_api_url('examfieldset'),
+			model: App.models.FieldSet
+		});
+		
+		this.subSectionStore = new Ext.data.RESTStore({
+			autoSave: false,
+			autoLoad : true,
+			apiUrl : get_api_url('examsubsection'),
+			model: App.models.SubSection
+		});
+		
 		this.serviceTree = new App.visit.VisitServicePanel ({
 			layout: 'fit',
 			region:'west',
@@ -106,7 +120,13 @@ App.examination.Editor = Ext.extend(Ext.Panel, {
 	},
 	
 	newTmpBody: function(config){
-		return new App.examination.TemplateBody (config);
+		return new App.examination.TemplateBody (Ext.apply(
+			{
+				fieldSetStore : this.fieldSetStore,
+				subSectionStore : this.subSectionStore
+			},
+			config)
+		);
 	},
 	
 	newStartPanel: function(config){
