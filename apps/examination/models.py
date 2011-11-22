@@ -202,7 +202,7 @@ class FieldSet(models.Model):
     class Meta:
         verbose_name = u'Набор полей'
         verbose_name_plural = u'Наборы полей'
-        ordering = ('id',)
+        ordering = ('order',)
         
 class SubSection(models.Model):
     section = models.ForeignKey(FieldSet)
