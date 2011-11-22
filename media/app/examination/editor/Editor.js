@@ -75,7 +75,6 @@ App.examination.Editor = Ext.extend(Ext.Panel, {
 				var jsonResponse = Ext.util.JSON.decode(resp.responseText);
 				Ext.each(jsonResponse.objects, function(item,i){
 					this.base_service = item.resource_uri;
-					console.log(this.base_service);
 				}, this);
 				
 				this.tmpStore.setBaseParam('base_service',App.uriToId(this.base_service));
@@ -111,7 +110,6 @@ App.examination.Editor = Ext.extend(Ext.Panel, {
 				var jsonResponse = Ext.util.JSON.decode(resp.responseText);
 				Ext.each(jsonResponse.objects, function(item,i){
 					this.staff = item.staff;
-					console.log(this.staff);
 				}, this);
 			},
 			scope:this
