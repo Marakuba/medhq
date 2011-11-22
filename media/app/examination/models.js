@@ -122,3 +122,19 @@ App.models.Card = new Ext.data.Record.create([
 	{name: 'assistant'},
 	{name: 'data'}
 ]);
+
+App.models.FieldSet = new Ext.data.Record.create([
+   	{name: 'id'},
+	{name: 'resource_uri'},
+	{name: 'name'},
+	{name: 'order'},
+	{name: 'title'}
+]);
+
+App.models.SubSection = new Ext.data.Record.create([
+   	{name: 'id'},
+	{name: 'resource_uri'},
+	{name: 'section'},
+	{name: 'section_name'},
+	{name: 'title'}
+]);
