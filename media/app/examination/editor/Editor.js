@@ -40,7 +40,10 @@ App.examination.Editor = Ext.extend(Ext.Panel, {
 		this.contentPanel = new Ext.Panel({
 			region:'center',
  			border:false,
- 			layout: 'fit',				
+ 			layout: 'fit',
+ 			defaults:{
+ 				border:false
+ 			},
     		items: [
     		]
 		});
