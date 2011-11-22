@@ -4,7 +4,7 @@ Ext.ns('Ext.ux');
 App.examination.StartPanel = Ext.extend(Ext.form.FormPanel, {
 	initComponent : function() {
 		
-    	this.tmpCB = new Ext.form.LazyClearableComboBox({
+    	this.tmpCB = new Ext.form.LazyComboBox({
         	fieldLabel:'Шаблоны',
         	autoLoad: false,
 			anchor:'80%',
@@ -12,7 +12,7 @@ App.examination.StartPanel = Ext.extend(Ext.form.FormPanel, {
         	proxyUrl:get_api_url('templates')
     	});
     	
-    	this.cardCB = new Ext.form.LazyClearableComboBox({
+    	this.cardCB = new Ext.form.LazyComboBox({
         	fieldLabel:'Карты',
         	autoLoad: false,
 			anchor:'80%',
