@@ -1382,6 +1382,7 @@ class ExtPreorderResource(ExtResource):
             'timeslot':ALL_WITH_RELATIONS,
             'service':ALL_WITH_RELATIONS,
         }
+        limit = 500
         
 class EventResource(ExtResource):
     staff = fields.ForeignKey(PositionResource, 'staff', null=True)
