@@ -14,7 +14,7 @@ App.examination.TicketTab = Ext.extend(Ext.ux.Portal,{
 			}
 		},this);
 		return data
-	},
+	}
 });
 
 App.examination.TemplateBody = Ext.extend(Ext.TabPanel, {
@@ -32,53 +32,28 @@ App.examination.TemplateBody = Ext.extend(Ext.TabPanel, {
 			items:[]
 		});
 		
-		Ext.Ajax.request({
-			url:App.getApiUrl('examfieldset'),
-			success:function(response, opts){
-				var obj = Ext.decode(response.responseText);
-				Ext.each(obj.objects,function(rec){
-					this.menuBtns[rec.name] = {
-						text:rec.title,
-						id:rec.name,
-						order:rec.order,
-						handler:this.onAddSection.createDelegate(this,[rec.name,rec.title,rec.order]),
-						scope:this
-					};
-					this.sectionMenu.insert(rec.order,this.menuBtns[rec.name])
-					this.subSecBtns[rec.name] = []
-				},this);
-			},
-			failure:function(response, opts){
-				this.addSecBtn.disable();
-			},
-			scope:this
-		});
+		if (!this.fieldSetStore.data.length) {
+			this.addSecBtn.disable();
+		};
+		
+		this.fieldSetStore.each(function(record){
+			var rec = record.data; 
+			this.menuBtns[rec.name] = {
+				text:rec.title,
+				id:rec.name,
+				order:rec.order,
+				handler:this.onAddSection.createDelegate(this,[rec.name,rec.title,rec.order]),
+				scope:this
+			};
+			this.sectionMenu.insert(rec.order,this.menuBtns[rec.name])
+			this.subSecBtns[rec.name] = [];
+		},this);
 		
 		this.emptySubSec = {
 			text:'Произвольный',
 			handler:this.onAddSubSection.createDelegate(this,['Заголовок']),
 			scope:this
 		};
-		
-		Ext.Ajax.request({
-			url:App.getApiUrl('examsubsection'),
-			success:function(response, opts){
-				var obj = Ext.decode(response.responseText);
-				Ext.each(obj.objects,function(rec){
-					var item = {
-						text:rec.title,
-						handler:this.onAddSubSection.createDelegate(this,[rec.title]),
-						scope:this
-					};
-					this.subSecBtns[rec.section_name].push(item);
-				},this);
-				
-				for (rec in this.subSecBtns) {
-					this.subSecBtns[rec].push(this.emptySubSec);
-				}
-			},
-			scope:this
-		});
 		
 		this.addSecBtn = new Ext.Button({
 			text:'Добавить раздел',
@@ -147,10 +122,43 @@ App.examination.TemplateBody = Ext.extend(Ext.TabPanel, {
 		App.examination.TemplateBody.superclass.initComponent.apply(this, arguments);
 		
 		this.on('afterrender',function(){
+			
+			this.subSectionStore.each(function(record){
+				var rec = record.data; 
+				var item = {
+					text:rec.title,
+					handler:this.onAddSubSection.createDelegate(this,[rec.title]),
+					scope:this
+				};
+				this.subSecBtns[rec.section_name].push(item);
+			},this);
+			
+			for (rec in this.subSecBtns) {
+				this.subSecBtns[rec].push(this.emptySubSec);
+			};
+			
 			if (this.record.data.data) {
-//				this.loadData(this.record.data.data);
-//				this.activate(0);
+				this.loadData(this.record.data.data);
 			}
+			
+//			Ext.Ajax.request({
+//				url:App.getApiUrl('examsubsection'),
+//				success:function(response, opts){
+//					var obj = Ext.decode(response.responseText);
+//					Ext.each(obj.objects,function(rec){
+//						var item = {
+//							text:rec.title,
+//							handler:this.onAddSubSection.createDelegate(this,[rec.title]),
+//							scope:this
+//						};
+//						this.subSecBtns[rec.section_name].push(item);
+//					},this);
+//					
+//					
+//				},
+//				scope:this
+//			});
+		
 		},this)
 	},
 	
@@ -184,7 +192,7 @@ App.examination.TemplateBody = Ext.extend(Ext.TabPanel, {
 		this.setActiveTab(new_tab);
 //		this.fillSubSecMenu(tabName);
 		this.doLayout();
-		this.updateRecord();
+//		this.updateRecord();
 		return new_tab;
 	},
 	
@@ -238,13 +246,13 @@ App.examination.TemplateBody = Ext.extend(Ext.TabPanel, {
 						printable:ticket.printable,
 						private:ticket.private,
 						text:ticket.text
-					},
-					html: ticket.text
+					}
 				});
 				tab.items.itemAt(0).add(new_ticket);
 			},this);
 			this.doLayout();
 		},this);
+		this.setActiveTab(0);
 		
 	},
 	
