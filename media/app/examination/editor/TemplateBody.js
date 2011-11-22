@@ -93,6 +93,12 @@ App.examination.TemplateBody = Ext.extend(Ext.TabPanel, {
 						this.record.set('print_name',newValue);
 					}
 				},
+				previewtmp: function(){
+					App.eventManager.fireEvent('launchapp','panel',{
+						title:'Просмотр ' + this.record.data.id,
+						autoLoad:'/exam/template_preview/'+this.record.data.id+'/'
+					});
+				},
 				scope:this
 			},
 			scope:this
@@ -150,6 +156,8 @@ App.examination.TemplateBody = Ext.extend(Ext.TabPanel, {
 			
 			if (this.record.data.data) {
 				this.loadData(this.record.data.data);
+			} else {
+				this.generalTab.setPrintName(this.print_name);
 			};
 			
 			this.insert(0,this.generalTab);

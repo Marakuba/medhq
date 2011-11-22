@@ -68,6 +68,10 @@ App.examination.Editor = Ext.extend(Ext.Panel, {
 	onServiceClick: function(attrs){
 		var ids = attrs.id.split('-');
 		var id = ids[0];
+		var re = /(.*) \[\d+\]/;
+		var res = re.exec(attrs.text);
+		this.print_name = res[res.length-1];
+		
 		this.base_service = '';
 		
 		Ext.Ajax.request({
@@ -141,6 +145,7 @@ App.examination.Editor = Ext.extend(Ext.Panel, {
 				this.record.set('staff',this.staff);
 				this.tmpStore.add(this.record);
 				this.tmpBody = this.newTmpBody({
+					print_name:this.print_name,
 					record:this.record,
 					base_service:this.service
 				})
