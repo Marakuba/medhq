@@ -156,7 +156,7 @@ App.examination.TemplateBody = Ext.extend(Ext.TabPanel, {
 					if (this.items.length == 1) {
 						this.addSubSecBtn.disable();
 					};
-					this.updateRecord();
+					this.removeTab(p.tabName);
 				},
 				scope:this
 			}
@@ -253,6 +253,16 @@ App.examination.TemplateBody = Ext.extend(Ext.TabPanel, {
 						delete sec.tickets[j];
 					}
 				})
+			}
+		});
+		this.record.set('data',Ext.encode(data));
+	},
+	
+	removeTab:function(section){
+		var data = Ext.decode(this.record.data.data);
+		Ext.each(data,function(sec,i){
+			if (sec.section === section){
+				delete data[i];
 			}
 		});
 		this.record.set('data',Ext.encode(data));
