@@ -96,11 +96,15 @@ App.examination.TemplateBody = Ext.extend(Ext.TabPanel, {
 				previewtmp: function(){
 					App.eventManager.fireEvent('launchapp','panel',{
 						title:'Просмотр ' + this.record.data.id,
+						closable:true,
 						autoLoad:'/exam/template_preview/'+this.record.data.id+'/'
 					});
 				},
 				movearhcivetmp: function(){
+					this.record.beginEdit();
 					this.record.set('base_service','');
+					this.record.set('staff','');
+					this.record.endEdit();
 					this.fireEvent('movearhcivetmp');
 				},
 				deletetmp: function(){
