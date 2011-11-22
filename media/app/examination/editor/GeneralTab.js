@@ -6,7 +6,7 @@ App.examination.GeneralTab = Ext.extend(Ext.form.FormPanel, {
 		
 		this.printNameField = new Ext.form.TextField({
 			fieldLabel:'Заголовок для печати',
-			width: 300,
+			width: 200,
 			listeners:{
 				'change': function(field,newValue,oldValue){
 					this.fireEvent('printnamechange',newValue,oldValue)
@@ -30,10 +30,10 @@ App.examination.GeneralTab = Ext.extend(Ext.form.FormPanel, {
 			scope:this
 		});
 		
-		this.previewBtn = new Ext.Button({
+		this.reviewBtn = new Ext.Button({
 			text: 'Просмотр',
 			handler:function(){
-				this.fireEvent('previewtmp')
+				this.fireEvent('reviewtmp')
 			},
 			scope:this
 		});
@@ -41,16 +41,13 @@ App.examination.GeneralTab = Ext.extend(Ext.form.FormPanel, {
 		this.centralPanel = new Ext.Panel({
 			layout:'form',
 			region: 'center',
-			padding : 10,
-			border:false,
 			items:[this.printNameField]
 		});
 		
 		this.menuPanel = new Ext.Panel({
 			region: 'east',
-			baseCls: 'x-plain',
+			baseCls: 'x-plane',
 			margins: '5 5 5 5',
-			border: false,
 //			frame:true,
 			height:500,
 			width:200,
@@ -61,10 +58,10 @@ App.examination.GeneralTab = Ext.extend(Ext.form.FormPanel, {
 	        },
 	        defaults:{margins:'5 5 5 0'},
 	        scale: 'large',
-			items:[this.previewBtn,
+			items:[this.reviewBtn,
 				this.moveArchiveBtn,
 				this.dltBtn
-			]
+				]
 		});
 		
     	
