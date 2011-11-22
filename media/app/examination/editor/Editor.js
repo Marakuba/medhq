@@ -9,7 +9,7 @@ App.examination.Editor = Ext.extend(Ext.Panel, {
 			autoSave: true,
 			autoLoad : false,
 			apiUrl : get_api_url('examtemplate'),
-			model: App.models.Template
+			model: App.models.Template,
 		});
 		
 		this.fieldSetStore = new Ext.data.RESTStore({
@@ -62,7 +62,10 @@ App.examination.Editor = Ext.extend(Ext.Panel, {
 		Ext.apply(this, Ext.apply(this.initialConfig, config));
 		App.examination.Editor.superclass.initComponent.apply(this, arguments);
 		
-		this.serviceTree.on('serviceclick',this.onServiceClick,this);
+		this.serviceTree.on('serviceclick',function(attrs){
+			this.attrs = attrs;
+			this.onServiceClick(this.attrs)
+		},this);
 	},
 	
 	onServiceClick: function(attrs){
@@ -128,7 +131,16 @@ App.examination.Editor = Ext.extend(Ext.Panel, {
 		return new App.examination.TemplateBody (Ext.apply(
 			{
 				fieldSetStore : this.fieldSetStore,
-				subSectionStore : this.subSectionStore
+				subSectionStore : this.subSectionStore,
+				listeners:{
+					movearhcivetmp:function(){
+						this.onServiceClick(this.attrs)
+					},
+					deletetmp:function(){
+						this.onServiceClick(this.attrs)
+					},
+					scope:this
+				}
 			},
 			config)
 		);

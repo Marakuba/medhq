@@ -99,6 +99,14 @@ App.examination.TemplateBody = Ext.extend(Ext.TabPanel, {
 						autoLoad:'/exam/template_preview/'+this.record.data.id+'/'
 					});
 				},
+				movearhcivetmp: function(){
+					this.record.set('base_service','');
+					this.fireEvent('movearhcivetmp');
+				},
+				deletetmp: function(){
+					this.record.store.remove(this.record);
+					this.fireEvent('deletetmp');
+				},
 				scope:this
 			},
 			scope:this
@@ -232,8 +240,8 @@ App.examination.TemplateBody = Ext.extend(Ext.TabPanel, {
 			if (tab.getData){
 				section['section'] = tab.tabName;
 				section['tickets'] = tab.getData();
+				data.push(section);
 			};
-			data.push(section);
 		};
 		data = Ext.encode(data);
 		this.record.set('data', data);
