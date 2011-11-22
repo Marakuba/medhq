@@ -68,23 +68,35 @@ App.examination.TemplateBody = Ext.extend(Ext.TabPanel, {
 			disabled:true
 		});
 		
-		this.ttb = [this.addSecBtn, this.addSubSecBtn,{
-			text:'get Data',
-			handler:function(){
-				var tab = this.getActiveTab();
-				console.info(tab.getData());
+		this.ttb = [this.addSecBtn, this.addSubSecBtn,
+			{
+				text:'get Data',
+				handler:function(){
+					var tab = this.getActiveTab();
+					console.info(tab.getData());
+				},
+				scope:this
+			},{
+				text:'updateRecord()',
+				handler:this.updateRecord.createDelegate(this),
+				scope:this
+			},{
+				text:'loadData()',
+				handler:this.loadData.createDelegate(this),
+				scope:this
+			}
+		];
+		this.generalTab = new App.examination.GeneralTab({
+			listeners:{
+				printnamechange:function(newValue,oldValue){
+					if (this.record){
+						this.record.set('print_name',newValue);
+					}
+				},
+				scope:this
 			},
 			scope:this
-		},{
-			text:'updateRecord()',
-			handler:this.updateRecord.createDelegate(this),
-			scope:this
-		},{
-			text:'loadData()',
-			handler:this.loadData.createDelegate(this,[this.record.data.data]),
-			scope:this
-		}
-		]
+		})
 			
 		config = {
 			region:'center',
@@ -122,7 +134,6 @@ App.examination.TemplateBody = Ext.extend(Ext.TabPanel, {
 		App.examination.TemplateBody.superclass.initComponent.apply(this, arguments);
 		
 		this.on('afterrender',function(){
-			
 			this.subSectionStore.each(function(record){
 				var rec = record.data; 
 				var item = {
@@ -139,7 +150,10 @@ App.examination.TemplateBody = Ext.extend(Ext.TabPanel, {
 			
 			if (this.record.data.data) {
 				this.loadData(this.record.data.data);
-			}
+			};
+			
+			this.insert(0,this.generalTab);
+			this.setActiveTab(0);
 		
 		},this)
 	},
@@ -217,7 +231,9 @@ App.examination.TemplateBody = Ext.extend(Ext.TabPanel, {
 		this.record.set('data', data);
 	},
 	
-	loadData: function(recData){
+	loadData: function(){
+		var recData = this.record.data.data;
+		this.generalTab.setPrintName(this.record.data.print_name);
 		if (!recData){
 			return false
 		}
@@ -239,7 +255,7 @@ App.examination.TemplateBody = Ext.extend(Ext.TabPanel, {
 			},this);
 			this.doLayout();
 		},this);
-		this.setActiveTab(0);
+//		this.setActiveTab(0);
 		this.dataLoading = false;
 		
 	},
