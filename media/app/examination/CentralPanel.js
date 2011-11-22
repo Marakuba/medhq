@@ -79,11 +79,20 @@ App.ExamCentralPanel = Ext.extend(Ext.Panel, {
                 		});
                 		win.show();
                 	}
-                },{text: 'Конструктор',
+                },{
+                	text: 'Конструктор',
                     scale:'medium',
                     iconAlign: 'top',
                     handler: function(){
                     	this.launchApp('editor');
+                    },
+                    scope:this
+                },{
+                	text: 'Глоссарий',
+                    scale:'medium',
+                    iconAlign: 'top',
+                    handler: function(){
+                    	this.launchApp('glossarytree');
                     },
                     scope:this
                 }]

@@ -4,7 +4,21 @@ App.examination.GlossaryTree = Ext.extend(Ext.tree.TreePanel,{
 
 	initComponent:function(){
 		this.hiddenPkgs = [];
+		
+		this.helperTb = new Ext.Panel({ 
+			cls: "x-hidden",
+			height: 50, width: 150,
+			border: false,
+			tbar:[{
+				iconCls:'silk-add'
+			}],
+			html:'test panel'
+		});
+
+		this.layerTb = new Ext.Layer({ isFocused: false }, this.helperTb.getEl());
+		
 		config = {
+			title:'Глоссарий',
 		    rootVisible: false,
 		    lines: false,
 		    header: false,
@@ -51,12 +65,6 @@ App.examination.GlossaryTree = Ext.extend(Ext.tree.TreePanel,{
 	        		}
 	        	}
 	        },
-	        keys:{
-	        	key:Ext.EventObject.F3,
-	        	fn:function(){
-	        		console.dir(arguments);
-	        	}
-	        },
 		    tbar: [new Ext.form.TextField({
 		    	id:'service-tree-filter',
 		        width: 250,
@@ -88,9 +96,47 @@ App.examination.GlossaryTree = Ext.extend(Ext.tree.TreePanel,{
 		Ext.apply(this, Ext.apply(this.initialConfig, config));
 		App.ServicePanel.Tree.superclass.initComponent.apply(this, arguments);
 		
+//		this.te = new Ext.tree.TreeEditor(this);
+//		
+//		this.te.on('beforestartedit',function(ed, boundEl, value) {
+//					return ed.editNode.attributes.helper || false;
+////					if (ed.editNode.leaf)
+////						return false;
+//				});
+		
+		this.on('click', function(node, e){
+			this.showLayerTb(node.getUI());
+		}, this);
+		
 	    this.getSelectionModel().on('beforeselect', function(sm, node){
-	        return node.isLeaf();
+//	        return node.attributes.helper;
 	    });
+	    
+	    this.getSelectionModel().on('selectionchange', function(sm, node){
+	    	if(this.lastHelpNode && this.lastHelpNode!=node) {
+	    		this.lastHelpNode.remove();
+	    	} else {
+	    	}
+	    	if(this.lastHelpNode!=node) {
+		    	this.lastHelpNode = new Ext.tree.TreeNode({
+		    		text:'Создать новый элемент',
+		    		iconCls:'silk-add',
+		    		cls:'help-node',
+		    		helper:true
+		    	});
+		    	node.insertBefore(this.lastHelpNode, node.firstChild);
+	    	}
+	    }, this);
+
+	},
+	
+	showLayerTb : function (el) {
+		this.layerTb.alignTo(el.getEl());
+		this.layerTb.show(false);
+	},
+
+	hideLayerTb : function (el) {
+		this.layerTb.hide(false);
 	},
 	
 	filterTree: function(t, e){
@@ -122,4 +168,4 @@ App.examination.GlossaryTree = Ext.extend(Ext.tree.TreePanel,{
 	}
 });
 
-Ext.reg('servicepanel', App.ServicePanel.Tree);
+Ext.reg('glossarytree', App.examination.GlossaryTree);

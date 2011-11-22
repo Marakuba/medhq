@@ -1,7 +1,7 @@
 # -*- coding: utf-8 -*-
 from django.template import Context, loader
 from django.conf import settings
-from examination.models import ExaminationCard
+from examination.models import ExaminationCard, Template, FieldSet
 from django.contrib.contenttypes.models import ContentType
 from django.views.generic.simple import direct_to_template
 import simplejson
@@ -18,6 +18,23 @@ def cardPrint(request,card_id):
     return direct_to_template(request=request, 
                               template="print/exam/exam_card.html",
                               extra_context=ec)
+
+
+@render_to('print/exam/template_preview.html')
+def template_preview(request, tpl_id):
+    tpl = get_object_or_404(Template, pk=tpl_id)
+    
+    field_sets = dict([(fs.name, fs.title) for fs in FieldSet.objects.all()]) 
+    data = simplejson.loads(tpl.data)
+    for d in data:
+        d['title'] = field_sets[d['section']]
+    
+    ctx = {
+        'tpl':tpl,
+        'data':data
+    }
+    return ctx
+    
 
 @render_to('print/exam/epicrisis.html')
 def epicrisis(request):
