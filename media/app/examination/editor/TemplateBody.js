@@ -140,24 +140,6 @@ App.examination.TemplateBody = Ext.extend(Ext.TabPanel, {
 			if (this.record.data.data) {
 				this.loadData(this.record.data.data);
 			}
-			
-//			Ext.Ajax.request({
-//				url:App.getApiUrl('examsubsection'),
-//				success:function(response, opts){
-//					var obj = Ext.decode(response.responseText);
-//					Ext.each(obj.objects,function(rec){
-//						var item = {
-//							text:rec.title,
-//							handler:this.onAddSubSection.createDelegate(this,[rec.title]),
-//							scope:this
-//						};
-//						this.subSecBtns[rec.section_name].push(item);
-//					},this);
-//					
-//					
-//				},
-//				scope:this
-//			});
 		
 		},this)
 	},
@@ -192,7 +174,7 @@ App.examination.TemplateBody = Ext.extend(Ext.TabPanel, {
 		this.setActiveTab(new_tab);
 //		this.fillSubSecMenu(tabName);
 		this.doLayout();
-//		this.updateRecord();
+		this.updateRecord();
 		return new_tab;
 	},
 	
@@ -214,9 +196,13 @@ App.examination.TemplateBody = Ext.extend(Ext.TabPanel, {
 		});
 		cur_tab.items.itemAt(0).add(new_ticket);
 		this.doLayout();
+		this.updateRecord();
 	},
 	
 	updateRecord: function(){
+		if (this.dataLoading) {
+			return false;
+		};
 		var data = [];
 		for (var i =0; i< this.items.length; i++) {
 			var tab = this.items.items[i];
@@ -235,6 +221,7 @@ App.examination.TemplateBody = Ext.extend(Ext.TabPanel, {
 		if (!recData){
 			return false
 		}
+		this.dataLoading = true;
 		var data = Ext.decode(recData);
 		Ext.each(data,function(section){
 			var sec = this.menuBtns[section.section];
@@ -253,14 +240,19 @@ App.examination.TemplateBody = Ext.extend(Ext.TabPanel, {
 			this.doLayout();
 		},this);
 		this.setActiveTab(0);
+		this.dataLoading = false;
 		
 	},
 	
 	removeTicket:function(section,ticketTitle){
-		var data = Ext.encode(this.record.data.data);
-		Ext.each(data[section],function(ticket,i){
-			if (ticket.title === ticketTitle){
-				data[section].pop(i);
+		var data = Ext.decode(this.record.data.data);
+		Ext.each(data,function(sec,i){
+			if (sec.section === section){
+				Ext.each(sec.tickets,function(ticket,j){
+					if (ticket.title === ticketTitle){
+						delete sec.tickets[j];
+					}
+				})
 			}
 		});
 		this.record.set('data',Ext.encode(data));
