@@ -1258,7 +1258,7 @@ class TemplateResource(ExtResource):
         filtering = {
             'base_service':ALL_WITH_RELATIONS,
             'id':ALL,
-            'name':ALL
+            'print_name':ALL
         }
         
 class FieldSetResource(ExtResource):
