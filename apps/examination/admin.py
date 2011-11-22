@@ -43,6 +43,7 @@ class CardTemplateAdmin(admin.ModelAdmin):
 
 
 admin.site.register(Equipment)
+admin.site.register(Template)
 admin.site.register(FieldSet)
 admin.site.register(SubSection)
 admin.site.register(ExaminationCard, ExaminationCardAdmin)
