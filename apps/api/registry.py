@@ -1250,6 +1250,11 @@ class TemplateResource(ExtResource):
     base_service = fields.ForeignKey(BaseServiceResource, 'base_service',null=True)
     staff = fields.ForeignKey(StaffResource, 'staff', null=True)
     
+    def dehydrate(self, bundle):
+        obj = bundle.obj
+        bundle.data['service_name'] = obj.base_service and obj.base_service.name
+        return bundle
+    
     class Meta:
         queryset = Template.objects.all()
         resource_name = 'examtemplate'
@@ -1258,7 +1263,8 @@ class TemplateResource(ExtResource):
         filtering = {
             'base_service':ALL_WITH_RELATIONS,
             'id':ALL,
-            'print_name':ALL
+            'print_name':ALL,
+            'staff':ALL_WITH_RELATIONS
         }
         
 class FieldSetResource(ExtResource):
