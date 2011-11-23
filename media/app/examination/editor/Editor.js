@@ -157,6 +157,9 @@ App.examination.Editor = Ext.extend(Ext.Panel, {
 				this.record.set('print_name',this.print_name);
 			} else {
 				this.record = new this.tmpStore.recordType(source.data);
+				if (!this.record.data.print_name){
+					this.record.set('print_name',this.print_name);
+				};
 				delete this.record.data['id'];
 			};
 			this.record.set('base_service',this.base_service);
