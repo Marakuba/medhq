@@ -186,6 +186,12 @@ Ext.ux.form.Ticket = Ext.extend(Ext.Panel,{
 				this.body.removeClass('empty-body');
 				this.body.update(d.text);
 			}; 
+			if(!d.printable) {
+				this.addClass('not-printable');
+			}
+			if(d.private) {
+				this.addClass('private');
+			}
 		}		
 	},
 	

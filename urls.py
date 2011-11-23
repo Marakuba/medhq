@@ -18,6 +18,7 @@ from autocomplete.views import autocomplete
 urlpatterns = patterns('',
     url(r'^$', lambda r: HttpResponseRedirect('/webapp/cpanel/')),
     url(r'^webapp/',include('webapp.urls')),
+    url(r'^widget/',include('widget.urls')),
     url(r'^helper/fullpricelist/$','service.views.pricelist'),
     url(r'^helper/pricelist/$','service.views.price_list_helper'),
     url(r'^helper/servicelist/$','service.views.service_list'),

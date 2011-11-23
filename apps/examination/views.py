@@ -27,7 +27,7 @@ def template_preview(request, tpl_id):
     tpl = get_object_or_404(Template, pk=tpl_id)
     
     field_sets = dict([(fs.name, fs.title) for fs in FieldSet.objects.all()]) 
-    data = simplejson.loads(tpl.data)
+    data = tpl.data and simplejson.loads(tpl.data) or []
     for d in data:
         d['title'] = field_sets[d['section']]
     
