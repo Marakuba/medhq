@@ -1,0 +1,34 @@
+<style>
+	.template-preview {
+		font-famlily:"Arial";
+		padding:4pt;
+		font-size:10pt;
+	}
+
+	.template-preview h1 {
+		font-size:15pt;
+		margin:4pt 0;
+		color: gray;
+		border-bottom: 1px gray solid;
+	}
+	
+	.template-preview h2 {
+		font-size:12pt;
+		margin:8pt 0 4pt 0;
+	}
+	
+	.template-preview p {
+	}
+	
+</style>
+
+<div class="template-preview">
+<h1>{{ tpl.print_name }}</h1>
+
+{% for d in data %}
+	{% for ticket in d.tickets %}
+	<h2>{{ ticket.title }}</h2>
+	<p>{{ ticket.text }}</p>
+	{% endfor %}
+{% endfor %}
+</div>
