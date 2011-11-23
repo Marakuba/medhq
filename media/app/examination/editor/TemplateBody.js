@@ -101,10 +101,10 @@ App.examination.TemplateBody = Ext.extend(Ext.TabPanel, {
 					});
 				},
 				movearhcivetmp: function(){
-					this.record.beginEdit();
+//					this.record.beginEdit();
 					this.record.set('base_service','');
-					this.record.set('staff','');
-					this.record.endEdit();
+//					this.record.set('staff','');
+//					this.record.endEdit();
 					this.fireEvent('movearhcivetmp');
 				},
 				deletetmp: function(){
@@ -253,7 +253,7 @@ App.examination.TemplateBody = Ext.extend(Ext.TabPanel, {
 	
 	loadData: function(){
 		var recData = this.record.data.data;
-		this.generalTab.setPrintName(this.record.data.print_name);
+		this.generalTab.setPrintName(this.record.data.print_name || this.print_name);
 		if (!recData){
 			return false
 		}
