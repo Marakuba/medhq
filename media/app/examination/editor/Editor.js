@@ -44,7 +44,8 @@ App.examination.Editor = Ext.extend(Ext.Panel, {
 			region:'west',
 			baseParams:{
 				payment_type:'н',
-				staff : active_profile
+				staff : active_profile,
+				nocache : true
 			},
 			width:250,
 			border: false,

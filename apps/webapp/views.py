@@ -150,12 +150,11 @@ def get_service_tree(request):
         state = request.active_profile.department.state
         
     args = {}
-    if state:
+    if staff:
+        args['extended_service__staff']=staff
+    if state and not staff:
         #args['extended_service__state']=state.id
-        if staff:
-            args['extended_service__staff']=staff
-        else:
-            args['extended_service__branches']=state.id
+        args['extended_service__branches']=state.id
 
     nodes = []
     values = Price.objects.filter(extended_service__is_active=True, payment_type=payment_type,price_type='r',**args).\
@@ -295,7 +294,7 @@ def get_service_tree(request):
     #import pdb; pdb.set_trace()
 #    return nodes
 
-    if request.GET.get('refresh'):
+    if request.GET.get('nocache'):
         _cached_tree = None
     else:
         _cached_tree = cache.get(_cache_key)
