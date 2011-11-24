@@ -56,6 +56,7 @@ App.examination.StartPanel = Ext.extend(Ext.Panel, {
 			store: this.tmpStore,
 			hidden:true,
 			region:'center',
+			autoScroll:true,
 			columns:  [
 			    {
 			    	header: "Наименование", 
@@ -75,16 +76,22 @@ App.examination.StartPanel = Ext.extend(Ext.Panel, {
 //			view: new Ext.grid.GridView({forceFit : true})
 			viewConfig:{
 				forceFit:true
+			},
+			listeners: {
+				rowclick:this.onPreview,
+				scope:this
 			}
+			
 		});
 		
 		this.previewPanel = new Ext.Panel({
+			region: 'south',
             height: 250,
             width: 100,
             border: false,
             hidden:true,
             title: 'Просмотр',
-            region: 'south',
+            autoScroll:true,
             tbar: {
                 xtype: 'toolbar',
                 items: [
@@ -120,7 +127,6 @@ App.examination.StartPanel = Ext.extend(Ext.Panel, {
                     items: [
                         {
                             xtype: 'panel',
-                            title: 'My Panel',
                             items: [
                                 {
                                     xtype: 'radio',
@@ -163,6 +169,7 @@ App.examination.StartPanel = Ext.extend(Ext.Panel, {
                                 				this.printName = true;
                                 				this.tmpStore.load({callback:function(){
                                 					this.tmpGrid.getSelectionModel().selectFirstRow();
+                                					this.onPreview();
                                 				},scope:this});
                                 				if (this.tmpGrid.hidden){
                             						this.tmpGrid.show();
@@ -196,6 +203,7 @@ App.examination.StartPanel = Ext.extend(Ext.Panel, {
                                 				this.printName = true;
                                 				this.tmpStore.load({callback:function(){
                                 					this.tmpGrid.getSelectionModel().selectFirstRow();
+                                					this.onPreview();
                                 				},scope:this});
                                 				if (this.tmpGrid.hidden){
                             						this.tmpGrid.show();
@@ -228,6 +236,7 @@ App.examination.StartPanel = Ext.extend(Ext.Panel, {
                                 				this.printName = false;
                                 				this.tmpStore.load({callback:function(){
                                 					this.tmpGrid.getSelectionModel().selectFirstRow();
+                                					this.onPreview();
                                 				},scope:this});
                                 				if (this.tmpGrid.hidden){
                             						this.tmpGrid.show();
@@ -295,5 +304,17 @@ App.examination.StartPanel = Ext.extend(Ext.Panel, {
     			console.log('не выбран шаблон')
     		}
     	}
+	},
+	
+	onPreview: function(){
+		this.previewPanel.removeAll(true);
+		var record = this.tmpGrid.getSelectionModel().getSelected();
+		var list = new Ext.Panel({
+			autoLoad:String.format('/widget/examination/template/{0}/',record.data.id)
+		});
+		this.previewPanel.add(list);
+		this.previewPanel.doLayout();
+		this.previewPanel.show();
+		this.doLayout();
 	}
 });
