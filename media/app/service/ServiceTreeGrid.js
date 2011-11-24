@@ -76,7 +76,8 @@ App.ServiceTreeGrid = Ext.extend(Ext.ux.tree.TreeGrid,{
 	        autoScroll: true,
 	        rootVisible: false,
 	        loader:new Ext.ux.tree.TreeGridLoader({
-				baseParams:{
+				baseParams:this.baseParams ? this.baseParams : 
+				{
 					payment_type:'н'
 				},
 			    createNode : function(attr) {

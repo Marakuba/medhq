@@ -1,9 +1,22 @@
 Ext.ns('App.examination');
-Ext.ns('App.ServicePanel');
+Ext.ns('App.ServicePanel','App.ux.tree');
 Ext.ns('Ext.ux');
 
 App.examination.Editor = Ext.extend(Ext.Panel, {
 	initComponent : function() {
+		
+		Ext.Ajax.request({
+			url:get_api_url('position'),
+			method:'GET',
+			params: {id: active_profile},
+			success:function(resp, opts) {
+				var jsonResponse = Ext.util.JSON.decode(resp.responseText);
+				Ext.each(jsonResponse.objects, function(item,i){
+					this.staff = item.staff;
+				}, this);
+			},
+			scope: this
+		});
 		
 		this.tmpStore = new Ext.data.RESTStore({
 			autoSave: true,
@@ -26,9 +39,13 @@ App.examination.Editor = Ext.extend(Ext.Panel, {
 			model: App.models.SubSection
 		});
 		
-		this.serviceTree = new App.visit.VisitServicePanel ({
+		this.serviceTree = new App.ServiceTreeGrid ({
 			layout: 'fit',
 			region:'west',
+			baseParams:{
+				payment_type:'н',
+				staff : this.staff
+			},
 			width:250,
 			border: false,
 			collapsible:true,
@@ -75,64 +92,49 @@ App.examination.Editor = Ext.extend(Ext.Panel, {
 	onServiceClick: function(attrs){
 		var ids = attrs.id.split('-');
 		var id = ids[0];
-		var re = /(.*) \[\d+\]/;
-		var res = re.exec(attrs.text);
-		this.print_name = res[res.length-1];
+		this.print_name = attrs.text;
 		
 		this.base_service = '';
 		
 		Ext.Ajax.request({
-			url:get_api_url('position'),
+			url:get_api_url('baseservice'),
 			method:'GET',
-			params: {id: active_profile},
+			params: {id: id},
 			success:function(resp, opts) {
 				var jsonResponse = Ext.util.JSON.decode(resp.responseText);
 				Ext.each(jsonResponse.objects, function(item,i){
-					this.staff = item.staff;
+					this.base_service = item.resource_uri;
 				}, this);
-				Ext.Ajax.request({
-					url:get_api_url('baseservice'),
-					method:'GET',
-					params: {id: id},
-					success:function(resp, opts) {
-						var jsonResponse = Ext.util.JSON.decode(resp.responseText);
-						Ext.each(jsonResponse.objects, function(item,i){
-							this.base_service = item.resource_uri;
-						}, this);
-						
-						this.tmpStore.setBaseParam('base_service',App.uriToId(this.base_service));
-						this.tmpStore.load({
-							callback:function(records,opts,success){
-								if (records.length){
-									this.contentPanel.removeAll(true);
-									this.tmpBody = this.newTmpBody({
-										print_name:records[0].data.print_name,
-										record : records[0]
-									});
-									this.contentPanel.setTitle(this.tmpBody.print_name);
-									this.contentPanel.add(this.tmpBody);
-									this.contentPanel.doLayout();
-									
-								} else {
-									this.contentPanel.removeAll(true);
-									this.startPanel = this.newStartPanel({
-										print_name:this.print_name,
-										staff:this.staff
-									});
-									this.contentPanel.setTitle('Выберите источник шаблона');
-									this.contentPanel.add(this.startPanel);
-									this.contentPanel.doLayout();
-								}
-							},
-							scope:this
-						});
+				
+				this.tmpStore.setBaseParam('base_service',App.uriToId(this.base_service));
+				this.tmpStore.load({
+					callback:function(records,opts,success){
+						if (records.length){
+							this.contentPanel.removeAll(true);
+							this.tmpBody = this.newTmpBody({
+								print_name:records[0].data.print_name,
+								record : records[0]
+							});
+							this.contentPanel.setTitle(this.tmpBody.print_name);
+							this.contentPanel.add(this.tmpBody);
+							this.contentPanel.doLayout();
+							
+						} else {
+							this.contentPanel.removeAll(true);
+							this.startPanel = this.newStartPanel({
+								print_name:this.print_name,
+								staff:this.staff
+							});
+							this.contentPanel.setTitle('Выберите источник шаблона');
+							this.contentPanel.add(this.startPanel);
+							this.contentPanel.doLayout();
+						}
 					},
 					scope:this
 				});
 			},
 			scope:this
 		});
-		
 	},
 	
 	newTmpBody: function(config){
