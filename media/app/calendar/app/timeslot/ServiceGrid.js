@@ -11,6 +11,7 @@ App.calendar.ServiceChoiceGrid = Ext.extend(Ext.grid.GridPanel, {
 				    {name: 'id'},
 				    {name: 'resource_uri'},
 				    {name: 'service_name'},
+				    {name: 'state'},
 				    {name: 'state_name'},
 				    {name: 'price'}
 				]
@@ -44,6 +45,15 @@ App.calendar.ServiceChoiceGrid = Ext.extend(Ext.grid.GridPanel, {
 			scope:this
 		});
 		
+		this.searchField = new Ext.ux.form.SearchField({
+            store: this.store ? this.store : this.serveceStore,
+            paramName:'base_service__name__icontains'
+        });
+        
+        this.ttb = new Ext.Toolbar({
+			items:[this.choiceButton,this.searchField]
+		});
+		
 		var config = {
 			loadMask : {
 				msg : 'Подождите, идет загрузка...'
@@ -63,10 +73,10 @@ App.calendar.ServiceChoiceGrid = Ext.extend(Ext.grid.GridPanel, {
                     scope:this
                 }
 			}),
-			tbar:[this.choiceButton],
+			tbar:this.ttb,
 	        bbar: new Ext.PagingToolbar({
 	            pageSize: 20,
-	            store: this.store ? this.store : this.serveceStore,
+	            store: this.store,
 	            displayInfo: true,
 	            displayMsg: 'Записи {0} - {1} из {2}',
 	            emptyMsg: "Нет записей"
@@ -83,6 +93,12 @@ App.calendar.ServiceChoiceGrid = Ext.extend(Ext.grid.GridPanel, {
 
 		Ext.apply(this, Ext.apply(this.initialConfig, config));
 		App.calendar.ServiceChoiceGrid.superclass.initComponent.apply(this, arguments);
+		this.on('afterrender', function(){
+			this.store.load();
+		}, this);
+		
+		this.initToolbar();
+		
 	},
 	
 	btnSetDisabled: function(status) {
@@ -98,7 +114,53 @@ App.calendar.ServiceChoiceGrid = Ext.extend(Ext.grid.GridPanel, {
         if (record) {
         	Ext.callback(this.fn, this.scope || window, [record]);
         };
-    }
+    },
+    
+    storeFilter: function(field, value){
+		if(!value) {
+			delete this.store.baseParams[field]
+		} else {
+			this.store.setBaseParam(field, value);
+		}
+		this.store.load();
+	},
+    
+    initToolbar: function(){
+		// laboratory
+		Ext.Ajax.request({
+			url:get_api_url('medstate'),
+			method:'GET',
+			success:function(resp, opts) {
+				this.ttb.add({
+					xtype:'tbtext',
+					text:'Организация: '
+				});
+				this.ttb.add({
+					xtype:'button',
+					enableToggle:true,
+					toggleGroup:'ex-place-cls',
+					text:'Все',
+					pressed: true,
+					handler:this.storeFilter.createDelegate(this,['state'])
+				});
+				var jsonResponse = Ext.util.JSON.decode(resp.responseText);
+				Ext.each(jsonResponse.objects, function(item,i){
+					this.ttb.add({
+						xtype:'button',
+						enableToggle:true,
+						toggleGroup:'ex-place-cls',
+						text:item.name,
+						handler:this.storeFilter.createDelegate(this,['state',item.id])
+					});
+				}, this);
+				//this.ttb.addSeparator();
+				//this.ttb.add();
+				//this.ttb.add()
+				this.ttb.doLayout();
+			},
+			scope:this
+		});
+	}
 	
 });
 

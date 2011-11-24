@@ -174,7 +174,7 @@ Ext.calendar.MonthView = Ext.extend(Ext.calendar.CalendarView, {
 
                     if (t.getDay() == this.prevClockDay) {
                         if (el) {
-                            el.update(t.format('g:i a'));
+                            el.update(t.format('H:i'));
                         }
                     }
                     else {
@@ -256,7 +256,7 @@ Ext.calendar.MonthView = Ext.extend(Ext.calendar.CalendarView, {
             _elId: selector + '-' + evt._weekIndex,
             _isRecurring: evt.Recurrence && evt.Recurrence != '',
             _isReminder: evt[M.Reminder.name] && evt[M.Reminder.name] != '',
-            Title: (evt[M.IsAllDay.name] ? '': evt[M.StartDate.name].format('g:ia ')) + (!title || title.length == 0 ? '': title)
+            Title: (evt[M.IsAllDay.name] ? '': evt[M.StartDate.name].format('H:i ')) + (!title || title.length == 0 ? '': title)
         },
         evt);
     },

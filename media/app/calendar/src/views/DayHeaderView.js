@@ -19,6 +19,8 @@ Ext.calendar.DayHeaderView = Ext.extend(Ext.calendar.MonthView, {
     // private configs
     weekCount: 1,
     dayCount: 1,
+    startHour : this.startHour ? this.startHour : 0,
+    endHour : this.endHour ? this.endHour : 24,
     allDayOnly: true,
     monitorResize: false,
 
@@ -37,6 +39,8 @@ Ext.calendar.DayHeaderView = Ext.extend(Ext.calendar.MonthView, {
         if (!this.tpl) {
             this.tpl = new Ext.calendar.DayHeaderTemplate({
                 id: this.id,
+                startHour:this.startHour,
+                endHour:this.endHour,
                 showTodayText: this.showTodayText,
                 todayText: this.todayText,
                 showTime: this.showTime

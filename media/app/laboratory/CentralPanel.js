@@ -22,7 +22,7 @@ App.CentralPanel = Ext.extend(Ext.Panel, {
 			},{
                 xtype: 'buttongroup',
                 title: 'Журналы',
-                columns: 2,
+//                columns: 2,
                 defaults: {
                     scale: 'small'
                 },
@@ -33,6 +33,15 @@ App.CentralPanel = Ext.extend(Ext.Panel, {
                     iconAlign: 'top',
                     handler: function(){
                     	this.launchApp('labboard');
+                    },
+                    scope:this
+                },{
+                	xtype:'button',
+                    text: 'Ручные исследования',
+                    scale:'medium',
+                    iconAlign: 'top',
+                    handler: function(){
+                    	this.launchApp('manualgrid');
                     },
                     scope:this
                 },{

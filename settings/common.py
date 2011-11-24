@@ -72,7 +72,7 @@ TEMPLATE_CONTEXT_PROCESSORS = (
 
 ROOT_URLCONF = 'medhq.urls'
 
-MIDDLEWARE_CLASSES = (
+MIDDLEWARE_CLASSES = [
 #    'debug_toolbar.middleware.DebugToolbarMiddleware',
     #'johnny.middleware.LocalStoreClearMiddleware',
     #'johnny.middleware.QueryCacheMiddleware',
@@ -80,9 +80,8 @@ MIDDLEWARE_CLASSES = (
     'django.contrib.sessions.middleware.SessionMiddleware',
     'django.contrib.auth.middleware.AuthenticationMiddleware',
     'webapp.middleware.ActiveProfileMiddleware',
-    'reversion.middleware.RevisionMiddleware',
-#    'medhq.apps.core.middleware.SQLLogMiddleware'
-)
+    'reversion.middleware.RevisionMiddleware'
+]
 
 INSTALLED_APPS = (
     #'reversion',
@@ -96,6 +95,7 @@ INSTALLED_APPS = (
     'sentry',
     'sentry.client',
 
+    'crm',
     'core',
     'helpdesk',
     'webapp',
@@ -174,7 +174,9 @@ DBTEMPLATES_USE_CODEMIRROR = True
 
 CONSTANCE_CONFIG = {
     'BRAND': (u'', 'company brand'),
-    'PRICE_BY_PAYMENT_TYPE':(False,'Индивидуальные цены по каждому способу оплаты')
+    'PRICE_BY_PAYMENT_TYPE':(False,'Индивидуальные цены по каждому способу оплаты'),
+    'START_HOUR':(8,u'Начало работы'),
+    'END_HOUR':(20,u'Окончание работы'),
 }
 
 MAIN_STATE_ID = 1 

@@ -177,6 +177,11 @@ class BaseService(models.Model):
         #return "%s %s" % (self.code, self.name)
         return self.name 
     
+    def is_manual(self):
+        if self.labservice:
+            return self.labservice.is_manual
+        return False
+    
     def is_lab(self):
         return self.lab_group is not None
     
@@ -248,6 +253,10 @@ class ExtendedService(models.Model):
     state = models.ForeignKey('state.State', 
                               verbose_name=u'Учреждение',
                               limit_choices_to = {'type__in':(u'm',u'b')})
+    branches = models.ManyToManyField('state.State', 
+                              verbose_name=u'Филиалы',
+                              limit_choices_to = {'type__in':(u'b')},
+                              related_name = 'branches')
     tube = models.ForeignKey('lab.Tube', 
                              related_name='tube', 
                              null=True, blank=True)

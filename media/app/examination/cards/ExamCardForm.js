@@ -9,6 +9,8 @@ App.examination.ExamCardForm = Ext.extend(Ext.form.FormPanel, {
 		
 		this.concreteFields = ['name','print_name','mbk_diag','conclusion'];
 		
+		this.fieldList = 'equipment,area,scan_mode,thickness,width,contrast_enhancement,disease,complaints,history,anamnesis,objective_data,psycho_status,mbk_diag,gen_diag,concomitant_diag,clinical_diag,complication,ekg,treatment,referral,conclusion';
+		
 		this.examModel = App.models.examModel;
 		this.examCardStore = new Ext.data.Store({
 			//autoLoad:true,
@@ -109,6 +111,26 @@ App.examination.ExamCardForm = Ext.extend(Ext.form.FormPanel, {
 			selectOnFocus:true
 		});
 		
+		this.assistant = new Ext.form.LazyClearableComboBox({
+			fieldLabel:'Лаборант',
+			name:'assistant',
+			anchor:'50%',
+			valueField:'resource_uri',
+			queryParam : 'staff__last_name__istartswith',
+			store:new Ext.data.RESTStore({
+				autoLoad : true,
+				apiUrl : get_api_url('position'),
+				model: ['id','name','resource_uri']
+			}),
+		    minChars:2,
+		    emptyText:'Выберите врача...',
+		    listeners:{
+		    	select: function(combo, rec,i) {
+		    	},
+		    	scope:this
+		    }
+		});
+		
 		this.examComboBox = new Ext.form.ComboBox({
 			id:'exam-combo',
 			fieldLabel:'Другие карты осмотра',
@@ -132,7 +154,8 @@ App.examination.ExamCardForm = Ext.extend(Ext.form.FormPanel, {
 		this.workPlace = new Ext.Panel({
 			title:'Основные данные',
 			layout:'form',
-			labelAlign:'top',
+//			labelAlign:'top',
+			hideLabels:true,
 			autoScroll:true,
 			margins:'5 5 5 5',
 			items:[{
@@ -142,17 +165,71 @@ App.examination.ExamCardForm = Ext.extend(Ext.form.FormPanel, {
 					xtype:'hidden',
 					name:'name'
 				},{
+					layout:'hbox',
+					baseCls:'x-form-item',
+					items:[{
+						xtype:'displayfield',
+						value:'Заголовок для печати',
+						flex:1
+					}]
+				},{
 					xtype:'textfield',
-					fieldLabel:'Заголовок для печати',
+//					fieldLabel:'Заголовок для печати',
 					name:'print_name',
 					//height:40,
 					anchor:'100%'
+				},{
+					xtype:'displayfield',
+					value:'Лаборант',
+					flex:1
+				},this.assistant, {
+					layout:'hbox',
+					baseCls:'x-form-item',
+					items:[{
+						xtype:'displayfield',
+						value:'Оборудование',
+						flex:1
+					},{
+						xtype:'checkbox',
+						boxLabel:'Выводить на печать',
+						handler:this.getPrintStatus.createDelegate(this),
+						name:'equipment_print',
+						width:150
+					}]
 				},this.equipment,{
+					layout:'hbox',
+					baseCls:'x-form-item',
+					items:[{
+						xtype:'displayfield',
+						value:'Область исследования',
+						flex:1
+					},{
+						xtype:'checkbox',
+						boxLabel:'Выводить на печать',
+						handler:this.getPrintStatus.createDelegate(this),
+						name:'area_print',
+						width:150
+					}]
+				},{
 					xtype:'textarea',
 					fieldLabel:'Область исследования',
 					name:'area',
 					height: 100,
 					anchor:'100%'
+				},{
+					layout:'hbox',
+					baseCls:'x-form-item',
+					items:[{
+						xtype:'displayfield',
+						value:'Режим сканирования',
+						flex:1
+					},{
+						xtype:'checkbox',
+						boxLabel:'Выводить на печать',
+						handler:this.getPrintStatus.createDelegate(this),
+						name:'scan_mode_print',
+						width:150
+					}]
 				},{
 					xtype:'textarea',
 					fieldLabel:'Режим сканирования',
@@ -160,11 +237,39 @@ App.examination.ExamCardForm = Ext.extend(Ext.form.FormPanel, {
 					height: 100,
 					anchor:'100%'
 				},{
+					layout:'hbox',
+					baseCls:'x-form-item',
+					items:[{
+						xtype:'displayfield',
+						value:'Толщина реконструктивного среза',
+						flex:1
+					},{
+						xtype:'checkbox',
+						boxLabel:'Выводить на печать',
+						handler:this.getPrintStatus.createDelegate(this),
+						name:'thickness_print',
+						width:150
+					}]
+				},{
 					xtype:'textfield',
 					fieldLabel:'Толщина реконструктивного среза',
 					name:'thickness',
 //					height: 500,
 					anchor:'100%'
+				},{
+					layout:'hbox',
+					baseCls:'x-form-item',
+					items:[{
+						xtype:'displayfield',
+						value:'ширина/шаг',
+						flex:1
+					},{
+						xtype:'checkbox',
+						boxLabel:'Выводить на печать',
+						handler:this.getPrintStatus.createDelegate(this),
+						name:'width_print',
+						width:150
+					}]
 				},{
 					xtype:'textfield',
 					fieldLabel:'ширина/шаг',
@@ -172,11 +277,39 @@ App.examination.ExamCardForm = Ext.extend(Ext.form.FormPanel, {
 //					height: 500,
 					anchor:'100%'
 				},{
+					layout:'hbox',
+					baseCls:'x-form-item',
+					items:[{
+						xtype:'displayfield',
+						value:'Контрастное усиление',
+						flex:1
+					},{
+						xtype:'checkbox',
+						boxLabel:'Выводить на печать',
+						handler:this.getPrintStatus.createDelegate(this),
+						name:'contrast_enhancement_print',
+						width:150
+					}]
+				},{
 					xtype:'textarea',
 					fieldLabel:'Контрастное усиление',
 					name:'contrast_enhancement',
 					height: 100,
 					anchor:'100%'
+				},{
+					layout:'hbox',
+					baseCls:'x-form-item',
+					items:[{
+						xtype:'displayfield',
+						value:'Характер заболевания',
+						flex:1
+					},{
+						xtype:'checkbox',
+						boxLabel:'Выводить на печать',
+						handler:this.getPrintStatus.createDelegate(this),
+						name:'disease_print',
+						width:150
+					}]
 				},{
 					xtype:'textarea',
 					fieldLabel:'Характер заболевания',
@@ -184,11 +317,39 @@ App.examination.ExamCardForm = Ext.extend(Ext.form.FormPanel, {
 					height: 500,
 					anchor:'100%'
 				},{
+					layout:'hbox',
+					baseCls:'x-form-item',
+					items:[{
+						xtype:'displayfield',
+						value:'Жалобы',
+						flex:1
+					},{
+						xtype:'checkbox',
+						boxLabel:'Выводить на печать',
+						handler:this.getPrintStatus.createDelegate(this),
+						name:'complaints_print',
+						width:150
+					}]
+				},{
 					xtype:'textarea',
 					fieldLabel:'Жалобы',
 					name:'complaints',
 					height:500,
 					anchor:'100%'
+				},{
+					layout:'hbox',
+					baseCls:'x-form-item',
+					items:[{
+						xtype:'displayfield',
+						value:'История настоящего заболевания',
+						flex:1
+					},{
+						xtype:'checkbox',
+						boxLabel:'Выводить на печать',
+						handler:this.getPrintStatus.createDelegate(this),
+						name:'history_print',
+						width:150
+					}]
 				},{
 					xtype:'textarea',
 					fieldLabel:'История настоящего заболевания',
@@ -196,11 +357,39 @@ App.examination.ExamCardForm = Ext.extend(Ext.form.FormPanel, {
 					height:500,
 					anchor:'100%'
 				},{
+					layout:'hbox',
+					baseCls:'x-form-item',
+					items:[{
+						xtype:'displayfield',
+						value:'Анамнез',
+						flex:1
+					},{
+						xtype:'checkbox',
+						boxLabel:'Выводить на печать',
+						name:'anamnesis_print',
+						handler:this.getPrintStatus.createDelegate(this),
+						width:150
+					}]
+				},{
 					xtype:'textarea',
-					fieldLabel:'Анамнез',
+//					fieldLabel:'Анамнез',
 					name:'anamnesis',
 					height:500,
 					anchor:'100%'
+				},{
+					layout:'hbox',
+					baseCls:'x-form-item',
+					items:[{
+						xtype:'displayfield',
+						value:'Объективные данные',
+						flex:1
+					},{
+						xtype:'checkbox',
+						boxLabel:'Выводить на печать',
+						handler:this.getPrintStatus.createDelegate(this),
+						name:'objective_data_print',
+						width:150
+					}]
 				},{
 					xtype:'htmleditor',
 					fieldLabel:'Объективные данные',
@@ -208,22 +397,77 @@ App.examination.ExamCardForm = Ext.extend(Ext.form.FormPanel, {
 					height:500,
 					anchor:'100%'
 				},{
+					layout:'hbox',
+					baseCls:'x-form-item',
+					items:[{
+						xtype:'displayfield',
+						value:'Психологический статус',
+						flex:1
+					},{
+						xtype:'checkbox',
+						boxLabel:'Выводить на печать',
+						handler:this.getPrintStatus.createDelegate(this),
+						name:'psycho_status_print',
+						width:150
+					}]
+				},{
 					xtype:'textarea',
 					fieldLabel:'Психологический статус',
 					name:'psycho_status',
 					height:500,
 					anchor:'100%'
+				},{
+					layout:'hbox',
+					baseCls:'x-form-item',
+					items:[{
+						xtype:'displayfield',
+						value:'Диагноз по МКБ',
+						flex:1
+					},{
+						xtype:'checkbox',
+						boxLabel:'Выводить на печать',
+						handler:this.getPrintStatus.createDelegate(this),
+						name:'mbk_diag_print',
+						width:150
+					}]
 				},this.mkb,{
 					xtype:'button',
 					text:'Выбрать',
 					handler: this.openTree.createDelegate(this)
-				},
-				{
+				},{
+					layout:'hbox',
+					baseCls:'x-form-item',
+					items:[{
+						xtype:'displayfield',
+						value:'Основной диагноз',
+						flex:1
+					},{
+						xtype:'checkbox',
+						boxLabel:'Выводить на печать',
+						handler:this.getPrintStatus.createDelegate(this),
+						name:'gen_diag_print',
+						width:150
+					}]
+				},{
 					xtype:'htmleditor',
 					fieldLabel:'Основной диагноз',
 					name:'gen_diag',
 					height:500,
 					anchor:'100%'
+				},{
+					layout:'hbox',
+					baseCls:'x-form-item',
+					items:[{
+						xtype:'displayfield',
+						value:'Сопутствующий диагноз',
+						flex:1
+					},{
+						xtype:'checkbox',
+						boxLabel:'Выводить на печать',
+						handler:this.getPrintStatus.createDelegate(this),
+						name:'concomitant_diag_print',
+						width:150
+					}]
 				},{
 					xtype:'textarea',
 					height:500,
@@ -231,18 +475,59 @@ App.examination.ExamCardForm = Ext.extend(Ext.form.FormPanel, {
 					name:'concomitant_diag',
 					anchor:'100%'
 				},{
+					layout:'hbox',
+					baseCls:'x-form-item',
+					items:[{
+						xtype:'displayfield',
+						value:'Клинический диагноз',
+						flex:1
+					},{
+						xtype:'checkbox',
+						boxLabel:'Выводить на печать',
+						handler:this.getPrintStatus.createDelegate(this),
+						name:'clinical_diag_print',
+						width:150
+					}]
+				},{
 					xtype:'textarea',
 					fieldLabel:'Клинический диагноз',
 					height:500,
 					name:'clinical_diag',
 					anchor:'100%'
-				},
-				{
+				},{
+					layout:'hbox',
+					baseCls:'x-form-item',
+					items:[{
+						xtype:'displayfield',
+						value:'Осложнения',
+						flex:1
+					},{
+						xtype:'checkbox',
+						boxLabel:'Выводить на печать',
+						handler:this.getPrintStatus.createDelegate(this),
+						name:'complication_print',
+						width:150
+					}]
+				},{
 					xtype:'textarea',
 					fieldLabel:'Осложнения',
 					name:'complication',
 					height:500,
 					anchor:'100%'
+				},{
+					layout:'hbox',
+					baseCls:'x-form-item',
+					items:[{
+						xtype:'displayfield',
+						value:'ЭКГ',
+						flex:1
+					},{
+						xtype:'checkbox',
+						boxLabel:'Выводить на печать',
+						handler:this.getPrintStatus.createDelegate(this),
+						name:'ekg_print',
+						width:150
+					}]
 				},{
 					xtype:'textarea',
 					fieldLabel:'ЭКГ',
@@ -250,17 +535,59 @@ App.examination.ExamCardForm = Ext.extend(Ext.form.FormPanel, {
 					height:500,
 					anchor:'100%'
 				},{
+					layout:'hbox',
+					baseCls:'x-form-item',
+					items:[{
+						xtype:'displayfield',
+						value:'Лечение',
+						flex:1
+					},{
+						xtype:'checkbox',
+						boxLabel:'Выводить на печать',
+						handler:this.getPrintStatus.createDelegate(this),
+						name:'treatment_print',
+						width:150
+					}]
+				},{
 					xtype:'textarea',
 					fieldLabel:'Лечение',
 					height:500,
 					name:'treatment',
 					anchor:'100%'
 				},{
+					layout:'hbox',
+					baseCls:'x-form-item',
+					items:[{
+						xtype:'displayfield',
+						value:'Направление',
+						flex:1
+					},{
+						xtype:'checkbox',
+						boxLabel:'Выводить на печать',
+						handler:this.getPrintStatus.createDelegate(this),
+						name:'referral_print',
+						width:150
+					}]
+				},{
 					xtype:'textarea',
 					fieldLabel:'Направление',
 					height:500,
 					name:'referral',
 					anchor:'100%'
+				},{
+					layout:'hbox',
+					baseCls:'x-form-item',
+					items:[{
+						xtype:'displayfield',
+						value:'Заключение',
+						flex:1
+					},{
+						xtype:'checkbox',
+						boxLabel:'Выводить на печать',
+						handler:this.getPrintStatus.createDelegate(this),
+						name:'conclusion_print',
+						width:150
+					}]
 				},{
 					xtype:'textarea',
 					fieldLabel:'Заключение',
@@ -269,10 +596,8 @@ App.examination.ExamCardForm = Ext.extend(Ext.form.FormPanel, {
 					anchor:'100%'
 				},{
 					xtype:'textarea',
-					fieldLabel:'Примечание',
-					height:500,
-					name:'comment',
-					anchor:'100%'
+					hidden:true,
+					name:'comment'
 				}]
 		});
 		
@@ -394,10 +719,6 @@ App.examination.ExamCardForm = Ext.extend(Ext.form.FormPanel, {
 					id:'conclusion-btn',
 					text:'Заключение',
 					handler:this.onFocus.createDelegate(this,['conclusion'])
-				},{
-					id:'comment-btn',
-					text:'Примечание',
-					handler:this.onFocus.createDelegate(this,['comment'])
 				}]
 		});
 		
@@ -491,12 +812,43 @@ App.examination.ExamCardForm = Ext.extend(Ext.form.FormPanel, {
 			if(this.record) {
 				this.getForm().loadRecord(this.record);
 				Ext.getCmp(this.tmp_id+'-info-btn').setText('Выбранный шаблон: '+this.record.data.name);
-			};
+			} else {
+				this.getForm().findField('comment').setValue(this.fieldList);
+			}
+			this.setPrintStatus();
 			if (this.ordered_service) {
 				this.getForm().findField('ordered_service').setValue(this.ordered_service)
 			}
 			//this.examCardStore.load();
 		},this);
+	},
+	
+	setPrintStatus : function() {
+		var f = this.getForm();
+		var st = f.findField('comment').getValue().split(',');
+		Ext.each(st, function(item){
+			var field = f.findField(item+'_print');
+			if(field) {
+				field.setValue(true);
+			}
+		}, this);
+	},
+	
+	getPrintStatus : function() {
+		var st = this.fieldList.split(',');
+		var vals = [];
+		var f = this.getForm();
+		Ext.each(st, function(item){
+			var field = f.findField(item+'_print');
+			if(field) {
+				var v = field.getValue();
+				if(v){
+					vals.push(item);
+				}
+			}
+		},this);
+		var v = vals.join(',');
+		f.findField('comment').setValue(v);
 	},
 	
 	onPromptSubmit: function(arr) {
@@ -551,7 +903,7 @@ App.examination.ExamCardForm = Ext.extend(Ext.form.FormPanel, {
 				var Model = this.model;
 				this.record = new Model();
 			} else {
-				console.log('Ошибка: нет модели');
+				Ext.MessageBox.alert('Ошибка','нет модели');
 				var Model = this.examModel;
 				this.record = new Model();
 			}

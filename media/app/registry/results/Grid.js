@@ -34,7 +34,8 @@ App.results.Grid = Ext.extend(Ext.grid.GridPanel, {
 		this.store = new Ext.data.Store({
 			autoLoad:true,
 		    baseParams: {
-		    	format:'json'
+		    	format:'json',
+		    	is_manual:false
 		    },
 		    paramNames: {
 			    start : 'offset',  // The parameter name which specifies the start row

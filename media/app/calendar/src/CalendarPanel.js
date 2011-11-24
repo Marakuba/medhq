@@ -75,6 +75,9 @@ Ext.calendar.CalendarPanel = Ext.extend(Ext.Panel, {
      * Alternate text to use for the 'Month' nav bar button.
      */
     monthText: 'Месяц',
+    
+    startHour:0,
+    endHour:24,
 
     // private
     layoutConfig: {
@@ -274,6 +277,8 @@ Ext.calendar.CalendarPanel = Ext.extend(Ext.Panel, {
         if (this.showDayView) {
             var day = Ext.apply({
                 xtype: 'dayview',
+                startHour:this.startHour,
+                endHour:this.endHour,
                 title: this.dayText,
                 showToday: this.showToday,
                 showTodayText: this.showTodayText,
@@ -292,7 +297,9 @@ Ext.calendar.CalendarPanel = Ext.extend(Ext.Panel, {
                 title: this.weekText,
                 showToday: this.showToday,
                 showTodayText: this.showTodayText,
-                showTime: this.showTime
+                showTime: this.showTime,
+                startHour:this.startHour,
+                endHour:this.endHour
             },
             this.weekViewCfg);
 
@@ -308,6 +315,8 @@ Ext.calendar.CalendarPanel = Ext.extend(Ext.Panel, {
                 showToday: this.showToday,
                 showTodayText: this.showTodayText,
                 showTime: this.showTime,
+                endHour:this.endHour,
+                title: this.dayText,
                 listeners: {
                     'weekclick': {
                         fn: function(vw, dt) {
@@ -369,7 +378,7 @@ Ext.calendar.CalendarPanel = Ext.extend(Ext.Panel, {
     // private
     afterRender: function() {
         Ext.calendar.CalendarPanel.superclass.afterRender.call(this);
-        this.fireViewChange();
+        //this.fireViewChange();
     },
 
     // private
@@ -437,24 +446,52 @@ Ext.calendar.CalendarPanel = Ext.extend(Ext.Panel, {
 
     // private
     setActiveView: function(id) {
-        var l = this.layout;
-        l.setActiveItem(id);
+    	/*
+    	 * При активации view нужно перегрузить eventStore с нужной установкой timeslot и 
+    	 * датами отображения событий. даты устанавливаются только после активации view
+    	 * this.layout.setActiveItem(id)
+    	 * если эту команду вставить до загрузки store, то он не успеет загрузиться
+    	 * и в календаре некоторое время будет отображаться не актуальные events
+    	 * поэтому при переходе между view будем грузить все события текущего месяца 
+    	 * плюс минус неделя
+    	 */
+    	var st = new Date();
+    	var e = new Date();
+    	st = st.add(Date.DAY,-(st.getDate()+7));
+//    	st.setDate(22);
+    	e = e.add(Date.DAY,(31-e.getDate()+7));
+//    	e.setDate(7);
+//    	console.log('st = ', st, '; e = ',e);
+    	if (id == "app-calendar-month") {
+        	this.eventStore.setBaseParam('timeslot',false);
+    	} else {
+    		this.eventStore.setBaseParam('timeslot',true);
+    	};
 
-        if (id == this.id + '-edit') {
-            this.getTopToolbar().hide();
-            this.doLayout();
-        }
-        else {
-            l.activeItem.refresh();
-            this.getTopToolbar().show();
-            this.updateNavState();
-        }
-        this.activeView = l.activeItem;
-        this.fireViewChange();
+        this.eventStore.setBaseParam('start__gte',st.format('Y-m-d'));
+        this.eventStore.setBaseParam('end__lt',e.format('Y-m-d'));
+    	this.eventStore.load({
+    		callback:function(){
+    			var l = this.layout;
+		        l.setActiveItem(id);
+		
+		        if (id == this.id + '-edit') {
+		            this.getTopToolbar().hide();
+		            this.doLayout();
+		        }
+		        else {
+		            l.activeItem.refresh();
+		            this.getTopToolbar().show();
+		            this.updateNavState();
+		        }
+		        this.activeView = l.activeItem;
+		        this.fireViewChange(true);
+    		},
+    		scope:this});
     },
 
     // private
-    fireViewChange: function() {
+    fireViewChange: function(loaded) {
         var info = null,
             view = this.layout.activeItem;
 
@@ -465,6 +502,11 @@ Ext.calendar.CalendarPanel = Ext.extend(Ext.Panel, {
                 viewStart: vb.start,
                 viewEnd: vb.end
             };
+            this.eventStore.setBaseParam('start__gte',vb.start.format('Y-m-d'));
+            this.eventStore.setBaseParam('end__lt',vb.end.add(Date.DAY,1).format('Y-m-d'));
+            if (!loaded){
+            	this.eventStore.load();
+            }
         };
         this.fireEvent('viewchange', this, view, info);
     },
@@ -485,7 +527,7 @@ Ext.calendar.CalendarPanel = Ext.extend(Ext.Panel, {
      * @param {Date} dt
      */
     setStartDate: function(dt) {
-        this.layout.activeItem.setStartDate(dt, true);
+        this.layout.activeItem.setStartDate(dt, false);
         this.updateNavState();
         this.fireViewChange();
     },

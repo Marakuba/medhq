@@ -9,7 +9,7 @@ App.examination.Editor = Ext.extend(Ext.Panel, {
 			autoSave: true,
 			autoLoad : false,
 			apiUrl : get_api_url('examtemplate'),
-			model: App.models.Template,
+			model: App.models.Template
 		});
 		
 		this.fieldSetStore = new Ext.data.RESTStore({
@@ -41,6 +41,7 @@ App.examination.Editor = Ext.extend(Ext.Panel, {
 			region:'center',
  			border:false,
  			layout: 'fit',
+ 			title:'Выберите услугу',
  			defaults:{
  				border:false
  			},
@@ -102,16 +103,20 @@ App.examination.Editor = Ext.extend(Ext.Panel, {
 								if (records.length){
 									this.contentPanel.removeAll(true);
 									this.tmpBody = this.newTmpBody({
+										print_name:records[0].data.print_name,
 										record : records[0]
 									});
+									this.contentPanel.setTitle(this.tmpBody.print_name);
 									this.contentPanel.add(this.tmpBody);
 									this.contentPanel.doLayout();
 									
 								} else {
 									this.contentPanel.removeAll(true);
 									this.startPanel = this.newStartPanel({
+										print_name:this.print_name,
 										staff:this.staff
 									});
+									this.contentPanel.setTitle('Выберите источник шаблона');
 									this.contentPanel.add(this.startPanel);
 									this.contentPanel.doLayout();
 								}
@@ -133,12 +138,16 @@ App.examination.Editor = Ext.extend(Ext.Panel, {
 				base_service : this.service,
 				fieldSetStore : this.fieldSetStore,
 				subSectionStore : this.subSectionStore,
+				title:'Заголовок',
 				listeners:{
 					movearhcivetmp:function(){
 						this.onServiceClick(this.attrs)
 					},
 					deletetmp:function(){
 						this.onServiceClick(this.attrs)
+					},
+					changetitle: function(text){
+						this.contentPanel.setTitle(text);
 					},
 					scope:this
 				}
@@ -170,6 +179,7 @@ App.examination.Editor = Ext.extend(Ext.Panel, {
 				record:this.record,
 				base_service:this.service
 			});
+			this.contentPanel.setTitle(this.tmpBody.print_name);
 			this.contentPanel.add(this.tmpBody);
 			this.contentPanel.doLayout();
 		},this);

@@ -34,6 +34,23 @@ logger.setLevel(logging.NOTSET)
 
 
 
+class ReferralAgent(make_operator_object('referralagent')):
+    """
+    """
+    name = models.CharField(u'Наименование агента', 
+                            max_length=200, 
+                            help_text=u'')
+    
+    objects = models.Manager()
+    
+    def __unicode__(self):
+        return u"%s" % (self.name,)
+    
+    class Meta:
+        verbose_name = u'агент'
+        verbose_name_plural = u'агенты'
+        ordering = ('name',)
+
 
 class Referral(make_operator_object('referral')):
     """
@@ -42,6 +59,8 @@ class Referral(make_operator_object('referral')):
                             max_length=200, 
                             help_text=u'Образец заполнения: Иванова И.И., гор.больница №1.')
     
+    agent = models.ForeignKey(ReferralAgent, null=True, blank = True, verbose_name=u'Агент')
+
     objects = models.Manager()
     
     def __unicode__(self):
@@ -210,6 +229,8 @@ class Visit(make_operator_object('visit')):
 class PlainVisit(Visit):
     """
     """
+    def get_ad_source(self):
+        return self.patient.ad_source.name
     
     class Meta:
         proxy=True
@@ -296,11 +317,17 @@ class OrderedService(make_operator_object('ordered_service')):
             else:
                 logger.info('sampling id%s %s found' % (sampling.id,sampling.__unicode__()) )
             
-            
-    
-            lab_order, created = LabOrder.objects.get_or_create(visit=visit,  
-                                                                laboratory=self.execution_place,
-                                                                lab_group=s.lab_group)
+            if s.is_manual():
+                lab_order = LabOrder.objects.create(visit=visit,  
+                                                    laboratory=self.execution_place,
+                                                    lab_group=s.lab_group,
+                                                    is_manual=s.is_manual())
+                created = True
+            else:
+                lab_order, created = LabOrder.objects.get_or_create(visit=visit,  
+                                                                    laboratory=self.execution_place,
+                                                                    lab_group=s.lab_group,
+                                                                    is_manual=s.is_manual())
             if created:
                 logger.info('laborder %s created' % lab_order.id)
             else:

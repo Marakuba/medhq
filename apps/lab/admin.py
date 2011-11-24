@@ -11,6 +11,11 @@ from django import forms
 from django.conf import settings
 from django.utils.encoding import smart_unicode
 
+class LabServiceInline(admin.TabularInline):
+    """
+    """
+    model = LabService
+
 class ResultInlineForm(forms.ModelForm):
     """
     """

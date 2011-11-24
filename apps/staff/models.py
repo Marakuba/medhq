@@ -85,6 +85,9 @@ class Position(models.Model):
     def __unicode__(self):
         return u"%s, %s" % (self.staff.short_name(), self.title)
     
+    def short_name(self):
+        return self.staff.short_name()
+    
     @property
     def state(self):
         return self.department.state.id

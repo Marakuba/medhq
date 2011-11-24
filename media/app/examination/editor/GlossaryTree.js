@@ -113,20 +113,16 @@ App.examination.GlossaryTree = Ext.extend(Ext.tree.TreePanel,{
 	    });
 	    
 	    this.getSelectionModel().on('selectionchange', function(sm, node){
-	    	if(this.lastHelpNode && this.lastHelpNode!=node) {
+	    	if(this.lastHelpNode) {
 	    		this.lastHelpNode.remove();
-	    	} else {
-	    	}
-	    	if(this.lastHelpNode!=node) {
-		    	this.lastHelpNode = new Ext.tree.TreeNode({
-		    		text:'Создать новый элемент',
-		    		iconCls:'silk-add',
-		    		cls:'help-node',
-		    		helper:true
-		    	});
-		    	node.insertBefore(this.lastHelpNode, node.firstChild);
-	    	}
-	    }, this);
+	    	};
+	    	this.lastHelpNode = new Ext.tree.TreeNode({
+	    		text:'Создать новый элемент',
+	    		iconCls:'silk-add',
+	    		cls:'help-node'
+	    	});
+	    	node.insertBefore(this.lastHelpNode, node.firstChild);
+	    });
 
 	},
 	

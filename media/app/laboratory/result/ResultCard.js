@@ -174,7 +174,6 @@ App.result.ResultCard = Ext.extend(Ext.Panel, {
 			}]
 		});
 		
-		
 		config = {
 			border:false,
 			title:'Результаты',

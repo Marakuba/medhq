@@ -13,6 +13,7 @@ from django.template.context import RequestContext
 import datetime
 from django.views.decorators.cache import cache_control
 from django import forms
+from django.contrib.auth.decorators import login_required, permission_required
 
 
 
@@ -28,6 +29,9 @@ from django import forms
 #                              extra_context=extra_context)
     
 
+
+@login_required
+@permission_required('pricelist.add_price')
 @cache_control(no_cache=True)
 def report_list(request):
     form = ReportForm()

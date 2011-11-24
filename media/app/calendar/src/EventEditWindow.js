@@ -14,107 +14,53 @@
  * @param {Object} config The config object
  */
 Ext.ns('Ext.calendar');
-Ext.calendar.EventEditWindow = function(config) {
-    var formPanelCfg = {
-        xtype: 'form',
-        labelWidth: 65,
-        frame: false,
-        bodyStyle: 'background:transparent;padding:5px 10px 10px;',
-        bodyBorder: false,
-        border: false,
-        items: [{
-            id: 'title',
-            name: Ext.calendar.EventMappings.Title.name,
-            fieldLabel: 'Заголовок',
-            xtype: 'textfield',
-            anchor: '100%'
-        },
-        {
-            xtype: 'daterangefield',
-            id: 'date-range',
-            anchor: '100%',
-            fieldLabel: 'Когда'
-        }]
-    };
-
-    if (config.calendarStore) {
-        this.calendarStore = config.calendarStore;
-        delete config.calendarStore;
-
-        formPanelCfg.items.push({
-            xtype: 'calendarpicker',
-            id: 'calendar',
-            name: 'calendar',
-            anchor: '100%',
-            store: this.calendarStore
-        });
-    };
-    
-    if (config.staffStore) {
-        this.staffStore = config.staffStore;
-        delete config.staffStore;
-
-        formPanelCfg.items.push({
-            xtype: 'staffpicker',
-            id: 'staff',
-            name: 'staff',
-            anchor: '100%',
-            store: this.staffStore
-        });
-    }
-
-    Ext.calendar.EventEditWindow.superclass.constructor.call(this, Ext.apply({
-        titleTextAdd: 'Добавить событие',
-        titleTextEdit: 'Изменить событие',
-        width: 600,
-        autocreate: true,
-        border: true,
-        closeAction: 'hide',
-        modal: true,
-        resizable: false,
-        buttonAlign: 'left',
-        savingMessage: 'Сохранение изменений...',
-        deletingMessage: 'Удаление события...',
-
-        fbar: [/*{
-            xtype: 'tbtext',
-            text: '<a href="#" id="tblink">Дополнительно...</a>'
-        },*/
-        '->', {
-            text: 'Сохранить',
-            disabled: false,
-            handler: this.onSave,
-            scope: this
-        },
-        {
-            id: 'delete-btn',
-            text: 'Удалить',
-            disabled: false,
-            handler: this.onDelete,
-            scope: this,
-            hideMode: 'offsets'
-        },
-        {
-            text: 'Отмена',
-            disabled: false,
-            handler: this.onCancel,
-            scope: this
-        }],
-        items: formPanelCfg
-    },
-    config));
-};
-
-Ext.extend(Ext.calendar.EventEditWindow, Ext.Window, {
-    // private
-    //newId: 10000,
-
-    // private
-    initComponent: function() {
-        Ext.calendar.EventEditWindow.superclass.initComponent.call(this);
-
-        this.formPanel = this.items.items[0];
-
+Ext.calendar.EventEditWindow = Ext.extend(Ext.Window, {
+    initComponent: function(){
+    	this.startHour = this.startHour ? this.startHour : 0;
+		this.endHour = this.endHour ? this.endHour : 23;
+		
+		this.titleField = new Ext.form.TextField({
+			name: Ext.calendar.EventMappings.Title.name,
+			fieldLabel: 'Заголовок',
+			anchor: '100%'
+		});
+		this.dateRangeField = new Ext.calendar.DateRangeField({
+			startHour: this.startHour,
+			endHour: this.endHour,
+			anchor: '100%',
+	        fieldLabel: 'Когда'
+		});
+		
+	    this.formPanelCfg = new Ext.form.FormPanel({
+	        xtype: 'form',
+	        labelWidth: 65,
+	        frame: false,
+	        bodyStyle: 'background:transparent;padding:5px 10px 10px;',
+	        bodyBorder: false,
+	        border: false,
+	        items: [this.titleField, this.dateRangeField]
+	    });
+	
+	    if (this.calendarStore) {
+	        
+	        this.doctor = new Ext.calendar.CalendarPicker({
+				name: 'calendar',
+		        anchor: '100%',
+		        store: this.calendarStore
+			});
+	
+	        this.formPanelCfg.add(this.doctor);
+	    };
+	    
+	    if (this.staffStore) {
+			this.staffPicker = new Ext.calendar.StaffPicker({
+				name: 'staff',
+	            anchor: '100%',
+	            store: this.staffStore
+			})
+	        this.formPanelCfg.add(this.staffPicker);
+	    };
+	    
         this.addEvents({
             /**
              * @event eventadd
@@ -155,13 +101,120 @@ Ext.extend(Ext.calendar.EventEditWindow, Ext.Window, {
              */
             editdetails: true
         });
+        
+        this.deleteBtn = new Ext.Button({
+        	text: 'Удалить',
+            disabled: false,
+            hidden:this.o.data ? false : true,
+            handler: this.onDelete,
+            scope: this,
+            hideMode: 'offsets'
+        })
+        
+	    config = {
+	        titleTextAdd: 'Добавить событие',
+	        titleTextEdit: 'Изменить событие',
+	        width: 600,
+	        autocreate: true,
+	        border: true,
+	        closeAction: 'close',
+	        modal: true,
+	        resizable: false,
+	        buttonAlign: 'left',
+	        savingMessage: 'Сохранение изменений...',
+	        deletingMessage: 'Удаление события...',
+	
+	        fbar: [/*{
+	            xtype: 'tbtext',
+	            text: '<a href="#" id="tblink">Дополнительно...</a>'
+	        },*/
+	        '->', {
+	            text: 'Сохранить',
+	            disabled: false,
+	            handler: this.onSave,
+	            scope: this
+	        },
+	        this.deleteBtn,
+	        {
+	            text: 'Отмена',
+	            disabled: false,
+	            handler: this.onCancel,
+	            scope: this
+	        }],
+	        items: this.formPanelCfg
+	    };
+	    
+	    Ext.apply(this, Ext.apply(this.initialConfig, config));
+		Ext.calendar.EventEditWindow.superclass.initComponent.apply(this, arguments);
     },
-
     // private
     afterRender: function() {
         Ext.calendar.EventEditWindow.superclass.afterRender.call(this);
 
         this.el.addClass('ext-cal-event-win');
+        
+        this.formPanel = this.formPanelCfg;
+
+        // Work around the CSS day cell height hack needed for initial render in IE8/strict:
+        
+//        this.deleteBtn[this.o.data && this.o.data[Ext.calendar.EventMappings.EventId.name] ? 'show': 'hide']();
+
+        var rec,
+        f = this.formPanel.getForm();
+
+        if (this.o.data) {
+        	this.dateRangeField.disable();
+            rec = this.o;
+            this.isAdd = !!rec.data[Ext.calendar.EventMappings.IsNew.name];
+            if (this.isAdd) {
+                // Enable adding the default record that was passed in
+                // if it's new even if the user makes no changes
+                rec.markDirty();
+                this.setTitle(this.titleTextAdd);
+            }
+            else {
+                this.setTitle(this.titleTextEdit);
+            }
+
+            f.loadRecord(rec);
+        }
+        else {
+        	this.dateRangeField.enable();
+            this.isAdd = true;
+            this.setTitle(this.titleTextAdd);
+
+            var M = Ext.calendar.EventMappings,
+            eventId = M.EventId.name,
+            start = this.o[M.StartDate.name],
+            end = this.o[M.EndDate.name] || start.add('h', 1);
+            if (start.getHours() < this.startHour) {
+            	start.setHours(this.startHour);
+            	start.setMinutes(0);
+            }
+            if (end.getHours() > this.endHour) {
+            	end.setHours(this.endHour);
+            	end.setMinutes(0);
+            }
+            rec = new Ext.calendar.EventRecord();
+            //rec.data[M.EventId.name] = this.newId++;
+            rec.data[M.StartDate.name] = start;
+            rec.data[M.EndDate.name] = end;
+            //rec.data[M.IsAllDay.name] = !!o[M.IsAllDay.name] || start.getDate() != end.clone().add(Date.MILLI, 1).getDate();
+            rec.data[M.IsNew.name] = true;
+
+            f.reset();
+            f.loadRecord(rec);
+        }
+
+        if (this.calendarStore) {
+            this.doctor.setValue(rec.data[Ext.calendar.EventMappings.CalendarId.name]);
+        };
+        if (this.staffStore) {
+            this.staffPicker.setValue(rec.data[Ext.calendar.EventMappings.StaffId.name]);
+        }
+        
+        this.dateRangeField.setValue(rec.data);
+        this.activeRecord = rec;
 
 /*        Ext.get('tblink').on('click',
         function(e) {
@@ -183,62 +236,13 @@ Ext.extend(Ext.calendar.EventEditWindow, Ext.Window, {
      * @return {Ext.Window} this
      */
     show: function(o, animateTarget) {
-
-        // Work around the CSS day cell height hack needed for initial render in IE8/strict:
-        var anim = (Ext.isIE8 && Ext.isStrict) ? null: animateTarget;
+    	
+    	var anim = (Ext.isIE8 && Ext.isStrict) ? null: animateTarget;
 
         Ext.calendar.EventEditWindow.superclass.show.call(this, anim,
         function() {
-            Ext.getCmp('title').focus(false, 100);
+            this.titleField.focus(false, 100);
         });
-        Ext.getCmp('delete-btn')[o.data && o.data[Ext.calendar.EventMappings.EventId.name] ? 'show': 'hide']();
-
-        var rec,
-        f = this.formPanel.form;
-
-        if (o.data) {
-            rec = o;
-            this.isAdd = !!rec.data[Ext.calendar.EventMappings.IsNew.name];
-            if (this.isAdd) {
-                // Enable adding the default record that was passed in
-                // if it's new even if the user makes no changes
-                rec.markDirty();
-                this.setTitle(this.titleTextAdd);
-            }
-            else {
-                this.setTitle(this.titleTextEdit);
-            }
-
-            f.loadRecord(rec);
-        }
-        else {
-            this.isAdd = true;
-            this.setTitle(this.titleTextAdd);
-
-            var M = Ext.calendar.EventMappings,
-            eventId = M.EventId.name,
-            start = o[M.StartDate.name],
-            end = o[M.EndDate.name] || start.add('h', 1);
-
-            rec = new Ext.calendar.EventRecord();
-            //rec.data[M.EventId.name] = this.newId++;
-            rec.data[M.StartDate.name] = start;
-            rec.data[M.EndDate.name] = end;
-            //rec.data[M.IsAllDay.name] = !!o[M.IsAllDay.name] || start.getDate() != end.clone().add(Date.MILLI, 1).getDate();
-            rec.data[M.IsNew.name] = true;
-
-            f.reset();
-            f.loadRecord(rec);
-        }
-
-        if (this.calendarStore) {
-            Ext.getCmp('calendar').setValue(rec.data[Ext.calendar.EventMappings.CalendarId.name]);
-        };
-        if (this.staffStore) {
-            Ext.getCmp('staff').setValue(rec.data[Ext.calendar.EventMappings.StaffId.name]);
-        }
-        Ext.getCmp('date-range').setValue(rec.data);
-        this.activeRecord = rec;
 
         return this;
     },
@@ -252,8 +256,9 @@ Ext.extend(Ext.calendar.EventEditWindow, Ext.Window, {
 
     // private
     onCancel: function() {
-        this.cleanup(true);
-        this.fireEvent('eventcancel', this);
+    	this.close();
+//        this.cleanup(true);
+//        this.fireEvent('eventcancel', this);
     },
 
     // private
@@ -263,17 +268,18 @@ Ext.extend(Ext.calendar.EventEditWindow, Ext.Window, {
         }
         delete this.activeRecord;
 
-        if (hide === true) {
+        /*if (hide === true) {
             // Work around the CSS day cell height hack needed for initial render in IE8/strict:
             //var anim = afterDelete || (Ext.isIE8 && Ext.isStrict) ? null : this.animateTarget;
             this.hide();
-        }
+        }*/
+        this.close;
     },
 
     // private
     updateRecord: function() {
         var f = this.formPanel.form,
-        dates = Ext.getCmp('date-range').getValue(),
+        dates = this.dateRangeField.getValue(),
         M = Ext.calendar.EventMappings;
 
         f.updateRecord(this.activeRecord);

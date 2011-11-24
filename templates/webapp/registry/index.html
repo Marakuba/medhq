@@ -27,6 +27,23 @@
     <link rel="stylesheet" type="text/css" href="{{ MEDIA_URL }}resources/css/app.css"/>
     <link rel="stylesheet" type="text/css" href="{{ MEDIA_URL }}app/calendar/resources/css/calendar.css"/>
     <link rel="stylesheet" type="text/css" href="{{ MEDIA_URL }}app/calendar/resources/css/examples.css"/>
+    <style type="text/css" media="all">
+	    .ext-cal-dayview .ext-cal-body-ct .ext-cal-bg-tbl {
+		    height: 504px;
+		}
+		
+		.ext-cal-day-col-gutter {
+		    height: 504px;
+		}
+
+    	.x-tree-node-anchor {
+    		white-space: normal;
+    	}
+    	
+    	.ext-cal-hd-ad-inner {
+			height:50px;
+		}
+    </style>
 
     <!-- FAM -->
     <link rel="stylesheet" type="text/css" href="{{ MEDIA_URL }}resources/css/silk.css"/>
@@ -42,9 +59,6 @@
     <!-- LIBS -->
     <script type="text/javascript" src="{{ MEDIA_URL }}extjs/adapter/ext/ext-base.js"></script>
     
-    <script type="text/javascript" src="{{ MEDIA_URL }}web-socket-js/swfobject.js"></script>
-    <script type="text/javascript" src="{{ MEDIA_URL }}web-socket-js/web_socket.js"></script>
-    
     <!-- ENDLIBS -->
 
     <script type="text/javascript" src="{{ MEDIA_URL }}extjs/ext-all{% if debug %}-debug{% endif %}.js"></script>
@@ -57,7 +71,15 @@
     <script type="text/javascript" src="{{ MEDIA_URL }}extjs/ux/Spinner.js"></script>
     <script type="text/javascript" src="{{ MEDIA_URL }}extjs/ux/SpinnerField.js"></script>
     <script type="text/javascript" src="{{ MEDIA_URL }}extjs/ux/statusbar/StatusBar.js"></script>
+    <script type="text/javascript" src="{{ MEDIA_URL }}extjs/ux/SearchField.js"></script>
     <script type="text/javascript" src="{{ MEDIA_URL }}extjs/ux/CheckColumn.js"></script> 
+    
+    <script type="text/javascript" src="{{ MEDIA_URL }}extjs/ux/treegrid/TreeGridSorter.js"></script>
+    <script type="text/javascript" src="{{ MEDIA_URL }}extjs/ux/treegrid/TreeGridColumnResizer.js"></script>
+    <script type="text/javascript" src="{{ MEDIA_URL }}extjs/ux/treegrid/TreeGridNodeUI.js"></script>
+    <script type="text/javascript" src="{{ MEDIA_URL }}extjs/ux/treegrid/TreeGridLoader.js"></script>
+    <script type="text/javascript" src="{{ MEDIA_URL }}extjs/ux/treegrid/TreeGridColumns.js"></script>
+    <script type="text/javascript" src="{{ MEDIA_URL }}extjs/ux/treegrid/TreeGrid.js"></script>
 
     <script type="text/javascript" src="{{ MEDIA_URL }}app/ux/InputTextMask.js"></script> 
 	
@@ -86,28 +108,28 @@
 	<script type="text/javascript" src="{{ MEDIA_URL }}app/calendar/EventManager.js"></script>
 	<script type="text/javascript" src="{{ MEDIA_URL }}app/calendar/src/Ext.calendar.js"></script>
     
+	<script type="text/javascript" src="{{ MEDIA_URL }}app/calendar/src/templates/DayHeaderTemplate.js"></script>
+	<script type="text/javascript" src="{{ MEDIA_URL }}app/calendar/src/templates/DayBodyTemplate.js"></script>
+	<script type="text/javascript" src="{{ MEDIA_URL }}app/calendar/src/templates/DayViewTemplate.js"></script>
     <script type="text/javascript" src="{{ MEDIA_URL }}app/calendar/src/templates/BoxLayoutTemplate.js"></script>
-    <script type="text/javascript" src="{{ MEDIA_URL }}app/calendar/src/templates/DayBodyTemplate.js"></script>
-    <script type="text/javascript" src="{{ MEDIA_URL }}app/calendar/src/templates/DayHeaderTemplate.js"></script>
-    <script type="text/javascript" src="{{ MEDIA_URL }}app/calendar/src/templates/DayViewTemplate.js"></script>
     <script type="text/javascript" src="{{ MEDIA_URL }}app/calendar/src/templates/MonthViewTemplate.js"></script>
     
-    <script type="text/javascript" src="{{ MEDIA_URL }}app/calendar/src/dd/CalendarDD.js"></script>
     <script type="text/javascript" src="{{ MEDIA_URL }}app/calendar/src/dd/CalendarScrollManager.js"></script>
-    <script type="text/javascript" src="{{ MEDIA_URL }}app/calendar/src/dd/DayViewDD.js"></script>
     <script type="text/javascript" src="{{ MEDIA_URL }}app/calendar/src/dd/StatusProxy.js"></script>
+    <script type="text/javascript" src="{{ MEDIA_URL }}app/calendar/src/dd/CalendarDD.js"></script>
+    <script type="text/javascript" src="{{ MEDIA_URL }}app/calendar/src/dd/DayViewDD.js"></script>
     
     <script type="text/javascript" src="{{ MEDIA_URL }}app/calendar/src/EventRecord.js"></script>
     <script type="text/javascript" src="{{ MEDIA_URL }}app/calendar/src/views/MonthDayDetailView.js"></script>
+    <script type="text/javascript" src="{{ MEDIA_URL }}app/calendar/src/WeekEventRenderer.js"></script>
     <script type="text/javascript" src="{{ MEDIA_URL }}app/calendar/src/widgets/CalendarPicker.js"></script>
     <script type="text/javascript" src="{{ MEDIA_URL }}app/calendar/src/widgets/StaffPicker.js"></script>
     <script type="text/javascript" src="{{ MEDIA_URL }}app/calendar/src/widgets/StaffGrid.js"></script>
-    <script type="text/javascript" src="{{ MEDIA_URL }}app/calendar/src/WeekEventRenderer.js"></script>
     <script type="text/javascript" src="{{ MEDIA_URL }}app/calendar/src/views/CalendarView.js"></script>
-    <script type="text/javascript" src="{{ MEDIA_URL }}app/calendar/src/views/MonthView.js"></script>
     <script type="text/javascript" src="{{ MEDIA_URL }}app/calendar/src/views/DayView.js"></script>
-    <script type="text/javascript" src="{{ MEDIA_URL }}app/calendar/src/views/DayHeaderView.js"></script>
     <script type="text/javascript" src="{{ MEDIA_URL }}app/calendar/src/views/DayBodyView.js"></script>
+    <script type="text/javascript" src="{{ MEDIA_URL }}app/calendar/src/views/MonthView.js"></script>
+    <script type="text/javascript" src="{{ MEDIA_URL }}app/calendar/src/views/DayHeaderView.js"></script>
     <script type="text/javascript" src="{{ MEDIA_URL }}app/calendar/src/views/WeekView.js"></script>
     
     <script type="text/javascript" src="{{ MEDIA_URL }}app/calendar/src/widgets/DateRangeField.js"></script>
@@ -115,6 +137,7 @@
     
     <script type="text/javascript" src="{{ MEDIA_URL }}app/calendar/app/timeslot/ServiceGrid.js"></script>
     <script type="text/javascript" src="{{ MEDIA_URL }}app/calendar/app/timeslot/PatientGrid.js"></script>
+    <script type="text/javascript" src="{{ MEDIA_URL }}app/calendar/app/timeslot/VacantTimeslotGrid.js"></script>
     <script type="text/javascript" src="{{ MEDIA_URL }}app/calendar/app/timeslot/PreorderedServiceInlineGrid.js"></script>
     
 	<script type="text/javascript" src="{{ MEDIA_URL }}app/calendar/src/EventEditForm.js"></script>
@@ -134,6 +157,7 @@
     <script type="text/javascript" src="{{ MEDIA_URL }}app/registry/ReferralGrid.js"></script>
     <script type="text/javascript" src="{{ MEDIA_URL }}app/registry/ReferralWindow.js"></script>
 
+    <script type="text/javascript" src="{{ MEDIA_URL }}app/registry/patient/ManualGrid.js"></script>
     <script type="text/javascript" src="{{ MEDIA_URL }}app/registry/patient/LabGrid.js"></script>
     <script type="text/javascript" src="{{ MEDIA_URL }}app/registry/patient/ExamCardGrid.js"></script>
     <script type="text/javascript" src="{{ MEDIA_URL }}app/registry/patient/VisitGrid.js"></script>
@@ -160,6 +184,7 @@
     <script type="text/javascript" src="{{ MEDIA_URL }}app/registry/preorder/PreorderGrid.js"></script>
 
     <script type="text/javascript" src="{{ MEDIA_URL }}app/registry/visit/VisitServicePanel.js"></script>
+    <script type="text/javascript" src="{{ MEDIA_URL }}app/service/ServiceTreeGrid.js"></script>
     <script type="text/javascript" src="{{ MEDIA_URL }}app/registry/visit/StaffWindow.js"></script>
 	<script type="text/javascript" src="{{ MEDIA_URL }}app/registry/visit/VisitForm.js"></script>
     <script type="text/javascript" src="{{ MEDIA_URL }}app/registry/visit/OrderedServiceInlineGrid.js"></script>
@@ -209,7 +234,7 @@
     <script type="text/javascript" src="{{ MEDIA_URL }}app/registry/app.js"></script>
 
 
-<!--     <script type="text/javascript" src="{{ MEDIA_URL }}resources/js/web-socket-js/swfobject.js"></script>
+    <script type="text/javascript" src="{{ MEDIA_URL }}resources/js/web-socket-js/swfobject.js"></script>
   <script type="text/javascript" src="{{ MEDIA_URL }}resources/js/web-socket-js/web_socket.js"></script>
 
 <script type="text/javascript">
@@ -227,8 +252,8 @@
 
       // Connect to Web Socket.
       // Change host/port here to your own Web Socket server.
-      // ws = new WebSocket("ws://192.168.1.204:8888/");
-      /*ws = new WebSocket("ws://127.0.0.1:8000/");
+      ws = new WebSocket("ws://192.168.1.204:8888/");
+      //ws = new WebSocket("ws://127.0.0.1:8000/");
 
       // Set event handlers.
       ws.onopen = function() {
@@ -243,31 +268,10 @@
       };
       ws.onerror = function() {
         console.log("printserver error");
-      };*/
-
+      };
     }
     
-    function onSubmit() {
-      var input = document.getElementById("input");
-      // You can send message to the Web Socket using ws.send.
-      ws.send(input.value);
-      output("send: " + input.value);
-      input.value = "";
-      input.focus();
-    }
-    
-    function onCloseClick() {
-      ws.close();
-    }
-    
-    function output(str) {
-      var log = document.getElementById("log");
-      var escaped = str.replace(/&/, "&amp;").replace(/</, "&lt;").
-        replace(/>/, "&gt;").replace(/"/, "&quot;"); // "
-      log.innerHTML = escaped + "<br>" + log.innerHTML;
-    }
-
-  </script> -->
+  </script>
 
 {% endblock %}
 

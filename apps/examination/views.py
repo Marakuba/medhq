@@ -12,8 +12,10 @@ from examination.forms import EpicrisisForm
 
 def cardPrint(request,card_id):
     card = get_object_or_404(ExaminationCard, pk=card_id)
+    to_print = card.comment.split(',')
     ec = {
-            'card':card
+            'card':card,
+            'to_print':to_print
     }
     return direct_to_template(request=request, 
                               template="print/exam/exam_card.html",

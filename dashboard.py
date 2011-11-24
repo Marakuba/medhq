@@ -34,30 +34,30 @@ class CustomIndexDashboard(Dashboard):
         self.title = title 
         self.columns = 2
         # append a link list module for "quick links"
-        self.children.append(Toolbar(
-            title=_('Quick links'),
-            layout='inline',
-            draggable=False,
-            deletable=False,
-            collapsible=False,
-            children=[
-                {
-                    'title': _(u'Новый пациент'),
-                    'url': reverse('admin:patient_patient_add'),
-                    'icon': 'resources/images/patient-new.png'
-                },{
-                    'title': _(u'Новый прием'),
-                    'url': reverse('admin:visit_visit_add'),
-                    'icon': 'resources/images/document-new.png'
-                },
+#        self.children.append(Toolbar(
+#            title=_('Quick links'),
+#            layout='inline',
+#            draggable=False,
+#            deletable=False,
+#            collapsible=False,
+#            children=[
 #                {
-#                    'title': _(u'Предварительная запись'),
-#                    'url': '%s?preliminary' % reverse('admin:visit_visit_add'),
-#                    'icon': 'resources/images/calendar.png'
-#                }
-                
-            ]
-        ))
+#                    'title': _(u'Новый пациент'),
+#                    'url': reverse('admin:patient_patient_add'),
+#                    'icon': 'resources/images/patient-new.png'
+#                },{
+#                    'title': _(u'Новый прием'),
+#                    'url': reverse('admin:visit_visit_add'),
+#                    'icon': 'resources/images/document-new.png'
+#                },
+##                {
+##                    'title': _(u'Предварительная запись'),
+##                    'url': '%s?preliminary' % reverse('admin:visit_visit_add'),
+##                    'icon': 'resources/images/calendar.png'
+##                }
+#                
+#            ]
+#        ))
 
         # append an app list module for "Applications"
         self.children.append(modules.AppList(

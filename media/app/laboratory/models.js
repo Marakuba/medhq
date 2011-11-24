@@ -14,12 +14,15 @@ App.models.LabService = new Ext.data.Record.create([
     {name: 'lab_group'},
     {name: 'modified'},
     {name: 'order'},
+    {name: 'operator_name'},
     {name: 'patient'},
+    {name: 'patient_name'},
     {name: 'patient_age'},
     {name: 'resource_uri'},
     {name: 'service'},
     {name: 'service_name'},
     {name: 'service_full_name'},
+    {name: 'service_code'},
     {name: 'staff'},
     {name: 'staff_name'}
 ]);
@@ -38,6 +41,7 @@ App.models.LabOrder = new Ext.data.Record.create([
 	{name: 'staff_name'},
 	{name: 'patient_name'},
 	{name: 'operator_name'},
+	{name: 'is_male', type:'bool'},
 	{name: 'is_completed', type:'bool'},
 	{name: 'comment'},
 	{name: 'print_date', type:'date',format:'c'},

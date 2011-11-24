@@ -23,7 +23,8 @@ Ext.calendar.StaffGrid = Ext.extend(Ext.grid.GridPanel, {
 		this.store = new Ext.data.Store({
 			autoLoad:true,
 		    baseParams: {
-		    	format:'json'
+		    	format:'json',
+		    	'doctor__isnull':false
 		    },
 		    paramNames: {
 			    start : 'offset',

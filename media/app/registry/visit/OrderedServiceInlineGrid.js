@@ -239,9 +239,9 @@ App.visit.OrderedServiceInlineGrid = Ext.extend(Ext.grid.EditorGridPanel, {
 	},
 	
 	addRecord: function(attrs){
-		var re = /(.*) \[\d+\]/;
-		var res = re.exec(attrs.text);
-		var text = res[res.length-1];
+//		var re = /(.*) \[\d+\]/;
+//		var res = re.exec(attrs.text);
+		var text = attrs.text//res[res.length-1];
 		var ids = attrs.id.split('-');
 		var id = ids[0];
 		var place = ids[1];
@@ -261,12 +261,22 @@ App.visit.OrderedServiceInlineGrid = Ext.extend(Ext.grid.EditorGridPanel, {
 	
 	addRow: function(attrs, can_duplicate, callback, scope) {
 		if(!can_duplicate) {
-			var re = /(.*) \[\d+\]/;
-			res = re.exec(attrs.text);
-			var text = res[res.length-1];		
-			if(this.store.query('service_name',text).length){
-				return false;
-			}
+//			var re = /(.*) \[\d+\]/;
+//			res = re.exec(attrs.text);
+//			var text = res[res.length-1];	
+			var ids = attrs.id.split('-');
+			var has_record = false;
+			this.store.each(function(rec){
+				var serv_id = App.uriToId(rec.data.service);
+				var ex_id = App.uriToId(rec.data.execution_place);
+                if ((serv_id == ids[0]) && (ex_id == ids[1])) {
+                	has_record = true;
+                	return 0
+                }
+            });
+            if (has_record) {
+            	return false;
+            };
 		}
 		if(attrs.staff){
 			var box = App.visit.StaffBox;
