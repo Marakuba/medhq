@@ -36,7 +36,6 @@ App.examination.TemplateBody = Ext.extend(Ext.TabPanel, {
 			this.addSecBtn.disable();
 		};
 		
-		
 		this.fieldSetStore.each(function(record){
 			var rec = record.data; 
 			this.menuBtns[rec.name] = {
@@ -87,7 +86,6 @@ App.examination.TemplateBody = Ext.extend(Ext.TabPanel, {
 				scope:this
 			}
 		];
-		
 		this.generalTab = new App.examination.GeneralTab({
 			print_name:this.print_name,
 			listeners:{
@@ -181,7 +179,6 @@ App.examination.TemplateBody = Ext.extend(Ext.TabPanel, {
 			
 			this.insert(0,this.generalTab);
 			this.setActiveTab(0);
-			
 		},this)
 	},
 	

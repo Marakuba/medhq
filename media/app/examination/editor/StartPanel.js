@@ -73,7 +73,6 @@ App.examination.StartPanel = Ext.extend(Ext.Panel, {
 			    	dataIndex: 'service_name' 
 			    }
 			],
-//			view: new Ext.grid.GridView({forceFit : true})
 			viewConfig:{
 				forceFit:true
 			},
