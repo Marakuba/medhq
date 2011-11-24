@@ -20,6 +20,14 @@
 	.template-preview p {
 	}
 	
+	.template-preview .footer {
+		margin-top:1cm;
+	}
+	
+	.template-preview .footer span {
+		float:right;
+	}
+	
 </style>
 
 <div class="template-preview">
@@ -31,4 +39,10 @@
 	<p>{{ ticket.text }}</p>
 	{% endfor %}
 {% endfor %}
+
+<div class="footer">Врач
+	<span>___________________ {{ request.active_profile }}</span>
 </div>
+<br style="clear:both">
+</div>
+
