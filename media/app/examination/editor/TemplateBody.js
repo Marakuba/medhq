@@ -36,6 +36,7 @@ App.examination.TemplateBody = Ext.extend(Ext.TabPanel, {
 			this.addSecBtn.disable();
 		};
 		
+		
 		this.fieldSetStore.each(function(record){
 			var rec = record.data; 
 			this.menuBtns[rec.name] = {
@@ -86,7 +87,9 @@ App.examination.TemplateBody = Ext.extend(Ext.TabPanel, {
 				scope:this
 			}
 		];
+		
 		this.generalTab = new App.examination.GeneralTab({
+			print_name:this.print_name,
 			listeners:{
 				printnamechange:function(newValue,oldValue){
 					if (this.record){
@@ -110,6 +113,10 @@ App.examination.TemplateBody = Ext.extend(Ext.TabPanel, {
 				deletetmp: function(){
 					this.record.store.remove(this.record);
 					this.fireEvent('deletetmp');
+				},
+				changetitle: function(text){
+					this.record.set('print_name',text);
+					this.fireEvent('changetitle',text);
 				},
 				scope:this
 			},
@@ -151,7 +158,7 @@ App.examination.TemplateBody = Ext.extend(Ext.TabPanel, {
 		Ext.apply(this, Ext.apply(this.initialConfig, config));
 		App.examination.TemplateBody.superclass.initComponent.apply(this, arguments);
 		
-		this.on('afterrender',function(){
+		this.on('afterrender',function(form){
 			this.subSectionStore.each(function(record){
 				var rec = record.data; 
 				var item = {
@@ -174,7 +181,7 @@ App.examination.TemplateBody = Ext.extend(Ext.TabPanel, {
 			
 			this.insert(0,this.generalTab);
 			this.setActiveTab(0);
-		
+			
 		},this)
 	},
 	

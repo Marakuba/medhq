@@ -15,6 +15,32 @@ App.examination.GeneralTab = Ext.extend(Ext.form.FormPanel, {
 			}
 		});
 		
+		var cfg = {
+            shadow: false,
+            completeOnEnter: true,
+            cancelOnEsc: true,
+            updateEl: true,
+            ignoreNoChange: true
+        };
+        
+        this.headerEditor = new Ext.Editor(Ext.apply({
+            cls: 'x-large-editor',
+            alignment: 'bl-bl?',
+            offsets: [0, 3],
+            listeners: {
+                complete: function(ed, value, oldValue){
+                	this.fireEvent('changetitle',value)
+                },
+                scope:this
+            },
+            field: {
+                allowBlank: false,
+                xtype: 'textfield',
+                width: 90,
+                selectOnFocus: true
+            }
+        }, cfg));
+		
 		this.dltBtn = new Ext.Button({
 			text: 'Удалить шаблон',
 			handler:function(){
@@ -38,12 +64,35 @@ App.examination.GeneralTab = Ext.extend(Ext.form.FormPanel, {
 			scope:this
 		});
 		
+		this.headerElt = new Ext.BoxComponent({
+			html:this.print_name? this.print_name:'Нет заголовка',
+			listeners:{
+				afterrender:function(){
+					var el = this.headerElt.el; 
+					el.on('dblclick',function(e,t){
+						this.headerEditor.startEdit(t);
+					},this);
+				},
+				scope:this
+			}
+		});
+		
+		this.titlePanel = new Ext.Panel({
+			region:'center',
+			layout:'hbox',
+			items:[{
+				xtype:'label',
+				text:'Заголовок:',
+				margins:'0 10 0 0 '
+			},this.headerElt]
+		});
+		
 		this.centralPanel = new Ext.Panel({
-			layout:'form',
+			layout:'border',
 			region: 'center',
 			padding : 10,
 			border:false,
-			items:[this.printNameField]
+			items:[this.titlePanel]
 		});
 		
 		this.menuPanel = new Ext.Panel({
@@ -81,6 +130,10 @@ App.examination.GeneralTab = Ext.extend(Ext.form.FormPanel, {
 								
 		Ext.apply(this, Ext.apply(this.initialConfig, config));
 		App.examination.GeneralTab.superclass.initComponent.apply(this, arguments);
+		
+		this.on('afterrender',function(){
+			
+		});
 	},
 	
 	setPrintName: function (text){
