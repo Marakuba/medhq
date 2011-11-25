@@ -155,6 +155,13 @@ class Card(models.Model):
     ordered_service = models.ForeignKey(OrderedService,blank=True, null=True)
     assistant = models.ForeignKey(Position, verbose_name=u'Лаборант', null=True, blank=True)
     data = models.TextField(u'Данные', null=True, blank=True)
+    equipment = models.ForeignKey(Equipment, verbose_name=u'Оборудование', null=True, blank=True)
+    area = models.TextField(u'Область исследования', null=True, blank=True)
+    scan_mode = models.TextField(u'Режим сканирования', null=True, blank=True)
+    thickness = models.TextField(u'Толщина реконструктивного среза', null=True, blank=True)
+    width = models.TextField(u'ширина/шаг', null=True, blank=True)
+    contrast_enhancement = models.TextField(u'Контрастное усиление', null=True, blank=True)
+    
     
     def __unicode__(self):
         return "%s - %s - %s" % (self.created.strftime("%d/%m/%Y"),self.name or self.print_name,self.ordered_service.order.patient.short_name())
@@ -173,6 +180,12 @@ class Template(models.Model):
     base_service = models.ForeignKey(BaseService, null=True, blank=True)
     staff = models.ForeignKey(Staff, null=True, blank=True)
     data = models.TextField(u'Данные', null=True, blank=True)
+    equipment = models.ForeignKey(Equipment, verbose_name=u'Оборудование', null=True, blank=True)
+    area = models.TextField(u'Область исследования', null=True, blank=True)
+    scan_mode = models.TextField(u'Режим сканирования', null=True, blank=True)
+    thickness = models.TextField(u'Толщина реконструктивного среза', null=True, blank=True)
+    width = models.TextField(u'ширина/шаг', null=True, blank=True)
+    contrast_enhancement = models.TextField(u'Контрастное усиление', null=True, blank=True)
     
     
 class Glossary(MPTTModel):

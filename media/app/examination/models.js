@@ -111,7 +111,13 @@ App.models.Template = new Ext.data.Record.create([
 	{name: 'print_date'},
 	{name: 'base_service'},
 	{name: 'staff'},
-	{name: 'data'}
+	{name: 'data'},
+	{name: 'equipment'},
+	{name: 'area'},
+	{name: 'scan_mode'},
+	{name: 'thickness'},
+	{name: 'width'},
+	{name: 'contrast_enhancement'}
 ]);
 	
 App.models.Card = new Ext.data.Record.create([
