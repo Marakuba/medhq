@@ -64,6 +64,14 @@ App.examination.GeneralTab = Ext.extend(Ext.form.FormPanel, {
 			scope:this
 		});
 		
+		this.equipBtn = new Ext.Button({
+			text: 'Оборудование',
+			handler:function(){
+				this.fireEvent('equiptab');
+			},
+			scope:this
+		});
+		
 		this.headerElt = new Ext.BoxComponent({
 			html:this.print_name? this.print_name:'Нет заголовка',
 			listeners:{
@@ -112,7 +120,8 @@ App.examination.GeneralTab = Ext.extend(Ext.form.FormPanel, {
 	        scale: 'large',
 			items:[this.previewBtn,
 				this.moveArchiveBtn,
-				this.dltBtn
+				this.dltBtn,
+				this.equipBtn
 			]
 		});
 		

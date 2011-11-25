@@ -88,6 +88,26 @@ App.examination.TemplateBody = Ext.extend(Ext.TabPanel, {
 			}
 		];
 		
+		this.equipTab = new App.examination.EquipmentTab({
+			id:'equip-tab',
+			listeners:{
+				setdata:function(field,value){
+					this.record.set(field,value);
+				},
+				close:function(){
+					this.record.beginEdit();
+					this.record.set('equipment','');
+					this.record.set('area','');
+					this.record.set('scan_mode','');
+					this.record.set('thickness','');
+					this.record.set('width','');
+					this.record.set('contrast_enhancement','');
+					this.record.endEdit();
+				},
+				scope: this
+			}
+		});
+		
 		this.generalTab = new App.examination.GeneralTab({
 			print_name:this.print_name,
 			listeners:{
@@ -118,6 +138,10 @@ App.examination.TemplateBody = Ext.extend(Ext.TabPanel, {
 					this.record.set('print_name',text);
 					this.fireEvent('changetitle',text);
 				},
+				equiptab: function(){
+					this.add(this.equipTab);
+					this.equipTab.loadRecord(this.record);
+				},
 				scope:this
 			},
 			scope:this
@@ -133,6 +157,18 @@ App.examination.TemplateBody = Ext.extend(Ext.TabPanel, {
 			if (tab){
 				this.fillSubSecMenu(tab.tabName);
 			};
+		},this);
+		
+		this.on('beforedestroy',function(){
+			if (!this.record.equipment){
+				this.record.beginEdit();
+				this.record.set('area','');
+				this.record.set('scan_mode','');
+				this.record.set('thickness','');
+				this.record.set('width','');
+				this.record.set('contrast_enhancement','');
+				this.record.endEdit();
+			}
 		},this);
 		
 		this.on('beforeticketremove', function(ticket){
@@ -180,6 +216,10 @@ App.examination.TemplateBody = Ext.extend(Ext.TabPanel, {
 			};
 			
 			this.insert(0,this.generalTab);
+			if (this.record.data.equipment){
+				this.add(this.equipTab);
+				this.equipTab.loadRecord(this.record);
+			};
 			this.setActiveTab(0);
 			
 		},this)

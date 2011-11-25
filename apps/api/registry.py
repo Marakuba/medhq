@@ -1249,6 +1249,7 @@ class TemplateResource(ExtResource):
     
     base_service = fields.ForeignKey(BaseServiceResource, 'base_service',null=True)
     staff = fields.ForeignKey(StaffResource, 'staff', null=True)
+    equipment = fields.ForeignKey(ExamEquipmentResource, 'equipment', null=True)
     
     def dehydrate(self, bundle):
         obj = bundle.obj
