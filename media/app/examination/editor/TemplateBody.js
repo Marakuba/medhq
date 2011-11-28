@@ -262,7 +262,12 @@ App.examination.TemplateBody = Ext.extend(Ext.TabPanel, {
 		this.subSectionMenu.removeAll(true);
 		Ext.each(this.subSecBtns[section],function(tabName){
 			this.subSectionMenu.add(tabName);
-		},this)
+		},this);
+		if (this.subSectionMenu.items.length){
+			this.addSubSecBtn.enable();
+		} else {
+			this.addSubSecBtn.disable();
+		}
 	},
 	
 	onAddSubSection: function(title){

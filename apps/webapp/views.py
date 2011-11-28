@@ -144,6 +144,10 @@ def get_service_tree(request):
     """
     payment_type = request.GET.get('payment_type',u'н')
     staff = request.GET.get('staff')
+    
+    nocache = request.GET.get('nocache')
+    has_promo = request.GET.get('promotion')
+    
     _cache_key = (settings.SERVICETREE_ONLY_OWN and request.active_profile) and 'service_list_%s_%s' % (request.active_profile.state, payment_type) or ('service_list_%s' % payment_type)
     
     if settings.SERVICETREE_ONLY_OWN and request.active_profile:
@@ -275,7 +279,7 @@ def get_service_tree(request):
 #            if node:
 #                tree.append(node)
             return tree 
-        
+    
     for base_service in BaseService.objects.all().order_by(BaseService._meta.tree_id_attr, BaseService._meta.left_attr, 'level'): #@UndefinedVariable
         if base_service.is_leaf_node():
             if result.has_key(base_service.id):
@@ -294,27 +298,29 @@ def get_service_tree(request):
     #import pdb; pdb.set_trace()
 #    return nodes
 
-    if request.GET.get('nocache'):
+    if nocache:
         _cached_tree = None
     else:
         _cached_tree = cache.get(_cache_key)
         
     if not _cached_tree:
         tree = []
-        promotions = Promotion.objects.actual()
-        if promotions.count():
-            tree_node = {
-                'id':'promotions',
-                'text':u'Акции / Комплексные обследования',
-                'children':[promo_dict(promo) for promo in promotions],
-                'leaf':False,
-                'singleClickExpand':True
-            }
-            tree.append(tree_node)
+        if has_promo:
+            promotions = Promotion.objects.actual()
+            if promotions.count():
+                tree_node = {
+                    'id':'promotions',
+                    'text':u'Акции / Комплексные обследования',
+                    'children':[promo_dict(promo) for promo in promotions],
+                    'leaf':False,
+                    'singleClickExpand':True
+                }
+                tree.append(tree_node)
         s = clear_tree(nodes,[])
         tree.extend(s) #@UndefinedVariable
         _cached_tree = simplejson.dumps(tree)
-        cache.set(_cache_key, _cached_tree, 24*60*60*30)
+        if not nocache:
+            cache.set(_cache_key, _cached_tree, 24*60*60*30)
 
     return _cached_tree
 
