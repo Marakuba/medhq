@@ -1,11 +1,11 @@
 Ext.ns('App.examination');
 Ext.ns('Ext.ux');
 
-App.examination.StartPanel = Ext.extend(Ext.Panel, {
+App.examination.CardStartPanel = Ext.extend(Ext.Panel, {
 	
     initComponent: function() {
     	this.radio = 'empty';
-    	this.printName = true;
+    	this.printName = true; //в таблице шаблонов отображать колонку 'print_name'
     	
         this.proxy = new Ext.data.HttpProxy({
         	url: get_api_url('examtemplate')
@@ -102,7 +102,36 @@ App.examination.StartPanel = Ext.extend(Ext.Panel, {
                 ]
             }
         });
-    	
+		
+		this.fromTmpRadio = new Ext.form.Radio({
+            boxLabel: 'Из шаблона',
+            name: 'input-choice', 
+            inputValue: 'service',
+            listeners:{
+            	check: function(r,checked){
+            		if (checked){
+            			this.radio = r.getValue().inputValue;
+            			if (this.previewPanel.hidden){
+            				this.previewPanel.show();
+            			};
+        				this.tmpStore.setBaseParam('staff',App.uriToId(this.staff));
+        				this.tmpStore.setBaseParam('base_service',App.uriToId(this.service));
+        				delete this.tmpStore.baseParams['base_service__isnull'];
+        				delete this.tmpStore.baseParams['staff__isnull'];
+//                				this.printName = false;
+        				this.tmpStore.load({callback:function(){
+        					this.tmpGrid.getSelectionModel().selectFirstRow();
+        					this.onPreview();
+        				},scope:this});
+        				if (!this.tmpGrid.hidden){
+    						this.tmpGrid.hide();
+    					};
+            		}
+            	},
+            	scope:this
+            }
+        });
+		
     	var config = {
 			layout: 'border',
 			autoScroll:true,
@@ -123,13 +152,15 @@ App.examination.StartPanel = Ext.extend(Ext.Panel, {
                     border: false,
                     region: 'north',
                     align: 'stretch',
-                    items: [
-                        {
+                    items: [{
+                            xtype: 'panel',
+                            items: [this.fromTmpRadio]
+                    	},{
                             xtype: 'panel',
                             items: [
                                 {
                                     xtype: 'radio',
-                                    boxLabel: 'Пустой шаблон',
+                                    boxLabel: 'Пустая карта осмотра',
                                     name: 'input-choice', 
                                     inputValue: 'empty', 
                                     checked: true,
@@ -165,6 +196,7 @@ App.examination.StartPanel = Ext.extend(Ext.Panel, {
                                 				this.tmpStore.setBaseParam('base_service__isnull',true);
                                 				this.tmpStore.setBaseParam('staff__isnull',true);
                                 				delete this.tmpStore.baseParams['staff'];
+                                				delete this.tmpStore.baseParams['base_service'];
                                 				this.printName = true;
                                 				this.tmpStore.load({callback:function(){
                                 					this.tmpGrid.getSelectionModel().selectFirstRow();
@@ -199,40 +231,8 @@ App.examination.StartPanel = Ext.extend(Ext.Panel, {
                                 				this.tmpStore.setBaseParam('base_service__isnull',true);
                                 				this.tmpStore.setBaseParam('staff',App.uriToId(this.staff));
                                 				delete this.tmpStore.baseParams['staff__isnull'];
+                                				delete this.tmpStore.baseParams['base_service'];
                                 				this.printName = true;
-                                				this.tmpStore.load({callback:function(){
-                                					this.tmpGrid.getSelectionModel().selectFirstRow();
-                                					this.onPreview();
-                                				},scope:this});
-                                				if (this.tmpGrid.hidden){
-                            						this.tmpGrid.show();
-                            					};
-                                    		}
-                                    	},
-                                    	scope:this
-                                    }
-                                }
-                            ]
-                        },
-                        {
-                            xtype: 'panel',
-                            items: [
-                                {
-                                    xtype: 'radio',
-                                    boxLabel: 'Из услуги',
-                                    name: 'input-choice', 
-                                    inputValue: 'service',
-                                    listeners:{
-                                    	check: function(r,checked){
-                                    		if (checked){
-                                    			this.radio = r.getValue().inputValue;
-                                    			if (!this.previewPanel.hidden){
-                                    				this.previewPanel.hide();
-                                    			};
-                                				this.tmpStore.setBaseParam('staff',App.uriToId(this.staff));
-                                				this.tmpStore.setBaseParam('base_service__isnull',false);
-                                				delete this.tmpStore.baseParams['staff__isnull'];
-                                				this.printName = false;
                                 				this.tmpStore.load({callback:function(){
                                 					this.tmpGrid.getSelectionModel().selectFirstRow();
                                 					this.onPreview();
@@ -276,7 +276,18 @@ App.examination.StartPanel = Ext.extend(Ext.Panel, {
         };
         
 		Ext.apply(this, Ext.apply(this.initialConfig, config));
-        App.examination.StartPanel.superclass.initComponent.call(this);
+        App.examination.CardStartPanel.superclass.initComponent.call(this);
+        this.on('afterrender',function(){
+        	this.tmpStore.setBaseParam('staff',App.uriToId(this.staff));
+            this.tmpStore.setBaseParam('base_service',App.uriToId(this.service));
+			this.tmpStore.load({callback:function(records){
+				if (records[0]){
+					this.fromTmpRadio.setValue(true);
+					this.tmpGrid.getSelectionModel().selectFirstRow();
+					this.onPreview();
+				}
+			},scope:this});
+        });
     },
     
     printNameRenderer: function(){
@@ -300,7 +311,7 @@ App.examination.StartPanel = Ext.extend(Ext.Panel, {
     			console.log(record);
     			this.fireEvent('opentmp',record)
     		} else {
-    			console.log('не выбран шаблон')
+    			console.log('не выбран источник')
     		}
     	}
 	},

@@ -4,6 +4,19 @@ App.examorder.ExamOrderGrid = Ext.extend(Ext.grid.GridPanel, {
 
 	initComponent : function() {
 		
+		Ext.Ajax.request({
+			url:get_api_url('position'),
+			method:'GET',
+			params: {id: active_profile},
+			success:function(resp, opts) {
+				var jsonResponse = Ext.util.JSON.decode(resp.responseText);
+				Ext.each(jsonResponse.objects, function(item,i){
+					this.staff = item.staff;
+				}, this);
+			},
+			scope: this
+		});
+		
 		this.tmp_id = Ext.id();
 		
 		this.backend = App.getBackend('examservice');		
@@ -242,11 +255,18 @@ App.examorder.ExamOrderGrid = Ext.extend(Ext.grid.GridPanel, {
 				closable:true,
         		patient:rec.data.patient,
         		ordered_service:rec.data.resource_uri,
-				title: 'Карта осмотра ' + rec.data.patient_name,
-				scope:this
+				title: 'Пациент ' + rec.data.patient_name,
+				service:rec.data.service,
+				staff:this.staff
+//				scope:this
 			}
-			App.eventManager.fireEvent('launchapp', 'examcardform',config);
+//			App.eventManager.fireEvent('launchapp', 'examcardform',config);
+			
+			App.eventManager.fireEvent('launchapp', 'neocard',config);
+			
         }
+		
+		
 	},
 	
 	onGlobalSearch: function(v) {

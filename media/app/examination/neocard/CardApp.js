@@ -2,21 +2,8 @@ Ext.ns('App.examination');
 Ext.ns('App.ServicePanel','App.ux.tree');
 Ext.ns('Ext.ux');
 
-App.examination.Editor = Ext.extend(Ext.Panel, {
+App.examination.CardApp = Ext.extend(Ext.Panel, {
 	initComponent : function() {
-		
-		Ext.Ajax.request({
-			url:get_api_url('position'),
-			method:'GET',
-			params: {id: active_profile},
-			success:function(resp, opts) {
-				var jsonResponse = Ext.util.JSON.decode(resp.responseText);
-				Ext.each(jsonResponse.objects, function(item,i){
-					this.staff = item.staff;
-				}, this);
-			},
-			scope: this
-		});
 		
 		this.tmpStore = new Ext.data.RESTStore({
 			autoSave: true,
@@ -39,15 +26,8 @@ App.examination.Editor = Ext.extend(Ext.Panel, {
 			model: App.models.SubSection
 		});
 		
-		this.serviceTree = new App.ServiceTreeGrid ({
-//			layout: 'fit',
+		this.patientPanel = new App.examination.PatientHistoryPanel ({
 			region:'west',
-			baseParams:{
-				payment_type:'н',
-				staff : active_profile,
-				nocache : true
-			},
-			autoScroll:true,
 			width:250,
 			border: false,
 			collapsible:true,
@@ -55,13 +35,12 @@ App.examination.Editor = Ext.extend(Ext.Panel, {
 			split:true
 		});
 		
-		
 		this.contentPanel = new Ext.Panel({
 			region:'center',
  			border:true,
  			margins:'5 5 5 0',
  			layout: 'fit',
- 			title:'Выберите услугу',
+ 			title:'Выберите действие',
  			defaults:{
  				border:false
  			},
@@ -70,61 +49,30 @@ App.examination.Editor = Ext.extend(Ext.Panel, {
 		});
 		
 		var config = {
-			id: 'editor-cmp',
+			id: 'neocard-cmp',
 			closable:true,
 			title: 'Конструктор',
 			layout: 'border',	
      		items: [
-				this.serviceTree,
+				this.patientPanel,
 				this.contentPanel
 			]
 		};
 		
 		Ext.apply(this, Ext.apply(this.initialConfig, config));
-		App.examination.Editor.superclass.initComponent.apply(this, arguments);
+		App.examination.CardApp.superclass.initComponent.apply(this, arguments);
 		
-		this.serviceTree.on('serviceclick',function(attrs){
-			this.attrs = attrs;
-			this.onServiceClick(this.attrs)
+		this.on('afterrender',function(){
+			this.startPanel = this.newStartPanel({
+				service:this.service,
+				staff:this.staff
+			});
+			this.contentPanel.add(this.startPanel);
 		},this);
+		
 	},
 	
-	onServiceClick: function(attrs){
-		var ids = attrs.id.split('-');
-		var id = ids[0];
-		this.print_name = attrs.text;
-		
-		this.base_service = get_api_url('baseservice') + '/' + id;
-		
-		this.tmpStore.setBaseParam('base_service',id);
-		this.tmpStore.load({
-			callback:function(records,opts,success){
-				if (records.length){
-					this.contentPanel.removeAll(true);
-					this.tmpBody = this.newTmpBody({
-						print_name:records[0].data.print_name,
-						record : records[0]
-					});
-					this.contentPanel.setTitle(this.tmpBody.print_name);
-					this.contentPanel.add(this.tmpBody);
-					this.contentPanel.doLayout();
-					
-				} else {
-					this.contentPanel.removeAll(true);
-					this.startPanel = this.newStartPanel({
-						print_name:this.print_name,
-						staff:this.staff
-					});
-					this.contentPanel.setTitle('Выберите источник шаблона');
-					this.contentPanel.add(this.startPanel);
-					this.contentPanel.doLayout();
-				}
-			},
-			scope:this
-		});
-	},
-	
-	newTmpBody: function(config){
+	newCardBody: function(config){
 		return new App.examination.TemplateBody (Ext.apply(
 			{
 				base_service : this.service,
@@ -149,7 +97,7 @@ App.examination.Editor = Ext.extend(Ext.Panel, {
 	},
 	
 	newStartPanel: function(config){
-		var startPanel = new App.examination.StartPanel(config);
+		var startPanel = new App.examination.CardStartPanel(config);
 		
 		startPanel.on('opentmp',function(source){
 			this.contentPanel.removeAll(true);
@@ -181,4 +129,4 @@ App.examination.Editor = Ext.extend(Ext.Panel, {
 });
 
 
-Ext.reg('editor', App.examination.Editor);
+Ext.reg('neocard', App.examination.CardApp);
