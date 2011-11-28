@@ -210,7 +210,7 @@ App.examorder.ExamOrderGrid = Ext.extend(Ext.grid.GridPanel, {
 			}),
 	        tbar:this.ttb,
 			listeners: {
-				rowdblclick:this.onOpen.createDelegate(this, ['order'])
+				rowdblclick:this.onAdd.createDelegate(this)
 			},
 			bbar: new Ext.PagingToolbar({
 	            pageSize: 25,
@@ -257,6 +257,7 @@ App.examorder.ExamOrderGrid = Ext.extend(Ext.grid.GridPanel, {
         		ordered_service:rec.data.resource_uri,
 				title: 'Пациент ' + rec.data.patient_name,
 				service:rec.data.service,
+				print_name:rec.data.service_name,
 				staff:this.staff
 //				scope:this
 			}

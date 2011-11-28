@@ -1224,6 +1224,8 @@ class CardResource(ExtResource):
     
     ordered_service = fields.ForeignKey(OrderedServiceResource, 'ordered_service', null=True)
     assistant = fields.ForeignKey(PositionResource, 'assistant', null = True)
+    mkb_diag = fields.ForeignKey(ICD10Resource, 'mkb_diag', null=True)
+    equipment = fields.ForeignKey(ExamEquipmentResource, 'equipment', null=True)
 
     def dehydrate(self, bundle):
         obj = bundle.obj

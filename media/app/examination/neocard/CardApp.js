@@ -12,6 +12,13 @@ App.examination.CardApp = Ext.extend(Ext.Panel, {
 			model: App.models.Template
 		});
 		
+		this.cardStore = new Ext.data.RESTStore({
+			autoSave: true,
+			autoLoad : false,
+			apiUrl : get_api_url('card'),
+			model: App.models.Card
+		});
+		
 		this.fieldSetStore = new Ext.data.RESTStore({
 			autoSave: false,
 			autoLoad : true,
@@ -47,11 +54,15 @@ App.examination.CardApp = Ext.extend(Ext.Panel, {
     		items: [
     		]
 		});
+	
+		this.generalTab = new App.examination.CardGeneralTab({
+			print_name:this.print_name
+		});
 		
 		var config = {
 			id: 'neocard-cmp',
 			closable:true,
-			title: 'Конструктор',
+			title: 'Карта осмотра',
 			layout: 'border',	
      		items: [
 				this.patientPanel,
@@ -75,9 +86,9 @@ App.examination.CardApp = Ext.extend(Ext.Panel, {
 	newCardBody: function(config){
 		return new App.examination.TemplateBody (Ext.apply(
 			{
-				base_service : this.service,
 				fieldSetStore : this.fieldSetStore,
 				subSectionStore : this.subSectionStore,
+				generalTab: this.generalTab,
 				title:'Заголовок',
 				listeners:{
 					movearhcivetmp:function(){
@@ -102,25 +113,25 @@ App.examination.CardApp = Ext.extend(Ext.Panel, {
 		startPanel.on('opentmp',function(source){
 			this.contentPanel.removeAll(true);
 			if (!source){
-				this.record = new this.tmpStore.model();
+				this.record = new this.cardStore.model();
 				this.record.set('print_name',this.print_name);
 			} else {
-				this.record = new this.tmpStore.recordType(source.data);
+				this.record = new this.cardStore.recordType();
+				Ext.applyIf(this.record.data,source.data);
 				if (!this.record.data.print_name){
 					this.record.set('print_name',this.print_name);
 				};
 				delete this.record.data['id'];
 			};
-			this.record.set('base_service',this.base_service);
-			this.record.set('staff',this.staff);
-			this.tmpStore.add(this.record);
-			this.tmpBody = this.newTmpBody({
+			this.record.set('ordered_service',this.service);
+			this.cardStore.add(this.record);
+			this.cardBody = this.newCardBody({
 				print_name:this.record.data.print_name ? this.record.data.print_name: this.print_name,
 				record:this.record,
-				base_service:this.service
+				card:true // признак того, что это карта
 			});
-			this.contentPanel.setTitle(this.tmpBody.print_name);
-			this.contentPanel.add(this.tmpBody);
+			this.contentPanel.setTitle(this.cardBody.print_name);
+			this.contentPanel.add(this.cardBody);
 			this.contentPanel.doLayout();
 		},this);
 		

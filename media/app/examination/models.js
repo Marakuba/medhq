@@ -127,7 +127,15 @@ App.models.Card = new Ext.data.Record.create([
 	{name: 'print_date'},
 	{name: 'ordered_service'},
 	{name: 'assistant'},
-	{name: 'data'}
+	{name: 'data'},
+	{name: 'equipment'},
+	{name: 'area'},
+	{name: 'scan_mode'},
+	{name: 'thickness'},
+	{name: 'width'},
+	{name: 'contrast_enhancement'},
+	{name: 'assistent'},
+	{name: 'mkb_diag'}
 ]);
 
 App.models.FieldSet = new Ext.data.Record.create([

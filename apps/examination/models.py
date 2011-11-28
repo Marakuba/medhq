@@ -153,6 +153,7 @@ class Card(models.Model):
     modified = models.DateTimeField(auto_now=True)
     print_date = models.DateTimeField(u'Время печати', blank=True, null=True)
     ordered_service = models.ForeignKey(OrderedService,blank=True, null=True)
+    mkb_diag = models.ForeignKey(ICD10, null=True, blank=True)
     assistant = models.ForeignKey(Position, verbose_name=u'Лаборант', null=True, blank=True)
     data = models.TextField(u'Данные', null=True, blank=True)
     equipment = models.ForeignKey(Equipment, verbose_name=u'Оборудование', null=True, blank=True)

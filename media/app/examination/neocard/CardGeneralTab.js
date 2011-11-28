@@ -1,7 +1,7 @@
 Ext.ns('App.examination');
 Ext.ns('Ext.ux');
 
-App.examination.GeneralTab = Ext.extend(Ext.form.FormPanel, {
+App.examination.CardGeneralTab = Ext.extend(Ext.form.FormPanel, {
 	initComponent : function() {
 		
 		this.printNameField = new Ext.form.TextField({
@@ -13,6 +13,58 @@ App.examination.GeneralTab = Ext.extend(Ext.form.FormPanel, {
 				},
 			scope:this
 			}
+		});
+		
+		this.mkb = new Ext.form.LazyComboBox({
+			fieldLabel:'Диагноз по МКБ',
+			hideTrigger:true,
+			anchor:'95%',
+			name:'mbk_diag',
+            allowBlank:true,
+			store: new Ext.data.JsonStore({
+				autoLoad:false,
+				proxy: new Ext.data.HttpProxy({
+					url:get_api_url('icd10'),
+					method:'GET'
+				}),
+				root:'objects',
+				idProperty:'resource_uri',
+				fields:['resource_uri','text','id']
+			}),
+//			typeAhead: true,
+			readOnly:true,
+			//queryParam:'code__istartswith',
+//			minChars:3,
+//			triggerAction: 'all',
+			emptyText:'Выберите диагноз...',
+			valueField: 'resource_uri',
+			displayField: 'text',
+//			selectOnFocus:true,
+			listeners:{
+				'click': this.openTree.createDelegate(this),
+				scope:this
+			}
+		});
+		
+		this.assistant = new Ext.form.LazyClearableComboBox({
+			fieldLabel:'Лаборант',
+			name:'assistant',
+			anchor:'50%',
+			valueField:'resource_uri',
+			queryParam : 'staff__last_name__istartswith',
+			store:new Ext.data.RESTStore({
+				autoLoad : true,
+				apiUrl : get_api_url('position'),
+				model: ['id','name','resource_uri']
+			}),
+		    minChars:2,
+		    emptyText:'Выберите врача...',
+		    listeners:{
+		    	select: function(combo, rec,i) {
+		    		this.fireEvent('setassistant',rec.data.resource_uri);
+		    	},
+		    	scope:this
+		    }
 		});
 		
 		var cfg = {
@@ -45,25 +97,10 @@ App.examination.GeneralTab = Ext.extend(Ext.form.FormPanel, {
             }
         }, cfg));
 		
-		this.dltBtn = new Ext.Button({
-			text: 'Удалить шаблон',
-			handler:function(){
-				this.fireEvent('deletetmp')
-			},
-			scope:this
-		});
-		this.moveArchiveBtn = new Ext.Button({
-			text: 'Переместить в архив',
-			handler:function(){
-				this.fireEvent('movearhcivetmp')
-			},
-			scope:this
-		});
-		
 		this.previewBtn = new Ext.Button({
 			text: 'Просмотр',
 			handler:function(){
-				this.fireEvent('previewtmp')
+				this.fireEvent('previewcard')
 			},
 			scope:this
 		});
@@ -109,10 +146,12 @@ App.examination.GeneralTab = Ext.extend(Ext.form.FormPanel, {
 		});
 		
 		this.centralPanel = new Ext.Panel({
-			layout:'border',
+			layout:'form',
 			region: 'center',
 			border:false,
-			items:[this.titlePanel]
+			items:[this.titlePanel,
+				this.mkb,
+				this.assistant]
 		});
 		
 		this.menuPanel = new Ext.Panel({
@@ -132,8 +171,6 @@ App.examination.GeneralTab = Ext.extend(Ext.form.FormPanel, {
 	        	margins:'5 5 5 0'
 	        },
 			items:[this.previewBtn,
-				this.moveArchiveBtn,
-				this.dltBtn,
 				this.equipBtn
 			]
 		});
@@ -151,7 +188,7 @@ App.examination.GeneralTab = Ext.extend(Ext.form.FormPanel, {
 		}
 								
 		Ext.apply(this, Ext.apply(this.initialConfig, config));
-		App.examination.GeneralTab.superclass.initComponent.apply(this, arguments);
+		App.examination.CardGeneralTab.superclass.initComponent.apply(this, arguments);
 		
 		this.on('afterrender',function(){
 			
@@ -160,6 +197,20 @@ App.examination.GeneralTab = Ext.extend(Ext.form.FormPanel, {
 	
 	setPrintName: function (text){
 		this.printNameField.setValue(text);
+	},
+	
+	openTree : function(){
+		if (!this.mkbWin){
+			this.mkbWin = new App.dict.MKBWindow({
+				fn: function(node){
+					this.mkb.forceValue(node.attributes.resource_uri);
+					this.mkbWin.hide();
+					this.fireEvent('setmkb',node.attributes.resource_uri)
+				},
+				scope:this
+			})
+		}
+		this.mkbWin.show();
 	}
 	
 });
