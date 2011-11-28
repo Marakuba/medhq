@@ -36,7 +36,11 @@ App.examination.GeneralTab = Ext.extend(Ext.form.FormPanel, {
             field: {
                 allowBlank: false,
                 xtype: 'textfield',
-                width: 90,
+                width: 500,
+                cls:'header-editor',
+                style:{
+                	height:'1.1em'
+                },
                 selectOnFocus: true
             }
         }, cfg));
@@ -74,6 +78,7 @@ App.examination.GeneralTab = Ext.extend(Ext.form.FormPanel, {
 		
 		this.headerElt = new Ext.BoxComponent({
 			html:this.print_name? this.print_name:'Нет заголовка',
+			cls:'tpl-print-name',
 			listeners:{
 				afterrender:function(){
 					var el = this.headerElt.el; 
@@ -87,18 +92,25 @@ App.examination.GeneralTab = Ext.extend(Ext.form.FormPanel, {
 		
 		this.titlePanel = new Ext.Panel({
 			region:'center',
-			layout:'hbox',
+			layout:'anchor',
+			border:true,
+			margins:'5 5 5 5',
+			padding:10,
 			items:[{
-				xtype:'label',
-				text:'Заголовок:',
-				margins:'0 10 0 0 '
+				xtype:'box',
+				html:'Наименование',
+				cls:'tab-title'
+			},{
+				xtype:'box',
+				html:'Выводится в качестве заголовка при печати',
+				anchor:'100%',
+				cls:'tab-subtitle'
 			},this.headerElt]
 		});
 		
 		this.centralPanel = new Ext.Panel({
 			layout:'border',
 			region: 'center',
-			padding : 10,
 			border:false,
 			items:[this.titlePanel]
 		});
@@ -113,11 +125,12 @@ App.examination.GeneralTab = Ext.extend(Ext.form.FormPanel, {
 			width:200,
 	 		layout: {
 	            type:'vbox',
-	            padding:'10',
 	            align:'stretch'
 	        },
-	        defaults:{margins:'5 5 5 0'},
-	        scale: 'large',
+	        defaults:{
+	        	scale: 'large',
+	        	margins:'5 5 5 0'
+	        },
 			items:[this.previewBtn,
 				this.moveArchiveBtn,
 				this.dltBtn,

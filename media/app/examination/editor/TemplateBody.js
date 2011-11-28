@@ -94,7 +94,7 @@ App.examination.TemplateBody = Ext.extend(Ext.TabPanel, {
 				setdata:function(field,value){
 					this.record.set(field,value);
 				},
-				close:function(){
+				beforeclose:function(){
 					this.record.beginEdit();
 					this.record.set('equipment','');
 					this.record.set('area','');
@@ -103,6 +103,7 @@ App.examination.TemplateBody = Ext.extend(Ext.TabPanel, {
 					this.record.set('width','');
 					this.record.set('contrast_enhancement','');
 					this.record.endEdit();
+					return true
 				},
 				scope: this
 			}
@@ -118,7 +119,7 @@ App.examination.TemplateBody = Ext.extend(Ext.TabPanel, {
 				},
 				previewtmp: function(){
 					App.eventManager.fireEvent('launchapp','panel',{
-						title:'Просмотр ' + this.record.data.id,
+						title:'Просмотр: ' + this.record.data.print_name,
 						closable:true,
 						autoLoad:String.format('/widget/examination/template/{0}/',this.record.data.id)
 					});
@@ -160,7 +161,7 @@ App.examination.TemplateBody = Ext.extend(Ext.TabPanel, {
 		},this);
 		
 		this.on('beforedestroy',function(){
-			if (!this.record.equipment){
+			if (!this.record.data.equipment){
 				this.record.beginEdit();
 				this.record.set('area','');
 				this.record.set('scan_mode','');

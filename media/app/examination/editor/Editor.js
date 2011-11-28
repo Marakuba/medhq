@@ -40,13 +40,14 @@ App.examination.Editor = Ext.extend(Ext.Panel, {
 		});
 		
 		this.serviceTree = new App.ServiceTreeGrid ({
-			layout: 'fit',
+//			layout: 'fit',
 			region:'west',
 			baseParams:{
 				payment_type:'н',
 				staff : active_profile,
 				nocache : true
 			},
+			autoScroll:true,
 			width:250,
 			border: false,
 			collapsible:true,
@@ -57,7 +58,8 @@ App.examination.Editor = Ext.extend(Ext.Panel, {
 		
 		this.contentPanel = new Ext.Panel({
 			region:'center',
- 			border:false,
+ 			border:true,
+ 			margins:'5 5 5 0',
  			layout: 'fit',
  			title:'Выберите услугу',
  			defaults:{
