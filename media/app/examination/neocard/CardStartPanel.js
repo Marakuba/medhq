@@ -284,7 +284,7 @@ App.examination.CardStartPanel = Ext.extend(Ext.Panel, {
 				if (records[0]){
 					this.fromTmpRadio.setValue(true);
 					this.tmpGrid.getSelectionModel().selectFirstRow();
-					this.onPreview();
+//					this.onPreview();
 				}
 			},scope:this});
         });

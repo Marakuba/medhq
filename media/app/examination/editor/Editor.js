@@ -69,6 +69,10 @@ App.examination.Editor = Ext.extend(Ext.Panel, {
     		]
 		});
 		
+		this.generalTab = new App.examination.GeneralTab({
+			print_name:this.print_name
+		});
+		
 		var config = {
 			id: 'editor-cmp',
 			closable:true,
@@ -133,6 +137,7 @@ App.examination.Editor = Ext.extend(Ext.Panel, {
 				base_service : this.service,
 				fieldSetStore : this.fieldSetStore,
 				subSectionStore : this.subSectionStore,
+				generalTab: this.generalTab,
 				title:'Заголовок',
 				listeners:{
 					movearhcivetmp:function(){

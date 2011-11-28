@@ -109,45 +109,6 @@ App.examination.TemplateBody = Ext.extend(Ext.TabPanel, {
 			}
 		});
 		
-		this.generalTab = new App.examination.GeneralTab({
-			print_name:this.print_name,
-			listeners:{
-				printnamechange:function(newValue,oldValue){
-					if (this.record){
-						this.record.set('print_name',newValue);
-					}
-				},
-				previewtmp: function(){
-					App.eventManager.fireEvent('launchapp','panel',{
-						title:'Просмотр: ' + this.record.data.print_name,
-						closable:true,
-						autoLoad:String.format('/widget/examination/template/{0}/',this.record.data.id)
-					});
-				},
-				movearhcivetmp: function(){
-//					this.record.beginEdit();
-					this.record.set('base_service','');
-//					this.record.set('staff','');
-//					this.record.endEdit();
-					this.fireEvent('movearhcivetmp');
-				},
-				deletetmp: function(){
-					this.record.store.remove(this.record);
-					this.fireEvent('deletetmp');
-				},
-				changetitle: function(text){
-					this.record.set('print_name',text);
-					this.fireEvent('changetitle',text);
-				},
-				equiptab: function(){
-					this.add(this.equipTab);
-					this.equipTab.loadRecord(this.record);
-				},
-				scope:this
-			},
-			scope:this
-		})
-			
 		config = {
 			region:'center',
 			margins:'5 0 5 5',
@@ -170,6 +131,60 @@ App.examination.TemplateBody = Ext.extend(Ext.TabPanel, {
 				this.record.set('contrast_enhancement','');
 				this.record.endEdit();
 			}
+		},this);
+		
+		this.generalTab.on('printnamechange',function(newValue,oldValue){
+			if (this.record){
+				this.record.set('print_name',newValue);
+			}
+		},this);
+		
+		this.generalTab.on('previewtmp',function(){
+			App.eventManager.fireEvent('launchapp','panel',{
+				title:'Просмотр: ' + this.record.data.print_name,
+				closable:true,
+				autoLoad:String.format('/widget/examination/template/{0}/',this.record.data.id)
+			});
+		},this);
+		
+		this.generalTab.on('setmkb',function(value){
+			if (this.record){
+				this.record.set('mkb_diag',value);
+			}
+		},this);
+		
+		this.generalTab.on('setassistant',function(value){
+			if (this.record){
+				this.record.set('assistant',value);
+			}
+		},this);
+		
+		this.generalTab.on('previewcard',function(){
+			App.eventManager.fireEvent('launchapp','panel',{
+				title:'Просмотр: ' + this.record.data.print_name,
+				closable:true,
+				autoLoad:String.format('/widget/examination/card/{0}/',this.record.data.id)
+			});
+		},this);
+		
+		this.generalTab.on('movearhcivetmp',function(){
+			this.record.set('base_service','');
+			this.fireEvent('movearhcivetmp');
+		},this);
+				
+		this.generalTab.on('deletetmp',function(){
+			this.record.store.remove(this.record);
+			this.fireEvent('deletetmp');
+		},this);
+				
+		this.generalTab.on('changetitle',function(text){
+			this.record.set('print_name',text);
+			this.fireEvent('changetitle',text);
+		},this);
+				
+		this.generalTab.on('equiptab',function(){
+			this.add(this.equipTab);
+			this.equipTab.loadRecord(this.record);
 		},this);
 		
 		this.on('beforeticketremove', function(ticket){
