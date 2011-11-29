@@ -55,10 +55,6 @@ App.examination.CardApp = Ext.extend(Ext.Panel, {
     		]
 		});
 	
-		this.generalTab = new App.examination.CardGeneralTab({
-			print_name:this.print_name
-		});
-		
 		var config = {
 			id: 'neocard-cmp',
 			closable:true,
@@ -84,6 +80,11 @@ App.examination.CardApp = Ext.extend(Ext.Panel, {
 	},
 	
 	newCardBody: function(config){
+		
+		this.generalTab = new App.examination.CardGeneralTab({
+			print_name:this.print_name
+		});
+		
 		return new App.examination.TemplateBody (Ext.apply(
 			{
 				fieldSetStore : this.fieldSetStore,
