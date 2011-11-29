@@ -29,7 +29,7 @@ from billing.models import Account, Payment, ClientAccount
 from interlayer.models import ClientItem
 from django.contrib.contenttypes.models import ContentType
 from examination.models import TemplateGroup, DICOM, Card, Template, FieldSet,\
-    SubSection
+    SubSection, Glossary
 from tastypie.cache import SimpleCache
 from django.contrib.auth.models import User
 from examination.models import Equipment as ExamEquipment
@@ -1297,6 +1297,46 @@ class SubSectionResource(ExtResource):
             'order':ALL
         }
         
+class GlossaryResource(ExtResource):
+    
+    base_service = fields.ForeignKey(BaseServiceResource, 'base_service', null=True)
+    staff = fields.ForeignKey(StaffResource, 'staff', null=True)
+    parent = fields.ForeignKey('self','parent', null=True)
+    
+    def dehydrate(self, bundle):
+        bundle.data['text'] = "%s, %s" % (bundle.obj.code, bundle.obj.name)
+        bundle.data['parent'] =  bundle.obj.parent and bundle.obj.parent.id
+        if bundle.obj.is_leaf_node():
+            bundle.data['leaf'] = bundle.obj.is_leaf_node()
+        return bundle
+    
+
+    def build_filters(self, filters=None):
+        if filters is None:
+            filters = {}
+
+        orm_filters = super(ICD10Resource, self).build_filters(filters)
+
+        if "parent" in filters:
+            if filters['parent']=='root':
+                del orm_filters['parent__exact']
+                orm_filters['parent__isnull'] = True
+
+        return orm_filters
+    
+    class Meta:
+        queryset = Glossary.objects.all()
+        resource_name = 'glossary'
+        default_format = 'application/json'
+        authorization = DjangoAuthorization()
+        filtering = {
+            'base_service':ALL_WITH_RELATIONS,
+            'staff':ALL_WITH_RELATIONS,
+            'id':ALL,
+            'text':ALL,
+            'section':ALL
+        }
+        
 class RegExamCardResource(ExtResource):
     ordered_service = fields.ForeignKey(OrderedServiceResource, 'ordered_service', null=True)
     
@@ -1721,6 +1761,7 @@ api.register(FieldSetResource())
 api.register(SubSectionResource())
 api.register(TemplateResource())
 api.register(CardResource())
+api.register(GlossaryResource())
 
 #helpdesk
 api.register(IssueTypeResource())
