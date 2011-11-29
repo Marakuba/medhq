@@ -15,8 +15,8 @@ Ext.ux.form.Ticket = Ext.extend(Ext.Panel,{
 		this.defaultText = 'Щелкните здесь чтобы ввести описание...';
 		this.defaultTitle = 'Щелкните здесь чтобы установить заголовок...';
 		
-		this.addEvents('beforeticketremove','ticketremove','ticketdataupdate');
-		this.enableBubble('beforeticketremove','ticketremove','ticketdataupdate');
+		this.addEvents('beforeticketremove','ticketremove','ticketdataupdate','ticketeditstart');
+		this.enableBubble('beforeticketremove','ticketremove','ticketdataupdate','ticketeditstart');
 		
 		this.pntMenuItem = new Ext.menu.CheckItem({
 			text:'Выводить на печать',
@@ -80,11 +80,15 @@ Ext.ux.form.Ticket = Ext.extend(Ext.Panel,{
 					panel.setData(this.data || {});
 
 					var cfg = {
+						allowBlur:false,
 	                    shadow: false,
 	                    completeOnEnter: true,
 	                    cancelOnEsc: true,
 	                    updateEl: true,
-	                    ignoreNoChange: true
+	                    ignoreNoChange: true,
+	                    style:{
+	                    	zIndex:9000
+	                    }
 	                };
 	
 	                var sectionEditor = new Ext.Editor(Ext.apply({
@@ -92,8 +96,11 @@ Ext.ux.form.Ticket = Ext.extend(Ext.Panel,{
 	                    emptyText:'Щелкните здесь чтобы ввести описание...',
 	                    listeners: {
 	                    	show:function(edt){
+	                    		panel.fireEvent('ticketeditstart',edt);
 	                    		if(edt.field.getValue()==edt.emptyText){
 	                    			edt.field.setValue('');
+	                    		} else {
+	                    			edt.field.setValue(panel.data.text);
 	                    		}
 	                    	},
 	                        beforecomplete: function(ed, value){
@@ -102,6 +109,7 @@ Ext.ux.form.Ticket = Ext.extend(Ext.Panel,{
 	                        		ed.setValue(ed.emptyText);
 	                        		panel.body.addClass('empty-body');
 	                        	} else {
+//	                        		ed.setValue(markdown.toHTML(value));
 	                        		panel.body.removeClass('empty-body');
 	                        	}
 	                            return true;

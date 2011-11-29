@@ -4,7 +4,7 @@ App.examination.TicketTab = Ext.extend(Ext.ux.Portal,{
 	title:'Новый раздел',
 	autoScroll:true,
 	cls: 'placeholder',
-	bubbleEvents:['beforeticketremove','ticketremove','ticketdataupdate'],
+	bubbleEvents:['beforeticketremove','ticketremove','ticketdataupdate','ticketeditstart'],
 	closable: true,
 	getData: function(){
 		var data = [];
@@ -20,6 +20,8 @@ App.examination.TicketTab = Ext.extend(Ext.ux.Portal,{
 App.examination.TemplateBody = Ext.extend(Ext.TabPanel, {
 	
 	initComponent: function(){
+		
+		this.ctxEditor = undefined;
 		
 		this.menuBtns = {};
 		this.subSecBtns = {}
@@ -172,10 +174,24 @@ App.examination.TemplateBody = Ext.extend(Ext.TabPanel, {
 			
 		},this);
 
+		this.on('ticketeditstart', function(editor){
+			this.ctxEditor = editor;
+			var f = this.ctxEditor.field;
+			var pos = f.getPosition();
+			var win = new Ext.Window({ /// окошко должно быть в контексте компонента
+				title:'Glossary',
+				x:pos[0],
+				y:pos[1]+f.getHeight()+3,
+				width:400,
+				height:300
+			});
+			win.show(this.ctxEditor);
+		},this);
+
 		this.on('ticketdataupdate', function(ticket, data){
 			// в тикете обновились данные 
-			console.dir(data);
 			this.updateRecord();
+			this.ctxEditor = undefined;
 		},this);
 
 		Ext.apply(this, Ext.apply(this.initialConfig, config));
