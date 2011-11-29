@@ -41,7 +41,7 @@ App.examination.CardGeneralTab = Ext.extend(Ext.form.FormPanel, {
 			displayField: 'text',
 //			selectOnFocus:true,
 			listeners:{
-				'click': this.openTree.createDelegate(this),
+				'focus': this.openTree.createDelegate(this),
 				scope:this
 			}
 		});
