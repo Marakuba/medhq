@@ -90,6 +90,7 @@ App.examination.CardApp = Ext.extend(Ext.Panel, {
 				fieldSetStore : this.fieldSetStore,
 				subSectionStore : this.subSectionStore,
 				generalTab: this.generalTab,
+				card:true,
 				title:'Заголовок',
 				listeners:{
 					movearhcivetmp:function(){
