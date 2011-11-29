@@ -39,7 +39,7 @@ def examination_card(request, object_id):
                              })
     if card.mkb_diag:
         general_data.append({'title':'Диагноз по МКБ-10',
-                             'text':card.mkb_diag.name
+                             'text':"%s, %s" % (card.mkb_diag.code, card.mkb_diag.name)
                              })
     field_sets = dict([(fs.name, fs.title) for fs in FieldSet.objects.all()]) 
     data = card.data and simplejson.loads(card.data) or []
