@@ -177,6 +177,7 @@ App.examination.TemplateBody = Ext.extend(Ext.TabPanel, {
 
 		this.on('ticketeditstart', function(editor){
 			this.ctxEditor = editor;
+			this.glossary = new App.dict.GlossaryTree();
 			var f = this.ctxEditor.field;
 			var pos = f.getPosition();
 			var win = new Ext.Window({ /// окошко должно быть в контексте компонента
@@ -184,7 +185,8 @@ App.examination.TemplateBody = Ext.extend(Ext.TabPanel, {
 				x:pos[0],
 				y:pos[1]+f.getHeight()+3,
 				width:400,
-				height:300
+				height:300,
+				items:[this.glossary]
 			});
 			win.show(this.ctxEditor);
 		},this);
