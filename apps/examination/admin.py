@@ -4,7 +4,7 @@ from django.contrib import admin
 
 from models import *
 from django import forms
-from examination.models import CardTemplate, ExaminationCard, FieldSet, SubSection
+from examination.models import CardTemplate, ExaminationCard, FieldSet, SubSection, Glossary
 
 class DICOMAdmin(admin.TabularInline):
     """
@@ -41,6 +41,11 @@ class CardTemplateAdmin(admin.ModelAdmin):
     list_display = ('name','staff','group')
     list_filter = ('group','staff',)
 
+class GlossaryAdmin(admin.ModelAdmin):
+    """
+    """
+    list_display = ('text','staff','base_service','parent')
+    list_filter = ('base_service','staff',)
 
 admin.site.register(Equipment)
 admin.site.register(Template)
@@ -48,3 +53,4 @@ admin.site.register(FieldSet)
 admin.site.register(SubSection)
 admin.site.register(ExaminationCard, ExaminationCardAdmin)
 admin.site.register(CardTemplate, CardTemplateAdmin)
+admin.site.register(Glossary, GlossaryAdmin)

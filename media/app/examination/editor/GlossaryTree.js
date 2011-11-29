@@ -1,4 +1,4 @@
-Ext.ns('App.ServicePanel');
+Ext.ns('App.examination');
 
 App.examination.GlossaryTree = Ext.extend(Ext.tree.TreePanel,{
 
