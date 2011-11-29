@@ -97,14 +97,6 @@ App.examination.CardGeneralTab = Ext.extend(Ext.form.FormPanel, {
             }
         }, cfg));
 		
-		this.previewBtn = new Ext.Button({
-			text: 'Просмотр',
-			handler:function(){
-				this.fireEvent('previewcard')
-			},
-			scope:this
-		});
-		
 		this.equipBtn = new Ext.Button({
 			text: 'Оборудование',
 			handler:function(){
@@ -170,7 +162,7 @@ App.examination.CardGeneralTab = Ext.extend(Ext.form.FormPanel, {
 	        	scale: 'large',
 	        	margins:'5 5 5 0'
 	        },
-			items:[this.previewBtn,
+			items:[
 				this.equipBtn
 			]
 		});

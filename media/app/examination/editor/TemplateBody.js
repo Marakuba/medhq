@@ -68,8 +68,13 @@ App.examination.TemplateBody = Ext.extend(Ext.TabPanel, {
 			menu:this.subSectionMenu,
 			disabled:true
 		});
+		this.previewBtn = new Ext.Button({
+			text: 'Просмотр',
+			handler:this.onPreview.createDelegate(this,[this.card]),
+			scope:this
+		});
 		
-		this.ttb = [this.addSecBtn, this.addSubSecBtn];
+		this.ttb = [this.addSecBtn, this.addSubSecBtn,'-',this.previewBtn];
 		
 		this.equipTab = new App.examination.EquipmentTab({
 			id:'equip-tab',
@@ -132,26 +137,6 @@ App.examination.TemplateBody = Ext.extend(Ext.TabPanel, {
 			if (this.record){
 				this.record.set('assistant',value);
 			}
-		},this);
-		
-		this.generalTab.on('previewcard',function(){
-			var new_tab = this.add({
-				xtype:'panel',
-				title:'Просмотр: ' + this.record.data.print_name,
-				closable:true,
-				autoLoad:String.format('/widget/examination/card/{0}/',this.record.data.id)
-			});
-			this.setActiveTab(new_tab);
-		},this);
-		
-		this.generalTab.on('previewtmp',function(){
-			var new_tab = this.add({
-				xtype:'panel',
-				title:'Просмотр: ' + this.record.data.print_name,
-				closable:true,
-				autoLoad:String.format('/widget/examination/template/{0}/',this.record.data.id)
-			});
-			this.setActiveTab(new_tab);
 		},this);
 		
 		this.generalTab.on('movearhcivetmp',function(){
@@ -357,7 +342,16 @@ App.examination.TemplateBody = Ext.extend(Ext.TabPanel, {
 			}
 		});
 		this.record.set('data',Ext.encode(data));
-	}
+	},
+	
+	onPreview: function(isCard){
+		var essence = isCard?'card':'template';
+		App.eventManager.fireEvent('launchapp','panel',{
+			title:'Просмотр: ' + this.record.data.print_name,
+			closable:true,
+			autoLoad:String.format('/widget/examination/{0}/{1}/',essence,this.record.data.id)
+		});
+	} 
 
 });
 

@@ -60,14 +60,6 @@ App.examination.GeneralTab = Ext.extend(Ext.form.FormPanel, {
 			scope:this
 		});
 		
-		this.previewBtn = new Ext.Button({
-			text: 'Просмотр',
-			handler:function(){
-				this.fireEvent('previewtmp')
-			},
-			scope:this
-		});
-		
 		this.equipBtn = new Ext.Button({
 			text: 'Оборудование',
 			handler:function(){
@@ -131,7 +123,7 @@ App.examination.GeneralTab = Ext.extend(Ext.form.FormPanel, {
 	        	scale: 'large',
 	        	margins:'5 5 5 0'
 	        },
-			items:[this.previewBtn,
+			items:[
 				this.moveArchiveBtn,
 				this.dltBtn,
 				this.equipBtn
