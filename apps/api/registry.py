@@ -1304,7 +1304,6 @@ class GlossaryResource(ExtResource):
     parent = fields.ForeignKey('self','parent', null=True)
     
     def dehydrate(self, bundle):
-        bundle.data['text'] = "%s, %s" % (bundle.obj.code, bundle.obj.name)
         bundle.data['parent'] =  bundle.obj.parent and bundle.obj.parent.id
         if bundle.obj.is_leaf_node():
             bundle.data['leaf'] = bundle.obj.is_leaf_node()
@@ -1315,7 +1314,7 @@ class GlossaryResource(ExtResource):
         if filters is None:
             filters = {}
 
-        orm_filters = super(ICD10Resource, self).build_filters(filters)
+        orm_filters = super(GlossaryResource, self).build_filters(filters)
 
         if "parent" in filters:
             if filters['parent']=='root':
@@ -1334,6 +1333,7 @@ class GlossaryResource(ExtResource):
             'staff':ALL_WITH_RELATIONS,
             'id':ALL,
             'text':ALL,
+            'parent':ALL,
             'section':ALL
         }
         
