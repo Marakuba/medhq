@@ -20,6 +20,9 @@ def examination_template(request, object_id):
     field_sets = dict([(fs.name, fs.title) for fs in FieldSet.objects.all()]) 
     data = tpl.data and simplejson.loads(tpl.data) or []
     for d in data:
+        for t in d['tickets']:
+            if t['printable'] == False:
+                d['tickets'].remove(t)
         d['title'] = field_sets[d['section']]
     
     ctx = {
@@ -44,6 +47,9 @@ def examination_card(request, object_id):
     field_sets = dict([(fs.name, fs.title) for fs in FieldSet.objects.all()]) 
     data = card.data and simplejson.loads(card.data) or []
     for d in data:
+        for t in d['tickets']:
+            if t['printable'] == False:
+                d['tickets'].remove(t)
         d['title'] = field_sets[d['section']]
     
     ctx = {

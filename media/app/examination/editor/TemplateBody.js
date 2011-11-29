@@ -69,24 +69,7 @@ App.examination.TemplateBody = Ext.extend(Ext.TabPanel, {
 			disabled:true
 		});
 		
-		this.ttb = [this.addSecBtn, this.addSubSecBtn,
-			{
-				text:'get Data',
-				handler:function(){
-					var tab = this.getActiveTab();
-					console.info(tab.getData());
-				},
-				scope:this
-			},{
-				text:'updateRecord()',
-				handler:this.updateRecord.createDelegate(this),
-				scope:this
-			},{
-				text:'loadData()',
-				handler:this.loadData.createDelegate(this),
-				scope:this
-			}
-		];
+		this.ttb = [this.addSecBtn, this.addSubSecBtn];
 		
 		this.equipTab = new App.examination.EquipmentTab({
 			id:'equip-tab',
@@ -139,14 +122,6 @@ App.examination.TemplateBody = Ext.extend(Ext.TabPanel, {
 			}
 		},this);
 		
-		this.generalTab.on('previewtmp',function(){
-			App.eventManager.fireEvent('launchapp','panel',{
-				title:'Просмотр: ' + this.record.data.print_name,
-				closable:true,
-				autoLoad:String.format('/widget/examination/template/{0}/',this.record.data.id)
-			});
-		},this);
-		
 		this.generalTab.on('setmkb',function(value){
 			if (this.record){
 				this.record.set('mkb_diag',value);
@@ -160,11 +135,23 @@ App.examination.TemplateBody = Ext.extend(Ext.TabPanel, {
 		},this);
 		
 		this.generalTab.on('previewcard',function(){
-			App.eventManager.fireEvent('launchapp','panel',{
+			var new_tab = this.add({
+				xtype:'panel',
 				title:'Просмотр: ' + this.record.data.print_name,
 				closable:true,
 				autoLoad:String.format('/widget/examination/card/{0}/',this.record.data.id)
 			});
+			this.setActiveTab(new_tab);
+		},this);
+		
+		this.generalTab.on('previewtmp',function(){
+			var new_tab = this.add({
+				xtype:'panel',
+				title:'Просмотр: ' + this.record.data.print_name,
+				closable:true,
+				autoLoad:String.format('/widget/examination/template/{0}/',this.record.data.id)
+			});
+			this.setActiveTab(new_tab);
 		},this);
 		
 		this.generalTab.on('movearhcivetmp',function(){
