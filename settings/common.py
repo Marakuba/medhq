@@ -110,6 +110,7 @@ INSTALLED_APPS = (
     'scheduler',
     'interlayer',
     'billing',
+    'infographics',
     
         
     'django.contrib.admin',
@@ -120,6 +121,7 @@ INSTALLED_APPS = (
     
     'autocomplete',
     'constance',
+    'cube',
     'dbtemplates',
     'debug_toolbar',
     'django_extensions',

@@ -1,0 +1,49 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD HTML 4.01//EN" "http://www.w3.org/TR/html4/strict.dtd">
+<html lang="en">
+    <head>
+        <meta http-equiv="Content-Type" content="text/html; charset=utf-8">
+        <title>Punch Chart</title>
+        <script src="{{ MEDIA_URL }}infographics/raphael.js" type="text/javascript" charset="utf-8"></script>
+        <script src="{{ MEDIA_URL }}infographics/jquery.js" type="text/javascript" charset="utf-8"></script>
+        <script src="{{ MEDIA_URL }}infographics/dots.js" type="text/javascript" charset="utf-8"></script>
+
+        <link rel="stylesheet" href="{{ MEDIA_URL }}infographics/demo.css" type="text/css" media="screen">
+        <style type="text/css" media="screen">
+            body {
+                margin: 0;
+            }
+            #chart {
+                color: #333;
+                left: 50%;
+                margin: -150px 0 0 -400px;
+                position: absolute;
+                top: 50%;
+                width: 300px;
+                width: 800px;
+            }
+        </style>
+    </head>
+    <body>
+    
+    <table id="for-chart">
+	    <tfoot>
+	        <tr>
+	        {% for name, pretty_name in col_names %}
+	            <th>{{ pretty_name }}</th>
+	        {% endfor %}
+	        </tr>
+	    </tfoot>
+	    <tbody>
+	        {% for row in rows %}
+	        <tr>
+	            <th scope="row">{{ row.pretty_name }}</th>
+	            {% for value in row.values %}
+	            <td>{{ value|default:'' }}</td>
+	            {% endfor %}
+	        </tr>
+	        {% endfor %}
+	    </tbody>
+	</table>
+	<div id="chart"></div>
+    </body>
+</html>
