@@ -23,6 +23,11 @@ App.examination.TemplateBody = Ext.extend(Ext.TabPanel, {
 		
 		this.ctxEditor = undefined;
 		
+		String.prototype.splice = function( idx, rem, s ) {
+		    return (this.slice(0,idx) + s + this.slice(idx + Math.abs(rem)));
+		};
+
+		
 		this.menuBtns = {};
 		this.subSecBtns = {}
 		
@@ -175,26 +180,66 @@ App.examination.TemplateBody = Ext.extend(Ext.TabPanel, {
 			
 		},this);
 
-		this.on('ticketeditstart', function(editor){
+		this.on('ticketeditstart', function(panel,editor,pos){
+			if (this.ctxEditor) {
+				this.ctxEditor.completeEdit();
+			};
 			this.ctxEditor = editor;
-			this.glossary = new App.dict.GlossaryTree();
+			this.ticket = panel;
 			var f = this.ctxEditor.field;
-			var pos = f.getPosition();
-			var win = new Ext.Window({ /// окошко должно быть в контексте компонента
+			var position = f.getPosition();
+			if (this.glosWin){
+				this.glosWin.setPosition(position[0],position[1]+f.getHeight()+3);
+				return true
+			};
+			this.glossary = new App.dict.GlossaryTree({
+				listeners:{
+					'nodeclick':function(attrs){
+						var pos = panel.getPos();
+						var old_value = this.ctxEditor.field.getValue();
+						if (pos>0){
+							var new_value = old_value.splice(pos, 0, ' '+attrs.text);
+						} else {
+							var new_value = old_value.splice(pos, 0, attrs.text);
+						}
+						this.ctxEditor.field.setValue(new_value);
+						pos = pos + attrs.text.length + 1;
+						var textarea = this.ctxEditor.field.getEl().dom;
+						panel.setCaretTo(textarea,pos);
+					},
+					scope:this
+				}
+			});
+			this.glosWin = new Ext.Window({ /// окошко должно быть в контексте компонента
 				title:'Glossary',
-				x:pos[0],
-				y:pos[1]+f.getHeight()+3,
+				x:position[0],
+				y:position[1]+f.getHeight()+3,
 				width:400,
 				height:300,
-				items:[this.glossary]
+				layout:'fit',
+				items:[this.glossary],
+				listeners:{
+					'afterrender':function(){
+						var textarea = this.ctxEditor.field.getEl().dom;
+						var pos = this.ctxEditor.field.getValue().length;
+						panel.setCaretTo(textarea,pos);
+					},
+					'beforeclose':function(){
+						if (this.ctxEditor){
+							this.ctxEditor.field.focus('',10);
+						}
+					},
+					scope:this
+				}
 			});
-			win.show(this.ctxEditor);
+			this.glosWin.show(this.ctxEditor);
 		},this);
 
 		this.on('ticketdataupdate', function(ticket, data){
 			// в тикете обновились данные 
 			this.updateRecord();
 			this.ctxEditor = undefined;
+			this.ticket = undefined;
 		},this);
 
 		Ext.apply(this, Ext.apply(this.initialConfig, config));
@@ -244,6 +289,16 @@ App.examination.TemplateBody = Ext.extend(Ext.TabPanel, {
 						this.addSubSecBtn.disable();
 					};
 					this.removeTab(p.tabName);
+				},
+				'afterrender':function(panel){
+					panel.body.on('click',function(e,t){
+						if (!(t.classList[0]==='x-plain-body')){
+							if (this.ctxEditor){
+								this.ctxEditor.completeEdit();
+							};
+							this.onTicketEndEdit();
+						}
+					},this);
 				},
 				scope:this
 			}
@@ -369,7 +424,13 @@ App.examination.TemplateBody = Ext.extend(Ext.TabPanel, {
 			closable:true,
 			autoLoad:String.format('/widget/examination/{0}/{1}/',essence,this.record.data.id)
 		});
-	} 
+	},
+	
+	onTicketEndEdit: function(){
+		if (this.glosWin) {
+			this.glosWin.close();
+		}
+	}
 
 });
 
