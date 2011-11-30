@@ -50,8 +50,8 @@ App.dict.GlossaryTree = Ext.extend(Ext.tree.TreePanel, {
  
             }
         
-        this.on('dblclick', function(node, e){
-//			this.fireEvent('nodeclick',node.id);
+        this.on('click', function(node, e){
+			this.fireEvent('nodeclick',node.attributes);
 			if (node.attributes.leaf) {
 				Ext.callback(this.fn, this.scope || window, [node]);
 			}

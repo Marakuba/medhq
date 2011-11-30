@@ -96,7 +96,9 @@ Ext.ux.form.Ticket = Ext.extend(Ext.Panel,{
 	                    emptyText:'Щелкните здесь чтобы ввести описание...',
 	                    listeners: {
 	                    	show:function(edt){
-	                    		panel.fireEvent('ticketeditstart',edt);
+	                    		var el = edt.field.getEl();
+	                    		var pos = this.getCaretPos(el.dom);
+	                    		panel.fireEvent('ticketeditstart',this,edt,pos);
 	                    		if(edt.field.getValue()==edt.emptyText){
 	                    			edt.field.setValue('');
 	                    		} else {
@@ -116,7 +118,8 @@ Ext.ux.form.Ticket = Ext.extend(Ext.Panel,{
 	                        },
 	                        complete: function(ed, value, oldValue){
 	                        	panel.fireEvent('ticketdataupdate', panel, panel.data);
-	                        }
+	                        },
+	                        scope:this
 	                    },
 	                    field: {
 	                        allowBlank: true,
@@ -124,7 +127,20 @@ Ext.ux.form.Ticket = Ext.extend(Ext.Panel,{
 	                        width: 890,
 	                        selectOnFocus: true,
 	                        cls:'text-editor',
-	                        grow:true
+	                        grow:true,
+	                        listeners:{
+	                        	'render': function(c) {
+							     	var el = c.getEl()
+							     	el.on('keyup', function(t,e) {
+							        	this.curPos = this.getCaretPos(el.dom);
+							     	}, this);
+							     	el.on('blur', function(t,e) {
+							        	this.curPos = this.getCaretPos(el.dom);
+							     	}, this);
+							    },
+	                        	scope:this
+	                        },
+	                        scope:this
 	                    }
 	                }, cfg));
 	                panel.body.on('click', function(e, t){
@@ -219,7 +235,52 @@ Ext.ux.form.Ticket = Ext.extend(Ext.Panel,{
 		this.pntMenuItem.setDisabled(checked);
 		this.fireEvent('ticketdataupdate', this, this.data);
 		this[checked ? 'addClass' : 'removeClass']('private');
-	}
+	},
+	
+	doGetCaretPosition: function (ctrl) {
+		var CaretPos = 0;	// IE Support
+		if (document.selection) {
+			ctrl.focus ();
+			var Sel = document.selection.createRange ();
+			Sel.moveStart ('character', -ctrl.value.length);
+			CaretPos = Sel.text.length;
+		}
+		// Firefox support
+		else if (ctrl.selectionStart || ctrl.selectionStart == '0')
+			CaretPos = ctrl.selectionStart;
+		return (CaretPos);
+	},
+	
+	setCaretTo: function(obj, pos) {
+		this.curPos = pos;
+//		pos = pos - 1;
+		if(obj.createTextRange) { 
+			var range = obj.createTextRange(); 
+			range.move("character", pos); 
+			range.select(); 
+		} else if(obj.selectionStart) { 
+			obj.focus(); 
+			obj.setSelectionRange(pos, pos); 
+		};
+	},
+    
+    getCaretPos: function(el) {
+ 	    var rng, ii=0;
+		if(typeof el.selectionStart=="number") {
+			ii=el.selectionStart;
+		} else if (document.selection && el.createTextRange){
+			rng=document.selection.createRange();
+			rng.collapse(true);
+			rng.moveStart("character", -el.value.length);
+			ii=rng.text.length;
+		};
+		this.curPos = ii;
+		return ii;
+    },
+    
+    getPos: function(){
+    	return this.curPos;
+    }
 });
 
 Ext.reg('ticket', Ext.ux.form.Ticket);
