@@ -12,6 +12,8 @@ Ext.ns('Ext.ux.form');
 
 Ext.ux.form.Ticket = Ext.extend(Ext.Panel,{
 	initComponent: function(){
+		
+		this.curPos = 0;
 		this.defaultText = 'Щелкните здесь чтобы ввести описание...';
 		this.defaultTitle = 'Щелкните здесь чтобы установить заголовок...';
 		
@@ -132,10 +134,14 @@ Ext.ux.form.Ticket = Ext.extend(Ext.Panel,{
 	                        	'render': function(c) {
 							     	var el = c.getEl()
 							     	el.on('keyup', function(t,e) {
-							        	this.curPos = this.getCaretPos(el.dom);
+							        	this.getCaretPos(el.dom);
 							     	}, this);
 							     	el.on('blur', function(t,e) {
-							        	this.curPos = this.getCaretPos(el.dom);
+							        	this.getCaretPos(el.dom);
+							     	}, this);
+							     	el.on('focus', function(t,e) {
+							        	var pos = this.getPos();
+										el.dom.setSelectionRange(pos, pos);
 							     	}, this);
 							    },
 	                        	scope:this
@@ -187,6 +193,7 @@ Ext.ux.form.Ticket = Ext.extend(Ext.Panel,{
 		};
 		Ext.apply(this, Ext.apply(this.initialConfig, config));
 		Ext.ux.form.Ticket.superclass.initComponent.apply(this, arguments);
+		
 	},
 	
 	setData : function(data) {
@@ -252,15 +259,15 @@ Ext.ux.form.Ticket = Ext.extend(Ext.Panel,{
 	},
 	
 	setCaretTo: function(obj, pos) {
-		this.curPos = pos;
+		this.setPos(pos);
 //		pos = pos - 1;
 		if(obj.createTextRange) { 
 			var range = obj.createTextRange(); 
 			range.move("character", pos); 
 			range.select(); 
 		} else if(obj.selectionStart) { 
-			obj.focus(); 
-			obj.setSelectionRange(pos, pos); 
+			obj.focus(false,300); 
+//			obj.setSelectionRange(pos, pos); 
 		};
 	},
     
@@ -274,8 +281,12 @@ Ext.ux.form.Ticket = Ext.extend(Ext.Panel,{
 			rng.moveStart("character", -el.value.length);
 			ii=rng.text.length;
 		};
-		this.curPos = ii;
+		this.setPos(ii);
 		return ii;
+    },
+    
+    setPos: function(pos){
+    	this.curPos = pos;
     },
     
     getPos: function(){

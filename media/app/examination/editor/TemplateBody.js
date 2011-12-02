@@ -1,27 +1,25 @@
 Ext.ns('App.examination');
 
-App.examination.TicketTab = Ext.extend(Ext.ux.Portal,{
-	title:'Новый раздел',
-	autoScroll:true,
-	cls: 'placeholder',
-	bubbleEvents:['beforeticketremove','ticketremove','ticketdataupdate','ticketeditstart'],
-	closable: true,
-	getData: function(){
-		var data = [];
-		this.items.itemAt(0).items.each(function(item){
-			if(item.getData){
-				data.push(item.getData());
-			}
-		},this);
-		return data
-	}
-});
+//App.examination.TicketTab = Ext.extend(Ext.ux.Portal,{
+//	title:'Новый раздел',
+//	autoScroll:true,
+//	cls: 'placeholder',
+//	bubbleEvents:['beforeticketremove','ticketremove','ticketdataupdate','ticketeditstart'],
+//	closable: true,
+//	getData: function(){
+//		var data = [];
+//		this.items.itemAt(0).items.each(function(item){
+//			if(item.getData){
+//				data.push(item.getData());
+//			}
+//		},this);
+//		return data
+//	}
+//});
 
 App.examination.TemplateBody = Ext.extend(Ext.TabPanel, {
 	
 	initComponent: function(){
-		
-		this.ctxEditor = undefined;
 		
 		String.prototype.splice = function( idx, rem, s ) {
 		    return (this.slice(0,idx) + s + this.slice(idx + Math.abs(rem)));
@@ -112,7 +110,7 @@ App.examination.TemplateBody = Ext.extend(Ext.TabPanel, {
 		},
 		this.on('tabchange',function(panel,tab){
 			if (tab){
-				this.fillSubSecMenu(tab.tabName);
+				this.fillSubSecMenu(tab.section);
 			};
 		},this);
 		
@@ -126,6 +124,27 @@ App.examination.TemplateBody = Ext.extend(Ext.TabPanel, {
 				this.record.set('contrast_enhancement','');
 				this.record.endEdit();
 			}
+		},this);
+		
+		this.on('beforeticketremove', function(ticket){
+			/* тут можно узнать что тикет будет удален
+			 * если не надо удалять - можно вернуть false
+			 */
+			return true
+		},this);
+		
+		this.on('ticketremove', function(ticket){
+			// а тут тикет уже удален
+			var tab = this.getActiveTab();
+			this.removeTicket(tab.section,ticket.title)
+			
+		},this);
+
+		this.on('ticketremove', this.removeTicket,this);
+		
+		this.on('ticketdataupdate', function(ticket, data){
+			// в тикете обновились данные 
+			this.ticket = undefined;
 		},this);
 		
 		this.generalTab.on('printnamechange',function(newValue,oldValue){
@@ -166,81 +185,7 @@ App.examination.TemplateBody = Ext.extend(Ext.TabPanel, {
 			this.equipTab.loadRecord(this.record);
 		},this);
 		
-		this.on('beforeticketremove', function(ticket){
-			/* тут можно узнать что тикет будет удален
-			 * если не надо удалять - можно вернуть false
-			 */
-			return true
-		},this);
-
-		this.on('ticketremove', function(ticket){
-			// а тут тикет уже удален
-			var tab = this.getActiveTab();
-			this.removeTicket(tab.tabName,ticket.title)
-			
-		},this);
-
-		this.on('ticketeditstart', function(panel,editor,pos){
-			if (this.ctxEditor) {
-				this.ctxEditor.completeEdit();
-			};
-			this.ctxEditor = editor;
-			this.ticket = panel;
-			var f = this.ctxEditor.field;
-			var position = f.getPosition();
-			if (this.glosWin){
-				this.glosWin.setPosition(position[0],position[1]+f.getHeight()+3);
-				return true
-			};
-			this.glossary = new App.dict.GlossaryTree({
-				listeners:{
-					'nodeclick':function(attrs){
-						var pos = panel.getPos();
-						var old_value = this.ctxEditor.field.getValue();
-						if (pos>0){
-							var new_value = old_value.splice(pos, 0, ' '+attrs.text);
-						} else {
-							var new_value = old_value.splice(pos, 0, attrs.text);
-						}
-						this.ctxEditor.field.setValue(new_value);
-						pos = pos + attrs.text.length + 1;
-						var textarea = this.ctxEditor.field.getEl().dom;
-						panel.setCaretTo(textarea,pos);
-					},
-					scope:this
-				}
-			});
-			this.glosWin = new Ext.Window({ /// окошко должно быть в контексте компонента
-				title:'Glossary',
-				x:position[0],
-				y:position[1]+f.getHeight()+3,
-				width:400,
-				height:300,
-				layout:'fit',
-				items:[this.glossary],
-				listeners:{
-					'afterrender':function(){
-						var textarea = this.ctxEditor.field.getEl().dom;
-						var pos = this.ctxEditor.field.getValue().length;
-						panel.setCaretTo(textarea,pos);
-					},
-					'beforeclose':function(){
-						if (this.ctxEditor){
-							this.ctxEditor.field.focus('',10);
-						}
-					},
-					scope:this
-				}
-			});
-			this.glosWin.show(this.ctxEditor);
-		},this);
-
-		this.on('ticketdataupdate', function(ticket, data){
-			// в тикете обновились данные 
-			this.updateRecord();
-			this.ctxEditor = undefined;
-			this.ticket = undefined;
-		},this);
+		
 
 		Ext.apply(this, Ext.apply(this.initialConfig, config));
 		App.examination.TemplateBody.superclass.initComponent.apply(this, arguments);
@@ -276,45 +221,32 @@ App.examination.TemplateBody = Ext.extend(Ext.TabPanel, {
 		},this)
 	},
 	
-	onAddSection: function(tabName,title,order){
+	onAddSection: function(section,title,order,data){
 		var new_tab = this.insert(order,new App.examination.TicketTab({
 			title:title,
-			tabName:tabName,
+			section:section,
+			data:data,
 			order:order,
+			record:this.record,
 			listeners:{
 				'close': function(p){
-					this.sectionMenu.insert(p.order,this.menuBtns[p.tabName]);
+					this.sectionMenu.insert(p.order,this.menuBtns[p.section]);
 					this.addSecBtn.enable();
 					if (this.items.length == 1) {
 						this.addSubSecBtn.disable();
 					};
-					this.removeTab(p.tabName);
-				},
-				'afterrender':function(panel){
-					panel.body.on('click',function(e,t){
-						if (!(t.classList[0]==='x-plain-body')){
-							if (this.ctxEditor){
-								this.ctxEditor.completeEdit();
-							};
-							this.onTicketEndEdit();
-						}
-					},this);
+					this.removeTab(p.section);
 				},
 				scope:this
 			}
 		}));
-		new_tab.add({
-			xtype:'portalcolumn',
-			columnWidth:1,
-			anchor:'100%'
-		})
-		this.sectionMenu.remove(tabName);
+		this.sectionMenu.remove(section);
 		if (this.sectionMenu.items.length == 0) {
 			this.addSecBtn.disable();
 		};
 		this.addSubSecBtn.enable();
 		this.setActiveTab(new_tab);
-//		this.fillSubSecMenu(tabName);
+//		this.fillSubSecMenu(section);
 		this.doLayout();
 		this.updateRecord();
 		return new_tab;
@@ -322,8 +254,8 @@ App.examination.TemplateBody = Ext.extend(Ext.TabPanel, {
 	
 	fillSubSecMenu : function(section) {
 		this.subSectionMenu.removeAll(true);
-		Ext.each(this.subSecBtns[section],function(tabName){
-			this.subSectionMenu.add(tabName);
+		Ext.each(this.subSecBtns[section],function(section){
+			this.subSectionMenu.add(section);
 		},this);
 		if (this.subSectionMenu.items.length){
 			this.addSubSecBtn.enable();
@@ -334,14 +266,7 @@ App.examination.TemplateBody = Ext.extend(Ext.TabPanel, {
 	
 	onAddSubSection: function(title){
 		var cur_tab = this.getActiveTab();
-		var new_ticket = new Ext.ux.form.Ticket({
-			data:{
-				title:title,
-				printable:true,
-				private:false
-			}
-		});
-		cur_tab.items.itemAt(0).add(new_ticket);
+		cur_tab.addTicket(title);
 		this.doLayout();
 		this.updateRecord();
 	},
@@ -355,7 +280,7 @@ App.examination.TemplateBody = Ext.extend(Ext.TabPanel, {
 			var tab = this.items.items[i];
 			var section = {};
 			if (tab.getData){
-				section['section'] = tab.tabName;
+				section['section'] = tab.section;
 				section['tickets'] = tab.getData();
 				data.push(section);
 			};
@@ -374,23 +299,21 @@ App.examination.TemplateBody = Ext.extend(Ext.TabPanel, {
 		var data = Ext.decode(recData);
 		Ext.each(data,function(section){
 			var sec = this.menuBtns[section.section];
-			var tab = this.onAddSection(section.section,sec.text,sec.order);
-			Ext.each(section.tickets,function(ticket,i){
-				var new_ticket = new Ext.ux.form.Ticket({
-					data:{
-						title:ticket.title,
-						printable:ticket.printable,
-						private:ticket.private,
-						text:ticket.text
-					}
-				});
-				tab.items.itemAt(0).add(new_ticket);
-			},this);
+			var tab = this.onAddSection(section.section,sec.text,sec.order,section);
 			this.doLayout();
 		},this);
 //		this.setActiveTab(0);
 		this.dataLoading = false;
 		
+	},
+	
+	onPreview: function(isCard){
+		var essence = isCard?'card':'template';
+		App.eventManager.fireEvent('launchapp','panel',{
+			title:'Просмотр: ' + this.record.data.print_name,
+			closable:true,
+			autoLoad:String.format('/widget/examination/{0}/{1}/',essence,this.record.data.id)
+		});
 	},
 	
 	removeTicket:function(section,ticketTitle){
@@ -405,32 +328,8 @@ App.examination.TemplateBody = Ext.extend(Ext.TabPanel, {
 			}
 		});
 		this.record.set('data',Ext.encode(data));
-	},
-	
-	removeTab:function(section){
-		var data = Ext.decode(this.record.data.data);
-		Ext.each(data,function(sec,i){
-			if (sec.section === section){
-				delete data[i];
-			}
-		});
-		this.record.set('data',Ext.encode(data));
-	},
-	
-	onPreview: function(isCard){
-		var essence = isCard?'card':'template';
-		App.eventManager.fireEvent('launchapp','panel',{
-			title:'Просмотр: ' + this.record.data.print_name,
-			closable:true,
-			autoLoad:String.format('/widget/examination/{0}/{1}/',essence,this.record.data.id)
-		});
-	},
-	
-	onTicketEndEdit: function(){
-		if (this.glosWin) {
-			this.glosWin.close();
-		}
 	}
+	
 
 });
 

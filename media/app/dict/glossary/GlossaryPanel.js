@@ -1,6 +1,6 @@
 Ext.ns('App.dict');
 
-App.dict.GlossaryWindow = Ext.extend(Ext.Window, {
+App.dict.GlossaryPanel = Ext.extend(Ext.Panel, {
 
 	initComponent: function(){
 		
@@ -21,28 +21,15 @@ App.dict.GlossaryWindow = Ext.extend(Ext.Window, {
 			minimizeble:true,
 			resizeble:true,
 			modal:true,
-			closeAction:'hide',
 			layout:'fit',
-			items:[this.tree],
-			buttons:[{
-				text:'Закрыть',
-				handler:this.onClose.createDelegate(this),
-				scope:this
-			}]
+			items:[this.tree]
 		}
 		Ext.apply(this, Ext.apply(this.initialConfig, config));
-		App.dict.GlossaryWindow.superclass.initComponent.apply(this, arguments);
-	},
-	
-	onFormSave: function() {
-		this.form.onSave();
-	},
-	
-	onClose: function() {
-		this.hide();
+		App.dict.GlossaryPanel.superclass.initComponent.apply(this, arguments);
 	}
+	
 	
 });
 
 
-Ext.reg('glossarywindow', App.dict.GlossaryWindow);
+Ext.reg('glossarypanel', App.dict.GlossaryPanel);

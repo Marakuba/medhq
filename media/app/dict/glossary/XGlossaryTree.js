@@ -1,7 +1,7 @@
 Ext.ns('App.dict');
 
 
-App.dict.GlossaryTree = Ext.extend(Ext.tree.TreePanel, {
+App.dict.XGlossaryTree = Ext.extend(Ext.ux.tree.RemoteTreePanel, {
 	
 	initComponent: function(){
 		
@@ -19,13 +19,45 @@ App.dict.GlossaryTree = Ext.extend(Ext.tree.TreePanel, {
 
         config = {
                 margins: '0 0 5 5',
-                root:  new Ext.tree.AsyncTreeNode({
-	            	expanded: false,
-	            	text:'Глоссарий',
-	            	id:'root'
-                }),
                 width:250,
                 split:true,
+                root:{
+					 nodeType:'async'
+					,id:'root'
+					,text:'Глоссарий'
+					,expanded:true
+					,uiProvider:false
+				},
+				tbar:['Поиск:', {
+					 xtype:'trigger'
+					,triggerClass:'x-form-clear-trigger'
+					,onTriggerClick:function() {
+						this.setValue('');
+						treeFilter.clear();
+					}
+//					,id:'filter'
+					,enableKeyEvents:true
+					,listeners:{
+						keyup:{buffer:150, fn:function(field, e) {
+							if(Ext.EventObject.ESC == e.getKey()) {
+								field.onTriggerClick();
+							}
+							else {
+								var val = this.getRawValue();
+								var re = new RegExp('.*' + val + '.*', 'i');
+								treeFilter.clear();
+								treeFilter.filter(re, 'text');
+							}
+						}}
+					}
+				}]
+				,tools:[{
+					 id:'refresh'
+					,handler:function() {
+						win.items.item(0).actions.reloadTree.execute();
+					}
+				}]
+				,plugins:[new Ext.ux.menu.IconMenu()],
                 loader: new Ext.tree.TreeLoader({
                 	nodeParameter:'parent',
                 	dataUrl: get_api_url('glossary'),
@@ -74,7 +106,7 @@ App.dict.GlossaryTree = Ext.extend(Ext.tree.TreePanel, {
 		
 
 		Ext.apply(this, Ext.apply(this.initialConfig, config));
-		App.dict.GlossaryTree.superclass.initComponent.apply(this, arguments);
+		App.dict.XGlossaryTree.superclass.initComponent.apply(this, arguments);
 	},
 	
 	onTreeNodeDblClick: function(n) {
@@ -91,4 +123,6 @@ App.dict.GlossaryTree = Ext.extend(Ext.tree.TreePanel, {
 
 });
 
-Ext.reg('glossarytree', App.dict.GlossaryTree);
+treeFilter = new Ext.ux.tree.TreeFilterX(App.dict.GlossaryTree);
+
+Ext.reg('xglossarytree', App.dict.XGlossaryTree);
