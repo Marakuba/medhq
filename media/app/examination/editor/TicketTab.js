@@ -18,6 +18,17 @@ App.examination.TicketTab = Ext.extend(Ext.Panel, {
 		});
 		
 		this.ctxEditor = undefined;
+//		this.ticket = Ext.ux.form.Ticket();
+		
+		this.glossPanel = new App.dict.XGlossaryTree({
+			section:this.tabName,
+			collapsible:true,
+			collapsed:true,
+			region:'east',
+//			hideCollapseTool : true,
+//			allowDomMove:false,
+			floating:false
+		});
 		
 		this.ticketPanel = new App.examination.TicketPanel({
 			region:'center',
@@ -43,23 +54,16 @@ App.examination.TicketTab = Ext.extend(Ext.Panel, {
 						this.ctxEditor.field.setWidth(adjW-60);
 					}
 				},
+				'afterrender':function(panel){
+					panel.body.on('click',function(e,t){
+						
+						if (this.ctxEditor){
+							this.ctxEditor.completeEdit();
+							this.onTicketEndEdit();
+						}
+					},this);
+				},
 				scope:this
-			}
-		});
-		
-		this.glossPanel = new App.dict.XGlossaryTree({
-			section:this.tabName,
-			collapsible:true,
-			collapsed:true,
-			items:[],
-			region:'east',
-//			hideCollapseTool : true,
-//			allowDomMove:false,
-			floating:false,
-			listeners:{
-				'staterestore':function(){
-					console.log('2')
-				}
 			}
 		});
 		
@@ -83,14 +87,6 @@ App.examination.TicketTab = Ext.extend(Ext.Panel, {
 		App.examination.TicketTab.superclass.initComponent.apply(this, arguments);
 		
 		this.on('afterrender',function(panel){
-			panel.body.on('click',function(e,t){
-				if (!(t.classList[0]==='x-plain-body')){
-					if (this.ctxEditor){
-						this.ctxEditor.completeEdit();
-					};
-					this.onTicketEndEdit();
-				}
-			},this);
 			
 			if(this.data){
 				Ext.each(this.data.tickets,function(ticket,i){
@@ -105,7 +101,8 @@ App.examination.TicketTab = Ext.extend(Ext.Panel, {
 					this.portalColumn.add(new_ticket);
 				},this);
 				this.doLayout();
-			}
+			};
+			
 		});
 		
 		this.on('beforeclose',function(){
@@ -118,14 +115,46 @@ App.examination.TicketTab = Ext.extend(Ext.Panel, {
 			this.record.set('data',Ext.encode(data));
 		});
 		
+		this.glossPanel.on('nodeclick',function(attrs){
+			if (this.ticket){
+				var pos = this.ticket.getPos();
+				var old_value = this.ctxEditor.field.getValue();
+				if (pos>0){
+					var new_value = old_value.splice(pos, 0, ' '+attrs.text);
+				} else {
+					var new_value = old_value.splice(pos, 0, attrs.text);
+				}
+				this.ctxEditor.field.setValue(new_value);
+				pos = pos + attrs.text.length + 1;
+				var textarea = this.ctxEditor.field.getEl().dom;
+				this.ticket.setCaretTo(textarea,pos);
+			}
+		});
+		
+		this.glossPanel.on('afterrender',function(){
+			if (this.ctxEditor){
+				var textarea = this.ctxEditor.field.getEl().dom;
+				var pos = this.ctxEditor.field.getValue().length;
+				this.ticket.setCaretTo(textarea,pos);
+			}
+		});
+		
+		this.glossPanel.on('beforeclose',function(){
+			if (this.ctxEditor){
+				this.ctxEditor.field.focus('',10);
+			}
+		});
+		
 		this.on('ticketeditstart', function(panel,editor,pos){
 			if (this.ctxEditor) {
 				this.ctxEditor.completeEdit();
 			};
 			this.ctxEditor = editor;
 			
-			this.glossPanel.toggleCollapse();
-//			this.ticket = panel;
+			if (this.glossPanel.collapsed){
+				this.glossPanel.toggleCollapse();
+			}
+			this.ticket = panel;
 //			var f = this.ctxEditor.field;
 //			var position = f.getPosition();
 //			if (this.glosWin){
@@ -183,8 +212,8 @@ App.examination.TicketTab = Ext.extend(Ext.Panel, {
 	},
 	
 	onTicketEndEdit: function(){
-		if (this.glosWin) {
-			this.glosWin.close();
+		if(!this.glossPanel.collapsed){
+			this.glossPanel.collapse();
 		}
 	},
 	
