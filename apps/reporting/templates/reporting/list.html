@@ -29,10 +29,10 @@
 	}
 </style>
 
-<script type="text/javascript" src="{{ MEDIA_URL }}resources/js/jquery-1.4.4.js"></script>
-<script type="text/javascript" src="{{ MEDIA_URL }}resources/js/jui/ui/jquery.ui.core.js"></script>
-<script type="text/javascript" src="{{ MEDIA_URL }}resources/js/jui/ui/jquery.ui.widget.js"></script>
-<script type="text/javascript" src="{{ MEDIA_URL }}resources/js/jui/ui/jquery.ui.datepicker.js"></script>
+<script type="text/javascript" src="{{ STATIC_URL }}resources/js/jquery-1.4.4.js"></script>
+<script type="text/javascript" src="{{ STATIC_URL }}resources/js/jui/ui/jquery.ui.core.js"></script>
+<script type="text/javascript" src="{{ STATIC_URL }}resources/js/jui/ui/jquery.ui.widget.js"></script>
+<script type="text/javascript" src="{{ STATIC_URL }}resources/js/jui/ui/jquery.ui.datepicker.js"></script>
 
 <script> 
 function go(slug){ 
@@ -84,8 +84,8 @@ function go(slug){
 } 
 </script>
 
-<link href="{{ MEDIA_URL }}resources/js/jui/themes/base/jquery.ui.all.css" type="text/css" media="all" rel="stylesheet" />
-<script src="{{ MEDIA_URL }}resources/js/jui/ui/i18n/jquery.ui.datepicker-ru.js"></script>
+<link href="{{ STATIC_URL }}resources/js/jui/themes/base/jquery.ui.all.css" type="text/css" media="all" rel="stylesheet" />
+<script src="{{ STATIC_URL }}resources/js/jui/ui/i18n/jquery.ui.datepicker-ru.js"></script>
 <script>
 	$(function() {
 		$( ".date-field" ).datepicker({ dateFormat: 'yy-mm-dd' });

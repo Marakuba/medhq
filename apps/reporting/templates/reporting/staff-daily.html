@@ -1,28 +1,8 @@
-{% extends "print/base.html" %}
+{% extends "reporting/base.html" %}
 
+{% block print_header %}{% endblock %}
 
-{% block extra_head %}
-	<link rel="stylesheet" type="text/css" href="{{ MEDIA_URL }}resources/css/reports.css">
-{% endblock %}
-
-{% block body %}
-{% include "print/header.html"%}
-
-<div id="changelist" class="module">
-<h1>{{ name }}</h1>
-
-<table class="params" border="0" cellpadding="0" cellspacing="1">
-{% for params in trim_params %}
-<tr>
-<td>{{ params.0 }}</td><td class="data">{{ params.1 }}</td></tr>
-{% endfor %}
-</table>
-            
-<br><br>
-            
-<table class="data" class="data">
-    <tbody>
-
+{% block data %}
         <tr class="header">
             <th>Ф.И.О.</th>
 <!--             <th>Полис</th>             -->
@@ -72,9 +52,9 @@
             <th class="number">{{results.0.3|default:"0,00"}}</th>
         </tr>
 
-    </tbody>
-</table>
+{% endblock %}
 
+{% block footer %}
 
 <table style="width:100%; margin-top:1.5cm">
 	<tr>
@@ -86,7 +66,5 @@
 		<td style="text-align:center; font-size:8pt">подпись</td>
 	</tr>
 </table>
-
-</div>
 
 {% endblock %}

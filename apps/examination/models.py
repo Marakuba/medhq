@@ -147,7 +147,7 @@ class DICOM(models.Model):
         return im
     
     def get_image_url(self):
-        return u"%sdicom/img/dcm_%s.png" % (settings.MEDIA_URL, self.id)
+        return u"%sdicom/img/dcm_%s.png" % (settings.STATIC_URL, self.id)
     
     def get_image_path(self):
         return settings.MEDIA_ROOT / 'dicom' / 'img' / "dcm_%s.png" % self.id

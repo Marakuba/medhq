@@ -3,7 +3,7 @@ from django.utils import simplejson
 from django.http import HttpResponse, HttpResponseRedirect
 from service.models import BaseService
 from django.db import connection
-from django.core.cache import cache
+from django.core.cache import get_cache
 from patient.models import Patient
 from django.shortcuts import get_object_or_404, render_to_response
 from pricelist.models import Discount
@@ -89,7 +89,15 @@ def set_active_profile(request, position_id):
 @login_required
 @render_to('webapp/cpanel/index.html')
 def cpanel(request):
-    return {}
+    perms = {
+        'registry':request.user.has_perm('visit.add_visit') or request.user.is_superuser,
+        'laboratory':request.user.has_perm('lab.change_laborder') or request.user.is_superuser,
+        'examination':request.user.has_perm('examination.add_examinationcard') or request.user.is_superuser,
+        'admin':request.user.is_staff or request.user.is_superuser,
+    }
+    return {
+        'perms':simplejson.dumps(perms)
+    }
 
     
 @login_required
@@ -141,16 +149,37 @@ def helpdesk(request):
 def get_service_tree(request):
     """
     Генерирует дерево в json-формате.
-    """
-    payment_type = request.GET.get('payment_type',u'н')
-    _cache_key = (settings.SERVICETREE_ONLY_OWN and request.active_profile) and 'service_list_%s_%s' % (request.active_profile.state, payment_type) or ('service_list_%s' % payment_type)
     
+    Ключ кэша:
+    
+    service_list_-stateId или *-_-способ оплаты-
+    
+    service_list_*_н - любая организация, способ оплаты - наличный платеж
+    service_list_2_д - организация #2, способ оплаты - ДМС 
+    и т.д.
+    """
+    
+    payment_type = request.GET.get('payment_type',u'н')
+    staff = request.GET.get('staff')
+    nocache = request.GET.get('nocache')
+    recache = request.GET.get('recache')
+    promotion = request.GET.get('promotion')
+
+    state = None
     if settings.SERVICETREE_ONLY_OWN and request.active_profile:
         state = request.active_profile.department.state
-        
+
+    try:
+        cache = get_cache('service')
+    except:
+        raise "Service cache must be defined!"
+            
+    _cache_key = u'service_list_%s_%s' % ( state and state.id or u'*', payment_type) 
+    
     args = {}
+    if staff:
+        args['extended_service__staff']=staff
     if state:
-        #args['extended_service__state']=state.id
         args['extended_service__branches']=state.id
 
     nodes = []
@@ -280,38 +309,39 @@ def get_service_tree(request):
         else:
             nodes.append(base_service)
                     
-    #mass = []        
-#    nodes = clear_tree(nodes,[])
-#    for node in nodes:
-#        if result.has_key(node.id):
-#            k = [node,result[node['id']]['value'] or None]
-#        else:
-#            k = [node,None]
-#        mass.append(k)   
-    #import pdb; pdb.set_trace()
-#    return nodes
+    # запрос с параметром recache удаляет ВСЕ записи в нём
+    if recache:
+        cache.clear()
 
-    if request.GET.get('refresh'):
+    # если передаем параметр nocache, кэширование не происходит. иначе пробуем достать кэш по ключу
+    if nocache:
         _cached_tree = None
     else:
         _cached_tree = cache.get(_cache_key)
         
     if not _cached_tree:
         tree = []
-        promotions = Promotion.objects.actual()
-        if promotions.count():
-            tree_node = {
-                'id':'promotions',
-                'text':u'Акции / Комплексные обследования',
-                'children':[promo_dict(promo) for promo in promotions],
-                'leaf':False,
-                'singleClickExpand':True
-            }
-            tree.append(tree_node)
+        
+        # если передан параметр promotions, добавляем их в дерево услуг
+        if promotion:
+            promotions = Promotion.objects.actual()
+            if promotions.count():
+                tree_node = {
+                    'id':'promotions',
+                    'text':u'Акции / Комплексные обследования',
+                    'children':[promo_dict(promo) for promo in promotions],
+                    'leaf':False,
+                    'singleClickExpand':True
+                }
+                tree.append(tree_node)
+                
         s = clear_tree(nodes,[])
-        tree.extend(s) #@UndefinedVariable
+        tree.extend(s)
         _cached_tree = simplejson.dumps(tree)
-        cache.set(_cache_key, _cached_tree, 24*60*60*30)
+        
+        # кэш не обновляется, если есть параметр nocache
+        if not nocache:
+            cache.set(_cache_key, _cached_tree, 24*60*60*30)
 
     return _cached_tree
 

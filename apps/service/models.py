@@ -12,6 +12,7 @@ from django.db.models.signals import post_save
 from mptt.models import MPTTModel
 import datetime
 from state.models import State
+from constance import config
 
 
 class ICD10(MPTTModel):
@@ -192,7 +193,7 @@ class BaseService(models.Model):
             try:
                 place = self.execution_place.all()[0]
             except:
-                return self.execution_place.get(id=settings.MAIN_STATE_ID)
+                return self.execution_place.get(id=config.MAIN_STATE_ID)
         return place
     
     def price(self, state=None, date=None, payment_type=u'н'):

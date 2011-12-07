@@ -3,28 +3,28 @@
 {% block title %}Панель управления{% endblock %}
 
 {% block head %}
-	<link rel="icon" type="image/ico" href="{{ MEDIA_URL }}resources/favicon.ico" />
+	<link rel="icon" type="image/ico" href="{{ STATIC_URL }}resources/favicon.ico" />
 
     <!-- ExtJS -->
-    <link rel="stylesheet" type="text/css" href="{{ MEDIA_URL }}extjs/resources/css/ext-all.css"/>
+    <link rel="stylesheet" type="text/css" href="{{ STATIC_URL }}extjs/resources/css/ext-all.css"/>
 
     <!-- APP -->
-    <link rel="stylesheet" type="text/css" href="{{ MEDIA_URL }}resources/css/app.css"/>
+    <link rel="stylesheet" type="text/css" href="{{ STATIC_URL }}resources/css/app.css"/>
 
     <!-- FAM -->
-    <link rel="stylesheet" type="text/css" href="{{ MEDIA_URL }}resources/css/silk.css"/>
-	<link rel="stylesheet" type="text/css" href="{{ MEDIA_URL }}extjs/ux/css/Spinner.css" rel="stylesheet" />
-	<link rel="stylesheet" type="text/css" href="{{ MEDIA_URL }}extjs/ux/css/RowEditor.css" rel="stylesheet" />
+    <link rel="stylesheet" type="text/css" href="{{ STATIC_URL }}resources/css/silk.css"/>
+	<link rel="stylesheet" type="text/css" href="{{ STATIC_URL }}extjs/ux/css/Spinner.css" rel="stylesheet" />
+	<link rel="stylesheet" type="text/css" href="{{ STATIC_URL }}extjs/ux/css/RowEditor.css" rel="stylesheet" />
 	
     <!-- Growl -->
-    <link rel="stylesheet" type="text/css" href="{{ MEDIA_URL }}libs/growl/css/ext/ux/Growl.css"/>
+    <link rel="stylesheet" type="text/css" href="{{ STATIC_URL }}libs/growl/css/ext/ux/Growl.css"/>
 
 	<style>
 	</style>
 
 	<script type="text/javascript">
 		var state = '{{ request.active_profile.state }}';
-		var MEDIA_URL = '{{ MEDIA_URL }}';
+		var MEDIA_URL = '{{ STATIC_URL }}';
 		var API_URL = '/api/v1';
 		function get_api_url(resource){
 			return [API_URL,'dashboard',resource].join("/");
@@ -32,58 +32,58 @@
 	</script>
 
     <!-- LIBS -->
-    <script type="text/javascript" src="{{ MEDIA_URL }}extjs/adapter/ext/ext-base.js"></script>
+    <script type="text/javascript" src="{{ STATIC_URL }}extjs/adapter/ext/ext-base.js"></script>
     <!-- ENDLIBS -->
 
-    <script type="text/javascript" src="{{ MEDIA_URL }}extjs/ext-all-debug.js"></script>
-    <script type="text/javascript" src="{{ MEDIA_URL }}extjs/src/locale/ext-lang-ru.js"></script>
+    <script type="text/javascript" src="{{ STATIC_URL }}extjs/ext-all-debug.js"></script>
+    <script type="text/javascript" src="{{ STATIC_URL }}extjs/src/locale/ext-lang-ru.js"></script>
 
     <!-- Growl -->
-    <script type="text/javascript" src="{{ MEDIA_URL }}libs/growl/js/ext/ux/Growl.js"></script>
+    <script type="text/javascript" src="{{ STATIC_URL }}libs/growl/js/ext/ux/Growl.js"></script>
 
-    <script type="text/javascript" src="{{ MEDIA_URL }}extjs/ux/RowEditor.js"></script>
-    <script type="text/javascript" src="{{ MEDIA_URL }}extjs/ux/CheckColumn.js"></script> 
+    <script type="text/javascript" src="{{ STATIC_URL }}extjs/ux/RowEditor.js"></script>
+    <script type="text/javascript" src="{{ STATIC_URL }}extjs/ux/CheckColumn.js"></script> 
     
-    <script type="text/javascript" src="{{ MEDIA_URL }}app/data/RestStore.js"></script>
+    <script type="text/javascript" src="{{ STATIC_URL }}app/data/RestStore.js"></script>
 
-    <script type="text/javascript" src="{{ MEDIA_URL }}app/ux/GSearchField.js"></script>
-    <script type="text/javascript" src="{{ MEDIA_URL }}app/App.js"></script>
-    <script type="text/javascript" src="{{ MEDIA_URL }}app/Backend.js"></script>
-    <script type="text/javascript" src="{{ MEDIA_URL }}app/form/ClearableComboBox.js"></script>
-    <script type="text/javascript" src="{{ MEDIA_URL }}app/form/LazyComboBox.js"></script>
+    <script type="text/javascript" src="{{ STATIC_URL }}app/ux/GSearchField.js"></script>
+    <script type="text/javascript" src="{{ STATIC_URL }}app/App.js"></script>
+    <script type="text/javascript" src="{{ STATIC_URL }}app/Backend.js"></script>
+    <script type="text/javascript" src="{{ STATIC_URL }}app/form/ClearableComboBox.js"></script>
+    <script type="text/javascript" src="{{ STATIC_URL }}app/form/LazyComboBox.js"></script>
 
-    <script type="text/javascript" src="{{ MEDIA_URL }}app/laboratory/backends.js"></script>
-    <script type="text/javascript" src="{{ MEDIA_URL }}app/laboratory/models.js"></script>
+    <script type="text/javascript" src="{{ STATIC_URL }}app/laboratory/backends.js"></script>
+    <script type="text/javascript" src="{{ STATIC_URL }}app/laboratory/models.js"></script>
 
-    <script type="text/javascript" src="{{ MEDIA_URL }}app/laboratory/search/SearchWindow.js"></script>
+    <script type="text/javascript" src="{{ STATIC_URL }}app/laboratory/search/SearchWindow.js"></script>
 
-    <script type="text/javascript" src="{{ MEDIA_URL }}app/laboratory/register/RegisterWindow.js"></script>
+    <script type="text/javascript" src="{{ STATIC_URL }}app/laboratory/register/RegisterWindow.js"></script>
 
-    <script type="text/javascript" src="{{ MEDIA_URL }}app/laboratory/fields/InputList.js"></script>
+    <script type="text/javascript" src="{{ STATIC_URL }}app/laboratory/fields/InputList.js"></script>
 
-    <script type="text/javascript" src="{{ MEDIA_URL }}app/laboratory/manual/cards/BaseCard.js"></script>
-    <script type="text/javascript" src="{{ MEDIA_URL }}app/laboratory/manual/cards/sperm.js"></script>
-    <script type="text/javascript" src="{{ MEDIA_URL }}app/laboratory/manual/cards/ugsmear.js"></script>
+    <script type="text/javascript" src="{{ STATIC_URL }}app/laboratory/manual/cards/BaseCard.js"></script>
+    <script type="text/javascript" src="{{ STATIC_URL }}app/laboratory/manual/cards/sperm.js"></script>
+    <script type="text/javascript" src="{{ STATIC_URL }}app/laboratory/manual/cards/ugsmear.js"></script>
 
-    <script type="text/javascript" src="{{ MEDIA_URL }}app/laboratory/manual/ManualGrid.js"></script>
+    <script type="text/javascript" src="{{ STATIC_URL }}app/laboratory/manual/ManualGrid.js"></script>
 
-    <script type="text/javascript" src="{{ MEDIA_URL }}app/laboratory/laborder/LabBoard.js"></script>
-    <script type="text/javascript" src="{{ MEDIA_URL }}app/laboratory/laborder/LabOrderGrid.js"></script>
-    <script type="text/javascript" src="{{ MEDIA_URL }}app/laboratory/laborder/LabServiceGrid.js"></script>
-    <script type="text/javascript" src="{{ MEDIA_URL }}app/laboratory/laborder/LabTestGrid.js"></script>
+    <script type="text/javascript" src="{{ STATIC_URL }}app/laboratory/laborder/LabBoard.js"></script>
+    <script type="text/javascript" src="{{ STATIC_URL }}app/laboratory/laborder/LabOrderGrid.js"></script>
+    <script type="text/javascript" src="{{ STATIC_URL }}app/laboratory/laborder/LabServiceGrid.js"></script>
+    <script type="text/javascript" src="{{ STATIC_URL }}app/laboratory/laborder/LabTestGrid.js"></script>
 
-    <script type="text/javascript" src="{{ MEDIA_URL }}app/laboratory/equipment/EquipmentGrid.js"></script>
-    <script type="text/javascript" src="{{ MEDIA_URL }}app/laboratory/equipment/EquipmentTaskGrid.js"></script>
-    <script type="text/javascript" src="{{ MEDIA_URL }}app/laboratory/equipment/EquipmentResultGrid.js"></script>
-    <script type="text/javascript" src="{{ MEDIA_URL }}app/laboratory/equipment/EquipmentAssayGrid.js"></script>
+    <script type="text/javascript" src="{{ STATIC_URL }}app/laboratory/equipment/EquipmentGrid.js"></script>
+    <script type="text/javascript" src="{{ STATIC_URL }}app/laboratory/equipment/EquipmentTaskGrid.js"></script>
+    <script type="text/javascript" src="{{ STATIC_URL }}app/laboratory/equipment/EquipmentResultGrid.js"></script>
+    <script type="text/javascript" src="{{ STATIC_URL }}app/laboratory/equipment/EquipmentAssayGrid.js"></script>
 
-    <script type="text/javascript" src="{{ MEDIA_URL }}app/laboratory/result/ResultGrid.js"></script>
-    <script type="text/javascript" src="{{ MEDIA_URL }}app/laboratory/result/ResultCard.js"></script>
+    <script type="text/javascript" src="{{ STATIC_URL }}app/laboratory/result/ResultGrid.js"></script>
+    <script type="text/javascript" src="{{ STATIC_URL }}app/laboratory/result/ResultCard.js"></script>
 
-    <script type="text/javascript" src="{{ MEDIA_URL }}app/laboratory/EventManager.js"></script>
-    <script type="text/javascript" src="{{ MEDIA_URL }}app/laboratory/CentralPanel.js"></script>
-    <script type="text/javascript" src="{{ MEDIA_URL }}app/laboratory/MainPanel.js"></script>
-    <script type="text/javascript" src="{{ MEDIA_URL }}app/laboratory/app.js"></script>
+    <script type="text/javascript" src="{{ STATIC_URL }}app/laboratory/EventManager.js"></script>
+    <script type="text/javascript" src="{{ STATIC_URL }}app/laboratory/CentralPanel.js"></script>
+    <script type="text/javascript" src="{{ STATIC_URL }}app/laboratory/MainPanel.js"></script>
+    <script type="text/javascript" src="{{ STATIC_URL }}app/laboratory/app.js"></script>
 
 {% include "webapp/includes/active_profile.html" %}
 

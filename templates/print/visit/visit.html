@@ -10,9 +10,6 @@
 
 	
 <style>
-	body {
-		width:21cm;
-	}
 	table.page-frame {
 		width:100%;
 		page-break-after:always;
@@ -28,7 +25,7 @@
 		margin:5px 0 10px 0;
 	}
 	td.visit {
-		height:19cm;
+		height:15cm;
 	}
 	td.agreement {
 		border-top:dashed 1px gray;
@@ -70,15 +67,31 @@
 {% endblock %}
 
 {% block body %}
+
+<div id="print-box">
+	<script>
+		function printDoc(){
+			if(jsPrintSetup){
+				jsPrintSetup.setOption('marginTop',10);
+				jsPrintSetup.setOption('marginBottom',10);
+				jsPrintSetup.setOption('marginLeft',10);
+				jsPrintSetup.setOption('marginRight',10);
+				jsPrintSetup.print();
+			} else {
+				window.print();
+			}
+		}
+	</script>
+	<a href="javascript:printDoc();">Печать</a>
+</div>
+<div class="page_wrapper_A4_book">
+<div class="page_wrapper">
+{% include "print/visit_header.html" %}
 <table class="page-frame">
 	<tr>
 		<td class="visit">
-			<div class="header center">
-				<div style="float:left"><img src="/webapp/barcode/?codestring={{ visit.barcode.id }}"></div>
-				<div class="brand logo">{{ config.BRAND|upper }}</div>
-			</div>
-			<div class="details">
-				<div style="font-size:10pt;float:right">{% flatblock "address.visit" %}</div>
+ 			<div class="details">
+				<div style="font-size:10pt;float:right">{% include "print/visit_details.html" %}</div>
 				<div>Пациент: <strong>{{ visit.patient.full_name }}</strong></div>
 				<div>Дата: <strong>{{ visit.created|date:"d.m.Y" }}</strong></div>
 				<div>Номер визита: <strong>{{ visit.barcode.id }}</strong></div>
@@ -87,7 +100,7 @@
 				<tr>
 					<th width="2%" class="service">№</th>
 					<th class="service">Наименование услуги</th>
-					<th width="10%" nowrap class="service">Стоимость, руб.</th>
+					<th width="10%" nowrap class="service">Стоимость,<br> руб.</th>
 					<th width="7%" nowrap class="service">Кол-во</th>
 					<th width="10%" nowrap class="service">Сумма, руб.</th>
 					<th width="10%" nowrap class="service">Скидка, руб.</th>
@@ -168,5 +181,6 @@
 	</tr>
 
 </table>
-
+</div>
+</div>
 {% endblock %}

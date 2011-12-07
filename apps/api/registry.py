@@ -36,6 +36,7 @@ from tastypie.authentication import ApiKeyAuthentication
 from patient.utils import smartFilter
 from django.db.models.query_utils import Q
 from crm.models import AdSource
+from constance import config
 
 class UserResource(ModelResource):
 
@@ -231,7 +232,7 @@ class ReferralResource(ExtResource):
 class LabResource(ModelResource):
 
     class Meta:
-        queryset = State.objects.filter(type__in=('m','b')).exclude(id=settings.MAIN_STATE_ID) 
+        queryset = State.objects.filter(type__in=('m','b')).exclude(id=config.MAIN_STATE_ID) 
         resource_name = 'lab'
         limit = 10
         filtering = {

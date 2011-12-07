@@ -18,12 +18,8 @@ from autocomplete.views import autocomplete
 urlpatterns = patterns('',
     url(r'^$', lambda r: HttpResponseRedirect('/webapp/cpanel/')),
     url(r'^webapp/',include('webapp.urls')),
-    url(r'^helper/fullpricelist/$','service.views.pricelist'),
-    url(r'^helper/pricelist/$','service.views.price_list_helper'),
-    url(r'^helper/servicelist/$','service.views.service_list'),
-    url(r'^helper/staffsetter/$','service.views.staff_setter'),
+#    url(r'^helper/pricelist/$','service.views.price_list_helper'),
     url(r'^old/reporting/', include('reporting.urls')),
-#    url(r'^monitoring/sentry/', include('sentry.urls')),
     url(r'^admin/', include(admin.site.urls)),
     url(r'^admin_tools/', include('admin_tools.urls')),
     url(r'^api/', include('api.urls')),
@@ -33,5 +29,10 @@ urlpatterns = patterns('',
     url(r'^numeration/', include('numeration.urls')),
     url(r'^autocomplete/', include(autocomplete.urls)),
     url(r'^timeslot/haspreorder/(?P<id>\d+)/$', 'scheduler.views.hasPreorder'),
-    #(r'helpdesk/', include('helpdesk.urls')),
 )
+
+try:
+    from local_urls import localpatterns
+    urlpatterns += localpatterns
+except:
+    print "local urls not found!"

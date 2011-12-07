@@ -9,9 +9,6 @@
 
 	
 <style>
-	body {
-		width:21cm;
-	}
 	table.page-frame {
 		width:100%;
 		page-break-after:always;
@@ -73,6 +70,13 @@
 {% endblock %}
 
 {% block body %}
+<div id="print-box">
+	<a href="javascript:window.print();">Печать</a>
+</div>
+
+<div class="page_wrapper_A4_book">
+<div class="page_wrapper">
+{% include "print/visit_header.html" %}
 <table class="page-frame">
 	<tr>
 		<td>
@@ -120,5 +124,6 @@
 		</td>
 	</tr>
 </table>
-
+</div>
+</div>
 {% endblock %}

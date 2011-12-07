@@ -12,15 +12,10 @@ App.CentralPanel = Ext.extend(Ext.Panel, {
 	
 	initComponent: function(){
 		this.mainPanel = new App.MainPanel({});
-
-		config = {
-			region:'center',
-			border:false,
-			layout:'border',
-			items:[this.mainPanel],
-			tbar:[{
+		
+		this.ttb = new Ext.Toolbar({
+			items:[{
 				xtype: 'buttongroup',
-//				title: '№ заказа или фамилия',
 				padding:5,
 				items:[{
 					id:'global-search-field',
@@ -29,37 +24,11 @@ App.CentralPanel = Ext.extend(Ext.Panel, {
 				}]
 			},{
 				xtype:'buttongroup',
-//				title:'Регистратура',
 				defaults:{
 					xtype:'button',
 					scale:'medium'
 				},
-				items:[/*{
-					xtype:'splitbutton',
-//					text:'Новый пациент',
-					iconCls:'silk-add',
-					tooltip:'Создание нового пациента',
-					handler:function(){
-						var win = new App.patient.PatientWindow({
-							inCard:true,
-							scope:this,
-							fn:function(record){
-//								this.store.insertRecord(record);
-							}
-						});
-						win.show();
-					},
-					scope:this,
-					menu:[{
-						iconCls:'med-usersetup',
-						text:'Журнал пациентов',
-						tooltip:'Журнал всех пациентов',
-						handler:function(){
-							this.launchApp('patients');
-						},
-						scope:this
-					}]
-				},*/{
+				items:[{
 					text:'Приемы',
 					tooltip:'Журнал приемов пациентов',
 					handler:function(){
@@ -69,13 +38,11 @@ App.CentralPanel = Ext.extend(Ext.Panel, {
 				}]
 			},{
 				xtype:'buttongroup',
-//				title:'Результаты',
 				defaults:{
 					xtype:'button',
 					scale:'medium'
 				},
 				items:[{
-//					iconCls:'med-testtubes',
 					text:'Результаты',
 					tooltip:'Журнал результатов анализов',
 					handler:function(){
@@ -85,7 +52,6 @@ App.CentralPanel = Ext.extend(Ext.Panel, {
 				}]
 			},{
 				xtype:'buttongroup',
-//				title:'Штрих-коды',
 				defaults:{
 					xtype:'button',
 					scale:'medium'
@@ -103,7 +69,6 @@ App.CentralPanel = Ext.extend(Ext.Panel, {
 				}]
 			},{
 				xtype:'buttongroup',
-//				title:'Календарь',
 				defaults:{
 					xtype:'button',
 					scale:'medium'
@@ -125,7 +90,6 @@ App.CentralPanel = Ext.extend(Ext.Panel, {
 				}]
 			},{
 				xtype:'buttongroup',
-//				title:'Отчеты',
 				defaults:{
 					xtype:'button',
 					scale:'medium'
@@ -140,7 +104,6 @@ App.CentralPanel = Ext.extend(Ext.Panel, {
 				}]
 			},{
 				xtype:'buttongroup',
-				//title:'Касса',
 				defaults:{
 					xtype:'button',
 					scale:'medium'
@@ -179,7 +142,6 @@ App.CentralPanel = Ext.extend(Ext.Panel, {
             	}]
             },'->',{
 				xtype:'buttongroup',
-//				title:'HelpDesk',
 				defaults:{
 					xtype:'button',
 					scale:'medium'
@@ -193,7 +155,6 @@ App.CentralPanel = Ext.extend(Ext.Panel, {
 				}]
 			},{
 				xtype:'buttongroup',
-//				title:'Профиль',
 				defaults:{
 					xtype:'button',
 					scale:'medium'
@@ -230,7 +191,15 @@ App.CentralPanel = Ext.extend(Ext.Panel, {
 	            		window.location.href = '/webapp/logout/';
 	            	}
 	            }]
-			}],
+			}]
+		});
+
+		config = {
+			region:'center',
+			border:false,
+			layout:'border',
+			items:[this.mainPanel],
+			tbar:this.ttb,
 	        bbar: App.StatusBar
 		}
 		Ext.apply(this, Ext.apply(this.initialConfig, config));
@@ -238,14 +207,14 @@ App.CentralPanel = Ext.extend(Ext.Panel, {
 		App.eventManager.on('launchapp', this.launchApp, this);
 		App.eventManager.on('closeapp', this.closeApp, this);
 		this.on('afterrender', function(){
-			Ext.QuickTips.register({
+/*			Ext.QuickTips.register({
 				autoHide:false,
 			    target: 'global-search-field',
 			    title: 'Новый поиск!',
 			    text: 'Вводите поисковый запрос следующего вида:<br><b>фамилия имя отчество дата рождения</b>',
 			    width: 300,
 			    dismissDelay: 30000 // Hide after 10 seconds hover
-			});
+			});*/
 
 		});
 	},

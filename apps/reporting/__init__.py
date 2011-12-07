@@ -20,35 +20,31 @@ def all_reports():
 
 def autodiscover():
     from django.conf import settings
-    CUSTOMS_ROOT = getattr(settings, 'CUSTOMS_ROOT')
-    REPORTS_DIR = getattr(settings, 'REPORTS_DIR')
-    
-    import os
+    REPORTING_SOURCE_FILE =  getattr(settings, 'REPORTING_SOURCE_FILE', 'reports') 
+    for app in settings.INSTALLED_APPS:
+        try:
+            app_path = __import__(app, {}, {}, [app.split('.')[-1]]).__path__
+        except AttributeError:
+            continue
 
-    for dirpath, dirnames, filenames in os.walk(CUSTOMS_ROOT / REPORTS_DIR):
-        for filename in filenames:
-            if filename.lower().endswith(('.pyc', '__init__.py')): continue
-
-            module = ".".join([REPORTS_DIR, filename.split('.')[0]])
-            print module
-            __import__("%s" % module)
-
-
-#    REPORTING_SOURCE_FILE =  getattr(settings, 'REPORTING_SOURCE_FILE', 'reports') 
-#    for app in settings.INSTALLED_APPS:
-#        try:
-#            app_path = __import__(app, {}, {}, [app.split('.')[-1]]).__path__
-#        except AttributeError:
-#            continue
+        try:
+            imp.find_module(REPORTING_SOURCE_FILE, app_path)
+        except ImportError:
+            continue
+        __import__('%s.%s' % (app, REPORTING_SOURCE_FILE))
+        print '%s.%s' % (app, REPORTING_SOURCE_FILE)
+#    REPORTS_DIR = 'reports'
+#    CUSTOM_APPS = settings.CUSTOM_APPS
+#    print CUSTOM_APPS / REPORTS_DIR
+#    import os
 #
-#        print app_path
+#    for dirpath, dirnames, filenames in os.walk(CUSTOM_APPS / REPORTS_DIR):
+#        for filename in filenames:
+#            if filename.lower().endswith(('.pyc', '__init__.py')): continue
 #
-#        try:
-#            imp.find_module(REPORTING_SOURCE_FILE, app_path)
-#        except ImportError:
-#            continue
-#        print '%s.%s' % (app, REPORTING_SOURCE_FILE)
-#        __import__('%s.%s' % (app, REPORTING_SOURCE_FILE))
+#            module = ".".join([REPORTS_DIR, filename.split('.')[0]])
+#            print module
+#            __import__("%s" % module)
 
 
 def DistinctCount(field):

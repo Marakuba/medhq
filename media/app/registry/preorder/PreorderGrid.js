@@ -102,7 +102,13 @@ App.registry.PreorderGrid = Ext.extend(Ext.grid.GridPanel, {
 		});
 		
 		 this.ttb = new Ext.Toolbar({
-			items:[this.visitButton,this.clearButton,'->']
+			items:[this.visitButton,this.clearButton,'-',{
+				text:'Реестр',
+				handler:function(){
+					Ext.ux.Printer.print(this);
+				},
+				scope:this
+			},'->']
 		});
 		
 		var config = {

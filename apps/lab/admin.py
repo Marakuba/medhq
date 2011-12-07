@@ -42,7 +42,7 @@ class ResultInline(admin.TabularInline):
 
 
 def actions(obj):
-    return "<a href='%sprint_results/' title='Распечатать' target='_blank'><img src='%sresources/images/1294430047_print.png' border='0'></a>" % (obj.get_absolute_url(), settings.MEDIA_URL)
+    return "<a href='%sprint_results/' title='Распечатать' target='_blank'><img src='%sresources/images/1294430047_print.png' border='0'></a>" % (obj.get_absolute_url(), settings.STATIC_URL)
 actions.short_description = u'Действия'
 actions.allow_tags = True
 

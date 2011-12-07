@@ -7,6 +7,7 @@ from service.models import BaseService, ExecutionPlace
 from django.conf import settings
 from pricelist.models import Price, PriceType
 import datetime
+from constance import config
 
 class Command(BaseCommand):
 
@@ -18,7 +19,7 @@ class Command(BaseCommand):
         table = csv.reader(open(f,'r'), delimiter=",")
         
         
-        pl = State.objects.get(id=settings.MAIN_STATE_ID)
+        pl = State.objects.get(id=config.MAIN_STATE_ID)
 
         slugs = ('em_retail','kdl_income','dc_income')
         types = {}

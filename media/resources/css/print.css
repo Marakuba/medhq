@@ -1,26 +1,20 @@
 html {
 	font-family: Arial, Helvetica, sans-serif;
 	font-size:9.5pt;
-	margin-right:1cm;
 }
 
-.header, .patient, .results, .underwrite {
+.page_wrapper {
+	padding:0cm;
+}
+
+@media print {
+	#print-box {
+		display:none;
+	}
+}
+
+.patient, .results, .underwrite {
 	width: 100%;
-}
-
-.header .brand {
-	font-family: Impact;
-	font-size:30pt;
-}
-
-.header .info {
-	vertical-align:top;
-	text-align: right;
-}
-
-.header .worktime {
-	font-size:10pt;
-	padding:15px 0;
 }
 
 .patient {

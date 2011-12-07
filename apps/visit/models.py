@@ -255,7 +255,7 @@ class OrderedService(make_operator_object('ordered_service')):
     order = models.ForeignKey(Visit)
     service = models.ForeignKey(BaseService, verbose_name=u'Услуга')
     execution_place = models.ForeignKey(State, verbose_name=u'Место выполнения', 
-                                        default=settings.MAIN_STATE_ID)
+                                        default=config.MAIN_STATE_ID)
     executed = models.DateTimeField(u'Дата выполнения', null=True, blank=True)
     staff = models.ForeignKey(Position, null=True, blank=True, verbose_name=u'Врач')
     price = models.DecimalField(u'Цена услуги', 

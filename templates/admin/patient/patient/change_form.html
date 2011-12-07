@@ -40,13 +40,13 @@
 			</tr>
 			{% for result in results %}
 			<tr>
-				<td><img src="{{ MEDIA_URL }}admin/img/admin/icon-{{ result.is_completed|yesno:'yes,no'}}.gif"></td>
+				<td><img src="{{ STATIC_URL }}admin/img/admin/icon-{{ result.is_completed|yesno:'yes,no'}}.gif"></td>
 				<td>{{ result.id }}</td>
 				<td>{{ result.created }}</td>
 				<td>{{ result.laboratory }}</td>
 				<td>{{ result.staff }}</td>
 				<td>
-					<a href='{{ result.get_absolute_url }}print_results/' title='Распечатать' target='_blank'><img src='{{ MEDIA_URL }}resources/images/1294430047_print.png' border='0'></a>
+					<a href='{{ result.get_absolute_url }}print_results/' title='Распечатать' target='_blank'><img src='{{ STATIC_URL }}resources/images/1294430047_print.png' border='0'></a>
 				</td>
 			</tr>
 			{% endfor %}
