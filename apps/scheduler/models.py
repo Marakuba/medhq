@@ -116,11 +116,11 @@ class Event(models.Model):
                                      end = start+timeslot, timeslot = True, vacant = True, n = False, \
                                      parent = self, rem = self.rem)
                 start += timeslot
-        try:
-            st = Position.objects.get(id = self.cid)
-            self.staff = st
-        except:
-            print 'Event save Error! Position %s not found' % (self.cid)
+#        try:
+#            st = Position.objects.get(id = self.cid)
+#            self.staff = st
+#        except:
+#            print 'Event save Error! Position %s not found' % (self.cid)
         super(Event, self).save(*args, **kwargs)
 
     def delete(self, *args, **kwargs):

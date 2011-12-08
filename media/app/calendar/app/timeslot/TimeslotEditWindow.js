@@ -100,7 +100,7 @@ Ext.calendar.TimeslotEditWindow = Ext.extend(Ext.Window, {
 		    displayField: 'service_name',
 		    listeners:{
 		    	'select':function(combo,record,index){
-		    		this.service = record;
+		    		this.service = record.data.resource_uri;
 		    	},
 		    	scope:this
 		    }
@@ -546,7 +546,7 @@ Ext.calendar.TimeslotEditWindow = Ext.extend(Ext.Window, {
         
         
         this.serviceStore.setBaseParam('staff',this.staff_id);
-        this.serviceStore.load();
+//        this.serviceStore.load();
 
         if (o.data) {
             rec = o;
@@ -695,6 +695,7 @@ Ext.calendar.TimeslotEditWindow = Ext.extend(Ext.Window, {
 			this.serviceButton.setDisabled(false);
 			if (this.preorder.data.service) {
 				this.serviceCombo.forceValue(this.preorder.data.service);
+				this.service = this.preorder.data.service;
 			};
 			this.patientCombo.setValue(records[0].data.patient);
 			this.setPatient(records[0].data.patient);
@@ -906,7 +907,7 @@ Ext.calendar.TimeslotEditWindow = Ext.extend(Ext.Window, {
        		store:this.serviceStore,
        		fn:function(record){
        			this.serviceCombo.forceValue(record.data.resource_uri)
-       			this.service = record;
+       			this.service = record.data.resource_uri;
 				serviceWindow.close();
 			}
        	 });

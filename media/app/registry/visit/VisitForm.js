@@ -452,6 +452,9 @@ App.visit.VisitForm = Ext.extend(Ext.FormPanel, {
 			if (this.preorderRecord && this.preorderRecord.data.service){
 				this.addPreorderService(this.preorderRecord);
 				if (this.preorderRecord.data.payment_type){
+					if (this.preorderRecord.data.payment_type=='н'){
+						return
+					}
 					this.paymentTypeCB.setValue(this.preorderRecord.data.payment_type);
 					var ind = this.paymentTypeCB.store.find("id",this.preorderRecord.data.payment_type)
 					var rec = this.paymentTypeCB.store.getAt(ind)
