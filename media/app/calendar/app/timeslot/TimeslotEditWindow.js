@@ -546,7 +546,7 @@ Ext.calendar.TimeslotEditWindow = Ext.extend(Ext.Window, {
         
         
         this.serviceStore.setBaseParam('staff',this.staff_id);
-        this.serviceStore.load();
+//        this.serviceStore.load();
 
         if (o.data) {
             rec = o;

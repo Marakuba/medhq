@@ -1350,7 +1350,8 @@ class PreorderResource(ExtResource):
         filtering = {
             'patient':ALL_WITH_RELATIONS,
             'timeslot':ALL,
-            'service':ALL_WITH_RELATIONS
+            'service':ALL_WITH_RELATIONS,
+            'payment_type':ALL
         }
         
 class ExtPreorderResource(ExtResource):
@@ -1363,6 +1364,7 @@ class ExtPreorderResource(ExtResource):
         obj = bundle.obj
         bundle.data['service_name'] = obj.service and obj.service.base_service.name
         bundle.data['patient_name'] = obj.patient.full_name()
+        bundle.data['ptype_name'] = obj.get_payment_type_display()
         bundle.data['execution_place'] = obj.service and obj.service.state.id
         bundle.data['execution_place_name'] = obj.service and obj.service.state.name
         bundle.data['staff'] = obj.timeslot.cid
@@ -1382,6 +1384,7 @@ class ExtPreorderResource(ExtResource):
             'start':ALL,
             'timeslot':ALL_WITH_RELATIONS,
             'service':ALL_WITH_RELATIONS,
+            'payment_type':ALL
         }
         limit = 500
         
