@@ -10,14 +10,37 @@
 
     <!-- APP -->
     <link rel="stylesheet" type="text/css" href="{{ STATIC_URL }}resources/css/app.css"/>
+    <link rel="stylesheet" type="text/css" href="{{ STATIC_URL }}app/calendar/resources/css/calendar.css"/>
+    <link rel="stylesheet" type="text/css" href="{{ STATIC_URL }}app/calendar/resources/css/examples.css"/>
 
     <!-- FAM -->
     <link rel="stylesheet" type="text/css" href="{{ STATIC_URL }}resources/css/silk.css"/>
 	<link rel="stylesheet" type="text/css" href="{{ STATIC_URL }}extjs/ux/css/Spinner.css" rel="stylesheet" />
 	<link rel="stylesheet" type="text/css" href="{{ STATIC_URL }}extjs/ux/css/RowEditor.css" rel="stylesheet" />
 	
-	<style>
-	</style>
+	 <!-- GIF -->
+    <link rel="stylesheet" type="text/css" href="{{ STATIC_URL }}app/calendar/resources/images/default/bg.gif"/>
+    <link rel="stylesheet" type="text/css" href="{{ STATIC_URL }}app/calendar/resources/images/default/page-prev.gif"/>
+    <link rel="stylesheet" type="text/css" href="{{ STATIC_URL }}app/calendar/resources/images/default/arrow.gif"/>
+    <link rel="stylesheet" type="text/css" href="{{ STATIC_URL }}app/calendar/resources/images/default/page-next.gif"/>
+    
+	<style type="text/css" media="all">
+	    .ext-cal-dayview .ext-cal-body-ct .ext-cal-bg-tbl {
+		    height: 504px;
+		}
+		
+		.ext-cal-day-col-gutter {
+		    height: 504px;
+		}
+
+    	.x-tree-node-anchor {
+    		white-space: normal;
+    	}
+    	
+    	.ext-cal-hd-ad-inner {
+			height:50px;
+		}
+    </style>
 
 	<script type="text/javascript">
 		var state = '{{ request.active_profile.state }}';
@@ -34,9 +57,17 @@
 
     <script type="text/javascript" src="{{ STATIC_URL }}extjs/ext-all-debug.js"></script>
     <!--<script type="text/javascript" src="{{ STATIC_URL }}extjs/src/debug.js"></script>-->
+    
+    <!-- OWN CMP -->
 
+    <script type="text/javascript" src="/webapp/settings/"></script>
+
+    
     <script type="text/javascript" src="{{ STATIC_URL }}extjs/ux/RowEditor.js"></script>
     <script type="text/javascript" src="{{ STATIC_URL }}extjs/ux/CheckColumn.js"></script> 
+    
+    <script type="text/javascript" src="{{ STATIC_URL }}app/registry/models.js"></script>
+    <script type="text/javascript" src="{{ STATIC_URL }}app/registry/EventManager.js"></script>
     
     <script type="text/javascript" src="{{ STATIC_URL }}app/ux/GSearchField.js"></script>
     <script type="text/javascript" src="{{ STATIC_URL }}app/ux/StatusBar.js"></script>
@@ -49,6 +80,52 @@
 
     <script type="text/javascript" src="{{ STATIC_URL }}app/examination/backends.js"></script>
     <script type="text/javascript" src="{{ STATIC_URL }}app/examination/models.js"></script>
+    
+    <!-- calendar -->
+	<script type="text/javascript" src="{{ STATIC_URL }}app/calendar/EventManager.js"></script>
+	<script type="text/javascript" src="{{ STATIC_URL }}app/calendar/src/Ext.calendar.js"></script>
+    
+	<script type="text/javascript" src="{{ STATIC_URL }}app/calendar/src/templates/DayHeaderTemplate.js"></script>
+	<script type="text/javascript" src="{{ STATIC_URL }}app/calendar/src/templates/DayBodyTemplate.js"></script>
+	<script type="text/javascript" src="{{ STATIC_URL }}app/calendar/src/templates/DayViewTemplate.js"></script>
+    <script type="text/javascript" src="{{ STATIC_URL }}app/calendar/src/templates/BoxLayoutTemplate.js"></script>
+    <script type="text/javascript" src="{{ STATIC_URL }}app/calendar/src/templates/MonthViewTemplate.js"></script>
+    
+    <script type="text/javascript" src="{{ STATIC_URL }}app/calendar/src/dd/CalendarScrollManager.js"></script>
+    <script type="text/javascript" src="{{ STATIC_URL }}app/calendar/src/dd/StatusProxy.js"></script>
+    <script type="text/javascript" src="{{ STATIC_URL }}app/calendar/src/dd/CalendarDD.js"></script>
+    <script type="text/javascript" src="{{ STATIC_URL }}app/calendar/src/dd/DayViewDD.js"></script>
+    
+    <script type="text/javascript" src="{{ STATIC_URL }}app/calendar/src/EventRecord.js"></script>
+    <script type="text/javascript" src="{{ STATIC_URL }}app/calendar/src/views/MonthDayDetailView.js"></script>
+    <script type="text/javascript" src="{{ STATIC_URL }}app/calendar/src/WeekEventRenderer.js"></script>
+    <script type="text/javascript" src="{{ STATIC_URL }}app/calendar/src/widgets/CalendarPicker.js"></script>
+    <script type="text/javascript" src="{{ STATIC_URL }}app/calendar/src/widgets/StaffPicker.js"></script>
+    <script type="text/javascript" src="{{ STATIC_URL }}app/calendar/src/widgets/StaffGrid.js"></script>
+    <script type="text/javascript" src="{{ STATIC_URL }}app/calendar/src/views/CalendarView.js"></script>
+    <script type="text/javascript" src="{{ STATIC_URL }}app/calendar/src/views/DayView.js"></script>
+    <script type="text/javascript" src="{{ STATIC_URL }}app/calendar/src/views/DayBodyView.js"></script>
+    <script type="text/javascript" src="{{ STATIC_URL }}app/calendar/src/views/MonthView.js"></script>
+    <script type="text/javascript" src="{{ STATIC_URL }}app/calendar/src/views/DayHeaderView.js"></script>
+    <script type="text/javascript" src="{{ STATIC_URL }}app/calendar/src/views/WeekView.js"></script>
+    
+    <script type="text/javascript" src="{{ STATIC_URL }}app/calendar/src/widgets/DateRangeField.js"></script>
+    <script type="text/javascript" src="{{ STATIC_URL }}app/calendar/src/widgets/ReminderField.js"></script>
+    
+    <script type="text/javascript" src="{{ STATIC_URL }}app/calendar/app/timeslot/ServiceGrid.js"></script>
+    <script type="text/javascript" src="{{ STATIC_URL }}app/calendar/app/timeslot/PatientGrid.js"></script>
+    <script type="text/javascript" src="{{ STATIC_URL }}app/calendar/app/timeslot/VacantTimeslotGrid.js"></script>
+    <script type="text/javascript" src="{{ STATIC_URL }}app/calendar/app/timeslot/PreorderedServiceInlineGrid.js"></script>
+    
+	<script type="text/javascript" src="{{ STATIC_URL }}app/calendar/src/EventEditForm.js"></script>
+    <script type="text/javascript" src="{{ STATIC_URL }}app/calendar/src/EventEditWindow.js"></script>
+    <script type="text/javascript" src="{{ STATIC_URL }}app/calendar/app/timeslot/TimeslotInfoWindow.js"></script>
+    <script type="text/javascript" src="{{ STATIC_URL }}app/calendar/app/timeslot/TimeslotEditForm.js"></script>
+    <script type="text/javascript" src="{{ STATIC_URL }}app/calendar/app/timeslot/TimeslotEditWindow.js"></script>
+    <script type="text/javascript" src="{{ STATIC_URL }}app/calendar/src/CalendarPanel.js"></script>
+    <script type="text/javascript" src="{{ STATIC_URL }}app/calendar/app/DoctorScheduler.js"></script>
+    
+    <!-- examination -->
 
     <script type="text/javascript" src="{{ STATIC_URL }}app/examination/examorder/Grid.js"></script>
 
@@ -78,6 +155,7 @@
     
     <script type="text/javascript" src="{{ STATIC_URL }}app/dict/mkb/MKBTree.js"></script>
     <script type="text/javascript" src="{{ STATIC_URL }}app/dict/mkb/MKBWindow.js"></script>
+    
 
 {% include "webapp/includes/active_profile.html" %}
 

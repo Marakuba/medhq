@@ -78,6 +78,17 @@ App.ExamCentralPanel = Ext.extend(Ext.Panel, {
                 		});
                 		win.show();
                 	}
+                },{
+                	text:'Расписание',
+                	scale:'medium',
+                	handler:function(){
+                		this.launchApp('doctorscheduler',{
+                			closable:true,
+                			doctorMode:true,
+                			title:'Расписание'
+                		});
+                	},
+                    scope:this
                 }]
             },{
                 xtype: 'buttongroup',
