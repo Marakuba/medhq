@@ -353,7 +353,7 @@ Ext.ux.tree.RemoteTreePanel = Ext.extend(Ext.tree.TreePanel, {
 
 		// install event handlers on contextMenu
 		if(this.contextMenu) {
-			this.on({contextmenu:{scope:this, fn:this.onContextMenu, stopEvent:true}});
+//			this.on({contextmenu:{scope:this, fn:this.onContextMenu, stopEvent:true}});
 			this.contextMenu.on({
 				hide:{scope:this, fn:function() {
 					this.actionNode = null;
@@ -705,7 +705,7 @@ Ext.ux.tree.RemoteTreePanel = Ext.extend(Ext.tree.TreePanel, {
 			node.select();
 			this.actionNode = node;
 			var alignEl = node.getUI().getEl();
-			var xy = menu.menu.getEl().getAlignToXY(alignEl, 'tl-tl', [0, 18]);
+			var xy = menu.getEl().getAlignToXY(alignEl, 'tl-tl', [0, 18]);
 			menu.showAt([e.getXY()[0], xy[1]]);
 			e.stopEvent();
 		}

@@ -5,6 +5,8 @@ App.dict.XGlossaryTree = Ext.extend(Ext.ux.tree.RemoteTreePanel, {
 	
 	initComponent: function(){
 		
+		this.CM = new Ext.ux.menu.IconMenu();
+		
 		this.treeEditor = new Ext.tree.TreeEditor(this, {}, {
 		    cancelOnEsc: true,
 		    completeOnEnter: true,
@@ -16,6 +18,26 @@ App.dict.XGlossaryTree = Ext.extend(Ext.ux.tree.RemoteTreePanel, {
 		    }
 		});
 		
+		
+		
+//		this.contextMenu = new Ext.menu.Menu([
+//			 new Ext.menu.TextItem({text:'', style:'font-weight:bold;margin:0px 4px 0px 27px;line-height:18px'})
+//			,'-'
+//			,this.actions.reloadTree
+//			,this.actions.expandAll
+//			,this.actions.collapseAll
+//			,'-'
+//			,this.actions.expandNode
+//			,this.actions.collapseNode
+//			,'-'
+//			,this.actions.renameNode
+//			,'-'
+//			,this.actions.appendChild
+//			,this.actions.insertChild
+//			,'-'
+//			,this.actions.removeNode
+//		]);
+//		
 		this.loader = new Ext.tree.TreeLoader({
         	nodeParameter:'parent',
         	dataUrl: get_api_url('glossary'),
@@ -69,12 +91,12 @@ App.dict.XGlossaryTree = Ext.extend(Ext.ux.tree.RemoteTreePanel, {
 			}
         });
         
-        this.contextMenu = new Ext.ux.menu.IconMenu();
-        
         config = {
                 margins: '0 0 5 5',
                 width:250,
                 split:true,
+                disabled:false,
+//                contextMenu:this.contextMenu, 	
                 root:{
 					 nodeType:'async'
 					,id:'root'
@@ -89,7 +111,7 @@ App.dict.XGlossaryTree = Ext.extend(Ext.ux.tree.RemoteTreePanel, {
 						this.items.item(0).actions.reloadTree.execute();
 					}
 				}]
-				,plugins:[this.contextMenu],
+				,plugins:this.CM,
                 loader: this.loader,
                 rootVisible:true,
                 lines:false,
@@ -97,12 +119,29 @@ App.dict.XGlossaryTree = Ext.extend(Ext.ux.tree.RemoteTreePanel, {
                 collapseMode:'mini',
                 autoScroll: true,
                 header: false,
-                requestMethod:'GET'
+                requestMethod:'GET',
+                listeners:{
+	            	contextmenu:function(node, e){
+						this.fireEvent('nodeclick',node.attributes);
+						node.select();
+			            var c = node.getOwnerTree().contextMenu;
+			            c.contextNode = node;
+			            c.showAt(e.getXY());
+			            var actions = this.actions;
+						var disable = true !== this.editable || !this.actionNode;
+						actions.appendChild.setDisabled(false);
+						actions.renameNode.setDisabled(false);
+						actions.removeNode.setDisabled(false);
+						actions.insertChild.setDisabled(false);
+					},
+					scope:this
+	            }
 //                tbar: [' ', new Ext.form.TextField({
 //                    width:200,
  //               })]
  
-            }
+            },
+            
         
         this.on('click', function(node, e){
 			this.fireEvent('nodeclick',node.attributes);
@@ -110,6 +149,19 @@ App.dict.XGlossaryTree = Ext.extend(Ext.ux.tree.RemoteTreePanel, {
 				Ext.callback(this.fn, this.scope || window, [node]);
 			}
 		}, this);
+		
+//		this.on('contextmenu', function(node, e) {
+//            node.select();
+//            var c = node.getOwnerTree().contextMenu;
+//            c.contextNode = node;
+//            c.showAt(e.getXY());
+//            var actions = this.actions;
+//			var disable = true !== this.editable || !this.actionNode;
+//			actions.appendChild.setDisabled(false);
+//			actions.renameNode.setDisabled(true);
+//			actions.removeNode.setDisabled(false);
+//			actions.insertChild.setDisabled(false);
+//		},this);
 		
 		this.on('dblclick',this.onTreeNodeDblClick,this);
 		
@@ -128,6 +180,63 @@ App.dict.XGlossaryTree = Ext.extend(Ext.ux.tree.RemoteTreePanel, {
 	onTreeEditComplete: function(treeEditor, o, n){
 		//o - oldValue
    		//n - newValue
+
+	},
+	
+	appendChild:function(childNode, insert) {
+
+		var params = this.applyBaseParams();
+		var jsonData = {};
+		jsonData[this.paramNames.text] = childNode.text;
+		jsonData['section'] = this.section;
+		jsonData['base_service'] = this.service;
+		jsonData['parent'] = childNode.parentNode.resource_uri;
+		var data = {'objects':jsonData}
+
+		var o = Ext.apply(this.getOptions(), {
+			node:childNode,
+			action:'appendChild'
+			,params:params
+			,jsonData:data
+			,headers:{
+				'Content-Type':'application/json'
+			}
+		});
+
+		if(false !== this.fireEvent('before' + (insert ? 'insert' : 'append') + 'request', this, o)) {
+
+			// set loading indicator
+			childNode.getUI().beforeLoad();
+			Ext.Ajax.request(o);
+		}
+	}, // eo function appendChild
+	
+	renameNode:function(node, newText) {
+		
+		var params = this.applyBaseParams();
+		var jsonData = {};
+		jsonData[this.paramNames.text] = newText;
+		jsonData['id'] = childNode.id;
+		jsonData['section'] = this.section;
+		jsonData['base_service'] = this.service;
+		jsonData['parent'] = childNode.parentNode.resource_uri;
+		var data = {'objects':jsonData}
+
+		var o = Ext.apply(this.getOptions(), {
+			node:node,
+			action:'appendChild',
+			params:params,
+			jsonData:data,
+			headers:{
+				'Content-Type':'application/json'
+			}
+		});
+
+		if(false !== this.fireEvent('beforerenamerequest', this, o)) {
+			// set loading indicator
+			node.getUI().beforeLoad();
+			Ext.Ajax.request(o);
+		}
 
 	}
 
