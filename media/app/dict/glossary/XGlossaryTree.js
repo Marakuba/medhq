@@ -120,6 +120,19 @@ App.dict.XGlossaryTree = Ext.extend(Ext.ux.tree.RemoteTreePanel, {
                 autoScroll: true,
                 header: false,
                 requestMethod:'GET',
+                appendText:'Добавить в конец'
+				,collapseAllText:'Свернуть все'
+				,collapseText:'Свернуть'
+				,contextMenu:true
+				,deleteText:'Удалить'
+				,errorText:'Ошибка'
+				,expandAllText:'Развернуть все'
+				,expandText:'Развернуть'
+				,insertText:'Добавить в начало'
+				,newText:'Новый элемент'
+				,reallyWantText:'Вы действительно хотите'
+				,reloadText:'Обновить'
+				,renameText:'Переименовать',
                 listeners:{
 	            	contextmenu:function(node, e){
 						this.fireEvent('nodeclick',node.attributes);
@@ -189,8 +202,9 @@ App.dict.XGlossaryTree = Ext.extend(Ext.ux.tree.RemoteTreePanel, {
 		var jsonData = {};
 		jsonData[this.paramNames.text] = childNode.text;
 		jsonData['section'] = this.section;
-		jsonData['base_service'] = this.service;
-		jsonData['parent'] = childNode.parentNode.resource_uri;
+		jsonData['base_service'] = this.base_service;
+		jsonData['staff'] = this.staff;
+		jsonData['parent'] = childNode.parentNode.attributes.resource_uri;
 		var data = {'objects':jsonData}
 
 		var o = Ext.apply(this.getOptions(), {
@@ -218,7 +232,8 @@ App.dict.XGlossaryTree = Ext.extend(Ext.ux.tree.RemoteTreePanel, {
 		jsonData[this.paramNames.text] = newText;
 		jsonData['id'] = childNode.id;
 		jsonData['section'] = this.section;
-		jsonData['base_service'] = this.service;
+		jsonData['staff'] = this.staff;
+		jsonData['base_service'] = this.base_service;
 		jsonData['parent'] = childNode.parentNode.resource_uri;
 		var data = {'objects':jsonData}
 
@@ -238,6 +253,47 @@ App.dict.XGlossaryTree = Ext.extend(Ext.ux.tree.RemoteTreePanel, {
 			Ext.Ajax.request(o);
 		}
 
+	},
+	
+	removeNode:function(node) {
+		if(0 === node.getDepth()) {
+			return;
+		}
+		Ext.Msg.show({
+			 title:this.deleteText
+			,msg:this.reallyWantText + ' ' + this.deleteText.toLowerCase() + ': <b>' + node.text + '</b>?'
+			,icon:Ext.Msg.QUESTION
+			,buttons:Ext.Msg.YESNO
+			,scope:this
+			,fn:function(response) {
+				if('yes' !== response) {
+					return;
+				}
+				var jsonData = {};
+				jsonData['resource_uri'] = node.resource_uri;
+				var params = this.applyBaseParams();
+				
+				var data = {'objects':jsonData}
+
+				var o = Ext.apply(this.getOptions(), {
+					action:'removeNode',
+					node:node,
+					url: App.get_api_url('glossary')+'/'+node.id,
+					params:params,
+					method:'DELETE',
+					jsonData:data,
+					headers:{
+						'Content-Type':'application/json'
+					}
+				});
+
+				if(false !== this.fireEvent('beforeremoverequest', this, o)) {
+					// set loading indicator
+					node.getUI().beforeLoad();
+					Ext.Ajax.request(o);
+				}
+			}
+		});
 	}
 
 });

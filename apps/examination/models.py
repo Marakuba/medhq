@@ -198,7 +198,7 @@ class Glossary(MPTTModel):
     text = models.TextField(u'Текст', null=True, blank=True)
     
     def __unicode__(self):
-        return self.text
+        return "%s %s" % (self.id, self.text)
     
     class Meta:
         verbose_name = u'Глоссарий'
