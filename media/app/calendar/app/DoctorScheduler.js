@@ -156,6 +156,7 @@ Ext.calendar.DoctorScheduler = Ext.extend(Ext.Panel, {
      		//autoSize:true,
         	//anchor:'100% 100%',
          	autoScroll:true,
+         	doctorMode:this.doctorMode,
          	autoHeight:true,
             sm : new Ext.grid.RowSelectionModel({
 				singleSelect : true,
@@ -315,7 +316,7 @@ Ext.calendar.DoctorScheduler = Ext.extend(Ext.Panel, {
                         },
                         'dayclick': {
                             fn: function(vw, dt, ad, el){
-                            	if (vw['id']=="app-calendar-month"){
+                            	if (vw['id']=="app-calendar-month" && !this.doctorMode){
                             		this.dayClickMW(vw, dt, ad, el)
                             	}
                             },
@@ -379,6 +380,7 @@ Ext.calendar.DoctorScheduler = Ext.extend(Ext.Panel, {
         	this.editWin = new Ext.calendar.EventEditWindow({
             	calendarStore: this.calendarStore,
             	modal:true,
+            	doctorMode:this.doctorMode,
             	startHour:this.startHour,
             	endHour:this.endHour,
             	o:rec,
@@ -414,41 +416,48 @@ Ext.calendar.DoctorScheduler = Ext.extend(Ext.Panel, {
             });
             this.editWin.show(rec, animateTarget);
         } else {
-        	this.timeslotWin = new Ext.calendar.TimeslotEditWindow({
-        		staff_id : this.staff_id,
-        		modal:true,
-               	calendarStore: this.calendarStore,
-				listeners: {
-					'eventadd': {
-						fn: function(win, rec){
-							win.close();
-							rec.data.IsNew = false;
-							this.eventStore.add(rec);
+        	if (this.doctorMode){
+        		var timeslotInfo = new Ext.calendar.TimeslotInfoWindow({
+        			event:rec
+        		});
+        		timeslotInfo.show();
+        	}else{
+	        	this.timeslotWin = new Ext.calendar.TimeslotEditWindow({
+	        		staff_id : this.staff_id,
+	        		modal:true,
+	               	calendarStore: this.calendarStore,
+					listeners: {
+						'eventadd': {
+							fn: function(win, rec){
+								win.close();
+								rec.data.IsNew = false;
+								this.eventStore.add(rec);
+							},
+							scope: this
 						},
-						scope: this
-					},
-					'eventupdate': {
-						fn: function(win, rec){
-							win.close();
+						'eventupdate': {
+							fn: function(win, rec){
+								win.close();
+							},
+							scope: this
 						},
-						scope: this
-					},
-					'eventdelete': {
-						fn: function(win, rec){
-							this.eventStore.remove(rec);
-							win.close();
+						'eventdelete': {
+							fn: function(win, rec){
+								this.eventStore.remove(rec);
+								win.close();
+							},
+							scope: this
 						},
-						scope: this
-					},
-    	            'editdetails': {
-                        fn: function(win, rec){
-           	                win.close();
-               	            App.calendarPanel.showEditForm(rec);
-                   	    }
-                    }	
-				}
-    	    });
-    	    this.timeslotWin.show(rec, animateTarget);
+	    	            'editdetails': {
+	                        fn: function(win, rec){
+	           	                win.close();
+	               	            App.calendarPanel.showEditForm(rec);
+	                   	    }
+	                    }	
+					}
+	    	    });
+	    	    this.timeslotWin.show(rec, animateTarget);
+        	}
         } 
 	},
     

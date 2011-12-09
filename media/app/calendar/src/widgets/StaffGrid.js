@@ -21,10 +21,10 @@ Ext.calendar.StaffGrid = Ext.extend(Ext.grid.GridPanel, {
 		]);
 
 		this.store = new Ext.data.Store({
-			autoLoad:true,
+			autoLoad:false,
 		    baseParams: {
 		    	format:'json',
-		    	'doctor__isnull':false
+		    	'doctor__isnull':false		    	
 		    },
 		    paramNames: {
 			    start : 'offset',
@@ -62,6 +62,13 @@ Ext.calendar.StaffGrid = Ext.extend(Ext.grid.GridPanel, {
 		this.store.on('load',function(){
 			this.getSelectionModel().selectFirstRow(0);
 		},this);
+		
+		this.on('afterrender',function(){
+			if (this.doctorMode){
+				this.store.setBaseParam('id',active_profile);
+			};
+			this.store.load();
+		});
 		
 		this.departmentStore = new Ext.data.RESTStore({
 			autoLoad : true,
