@@ -225,6 +225,8 @@ App.examination.TemplateBody = Ext.extend(Ext.TabPanel, {
 		var new_tab = this.insert(order,new App.examination.TicketTab({
 			title:title,
 			section:section,
+			base_service:this.base_service,
+			staff:this.staff,
 			data:data,
 			order:order,
 			record:this.record,

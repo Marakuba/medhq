@@ -135,9 +135,10 @@ App.examination.Editor = Ext.extend(Ext.Panel, {
 		
 		return new App.examination.TemplateBody (Ext.apply(
 			{
-				base_service : this.service,
+				base_service : this.base_service,
 				fieldSetStore : this.fieldSetStore,
 				subSectionStore : this.subSectionStore,
+				staff:this.staff,
 				generalTab: this.generalTab,
 				title:'Заголовок',
 				listeners:{

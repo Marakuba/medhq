@@ -21,7 +21,9 @@ App.examination.TicketTab = Ext.extend(Ext.Panel, {
 //		this.ticket = Ext.ux.form.Ticket();
 		
 		this.glossPanel = new App.dict.XGlossaryTree({
-			section:this.tabName,
+			section:this.section,
+			base_service:this.base_service,
+			staff:this.staff,
 			collapsible:true,
 			collapsed:true,
 			region:'east',
