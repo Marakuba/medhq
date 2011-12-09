@@ -9,6 +9,7 @@ Ext.calendar.TimeslotInfoWindow = Ext.extend(Ext.Window, {
 			{name: 'resource_uri'},
 			{name: 'patient'},
 			{name: 'patient_name'},
+			{name: 'patient_birthday'},
 			{name: 'timeslot'},
 			{name: 'comment'},
 			{name: 'visit'},
@@ -44,7 +45,9 @@ Ext.calendar.TimeslotInfoWindow = Ext.extend(Ext.Window, {
 		this.tpl = new Ext.XTemplate(
     		'<tpl for=".">',
 	        	'<font size = 5> Пациент: ','<span id="patient_name"> <b>{patient_name:this.nullFormatter}</b></span>',
+	        	'<br>',' Дата рождения: ','<span id="start" class = "start">','<b>{patient_birthday:date("d.m.Y")}</b>','</span>',
 	        	'<br>',' Услуга: ','<span id="service_name"> <b>{service_name:this.nullFormatter}</b></span>',
+	        	'<br>',' Форма оплаты: ','<span id="ptype_name"> <b>{ptype_name:this.nullFormatter}</b></span>',
 	        	'<br>',' Время начала: ','<span id="start" class = "start">','<b>{start:date("H:i")}</b>','</span>',
 	    	'</tpl>',
 	    	{nullFormatter: function(v) 
@@ -66,7 +69,7 @@ Ext.calendar.TimeslotInfoWindow = Ext.extend(Ext.Window, {
 	        bodyStyle: 'background:transparent;padding:5px 10px 10px;',
     	    bodyBorder: false,
         	border: false,
-        	height:200,
+        	height:300,
 	        items: [this.preorderPanel]
     	});
     	
@@ -87,6 +90,7 @@ Ext.calendar.TimeslotInfoWindow = Ext.extend(Ext.Window, {
     	
 	    config = {
 	        width: 600,
+	        height:400,
     	    autocreate: true,
         	border: true,
         	title:'Предзаказ',
