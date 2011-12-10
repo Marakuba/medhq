@@ -214,7 +214,8 @@ App.registry.PreorderGrid = Ext.extend(Ext.grid.GridPanel, {
             		var service = record.get('service');
             		var visit = record.get('visit');
             		var today = new Date();
-            		var actual = record.data.start.clearTime() >= today.clearTime();
+            		var start_date = record.data.start.clone(); 
+            		var actual = start_date.clearTime() >= today.clearTime();
             		if (record.data.comment){
             			p.body = '<p class="helpdesk-row-body"> Комментарий: '+record.data.comment+'</p>';
             		};
