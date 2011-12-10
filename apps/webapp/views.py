@@ -184,7 +184,7 @@ def get_service_tree(request):
 
     nodes = []
     values = Price.objects.filter(extended_service__is_active=True, payment_type=payment_type,price_type='r',**args).\
-        order_by('extended_service__id').\
+        order_by('extended_service__id','on_date').\
         values('on_date','extended_service__id','extended_service__state__id','extended_service__staff__id','value','extended_service__base_service__id').\
         annotate(Max('on_date'))
     result = {}
