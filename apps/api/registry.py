@@ -168,6 +168,7 @@ class PatientResource(ExtResource):
         resource_name = 'patient'
         default_format = 'application/json'
         authorization = DjangoAuthorization()
+        caching = SimpleCache()
         filtering = {
             'last_name':('istartswith',),
             'first_name':('istartswith',),
