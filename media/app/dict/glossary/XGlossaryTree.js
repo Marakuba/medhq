@@ -20,24 +20,6 @@ App.dict.XGlossaryTree = Ext.extend(Ext.ux.tree.RemoteTreePanel, {
 		
 		
 		
-//		this.contextMenu = new Ext.menu.Menu([
-//			 new Ext.menu.TextItem({text:'', style:'font-weight:bold;margin:0px 4px 0px 27px;line-height:18px'})
-//			,'-'
-//			,this.actions.reloadTree
-//			,this.actions.expandAll
-//			,this.actions.collapseAll
-//			,'-'
-//			,this.actions.expandNode
-//			,this.actions.collapseNode
-//			,'-'
-//			,this.actions.renameNode
-//			,'-'
-//			,this.actions.appendChild
-//			,this.actions.insertChild
-//			,'-'
-//			,this.actions.removeNode
-//		]);
-//		
 		this.loader = new Ext.tree.TreeLoader({
         	nodeParameter:'parent',
         	dataUrl: get_api_url('glossary'),
@@ -132,7 +114,7 @@ App.dict.XGlossaryTree = Ext.extend(Ext.ux.tree.RemoteTreePanel, {
 				,newText:'Новый элемент'
 				,reallyWantText:'Вы действительно хотите'
 				,reloadText:'Обновить'
-				,renameText:'Переименовать',
+				,renameText:'Изменить',
                 listeners:{
 	            	contextmenu:function(node, e){
 						this.fireEvent('nodeclick',node.attributes);
@@ -204,7 +186,7 @@ App.dict.XGlossaryTree = Ext.extend(Ext.ux.tree.RemoteTreePanel, {
 		jsonData['section'] = this.section;
 		jsonData['base_service'] = this.base_service;
 		jsonData['staff'] = this.staff;
-		jsonData['parent'] = childNode.parentNode.attributes.resource_uri;
+		jsonData['parent'] = childNode.parentNode.attributes.resource_uri || '';
 		var data = {'objects':jsonData}
 
 		var o = Ext.apply(this.getOptions(), {
@@ -228,19 +210,25 @@ App.dict.XGlossaryTree = Ext.extend(Ext.ux.tree.RemoteTreePanel, {
 	renameNode:function(node, newText) {
 		
 		var params = this.applyBaseParams();
+		params = {
+			format:'json'
+		};
 		var jsonData = {};
+		
 		jsonData[this.paramNames.text] = newText;
-		jsonData['id'] = childNode.id;
+		jsonData['id'] = node.id;
+		jsonData['resource_uri'] = App.get_api_url('glossary') + '/' + node.id;
 		jsonData['section'] = this.section;
 		jsonData['staff'] = this.staff;
 		jsonData['base_service'] = this.base_service;
-		jsonData['parent'] = childNode.parentNode.resource_uri;
+		jsonData['parent'] = node.parentNode.attributes.resource_uri || '';
 		var data = {'objects':jsonData}
 
 		var o = Ext.apply(this.getOptions(), {
 			node:node,
 			action:'appendChild',
 			params:params,
+			method:'PUT',
 			jsonData:data,
 			headers:{
 				'Content-Type':'application/json'
@@ -294,6 +282,119 @@ App.dict.XGlossaryTree = Ext.extend(Ext.ux.tree.RemoteTreePanel, {
 				}
 			}
 		});
+	},
+	
+	onBeforeNodeDrop:function(e) {
+		var movedNode = this.selectedNode;
+		this.moveNode(e,movedNode);
+		e.dropStatus = true;
+		return false;
+
+	},
+	
+	moveNode:function(e,movedNode) {
+
+		var params = this.applyBaseParams();
+		var jsonData = {};
+		jsonData['id'] = movedNode.id;
+		jsonData['section'] = this.section;
+		jsonData['staff'] = this.staff;
+		jsonData['base_service'] = this.base_service;
+		jsonData['parent'] = e.target.attributes.resource_uri || '';
+		jsonData['point'] = e.point;
+		var data = {'objects':jsonData}
+
+		var o = Ext.apply(this.getOptions(), {
+			 action:'moveNode',
+			e:e,
+			node:e.dropNode,
+			params:params,
+			method:'PUT',
+			jsonData:data,
+			headers:{
+				'Content-Type':'application/json'
+			}
+		});
+
+		if(false !== this.fireEvent('beforemoverequest', this, o)) {
+			// set loading indicator
+			e.dropNode.getUI().beforeLoad();
+			Ext.Ajax.request(o);
+		}
+
+	},
+	
+	actionCallback:function(options, success, response) {
+
+		// remove loading indicator
+		if(options.node) {
+			options.node.getUI().afterLoad();
+		}
+
+		// {{{
+		// failure handling
+		if(true !== success) {
+			this.showError(response.responseText);
+			return;
+		}
+		if (options.action !== 'removeNode'){
+			var o;
+			try {
+				o = Ext.decode(response.responseText);
+			}
+			catch(ex) {
+				this.showError(response.responseText);
+				return;
+			}
+			if(true !== o.success) {
+				this.showError(o.error || o.errors);
+				switch(options.action) {
+					case 'appendChild':
+					case 'insertChild':
+						options.node.parentNode.removeChild(options.node);
+					break;
+	
+					default:
+					break;
+				}
+				return;
+			}
+		}
+		if(!options.action) {
+			this.showError('Developer error: no options.action');
+		}
+		// }}}
+		//{{{
+		// success handling - synchronize ui with server action
+		switch(options.action) {
+			case 'renameNode':
+				options.node.setText(options.params.newText);
+			break;
+
+			case 'removeNode':
+				options.node.parentNode.removeChild(options.node);
+			break;
+
+			case 'moveNode':
+				if('append' === options.e.point) {
+					options.e.target.expand();
+				}
+				this.dropZone.completeDrop(options.e);
+			break;
+
+			case 'appendChild':
+			case 'insertChild':
+				// change id of the appended/inserted node
+				this.unregisterNode(options.node);
+				options.node.id = o.id;
+				Ext.fly(options.node.getUI().elNode).set({'ext:tree-node-id':o.id});
+				this.registerNode(options.node);
+				options.node.select();
+			break;
+		}
+		//}}}
+		this.fireEvent(options.action.toLowerCase() + 'success', this, options.node);
+
 	}
 
 });
