@@ -1378,7 +1378,7 @@ class ExtPreorderResource(ExtResource):
     
     def obj_create(self, bundle, request=None, **kwargs):
         kwargs['operator']=request.user
-        result = super(PreorderResource, self).obj_create(bundle=bundle, request=request, **kwargs)
+        result = super(ExtPreorderResource, self).obj_create(bundle=bundle, request=request, **kwargs)
         return result
     
     def dehydrate(self, bundle):
@@ -1389,10 +1389,10 @@ class ExtPreorderResource(ExtResource):
         bundle.data['ptype_name'] = obj.get_payment_type_display()
         bundle.data['execution_place'] = obj.service and obj.service.state.id
         bundle.data['execution_place_name'] = obj.service and obj.service.state.name
-        bundle.data['staff'] = obj.timeslot.cid
-        bundle.data['staff_name'] = obj.get_staff_name()
+        bundle.data['staff'] = obj.timeslot and obj.timeslot.cid
+        bundle.data['staff_name'] = obj.timeslot and obj.get_staff_name()
         bundle.data['price'] = obj.service and obj.service.get_actual_price()
-        bundle.data['start'] = obj.timeslot.start
+        bundle.data['start'] = obj.timeslot and obj.timeslot.start
         bundle.data['base_service'] = obj.service and obj.service.base_service.id
         bundle.data['patient_phone'] = obj.patient.mobile_phone
         return bundle

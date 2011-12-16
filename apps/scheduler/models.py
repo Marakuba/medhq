@@ -165,18 +165,23 @@ class Preorder(models.Model):
     objects = models.Manager()
     
     def get_staff_name(self):
-        staff_name = Position.objects.get(id=self.timeslot.cid).staff.short_name()
-        return staff_name
+        if self.timeslot:
+            staff_name = Position.objects.get(id=self.timeslot.cid).staff.short_name()
+            return staff_name
+        else:
+            return ''
     
     @transaction.commit_on_success
     def save(self, *args, **kwargs):
-        self.timeslot.vacant = False
-        self.timeslot.save()
+        if self.timeslot:
+            self.timeslot.vacant = False
+            self.timeslot.save()
         super(Preorder, self).save(*args, **kwargs) 
         
     def delete(self, *args, **kwargs):
-        self.timeslot.vacant = True 
-        self.timeslot.save()
+        if self.timeslot:
+            self.timeslot.vacant = True 
+            self.timeslot.save()
         super(Preorder, self).delete(*args, **kwargs) 
 
     class Meta:
@@ -190,17 +195,17 @@ class Preorder(models.Model):
     
 ### SIGNALS
 
-@transaction.commit_on_success
-def PreorderPreDelete(sender, **kwargs):
-    """
-    """
-    obj = kwargs['instance']
-    timeslot = obj.timeslot
-    timeslot.vacant=True
-    timeslot.save()
+#@transaction.commit_on_success
+#def PreorderPreDelete(sender, **kwargs):
+#    """
+#    """
+#    obj = kwargs['instance']
+#    timeslot = obj.timeslot
+#    timeslot.vacant=True
+#    timeslot.save()
     #visit
     #p = visit.patient
     #p.billed_account -= obj.total_price
     #p.save()
     
-pre_delete.connect(PreorderPreDelete, sender=Preorder)
+#pre_delete.connect(PreorderPreDelete, sender=Preorder)

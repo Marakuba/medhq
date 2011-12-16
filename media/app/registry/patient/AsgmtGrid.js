@@ -56,22 +56,11 @@ App.patient.AsgmtGrid = Ext.extend(Ext.grid.GridPanel, {
 		
 		this.columns =  [
 		    {
-		    	header: "Пациент", 
-		    	width: 60, 
-		    	sortable: true, 
-		    	dataIndex: 'patient_name',
-		    	hide: this.patient ? true : false
-		    },{
 		    	header: "Услуга", 
 		    	width: 100, 
 		    	sortable: true, 
 		    	dataIndex: 'service_name'
 		     },{
-		    	header: "Врач", 
-		    	width: 50, 
-		    	sortable: true, 
-		    	dataIndex: 'staff_name'
-		    },{
 		    	header: "Цена", 
 		    	width: 20, 
 		    	sortable: true, 
@@ -81,17 +70,6 @@ App.patient.AsgmtGrid = Ext.extend(Ext.grid.GridPanel, {
 		    	width: 40, 
 		    	sortable: true, 
 		    	dataIndex: 'execution_place_name'
-		    },{
-		    	header: "Форма оплаты", 
-		    	width: 25, 
-		    	sortable: true, 
-		    	dataIndex: 'ptype_name'
-		    },{
-		    	header: "Форма оплаты", 
-		    	width: 25, 
-		    	sortable: true, 
-		    	hidden:true,
-		    	dataIndex: 'payment_type'
 		    },{
 		    	header: "Телефон", 
 		    	width: 35, 
@@ -168,9 +146,6 @@ App.patient.AsgmtGrid = Ext.extend(Ext.grid.GridPanel, {
 				getRowClass: function(record, index, p, store) {
             		var service = record.get('service');
             		var visit = record.get('visit');
-//            		var today = new Date();
-//            		var start_date = record.data.start.clone(); 
-//            		var actual = start_date.clearTime() >= today.clearTime();
             		if (record.data.comment){
             			p.body = '<p class="helpdesk-row-body"> Комментарий: '+record.data.comment+'</p>';
             		};
@@ -180,10 +155,7 @@ App.patient.AsgmtGrid = Ext.extend(Ext.grid.GridPanel, {
             		if (!(state == record.data.execution_place) && record.data.service) {
             			return 'preorder-other-place-row-body';
             		};
-            		if (actual) {
-                		return 'preorder-actual-row-body';
-            		};
-            		return 'preorder-deactive-row-body';
+            		return 'preorder-actual-row-body';
         		}
 			}
 			

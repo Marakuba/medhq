@@ -20,6 +20,7 @@ App.assignment.AsgmtForm = Ext.extend(Ext.FormPanel, {
 		this.preorderGrid = new App.assignment.PreorderInlineGrid({
 			record:this.record,
 			type:this.type,
+			patientRecord:this.patientRecord,
 			region:'center'
 		});
 		
@@ -93,16 +94,7 @@ App.assignment.AsgmtForm = Ext.extend(Ext.FormPanel, {
 	onSave: function() {
 		var f = this.getForm();
 		if(f.isValid()){
-			var Record = this.getRecord();
-			f.updateRecord(Record);
-			if(!Record.phantom) {
-				this.inlines.each(function(inline,i,l){
-					inline.onSave();
-				});
-			}
-			if(this.fn) {
-				Ext.callback(this.fn, this.scope || window, [Record]);
-			}
+			this.preorderGrid.onSave();
 		} else {
 			Ext.MessageBox.alert('Предупреждение','Пожалуйста, заполните все поля формы!');
 		}
