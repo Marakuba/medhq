@@ -37,6 +37,7 @@ from patient.utils import smartFilter
 from django.db.models.query_utils import Q
 from crm.models import AdSource
 from constance import config
+from promotion.models import Promotion
 
 class UserResource(ModelResource):
 
@@ -1329,6 +1330,14 @@ class EquipmentResultResource(ExtResource):
             'assay':ALL,
         }   
         
+class PromotionResource(ExtResource):
+    class Meta:
+        queryset = Promotion.objects.all()
+        resource_name = 'promotion'
+        authorization = DjangoAuthorization()
+        filtering = {
+        }   
+        
 class CalendarResource(ExtResource):
     
     class Meta:
@@ -1343,6 +1352,12 @@ class PreorderResource(ExtResource):
     patient = fields.ForeignKey(PatientResource, 'patient', null=True)
     timeslot = fields.OneToOneField('apps.api.registry.EventResource','timeslot', null=True)
     service = fields.ForeignKey(ExtendedServiceResource, 'service', null=True)
+    promotion = fields.ForeignKey(PromotionResource, 'promotion', null=True)
+    
+    def obj_create(self, bundle, request=None, **kwargs):
+        kwargs['operator']=request.user
+        result = super(PreorderResource, self).obj_create(bundle=bundle, request=request, **kwargs)
+        return result
     
     class Meta:
         queryset = Preorder.objects.all()
@@ -1360,6 +1375,11 @@ class ExtPreorderResource(ExtResource):
     timeslot = fields.OneToOneField('apps.api.registry.EventResource','timeslot', null=True)
     visit = fields.OneToOneField(VisitResource,'visit',null=True)
     service = fields.ForeignKey(ExtendedServiceResource, 'service', null=True)
+    
+    def obj_create(self, bundle, request=None, **kwargs):
+        kwargs['operator']=request.user
+        result = super(PreorderResource, self).obj_create(bundle=bundle, request=request, **kwargs)
+        return result
     
     def dehydrate(self, bundle):
         obj = bundle.obj

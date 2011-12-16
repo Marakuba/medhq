@@ -117,7 +117,13 @@ App.patient.AsgmtGrid = Ext.extend(Ext.grid.GridPanel, {
 		});
 		
 		this.ttb = new Ext.Toolbar({
-			items:[this.visitButton,this.clearButton,'-',{
+			items:[{
+						xtype:'button',
+						iconCls:'med-usersetup',
+						text:'Новое направление',
+						handler:this.onCreate.createDelegate(this)
+					},
+					this.visitButton,this.clearButton,'-',{
 				text:'Реестр',
 				handler:function(){
 					Ext.ux.Printer.print(this);
@@ -203,6 +209,7 @@ App.patient.AsgmtGrid = Ext.extend(Ext.grid.GridPanel, {
 	setActivePatient: function(rec) {
 		id = rec.id;
 		this.patientId = id;
+		this.patientRecord = rec;
 		var s = this.store;
 		s.baseParams = {format:'json','patient': id, 'timeslot__isnull':true};
 		s.load();
@@ -283,7 +290,15 @@ App.patient.AsgmtGrid = Ext.extend(Ext.grid.GridPanel, {
 				type:'visit'
 			});
     	},scope:this});
-    }
+    },
+    
+    onCreate: function(){
+		if (this.patientRecord) {
+			App.eventManager.fireEvent('launchapp','asgmttab',{
+				patientRecord:this.patientRecord
+			});
+		}
+	}
 	
 	
 });

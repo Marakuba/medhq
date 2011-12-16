@@ -3,6 +3,7 @@
 from django.db import models, transaction
 from django.contrib.auth.models import User
 import datetime
+from core.models import make_operator_object
 from south.modelsinspector import add_introspection_rules
 from django.utils.encoding import smart_unicode, force_unicode, smart_str
 import time
@@ -19,6 +20,7 @@ import exceptions
 
 from datetime import timedelta
 from service.models import ExtendedService
+from promotion.models import Promotion
 
 add_introspection_rules([], ["^scheduler\.models\.CustomDateTimeField"])
 
@@ -146,6 +148,9 @@ class Preorder(models.Model):
     """
     Модель предварительного заказа
     """
+    created = models.DateTimeField(u'Создано', auto_now_add=True)
+    modified = models.DateTimeField(auto_now=True)
+    operator = models.ForeignKey(User, related_name='operator_in_preorder', blank = True, null=True)
     patient = models.ForeignKey(Patient, blank = True, null = True)
     timeslot = models.OneToOneField(Event, blank = True, null = True, related_name='preord')
     comment = models.TextField(u'Примечание', blank = True, null = True)
@@ -155,6 +160,9 @@ class Preorder(models.Model):
     payment_type = models.CharField(u'Способ оплаты', max_length=1, 
                                     default=u'н', 
                                     choices=PAYMENT_TYPES)
+    promotion = models.ForeignKey(Promotion,blank = True, null=True)
+    count = models.PositiveIntegerField(u'Количество', default=1)
+    objects = models.Manager()
     
     def get_staff_name(self):
         staff_name = Position.objects.get(id=self.timeslot.cid).staff.short_name()
