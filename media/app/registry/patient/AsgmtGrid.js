@@ -115,7 +115,7 @@ App.patient.AsgmtGrid = Ext.extend(Ext.grid.GridPanel, {
 				msg : 'Подождите, идет загрузка...'
 			},
 			border : false,
-			title:'Назначения',
+			title:'Направления',
 			store:this.store,
 			columns:this.columns,
 			sm : new Ext.grid.RowSelectionModel({
@@ -185,6 +185,11 @@ App.patient.AsgmtGrid = Ext.extend(Ext.grid.GridPanel, {
 		var s = this.store;
 		s.baseParams = {format:'json','patient': id, 'timeslot__isnull':true};
 		s.load();
+	},
+	
+	btnSetDisabled: function(status) {
+        this.visitButton.setDisabled(status);
+        this.clearButton.setDisabled(status);
 	},
 	
 	onPreorderSelect: function(record){

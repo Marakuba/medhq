@@ -175,8 +175,8 @@ App.assignment.PreorderInlineGrid = Ext.extend(Ext.grid.EditorGridPanel, {
 			var has_record = false;
 			this.store.each(function(rec){
 				var serv_id = App.uriToId(rec.data.service);
-				var ex_id = App.uriToId(rec.data.execution_place);
                 if (serv_id == id) {
+                	rec.data.count += 1;
                 	has_record = true;
                 	return 0
                 }
