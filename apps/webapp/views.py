@@ -164,9 +164,11 @@ def get_service_tree(request):
     nocache = request.GET.get('nocache')
     recache = request.GET.get('recache')
     promotion = request.GET.get('promotion')
+    all = request.GET.get('all')
+    ext = request.GET.get('ext')
 
     state = None
-    if settings.SERVICETREE_ONLY_OWN and request.active_profile:
+    if settings.SERVICETREE_ONLY_OWN and request.active_profile and not all:
         state = request.active_profile.department.state
 
     try:
@@ -259,7 +261,7 @@ def get_service_tree(request):
                     for service in result[node.id]:
                         staff_all = Position.objects.filter(extendedservice=service)
                         tree_node = {
-                                "id":'%s-%s' % (node.id,result[node.id][service]['extended_service__state__id']),
+                                "id":ext and service or '%s-%s' % (node.id,result[node.id][service]['extended_service__state__id']),
                                 "text":"%s" % (node.short_name or node.name),
                                 "cls":"multi-line-text-node",
                                 "price":str(result[node.id][service]['value']),
