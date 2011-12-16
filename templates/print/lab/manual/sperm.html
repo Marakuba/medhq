@@ -1,21 +1,13 @@
-{% extends "print.html" %}
+{% extends "print/lab/manual/base.html" %}
 
 {% load lab_tags flatblock_tags %}
 
 {% block title %}{{ order }} - Результаты{% endblock %}
 
-{% block body %}
-
-
-{% include "print/lab/manual/header.html" %}
-<table class="results">
-	<tr>
-		<td colspan="4" class="group">{{ service }}</td>
-	</tr>
+{% block data %}
 	<tr>
 		<th>Наименование исследования</th>
 		<th>Результат</th>
-		<!-- <th>Единицы измерения</th> -->
 		<th>Значение нормы</th>
 	</tr>
 	
@@ -41,11 +33,4 @@
 	{% endif %}
 	{% endfor %}
 	
-
-</table>
-
-
-<div class="comment">{% autoescape off %}{{ laborder.comment }}{% endautoescape %}</div>
-<div class="print_time">{{ object.print_date }}</div>
-
 {% endblock %}

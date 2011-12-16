@@ -38,7 +38,7 @@ App.patient.VisitGrid = Ext.extend(Ext.grid.GridPanel, {
 		});
 		
 		this.columns =  [
-		    {
+		    /*{
 		    	width: 1, 
 		    	sortable: true, 
 		    	dataIndex: 'is_billed', 
@@ -47,8 +47,8 @@ App.patient.VisitGrid = Ext.extend(Ext.grid.GridPanel, {
 		    		return "<img src='"+MEDIA_URL+"admin/img/admin/icon-"+flag+".gif'>"
 		    	}
 		    	//editor: new Ext.form.TextField({})
-		    },{
-		    	width: 1, 
+		    },*/{
+		    	width: 8, 
 		    	sortable: true, 
 		    	dataIndex: 'cls', 
 		    	renderer: function(val) {
