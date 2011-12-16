@@ -257,6 +257,7 @@ App.registry.PreorderGrid = Ext.extend(Ext.grid.GridPanel, {
 		this.on('serviceselect', this.onServiceSelect, this);
 		this.on('afterrender', function(){
 			this.store.setBaseParam('timeslot__start__range',String.format('{0},{1}',this.start_date.format('Y-m-d 00:00'),this.start_date.format('Y-m-d 23:59')))
+			this.store.setBaseParam('timeslot__isnull',false);
 			this.store.load()}, 
 		this);
 		App.calendar.eventManager.on('preorderwrite', function(){
