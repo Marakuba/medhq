@@ -22,6 +22,7 @@ App.patient.AsgmtGrid = Ext.extend(Ext.grid.GridPanel, {
 		});
 		
 		this.store = new Ext.data.GroupingStore({
+			autoSave:true,
 		    baseParams: {
 		    	format:'json',
 		    	timeslot__isnull:true
@@ -52,6 +53,21 @@ App.patient.AsgmtGrid = Ext.extend(Ext.grid.GridPanel, {
 			apiUrl : get_api_url('event'),
 			model: this.eventModel
 		});
+		
+		this.freeTimeslotStore = new Ext.data.RESTStore({
+			autoLoad : false,
+			autoSave : true,
+			apiUrl : get_api_url('event'),
+			model: [
+				    {name: 'resource_uri'},
+				    {name: 'start',type:'date',format:'c'},
+				    {name: 'end',type:'date',format:'c'},
+				    {name: 'vacancy'},
+				    {name: 'timeslot'},
+				    {name: 'cid'},
+				    {name: 'staff'}
+				]
+		}); 
 		
 		
 		this.columns =  [
@@ -111,8 +127,8 @@ App.patient.AsgmtGrid = Ext.extend(Ext.grid.GridPanel, {
 				this.visitButton,this.clearButton,'-',
 				{
 					xtype:'button',
-					text:'Изменить время',
-					handler:this.onRetime.createDelegate(this),
+					text:'Назначить время',
+					handler:this.onMovePreorder.createDelegate(this, []),
 					scope:this
 				},{
 					text:'Реестр',
@@ -284,7 +300,37 @@ App.patient.AsgmtGrid = Ext.extend(Ext.grid.GridPanel, {
 				scope:this
 			});
 		}
-	}
+	},
+	
+	 onMovePreorder: function(){
+	 	var preorder = this.getSelected();
+    	var freeTimeslotWindow;
+        	
+        var freeTimeslotGrid = new App.calendar.VacantTimeslotGrid({
+       		scope:this,
+       		store:this.freeTimeslotStore,
+       		fn:function(record){
+       			if (!record){
+       				return false;
+       			};
+       			preorder.set('timeslot',record.data.resource_uri);
+       			record.set('vacant',false);
+       			this.store.load();
+				freeTimeslotWindow.close();
+			}
+       	 });
+        	
+       	freeTimeslotWindow = new Ext.Window ({
+       		width:700,
+			height:500,
+			layout:'fit',
+			title:'Свободные часы работы',
+			items:[freeTimeslotGrid],
+			modal:true,
+			border:false
+    	});
+       	freeTimeslotWindow.show();
+    }
 	
 	
 });
