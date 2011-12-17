@@ -43,7 +43,8 @@ App.assignment.AsgmtForm = Ext.extend(Ext.FormPanel, {
 	        		this.loader.baseParams = {
 	        			payment_type:'н',
 	        			all:true,
-	        			ext:1
+	        			ext:1,
+	        			promotion:true
 	        		}
 	        	}
 	        }
@@ -138,6 +139,7 @@ App.assignment.AsgmtForm = Ext.extend(Ext.FormPanel, {
 			this.cNodes = a.nodes;
 			complexAdd = function() {
 				var item = this.cNodes.pop();
+				item['promotion'] = node.id;
 				this.addRow(item, function(){
 					if(this.cNodes.length) {
 						complexAdd.createDelegate(this,[])();
@@ -145,22 +147,6 @@ App.assignment.AsgmtForm = Ext.extend(Ext.FormPanel, {
 				}, this);
 			}
 			complexAdd.createDelegate(this,[])();
-//			Ext.each(a.nodes, function(item,i){
-//				this.addRow(item);
-//			}, this);
-			if (a.discount) {
-				var dsc = this.discountCmb;
-				dsc.getStore().load({
-					callback:function(){
-						var r = dsc.findRecord(dsc.valueField,get_api_url('discount')+'/'+a.discount);
-						if(r) {
-							dsc.setValue(r.data.resource_uri);
-							this.preorderGrid.onSumChange();
-						}
-					},
-					scope:this
-				});
-			}
 		} else {
 			this.addRow(a);
 		}

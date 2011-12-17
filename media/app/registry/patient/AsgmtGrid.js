@@ -75,6 +75,11 @@ App.patient.AsgmtGrid = Ext.extend(Ext.grid.GridPanel, {
 		    	width: 35, 
 		    	sortable: false, 
 		    	dataIndex: 'patient_phone'
+		    },{
+		    	header: "Акция", 
+		    	width: 35, 
+		    	sortable: false, 
+		    	dataIndex: 'promotion_name'
 		    }
 		];		
 		
@@ -96,18 +101,26 @@ App.patient.AsgmtGrid = Ext.extend(Ext.grid.GridPanel, {
 		
 		this.ttb = new Ext.Toolbar({
 			items:[{
-						xtype:'button',
-						iconCls:'med-usersetup',
-						text:'Новое направление',
-						handler:this.onCreate.createDelegate(this)
-					},
-					this.visitButton,this.clearButton,'-',{
-				text:'Реестр',
-				handler:function(){
-					Ext.ux.Printer.print(this);
+					
+					xtype:'button',
+					iconCls:'med-usersetup',
+					text:'Новое направление',
+					handler:this.onCreate.createDelegate(this),
+					scope:this
 				},
-				scope:this
-			}]
+				this.visitButton,this.clearButton,'-',
+				{
+					xtype:'button',
+					text:'Изменить время',
+					handler:this.onRetime.createDelegate(this),
+					scope:this
+				},{
+					text:'Реестр',
+					handler:function(){
+						Ext.ux.Printer.print(this);
+					},
+					scope:this
+				}]
 		});
 		
 		var config = {
@@ -254,32 +267,26 @@ App.patient.AsgmtGrid = Ext.extend(Ext.grid.GridPanel, {
     		Ext.Msg.alert('Ошибка!','Вы не можете работать с этой организацией!');
     		return
     	};
-    	this.patientStore.setBaseParam('id',App.uriToId(record.data.patient));
-    	this.patientStore.load({callback:function(records,opt,success){
-    		if (!records) {
-    			Ext.msg.alert('Ошибка','Не указан пациент');
-    			return
-    		};
-    		this.patientRecord = records[0];
-    		App.eventManager.fireEvent('launchapp','visittab',{
-				preorderRecord:this.record,
-				patientRecord:this.patientRecord,
-				type:'visit'
-			});
-    	},scope:this});
+		App.eventManager.fireEvent('launchapp','visittab',{
+			preorderRecord:this.record,
+			patientRecord:this.patientRecord,
+			type:'visit'
+		});
     },
     
     onCreate: function(){
 		if (this.patientRecord) {
 			App.eventManager.fireEvent('launchapp','asgmttab',{
-				patientRecord:this.patientRecord
+				patientRecord:this.patientRecord,
+				fn: function(){
+					this.store.load();
+				},
+				scope:this
 			});
 		}
 	}
 	
 	
 });
-
-
 
 Ext.reg('asgmtgrid',App.patient.AsgmtGrid);

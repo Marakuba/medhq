@@ -13,7 +13,7 @@ App.visit.VisitForm = Ext.extend(Ext.FormPanel, {
 					    encode: false,
 					    writeAllFields: false
 					}),
-			apiUrl : get_api_url('extpreorder'),
+			apiUrl : get_api_url('visitpreorder'),
 			model: App.models.preorderModel
 		});
 		
@@ -600,7 +600,8 @@ App.visit.VisitForm = Ext.extend(Ext.FormPanel, {
 			border:false
     	});
     	var today = new Date();
-    	this.preorderGrid.store.setBaseParam('timeslot__start__gte',today.format('Y-m-d 00:00'));
+//    	this.preorderGrid.store.setBaseParam('timeslot__start__gte',today.format('Y-m-d 00:00'));
+    	this.preorderGrid.store.setBaseParam('visit__isnull',true);
     	this.preorderGrid.store.setBaseParam('patient',App.uriToId(this.patientRecord.data.resource_uri));
        	this.preorderWindow.show();
 	},
@@ -610,10 +611,12 @@ App.visit.VisitForm = Ext.extend(Ext.FormPanel, {
 		p.beginEdit();
 		p.set('preorder',record.data.resource_uri);
 		p.set('price',record.data.price);
-		p.set('staff_name',record.data.staff_name);
 		p.set('service_name',record.data.service_name);
 		p.set('service',App.getApiUrl('baseservice',record.data.base_service));
-		p.set('staff',App.getApiUrl('position',record.data.staff));
+		if (record.data.staff){
+			p.set('staff',App.getApiUrl('position',record.data.staff));
+			p.set('staff_name',record.data.staff_name);
+		};
 		p.set('execution_place',App.getApiUrl('state',record.data.execution_place));
 		p.set('count',1);
 		p.data['id'] = '';

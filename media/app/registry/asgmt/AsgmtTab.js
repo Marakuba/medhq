@@ -55,7 +55,7 @@ App.assignment.AsgmtTab = Ext.extend(Ext.Panel, {
 			      '->',{
         		text:'Закрыть',
 				handler:this.onClose.createDelegate(this,[])
-			},this.saveButton,this.payButton],
+			},this.saveButton],
 	        items:[this.form]
 		}
 
@@ -155,6 +155,7 @@ App.assignment.AsgmtTab = Ext.extend(Ext.Panel, {
 			if(this.msgBox) {
 				this.msgBox.hide();
 			}
+			Ext.callback(this.fn, this.scope || window);
 			this.onClose(true);
 //			this.fireEvent('savecomplete');
 		}

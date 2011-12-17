@@ -32,6 +32,11 @@ def datetimeIterator(from_date=None, to_date=None, delta=timedelta(minutes=30)):
         from_date = from_date + delta
         return
 
+def getToday():
+    currentdate = datetime.datetime.today()
+    currentdate = currentdate.combine(currentdate.date(), currentdate.min.time())
+    return currentdate
+
 class CustomDateTimeField(models.DateTimeField):
     
     def to_python(self, value):

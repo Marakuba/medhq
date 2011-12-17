@@ -49,7 +49,24 @@ App.assignment.PreorderInlineGrid = Ext.extend(Ext.grid.EditorGridPanel, {
 		if (this.record) {
 			this.store.setBaseParam('order',this.record.id);
 			this.store.load();
-		}
+		};
+		
+		this.serviceStore = new Ext.data.Store({
+			autoDestroy:true,
+			proxy: new Ext.data.HttpProxy({
+			    url: get_api_url('extendedservice'),
+				method:'GET'
+			}),
+			reader: new Ext.data.JsonReader({
+			    totalProperty: 'meta.total_count',
+			    idProperty: 'id',
+			    root: 'objects'
+			}, [
+			    {name: 'id'},
+			    {name: 'resource_uri'},
+			    {name: 'state'}
+			])
+		});
 		
 		this.staffStore = new Ext.data.Store({
 			autoDestroy:true,
@@ -150,16 +167,35 @@ App.assignment.PreorderInlineGrid = Ext.extend(Ext.grid.EditorGridPanel, {
 		this.fireEvent('sumchange',c);
 	},
 	
+	getPlace: function(ext_serv_id){
+		this.serviceStore.setBaseParam('id',ext_serv_id);
+		var state = this.serviceStore.load({callback:function(records){
+			if (records.length){
+				return records[0].data.state;
+			} else {
+				return 0
+			}
+		}});
+		if (state){
+			return state
+		} else {
+			return ''
+		}
+	},
+	
 	addRecord: function(attrs){
 //		var re = /(.*) \[\d+\]/;
 //		var res = re.exec(attrs.text);
 		var text = attrs.text//res[res.length-1];
 		var id = attrs.id;
 		var Preorder = this.store.recordType;
+		var state = this.getPlace(id);
 		var s = new Preorder({
 			service:App.getApiUrl('extendedservice')+'/'+id, //TODO: replace to App.getApiUrl
 			service_name:text,
+			promotion: attrs.promotion ? App.getApiUrl('promotion')+'/'+attrs.promotion : '',
 			patient:this.patientRecord.data.resource_uri,
+			execution_place : state,
 			count:attrs.c || 1
 		});
 		this.store.add(s);

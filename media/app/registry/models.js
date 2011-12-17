@@ -97,6 +97,7 @@ App.models.preorderModel = new Ext.data.Record.create([
 	{name: 'execution_place_name'},
 	{name: 'patient_phone'},
 	{name: 'promotion'},
+	{name: 'promotion_name'},
 	{name: 'count'},
 	{name: 'start', type: 'date',format:'c'}
 ]);
