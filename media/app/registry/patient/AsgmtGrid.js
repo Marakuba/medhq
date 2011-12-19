@@ -5,7 +5,10 @@ App.patient.AsgmtGrid = Ext.extend(Ext.grid.GridPanel, {
 	loadInstant: false,
 	
 	initComponent : function() {
+		// Определяет, можно ли выписывать визит для услуг других организаций
+	this.serviceTreeOnlyOwn = App.settings.serviceTreeOnlyOwn; // 
 		
+	
 		this.proxy = new Ext.data.HttpProxy({
 		    url: get_api_url('extpreorder')
 		});
@@ -191,7 +194,7 @@ App.patient.AsgmtGrid = Ext.extend(Ext.grid.GridPanel, {
             		if (visit) {
                 		return 'preorder-visited-row-body';
             		};
-            		if (!(state == record.data.execution_place) && record.data.service) {
+            		if (!(state == record.data.execution_place) && record.data.service && this.serviceTreeOnlyOwn) {
             			return 'preorder-other-place-row-body';
             		};
             		return 'preorder-actual-row-body';
@@ -289,7 +292,7 @@ App.patient.AsgmtGrid = Ext.extend(Ext.grid.GridPanel, {
     		Ext.Msg.alert('Ошибка!','Не указан пациент!');
     		return
     	};
-    	if (!(state == record.data.execution_place) && record.data.service){
+    	if (!(state == record.data.execution_place) && record.data.service && this.serviceTreeOnlyOwn){
     		Ext.Msg.alert('Ошибка!','Вы не можете работать с этой организацией!');
     		return
     	};

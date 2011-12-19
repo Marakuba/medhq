@@ -182,4 +182,5 @@ CONSTANCE_CONFIG = {
     'START_HOUR':(8,u'Начало работы'),
     'END_HOUR':(20,u'Окончание работы'),
     'CUMULATIVE_DISCOUNTS':(True,u'Использование накопительных скидок (temporary)'),
+    'SERVICETREE_ONLY_OWN':(True,u'Показывать услуги только текущей организации'),
 }
