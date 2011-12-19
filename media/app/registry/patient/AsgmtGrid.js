@@ -69,6 +69,16 @@ App.patient.AsgmtGrid = Ext.extend(Ext.grid.GridPanel, {
 				]
 		}); 
 		
+		this.extServiceStore = new Ext.data.RESTStore({
+			autoLoad : false,
+			autoSave : false,
+			apiUrl : get_api_url('extendedservice'),
+			model: [
+				    {name: 'resource_uri'},
+				    {name: 'staff'}
+				]
+		}); 
+		
 		
 		this.columns =  [
 		    {
@@ -128,7 +138,7 @@ App.patient.AsgmtGrid = Ext.extend(Ext.grid.GridPanel, {
 				{
 					xtype:'button',
 					text:'Назначить время',
-					handler:this.onMovePreorder.createDelegate(this, []),
+					handler:this.staffWindow.createDelegate(this, []),
 					scope:this
 				},{
 					text:'Реестр',
@@ -301,14 +311,42 @@ App.patient.AsgmtGrid = Ext.extend(Ext.grid.GridPanel, {
 			});
 		}
 	},
+	staffWindow: function(index, service){
+		var preorder = this.getSelected();
+		if (!preorder.data.service){
+			return false
+		}
+		this.extServiceStore.setBaseParam('id',App.uriToId(preorder.data.service))
+		this.extServiceStore.load({callback:function(records){
+			var sl = undefined;
+			if(records.length){
+				sl = records[0].data.staff
+				if (!sl){
+					Ext.Msg.alert('Предупреждение!','Для данной услуги не указан ни один врач');
+					return false
+				}
+			}
+			var win = new App.visit.StaffWindow({index:index, staffList:sl});
+			win.on('validstaff', this.onMovePreorder, this);
+			win.show();
+		},scope:this})
+	},
 	
-	 onMovePreorder: function(){
-	 	var preorder = this.getSelected();
+	updateStaff: function(rec, id, staff_name){
+		rec.beginEdit();
+		rec.set('staff',"/api/v1/dashboard/position/"+id);
+		rec.set('staff_name',staff_name);
+		rec.endEdit();
+	},
+	
+	 onMovePreorder: function(service,staff_id){
+		var preorder = this.getSelected();
     	var freeTimeslotWindow;
         	
         var freeTimeslotGrid = new App.calendar.VacantTimeslotGrid({
        		scope:this,
-       		store:this.freeTimeslotStore,
+//       		store:this.freeTimeslotStore,
+       		staff_id:staff_id,
        		fn:function(record){
        			if (!record){
        				return false;

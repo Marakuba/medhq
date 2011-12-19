@@ -116,11 +116,9 @@ App.assignment.PreorderInlineGrid = Ext.extend(Ext.grid.EditorGridPanel, {
 				listeners: {
 					rowselect: function(sm,i,rec) {
 						this.getTopToolbar().items.itemAt(0).setDisabled(!rec.phantom);
-						this.getTopToolbar().items.itemAt(1).setDisabled(false);
 					},
 					rowdeselect: function(sm,i,rec) {
 						this.getTopToolbar().items.itemAt(0).setDisabled(true);
-						this.getTopToolbar().items.itemAt(1).setDisabled(true);
 					},
 					scope:this
 				}

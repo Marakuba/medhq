@@ -4,6 +4,21 @@ App.calendar.VacantTimeslotGrid = Ext.extend(Ext.grid.GridPanel, {
 
 	initComponent : function() {
 		
+		this.store = this.store ? this.store : new Ext.data.RESTStore({
+			autoLoad : false,
+			autoSave : true,
+			apiUrl : get_api_url('event'),
+			model: [
+				    {name: 'resource_uri'},
+				    {name: 'start',type:'date',format:'c'},
+				    {name: 'end',type:'date',format:'c'},
+				    {name: 'vacancy'},
+				    {name: 'timeslot'},
+				    {name: 'cid'},
+				    {name: 'staff'}
+				]
+		}); 
+		
 		this.start_date = new Date();
 		
 		this.columns =  [
@@ -117,6 +132,9 @@ App.calendar.VacantTimeslotGrid = Ext.extend(Ext.grid.GridPanel, {
 		}, this);
 		this.on('timeslotselect', this.onTimeslotSelect, this);
 		this.on('afterrender', function(){
+			if (this.staff_id){
+				this.store.setBaseParam('cid',this.staff_id);
+			}
 			this.store.setBaseParam('vacant',true);
 			this.store.setBaseParam('timeslot',true);
 			this.store.setBaseParam('start__range',String.format('{0},{1}',this.start_date.format('Y-m-d 00:00'),this.start_date.format('Y-m-d 23:59')))
