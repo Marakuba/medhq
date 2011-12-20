@@ -251,6 +251,12 @@ App.patient.AsgmtGrid = Ext.extend(Ext.grid.GridPanel, {
 	},
 	
 	onPreorderSelect: function(record){
+		var records = this.getSelectionModel().getSelections();
+		if (records.length != 1){
+			this.setTimeButton.setDisabled(true)
+		} else {
+			this.setTimeButton.setDisabled(false)
+		}
         if (!record.data.visit) {
         	this.visitButton.setDisabled(false);
         } else {
