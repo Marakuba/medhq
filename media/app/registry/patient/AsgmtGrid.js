@@ -6,11 +6,11 @@ App.patient.AsgmtGrid = Ext.extend(Ext.grid.GridPanel, {
 	
 	initComponent : function() {
 		// Определяет, можно ли выписывать визит для услуг других организаций
-	this.serviceTreeOnlyOwn = App.settings.serviceTreeOnlyOwn; // 
+		this.serviceTreeOnlyOwn = App.settings.serviceTreeOnlyOwn; // 
 		
 	
 		this.proxy = new Ext.data.HttpProxy({
-		    url: get_api_url('extpreorder')
+		    url: get_api_url('visitpreorder')
 		});
 		
 		this.reader = new Ext.data.JsonReader({
@@ -28,7 +28,6 @@ App.patient.AsgmtGrid = Ext.extend(Ext.grid.GridPanel, {
 			autoSave:true,
 		    baseParams: {
 		    	format:'json',
-		    	timeslot__isnull:true,
 		    	visit__isnull:true
 		    },
 		    paramNames: {
@@ -95,6 +94,12 @@ App.patient.AsgmtGrid = Ext.extend(Ext.grid.GridPanel, {
 		    	width: 20, 
 		    	sortable: true, 
 		    	dataIndex: 'price'
+		    },{
+		    	header: "Время", 
+		    	width: 30, 
+		    	sortable: true, 
+		    	dataIndex: 'start',
+		    	renderer:Ext.util.Format.dateRenderer('H:i / d.m.Y')
 		    },{
 		    	header: "Место выполнения", 
 		    	width: 40, 
@@ -194,7 +199,7 @@ App.patient.AsgmtGrid = Ext.extend(Ext.grid.GridPanel, {
             		if (record.data.comment){
             			p.body = '<p class="helpdesk-row-body"> Комментарий: '+record.data.comment+'</p>';
             		};
-            		if (visit) {
+            		if (record.data.start) {
                 		return 'preorder-visited-row-body';
             		};
             		if (!(state == record.data.execution_place) && record.data.service && this.serviceTreeOnlyOwn) {
@@ -228,7 +233,7 @@ App.patient.AsgmtGrid = Ext.extend(Ext.grid.GridPanel, {
 		this.patientId = id;
 		this.patientRecord = rec;
 		var s = this.store;
-		s.baseParams = {format:'json','patient': id, 'timeslot__isnull':true, visit__isnull:true};
+		s.baseParams = {format:'json','patient': id, visit__isnull:true};
 		s.load();
 	},
 	
