@@ -28,7 +28,8 @@ App.patient.AsgmtGrid = Ext.extend(Ext.grid.GridPanel, {
 			autoSave:true,
 		    baseParams: {
 		    	format:'json',
-		    	timeslot__isnull:true
+		    	timeslot__isnull:true,
+		    	visit__isnull:true
 		    },
 		    paramNames: {
 			    start : 'offset',  // The parameter name which specifies the start row
@@ -128,6 +129,13 @@ App.patient.AsgmtGrid = Ext.extend(Ext.grid.GridPanel, {
 			scope:this
 		});
 		
+		this.setTimeButton = new Ext.Button({
+			xtype:'button',
+			text:'Назначить время',
+			handler:this.staffWindow.createDelegate(this, []),
+			scope:this
+		});
+		
 		this.ttb = new Ext.Toolbar({
 			items:[{
 					
@@ -138,12 +146,7 @@ App.patient.AsgmtGrid = Ext.extend(Ext.grid.GridPanel, {
 					scope:this
 				},
 				this.visitButton,this.clearButton,'-',
-				{
-					xtype:'button',
-					text:'Назначить время',
-					handler:this.staffWindow.createDelegate(this, []),
-					scope:this
-				},{
+				this.setTimeButton,{
 					text:'Реестр',
 					handler:function(){
 						Ext.ux.Printer.print(this);
@@ -225,13 +228,21 @@ App.patient.AsgmtGrid = Ext.extend(Ext.grid.GridPanel, {
 		this.patientId = id;
 		this.patientRecord = rec;
 		var s = this.store;
-		s.baseParams = {format:'json','patient': id, 'timeslot__isnull':true};
+		s.baseParams = {format:'json','patient': id, 'timeslot__isnull':true, visit__isnull:true};
 		s.load();
 	},
 	
 	btnSetDisabled: function(status) {
-        this.visitButton.setDisabled(status);
-        this.clearButton.setDisabled(status);
+		if (!status){
+			var record = this.getSelected();
+			if (record.data.visit){
+				this.visitButton.setDisabled(true);
+	        	this.clearButton.setDisabled(true);
+			}
+		} else {
+	        this.visitButton.setDisabled(status);
+	        this.clearButton.setDisabled(status);
+		}
 	},
 	
 	onPreorderSelect: function(record){
@@ -240,7 +251,9 @@ App.patient.AsgmtGrid = Ext.extend(Ext.grid.GridPanel, {
         } else {
         	this.visitButton.setDisabled(true);
         };
-        this.clearButton.setDisabled(false);
+        if (!record.data.visit) {
+        	this.clearButton.setDisabled(false);
+        };
 	},
 	
     getSelected: function() {
@@ -276,7 +289,7 @@ App.patient.AsgmtGrid = Ext.extend(Ext.grid.GridPanel, {
     
     onDelPreorderClick : function() {
     	var record = this.getSelected();
-    	if (!record) {
+    	if (!record || record.data.visit) {
     		return false
     	};
     	this.store.remove(record)
@@ -316,7 +329,7 @@ App.patient.AsgmtGrid = Ext.extend(Ext.grid.GridPanel, {
 	},
 	staffWindow: function(index, service){
 		var preorder = this.getSelected();
-		if (!preorder.data.service){
+		if (!preorder.data.service || preorder.data.visit){
 			return false
 		}
 		this.extServiceStore.setBaseParam('id',App.uriToId(preorder.data.service))

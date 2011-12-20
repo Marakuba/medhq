@@ -1408,6 +1408,7 @@ class ExtPreorderResource(ExtResource):
             'start':ALL,
             'timeslot':ALL_WITH_RELATIONS,
             'service':ALL_WITH_RELATIONS,
+            'visit':ALL_WITH_RELATIONS,
             'payment_type':ALL
         }
         limit = 500
