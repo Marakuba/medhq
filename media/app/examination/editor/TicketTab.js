@@ -25,6 +25,7 @@ App.examination.TicketTab = Ext.extend(Ext.Panel, {
 			base_service:this.base_service,
 			staff:this.staff,
 			collapsible:true,
+			animate: false,
 			collapsed:true,
 			region:'east',
 //			hideCollapseTool : true,
