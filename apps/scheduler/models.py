@@ -160,7 +160,7 @@ class Preorder(models.Model):
     timeslot = models.OneToOneField(Event, blank = True, null = True, related_name='preord')
     comment = models.TextField(u'Примечание', blank = True, null = True)
     expiration = CustomDateTimeField(u'Дата истечения', blank = True, null = True)
-    visit = models.OneToOneField(Visit, blank = True, null=True)
+    visit = models.ForeignKey(Visit, blank = True, null=True)
     service = models.ForeignKey(ExtendedService, blank = True, null=True)
     payment_type = models.CharField(u'Способ оплаты', max_length=1, 
                                     default=u'н', 

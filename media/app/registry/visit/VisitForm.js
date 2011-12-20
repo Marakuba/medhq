@@ -459,22 +459,27 @@ App.visit.VisitForm = Ext.extend(Ext.FormPanel, {
 					recs = [this.preorderRecord];
 				}
 				
-				Ext.each(recs, function(rec){
-					if(rec.data.service){
-						this.addPreorderService(rec);
-						var pt = rec.data.payment_type;
-						if(pt && pt!='н'){
-							this.paymentTypeCB.setValue(pt);
-							var ptRec = this.paymentTypeCB.findRecord(this.paymentTypeCB.valueField,pt);
-							this.onPaymentTypeChoice(ptRec);
-						}
-					}
-				},this);
+				this.addPreorderRecords(recs);
+				
 			}
 		},this);
 		this.orderedService.on('sumchange', this.updateTotalSum, this);
 		this.servicePanel.on('serviceclick', this.onServiceClick, this);
 		
+	},
+	
+	addPreorderRecords : function(records) {
+		Ext.each(records, function(rec){
+			if(rec.data.service){
+				this.addPreorderService(rec);
+				var pt = rec.data.payment_type;
+				if(pt && pt!='н'){
+					this.paymentTypeCB.setValue(pt);
+					var ptRec = this.paymentTypeCB.findRecord(this.paymentTypeCB.valueField,pt);
+					this.onPaymentTypeChoice(ptRec);
+				}
+			}
+		},this);
 	},
 	
 	printBarcode: function()
@@ -597,7 +602,7 @@ App.visit.VisitForm = Ext.extend(Ext.FormPanel, {
        		scope:this,
        		patient : this.patientRecord,
        		store : this.preorderStore,
-       		fn:this.addPreorderService
+       		fn:this.addPreorderRecords
        	 });
         	
        	this.preorderWindow = new Ext.Window ({
@@ -632,7 +637,7 @@ App.visit.VisitForm = Ext.extend(Ext.FormPanel, {
 		p.data['id'] = '';
 		p.endEdit();
 		this.orderedService.store.add(p);
-		this.orderedService.preorder = record;
+		this.orderedService.preorders.add(record.data.resource_uri,record);
 		if (this.preorderWindow){
 			this.preorderWindow.close();
 		}

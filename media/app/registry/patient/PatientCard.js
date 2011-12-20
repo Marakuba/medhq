@@ -27,6 +27,10 @@ App.patient.PatientCard = Ext.extend(Ext.TabPanel, {
 				layout:'fit',
 				xtype:'patientmanualgrid'
 			},{
+				title:'Назначения',
+				layout:'fit',
+				xtype:'asgmtgrid'
+			},{
 				title:'Оказанные услуги',
 				layout:'fit',
 				xtype:'patientservicegrid'
@@ -38,10 +42,6 @@ App.patient.PatientCard = Ext.extend(Ext.TabPanel, {
 				title:'Оплаты',
 				layout:'fit',
 				xtype:'paymentgrid'
-			},{
-				title:'Назначения',
-				layout:'fit',
-				xtype:'asgmtgrid'
 			}/*,{
 				title:'Возвраты',
 				layout:'fit',

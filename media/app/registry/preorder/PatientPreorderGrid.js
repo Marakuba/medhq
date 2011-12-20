@@ -25,7 +25,7 @@ App.registry.PatientPreorderGrid = Ext.extend(Ext.grid.GridPanel, {
 		    	dataIndex: 'service_name'
 		    },{
 		    	header: "Цена", 
-		    	width: 70, 
+		    	width: 30, 
 		    	sortable: true, 
 		    	dataIndex: 'price'
 		    },{
@@ -53,7 +53,7 @@ App.registry.PatientPreorderGrid = Ext.extend(Ext.grid.GridPanel, {
 			store:this.store,
 			columns:this.columns,
 			sm : new Ext.grid.RowSelectionModel({
-				singleSelect : true,
+				singleSelect : false,
 				listeners: {
                     rowselect: function(sm, row, rec) {
                     	this.fireEvent('serviceselect', rec);
@@ -118,10 +118,8 @@ App.registry.PatientPreorderGrid = Ext.extend(Ext.grid.GridPanel, {
 	},
 	
 	onChoice: function() {
-        var record = this.getSelectionModel().getSelected();
-        if (record.data.service && !record.data.visit) {
-        	Ext.callback(this.fn, this.scope || window, [record]);
-        };
+        var records = this.getSelectionModel().getSelections();
+        Ext.callback(this.fn, this.scope || window, [records]);
     }
 	
 });
