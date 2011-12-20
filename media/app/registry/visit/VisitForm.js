@@ -449,17 +449,27 @@ App.visit.VisitForm = Ext.extend(Ext.FormPanel, {
 			if(this.record) {
 				this.getForm().loadRecord(this.record);
 			};
-			if (this.preorderRecord && this.preorderRecord.data.service){
-				this.addPreorderService(this.preorderRecord);
-				if (this.preorderRecord.data.payment_type){
-					if (this.preorderRecord.data.payment_type=='н'){
-						return
-					}
-					this.paymentTypeCB.setValue(this.preorderRecord.data.payment_type);
-					var ind = this.paymentTypeCB.store.find("id",this.preorderRecord.data.payment_type)
-					var rec = this.paymentTypeCB.store.getAt(ind)
-					this.onPaymentTypeChoice(rec);
+			if (this.preorderRecord ){
+
+				var recs = [];
+				
+				if(Ext.isArray(this.preorderRecord)){
+					recs = this.preorderRecord;
+				} else if (this.preorderRecord.data) {
+					recs = [this.preorderRecord];
 				}
+				
+				Ext.each(recs, function(rec){
+					if(rec.data.service){
+						this.addPreorderService(rec);
+						var pt = rec.data.payment_type;
+						if(pt && pt!='н'){
+							this.paymentTypeCB.setValue(pt);
+							var ptRec = this.paymentTypeCB.findRecord(this.paymentTypeCB.valueField,pt);
+							this.onPaymentTypeChoice(ptRec);
+						}
+					}
+				},this);
 			}
 		},this);
 		this.orderedService.on('sumchange', this.updateTotalSum, this);
@@ -620,7 +630,7 @@ App.visit.VisitForm = Ext.extend(Ext.FormPanel, {
 		p.set('execution_place',App.getApiUrl('state',record.data.execution_place));
 		p.set('count',1);
 		p.data['id'] = '';
-		p.beginEdit();
+		p.endEdit();
 		this.orderedService.store.add(p);
 		this.orderedService.preorder = record;
 		if (this.preorderWindow){

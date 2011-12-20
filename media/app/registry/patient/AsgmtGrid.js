@@ -297,23 +297,21 @@ App.patient.AsgmtGrid = Ext.extend(Ext.grid.GridPanel, {
     
     visitAdd : function(record) {
     	this.record = record;
-    	if (!record){
-    		Ext.Msg.alert('Ошибка!','Не указан предзаказ!');
-    		return
-    	};
-    	if (!record.data.patient){
-    		Ext.Msg.alert('Ошибка!','Не указан пациент!');
-    		return
-    	};
-    	if (!(state == record.data.execution_place) && record.data.service && this.serviceTreeOnlyOwn){
-    		Ext.Msg.alert('Ошибка!','Вы не можете работать с этой организацией!');
-    		return
-    	};
-		App.eventManager.fireEvent('launchapp','visittab',{
-			preorderRecord:this.record,
-			patientRecord:this.patientRecord,
-			type:'visit'
-		});
+    	if (record){
+	    	if (!record.data.patient){
+	    		Ext.Msg.alert('Ошибка!','Не указан пациент!');
+	    		return
+	    	};
+	    	if (!(state == record.data.execution_place) && record.data.service && this.serviceTreeOnlyOwn){
+	    		Ext.Msg.alert('Ошибка!','Вы не можете работать с этой организацией!');
+	    		return
+	    	};
+			App.eventManager.fireEvent('launchapp','visittab',{
+				preorderRecord:this.record,
+				patientRecord:this.patientRecord,
+				type:'visit'
+			});
+    	}
     },
     
     onCreate: function(){
