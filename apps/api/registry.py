@@ -24,7 +24,7 @@ from django.core.exceptions import ObjectDoesNotExist
 from tastypie.exceptions import NotFound
 from examination.models import CardTemplate, ExaminationCard#, TemplateGroup
 from helpdesk.models import Issue, IssueType
-from scheduler.models import Calendar, Event, Preorder
+from scheduler.models import Calendar, Event, Preorder, getToday
 from billing.models import Account, Payment, ClientAccount
 from interlayer.models import ClientItem
 from django.contrib.contenttypes.models import ContentType
@@ -37,6 +37,7 @@ from patient.utils import smartFilter
 from django.db.models.query_utils import Q
 from crm.models import AdSource
 from constance import config
+from promotion.models import Promotion
 
 class UserResource(ModelResource):
 
@@ -1329,6 +1330,14 @@ class EquipmentResultResource(ExtResource):
             'assay':ALL,
         }   
         
+class PromotionResource(ExtResource):
+    class Meta:
+        queryset = Promotion.objects.all()
+        resource_name = 'promotion'
+        authorization = DjangoAuthorization()
+        filtering = {
+        }   
+        
 class CalendarResource(ExtResource):
     
     class Meta:
@@ -1343,6 +1352,12 @@ class PreorderResource(ExtResource):
     patient = fields.ForeignKey(PatientResource, 'patient', null=True)
     timeslot = fields.OneToOneField('apps.api.registry.EventResource','timeslot', null=True)
     service = fields.ForeignKey(ExtendedServiceResource, 'service', null=True)
+    promotion = fields.ForeignKey(PromotionResource, 'promotion', null=True)
+    
+    def obj_create(self, bundle, request=None, **kwargs):
+        kwargs['operator']=request.user
+        result = super(PreorderResource, self).obj_create(bundle=bundle, request=request, **kwargs)
+        return result
     
     class Meta:
         queryset = Preorder.objects.all()
@@ -1360,6 +1375,12 @@ class ExtPreorderResource(ExtResource):
     timeslot = fields.OneToOneField('apps.api.registry.EventResource','timeslot', null=True)
     visit = fields.OneToOneField(VisitResource,'visit',null=True)
     service = fields.ForeignKey(ExtendedServiceResource, 'service', null=True)
+    promotion = fields.ForeignKey(PromotionResource, 'promotion', null=True)
+    
+    def obj_create(self, bundle, request=None, **kwargs):
+        kwargs['operator']=request.user
+        result = super(ExtPreorderResource, self).obj_create(bundle=bundle, request=request, **kwargs)
+        return result
     
     def dehydrate(self, bundle):
         obj = bundle.obj
@@ -1369,10 +1390,11 @@ class ExtPreorderResource(ExtResource):
         bundle.data['ptype_name'] = obj.get_payment_type_display()
         bundle.data['execution_place'] = obj.service and obj.service.state.id
         bundle.data['execution_place_name'] = obj.service and obj.service.state.name
-        bundle.data['staff'] = obj.timeslot.cid
-        bundle.data['staff_name'] = obj.get_staff_name()
+        bundle.data['promotion_name'] = obj.promotion and obj.promotion.name
+        bundle.data['staff'] = obj.timeslot and obj.timeslot.cid
+        bundle.data['staff_name'] = obj.timeslot and obj.get_staff_name()
         bundle.data['price'] = obj.service and obj.service.get_actual_price()
-        bundle.data['start'] = obj.timeslot.start
+        bundle.data['start'] = obj.timeslot and obj.timeslot.start
         bundle.data['base_service'] = obj.service and obj.service.base_service.id
         bundle.data['patient_phone'] = obj.patient.mobile_phone
         return bundle
@@ -1386,6 +1408,27 @@ class ExtPreorderResource(ExtResource):
             'start':ALL,
             'timeslot':ALL_WITH_RELATIONS,
             'service':ALL_WITH_RELATIONS,
+            'visit':ALL_WITH_RELATIONS,
+            'payment_type':ALL
+        }
+        limit = 500
+        
+class VisitPreorderResource(ExtPreorderResource):
+    """
+    Используется в форме визита при выборе предзаказа.
+    Содержит неоформленные предзаказы начиная с сегодняшнего дня и направления
+    """
+    
+    class Meta:
+        queryset = Preorder.objects.filter(Q(timeslot__start__gte=getToday()) | Q(timeslot__isnull=True)).order_by('-timeslot__start')
+        resource_name = 'visitpreorder'
+        authorization = DjangoAuthorization()
+        filtering = {
+            'patient':ALL,
+            'start':ALL,
+            'timeslot':ALL_WITH_RELATIONS,
+            'service':ALL_WITH_RELATIONS,
+            'visit':ALL_WITH_RELATIONS,
             'payment_type':ALL
         }
         limit = 500
@@ -1596,6 +1639,7 @@ api.register(RefundBasketResource())
 api.register(LabServiceResource())
 api.register(LabTestResource())
 api.register(ExamServiceResource())
+api.register(VisitPreorderResource())
 
 #lab
 api.register(InputListResource())
@@ -1671,6 +1715,8 @@ api.register(DebtorResource())
 api.register(InvoiceResource())
 api.register(InvoiceItemResource())
 
+
+api.register(PromotionResource())
 
 #crm
 api.register(AdSourceResource())

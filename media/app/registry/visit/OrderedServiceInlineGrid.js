@@ -4,6 +4,9 @@ Ext.ns('App.visit');
 App.visit.OrderedServiceInlineGrid = Ext.extend(Ext.grid.EditorGridPanel, {
 
 	loadInstant: false,
+	
+	preorders : new Ext.util.MixedCollection({}),
+	
 	initComponent : function() {
 		
 		this.shortMode = this.type=='material';
@@ -354,17 +357,24 @@ App.visit.OrderedServiceInlineGrid = Ext.extend(Ext.grid.EditorGridPanel, {
 			var records = this.store.queryBy(function(rec,id){
 				return rec.data.order ? false : true;
 			});
+			var ps;
 			records.each(function(item,idx,len){
 				item.beginEdit();
 				item.set('order', this.record.data.resource_uri);
 				item.endEdit();
-				var preorder = item.data.preorder;
-				if (this.preorder && this.preorder.data.staff==App.uriToId(item.data.staff)) {
-//					this.preorder.beginEdit();
-					this.preorder.set('visit',this.record.data.resource_uri)
-//					this.preorder.endEdit();
+				var preorder = this.preorders.get(item.data.preorder);
+				if (preorder) {
+					if(!ps) {
+						ps = preorder.store;
+						ps.autoSave = false;
+					}
+					preorder.set('visit',this.record.data.resource_uri)
 				}
 			}, this);
+			if(ps){
+				ps.save();
+				ps.autoSave = true;
+			}
 			this.store.save();
 		} else {
 			Ext.MessageBox.alert('Ошибка','Не задана запись визита!');

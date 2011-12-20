@@ -22,6 +22,8 @@ from state.models import State
 from pricelist.models import Price
 from django.db.models import Max
 from staff.models import Position
+import datetime
+import time
 
 
 def auth(request, authentication_form=AuthenticationForm):
@@ -158,43 +160,7 @@ def get_service_tree(request):
     service_list_2_д - организация #2, способ оплаты - ДМС 
     и т.д.
     """
-    
-    payment_type = request.GET.get('payment_type',u'н')
-    staff = request.GET.get('staff')
-    nocache = request.GET.get('nocache')
-    recache = request.GET.get('recache')
-    promotion = request.GET.get('promotion')
 
-    state = None
-    if settings.SERVICETREE_ONLY_OWN and request.active_profile:
-        state = request.active_profile.department.state
-
-    try:
-        cache = get_cache('service')
-    except:
-        raise "Service cache must be defined!"
-            
-    _cache_key = u'service_list_%s_%s' % ( state and state.id or u'*', payment_type) 
-    
-    args = {}
-    if staff:
-        args['extended_service__staff']=staff
-    if state:
-        args['extended_service__branches']=state.id
-
-    nodes = []
-    values = Price.objects.filter(extended_service__is_active=True, payment_type=payment_type,price_type='r',**args).\
-        order_by('extended_service__id','on_date').\
-        values('on_date','extended_service__id','extended_service__state__id','extended_service__staff__id','value','extended_service__base_service__id').\
-        annotate(Max('on_date'))
-    result = {}
-    for val in values:
-        if result.has_key(val['extended_service__base_service__id']):
-            result[val['extended_service__base_service__id']][val['extended_service__id']] = val
-        else:
-            result[val['extended_service__base_service__id']] = {}
-            result[val['extended_service__base_service__id']][val['extended_service__id']] = val
-        
     def promo_dict(obj):
         
         def node_dict(obj):
@@ -203,7 +169,7 @@ def get_service_tree(request):
                 es = bs.extendedservice_set.get(state=obj.execution_place)
                 price = es.get_actual_price(payment_type=payment_type)
                 node = {
-                    "id":'%s-%s' % (obj.base_service.id,obj.execution_place.id),
+                    "id":ext and es.id or '%s-%s' % (obj.base_service.id,obj.execution_place.id),
                     "text":"%s [%s]" % (obj.base_service.short_name or obj.base_service.name, price),
                     "price":price,
                     "c":obj.count or 1
@@ -259,7 +225,7 @@ def get_service_tree(request):
                     for service in result[node.id]:
                         staff_all = Position.objects.filter(extendedservice=service)
                         tree_node = {
-                                "id":'%s-%s' % (node.id,result[node.id][service]['extended_service__state__id']),
+                                "id":ext and service or '%s-%s' % (node.id,result[node.id][service]['extended_service__state__id']),
                                 "text":"%s" % (node.short_name or node.name),
                                 "cls":"multi-line-text-node",
                                 "price":str(result[node.id][service]['value']),
@@ -301,14 +267,36 @@ def get_service_tree(request):
 #            if node:
 #                tree.append(node)
             return tree 
-        
-    for base_service in BaseService.objects.all().order_by(BaseService._meta.tree_id_attr, BaseService._meta.left_attr, 'level'): #@UndefinedVariable
-        if base_service.is_leaf_node():
-            if result.has_key(base_service.id):
-                nodes.append(base_service)
-        else:
-            nodes.append(base_service)
-                    
+    
+    payment_type = request.GET.get('payment_type',u'н')
+    staff = request.GET.get('staff')
+    nocache = request.GET.get('nocache')
+    recache = request.GET.get('recache')
+    promotion = request.GET.get('promotion')
+    all = request.GET.get('all')
+    ext = request.GET.get('ext')
+
+    TODAY = datetime.date.today()
+    on_date = request.GET.get('on_date',TODAY)
+    if on_date and not isinstance(on_date, datetime.date):
+        try:
+            on_date = time.strptime(on_date, '%d-%m-%Y')
+            on_date = datetime.date(year=on_date.tm_year,month=on_date.tm_mon,day=on_date.tm_mday)
+            nocache = True
+        except:
+            on_date = TODAY
+    
+    state = None
+    if settings.SERVICETREE_ONLY_OWN and request.active_profile and not all:
+        state = request.active_profile.department.state
+
+    try:
+        cache = get_cache('service')
+    except:
+        raise "Service cache must be defined!"
+            
+    _cache_key = u'service_list_%s_%s' % ( state and state.id or u'*', payment_type) 
+    
     # запрос с параметром recache удаляет ВСЕ записи в нём
     if recache:
         cache.clear()
@@ -319,7 +307,40 @@ def get_service_tree(request):
     else:
         _cached_tree = cache.get(_cache_key)
         
+        
+    # если отсутствует кэш, то начинаем построение дерева услуг    
     if not _cached_tree:
+
+        args = dict(extended_service__is_active=True, 
+                    payment_type=payment_type,
+                    price_type='r',
+                    on_date__lte=on_date)
+        if staff:
+            args['extended_service__staff']=staff
+        if state:
+            args['extended_service__branches']=state.id
+    
+        nodes = []
+        values = Price.objects.filter(**args).\
+            order_by('extended_service__id','on_date').\
+            values('on_date','extended_service__id','extended_service__state__id','extended_service__staff__id','value','extended_service__base_service__id').\
+            annotate(Max('on_date'))
+        result = {}
+        for val in values:
+            if result.has_key(val['extended_service__base_service__id']):
+                result[val['extended_service__base_service__id']][val['extended_service__id']] = val
+            else:
+                result[val['extended_service__base_service__id']] = {}
+                result[val['extended_service__base_service__id']][val['extended_service__id']] = val
+            
+        for base_service in BaseService.objects.all().order_by(BaseService._meta.tree_id_attr, BaseService._meta.left_attr, 'level'): #@UndefinedVariable
+            if base_service.is_leaf_node():
+                if result.has_key(base_service.id):
+                    nodes.append(base_service)
+            else:
+                nodes.append(base_service)
+        
+        
         tree = []
         
         # если передан параметр promotions, добавляем их в дерево услуг
