@@ -78,6 +78,7 @@ App.dict.XGlossaryTree = Ext.extend(Ext.ux.tree.RemoteTreePanel, {
                 width:250,
                 split:true,
                 disabled:false,
+                animate: false,
 //                contextMenu:this.contextMenu, 	
                 root:{
 					 nodeType:'async'
@@ -230,6 +231,7 @@ App.dict.XGlossaryTree = Ext.extend(Ext.ux.tree.RemoteTreePanel, {
 			params:params,
 			method:'PUT',
 			jsonData:data,
+			url:App.get_api_url('glossary') + '/' + node.id,
 			headers:{
 				'Content-Type':'application/json'
 			}
@@ -293,10 +295,15 @@ App.dict.XGlossaryTree = Ext.extend(Ext.ux.tree.RemoteTreePanel, {
 	},
 	
 	moveNode:function(e,movedNode) {
+		
+		if (!movedNode.id){
+			return false
+		}
 
 		var params = this.applyBaseParams();
 		var jsonData = {};
 		jsonData['id'] = movedNode.id;
+		jsonData['resource_uri'] = App.get_api_url('glossary') + '/' + movedNode.id;
 		jsonData['section'] = this.section;
 		jsonData['staff'] = this.staff;
 		jsonData['base_service'] = this.base_service;
@@ -305,10 +312,11 @@ App.dict.XGlossaryTree = Ext.extend(Ext.ux.tree.RemoteTreePanel, {
 		var data = {'objects':jsonData}
 
 		var o = Ext.apply(this.getOptions(), {
-			 action:'moveNode',
+			action:'moveNode',
 			e:e,
 			node:e.dropNode,
 			params:params,
+			url:App.get_api_url('glossary') + '/' + movedNode.id,
 			method:'PUT',
 			jsonData:data,
 			headers:{
