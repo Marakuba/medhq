@@ -35,6 +35,7 @@ App.examination.TicketTab = Ext.extend(Ext.Panel, {
 		
 		this.ticketPanel = new App.examination.TicketPanel({
 			region:'center',
+			baseCls:'ticket',
 			items:[this.portalColumn],
 			getData: function(){
 				var data = [];
@@ -58,7 +59,7 @@ App.examination.TicketTab = Ext.extend(Ext.Panel, {
 					}
 				},
 				'afterrender':function(panel){
-					panel.body.on('click',function(e,t){
+					panel.body.on('click',function(e,t,o){
 						
 						if (this.ctxEditor){
 							this.ctxEditor.completeEdit();
@@ -149,10 +150,11 @@ App.examination.TicketTab = Ext.extend(Ext.Panel, {
 		});
 		
 		this.on('ticketeditstart', function(panel,editor,pos){
-			if (this.ctxEditor) {
+			if (this.ctxEditor && this.ctxEditor.panel != panel) {
 				this.ctxEditor.completeEdit();
 			};
 			this.ctxEditor = editor;
+			this.ctxEditor.panel = panel;
 			
 			if (this.glossPanel.collapsed){
 				this.glossPanel.toggleCollapse();
