@@ -1,116 +1,129 @@
-{% extends "print.html" %}
+{% extends "print/off_blank.html" %}
 
 {% load lab_tags %}
 
-{% block title %}{{ card.ordered_service.order }} - Результаты{% endblock %}
+{% block title %}{{ card.ordered_service.order }} - Карта осмотра{% endblock %}
 
 {% block body %}
 
-<table class="header">
-	<tr>
-		<td class="brand">КЛИНИКА<br>ЕВРОМЕД</td>
-		<td class="info">350000, Россия<br>
-			г. Краснодар<br>
-			ул. КИМ, 143<br>
-			телефон: (861) 233-31-31<br>
-			факс: (861) 233-43-43
-		</td>
-	</tr>
-	<tr>
-		<td colspan="2" class="worktime">Время работы: пн-пт 08:00-19-00, сб: 09:00-14:00</td>
-	</tr>
-</table>
+
+<div id="print-box">
+	<a href="javascript:window.print();">Печать</a>
+</div>
+
+<div class="page_wrapper_A4_book">
+<div class="page_wrapper examination">
+
+{% include "print/exam_header.html" %}
 
 <table class="patient">
 	<tr>
 		<td>
 			<table>
 				<tr>
-					<td class="name">Ф.И.О.:</td><td class="bold">{{ card.ordered_service.order.visit.patient.full_name }}</td>
+					<td class="name">Ф.И.О.:</td><td class="bold">{{ card.ordered_service.order.patient.full_name }}</td>
 				</tr>
 				<tr>
-					<td class="name">Дата рождения:</td><td class="bold">{{ card.ordered_service.order.visit.patient.birth_day|date:"d.m.Y" }}</td>
+					<td class="name">Дата рождения:</td><td class="bold">{{ card.ordered_service.order.patient.birth_day|date:"d.m.Y" }}</td>
 				</tr>
 				<tr>
-					<td class="name">Дата исследования:</td><td class="bold">{{ card.ordered_service.order.visit.created|date:"d.m.Y H:i" }}</td>
+					<td class="name">Дата исследования:</td><td class="bold">{{ card.ordered_service.order.created|date:"d.m.Y H:i" }}</td>
 				</tr>
 			</table>
 		</td>
 		<td align="right">
 			Заказ: <strong>{{ card.ordered_service.order.id|zid:"5" }}</strong><br>
-			Врач: <strong>{{ card.ordered_service.order.staff.id|zid:"5" }}</strong><br>
-			Направившее учреждение: <strong>{{ card.ordered_service.order.visit.referral.id|zid:"5" }}</strong><br>
+			Врач: <strong>{{ card.ordered_service.staff.id|zid:"5" }}</strong><br>
+			Направившее учреждение: <strong>{{ card.ordered_service.order.referral.id|zid:"5" }}</strong><br>
 			
 		</td>
 	</tr>
 </table>
 <br>
-{% if card.disease and 'disease' in to_print  %}
-	<br> Характер заболевания
-	<p> {{card.disease}}</p>
+
+<h1 class="center">{% if card.print_name %}{{ card.print_name }}{% else %}{{ card.ordered_service.service }}{% endif %}</h1>
+<div class="content">
+
+{% if card.equipment %}
+    <br>  <strong>Выполнено на оборудовании: </strong> {{card.equipment}}<br>
 {% endif %}
-{% if card.complaints %}
-	<br> Жалобы
-	<p> {{card.complaints}}</p>
+
+{% if card.area %}
+    <br>  <strong>Область исследования: </strong> <p>{{card.area}}</p>
 {% endif %}
+
+{% if card.scan_mode %}
+    <br>  <strong>Режим сканирования: </strong> <p>{{card.scan_mode}}</p>
+{% endif %}
+
+{% if card.thickness %}
+    <br>  <strong>Толщина реконструктивного среза: </strong> <p>{{card.thickness}}</p>
+{% endif %}
+
+{% if card.width %}
+    <br>  <strong>Ширина/шаг, мм: </strong> <p>{{card.width}}</p>
+{% endif %}
+
+{% if card.contrast_enhancement %}
+    <br>  <strong>Контрастное усиление: </strong> <p>{{card.contrast_enhancement
+}}</p>
+{% endif %}
+
+{% if card.complaints and 'complaints' in to_print %}
+    <br>  <strong>Жалобы</strong>
+    <p> {{card.complaints|linebreaksbr}}</p>
+{% endif %}
+
+
 {% if card.history and 'history' in to_print %}
-	<br> История настоящего заболевания
-	<p> {{card.history}}</p>
+    <br>  <strong>История настоящего заболевания</strong>
+    <p> {{card.history|linebreaksbr}}</p>
 {% endif %}
-{% if card.anamnesis %}
-	<br> Анамнез
-	<br> {{card.anamnesis|linebreaks}}
+
+{% if card.anamnesis and 'anamnesis' in to_print %}
+    <br>  <strong>Анамнез</strong>
+    <p> {{card.anamnesis|linebreaksbr}}</p>
 {% endif %}
+
 {% if card.objective_data %}
-	<br> Объективные данные
-	<p> {{card.objective_data}}</p>
-{% endif %}
-{% if card.psycho_status %}
-	<br> Психологический/неврологический статус
-	<br> {{card.psycho_status}}
+    <br> <!--<strong>Объективные данные</strong>-->
+    <p> {% autoescape off %} {{ card.objective_data }} {% endautoescape %}</p>
 {% endif %}
 {% if card.gen_diag %}
-	<br> Основной диагноз
-	<p> {{card.gen_diag}}</p>
+    <br> <strong>Основной диагноз</strong>
+    <p> {% autoescape off %}{{card.gen_diag}}{% endautoescape %}</p>
 {% endif %}
 {% if card.mbk_diag %}
-	<br> Диагноз по МБК
-	<p> {{card.mbk_diag}}</p>
-{% endif %}
-{% if card.complication %}
-	<br> Осложнения
-	<p> {{card.complication}}</p>
-{% endif %}
-<br>
-{% if card.ekg %}
-	<br> ЭКГ
-	<br> {{card.ekg}}
-{% endif %}
-<br>
-{% if card.concomitant_diag %}
-	<br> Сопутствующий диагноз
-	<p> {{card.concomitant_diag}}</p>
-{% endif %}
-{% if card.clinical_diag %}
-	<br> Клинический диагноз
-	<p> {{card.clinical_diag}}</p>
+    <br> <strong>Диагноз по МБК</strong>
+    <p> {{card.mbk_diag}}</p>
 {% endif %}
 {% if card.treatment %}
-	<br> Лечение
-	<p> {{card.treatment}}</p>
+    <br> <strong>Лечение</strong>
+    <p> {{card.treatment|linebreaksbr}}</p>
 {% endif %}
 {% if card.referral %}
-	<br> Направление
-	<p> {{card.referral}}</p>
+    <br> <strong>Направление</strong>
+    <p> {{card.referral|linebreaksbr}}</p>
 {% endif %}
 {% if card.extra_service %}
-	<br> Дополнительные услуги
-	<p> {{card.extra_service}}</p>
+    <br> <strong>Дополнительные услуги</strong>
+    <p> {{card.extra_service|linebreaksbr}}</p>
+{% endif %}
+{% if card.conclusion %}
+    <br> <strong>Заключение</strong>
+    <p> {{card.conclusion}}</p>
 {% endif %}
 <br>
-{% if card.ordered_service.order.is_completed and card.ordered_service.order.comment %}
-<div class="comment">{{ card.ordered_service.order.comment }}</div>
-{% endif %}
-<div class="print_time">{{ card.ordered_service.order.print_date_display }}</div>
+<table width="100%">
+	<tr>
+		<td>Врач</td>
+		<td align="right">___________________ ({{ card.ordered_service.staff.staff.short_name }})</td>
+	</tr>
+</table>
+</div>
 
+{% include "print/exam_footer.html" %}
+
+</div>
+</div>
 {% endblock %}

@@ -18,6 +18,7 @@ Ext.onReady(function(){
             xtype:'button',
             text: 'Регистратура',
 			scale: 'large',
+			hidden: !permissions['registry'],
 			handler: function(){
 				window.location.href = '/webapp/registry/';
 			}
@@ -25,6 +26,7 @@ Ext.onReady(function(){
             xtype:'button',
             text: 'Лаборатория',
 			scale: 'large',
+			hidden: !permissions['laboratory'],
 			handler: function(){
 				window.location.href = '/webapp/laboratory/';
 			}
@@ -32,22 +34,27 @@ Ext.onReady(function(){
             xtype:'button',
             text: 'Обследование',
 			scale: 'large',
+			hidden: !permissions['examination'],
 			handler: function(){
 				window.location.href = '/webapp/examination/';
 			}
 		},{
             xtype:'button',
-            text: 'Расписание врачей',
-			scale: 'large',
-			handler: function(){
-				window.location.href = '/webapp/calendar/';
-			}
-        },{
-            xtype:'button',
             text: 'Администрирование',
 			scale: 'large',
+			hidden: !permissions['admin'],
 			handler: function(){
 				window.location.href = '/admin/';
+			}
+        },{
+        	xtype:'spacer',
+        	flex:1,
+        },{
+            xtype:'button',
+            text: 'Выход',
+			scale: 'medium',
+			handler: function(){
+				window.location.href = '/webapp/logout/';
 			}
         }],
         renderTo:"side-box-inner"
@@ -67,14 +74,14 @@ Ext.onReady(function(){
 				window.location.href = '/webapp/setactiveprofile/'+p+'/';
 			}
 		},
-		width:300,
+		width:500,
 		typeAhead: true,
 		triggerAction: 'all',
 		valueField:'id',
 		displayField:'title',
 		mode: 'local',
 		forceSelection:true,
-		selectOnFocus:true,
+		selectOnFocus:false,
 		editable:false,
 		renderTo:'active-profile-box'
     });

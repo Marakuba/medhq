@@ -67,7 +67,7 @@ class IncomeForm(VisitForm):
                                         required=True, label=u'Лаборатория')
 
 def actions(obj):
-    return u"<a href='%sprint/' title='Распечатать' target='_blank'><img src='%sresources/images/1294430047_print.png' border='0'></a>" % (obj.get_absolute_url(), settings.MEDIA_URL)
+    return u"<a href='%sprint/' title='Распечатать' target='_blank'><img src='%sresources/images/1294430047_print.png' border='0'></a>" % (obj.get_absolute_url(), settings.STATIC_URL)
 actions.short_description = u'Печать'
 actions.allow_tags = True
 

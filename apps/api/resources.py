@@ -87,11 +87,12 @@ class ExtResource(ModelResource):
         deserialized = self.deserialize(request, request.raw_post_data, format=request.META.get('CONTENT_TYPE', 'application/json'))
         bundle = self.build_bundle(data=dict_strip_unicode_keys(deserialized))
         self.is_valid(bundle, request)
+
         
         try:
             updated_bundle = self.obj_update(bundle, request=request, pk=kwargs.get('pk'))
             return self.build_response(request, updated_bundle) #return HttpAccepted()
-        except:
+        except Exception, err:
             updated_bundle = self.obj_create(bundle, request=request, pk=kwargs.get('pk'))
             return self.build_response(request, updated_bundle) #return HttpCreated(location=self.get_resource_uri(updated_bundle))
         

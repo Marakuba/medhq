@@ -106,6 +106,7 @@ Ext.calendar.EventEditWindow = Ext.extend(Ext.Window, {
         	text: 'Удалить',
             disabled: false,
             hidden:this.o.data ? false : true,
+            disabled: this.doctorMode ? true : false,
             handler: this.onDelete,
             scope: this,
             hideMode: 'offsets'

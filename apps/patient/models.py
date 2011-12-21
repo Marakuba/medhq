@@ -13,6 +13,7 @@ from billing.models import Payment, Account, ClientAccount
 from django.db.models.signals import post_save
 from visit.models import Visit
 from crm.models import AdSource
+from constance import config
 
 
 class Patient(make_person_object('patient')):
@@ -73,17 +74,18 @@ class Patient(make_person_object('patient')):
         total = (result['price'] or 0)- (result['discount'] or 0)
         self.billed_account = total
         
-        print "set new account value:", total
+#        print "set new account value:", total
         
-#        if not self.discount or self.discount.type in (u'accum',):
-#            full_total = total + self.initial_account
-#            if not self.discount or full_total > self.discount.max:
-#                new_discount = Discount.objects.filter(type__iexact=u'accum', min__lte=full_total, max__gte=full_total)
-#                if new_discount.count():
-#                    self.discount = new_discount[0]
-#                    print "set new discount:", new_discount[0]
-#                else:
-#                    print "no discounts for current value!"
+        if config.CUMULATIVE_DISCOUNTS:
+            if not self.discount or self.discount.type in (u'accum',):
+                full_total = total + self.initial_account
+                if not self.discount or full_total > self.discount.max:
+                    new_discount = Discount.objects.filter(type__iexact=u'accum', min__lte=full_total, max__gte=full_total)
+                    if new_discount.count():
+                        self.discount = new_discount[0]
+                        print "set new discount:", new_discount[0]
+                    else:
+                        print "no discounts for current value!"
         #commit all changes
         self.save()
     

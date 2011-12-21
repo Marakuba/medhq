@@ -1,0 +1,37 @@
+body {
+	background-color:gray;
+}
+.page_wrapper_A4_book, .page_wrapper_A4_landscape {
+	padding:1cm;
+}
+.page_wrapper_A4_book {
+	min-height:29.7cm;
+	width:20cm;
+	margin:1cm auto;
+	background:white;
+	border:1px solid;
+	box-shadow:1px 1px black;
+}
+
+.page_wrapper_A4_landscape {
+	min-height:21cm;
+	width:29.7cm;
+	margin:1cm auto;
+	background:white;
+	border:1px solid;
+	box-shadow:1px 1px black;
+}
+
+#print-box {
+	position:absolute;
+	top:20px;
+	left:20px;
+	padding:8px 8px 8px 25px;
+	background:white url(icons/printer.png) no-repeat 5px 8px;
+	border-radius:4px;
+}
+#print-box a {
+	font-family:'Arial';
+	color:black;
+	text-decoration: none;
+}

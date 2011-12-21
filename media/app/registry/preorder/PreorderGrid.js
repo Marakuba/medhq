@@ -41,12 +41,12 @@ App.registry.PreorderGrid = Ext.extend(Ext.grid.GridPanel, {
 		    	hide: this.patient ? true : false
 		    },{
 		    	header: "Услуга", 
-		    	width: 70, 
+		    	width: 100, 
 		    	sortable: true, 
 		    	dataIndex: 'service_name'
 		     },{
 		    	header: "Врач", 
-		    	width: 70, 
+		    	width: 50, 
 		    	sortable: true, 
 		    	dataIndex: 'staff_name'
 		    },{
@@ -66,6 +66,17 @@ App.registry.PreorderGrid = Ext.extend(Ext.grid.GridPanel, {
 		    	dataIndex: 'start',
 		    	renderer:Ext.util.Format.dateRenderer('H:i / d.m.Y')
 		    },{
+		    	header: "Форма оплаты", 
+		    	width: 25, 
+		    	sortable: true, 
+		    	dataIndex: 'ptype_name'
+		    },{
+		    	header: "Форма оплаты", 
+		    	width: 25, 
+		    	sortable: true, 
+		    	hidden:true,
+		    	dataIndex: 'payment_type'
+		    },{
 		    	header: "Телефон", 
 		    	width: 35, 
 		    	sortable: false, 
@@ -80,6 +91,47 @@ App.registry.PreorderGrid = Ext.extend(Ext.grid.GridPanel, {
 			handler:this.onVisitButtonClick.createDelegate(this, []),
 			scope:this
 		});
+		
+		this.pTypeButton = new Ext.CycleButton({
+            showText: true,
+            prependText: 'Оплата: ',
+            items: [{
+                text:'все',
+//                        iconCls:'icon-state-question',
+                checked:true,
+                filterValue:undefined
+            },{
+                text:'Наличные',
+//                iconCls:'icon-state-question',
+                filterValue:'н'
+            },{
+                text:'ДМС',
+//                iconCls:'icon-state-yes',
+                filterValue:'д'
+            },{
+                text:'Безнал',
+//                iconCls:'icon-state-no',
+                filterValue:'б'
+            }],
+            changeHandler:function(btn, item){
+                    this.storeFilter('payment_type',item.filterValue);
+            },
+            scope:this
+        });
+        
+        this.stateButton = new Ext.CycleButton({
+            showText: true,
+            prependText: 'Организация: ',
+            items: [{
+                text:'все',
+                checked:true,
+                filterValue:undefined
+            }],
+            changeHandler:function(btn, item){
+                    this.storeFilter('service_state',item.filterValue);
+            },
+            scope:this
+        })
 		
 		this.clearButton = new Ext.Button({
 			iconCls:'silk-cancel',
@@ -102,7 +154,13 @@ App.registry.PreorderGrid = Ext.extend(Ext.grid.GridPanel, {
 		});
 		
 		 this.ttb = new Ext.Toolbar({
-			items:[this.visitButton,this.clearButton,'->']
+			items:[this.visitButton,this.clearButton,'-',{
+				text:'Реестр',
+				handler:function(){
+					Ext.ux.Printer.print(this);
+				},
+				scope:this
+			},'->',this.pTypeButton]
 		});
 		
 		var config = {
@@ -156,7 +214,8 @@ App.registry.PreorderGrid = Ext.extend(Ext.grid.GridPanel, {
             		var service = record.get('service');
             		var visit = record.get('visit');
             		var today = new Date();
-            		var actual = record.data.start.clearTime() >= today.clearTime();
+            		var start_date = record.data.start.clone(); 
+            		var actual = start_date.clearTime() >= today.clearTime();
             		if (record.data.comment){
             			p.body = '<p class="helpdesk-row-body"> Комментарий: '+record.data.comment+'</p>';
             		};
@@ -198,6 +257,7 @@ App.registry.PreorderGrid = Ext.extend(Ext.grid.GridPanel, {
 		this.on('serviceselect', this.onServiceSelect, this);
 		this.on('afterrender', function(){
 			this.store.setBaseParam('timeslot__start__range',String.format('{0},{1}',this.start_date.format('Y-m-d 00:00'),this.start_date.format('Y-m-d 23:59')))
+			this.store.setBaseParam('timeslot__isnull',false);
 			this.store.load()}, 
 		this);
 		App.calendar.eventManager.on('preorderwrite', function(){
@@ -352,7 +412,10 @@ App.registry.PreorderGrid = Ext.extend(Ext.grid.GridPanel, {
 					toggleGroup:'ex-place-cls',
 					text:'Без услуги',
 					pressed: false,
-					handler:this.storeFilter.createDelegate(this,['service__isnull',true])
+					handler:function(button){
+						this.storeFilter('service__isnull',button.pressed?true:undefined)
+					},
+					scope:this
 				});
 				this.ttb.add({
 					xtype:'tbtext',

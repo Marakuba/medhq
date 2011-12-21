@@ -3,6 +3,7 @@
 from django.db import models, transaction
 from django.contrib.auth.models import User
 import datetime
+from core.models import make_operator_object
 from south.modelsinspector import add_introspection_rules
 from django.utils.encoding import smart_unicode, force_unicode, smart_str
 import time
@@ -19,6 +20,7 @@ import exceptions
 
 from datetime import timedelta
 from service.models import ExtendedService
+from promotion.models import Promotion
 
 add_introspection_rules([], ["^scheduler\.models\.CustomDateTimeField"])
 
@@ -29,6 +31,11 @@ def datetimeIterator(from_date=None, to_date=None, delta=timedelta(minutes=30)):
         yield from_date
         from_date = from_date + delta
         return
+
+def getToday():
+    currentdate = datetime.datetime.today()
+    currentdate = currentdate.combine(currentdate.date(), currentdate.min.time())
+    return currentdate
 
 class CustomDateTimeField(models.DateTimeField):
     
@@ -116,11 +123,11 @@ class Event(models.Model):
                                      end = start+timeslot, timeslot = True, vacant = True, n = False, \
                                      parent = self, rem = self.rem)
                 start += timeslot
-        try:
-            st = Position.objects.get(id = self.cid)
-            self.staff = st
-        except:
-            print 'Event save Error! Position %s not found' % (self.cid)
+#        try:
+#            st = Position.objects.get(id = self.cid)
+#            self.staff = st
+#        except:
+#            print 'Event save Error! Position %s not found' % (self.cid)
         super(Event, self).save(*args, **kwargs)
 
     def delete(self, *args, **kwargs):
@@ -146,29 +153,40 @@ class Preorder(models.Model):
     """
     Модель предварительного заказа
     """
+    created = models.DateTimeField(u'Создано', auto_now_add=True)
+    modified = models.DateTimeField(auto_now=True)
+    operator = models.ForeignKey(User, related_name='operator_in_preorder', blank = True, null=True)
     patient = models.ForeignKey(Patient, blank = True, null = True)
     timeslot = models.OneToOneField(Event, blank = True, null = True, related_name='preord')
     comment = models.TextField(u'Примечание', blank = True, null = True)
     expiration = CustomDateTimeField(u'Дата истечения', blank = True, null = True)
-    visit = models.OneToOneField(Visit, blank = True, null=True)
+    visit = models.ForeignKey(Visit, blank = True, null=True)
     service = models.ForeignKey(ExtendedService, blank = True, null=True)
     payment_type = models.CharField(u'Способ оплаты', max_length=1, 
                                     default=u'н', 
                                     choices=PAYMENT_TYPES)
+    promotion = models.ForeignKey(Promotion,blank = True, null=True)
+    count = models.PositiveIntegerField(u'Количество', default=1)
+    objects = models.Manager()
     
     def get_staff_name(self):
-        staff_name = Position.objects.get(id=self.timeslot.cid).staff.short_name()
-        return staff_name
+        if self.timeslot:
+            staff_name = Position.objects.get(id=self.timeslot.cid).staff.short_name()
+            return staff_name
+        else:
+            return ''
     
     @transaction.commit_on_success
     def save(self, *args, **kwargs):
-        self.timeslot.vacant = False
-        self.timeslot.save()
+        if self.timeslot:
+            self.timeslot.vacant = False
+            self.timeslot.save()
         super(Preorder, self).save(*args, **kwargs) 
         
     def delete(self, *args, **kwargs):
-        self.timeslot.vacant = True 
-        self.timeslot.save()
+        if self.timeslot:
+            self.timeslot.vacant = True 
+            self.timeslot.save()
         super(Preorder, self).delete(*args, **kwargs) 
 
     class Meta:
@@ -182,17 +200,17 @@ class Preorder(models.Model):
     
 ### SIGNALS
 
-@transaction.commit_on_success
-def PreorderPreDelete(sender, **kwargs):
-    """
-    """
-    obj = kwargs['instance']
-    timeslot = obj.timeslot
-    timeslot.vacant=True
-    timeslot.save()
+#@transaction.commit_on_success
+#def PreorderPreDelete(sender, **kwargs):
+#    """
+#    """
+#    obj = kwargs['instance']
+#    timeslot = obj.timeslot
+#    timeslot.vacant=True
+#    timeslot.save()
     #visit
     #p = visit.patient
     #p.billed_account -= obj.total_price
     #p.save()
     
-pre_delete.connect(PreorderPreDelete, sender=Preorder)
+#pre_delete.connect(PreorderPreDelete, sender=Preorder)

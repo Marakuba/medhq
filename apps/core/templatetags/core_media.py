@@ -11,14 +11,14 @@ JS_TPL = "<script type=\"text/javascript\" src=\"%s\"></script>"
 def load_core_media():
     try:
         media = settings.CORE_MEDIA
-        media_url = settings.MEDIA_URL
+        STATIC_URL = settings.STATIC_URL
         output = []
         
         css = media.get('css', None)
         if css:
             for k,v in css.iteritems():
                 for url in v:
-                    path = media_url + url
+                    path = STATIC_URL + url
                     output.append(CSS_TPL % (path, k))
         
         js = media.get('js', None)

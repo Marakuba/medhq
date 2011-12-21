@@ -106,14 +106,17 @@ App.CentralPanel = Ext.extend(Ext.Panel, {
 		this.mainPanel.remove(appId);
 	},
 	
-	launchApp: function(appId,config) {
+	launchApp: function(appId,config,active) {
         var app_config = {
             xtype:appId
         };
         config = config || {};
 		Ext.apply(app_config, config);
 		var new_app = this.mainPanel.add(app_config);
-		this.mainPanel.setActiveTab(new_app);
+		active = active===undefined ? true : active;
+		if(active) {
+			this.mainPanel.setActiveTab(new_app);
+		}
 	}
 });
 

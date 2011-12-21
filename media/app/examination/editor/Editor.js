@@ -83,6 +83,9 @@ App.examination.Editor = Ext.extend(Ext.Panel, {
 		Ext.apply(this, Ext.apply(this.initialConfig, config));
 		App.examination.Editor.superclass.initComponent.apply(this, arguments);
 		
+		this.on('afterrender',function(form){
+		});
+		
 		this.serviceTree.on('serviceclick',function(attrs){
 			this.attrs = attrs;
 			this.onServiceClick(this.attrs)

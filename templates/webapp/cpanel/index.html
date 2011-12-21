@@ -3,22 +3,17 @@
 {% block title %}Панель управления{% endblock %}
 
 {% block head %}
-	<link rel="icon" type="image/ico" href="{{ MEDIA_URL }}resources/favicon.ico" />
+	<link rel="icon" type="image/ico" href="{{ STATIC_URL }}resources/favicon.ico" />
 
     <!-- ExtJS -->
-    <link rel="stylesheet" type="text/css" href="{{ MEDIA_URL }}extjs/resources/css/ext-all.css"/>
+    <link rel="stylesheet" type="text/css" href="{{ STATIC_URL }}extjs/resources/css/ext-all.css"/>
 
-    <!-- APP -->
-    <link rel="stylesheet" type="text/css" href="{{ MEDIA_URL }}resources/css/app.css"/>
-
-    <!-- FAM -->
-    <link rel="stylesheet" type="text/css" href="{{ MEDIA_URL }}resources/css/silk.css"/>
-	
 	<style>
 		#bd {
 			width:960px;
 		    margin:5px auto;
 		    zoom:1;
+		    font-family: 'Arial';
 		}
 		#bd .left-column {
 		    width:738px;
@@ -33,16 +28,14 @@
 
 
     <!-- LIBS -->
-    <script type="text/javascript" src="{{ MEDIA_URL }}extjs/adapter/ext/ext-base.js"></script>
+    <script type="text/javascript" src="{{ STATIC_URL }}extjs/adapter/ext/ext-base.js"></script>
     <!-- ENDLIBS -->
 
-    <script type="text/javascript" src="{{ MEDIA_URL }}extjs/ext-all{% if debug %}-debug{% endif %}.js"></script>
-    <!--<script type="text/javascript" src="{{ MEDIA_URL }}extjs/src/debug.js"></script>-->
+    <script type="text/javascript" src="{{ STATIC_URL }}extjs/ext-all{% if debug %}-debug{% endif %}.js"></script>
 
-    <script type="text/javascript" src="{{ MEDIA_URL }}extjs/ux/CenterLayout.js"></script>
-
-    <script type="text/javascript" src="{{ MEDIA_URL }}app/cpanel/app.js"></script>
+    <script type="text/javascript" src="{{ STATIC_URL }}app/cpanel/app.js"></script>
 	
+	{% autoescape off %}
 	<script>
 		var profiles = [
 		{% for position in request.user.get_profile.position_set.all %}
@@ -50,16 +43,17 @@
 		{% endfor %}
 		]
 		var active_profile = {{ request.active_profile.id }};
+		var permissions = {{ perms }};
+		
 	</script>
-
-
+	{% endautoescape %}
 
 {% endblock %}
 
 {% block body %}
 <div id="bd">
 	<div class="left-column">
-		<div id="sample-spacer" style="height:500px;background:url({{ MEDIA_URL }}resources/images/medhq_splash_.png) no-repeat;">
+		<div id="sample-spacer" style="height:500px;background:url({{ config.MAIN_LOGO }}) no-repeat;">
 		Ваш профиль: <div id="active-profile-box"></div>
 		</div> 
 	</div>

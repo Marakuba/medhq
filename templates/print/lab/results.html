@@ -1,4 +1,4 @@
-{% extends "print.html" %}
+{% extends "print/off_blank.html" %}
 
 {% load lab_tags flatblock_tags %}
 
@@ -6,8 +6,12 @@
 
 {% block body %}
 
+<div id="print-box">
+	<a href="javascript:window.print();">Печать</a>
+</div>
 
-{% if results %}
+<div class="page_wrapper_A4_book">
+<div class="page_wrapper">
 {% include "print/lab/results_header.html" %}
 <table class="results">
 	<tr>
@@ -37,6 +41,8 @@
 		<td colspan="3" class="progress">В работе</td>
 	</tr>
 	{% endif %}
+	{% empty %}
+	<tr><td colspan="4">Результаты анализов отсутствуют</td></tr>
 	{% endfor %}
 	
 
@@ -45,6 +51,6 @@
 <div class="comment">{% autoescape off %}{{ order.comment }}{% endautoescape %}</div>
 {% endif %}
 <div class="print_time">{{ order.print_date_display }}</div>
-{% endif %}
-
+</div>
+</div>
 {% endblock %}

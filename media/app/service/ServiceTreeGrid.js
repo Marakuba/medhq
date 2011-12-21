@@ -140,7 +140,21 @@ App.ServiceTreeGrid = Ext.extend(Ext.ux.tree.TreeGrid,{
                     },
                     scope: this
 				}
-		    }),'->',{
+		    }),{
+		    	hidden:!this.wideActions,
+		    	text:'Сбросить кэш',
+		    	handler:function(){
+		    		
+		    	}
+		    },{
+		    	xtype:'datefield',
+		    	hidden:!this.wideActions,
+		    	listeners:{
+		    		select:function(df){
+		    			
+		    		}
+		    	}
+		    },'->',{
 		    	iconCls:'x-tbar-loading',
 		    	handler:function(){
 		    		this.getLoader().load(this.getRootNode());

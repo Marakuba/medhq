@@ -58,7 +58,7 @@ App.visit.VisitGrid = Ext.extend(Ext.grid.GridPanel, {
 		
 		
 		this.columns =  [
-		    {
+		    /*{
 		    	width: 1, 
 		    	sortable: true, 
 		    	dataIndex: 'is_billed', 
@@ -66,8 +66,8 @@ App.visit.VisitGrid = Ext.extend(Ext.grid.GridPanel, {
 		    		flag = val ? 'yes' : 'no';
 		    		return "<img src='"+MEDIA_URL+"admin/img/admin/icon-"+flag+".gif'>"
 		    	}
-		    },{
-		    	width: 1, 
+		    },*/{
+		    	width: 8, 
 		    	sortable: false, 
 		    	dataIndex: 'cls', 
 		    	renderer: function(val) {
@@ -84,7 +84,7 @@ App.visit.VisitGrid = Ext.extend(Ext.grid.GridPanel, {
 		    		}
 		    		return "<img src='"+MEDIA_URL+"resources/css/icons/"+icon+"' title='"+alt+"'>"
 		    	}
-		    },{
+		    },/*{
 		    	header: "№ заказа", 
 		    	width: 10, 
 		    	sortable: true, 
@@ -97,8 +97,8 @@ App.visit.VisitGrid = Ext.extend(Ext.grid.GridPanel, {
 		    		}
 		    		return val
 		    	}
-		    },{
-		    	header: "BC", 
+		    },*/{
+		    	header: "№ заказа", 
 		    	width: 10, 
 		    	sortable: true, 
 		    	dataIndex: 'barcode_id'

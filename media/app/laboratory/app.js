@@ -19,7 +19,7 @@ Ext.onReady(function(){
 	});
 	
 	centralPanel.launchApp('labboard');
-	centralPanel.launchApp('manualgrid');
+	centralPanel.launchApp('manualgrid',{},false);
 
     
 });

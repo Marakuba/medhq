@@ -41,6 +41,7 @@ App.examination.TemplateBody = Ext.extend(Ext.TabPanel, {
 			this.addSecBtn.disable();
 		};
 		
+		
 		this.fieldSetStore.each(function(record){
 			var rec = record.data; 
 			this.menuBtns[rec.name] = {
@@ -216,6 +217,7 @@ App.examination.TemplateBody = Ext.extend(Ext.TabPanel, {
 				this.equipTab.loadRecord(this.record);
 			};
 			this.setActiveTab(0);
+			
 		},this)
 	},
 	

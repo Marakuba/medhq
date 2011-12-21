@@ -8,9 +8,9 @@
 	<meta name="keywords" content="{% block metakeywords %}{% endblock %}" />
 	<meta name="description" content="{% block metadescription %}{% endblock %}" />
 	
-	<link href="{{ MEDIA_URL }}resources/css/reset.css" type="text/css" rel="stylesheet" />
+	<link href="{{ STATIC_URL }}resources/css/reset.css" type="text/css" rel="stylesheet" />
 {% block head %}{% endblock %}	
-	<link href="{{ MEDIA_URL }}resources/css/print.css" type="text/css" rel="stylesheet" />
+	<link href="{{ STATIC_URL }}resources/css/print.css" type="text/css" rel="stylesheet" />
 
 {% block extra_head %}{% endblock %}
 </head>

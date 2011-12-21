@@ -9,11 +9,9 @@ SITE_ROOT = PROJECT_ROOT.dirname()
 sys.path.append(SITE_ROOT)
 sys.path.append(PROJECT_ROOT / 'apps')
 sys.path.append(PROJECT_ROOT / 'libs')
-sys.path.append(PROJECT_ROOT / 'custom')
+
 
 MEDIA_ROOT = PROJECT_ROOT / 'media'
-CUSTOMS_ROOT = PROJECT_ROOT / 'custom'
-REPORTS_DIR = 'reports'
 UPLOAD_DIR = MEDIA_ROOT / 'photo'
 TEMPLATE_DIRS = [PROJECT_ROOT / 'templates']
 
@@ -52,6 +50,10 @@ CACHES = {
     'dbtemplates': {
         'BACKEND': 'django.core.cache.backends.memcached.MemcachedCache',
         'LOCATION': '127.0.0.1:11211',
+    },
+    'service': {
+        'BACKEND': 'django.core.cache.backends.memcached.MemcachedCache',
+        'LOCATION': '127.0.0.1:11212',
     }
 }
 
@@ -67,7 +69,9 @@ TEMPLATE_CONTEXT_PROCESSORS = (
     "django.core.context_processors.i18n",
     "django.core.context_processors.media",
     "django.core.context_processors.request",
-    'constance.context_processors.config',
+    "django.core.context_processors.static",
+    "constance.context_processors.config",
+
 )
 
 ROOT_URLCONF = 'medhq.urls'
@@ -83,17 +87,17 @@ MIDDLEWARE_CLASSES = [
     'reversion.middleware.RevisionMiddleware'
 ]
 
-INSTALLED_APPS = (
+INSTALLED_APPS = [
     #'reversion',
     'admin_tools',
     'admin_tools.theming',
     'admin_tools.dashboard',
     'admin_tools.menu',
 
-    'indexer',
-    'paging',
-    'sentry',
-    'sentry.client',
+#    'indexer',
+#    'paging',
+#    'sentry',
+#    'sentry.client',
 
     'crm',
     'core',
@@ -108,9 +112,9 @@ INSTALLED_APPS = (
     'state',
     'pricelist',
     'visit',
-    'taskmanager',
+#    'taskmanager',
     'lab',
-    'workflow',
+#    'workflow',
     'examination',
     'scheduler',
     'interlayer',
@@ -122,6 +126,7 @@ INSTALLED_APPS = (
     'django.contrib.contenttypes',
     'django.contrib.sessions',
     'django.contrib.sites',
+    'django.contrib.staticfiles',
     
     'autocomplete',
     'constance',
@@ -137,11 +142,7 @@ INSTALLED_APPS = (
     'reversion',
     'tastypie',
     'tagging'
-)
-
-ADMIN_TOOLS_MENU = 'medhq.menu.CustomMenu'
-
-ADMIN_TOOLS_INDEX_DASHBOARD = 'medhq.dashboard.CustomIndexDashboard'
+]
 
 APPSERVER_ADMIN_TITLE = u'Главная панель'
 
@@ -159,6 +160,8 @@ SESSION_EXPIRE_AT_BROWSER_CLOSE = True
 DBTEMPLATES_USE_CODEMIRROR = True
 
 
+### celery config
+
 #import djcelery
 #djcelery.setup_loader()
 #
@@ -170,17 +173,14 @@ DBTEMPLATES_USE_CODEMIRROR = True
 #CELERY_RESULT_BACKEND = "amqp"
 #CELERY_IMPORTS = ("tasks", )
 
-#HARD_CODE SETTINGS
+### constance config
 
 CONSTANCE_CONFIG = {
     'BRAND': (u'', 'company brand'),
+    'MAIN_STATE_ID' : (1,'main state id'),
     'PRICE_BY_PAYMENT_TYPE':(False,'Индивидуальные цены по каждому способу оплаты'),
     'START_HOUR':(8,u'Начало работы'),
     'END_HOUR':(20,u'Окончание работы'),
+    'CUMULATIVE_DISCOUNTS':(True,u'Использование накопительных скидок (temporary)'),
+    'SERVICETREE_ONLY_OWN':(True,u'Показывать услуги только текущей организации'),
 }
-
-MAIN_STATE_ID = 1 
-
-MAIN_PRICE_TYPE = 'em_retail'
-
-DBTEMPLATES_USE_CODEMIRROR = True

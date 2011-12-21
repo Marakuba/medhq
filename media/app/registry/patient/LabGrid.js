@@ -25,7 +25,7 @@ App.patient.LabGrid = Ext.extend(Ext.grid.GridPanel, {
 		    {name: 'is_printed', allowBlank: false, type:'boolean'},
 		    {name: 'print_date', allowBlank: false, type:'date'},
 		    {name: 'barcode'},
-		    {name: 'lab_name'},
+		    {name: 'laboratory_name'},
 		    {name: 'staff_name'}
 		]);
 		
@@ -63,37 +63,38 @@ App.patient.LabGrid = Ext.extend(Ext.grid.GridPanel, {
 		    		return "<img src='"+MEDIA_URL+"admin/img/admin/icon-"+flag+".gif'>"
 		    	}
 		    },{
-		    	header: "BC", 
-		    	width: 15, 
+		    	header: "Заказ", 
+		    	width: 25, 
 		    	sortable: true, 
 		    	dataIndex: 'barcode'
 		    },{
 		    	header: "Дата", 
-		    	width: 100, 
+		    	width: 50, 
 		    	sortable: true, 
 		    	dataIndex: 'created',
 		    	renderer:Ext.util.Format.dateRenderer('d.m.Y'), 
 		    	editor: new Ext.form.TextField({})
 		    },{
-		    	//width: 1, 
+		    	width: 80,
 		    	sortable: true, 
 		    	header:'Напечатано',
 		    	dataIndex: 'is_printed', 
-		    	renderer: function(val) {
+		    	renderer: function(val,opts,rec) {
 		    		flag = val ? 'yes' : 'no';
-		    		return "<img src='"+MEDIA_URL+"admin/img/admin/icon-"+flag+".gif'>"
+		    		time = val ? Ext.util.Format.date(rec.data.print_date, 'd.m.Y H:i') : '';
+		    		return "<img src='"+MEDIA_URL+"admin/img/admin/icon-"+flag+".gif'>&nbsp;&nbsp;&nbsp;" + time
 		    	}
-		    },{
+		    },/*{
 		    	header: "Дата/время печати", 
 		    	width: 100, 
 		    	sortable: true, 
 		    	dataIndex: 'print_date',
-		    	renderer:Ext.util.Format.dateRenderer('d.m.Y') 
-		    },{
+		    	renderer:Ext.util.Format.dateRenderer('d.m.Y H:i') 
+		    },*/{
 		    	header: "Лаборатория", 
-		    	width: 100, 
+		    	width: 80, 
 		    	sortable: true, 
-		    	dataIndex: 'lab_name'
+		    	dataIndex: 'laboratory_name'
 		    },{
 		    	header: "Врач", 
 		    	width: 100, 

@@ -51,13 +51,13 @@ App.results.Grid = Ext.extend(Ext.grid.GridPanel, {
 		
 		
 		this.columns =  [
-		    {
+		    /*{
 		    	header: "№ заказа", 
 		    	width: 8, 
 		    	sortable: true, 
 		    	dataIndex: 'visit_id'
-		    },{
-		    	header: "BC", 
+		    },*/{
+		    	header: "№ заказа", 
 		    	width: 8, 
 		    	sortable: true, 
 		    	dataIndex: 'barcode'
@@ -77,6 +77,16 @@ App.results.Grid = Ext.extend(Ext.grid.GridPanel, {
 		    	renderer:Ext.util.Format.dateRenderer('d.m.Y'), 
 		    	editor: new Ext.form.TextField({})
 		    },{
+		    	width: 30,
+		    	sortable: true, 
+		    	header:'Напечатано',
+		    	dataIndex: 'is_printed', 
+		    	renderer: function(val,opts,rec) {
+		    		flag = val ? 'yes' : 'no';
+		    		time = val ? Ext.util.Format.date(rec.data.print_date, 'd.m.Y H:i') : '';
+		    		return "<img src='"+MEDIA_URL+"admin/img/admin/icon-"+flag+".gif'>&nbsp;&nbsp;&nbsp;" + time
+		    	}
+		    },/*{
 		    	width: 1, 
 		    	sortable: true, 
 		    	header:'Напечатано',
@@ -91,9 +101,9 @@ App.results.Grid = Ext.extend(Ext.grid.GridPanel, {
 		    	sortable: true, 
 		    	dataIndex: 'print_date',
 		    	renderer:Ext.util.Format.dateRenderer('d.m.Y') 
-		    },{
+		    },*/{
 		    	header: "Пациент", 
-		    	width: 40, 
+		    	width: 50, 
 		    	sortable: true, 
 		    	dataIndex: 'patient_name'
 		    },{

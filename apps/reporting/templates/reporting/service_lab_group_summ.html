@@ -1,22 +1,6 @@
-{% extends "print/base.html" %}
+{% extends "reporting/base.html" %}
 
-{% block extra_head %}
-	<link rel="stylesheet" type="text/css" href="{{ MEDIA_URL }}resources/css/reports.css">
-{% endblock %}
-
-{% block body %}
-{% include "print/header.html"%}
-
-<div id="changelist" class="module">
-<h1>{{ name }}</h1>
-
-{% for params in trim_params %}
-<p>{{ params.0 }} : {{ params.1 }}</p>
-{% endfor %}
-            
-<table class="data" width="100%">
-    <tbody>
-
+{% block data %}
         <tr class="header">
             <th>Группа</th>
             <th>Код - Наименование</th>
@@ -57,11 +41,5 @@
                 {% endfor %}
             {% endfor %}
         {% endfor %}
-
-
-
-    </tbody>
-</table>
-</div>
 
 {% endblock %}
