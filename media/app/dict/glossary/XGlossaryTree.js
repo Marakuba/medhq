@@ -87,14 +87,14 @@ App.dict.XGlossaryTree = Ext.extend(Ext.ux.tree.RemoteTreePanel, {
 					,expanded:true
 					,uiProvider:false
 				},
-				tbar:['Поиск:', this.search]
-				,tools:[{
-					 id:'refresh'
-					,handler:function() {
+				tbar:['Поиск:', this.search],
+				tools:[{
+					 id:'refresh',
+					handler:function() {
 						this.items.item(0).actions.reloadTree.execute();
 					}
-				}]
-				,plugins:this.CM,
+				}],
+				plugins:this.CM,
                 loader: this.loader,
                 rootVisible:true,
                 lines:false,

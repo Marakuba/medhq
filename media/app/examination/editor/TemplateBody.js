@@ -1,22 +1,5 @@
 Ext.ns('App.examination');
 
-//App.examination.TicketTab = Ext.extend(Ext.ux.Portal,{
-//	title:'Новый раздел',
-//	autoScroll:true,
-//	cls: 'placeholder',
-//	bubbleEvents:['beforeticketremove','ticketremove','ticketdataupdate','ticketeditstart'],
-//	closable: true,
-//	getData: function(){
-//		var data = [];
-//		this.items.itemAt(0).items.each(function(item){
-//			if(item.getData){
-//				data.push(item.getData());
-//			}
-//		},this);
-//		return data
-//	}
-//});
-
 App.examination.TemplateBody = Ext.extend(Ext.TabPanel, {
 	
 	initComponent: function(){
@@ -36,11 +19,6 @@ App.examination.TemplateBody = Ext.extend(Ext.TabPanel, {
 		this.subSectionMenu = new Ext.menu.Menu({
 			items:[]
 		});
-		
-		if (!this.fieldSetStore.data.length) {
-			this.addSecBtn.disable();
-		};
-		
 		
 		this.fieldSetStore.each(function(record){
 			var rec = record.data; 
@@ -66,6 +44,10 @@ App.examination.TemplateBody = Ext.extend(Ext.TabPanel, {
 			menu:this.sectionMenu,
 			scope:this
 		});
+		
+		if (!this.fieldSetStore.data.length) {
+			this.addSecBtn.disable();
+		};
 		
 		this.addSubSecBtn = new Ext.Button({
 			iconCls:'silk-add',
