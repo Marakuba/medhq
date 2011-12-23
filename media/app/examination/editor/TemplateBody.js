@@ -122,7 +122,7 @@ App.examination.TemplateBody = Ext.extend(Ext.TabPanel, {
 			
 		},this);
 
-		this.on('ticketremove', this.removeTicket,this);
+//		this.on('ticketremove', this.removeTicket,this);
 		
 		this.on('ticketdataupdate', function(ticket, data){
 			// в тикете обновились данные 
@@ -210,6 +210,7 @@ App.examination.TemplateBody = Ext.extend(Ext.TabPanel, {
 			base_service:this.base_service,
 			staff:this.staff,
 			data:data,
+			bubbleEvents:['beforeticketremove','ticketremove','ticketdataupdate','ticketeditstart'],
 			order:order,
 			record:this.record,
 			listeners:{
@@ -220,6 +221,9 @@ App.examination.TemplateBody = Ext.extend(Ext.TabPanel, {
 						this.addSubSecBtn.disable();
 					};
 					this.removeTab(p.section);
+				},
+				'ticketdataupdate': function(){
+					this.updateRecord();
 				},
 				scope:this
 			}
