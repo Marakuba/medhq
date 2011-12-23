@@ -18,7 +18,6 @@ App.examination.TicketTab = Ext.extend(Ext.Panel, {
 		});
 		
 		this.ctxEditor = undefined;
-//		this.ticket = Ext.ux.form.Ticket();
 		
 		this.glossPanel = new App.dict.XGlossaryTree({
 			section:this.section,
@@ -28,8 +27,6 @@ App.examination.TicketTab = Ext.extend(Ext.Panel, {
 			animate: false,
 			collapsed:true,
 			region:'east',
-//			hideCollapseTool : true,
-//			allowDomMove:false,
 			floating:false
 		});
 		
@@ -54,12 +51,13 @@ App.examination.TicketTab = Ext.extend(Ext.Panel, {
 				    adjH: The box-adjusted height that was set
 				    w: The width that was originally specified
 				    h: The height that was originally specified*/
+					this.adjW = adjW;
 					if (this.ctxEditor){
 						this.ctxEditor.field.setWidth(adjW-60);
 					}
 				},
 				'afterrender':function(panel){
-					panel.body.on('click',function(e,t,o){
+					panel.body.on('blur',function(e,t,o){
 						
 						if (this.ctxEditor){
 							this.ctxEditor.completeEdit();
@@ -81,7 +79,7 @@ App.examination.TicketTab = Ext.extend(Ext.Panel, {
 		    labelAlign: 'top',
 		    autoSctoll:true,
 		    closable:true,
-		    bubbleEvents:['beforeticketremove','ticketremove','ticketdataupdate','ticketeditstart'],
+		    bubbleEvents:['beforeticketremove','ticketremove','ticketdataupdate','ticketeditstart','editorclose'],
 		    items: [
 		       this.ticketPanel, this.glossPanel
 		    ]
@@ -107,7 +105,7 @@ App.examination.TicketTab = Ext.extend(Ext.Panel, {
 				this.doLayout();
 			};
 			
-		});
+		},this);
 		
 		this.on('beforeclose',function(){
 			var data = Ext.decode(this.record.data.data);
@@ -117,23 +115,54 @@ App.examination.TicketTab = Ext.extend(Ext.Panel, {
 				}
 			});
 			this.record.set('data',Ext.encode(data));
-		});
+		},this);
+		
+		this.on('editorclose',function(){
+			this.ctxEditor = undefined;
+			console.log('editorclose');
+		},this)
 		
 		this.glossPanel.on('nodeclick',function(attrs){
 			if (this.ticket){
+				this.ticket.doNotClose = true;
 				var pos = this.ticket.getPos();
-				var old_value = this.ctxEditor.field.getValue();
-				if (pos>0){
-					var new_value = old_value.splice(pos, 0, ' '+attrs.text);
+				var oldText;
+				if (this.ctxEditor){
+					oldText = this.ctxEditor.field.getValue();
 				} else {
-					var new_value = old_value.splice(pos, 0, attrs.text);
+					oldText = this.ticket.getText();
+				};
+				var pastedText = attrs.text;
+//				console.log('pos = ' + pos);
+//				console.log('text[' + pos+'] = ' + oldText[pos]);
+//				console.log('length = ' + oldText.length);
+				if (oldText[pos] && oldText[pos] != ' '){
+					pastedText += ' ';
+				} 
+				if (pos>0){
+					var newText = oldText.splice(pos, 0, ' '+ pastedText);
+				} else {
+					var newText = oldText.splice(pos, 0, pastedText);
 				}
-				this.ctxEditor.field.setValue(new_value);
-				pos = pos + attrs.text.length + 1;
-				var textarea = this.ctxEditor.field.getEl().dom;
-				this.ticket.setCaretTo(textarea,pos);
+				this.ticket.setText(newText);
+				pos = pos + pastedText.length + 1;
+				var el = this.ticket.getEl()
+				if (this.ctxEditor){
+					this.ctxEditor.field.setValue(newText);
+					var textarea = this.ctxEditor.field.getEl().dom;
+					console.log(textarea);
+					console.log(this.ctxEditor);
+					console.log(this.ctxEditor.field);
+//					this.ticket.setCaretTo(textarea,pos);
+//					this.ctxEditor.field.focus(false,100);
+					textarea.setSelectionRange(pos, pos); 
+					this.ticket.setCaretTo.defer(300,this.ticket,[textarea,pos]);
+				} else {
+					this.ticket.setPos(pos);
+				};
+				this.fireEvent('ticketdataupdate');
 			}
-		});
+		},this);
 		
 		this.glossPanel.on('afterrender',function(){
 			if (this.ctxEditor){
@@ -155,6 +184,9 @@ App.examination.TicketTab = Ext.extend(Ext.Panel, {
 			};
 			this.ctxEditor = editor;
 			this.ctxEditor.panel = panel;
+			if (this.adjW){
+				this.ctxEditor.field.setWidth(this.adjW-60);
+			};
 			
 			if (this.glossPanel.collapsed){
 				this.glossPanel.toggleCollapse();
@@ -211,8 +243,8 @@ App.examination.TicketTab = Ext.extend(Ext.Panel, {
 
 		this.on('ticketdataupdate', function(ticket, data){
 			// в тикете обновились данные 
-			this.ctxEditor = undefined;
-			this.ticket = undefined;
+//			this.ctxEditor = undefined;
+//			this.ticket = undefined;
 		},this);
 	},
 	

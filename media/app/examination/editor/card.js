@@ -17,8 +17,8 @@ Ext.ux.form.Ticket = Ext.extend(Ext.Panel,{
 		this.defaultText = 'Щелкните здесь чтобы ввести описание...';
 		this.defaultTitle = 'Щелкните здесь чтобы установить заголовок...';
 		
-		this.addEvents('beforeticketremove','ticketremove','ticketdataupdate','ticketeditstart');
-		this.enableBubble('beforeticketremove','ticketremove','ticketdataupdate','ticketeditstart');
+		this.addEvents('beforeticketremove','ticketremove','ticketdataupdate','ticketeditstart','editorclose');
+		this.enableBubble('beforeticketremove','ticketremove','ticketdataupdate','ticketeditstart','editorclose');
 		
 		this.pntMenuItem = new Ext.menu.CheckItem({
 			text:'Выводить на печать',
@@ -99,13 +99,18 @@ Ext.ux.form.Ticket = Ext.extend(Ext.Panel,{
 	                    listeners: {
 	                    	show:function(edt){
 	                    		var el = edt.field.getEl();
-	                    		var pos = this.getCaretPos(el.dom);
-	                    		panel.fireEvent('ticketeditstart',this,edt,pos);
 	                    		if(edt.field.getValue()==edt.emptyText){
 	                    			edt.field.setValue('');
 	                    		} else {
 	                    			edt.field.setValue(panel.data.text);
+	                    		};
+	                    		var pos = this.getPos();
+	                    		if (!pos){
+	                    			pos = panel.data.text.length;
+//	                    			this.setPos(pos);
 	                    		}
+	                    		panel.fireEvent('ticketeditstart',this,edt,pos);
+	                    		this.setCaretTo(el.dom,pos);
 	                    	},
 	                        beforecomplete: function(ed, value){
 	                        	panel.data.text = value;
@@ -115,6 +120,7 @@ Ext.ux.form.Ticket = Ext.extend(Ext.Panel,{
 	                        	} else {
 //	                        		ed.setValue(markdown.toHTML(value));
 	                        		panel.body.removeClass('empty-body');
+	                        		console.log('before complete');
 	                        	}
 	                            return true;
 	                        },
@@ -136,12 +142,25 @@ Ext.ux.form.Ticket = Ext.extend(Ext.Panel,{
 							     	el.on('keyup', function(t,e) {
 							        	this.getCaretPos(el.dom);
 							     	}, this);
+							     	el.on('click',function(e,t,o){
+			                    		var pos = this.getCaretPos(el.dom);
+							     	}, this);
 							     	el.on('blur', function(t,e) {
 							        	this.getCaretPos(el.dom);
+							        	console.log(sectionEditor);
+							        	if (this.doNotClose){
+							        		this.doNotClose = undefined;
+							        	} else {
+							        		sectionEditor.completeEdit();
+							        		panel.fireEvent('editorclose');
+							        	};
+							        	sectionEditor.fireEvent('complete');
+							        	console.log('ticket is blured');
 							     	}, this);
 							     	el.on('focus', function(t,e) {
-							        	var pos = this.getPos();
-										el.dom.setSelectionRange(pos, pos);
+//							        	var pos = this.getPos();
+//										el.dom.setSelectionRange(pos, pos);
+							     		console.log('focused');
 							     	}, this);
 							    },
 	                        	scope:this
@@ -151,6 +170,9 @@ Ext.ux.form.Ticket = Ext.extend(Ext.Panel,{
 	                }, cfg));
 	                panel.body.on('click', function(e, t){
 	                	sectionEditor.startEdit(t);
+	                }, null);
+	                panel.body.on('blur', function(e, t){
+//	                	sectionEditor.completeEdit();
 	                }, null);
 	                
 	                var headerEditor = new Ext.Editor(Ext.apply({
@@ -265,9 +287,9 @@ Ext.ux.form.Ticket = Ext.extend(Ext.Panel,{
 			var range = obj.createTextRange(); 
 			range.move("character", pos); 
 			range.select(); 
-		} else if(obj.selectionStart) { 
+		} else if(obj.selectionStart) {
 			obj.focus(false,300); 
-//			obj.setSelectionRange(pos, pos); 
+			obj.setSelectionRange(pos, pos); 
 		};
 	},
     
@@ -291,6 +313,15 @@ Ext.ux.form.Ticket = Ext.extend(Ext.Panel,{
     
     getPos: function(){
     	return this.curPos;
+    },
+    
+    getText: function(){
+    	return this.data.text;
+    },
+    
+    setText: function(text){
+    	this.data.text = text;
+    	this.updateData();
     }
 });
 
