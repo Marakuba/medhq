@@ -3,6 +3,7 @@ from django.utils.encoding import smart_str
 import datetime
 from visit.settings import PAYMENT_TYPES
 from django.conf import settings
+from django.db import connection
 #from models import GROUP_SERVICE_UZI, GROUP_SERVICE_LAB
 
 try:
@@ -100,6 +101,14 @@ Where \
         self.request = request
         self.params = dict(self.request.GET.items())
         self.trim_params = dict(filter(lambda x: x[1] is not u'',self.params.items()))
+    
+    def prep_data(self):
+        cursor = connection.cursor()
+        cursor.execute(self.prep_query_str())
+        results = cursor.fetchall()
+        cursor.close ()
+        return results
+
 
     def fmap(self,l):
         return map(lambda x: [x[0],x[1:]],l)  

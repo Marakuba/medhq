@@ -44,10 +44,7 @@ def print_report(request, slug):
     from django.db import connection
     
     report = reporting.get_report(slug)(request)
-    cursor = connection.cursor()
-    cursor.execute(report.prep_query_str())
-    results = cursor.fetchall()
-    cursor.close ()
+    results = report.prep_data()
     #
     form = ReportForm(report.trim_params)
     dh = []
