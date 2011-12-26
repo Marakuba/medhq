@@ -46,11 +46,16 @@ class GlossaryAdmin(admin.ModelAdmin):
     """
     list_display = ('text','staff','base_service','parent')
     list_filter = ('base_service','staff',)
+    
+class SubSectionInlineAdmin(admin.TabularInline):
+    model = SubSection
+    
+class FieldSetAdmin(admin.ModelAdmin):
+    inlines = [SubSectionInlineAdmin]
 
 admin.site.register(Equipment)
 admin.site.register(Template)
-admin.site.register(FieldSet)
-admin.site.register(SubSection)
+admin.site.register(FieldSet, FieldSetAdmin)
 admin.site.register(ExaminationCard, ExaminationCardAdmin)
 admin.site.register(CardTemplate, CardTemplateAdmin)
 admin.site.register(Glossary, GlossaryAdmin)
