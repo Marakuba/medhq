@@ -97,6 +97,7 @@ App.examination.StartPanel = Ext.extend(Ext.Panel, {
                     {
                         xtype: 'button',
                         text: 'Открыть в новом окне',
+                        handler: this.previewInTab,
                         scope: this
                     }
                 ]
@@ -321,5 +322,17 @@ App.examination.StartPanel = Ext.extend(Ext.Panel, {
 			}
 		}
 		this.doLayout();
+	},
+	
+	previewInTab: function(){
+		var record = this.tmpGrid.getSelectionModel().getSelected();
+		if (!record) {
+			return false
+		}
+		App.eventManager.fireEvent('launchapp','panel',{
+			title:'Просмотр: ' + record.data.print_name,
+			closable:true,
+			autoLoad:String.format('/widget/examination/template/{0}/',record.data.id)
+		});
 	}
 });

@@ -47,6 +47,7 @@ App.examination.Editor = Ext.extend(Ext.Panel, {
 				staff : active_profile,
 				nocache : true
 			},
+			hidePrice: true,
 			autoScroll:true,
 			width:250,
 			border: false,

@@ -65,6 +65,26 @@ App.ServiceTreeGrid = Ext.extend(Ext.ux.tree.TreeGrid,{
 	
 	initComponent:function(){
 		this.hiddenPkgs = [];
+		this.columns = [{
+	        	header:'Наименование',
+	        	dataIndex:'text',
+	        	sortable:false,
+	        	width:this.large ? 700 : 215
+	        },{
+	        	header:'Цена',
+	        	dataIndex:'price',
+	        	sortable:false,
+	        	hidden: this.hidePrice ? true : false,
+	        	width:50,
+	        	align:'right'
+	        }/*,{
+	        	header:'Время вып-я',
+	        	dataIndex:'exec_time',
+	        	sortable:false,
+//	        	hidden:true,
+	        	width:50,
+	        	align:'left'
+	        }*/];
 		config = {
 			border:false,
 		    rootVisible: false,
@@ -94,25 +114,7 @@ App.ServiceTreeGrid = Ext.extend(Ext.ux.tree.TreeGrid,{
 	        	}
 	        }),
 	        enableSort: false,
-	        columns:[{
-	        	header:'Наименование',
-	        	dataIndex:'text',
-	        	sortable:false,
-	        	width:this.large ? 700 : 215
-	        },{
-	        	header:'Цена',
-	        	dataIndex:'price',
-	        	sortable:false,
-	        	width:50,
-	        	align:'right'
-	        }/*,{
-	        	header:'Время вып-я',
-	        	dataIndex:'exec_time',
-	        	sortable:false,
-//	        	hidden:true,
-	        	width:50,
-	        	align:'left'
-	        }*/],
+	        columns:this.columns,
 	        listeners:{
 	        	click:function(node,e){
 	        		if(node.leaf) {

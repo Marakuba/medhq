@@ -98,6 +98,19 @@ App.examination.TicketTab = Ext.extend(Ext.Panel, {
 							printable:ticket.printable,
 							private:ticket.private,
 							text:ticket.text
+						},
+						listeners:{
+							search: function(e,text){
+								filter = this.glossPanel.filter;
+								if(Ext.EventObject.ESC == e.getKey()) {
+									filter.clear();
+								} else {
+									var re = new RegExp('.*' + text + '.*', 'i');
+									filter.clear();
+									filter.filter(re, 'text');
+								}
+							},
+							scope:this
 						}
 					});
 					this.portalColumn.add(new_ticket);
@@ -139,7 +152,7 @@ App.examination.TicketTab = Ext.extend(Ext.Panel, {
 				if (oldText[pos] && oldText[pos] != ' '){
 					pastedText += ' ';
 				} 
-				if (pos>0){
+				if (pos>0 && oldText[pos-1] && oldText[pos-1] != ' '){
 					var newText = oldText.splice(pos, 0, ' '+ pastedText);
 				} else {
 					var newText = oldText.splice(pos, 0, pastedText);
