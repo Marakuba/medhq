@@ -17,7 +17,12 @@ App.examination.TicketTab = Ext.extend(Ext.Panel, {
 			anchor:'100%'
 		});
 		
+		this.buffer = '';
+		
 		this.ctxEditor = undefined;
+		
+		this.clearFilterList = [Ext.EventObject.ESC, Ext.EventObject.RIGHT, Ext.EventObject.LEFT, 
+								Ext.EventObject.UP, Ext.EventObject.DOWN]
 		
 		this.glossPanel = new App.dict.XGlossaryTree({
 			section:this.section,
@@ -102,13 +107,27 @@ App.examination.TicketTab = Ext.extend(Ext.Panel, {
 						listeners:{
 							search: function(e,text){
 								filter = this.glossPanel.filter;
-								if(Ext.EventObject.ESC == e.getKey()) {
+								var symbol = String.fromCharCode(e.getCharCode())
+								var key = e.getKey();
+								if(this.clearFilterList.indexOf(key) > -1) {
+									this.buffer = '';
 									filter.clear();
 								} else {
-									var re = new RegExp('.*' + text + '.*', 'i');
+									if (key == Ext.EventObject.BACKSPACE){
+										if(this.buffer){
+											this.buffer = this.buffer.substr(0, this.buffer.length-1)
+										}
+									} else {
+										this.buffer += symbol;
+									}
+									var re = new RegExp('.*' + this.buffer + '.*', 'i');
 									filter.clear();
 									filter.filter(re, 'text');
 								}
+							},
+							editorclick: function(){
+								this.buffer = '';
+								this.glossPanel.filter.clear();
 							},
 							scope:this
 						}
@@ -132,7 +151,6 @@ App.examination.TicketTab = Ext.extend(Ext.Panel, {
 		
 		this.on('editorclose',function(){
 			this.ctxEditor = undefined;
-			console.log('editorclose');
 		},this)
 		
 		this.glossPanel.on('nodeclick',function(attrs){
@@ -163,9 +181,6 @@ App.examination.TicketTab = Ext.extend(Ext.Panel, {
 				if (this.ctxEditor){
 					this.ctxEditor.field.setValue(newText);
 					var textarea = this.ctxEditor.field.getEl().dom;
-					console.log(textarea);
-					console.log(this.ctxEditor);
-					console.log(this.ctxEditor.field);
 //					this.ticket.setCaretTo(textarea,pos);
 //					this.ctxEditor.field.focus(false,100);
 					textarea.setSelectionRange(pos, pos); 
@@ -191,6 +206,10 @@ App.examination.TicketTab = Ext.extend(Ext.Panel, {
 			}
 		});
 		
+		this.glossPanel.on('beforeexpand',function(panel){
+			console.log(panel);
+		});
+		
 		this.on('ticketeditstart', function(panel,editor,pos){
 			if (this.ctxEditor && this.ctxEditor.panel != panel) {
 				this.ctxEditor.completeEdit();
@@ -205,53 +224,6 @@ App.examination.TicketTab = Ext.extend(Ext.Panel, {
 				this.glossPanel.toggleCollapse();
 			}
 			this.ticket = panel;
-//			var f = this.ctxEditor.field;
-//			var position = f.getPosition();
-//			if (this.glosWin){
-//				this.glosWin.setPosition(position[0],position[1]+f.getHeight()+3);
-//				return true
-//			};
-//			this.glossary = new App.dict.GlossaryTree({
-//				listeners:{
-//					'nodeclick':function(attrs){
-//						var pos = panel.getPos();
-//						var old_value = this.ctxEditor.field.getValue();
-//						if (pos>0){
-//							var new_value = old_value.splice(pos, 0, ' '+attrs.text);
-//						} else {
-//							var new_value = old_value.splice(pos, 0, attrs.text);
-//						}
-//						this.ctxEditor.field.setValue(new_value);
-//						pos = pos + attrs.text.length + 1;
-//						var textarea = this.ctxEditor.field.getEl().dom;
-//						panel.setCaretTo(textarea,pos);
-//					},
-//					scope:this
-//				}
-//			});
-//			this.glosWin = new Ext.Window({ /// окошко должно быть в контексте компонента
-//				title:'Glossary',
-//				x:position[0],
-//				y:position[1]+f.getHeight()+3,
-//				width:400,
-//				height:300,
-//				layout:'fit',
-//				items:[this.glossary],
-//				listeners:{
-//					'afterrender':function(){
-//						var textarea = this.ctxEditor.field.getEl().dom;
-//						var pos = this.ctxEditor.field.getValue().length;
-//						panel.setCaretTo(textarea,pos);
-//					},
-//					'beforeclose':function(){
-//						if (this.ctxEditor){
-//							this.ctxEditor.field.focus('',10);
-//						}
-//					},
-//					scope:this
-//				}
-//			});
-//			this.glosWin.show(this.ctxEditor);
 		},this);
 
 		this.on('ticketdataupdate', function(ticket, data){

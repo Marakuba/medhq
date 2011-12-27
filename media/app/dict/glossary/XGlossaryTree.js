@@ -22,7 +22,7 @@ App.dict.XGlossaryTree = Ext.extend(Ext.ux.tree.RemoteTreePanel, {
 		    }
 		});
 		
-		
+		this.filter = new Ext.ux.tree.TreeFilterX(this);
 		
 		this.loader = new Ext.tree.TreeLoader({
         	nodeParameter:'parent',
@@ -51,20 +51,13 @@ App.dict.XGlossaryTree = Ext.extend(Ext.ux.tree.RemoteTreePanel, {
                 
         this.search = new Ext.form.TriggerField({
         	triggerClass:'x-form-clear-trigger'
-			,onTriggerClick:function() {
-				this.search.setValue('');
-				this.filter.clear();
-			},
-			scope:this
-//					,id:'filter'
 			,enableKeyEvents:true
 			,listeners:{
 				render: function(f){
-					this.filter = new Ext.ux.tree.TreeFilterX(this);
 				},
 				keyup:{buffer:150, fn:function(field, e) {
 					if(Ext.EventObject.ESC == e.getKey()) {
-						field.onTriggerClick();
+						this.onTriggerClick();
 					}
 					else {
 						var val = this.search.getRawValue();
@@ -75,6 +68,24 @@ App.dict.XGlossaryTree = Ext.extend(Ext.ux.tree.RemoteTreePanel, {
 				}},
 				scope:this
 			}
+        });
+        
+        this.appendBtn = new Ext.Button({
+        	text:'начало',
+        	handler:this.onAppendChild.createDelegate(this,[true]),
+        	scope:this
+        });
+        
+        this.insertBtn = new Ext.Button({
+        	text:'конец',
+        	handler:this.onAppendChild.createDelegate(this,[]),
+        	scope:this
+        });
+        
+        this.editBtn = new Ext.Button({
+        	text:'Изменить',
+        	handler:this.editNode.createDelegate(this,[true]),
+        	scope:this
         });
         
         config = {
@@ -91,7 +102,7 @@ App.dict.XGlossaryTree = Ext.extend(Ext.ux.tree.RemoteTreePanel, {
 					,expanded:true
 					,uiProvider:false
 				},
-				tbar:['Поиск:', this.search],
+				tbar:['Добавить в',this.appendBtn,'\\',this.insertBtn,'-',this.editBtn],
 				tools:[{
 					 id:'refresh',
 					handler:function() {
@@ -107,7 +118,7 @@ App.dict.XGlossaryTree = Ext.extend(Ext.ux.tree.RemoteTreePanel, {
                 autoScroll: true,
                 header: false,
                 requestMethod:'GET',
-//                appendText:'Добавить в конец',
+                appendText:'Добавить в конец',
                 editable:true,
 				collapseAllText:'Свернуть все',
 				collapseText:'Свернуть',
@@ -194,9 +205,12 @@ App.dict.XGlossaryTree = Ext.extend(Ext.ux.tree.RemoteTreePanel, {
 	appendChild:function(childNode, insert) {
 
 		var params = this.applyBaseParams();
+		var position = insert ? 'first-child' : 'last-child';
+		console.log(insert);
 		var jsonData = {};
 		jsonData[this.paramNames.text] = childNode.text;
 		jsonData['section'] = this.section;
+		jsonData['position'] = position;
 		jsonData['base_service'] = this.base_service;
 		jsonData['staff'] = this.staff;
 		jsonData['parent'] = childNode.parentNode.attributes.resource_uri || '';
@@ -452,6 +466,48 @@ App.dict.XGlossaryTree = Ext.extend(Ext.ux.tree.RemoteTreePanel, {
 		});
 		
 		editWin.show();
+	},
+	
+	onTriggerClick:function() {
+		this.search.setValue('');
+		this.filter.clear();
+	},
+	
+	onAppendChild:function(insert) {
+		this.actionNode = this.actionNode || this.selectedNode;
+		if(!this.actionNode) {
+			return;
+		}
+		var node = this.actionNode;
+		var child;
+		node.leaf = false;
+		node.expand(false, false, function(n) {
+			if(true === insert) {
+				child = n.insertBefore(this.loader.createNode({text:this.newText, loaded:true}), n.firstChild);
+			}
+			else {
+				child = n.appendChild(this.loader.createNode({text:this.newText, loaded:true}));
+			}
+		}.createDelegate(this));
+		
+		var editWin = new App.dict.EditNodeWindow({
+			text:this.newText,
+			fn:function(value){
+//				var node = this.actionNode;
+				if (value){
+					child.setText(value);
+					this.appendChild(child,insert);
+				} else {
+					child.setText(this.newText)
+				}
+			},
+			scope:this
+		});
+		
+		editWin.show();
+
+		this.actionNode = null;
+
 	}
 });
 
