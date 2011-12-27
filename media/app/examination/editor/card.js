@@ -106,7 +106,11 @@ Ext.ux.form.Ticket = Ext.extend(Ext.Panel,{
 	                    		};
 	                    		var pos = this.getPos();
 	                    		if (!pos){
-	                    			pos = panel.data.text.length;
+	                    			if(panel.data.text){
+	                    				pos = panel.data.text.length;
+	                    			} else {
+	                    				pos = 0;
+	                    			}
 //	                    			this.setPos(pos);
 	                    		}
 	                    		panel.fireEvent('ticketeditstart',this,edt,pos);
@@ -120,7 +124,6 @@ Ext.ux.form.Ticket = Ext.extend(Ext.Panel,{
 	                        	} else {
 //	                        		ed.setValue(markdown.toHTML(value));
 	                        		panel.body.removeClass('empty-body');
-	                        		console.log('before complete');
 	                        	}
 	                            return true;
 	                        },
@@ -145,10 +148,10 @@ Ext.ux.form.Ticket = Ext.extend(Ext.Panel,{
 							     	}, this);
 							     	el.on('click',function(e,t,o){
 			                    		var pos = this.getCaretPos(el.dom);
+			                    		this.fireEvent('editorclick',e,t,o)
 							     	}, this);
 							     	el.on('blur', function(t,e) {
 							        	this.getCaretPos(el.dom);
-							        	console.log(sectionEditor);
 							        	if (this.doNotClose){
 							        		this.doNotClose = undefined;
 							        	} else {
@@ -156,12 +159,10 @@ Ext.ux.form.Ticket = Ext.extend(Ext.Panel,{
 							        		panel.fireEvent('editorclose');
 							        	};
 							        	sectionEditor.fireEvent('complete');
-							        	console.log('ticket is blured');
 							     	}, this);
 							     	el.on('focus', function(t,e) {
 //							        	var pos = this.getPos();
 //										el.dom.setSelectionRange(pos, pos);
-							     		console.log('focused');
 							     	}, this);
 							    },
 	                        	scope:this
@@ -204,7 +205,17 @@ Ext.ux.form.Ticket = Ext.extend(Ext.Panel,{
 	                        xtype: 'textfield',
 	                        width: 600,
 	                        selectOnFocus: true,
-	                        cls:'header-editor'
+	                        cls:'header-editor',
+	                        listeners:{
+	                        	'render': function(c) {
+		                    		var el = c.getEl();
+		                    		el.on('blur', function(t,e) {
+		                    			headerEditor.completeEdit();
+		                    		},this)
+		                    		
+	                    		}
+	                        },
+	                        scope:this
 	                    }
 	                }, cfg));
 	                panel.header.on('click', function(e, t){
