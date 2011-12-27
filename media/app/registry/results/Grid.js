@@ -32,7 +32,7 @@ App.results.Grid = Ext.extend(Ext.grid.GridPanel, {
 		});
 		
 		this.store = new Ext.data.Store({
-			autoLoad:true,
+			autoLoad:false,
 		    baseParams: {
 		    	format:'json',
 		    	is_manual:false
@@ -49,7 +49,12 @@ App.results.Grid = Ext.extend(Ext.grid.GridPanel, {
 		    writer: this.writer    // <-- plug a DataWriter into the store just as you would a Reader
 		});
 		
+		if(App.settings.strictMode) {
+			this.store.setBaseParam('visit__office',active_state_id);
+		}
 		
+		this.store.load();		
+
 		this.columns =  [
 		    /*{
 		    	header: "№ заказа", 

@@ -17,6 +17,10 @@ from constance import config
 
 
 class Patient(make_person_object('patient')):
+    
+    modified = models.DateTimeField(auto_now=True)
+    state = models.ForeignKey(State, null=True, blank=True, verbose_name=u'Организация')
+    
     user = models.ForeignKey(User, related_name="django_user", null=True, blank=True)
     hid_card = models.CharField(u'№ карты', max_length=50, blank=True)
     discount = models.ForeignKey(Discount, 

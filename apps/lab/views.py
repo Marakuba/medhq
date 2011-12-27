@@ -1,5 +1,5 @@
 # -*- coding: utf-8 -*-
-from django.shortcuts import get_object_or_404
+from django.shortcuts import get_object_or_404, render_to_response
 from lab.models import LabOrder, Result, Invoice, InvoiceItem, Sampling
 from service.models import BaseService
 import datetime
@@ -132,9 +132,9 @@ def print_results(request, order):
             'preview':preview,
     }
     
-    return direct_to_template(request=request, 
-                              template="print/lab/results.html",
-                              extra_context=ec)
+    return render_to_response(["print/lab/results_state_%s.html" % request.active_profile.state,"print/lab/results.html"],
+                              ec,
+                              context_instance=RequestContext(request))
 
 def print_manuals(request, object_id):
     """

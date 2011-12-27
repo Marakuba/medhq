@@ -135,6 +135,7 @@ class PatientResource(ExtResource):
     
     ad_source = fields.ForeignKey(AdSourceResource, 'ad_source', null=True)
     discount = fields.ForeignKey(DiscountResource, 'discount', null=True)
+    state = fields.ForeignKey('api.registry.StateResource', 'state', null=True)
     client_item = fields.OneToOneField(ClientItemResource, 'client_item', null=True)
     
     def hydrate_initial_account(self, bundle):
@@ -151,6 +152,7 @@ class PatientResource(ExtResource):
 
     def obj_create(self, bundle, request=None, **kwargs):
         kwargs['operator']=request.user
+        kwargs['state']=request.active_profile and request.active_profile.department.state or None
         result = super(PatientResource, self).obj_create(bundle=bundle, request=request, **kwargs)
         return result
 
@@ -185,7 +187,8 @@ class PatientResource(ExtResource):
             'birth_day':ALL_WITH_RELATIONS,
             'id':ALL,
             'full_name':('istartswith',),
-            'discount':ALL_WITH_RELATIONS
+            'discount':ALL_WITH_RELATIONS,
+            'state':ALL_WITH_RELATIONS
         }
         
 class DebtorResource(ExtResource):
@@ -243,10 +246,11 @@ class ReferralResource(ExtResource):
 class LabResource(ModelResource):
 
     class Meta:
-        queryset = State.objects.filter(type__in=('m','b')).exclude(id=config.MAIN_STATE_ID) 
+        queryset = State.objects.filter(type__in=('m','b','p')).exclude(id=config.MAIN_STATE_ID) 
         resource_name = 'lab'
         limit = 10
         filtering = {
+            'id': ALL,
             'name':('istartswith',)
         }
         
@@ -254,7 +258,7 @@ class LabResource(ModelResource):
 class MedStateResource(ModelResource):
 
     class Meta:
-        queryset = State.objects.filter(type__in=('m','b')).order_by('type','id',)
+        queryset = State.objects.filter(type__in=('m','b','p')).order_by('type','id',)
         resource_name = 'medstate'
         limit = 20
         filtering = {
@@ -1766,6 +1770,7 @@ class PaymentResource(ExtResource):
         
 class InvoiceResource(ExtResource):
     
+    office = fields.ForeignKey(StateResource, 'office')
     state = fields.ForeignKey(MedStateResource, 'state')
     
     def dehydrate(self, bundle):
@@ -1787,7 +1792,8 @@ class InvoiceResource(ExtResource):
         limit = 100
         filtering = {
             'id' : ALL,
-            'state' : ALL_WITH_RELATIONS
+            'state' : ALL_WITH_RELATIONS,
+            'office' : ALL_WITH_RELATIONS
         }
         
         

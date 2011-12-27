@@ -73,6 +73,7 @@ App.visit.VisitTab = Ext.extend(Ext.Panel, {
     	this.payButton = new Ext.Button({
 			text:'Сохранить и оплатить',
 			handler: this.onFormSave.createDelegate(this,[true]),
+			hidden:App.settings.strictMode,
 //			disabled:true,
 			scope:this
     	});
@@ -91,6 +92,7 @@ App.visit.VisitTab = Ext.extend(Ext.Panel, {
 					xtype:'button',
 					iconCls:'silk-accept',
 					text:'Выбрать предзаказ',
+					hidden:App.settings.strictMode,
 					handler: this.form.onPreorderChoice.createDelegate(this.form,[]),
 					scope:this
 			      },

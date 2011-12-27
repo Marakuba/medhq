@@ -98,6 +98,7 @@ App.patient.ServiceGrid = Ext.extend(Ext.grid.GridPanel, {
 		    	header: "Стоимость", 
 		    	width: 50, 
 		    	sortable: true, 
+		    	hidden: App.settings.strictMode,
 		    	dataIndex: 'price' 
 		    }
 		];		

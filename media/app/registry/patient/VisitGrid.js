@@ -160,6 +160,23 @@ App.patient.VisitGrid = Ext.extend(Ext.grid.GridPanel, {
 		    }
 		];		
 		
+		this.materialBtn = {
+			text:'Поступление биоматериала',
+			iconCls:'med-testtubes',
+			handler:this.onCreate.createDelegate(this,['material'])
+		};
+		
+		this.completeBtn = {
+			xtype:'splitbutton',
+			iconCls:'med-usersetup',
+			text:'Новый прием',
+			handler:this.onCreate.createDelegate(this,['visit']),
+			menu:{
+				items:[this.materialBtn]
+			}
+			
+		};
+		
 		var config = {
 			stripeRows:true,
 			loadMask : {
@@ -185,20 +202,7 @@ App.patient.VisitGrid = Ext.extend(Ext.grid.GridPanel, {
 //				id:'patient-visit-tbl',
 				xtype:'toolbar',
 				//disabled:true,
-				items:[{
-					xtype:'splitbutton',
-					iconCls:'med-usersetup',
-					text:'Новый прием',
-					handler:this.onCreate.createDelegate(this,['visit']),
-					menu:{
-						items:[{
-							text:'Поступление биоматериала',
-							iconCls:'med-testtubes',
-							handler:this.onCreate.createDelegate(this,['material'])
-						}]
-					}
-					
-				},{
+				items:[App.settings.strictMode ? this.materialBtn : this.completeBtn, {
 //					id:'vg-change-btn',
 					xtype:'button',
 					iconCls:'silk-pencil',

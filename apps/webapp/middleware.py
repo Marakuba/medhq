@@ -7,7 +7,7 @@ def get_active_profile(request):
     try:
         position_id = request.session['ACTIVE_PROFILE']
         position = get_object_or_404(Position, id=position_id)
-        print position
+#        print position
         return position
     except KeyError:
         try:

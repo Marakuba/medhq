@@ -62,6 +62,7 @@ App.CentralPanel = Ext.extend(Ext.Panel, {
 					xtype:'button',
 					scale:'medium'
 				},
+				hidden:App.settings.strictMode,
 				items:[{
 					text:'Серии',
 					tooltip:'Создание и печать серий штрих-кодов',
@@ -79,6 +80,7 @@ App.CentralPanel = Ext.extend(Ext.Panel, {
 					xtype:'button',
 					scale:'medium'
 				},
+				hidden:App.settings.strictMode,
 				items:[{
 					text:'Календарь',
 					tooltip:'Управление расписанием врачей',
@@ -114,6 +116,7 @@ App.CentralPanel = Ext.extend(Ext.Panel, {
 					xtype:'button',
 					scale:'medium'
 				},
+				hidden:App.settings.strictMode,
 				items:[{
 					text:'Кассир',
 					tooltip:'',
@@ -152,6 +155,7 @@ App.CentralPanel = Ext.extend(Ext.Panel, {
 					xtype:'button',
 					scale:'medium'
 				},
+				hidden:App.settings.strictMode,
 				items:[{
 					text:'Обращения',
 					handler:function(){

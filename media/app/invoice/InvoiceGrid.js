@@ -5,10 +5,16 @@ App.invoice.InvoiceGrid = Ext.extend(Ext.grid.GridPanel, {
 	initComponent : function() {
 		
 		this.store = new Ext.data.RESTStore({
-			autoLoad : true,
+			autoLoad : false,
 			apiUrl : get_api_url('invoice'),
 			model: App.models.Invoice
 		});
+
+		if(App.settings.strictMode) {
+			this.store.setBaseParam('office',active_state_id);
+		}
+		
+		this.store.load();		
 		
 		this.columns =  [
 		    {

@@ -39,7 +39,7 @@ App.visit.VisitGrid = Ext.extend(Ext.grid.GridPanel, {
 		    encode: false   // <-- don't return encoded JSON -- causes Ext.Ajax#request to send data using jsonData config rather than HTTP params
 		});
 		this.baseParams = {
-		    	format:'json'
+		    format:'json'
 		}; 
 		this.store = new Ext.data.Store({
 		    id: 'visit-store',
@@ -56,7 +56,12 @@ App.visit.VisitGrid = Ext.extend(Ext.grid.GridPanel, {
 		    writer: this.writer
 		});
 		
+		if(App.settings.strictMode) {
+			this.store.setBaseParam('office',active_state_id);
+		}
 		
+		this.store.load();		
+
 		this.columns =  [
 		    /*{
 		    	width: 1, 
@@ -258,8 +263,9 @@ App.visit.VisitGrid = Ext.extend(Ext.grid.GridPanel, {
 		Ext.apply(this, Ext.apply(this.initialConfig, config));
 		App.visit.VisitGrid.superclass.initComponent.apply(this, arguments);
 		App.eventManager.on('globalsearch', this.onGlobalSearch, this);
-		this.store.load();		
-		this.initToolbar();
+		if(!App.settings.strictMode) {
+			this.initToolbar();
+		}
 	},
 	
 	
