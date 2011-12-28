@@ -28,6 +28,13 @@ App.dict.XGlossaryTree = Ext.extend(Ext.ux.tree.RemoteTreePanel, {
         	nodeParameter:'parent',
         	dataUrl: get_api_url('glossary'),
         	requestMethod:'GET',
+        	baseParams:{
+        		format:'json',
+        		section:this.section,
+//        		base_service:App.uriToId(this.base_service),
+				staff:App.uriToId(this.staff)
+        	},
+        	scope:this,
         	processResponse : function(response, node, callback, scope){
 		        var json = response.responseText;
 		        try {
@@ -84,7 +91,7 @@ App.dict.XGlossaryTree = Ext.extend(Ext.ux.tree.RemoteTreePanel, {
         
         this.editBtn = new Ext.Button({
         	text:'Изменить',
-        	handler:this.editNode.createDelegate(this,[true]),
+        	handler:this.editNode.createDelegate(this),
         	scope:this
         });
         
@@ -134,7 +141,7 @@ App.dict.XGlossaryTree = Ext.extend(Ext.ux.tree.RemoteTreePanel, {
 				renameText:'Изменить',
                 listeners:{
 	            	contextmenu:function(node, e){
-						this.fireEvent('nodeclick',node.attributes);
+//						this.fireEvent('nodeclick',node.attributes);
 						node.select();
 			            var c = node.getOwnerTree().contextMenu;
 			            c.contextNode = node;
@@ -440,17 +447,24 @@ App.dict.XGlossaryTree = Ext.extend(Ext.ux.tree.RemoteTreePanel, {
 			return;
 		}
 		var node = this.actionNode;
-		this.editNode(node,node.attributes.text)
+		this.editNode()
 //		this.editor.triggerEdit(node, 10);
 		this.actionNode = null;
 	},
 	
 	beforeStartEdit: function( editor, boundEl, value ) {
-		this.editNode(editor.editNode, value);
+		this.fireEvent('nodeclick',editor.editNode.attributes);
+//		this.editNode();
 		return false;
 	}, 
 
-	editNode: function(node, value){
+	editNode: function(){
+		this.actionNode = this.actionNode || this.selectedNode;
+		if(!this.actionNode) {
+			return;
+		}
+		var node = this.actionNode;
+		var value = node.attributes.text;
 		var editWin = new App.dict.EditNodeWindow({
 			text:value,
 			fn:function(value){
@@ -460,7 +474,14 @@ App.dict.XGlossaryTree = Ext.extend(Ext.ux.tree.RemoteTreePanel, {
 					node.setText(value);
 				} else {
 					this.removeNode(node)
-				}
+				};
+				this.actionNode = undefined;
+			},
+			lesteners:{
+				'cancel':function(){
+					this.actionNode = undefined;
+				},
+				scope:this
 			},
 			scope:this
 		});

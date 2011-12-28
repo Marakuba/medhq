@@ -225,6 +225,9 @@ App.examination.TemplateBody = Ext.extend(Ext.TabPanel, {
 				'ticketdataupdate': function(){
 					this.updateRecord();
 				},
+				'drop': function(){
+					this.updateRecord();
+				},
 				scope:this
 			}
 		}));

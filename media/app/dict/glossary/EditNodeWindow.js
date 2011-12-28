@@ -53,6 +53,7 @@ App.dict.EditNodeWindow = Ext.extend(Ext.Window, {
 	},
 	
 	onCancel: function() {
+		this.fireEvent('cancel');
 		this.close();
 	}
 	
