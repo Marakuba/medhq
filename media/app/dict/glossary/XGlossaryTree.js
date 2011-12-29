@@ -147,7 +147,7 @@ App.dict.XGlossaryTree = Ext.extend(Ext.ux.tree.RemoteTreePanel, {
 			            c.contextNode = node;
 			            c.showAt(e.getXY());
 			            var actions = this.actions;
-						var disable = true !== this.editable || !this.actionNode;
+						var disable = true !== this.editable;
 						actions.appendChild.setDisabled(false);
 						actions.renameNode.setDisabled(false);
 						actions.removeNode.setDisabled(false);
@@ -213,7 +213,6 @@ App.dict.XGlossaryTree = Ext.extend(Ext.ux.tree.RemoteTreePanel, {
 
 		var params = this.applyBaseParams();
 		var position = insert ? 'first-child' : 'last-child';
-		console.log(insert);
 		var jsonData = {};
 		jsonData[this.paramNames.text] = childNode.text;
 		jsonData['section'] = this.section;
@@ -243,15 +242,16 @@ App.dict.XGlossaryTree = Ext.extend(Ext.ux.tree.RemoteTreePanel, {
 	}, // eo function appendChild
 	
 	renameNode:function(node, newText) {
-		
+		console.log(this.actionNode);
 		var params = this.applyBaseParams();
 		params = {
-			format:'json'
+			format:'json',
+			newText:newText
 		};
 		var jsonData = {};
 		
 		jsonData[this.paramNames.text] = newText;
-		jsonData['id'] = node.id;
+		jsonData['id'] = node.attributes.id;
 		jsonData['resource_uri'] = App.get_api_url('glossary') + '/' + node.attributes.id;
 		jsonData['section'] = this.section;
 		jsonData['staff'] = this.staff;
@@ -261,27 +261,34 @@ App.dict.XGlossaryTree = Ext.extend(Ext.ux.tree.RemoteTreePanel, {
 
 		var o = Ext.apply(this.getOptions(), {
 			node:node,
-			action:'appendChild',
+			action:'renameNode',
 			params:params,
 			method:'PUT',
 			jsonData:data,
 			url:App.get_api_url('glossary') + '/' + node.attributes.id,
 			headers:{
 				'Content-Type':'application/json'
+			},
+			success: function(answer,opt){
+				console.log(this.actionNode);
+				var obj = Ext.util.JSON.decode(answer.responseText);
+				node.id = obj.objects.id;
+				console.log(obj);
 			}
 		});
-
+		
 		if(false !== this.fireEvent('beforerenamerequest', this, o)) {
 			// set loading indicator
 			node.getUI().beforeLoad();
 			Ext.Ajax.request(o);
 		};
 		
-		this.doLayout();
-
 	},
 	
 	removeNode:function(node) {
+		if (node.id == 'root'){
+			return false
+		}
 		if(0 === node.getDepth()) {
 			return;
 		}
@@ -331,6 +338,9 @@ App.dict.XGlossaryTree = Ext.extend(Ext.ux.tree.RemoteTreePanel, {
 	},
 	
 	moveNode:function(e,movedNode) {
+		if (movedNode.id == 'root'){
+			return false
+		}
 		
 		if (!movedNode.attributes.id){
 			return false
@@ -430,9 +440,10 @@ App.dict.XGlossaryTree = Ext.extend(Ext.ux.tree.RemoteTreePanel, {
 			case 'insertChild':
 				// change id of the appended/inserted node
 				this.unregisterNode(options.node);
-				options.node.id = o.id;
-				Ext.fly(options.node.getUI().elNode).set({'ext:tree-node-id':o.id});
+				options.node.id = o.objects.id;
+				Ext.fly(options.node.getUI().elNode).set({'ext:tree-node-id':o.objects.id});
 				this.registerNode(options.node);
+				options.node.attributes['id'] = o.objects.id;
 				options.node.select();
 			break;
 		}
@@ -442,14 +453,12 @@ App.dict.XGlossaryTree = Ext.extend(Ext.ux.tree.RemoteTreePanel, {
 	},
 	
 	onRenameNode:function() {
-		this.actionNode = this.actionNode || this.selectedNode;
-		if(!this.actionNode) {
+		var node = this.selectedNode;
+		if(!node) {
 			return;
 		}
-		var node = this.actionNode;
 		this.editNode()
 //		this.editor.triggerEdit(node, 10);
-		this.actionNode = null;
 	},
 	
 	beforeStartEdit: function( editor, boundEl, value ) {
@@ -459,27 +468,28 @@ App.dict.XGlossaryTree = Ext.extend(Ext.ux.tree.RemoteTreePanel, {
 	}, 
 
 	editNode: function(){
-		this.actionNode = this.actionNode || this.selectedNode;
-		if(!this.actionNode) {
+		
+		var node = this.getSelectionModel().getSelectedNode();
+		if(!node) {
 			return;
+		};
+		if (node.id == 'root'){
+			return false
 		}
-		var node = this.actionNode;
-		var value = node.attributes.text;
+		var oldValue = node.attributes.text;
 		var editWin = new App.dict.EditNodeWindow({
-			text:value,
+			text:oldValue,
 			fn:function(value){
-//				var node = this.actionNode;
+				var inode = this.getSelectionModel().getSelectedNode();
 				if (value){
-					this.renameNode(node,value)
+					this.renameNode(inode,value)
 					node.setText(value);
 				} else {
-					this.removeNode(node)
+					this.removeNode(inode)
 				};
-				this.actionNode = undefined;
 			},
 			lesteners:{
 				'cancel':function(){
-					this.actionNode = undefined;
 				},
 				scope:this
 			},
@@ -497,9 +507,10 @@ App.dict.XGlossaryTree = Ext.extend(Ext.ux.tree.RemoteTreePanel, {
 	onAppendChild:function(insert) {
 		this.actionNode = this.actionNode || this.selectedNode;
 		if(!this.actionNode) {
-			return;
-		}
-		var node = this.actionNode;
+			var node = this.getRootNode();
+		} else {
+			var node = this.actionNode;
+		};
 		var child;
 		node.leaf = false;
 		node.expand(false, false, function(n) {

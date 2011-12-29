@@ -23,6 +23,8 @@ App.examination.StartPanel = Ext.extend(Ext.Panel, {
         }, [
             {name: 'id'},
 			{name: 'resource_uri'},
+			{name: 'created'},
+            {name: 'modified'},
 			{name: 'print_name'},
 			{name: 'print_date'},
 			{name: 'base_service'},
@@ -71,6 +73,18 @@ App.examination.StartPanel = Ext.extend(Ext.Panel, {
 			    	sortable: true, 
 			    	hidden:true,
 			    	dataIndex: 'service_name' 
+			    },{
+			    	header: "Создано", 
+			    	width:70,
+			    	sortable: true, 
+			    	renderer:Ext.util.Format.dateRenderer('H:i / d.m.Y'),
+			    	dataIndex: 'created' 
+			    },{
+			    	header: "Изменено", 
+			    	width:70,
+			    	sortable: true, 
+			    	renderer:Ext.util.Format.dateRenderer('H:i / d.m.Y'),
+			    	dataIndex: 'modified' 
 			    }
 			],
 			viewConfig:{

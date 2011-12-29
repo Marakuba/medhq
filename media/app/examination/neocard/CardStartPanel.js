@@ -22,6 +22,8 @@ App.examination.CardStartPanel = Ext.extend(Ext.Panel, {
             messageProperty: 'message'
         }, [
             {name: 'id'},
+            {name: 'created'},
+            {name: 'modified'},
 			{name: 'resource_uri'},
 			{name: 'print_name'},
 			{name: 'print_date'},
@@ -71,6 +73,18 @@ App.examination.CardStartPanel = Ext.extend(Ext.Panel, {
 			    	sortable: true, 
 			    	hidden:true,
 			    	dataIndex: 'service_name' 
+			    },{
+			    	header: "Создано", 
+			    	width:70,
+			    	sortable: true, 
+			    	renderer:Ext.util.Format.dateRenderer('H:i / d.m.Y'),
+			    	dataIndex: 'created' 
+			    },{
+			    	header: "Изменено", 
+			    	width:70,
+			    	sortable: true, 
+			    	renderer:Ext.util.Format.dateRenderer('H:i / d.m.Y'),
+			    	dataIndex: 'modified' 
 			    }
 			],
 			viewConfig:{
