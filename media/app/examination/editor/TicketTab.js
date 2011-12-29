@@ -5,7 +5,7 @@ App.examination.TicketPanel = Ext.extend(Ext.ux.Portal,{
 //	title:'Новый раздел',
 	autoScroll:true,
 	cls: 'placeholder',
-	bubbleEvents:['beforeticketremove','ticketremove','ticketdataupdate','ticketeditstart'],
+	bubbleEvents:['beforeticketremove','ticketremove','ticketdataupdate','ticketeditstart','drop'],
 	closable: true
 });
 
@@ -84,7 +84,7 @@ App.examination.TicketTab = Ext.extend(Ext.Panel, {
 		    labelAlign: 'top',
 		    autoSctoll:true,
 		    closable:true,
-		    bubbleEvents:['beforeticketremove','ticketremove','ticketdataupdate','ticketeditstart','editorclose'],
+		    bubbleEvents:['beforeticketremove','ticketremove','ticketdataupdate','ticketeditstart','editorclose','drop'],
 		    items: [
 		       this.ticketPanel, this.glossPanel
 		    ]
@@ -156,7 +156,7 @@ App.examination.TicketTab = Ext.extend(Ext.Panel, {
 		this.glossPanel.on('nodeclick',function(attrs){
 			if (this.ticket){
 				this.ticket.doNotClose = true;
-				var pos = this.ticket.getPos();
+				var pos = this.ticket.getPos() || 0;
 				var oldText;
 				if (this.ctxEditor){
 					oldText = this.ctxEditor.field.getValue();
@@ -211,6 +211,7 @@ App.examination.TicketTab = Ext.extend(Ext.Panel, {
 		});
 		
 		this.on('ticketeditstart', function(panel,editor,pos){
+			this.glossPanel.filter.clear();
 			if (this.ctxEditor && this.ctxEditor.panel != panel) {
 				this.ctxEditor.completeEdit();
 			};
