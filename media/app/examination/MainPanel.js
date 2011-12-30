@@ -10,6 +10,12 @@ App.ExamMainPanel = Ext.extend(Ext.TabPanel, {
 		}
 		Ext.apply(this, Ext.apply(this.initialConfig, config));
 		App.ExamMainPanel.superclass.initComponent.apply(this, arguments);
+		
+		this.on('tabchange',function(panel,tab){
+			if (tab){
+				App.eventManager.fireEvent('tmptabchange');
+			};
+		},this);
 	}
 
 });

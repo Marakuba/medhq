@@ -93,6 +93,7 @@ App.examination.TemplateBody = Ext.extend(Ext.TabPanel, {
 		this.on('tabchange',function(panel,tab){
 			if (tab){
 				this.fillSubSecMenu(tab.section);
+				App.eventManager.fireEvent('tmptabchange');
 			};
 		},this);
 		

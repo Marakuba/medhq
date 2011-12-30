@@ -93,6 +93,12 @@ App.examination.TicketTab = Ext.extend(Ext.Panel, {
 		Ext.apply(this, Ext.apply(this.initialConfig, config));
 		App.examination.TicketTab.superclass.initComponent.apply(this, arguments);
 		
+		App.eventManager.on('tmptabchange',function(){
+			if(this.ctxEditor){
+				this.ctxEditor.completeEdit();
+			}
+		},this)
+		
 		this.on('afterrender',function(panel){
 			
 			if(this.data){
@@ -156,7 +162,7 @@ App.examination.TicketTab = Ext.extend(Ext.Panel, {
 		this.glossPanel.on('nodeclick',function(attrs){
 			if (this.ticket){
 				this.ticket.doNotClose = true;
-				var pos = this.ticket.getPos() || 0;
+				var pos = this.ticket.getPos() || -1;
 				var oldText;
 				if (this.ctxEditor){
 					oldText = this.ctxEditor.field.getValue();
