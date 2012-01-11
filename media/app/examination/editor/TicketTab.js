@@ -22,7 +22,7 @@ App.examination.TicketTab = Ext.extend(Ext.Panel, {
 		this.ctxEditor = undefined;
 		
 		this.clearFilterList = [Ext.EventObject.ESC, Ext.EventObject.RIGHT, Ext.EventObject.LEFT, 
-								Ext.EventObject.SPACE, Ext.EventObject.ENTER,Ext.EventObject.TAB]
+								Ext.EventObject.SPACE,Ext.EventObject.TAB]
 		
 		this.glossPanel = new App.dict.XGlossaryTree({
 			section:this.section,
@@ -87,7 +87,8 @@ App.examination.TicketTab = Ext.extend(Ext.Panel, {
 					var txt = Ext.getCmp(list.currentEl.id);
 					var val = txt.getValue();
 					var curPos = this.ticket.getPos();
-					var beforePasted = val.substring(0,curPos-this.glossDropDown.buffer.length);
+//					console.log('buffer',this.glossDropDown.getBuffer());
+					var beforePasted = val.substring(0,curPos-this.glossDropDown.getBuffer().length);
 					var afterPasted = val.substr(curPos);
 					var pastedText = record.data.text;
 //					var parsedAddresses = this.parseMailAddressesOnCurrentPosition(txt);

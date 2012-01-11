@@ -53,18 +53,6 @@ Ext.ux.DropDownList = Ext.extend(Ext.Layer, {
         						Ext.EventObject.NUM_DIVISION,
         						Ext.EventObject.NUM_MULTIPLY,
         						Ext.EventObject.PERIOD,
-        						Ext.EventObject.F1,
-        						Ext.EventObject.F2,
-        						Ext.EventObject.F3,
-        						Ext.EventObject.F4,
-        						Ext.EventObject.F5,
-        						Ext.EventObject.F6,
-        						Ext.EventObject.F7,
-        						Ext.EventObject.F8,
-        						Ext.EventObject.F9,
-        						Ext.EventObject.F10,
-        						Ext.EventObject.F11,
-        						Ext.EventObject.F12,
         						Ext.EventObject.CTRL,
         						Ext.EventObject.CONTROL,
         						Ext.EventObject.CAPS_LOCK,
@@ -224,7 +212,6 @@ Ext.ux.DropDownList = Ext.extend(Ext.Layer, {
     	var symbol = String.fromCharCode(e.getCharCode());
     	var ss = e.isSpecialKey();
 		var key = e.getCharCode();
-		console.log(key);
     	if(this.ignoreFilterList.indexOf(key) > -1) {
 			return;
 		}
@@ -288,6 +275,7 @@ Ext.ux.DropDownList = Ext.extend(Ext.Layer, {
             s = this.store,
             r = s.getAt(index);
         if (r) {
+//        	console.log('onViewClick ',this.buffer);
             this.view.fireEvent('itemselected', this, r, index);
             this.collapse(false);
         } else {
@@ -306,5 +294,9 @@ Ext.ux.DropDownList = Ext.extend(Ext.Layer, {
             }
             this.view.fireEvent('listclosed');
         }
+    },
+    
+    getBuffer: function(){
+    	return this.buffer;
     }
 });
