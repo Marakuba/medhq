@@ -22,7 +22,7 @@ App.examination.TicketTab = Ext.extend(Ext.Panel, {
 		this.ctxEditor = undefined;
 		
 		this.clearFilterList = [Ext.EventObject.ESC, Ext.EventObject.RIGHT, Ext.EventObject.LEFT, 
-								Ext.EventObject.UP, Ext.EventObject.DOWN]
+								Ext.EventObject.SPACE,Ext.EventObject.TAB]
 		
 		this.glossPanel = new App.dict.XGlossaryTree({
 			section:this.section,
@@ -33,6 +33,91 @@ App.examination.TicketTab = Ext.extend(Ext.Panel, {
 			collapsed:true,
 			region:'east',
 			floating:false
+		});
+		
+		this.glossStore = new Ext.data.Store({
+            restful: true,    
+            autoLoad: true, 
+			autoDestroy:true,
+            baseParams:{
+        		format:'json',
+        		section:this.section,
+				staff:App.uriToId(this.staff)
+        	},
+		    paramNames: {
+			    start : 'offset',
+			    limit : 'limit',
+			    sort : 'sort',
+			    dir : 'dir'
+			},
+            proxy: new Ext.data.HttpProxy({
+	        	url: get_api_url('glossary')
+	        }),
+            reader: new Ext.data.JsonReader({
+	            totalProperty: 'meta.total_count',
+	            successProperty: 'success',
+	            idProperty: 'id',
+	            root: 'objects',
+	            messageProperty: 'message'
+	        }, [
+	            {name: 'id'},
+				{name: 'text'},
+				{name: 'staff'},
+				{name: 'section'}
+	        ])
+        });
+		
+		this.glossDropDown = new Ext.ux.DropDownList({
+			tpl: '<tpl for="."><div class="x-combo-list-item">{text}</div></tpl>',
+			store: this.glossStore,
+			valueField: 'text',
+			bubbleEvents:['itemselected', 'processquery', 'listclosed', 'listuserclosed'],
+			width:200,
+			clearFilterList: this.clearFilterList,
+			listeners: {
+				processquery: function(list, options, e) {
+					
+					/*var txt = Ext.getCmp(list.currentEl.id);
+					var parsedAddresses = this.parseMailAddressesOnCurrentPosition(txt);
+
+					options.query = parsedAddresses.currentAddress.trim();*/
+				},
+
+				itemselected: function(list, record, index) {
+					var txt = Ext.getCmp(list.currentEl.id);
+					var val = txt.getValue();
+					var curPos = this.ticket.getPos();
+//					console.log('buffer',this.glossDropDown.getBuffer());
+					var beforePasted = val.substring(0,curPos-this.glossDropDown.getBuffer().length);
+					var afterPasted = val.substr(curPos);
+					var pastedText = record.data.text;
+//					var parsedAddresses = this.parseMailAddressesOnCurrentPosition(txt);
+					var newPos = curPos - this.glossDropDown.buffer.length + pastedText.length;
+
+					if (!Ext.isEmpty(beforePasted) && !(beforePasted[beforePasted.length-1]==' ')) {
+						beforePasted += ' ';
+						newPos += 1;
+					};
+					if (!Ext.isEmpty(afterPasted)){
+						if (!afterPasted[0]==' ') pastedText += ' ';
+						newPos += 1;
+					};
+					var newText = beforePasted + pastedText + afterPasted;
+					txt.setValue(newText);
+					var textarea = this.ctxEditor.field.getEl().dom;
+					this.ticket.setCaretTo.defer(200,this.ticket,[textarea,newPos]);
+					this.glossDropDown.clearBuffer();
+//					console.log('beforePasted', beforePasted);
+//					console.log('pastedText', pastedText);
+//					console.log('afterPasted', afterPasted);
+//					console.log('newPos', newPos);
+//					this.ticket.setCaretTo(list.currentEl,parsedAddresses.beforeAddresses.length+parsedAddresses.currentAddresses.length+1);
+
+//					txt.setCursorPosition(newText.length);
+				},
+				
+				scope:this
+			}
 		});
 		
 		this.ticketPanel = new App.examination.TicketPanel({
@@ -112,7 +197,8 @@ App.examination.TicketTab = Ext.extend(Ext.Panel, {
 						},
 						listeners:{
 							search: function(e,text){
-								filter = this.glossPanel.filter;
+								this.glossDropDown.currentElKeyUp(e,text);
+								/*filter = this.glossPanel.filter;
 								var symbol = String.fromCharCode(e.getCharCode())
 								var key = e.getKey();
 								if(this.clearFilterList.indexOf(key) > -1) {
@@ -129,11 +215,12 @@ App.examination.TicketTab = Ext.extend(Ext.Panel, {
 									var re = new RegExp('.*' + this.buffer + '.*', 'i');
 									filter.clear();
 									filter.filter(re, 'text');
-								}
+								}*/
 							},
 							editorclick: function(){
 								this.buffer = '';
-								this.glossPanel.filter.clear();
+//								this.glossPanel.filter.clear();
+								this.glossDropDown.clearBuffer();
 							},
 							scope:this
 						}
@@ -157,7 +244,7 @@ App.examination.TicketTab = Ext.extend(Ext.Panel, {
 		
 		this.on('editorclose',function(){
 			this.ctxEditor = undefined;
-		},this)
+		},this);
 		
 		this.glossPanel.on('nodeclick',function(attrs){
 			if (this.ticket){
@@ -217,7 +304,9 @@ App.examination.TicketTab = Ext.extend(Ext.Panel, {
 		});
 		
 		this.on('ticketeditstart', function(panel,editor,pos){
+			this.curPos = pos;
 			this.glossPanel.filter.clear();
+			this.glossDropDown.clearBuffer();
 			if (this.ctxEditor && this.ctxEditor.panel != panel) {
 				this.ctxEditor.completeEdit();
 			};
@@ -226,6 +315,8 @@ App.examination.TicketTab = Ext.extend(Ext.Panel, {
 			if (this.adjW){
 				this.ctxEditor.field.setWidth(this.adjW-60);
 			};
+			
+			this.glossDropDown.bindElement(this.ctxEditor.field.el, this.glossDropDown);
 			
 			if (this.glossPanel.collapsed){
 				this.glossPanel.toggleCollapse();
@@ -237,6 +328,8 @@ App.examination.TicketTab = Ext.extend(Ext.Panel, {
 			// в тикете обновились данные 
 //			this.ctxEditor = undefined;
 //			this.ticket = undefined;
+			this.glossDropDown.unbindCurrentElement();
+			this.glossDropDown.clearBuffer();
 		},this);
 	},
 	
@@ -264,6 +357,68 @@ App.examination.TicketTab = Ext.extend(Ext.Panel, {
 	getData: function(){
 		var data = this.ticketPanel.getData();
 		return data
+	},
+	
+	parseMailAddressesOnCurrentPosition : function(textarea) {
+		curPos = this.ticket.getPos() || -1
+		var val = textarea.getValue();
+
+		var beforeAddresses = val.substr(0, curPos);
+		var afterAddresses = val.substr(curPos);
+
+//		var beforeEnd = -1;
+		var beforeEnd = this.lastIndexOfAny(beforeAddresses,[',','.',' ']);
+		if (beforeEnd == -1) {
+			beforeAddresses = '';
+		} else {
+			beforeAddresses = val.substring(0, beforeEnd + 1);
+		};
+		
+		console.log('beforeAddresses ', beforeAddresses);
+
+		var afterBegin = this.indexOfAny(afterAddresses,[',','.',' ']);
+//		var afterBegin = -1;
+		if (afterBegin == -1) {
+			afterAddresses = '';
+		} else {
+			afterAddresses = afterAddresses.substr(afterBegin);
+		};
+		
+//		console.log('afterAddresses ', afterAddresses);
+//		console.log('curPos ', curPos);
+//		console.log('val ', val);
+		beforeEnd = (beforeEnd == -1) ? 0 : beforeEnd;
+		afterBegin = (afterBegin == -1) ? undefined : afterBegin;
+		var currentAddress = val.substring(beforeEnd, afterBegin ? afterBegin + curPos : undefined);
+		
+//		console.log('left_ind ', beforeEnd);
+//		console.log('right_ind ', afterBegin);
+//		
+//		console.log('currentAddress ', currentAddress);
+
+		return ({
+			beforeAddresses: beforeAddresses.trim(),
+			currentAddress: currentAddress,
+			afterAddresses: afterAddresses.trim()
+		});
+	},
+	
+	lastIndexOfAny:function(str,arr){
+		var genInd = -1;
+		Ext.each(arr,function(chr){
+			var ind = str.lastIndexOf(chr);
+			if (ind > genInd) genInd = ind;
+		});
+		return genInd;
+	},
+	
+	indexOfAny:function(str,arr){
+		var genInd = -1;
+		Ext.each(arr,function(chr){
+			var ind = str.indexOf(chr);
+			if (ind < genInd || (genInd == -1 && ind > -1)) genInd = ind;
+		});
+		return genInd;
 	}
 	
 	

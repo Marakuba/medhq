@@ -142,9 +142,9 @@ Ext.ux.form.Ticket = Ext.extend(Ext.Panel,{
 	                        listeners:{
 	                        	'render': function(c) {
 							     	var el = c.getEl()
-							     	el.on('keyup', function(t,e) {
+							     	el.on('keypress', function(e,t) {
 							        	this.getCaretPos(el.dom);
-							        	this.fireEvent('search',t,e.value);
+							        	this.fireEvent('search',e,t.value);
 							     	}, this);
 							     	el.on('click',function(e,t,o){
 			                    		var pos = this.getCaretPos(el.dom);
