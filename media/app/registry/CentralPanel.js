@@ -49,6 +49,12 @@ App.CentralPanel = Ext.extend(Ext.Panel, {
 						this.launchApp('results');
 					},
 					scope:this
+				},{
+					text:'Orders',
+					handler:function(){
+						this.launchApp('remoteordergrid');
+					},
+					scope:this
 				}]
 			},{
 				xtype:'buttongroup',

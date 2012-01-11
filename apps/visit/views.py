@@ -12,6 +12,9 @@ from django.db.models.aggregates import Sum
 from autocomplete.views import AutocompleteView
 from staff.models import Position
 from django.http import HttpResponseBadRequest
+from extdirect.django.decorators import remoting
+import direct
+import simplejson
 autocomplete = AutocompleteView('visit')
 
 def all(request, visit_id):
@@ -121,4 +124,15 @@ def daily_staff_report(request):
     return direct_to_template(request=request, 
                               template="visit/daily_staff_report.html", 
                               extra_context=ec)
-    
+
+
+@remoting(direct.providers.remote_provider, len=1, action='visit', name='toLab')
+def to_lab(request):
+    """
+    """
+    data = simplejson.loads(request.raw_post_data)
+    ids = data['data'][0]
+    object_list = OrderedService.objects.filter(id__in=ids)
+    for obj in object_list:
+        obj.to_lab()
+    return dict(success=True, data='some data')

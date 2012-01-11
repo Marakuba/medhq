@@ -172,3 +172,15 @@
 	font-weight: bold;
 }
 
+.x-grid-row-warning {
+	background:#FFDFDF;
+}
+.x-grid-row-info {
+	background:#FFFEAB;
+}
+.x-grid-row-error {
+	background:#FF7373;
+}
+.x-grid-row-stripe {
+	background:url(../images/stripe_warn.png);
+}

@@ -3,11 +3,16 @@
 """
 """
 from django.contrib import admin
-from remoting.models import RemoteState
+from remoting.models import RemoteState, SyncObject, Transaction,\
+    TransactionItem
 
-class RemoteStateAdmin(admin.ModelAdmin):
+class RemoteStateInlineAdmin(admin.TabularInline):
     """
     """
-    list_display = ('state','domain_url')
+    model = RemoteState
+    extra = 1 
     
-admin.site.register(RemoteState, RemoteStateAdmin)
+
+admin.site.register(SyncObject)
+admin.site.register(Transaction)
+admin.site.register(TransactionItem)

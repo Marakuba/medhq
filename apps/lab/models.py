@@ -255,7 +255,10 @@ class Sampling(models.Model):
     status = models.ForeignKey(Status, blank=True, null=True)
     
     def __unicode__(self):
-        return u"материал №%s, %s, %s, к заказу %s" % (self.id, self.tube, self.laboratory, self.visit.id)
+        return u"№%s, %s, %s, к заказу %s" % (self.id, self.tube, self.laboratory, self.visit.id)
+    
+    def short_title(self):
+        return u"№%s, %s" % (self.id, self.tube)
     
     def get_services(self):
         print self.orderedservice_set.all()

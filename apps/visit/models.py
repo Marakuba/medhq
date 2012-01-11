@@ -23,6 +23,8 @@ from django.utils.encoding import smart_unicode
 from visit.settings import CANCEL_STATUSES
 from django.core.exceptions import ObjectDoesNotExist
 from constance import config
+from django.contrib.contenttypes import generic
+from remoting.models import TransactionItem
 
 logger = logging.getLogger()
 hdlr = logging.FileHandler(settings.LOG_FILE)
@@ -275,6 +277,8 @@ class OrderedService(make_operator_object('ordered_service')):
     sampling = models.ForeignKey('lab.Sampling', 
                                  null=True, blank=True)
     
+    transactions = generic.GenericRelation(TransactionItem)
+
     objects = models.Manager()
 
     def __unicode__(self):
@@ -289,11 +293,21 @@ class OrderedService(make_operator_object('ordered_service')):
         super(OrderedService, self).save(*args, **kwargs)
         self.order.update_total_price()
         
+    def latest_transaction(self):
+        all = self.transactions.all()
+        if all:
+            return all.latest('id')
+        return None
+        
     def total_discount(self):
         return self.order.discount_value*self.total_price/100
     
     def discount_price(self):
         return self.total_price - self.total_discount()
+    
+    def get_results(self):
+        results = Result.objects.filter(analysis__service=self.service, order__visit=self.order)
+        return results
     
     @transaction.commit_on_success
     def to_lab(self):
@@ -344,13 +358,14 @@ class OrderedService(make_operator_object('ordered_service')):
     
             if sampling:
                 self.sampling = sampling
-                self.save()
+            self.status = u'л'    
+            self.save()
             
             ### Generating AssayTask
             
             assays = s.equipmentassay_set.filter(is_active=True)
             for assay in assays:
-                EquipmentTask.objects.create(equipment_assay=assay, ordered_service=self)
+                EquipmentTask.objects.get_or_create(equipment_assay=assay, ordered_service=self)
                 
     def get_absolute_url(self):
         return u"/admin/visit/orderedservice/%s/" % self.id

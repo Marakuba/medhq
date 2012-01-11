@@ -101,6 +101,7 @@ INSTALLED_APPS = [
 
     'crm',
     'core',
+    'direct',
     'helpdesk',
     'webapp',
     'numeration',

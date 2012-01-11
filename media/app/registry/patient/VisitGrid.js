@@ -48,7 +48,7 @@ App.patient.VisitGrid = Ext.extend(Ext.grid.GridPanel, {
 		    	}
 		    	//editor: new Ext.form.TextField({})
 		    },*/{
-		    	width: 8, 
+		    	width: 80, 
 		    	sortable: true, 
 		    	dataIndex: 'cls', 
 		    	renderer: function(val) {
@@ -82,18 +82,18 @@ App.patient.VisitGrid = Ext.extend(Ext.grid.GridPanel, {
 		    	}
 		    },*/{
 		    	header: "№ заказа", 
-		    	width: 15, 
+		    	width: 150, 
 		    	sortable: true, 
 		    	dataIndex: 'barcode_id'
 		    },{
 		    	header: "Дата", 
-		    	width: 28, 
+		    	width: 280, 
 		    	sortable: true, 
 		    	dataIndex: 'created',
 		    	renderer:Ext.util.Format.dateRenderer('d.m.Y H:i')
 		    },{
 		    	header: "Сумма, руб.", 
-		    	width: 20, 
+		    	width: 200, 
 		    	sortable: true, 
 		    	dataIndex: 'total_price', 
 		    	renderer: function(v,params,rec){
@@ -251,7 +251,7 @@ App.patient.VisitGrid = Ext.extend(Ext.grid.GridPanel, {
 	            }]*/
 	        }),
 			viewConfig : {
-				forceFit : true,
+//				forceFit : true,
 				emptyText: 'Нет записей'
 				//getRowClass : this.applyRowClass
 			}

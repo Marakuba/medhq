@@ -8,6 +8,7 @@ from state.models import State
 from django.contrib.contenttypes.models import ContentType
 from django.contrib.contenttypes import generic
 from django.utils.encoding import smart_unicode
+from django.contrib.auth.models import User
 
 
 class SyncObject(models.Model):
@@ -34,9 +35,10 @@ class RemoteState(models.Model):
     """
     created = models.DateTimeField(u'Создано', auto_now_add=True)
     modified = models.DateTimeField(u'Изменено', auto_now=True)
-    state = models.ForeignKey(State)
+    state = models.OneToOneField(State)
     secret_key = models.CharField(u'Секретный код', max_length=256)
     domain_url = models.URLField(u'URL', verify_exists=False)
+    user = models.ForeignKey(User, blank=True, null=True)
     
     class Meta:
         verbose_name = u'внешняя лаборатория'
@@ -64,9 +66,8 @@ class Transaction(models.Model):
     
 
 TRANSACTION_STATUSES = (
-    (u'network.error',u'Ошибка связи'),
-    (u'result.progress',u'Получение результатов анализов'),
-    (u'result.complete',u'Получение данных для лаборатории'),
+    (u'error',u'Ошибка связи'),
+    (u'complete',u'Данные выгружены'),
 )
 
 class TransactionItem(models.Model):
@@ -77,3 +78,7 @@ class TransactionItem(models.Model):
     content_type = models.ForeignKey(ContentType)
     object_id = models.IntegerField()
     content_object = generic.GenericForeignKey('content_type', 'object_id')
+    message = models.TextField(blank=True)
+    
+    def __unicode__(self):
+        return self.message or u'<<transaction item>>'
