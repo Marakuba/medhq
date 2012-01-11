@@ -31,7 +31,6 @@ App.dict.XGlossaryTree = Ext.extend(Ext.ux.tree.RemoteTreePanel, {
         	baseParams:{
         		format:'json',
         		section:this.section,
-//        		base_service:App.uriToId(this.base_service),
 				staff:App.uriToId(this.staff)
         	},
         	scope:this,

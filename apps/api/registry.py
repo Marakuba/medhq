@@ -1327,21 +1327,6 @@ class GlossaryResource(ExtResource):
 
         return orm_filters
     
-    def build_response(self, request, updated_bundle, message=None, status=200):
-        """
-        """ 
-
-        desired_format = self.determine_format(request)
-        bundle = self.full_dehydrate(updated_bundle.obj)
-        bundle.data = {'success':True,
-                       'message':message or u'Операция выполнена успешно',
-                       'objects':bundle.data} 
-        serialized = self.serialize(request, bundle, desired_format)
-        response = HttpResponse(content=serialized, 
-                            content_type="text/html",#build_content_type(desired_format),
-                            status=status)
-        return response
-    
     class Meta:
         queryset = Glossary.objects.all()
         resource_name = 'glossary'
