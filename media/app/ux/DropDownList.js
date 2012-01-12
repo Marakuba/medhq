@@ -64,6 +64,7 @@ Ext.ux.DropDownList = Ext.extend(Ext.Layer, {
         
         this.buffer = '';
         this.pause = false;
+        this.pauseBuffer = ''; //Содержимое буфера на момент паузы
 
         this.store = config.store ? config.store : new Ext.data.JsonStore({
             fields: config.fields,
@@ -209,17 +210,23 @@ Ext.ux.DropDownList = Ext.extend(Ext.Layer, {
     clearBuffer: function(){
     	this.buffer = '';
     	this.pause = false;
+    	this.pauseBuffer = '';
+    	if (this.isVisible()) {
+            this.collapse(false);
+        };
     },
 
     currentElKeyUp: function(e, t) {
+//    	console.log(e.browserEvent);
     	var symbol = String.fromCharCode(e.getCharCode());
     	var ss = e.isSpecialKey();
 		var key = e.getCharCode();
+		//Если начали предложение с пробела 
 		if (!this.buffer && symbol == ' ') {
 			this.clearBuffer();
 			return
 		}
-		console.log(key);
+//		console.log(key);
     	if(this.ignoreFilterList.indexOf(key) > -1) {
 			return;
 		}
@@ -228,26 +235,43 @@ Ext.ux.DropDownList = Ext.extend(Ext.Layer, {
 			this.clearBuffer();
 			if (this.isVisible()) {
                 this.collapse(false);
-            }
-		} else {
-			if (key == Ext.EventObject.BACKSPACE){
-				if(this.buffer){
-					this.buffer = this.buffer.substr(0, this.buffer.length-1)
-				}
-			} else {
-				//Если на середине слова нет совпадений в store, то приостанавливаем поиск до следующего слова
-				//Если был нажат пробел, то восстанавливаем процесс поиска совпадений
-				if (this.pause){
-					if (symbol == ' '){
-						this.pause = false;
-						this.buffer = '';
-						return
-					} else {
-						return
+            };
+            return
+		};
+		var f = e.browserEvent
+		if (f.keyCode) {
+			// if BACKSPACE
+			if (f.keyCode == 8 && this.buffer){
+				if (f.ctrlKey){
+					this.clearBuffer();
+					return
+				} else {
+					this.buffer = this.buffer.substr(0, this.buffer.length-1);
+					if (this.pause){
+						if (this.buffer === this.pauseBuffer){
+							this.pause = false;
+						}
 					}
-				};
-				this.buffer += symbol;
+				}
+			//Если это не backspace, то ничего не делаем, т.к. клавиши, обнуляющие буфер уже обработаны сверху
+			} else {
+				return
 			}
+		} else {
+			if (f.charCode && !f.ctrlKey){
+				this.buffer += symbol;
+			} else {
+				return
+			}
+		};
+		
+		//Если на середине слова нет совпадений в store, то приостанавливаем поиск до следующего слова
+		//Если был нажат пробел, то восстанавливаем процесс поиска совпадений
+		if (this.pause){
+			if (symbol == ' '){
+				this.clearBuffer();
+			};
+			return
 		};
 		
         console.log(this.buffer)
@@ -272,6 +296,9 @@ Ext.ux.DropDownList = Ext.extend(Ext.Layer, {
 	            };
 	            //Если на середине слова нет совпадений в store, то приостанавливаем поиск до следующего слова
 	            this.pause = true;
+	            var buffer = this.getBuffer();
+	            this.pauseBuffer = buffer.substring(0,buffer.length-1)
+	            console.log('pauseBuffer', this.pauseBuffer);
 			}
 		}, scope:this})
     },
