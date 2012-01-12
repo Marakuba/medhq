@@ -208,6 +208,7 @@ Ext.ux.DropDownList = Ext.extend(Ext.Layer, {
     
     clearBuffer: function(){
     	this.buffer = '';
+    	this.pause = false;
     },
 
     currentElKeyUp: function(e, t) {
@@ -239,7 +240,7 @@ Ext.ux.DropDownList = Ext.extend(Ext.Layer, {
 				if (this.pause){
 					if (symbol == ' '){
 						this.pause = false;
-						this.clearBuffer();
+						this.buffer = '';
 						return
 					} else {
 						return
