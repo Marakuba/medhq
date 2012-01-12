@@ -22,7 +22,8 @@ App.examination.TicketTab = Ext.extend(Ext.Panel, {
 		this.ctxEditor = undefined;
 		
 		this.clearFilterList = [Ext.EventObject.ESC, Ext.EventObject.RIGHT, Ext.EventObject.LEFT, 
-								Ext.EventObject.SPACE,Ext.EventObject.TAB]
+								Ext.EventObject.TAB, 
+								Ext.EventObject.DELETE, 44, 59, 63]
 		
 		this.glossPanel = new App.dict.XGlossaryTree({
 			section:this.section,
