@@ -49,9 +49,10 @@ Ext.ux.DropDownList = Ext.extend(Ext.Layer, {
         						Ext.EventObject.PAGEUP,
         						Ext.EventObject.PAUSE,
         						Ext.EventObject.PRINT_SCREEN,
-        						Ext.EventObject.NUM_CENTER,
-        						Ext.EventObject.NUM_DIVISION,
-        						Ext.EventObject.NUM_MULTIPLY,
+        						Ext.EventObject.ENTER,
+//        						Ext.EventObject.NUM_CENTER,
+//        						Ext.EventObject.NUM_DIVISION,
+//        						Ext.EventObject.NUM_MULTIPLY,
         						Ext.EventObject.PERIOD,
         						Ext.EventObject.CTRL,
         						Ext.EventObject.CONTROL,
@@ -62,6 +63,7 @@ Ext.ux.DropDownList = Ext.extend(Ext.Layer, {
         						];
         
         this.buffer = '';
+        this.pause = false;
 
         this.store = config.store ? config.store : new Ext.data.JsonStore({
             fields: config.fields,
@@ -133,7 +135,7 @@ Ext.ux.DropDownList = Ext.extend(Ext.Layer, {
             },
 
             "enter": function(e) {
-                this.onViewClick();
+            	if (this.isVisible()) this.onViewClick();
             },
 
             "esc": function(e) {
@@ -212,6 +214,11 @@ Ext.ux.DropDownList = Ext.extend(Ext.Layer, {
     	var symbol = String.fromCharCode(e.getCharCode());
     	var ss = e.isSpecialKey();
 		var key = e.getCharCode();
+		if (!this.buffer && symbol == ' ') {
+			this.clearBuffer();
+			return
+		}
+		console.log(key);
     	if(this.ignoreFilterList.indexOf(key) > -1) {
 			return;
 		}
@@ -227,6 +234,17 @@ Ext.ux.DropDownList = Ext.extend(Ext.Layer, {
 					this.buffer = this.buffer.substr(0, this.buffer.length-1)
 				}
 			} else {
+				//Если на середине слова нет совпадений в store, то приостанавливаем поиск до следующего слова
+				//Если был нажат пробел, то восстанавливаем процесс поиска совпадений
+				if (this.pause){
+					if (symbol == ' '){
+						this.pause = false;
+						this.clearBuffer();
+						return
+					} else {
+						return
+					}
+				};
 				this.buffer += symbol;
 			}
 		};
@@ -250,7 +268,9 @@ Ext.ux.DropDownList = Ext.extend(Ext.Layer, {
 			} else {
 				if (this.isVisible()) {
 	                this.collapse(false);
-	            }
+	            };
+	            //Если на середине слова нет совпадений в store, то приостанавливаем поиск до следующего слова
+	            this.pause = true;
 			}
 		}, scope:this})
     },
