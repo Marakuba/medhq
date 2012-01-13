@@ -59,8 +59,8 @@ App.examination.Editor = Ext.extend(Ext.Panel, {
 		
 		this.contentPanel = new Ext.Panel({
 			region:'center',
- 			border:true,
- 			margins:'5 5 5 0',
+ 			border:false,
+// 			margins:'5 5 5 0',
  			layout: 'fit',
  			title:'Выберите услугу',
  			defaults:{

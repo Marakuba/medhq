@@ -165,7 +165,7 @@ App.examination.TicketTab = Ext.extend(Ext.Panel, {
 //		    height: 636,
 //		    width: 771,
 			layout:'border',
-		    padding: 10,
+//		    padding: 10,
 //		    title: 'Оборудование',
 		    labelAlign: 'top',
 		    autoSctoll:true,

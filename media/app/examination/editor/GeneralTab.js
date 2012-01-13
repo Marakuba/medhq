@@ -85,8 +85,8 @@ App.examination.GeneralTab = Ext.extend(Ext.form.FormPanel, {
 		this.titlePanel = new Ext.Panel({
 			region:'center',
 			layout:'anchor',
-			border:true,
-			margins:'5 5 5 5',
+			border:false,
+			margins:'0 5 0 0',
 			padding:10,
 			items:[{
 				xtype:'box',
