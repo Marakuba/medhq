@@ -321,7 +321,10 @@ App.examination.TicketTab = Ext.extend(Ext.Panel, {
 			
 			if (this.glossPanel.collapsed){
 				this.glossPanel.toggleCollapse();
-			}
+			};
+			if (this.ticket) {
+				this.ticket.body.removeClass('selected');
+			};
 			this.ticket = panel;
 		},this);
 
@@ -329,6 +332,7 @@ App.examination.TicketTab = Ext.extend(Ext.Panel, {
 			// в тикете обновились данные 
 //			this.ctxEditor = undefined;
 //			this.ticket = undefined;
+			this.ticket.body.addClass('selected');
 			this.glossDropDown.unbindCurrentElement();
 			this.glossDropDown.clearBuffer();
 		},this);
