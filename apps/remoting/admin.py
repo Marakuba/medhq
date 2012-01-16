@@ -13,6 +13,12 @@ class RemoteStateInlineAdmin(admin.TabularInline):
     extra = 1 
     
 
-admin.site.register(SyncObject)
+class SyncObjectAdmin(admin.ModelAdmin):
+    """
+    """
+    list_display = ('content_type','object_id','sync_id','state','created')
+    
+
+admin.site.register(SyncObject, SyncObjectAdmin)
 admin.site.register(Transaction)
 admin.site.register(TransactionItem)

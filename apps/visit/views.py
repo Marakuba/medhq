@@ -13,7 +13,7 @@ from autocomplete.views import AutocompleteView
 from staff.models import Position
 from django.http import HttpResponseBadRequest
 from extdirect.django.decorators import remoting
-import direct
+from direct.providers import remote_provider
 import simplejson
 autocomplete = AutocompleteView('visit')
 
@@ -126,7 +126,7 @@ def daily_staff_report(request):
                               extra_context=ec)
 
 
-@remoting(direct.providers.remote_provider, len=1, action='visit', name='toLab')
+@remoting(remote_provider, len=1, action='visit', name='toLab')
 def to_lab(request):
     """
     """
