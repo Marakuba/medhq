@@ -151,7 +151,9 @@ App.examination.GeneralTab = Ext.extend(Ext.form.FormPanel, {
 	},
 	
 	setPrintName: function (text){
-		this.printNameField.setValue(text);
+		this.print_name = text;
+		this.headerElt.html = text;
+		this.doLayout();
 	}
 	
 });
