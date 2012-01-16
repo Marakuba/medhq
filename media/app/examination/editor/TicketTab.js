@@ -349,6 +349,34 @@ App.examination.TicketTab = Ext.extend(Ext.Panel, {
 				title:title,
 				printable:true,
 				private:false
+			},
+			listeners:{
+				search: function(e,text){
+					this.glossDropDown.currentElKeyUp(e,text);
+					/*filter = this.glossPanel.filter;
+					var symbol = String.fromCharCode(e.getCharCode())
+					var key = e.getKey();
+					if(this.clearFilterList.indexOf(key) > -1) {
+						this.buffer = '';
+						filter.clear();
+					} else {
+						if (key == Ext.EventObject.BACKSPACE){
+							if(this.buffer){
+								this.buffer = this.buffer.substr(0, this.buffer.length-1)
+							}
+						} else {
+							this.buffer += symbol;
+						}
+						var re = new RegExp('.*' + this.buffer + '.*', 'i');
+						filter.clear();
+						filter.filter(re, 'text');
+					}*/
+				},
+				editorclick: function(){
+					this.buffer = '';
+					this.glossDropDown.clearBuffer();
+				},
+				scope:this
 			}
 		});
 		this.portalColumn.add(new_ticket);

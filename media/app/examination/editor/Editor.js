@@ -50,6 +50,7 @@ App.examination.Editor = Ext.extend(Ext.Panel, {
 			hidePrice: true,
 			autoScroll:true,
 			width:250,
+			searchFieldWidth: 200,
 			border: false,
 			collapsible:true,
 			collapseMode:'mini',
@@ -152,6 +153,11 @@ App.examination.Editor = Ext.extend(Ext.Panel, {
 					changetitle: function(text){
 						this.contentPanel.setTitle(text);
 					},
+					tmpclose: function(){
+						this.contentPanel.removeAll(true);
+						this.contentPanel.setTitle('Выберите услугу');
+						this.contentPanel.doLayout();
+					},
 					scope:this
 				}
 			},
@@ -182,6 +188,7 @@ App.examination.Editor = Ext.extend(Ext.Panel, {
 				record:this.record,
 				base_service:this.service
 			});
+			this.generalTab.print_name = this.tmpBody.print_name;
 			this.contentPanel.setTitle(this.tmpBody.print_name);
 			this.contentPanel.add(this.tmpBody);
 			this.contentPanel.doLayout();

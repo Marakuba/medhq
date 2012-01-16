@@ -125,7 +125,7 @@ App.ServiceTreeGrid = Ext.extend(Ext.ux.tree.TreeGrid,{
 	        },
 		    tbar: [new Ext.form.TextField({
 		    	id:'service-tree-filter',
-		        width: 250,
+		        width: this.searchFieldWidth || 250,
 				emptyText:'Поиск по названию',
                 enableKeyEvents: true,
 				listeners:{

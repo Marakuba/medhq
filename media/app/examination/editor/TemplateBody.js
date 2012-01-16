@@ -60,8 +60,13 @@ App.examination.TemplateBody = Ext.extend(Ext.TabPanel, {
 			handler:this.onPreview.createDelegate(this,[this.card]),
 			scope:this
 		});
+		this.closeBtn = new Ext.Button({
+			text: 'Закрыть шаблон',
+			handler:this.onClose.createDelegate(this),
+			scope:this
+		});
 		
-		this.ttb = [this.addSecBtn, this.addSubSecBtn,'-',this.previewBtn];
+		this.ttb = [this.addSecBtn, this.addSubSecBtn,'-',this.previewBtn, this.closeBtn];
 		
 		this.equipTab = new App.examination.EquipmentTab({
 			id:'equip-tab',
@@ -166,6 +171,7 @@ App.examination.TemplateBody = Ext.extend(Ext.TabPanel, {
 		this.generalTab.on('equiptab',function(){
 			this.add(this.equipTab);
 			this.equipTab.loadRecord(this.record);
+			this.setActiveTab(this.equipTab);
 		},this);
 		
 		
@@ -306,6 +312,10 @@ App.examination.TemplateBody = Ext.extend(Ext.TabPanel, {
 			closable:true,
 			autoLoad:String.format('/widget/examination/{0}/{1}/',essence,this.record.data.id)
 		});
+	},
+	
+	onClose: function(){
+		this.fireEvent('tmpclose');
 	},
 	
 	removeTicket:function(section,ticketTitle){
