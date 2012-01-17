@@ -295,7 +295,7 @@ def get_service_tree(request):
     except:
         raise "Service cache must be defined!"
             
-    _cache_key = u'service_list_%s_%s' % ( state and state.id or u'*', payment_type) 
+    _cache_key = u'%sservice_list_%s_%s' % (ext and 'ext_' or '', state and state.id or u'*', payment_type)
     
     # запрос с параметром recache удаляет ВСЕ записи в нём
     if recache:

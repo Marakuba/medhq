@@ -61,7 +61,7 @@ App.examination.TemplateBody = Ext.extend(Ext.TabPanel, {
 			scope:this
 		});
 		this.closeBtn = new Ext.Button({
-			text: 'Закрыть шаблон',
+			text: this.isCard ? 'Закрыть карту осмотра' : 'Закрыть шаблон',
 			handler:this.onClose.createDelegate(this),
 			scope:this
 		});
@@ -72,7 +72,7 @@ App.examination.TemplateBody = Ext.extend(Ext.TabPanel, {
 			scope:this
 		});
 		
-		this.ttb = [this.addSecBtn, this.addSubSecBtn,'-',this.previewBtn, this.closeBtn,this.svgBtn];
+		this.ttb = [this.addSecBtn, this.addSubSecBtn,'-',this.previewBtn, this.closeBtn];
 		
 		this.equipTab = new App.examination.EquipmentTab({
 			id:'equip-tab',
