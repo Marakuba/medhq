@@ -188,7 +188,12 @@ class BaseService(models.Model):
         return False
     
     def is_lab(self):
-        return self.lab_group is not None
+        try:
+            ls = self.labservice
+            is_lab = True
+        except:
+            is_lab = self.lab_group is not None
+        return is_lab 
     
     def get_ex_place(self):
         try:

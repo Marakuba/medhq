@@ -9,6 +9,8 @@ from visit.models import Visit, OrderedService
 from service.models import BaseService
 from django.db import transaction
 from remoting.exceptions import ServiceDoesNotExist
+from django.core.exceptions import ObjectDoesNotExist
+from lab.models import Result
 
 def get_patient(request, data):
     state = State.objects.get(uuid=data['source_lab'])
@@ -67,7 +69,6 @@ def get_visit(request, data, patient):
     return visit
 
 
-@transaction.commit_on_success
 def get_ordered_service(request, data):
     remote_state = State.objects.get(uuid=data['source_lab'])
     office = State.objects.get(uuid=data['dest_lab'])
@@ -79,8 +80,29 @@ def get_ordered_service(request, data):
     except:
         try:
             service = BaseService.objects.get(code=data['order']['code'])
+            """
+            необходимо учесть что лаборатории могут быть разными
+            последовательность:
+            запрашиваются extended service
+            если количество результатов == 1, то берем единственный элемент
+            если больше 1, то фильтруем запрос таким образом, чтобы осталось одно собственное учреждение
+            если таковых нет, то берем первый результат из запроса
+            """
+            ex_services = service.extendedservice_set.all()
+            c = ex_services.count()
+            if c==1:
+                execution_place = ex_services[0]
+            elif c>1:
+                own_ex_services = ex_services.filter(state__type=u'b')
+                if own_ex_services.count()>0:
+                    execution_place = own_ex_services[0]
+                else:
+                    execution_place = ex_services[0]
+            else:
+                raise Exception(u"Исследование с кодом '%s' имеет неверные настройки" % data['order']['code'])
+            
             ordered_service = OrderedService.objects.create(order=visit,
-                                                            execution_place=office,
+                                                            execution_place=execution_place.state,
                                                             service=service,
                                                             operator=visit.operator)
             print "OrderedService created", ordered_service
@@ -88,7 +110,36 @@ def get_ordered_service(request, data):
             SyncObject.objects.create(content_object=ordered_service, 
                                       state=remote_state, 
                                       sync_id=data['order']['id'])
-        except:
+        except ObjectDoesNotExist:
             raise Exception(u"Исследование с кодом '%s' не найдено" % data['order']['code'])
+        except:
+            pass 
     return ordered_service
-    
+
+
+def get_visit_sync_id(visit):
+    state = visit.office
+    try:
+        sync_obj = SyncObject.objects.get(state=state, 
+                                          content_type__model='visit',
+                                          object_id=visit.id)
+        return sync_obj.sync_id
+    except:
+        return None
+
+
+def get_result(request, data):
+    visit_id = data['visit']['id']
+    code = data['order']['code']
+    r = data['result']
+    try:
+        result = Result.objects.get(order__visit__id=visit_id, 
+                                    analysis__service__code=code,
+                                    analysis__name=r['name'])
+        result.value = r['value']
+        result.validation = 1
+        result.save()
+    except ObjectDoesNotExist:
+        raise Exception(u"Результат %s для заказа %s не найден" % (r['name'],visit_id) )
+    except:
+        pass

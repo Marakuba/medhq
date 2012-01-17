@@ -12,6 +12,7 @@ from annoying.decorators import render_to
 from django.db.models.aggregates import Count
 from collections import defaultdict
 import operator
+from remoting.views import post_results
 
 @render_to('print/lab/register.html')
 def print_register(request):
@@ -267,6 +268,14 @@ def confirm_results(request):
                     break
             lab_order.save()
             msg = lab_order.is_completed and u'Лабораторный ордер подтвержден' or u'Присутствуют пустые значения. Лабораторный ордер не подтвержден'
+            if lab_order.is_completed:
+                try:
+                    state = lab_order.visit.office.remotestate
+                    resp = post_results(lab_order)
+                    for r in resp:
+                        print r['success'],r['message']
+                except Exception, err:
+                    print "error", err
             return HttpResponse(simplejson.dumps({
                                                     'success':lab_order.is_completed,
                                                     'message':msg

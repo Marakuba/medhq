@@ -8,59 +8,133 @@ from extdirect.django.decorators import remoting
 from direct.providers import remote_provider
 from visit.models import OrderedService
 from collections import defaultdict
-import os
-from state.models import State
 from django.utils import simplejson
 from django.core.serializers.json import DjangoJSONEncoder
-from remoting.utils import get_patient, get_ordered_service
-from remoting.models import Transaction, TransactionItem
+from remoting.utils import get_ordered_service, get_visit_sync_id, get_result
+from remoting.models import Transaction, TransactionItem, SyncObject
 
-def send_to_lab(lab,data):
+def post_orders_to_local(request, data_set):
+    result = []
+    for data in data_set:
+        success = True
+        order_id = data['order']['id']
+        msg = u'Заказ №%s успешно размещен' % order_id
+        
+        try:
+            get_ordered_service(request, data)
+        except Exception, err:
+            msg = err.__unicode__()
+            success = False
+            
+        result.append({
+            'order':order_id,
+            'success': success,
+            'message':msg
+        })
+
+    return result
+
+def post_results_to_local(request, data_set):
+
+    result = []
+    print "results:",data_set
+    for data in data_set:
+        success = True
+        visit_id = data['visit']['id']
+        name = data['result']['name']
+        msg = u'Результат %s (%s) принят' % (data['result']['name'], visit_id)
+        
+        try:
+            get_result(request, data)
+        except Exception, err:
+            msg = err.__unicode__()
+            success = False
+            
+        result.append({
+            'result':name,
+            'visit':visit_id,
+            'success': success,
+            'message':msg
+        })
+    return result
+
+
+ACTIONS = {
+    'post_orders':post_orders_to_local,
+    'post_results':post_results_to_local,
+}
+
+def router(request):
+    """
+    """
+    data = simplejson.loads(request.raw_post_data)
+    action = data['action']
+    data_set = data['data']
+    
+    if action in ACTIONS:
+        func = ACTIONS[action]
+        result = func(request, data_set)
+    
+    return HttpResponse(simplejson.dumps(result), mimetype="application/json")    
+    
+def post_data_to_remote(lab,action,data):
     """
     """
     domain = lab.remotestate.domain_url
     url = 'remoting/router/'
     path = domain+url
-    json_data = simplejson.dumps(data,cls=DjangoJSONEncoder)
+    json_data = simplejson.dumps({ 
+        'action':action,
+        'data':data 
+    }, cls=DjangoJSONEncoder)
     try:
         req = urllib2.Request(path, json_data, {'Content-Type': 'application/json'})
         print 'data to send:',json_data
         f = urllib2.urlopen(req)
         response = f.read()
         f.close()
+        return simplejson.loads(response)    
     except Exception, err:
         print 'error:',err
-    return simplejson.loads(response)    
 
 
-def router(request):
-    """
-    """
-    result = []
-    data_set = simplejson.loads(request.raw_post_data)
-    for data in data_set:
-        success = True
-        err = None
-        id = data['order']['id']
-        
-        try:
-            ordered_service = get_ordered_service(request, data)
-            success = ordered_service is not None
-            err = success and (u'Заказ №%s успешно размещен' % id) or (u'Ошибка размещения заказа №%s' % id)
-        except Exception, err:
-            success = False
-            
-        result.append({
-            'order':id,
-            'success': success,
-            'message':hasattr(err, '__unicode__') and err.__unicode__() or err
-        })
+def post_results(lab_order):
+    lab = lab_order.visit.office
+    
+    results = []
+    visit_sync_id = get_visit_sync_id(lab_order.visit)
+    for result in lab_order.result_set.all():
+        a = result.analysis
+        data = {
+            'visit': {
+                'id':visit_sync_id
+            },
+            'order': {
+#                'id':1,
+                'code':a.service.code
+            },
+            'result': {
+                'name':a.name,
+                'code':a.code,
+                'value':result.value,
+                'measurement':a.measurement and a.measurement.name,
+                'ref_interval':a.ref_range_text
+            }
+        }
+        results.append(data)
+    
+#    data_set = simplejson.dumps(results)
 
-    return HttpResponse(simplejson.dumps(result), mimetype="application/json")    
+#    transaction = Transaction.objects.create(type='lab.out',
+#                                             sender=request.active_profile.department.state,
+#                                             reciever=_labs_cache[lab])
+    result = post_data_to_remote(lab,'post_results',results)
+    
+    return result
     
 
-@remoting(remote_provider, len=1, action='remoting', name='send')
-def send(request):
+@remoting(remote_provider, len=1, action='remoting', name='postOrders')
+def post_orders(request):
     """
     """
     data = simplejson.loads(request.raw_post_data)
@@ -100,7 +174,7 @@ def send(request):
         transaction = Transaction.objects.create(type='state.out',
                                                  sender=request.active_profile.department.state,
                                                  reciever=_labs_cache[lab])
-        result = send_to_lab(_labs_cache[lab], data)
+        result = post_data_to_remote(_labs_cache[lab], 'post_orders', data)
         
         success = []
         error = []

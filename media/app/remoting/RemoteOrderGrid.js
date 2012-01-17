@@ -244,7 +244,7 @@ App.remoting.RemoteOrderGrid = Ext.extend(Ext.grid.GridPanel, {
 	
 	onSend : function() {
 		var ids = this.getSelectedId();
-		App.direct.remoting.send(ids,function(result,e){
+		App.direct.remoting.postOrders(ids,function(result,e){
 			this.storeFilter('status',undefined);
         	this.manageBtn();
 		},this);
@@ -252,9 +252,10 @@ App.remoting.RemoteOrderGrid = Ext.extend(Ext.grid.GridPanel, {
 	
 	onToLab : function() {
 		var ids = this.getSelectedId();
+		console.info(ids);
 		App.direct.visit.toLab(ids,function(result,e){
-			console.info(result);
-			console.info(e);
+			this.storeFilter('status',undefined);
+        	this.manageBtn();
 		});
 	}
 	
