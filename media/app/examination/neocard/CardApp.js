@@ -35,6 +35,7 @@ App.examination.CardApp = Ext.extend(Ext.Panel, {
 		
 		this.patientPanel = new App.examination.PatientHistoryPanel ({
 			region:'west',
+			patient:this.patient,
 			width:250,
 			border: false,
 			collapsible:true,
@@ -90,7 +91,8 @@ App.examination.CardApp = Ext.extend(Ext.Panel, {
 				fieldSetStore : this.fieldSetStore,
 				subSectionStore : this.subSectionStore,
 				generalTab: this.generalTab,
-				card:true,
+				isCard:true,
+				staff:this.staff,
 				title:'Заголовок',
 				listeners:{
 					movearhcivetmp:function(){
