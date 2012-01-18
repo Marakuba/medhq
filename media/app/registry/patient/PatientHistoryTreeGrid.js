@@ -66,25 +66,79 @@ App.PatientHistoryTreeGrid = Ext.extend(Ext.ux.tree.TreeGrid,{
 	initComponent:function(){
 		this.hiddenPkgs = [];
 		this.columns = [{
-	        	header:'Действие',
-	        	dataIndex:'text',
-	        	sortable:false,
-	        	width:this.large ? 700 : 215
-	        },{
-	        	header:'Дата',
-	        	dataIndex:'created',
-	        	sortable:false,
-	        	hidden: this.hidePrice ? true : false,
-	        	width:50,
-	        	align:'right'
-	        },{
-	        	header:'Оператор',
-	        	dataIndex:'operator',
-	        	sortable:false,
+        	header:'Действие',
+        	dataIndex:'text',
+        	sortable:false,
+        	width:this.large ? 700 : 215
+        },{
+        	header:'Дата',
+        	dataIndex:'date',
+        	sortable:false,
+        	width:50,
+        	renderer:Ext.util.Format.dateRenderer('H:i / d.m.Y'),
+        	align:'right'
+        },{
+        	header:'Врач',
+        	dataIndex:'staff',
+        	sortable:true,
+        	width:70,
+        	align:'left'
+        },{
+        	header:'Оператор',
+        	dataIndex:'operator',
+        	sortable:false,
 //	        	hidden:true,
-	        	width:50,
-	        	align:'left'
-	        }];
+        	width:50,
+        	align:'left'
+        }];
+	    this.monthBtn = new Ext.Button({
+			text:'Месяц',
+			enableToggle: true,
+			pressed: true,
+			toggleHandler:function(button,state){
+				if (state){
+					this.loader.baseParams['get_months'] = true;
+				} else {
+					delete this.loader.baseParams['get_months']
+				};
+				this.loader.load(this.root);
+			},
+			scope:this
+		});
+	    this.yearBtn = new Ext.Button({
+			text:'Год',
+			pressed:true,
+			enableToggle: true,
+			toggleHandler:function(button,state){
+				if (state){
+					this.loader.baseParams['get_years'] = true;
+					this.monthBtn.enable();
+					if (this.monthBtn.pressed){
+						this.loader.baseParams['get_months'] = true;
+					}
+				} else {
+					delete this.loader.baseParams['get_years'];
+					delete this.loader.baseParams['get_months']
+					this.monthBtn.disable();
+				};
+				this.loader.load(this.root);
+			},
+			scope:this
+		});
+		this.visitBtn = new Ext.Button({
+			text:'Визиты',
+			enableToggle: true,
+			pressed: true,
+			toggleHandler:function(button,state){
+				if (state){
+					this.loader.baseParams['get_visits'] = true;
+				} else {
+					delete this.loader.baseParams['get_visits']
+				};
+				this.loader.load(this.root);
+			},
+			scope:this
+		});
 		config = {
 			border:false,
 		    rootVisible: false,
@@ -96,11 +150,12 @@ App.PatientHistoryTreeGrid = Ext.extend(Ext.ux.tree.TreeGrid,{
 	        loader:new Ext.ux.tree.TreeGridLoader({
 				baseParams:this.baseParams ? this.baseParams : 
 				{
-					
+					get_years:true,
+    				get_months:true
 				},
 			    createNode : function(attr) {
 			        if (!attr.uiProvider) {
-			            attr.uiProvider = App.ux.tree.ColspanNodeUI;
+//			            attr.uiProvider = App.ux.tree.ColspanNodeUI;
 			        }
 			        return Ext.tree.TreeLoader.prototype.createNode.call(this, attr);
 			    },
@@ -118,8 +173,8 @@ App.PatientHistoryTreeGrid = Ext.extend(Ext.ux.tree.TreeGrid,{
 	        	click:function(node,e){
 	        		if(node.leaf) {
 	        			node.attributes['shiftKey'] = e.shiftKey;
-	        			this.fireEvent('historyclick', node);
-	        		}
+	        			this.fireEvent('nodeclick', node);
+	        		};
 	        	}
 	        },
 		    tbar: [new Ext.form.TextField({
@@ -155,7 +210,7 @@ App.PatientHistoryTreeGrid = Ext.extend(Ext.ux.tree.TreeGrid,{
 		    			
 		    		}
 		    	}
-		    },'->',{
+		    },this.yearBtn,this.monthBtn,'->',{
 		    	iconCls:'x-tbar-loading',
 		    	handler:function(){
 		    		this.getLoader().load(this.getRootNode());
