@@ -88,7 +88,7 @@ def get_ordered_service(request, data):
             если больше 1, то фильтруем запрос таким образом, чтобы осталось одно собственное учреждение
             если таковых нет, то берем первый результат из запроса
             """
-            ex_services = service.extendedservice_set.all()
+            ex_services = service.extendedservice_set.active()
             c = ex_services.count()
             if c==1:
                 execution_place = ex_services[0]

@@ -21,11 +21,11 @@ class Command(BaseCommand):
         make_option('--format', action='store', dest='format',
             default='medhqjson', help=u'Формат файла'),
         make_option('--branches', action='store', dest='branches',
-            help=u'Определяет узел, в который будут добавляться услуги'),
+            help=u'Список филиалов, от имени которых разрешено выполнение услуги (через запятую)'),
         make_option('--state', action='store', dest='state',
-            help=u'Определяет узел, в который будут добавляться услуги'),
+            help=u'Организация, которая будет указана в расширенной услуге'),
         make_option('--top', action='store', dest='top',
-            help=u'Определяет узел, в который будут добавляться услуги'),
+            help=u'Название группы, в которую будут помещены загружаемые услуги (при необходимости)'),
     )
 
     def handle(self, *files, **options):
@@ -128,8 +128,6 @@ class Command(BaseCommand):
                                                                                       is_manual=es['is_manual'])
                 except Exception, err:
                     print "error:",err
-                    print es_list
-                    return
                     
                 if self.branches:
                     extended_service.branches.add(*self.branches)
