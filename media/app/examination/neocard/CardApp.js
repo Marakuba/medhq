@@ -36,7 +36,8 @@ App.examination.CardApp = Ext.extend(Ext.Panel, {
 		this.patientPanel = new App.examination.PatientHistoryPanel ({
 			region:'west',
 			patient:this.patient,
-			width:250,
+			patient_name:this.patient_name,
+			width:450,
 			border: false,
 			collapsible:true,
 			collapseMode:'mini',
@@ -127,7 +128,7 @@ App.examination.CardApp = Ext.extend(Ext.Panel, {
 				};
 				delete this.record.data['id'];
 			};
-			this.record.set('ordered_service',this.service);
+			this.record.set('ordered_service',this.ordered_service);
 			this.cardStore.add(this.record);
 			this.cardBody = this.newCardBody({
 				print_name:this.record.data.print_name ? this.record.data.print_name: this.print_name,

@@ -7,13 +7,18 @@ App.examination.PatientHistoryPanel = Ext.extend(Ext.Panel, {
     	
     	this.history_tree = new App.PatientHistoryTreeGrid({
     		baseParams: {
-    			patient:this.patient
-    		}
+    			patient:this.patient,
+    			get_years:true,
+				get_months:true,
+				get_visits:true,
+				get_orders:true
+    		},
+    		
     	});
     	
     	var config = {
 			layout: 'fit',
-			autoScroll:true,
+//			autoScroll:true,
             items: [
             	this.history_tree
             ]

@@ -65,61 +65,139 @@ App.PatientHistoryTreeGrid = Ext.extend(Ext.ux.tree.TreeGrid,{
 	
 	initComponent:function(){
 		this.hiddenPkgs = [];
+		this.loader = new Ext.ux.tree.TreeGridLoader({
+			baseParams:this.baseParams ? this.baseParams : 
+			{
+				get_years:true,
+				get_months:true,
+				get_visits:true,
+				get_orders:true
+			},
+		    createNode : function(attr) {
+		        if (!attr.uiProvider) {
+//			            attr.uiProvider = App.ux.tree.ColspanNodeUI;
+		        }
+		        return Ext.tree.TreeLoader.prototype.createNode.call(this, attr);
+		    },
+        	dataUrl:'/exam/history_tree/',
+        	requestMethod:'GET',
+        	listeners:{
+        		load: function(){
+        		},
+        		scope:this
+        	}
+        });
 		this.columns = [{
-	        	header:'Действие',
-	        	dataIndex:'text',
-	        	sortable:false,
-	        	width:this.large ? 700 : 215
-	        },{
-	        	header:'Дата',
-	        	dataIndex:'created',
-	        	sortable:false,
-	        	hidden: this.hidePrice ? true : false,
-	        	width:50,
-	        	align:'right'
-	        },{
-	        	header:'Оператор',
-	        	dataIndex:'operator',
-	        	sortable:false,
+        	header:'Действие',
+        	dataIndex:'text',
+        	sortable:false,
+        	width:this.large ? 700 : 215
+        },{
+        	header:'Дата',
+        	dataIndex:'date',
+        	sortable:false,
+        	width:50,
+        	renderer:Ext.util.Format.dateRenderer('H:i / d.m.Y'),
+        	align:'right'
+        },{
+        	header:'Врач',
+        	dataIndex:'staff',
+        	sortable:true,
+        	width:70,
+        	align:'left'
+        },{
+        	header:'Оператор',
+        	dataIndex:'operator',
+        	sortable:false,
 //	        	hidden:true,
-	        	width:50,
-	        	align:'left'
-	        }];
+        	width:50,
+        	align:'left'
+        }];
+	    this.monthBtn = new Ext.Button({
+			text:'Месяц',
+			enableToggle: true,
+			pressed: true,
+			toggleHandler:function(button,state){
+				if (state){
+					this.loader.baseParams['get_months'] = true;
+				} else {
+					delete this.loader.baseParams['get_months']
+				};
+				this.loader.load(this.root);
+			},
+			scope:this
+		});
+	    this.yearBtn = new Ext.Button({
+			text:'Год',
+			pressed:true,
+			enableToggle: true,
+			toggleHandler:function(button,state){
+				if (state){
+					this.loader.baseParams['get_years'] = true;
+					this.monthBtn.enable();
+					if (this.monthBtn.pressed){
+						this.loader.baseParams['get_months'] = true;
+					}
+				} else {
+					delete this.loader.baseParams['get_years'];
+					delete this.loader.baseParams['get_months']
+					this.monthBtn.disable();
+				};
+				this.loader.load(this.root);
+			},
+			scope:this
+		});
+		this.visitBtn = new Ext.Button({
+			text:'Визиты',
+			enableToggle: true,
+			pressed: this.loader.baseParams['get_visits'] ? true : false,
+			toggleHandler:function(button,state){
+				if (state){
+					this.loader.baseParams['get_visits'] = true;
+				} else {
+					delete this.loader.baseParams['get_visits']
+				};
+				this.loader.load(this.root);
+			},
+			scope:this
+		});
+		
+		this.orderBtn = new Ext.Button({
+			text:'Услуги',
+			enableToggle: true,
+			pressed: this.loader.baseParams['get_orders'] ? true : false,
+			toggleHandler:function(button,state){
+				if (state){
+					this.loader.baseParams['get_orders'] = true;
+				} else {
+					delete this.loader.baseParams['get_orders']
+				};
+				this.loader.load(this.root);
+			},
+			scope:this
+		});
 		config = {
 			border:false,
-		    rootVisible: false,
+		    /*rootVisible:true,
+    		root:new Ext.tree.AsyncTreeNode({
+//            	expanded: true,
+            	text:'999',
+            	id:'root'
+            }),*/
 		    header: false,
 	        animCollapse:false,
 	        animate: false,
 //	        containerScroll: false,
 	        autoScroll: true,
-	        loader:new Ext.ux.tree.TreeGridLoader({
-				baseParams:this.baseParams ? this.baseParams : 
-				{
-					
-				},
-			    createNode : function(attr) {
-			        if (!attr.uiProvider) {
-			            attr.uiProvider = App.ux.tree.ColspanNodeUI;
-			        }
-			        return Ext.tree.TreeLoader.prototype.createNode.call(this, attr);
-			    },
-	        	dataUrl:'/exam/history_tree/',
-	        	requestMethod:'GET',
-	        	listeners:{
-	        		load: function(){
-	        		},
-	        		scope:this
-	        	}
-	        }),
+	        loader:this.loader,
 	        enableSort: false,
 	        columns:this.columns,
 	        listeners:{
 	        	click:function(node,e){
 	        		if(node.leaf) {
 	        			node.attributes['shiftKey'] = e.shiftKey;
-	        			this.fireEvent('historyclick', node);
-	        		}
+	        			this.fireEvent('nodeclick', node);
+	        		};
 	        	}
 	        },
 		    tbar: [new Ext.form.TextField({
@@ -155,7 +233,12 @@ App.PatientHistoryTreeGrid = Ext.extend(Ext.ux.tree.TreeGrid,{
 		    			
 		    		}
 		    	}
-		    },'->',{
+		    },
+		    this.yearBtn,
+		    this.monthBtn,
+		    this.visitBtn,
+		    this.orderBtn,
+		    '->',{
 		    	iconCls:'x-tbar-loading',
 		    	handler:function(){
 		    		this.getLoader().load(this.getRootNode());
