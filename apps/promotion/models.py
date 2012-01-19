@@ -26,6 +26,7 @@ class Promotion(models.Model):
     start_date = models.DateField(u'Начало')
     end_date = models.DateField(u'Окончание')
     discount = models.ForeignKey(Discount, verbose_name=u'Скидка по акции', blank=True, null=True)
+    total_price = models.DecimalField(u'Полная стоимость', max_digits=10, decimal_places=2, default=0.0)
     comment = models.TextField(u'Комментарий', blank=True, help_text=u'Условия акции')
     
     objects = PromotionManager()

@@ -36,7 +36,15 @@ App.visit.VisitForm = Ext.extend(Ext.FormPanel, {
 	        width: 300,
 		    collapsible: true,
 		    collapseMode: 'mini',
-	        split: true
+	        split: true,
+	        listeners:{
+	        	render: function(){
+	        		this.loader.baseParams = {
+	        			payment_type:'н',
+	        			promotion:true
+	        		}
+	        	}
+	        }
 	    });	
 
 ///

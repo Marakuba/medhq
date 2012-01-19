@@ -1,0 +1,23 @@
+{% extends "reporting/base.html" %}
+
+{% block data %}
+        <tr class="header">
+            <th>Дата документа</th>
+            <th>Пациент</th>
+            <th class="number">Сумма</th>
+        </tr>
+        
+        <tr class="footer">        
+            <th colspan=2>ВСЕГО:</th>
+            <th class="number">{{results.0.1}}</th>
+        </tr>
+
+        {% for row in results.0.0 %}
+            <tr>
+                <td>{{row.0}}</td>
+                <td>{{row.1}}</td>
+                <td class="number">{{row.2}}</td>
+            </tr>
+        {% endfor %}
+
+{% endblock %}

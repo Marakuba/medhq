@@ -1,0 +1,11 @@
+{% extends "admin/change_form.html" %}
+{% load i18n admin_modify adminmedia %}
+
+
+{% block extrastyle %}{{ block.super }}
+<style>
+	#promotionitem_set-group .base_service select {
+		width:100%;
+	}
+</style>
+{% endblock %}
