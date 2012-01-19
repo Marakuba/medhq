@@ -65,6 +65,28 @@ App.PatientHistoryTreeGrid = Ext.extend(Ext.ux.tree.TreeGrid,{
 	
 	initComponent:function(){
 		this.hiddenPkgs = [];
+		this.loader = new Ext.ux.tree.TreeGridLoader({
+			baseParams:this.baseParams ? this.baseParams : 
+			{
+				get_years:true,
+				get_months:true,
+				get_visits:true,
+				get_orders:true
+			},
+		    createNode : function(attr) {
+		        if (!attr.uiProvider) {
+//			            attr.uiProvider = App.ux.tree.ColspanNodeUI;
+		        }
+		        return Ext.tree.TreeLoader.prototype.createNode.call(this, attr);
+		    },
+        	dataUrl:'/exam/history_tree/',
+        	requestMethod:'GET',
+        	listeners:{
+        		load: function(){
+        		},
+        		scope:this
+        	}
+        });
 		this.columns = [{
         	header:'Действие',
         	dataIndex:'text',
@@ -128,7 +150,7 @@ App.PatientHistoryTreeGrid = Ext.extend(Ext.ux.tree.TreeGrid,{
 		this.visitBtn = new Ext.Button({
 			text:'Визиты',
 			enableToggle: true,
-			pressed: true,
+			pressed: this.loader.baseParams['get_visits'] ? true : false,
 			toggleHandler:function(button,state){
 				if (state){
 					this.loader.baseParams['get_visits'] = true;
@@ -139,34 +161,35 @@ App.PatientHistoryTreeGrid = Ext.extend(Ext.ux.tree.TreeGrid,{
 			},
 			scope:this
 		});
+		
+		this.orderBtn = new Ext.Button({
+			text:'Услуги',
+			enableToggle: true,
+			pressed: this.loader.baseParams['get_orders'] ? true : false,
+			toggleHandler:function(button,state){
+				if (state){
+					this.loader.baseParams['get_orders'] = true;
+				} else {
+					delete this.loader.baseParams['get_orders']
+				};
+				this.loader.load(this.root);
+			},
+			scope:this
+		});
 		config = {
 			border:false,
-		    rootVisible: false,
+		    /*rootVisible:true,
+    		root:new Ext.tree.AsyncTreeNode({
+//            	expanded: true,
+            	text:'999',
+            	id:'root'
+            }),*/
 		    header: false,
 	        animCollapse:false,
 	        animate: false,
 //	        containerScroll: false,
 	        autoScroll: true,
-	        loader:new Ext.ux.tree.TreeGridLoader({
-				baseParams:this.baseParams ? this.baseParams : 
-				{
-					get_years:true,
-    				get_months:true
-				},
-			    createNode : function(attr) {
-			        if (!attr.uiProvider) {
-//			            attr.uiProvider = App.ux.tree.ColspanNodeUI;
-			        }
-			        return Ext.tree.TreeLoader.prototype.createNode.call(this, attr);
-			    },
-	        	dataUrl:'/exam/history_tree/',
-	        	requestMethod:'GET',
-	        	listeners:{
-	        		load: function(){
-	        		},
-	        		scope:this
-	        	}
-	        }),
+	        loader:this.loader,
 	        enableSort: false,
 	        columns:this.columns,
 	        listeners:{
@@ -210,7 +233,12 @@ App.PatientHistoryTreeGrid = Ext.extend(Ext.ux.tree.TreeGrid,{
 		    			
 		    		}
 		    	}
-		    },this.yearBtn,this.monthBtn,'->',{
+		    },
+		    this.yearBtn,
+		    this.monthBtn,
+		    this.visitBtn,
+		    this.orderBtn,
+		    '->',{
 		    	iconCls:'x-tbar-loading',
 		    	handler:function(){
 		    		this.getLoader().load(this.getRootNode());

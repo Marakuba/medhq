@@ -254,6 +254,7 @@ App.examorder.ExamOrderGrid = Ext.extend(Ext.grid.GridPanel, {
 			config = {
 				closable:true,
         		patient:rec.data.patient,
+        		patient_name: rec.data.patient_name,
         		ordered_service:rec.data.resource_uri,
 				title: 'Пациент ' + rec.data.patient_name,
 				service:rec.data.service,

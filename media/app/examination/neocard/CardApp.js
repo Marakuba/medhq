@@ -36,7 +36,8 @@ App.examination.CardApp = Ext.extend(Ext.Panel, {
 		this.patientPanel = new App.examination.PatientHistoryPanel ({
 			region:'west',
 			patient:this.patient,
-			width:400,
+			patient_name:this.patient_name,
+			width:450,
 			border: false,
 			collapsible:true,
 			collapseMode:'mini',

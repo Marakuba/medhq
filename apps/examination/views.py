@@ -13,6 +13,7 @@ from visit.models import Visit, OrderedService
 from django.views.decorators.gzip import gzip_page
 from django.core.serializers.json import DjangoJSONEncoder
 import datetime
+from patient.models import Patient
 #from lab.models import LabOrder, Result
 
 def cardPrint(request,card_id):
@@ -85,11 +86,12 @@ def get_history_tree(request):
     
     patient = request.GET.get('patient')
     if not patient:
-        return False
+        return u'не задан пациент'
     
     get_years = request.GET.get('get_years')
     get_months = request.GET.get('get_months')
     get_visits = request.GET.get('get_visits')
+    get_orders = request.GET.get('get_orders')
     tree = []
     
     """cards = Card.objects.filter(ordered_service__order__patient = patient)\
@@ -122,27 +124,28 @@ def get_history_tree(request):
 #    laborder_list = LabOrder.objects.filter(visit__patient = patient)    
 #    results = Result.objects.filter(order__visit__patient = patient).order_by('order__visit__id','analysis__service__id')
     
-#    def build_order_tree(visit):
+    def build_exam_tree(order):
+        exam_tree = []
+        exams = cards.filter(ordered_service = order.id)
+        for excard in exams:
+            exam_node = {
+                "id":"exam%s" % (excard.id),
+                "text":excard.print_name,
+                "date":excard.created,
+                "staff":order.staff and order.staff.short_name() or '',
+                "cls":"multi-line-text-node",
+                "singleClickExpand":True,
+                "leaf": True
+            }
+            exam_tree.append(exam_node)
+        return exam_tree
     
-    def build_visit_tree(visit_list):
-        visit_tree = []
-        for visit in visit_list:
-            visit_childs = []
-            services = os_list.filter(order = visit.id)
-            for serv in services:
-                order_childs = []
-                exams = cards.filter(ordered_service = serv.id)
-                for excard in exams:
-                    exam_node = {
-                        "id":"exam%s" % (excard.id),
-                        "text":excard.print_name,
-                        "date":excard.created,
-                        "staff":serv.staff and serv.staff.short_name() or '',
-                        "cls":"multi-line-text-node",
-                        "singleClickExpand":True,
-                        "leaf": True
-                    }
-                    order_childs.append(exam_node)
+    def build_order_tree(visit):
+        order_tree = []
+        services = os_list.filter(order = visit.id)
+        for serv in services:
+            order_childs = build_exam_tree(serv)
+            if get_orders:
                 prefix = serv.service.lab_group and 'labservice' or 'order'
                 order_node = {
                     "id":"%s_%s" % (prefix,serv.id),
@@ -155,95 +158,128 @@ def get_history_tree(request):
                     "children": order_childs,
                     "leaf": order_childs and False
                 }
-                visit_childs.append(order_node)
-            """lab_orders = laborder_list.filter(visit__id=visit.id)
-            for lab in lab_orders:
-                laborder_childs = []
-                services = [node.analysis.service for node in results]
-                services = list(set(services))
-                for service in services:
-                    labservice_node = {
-                        "id":"labservice-%s-%s" % (lab.id,service.id),
-                        "text":service.name,
-                        "cls":"multi-line-text-node",
-                        "leaf": True
-                    }
-                    laborder_childs.append(labservice_node)
-                laborder_node = {
-                    "id":"laborder%s" % (lab.id),
-                    "text":"Лабораторный ордер %s" % (lab.id),
-                    "date":lab.created,
+                order_tree.append(order_node)
+            else:
+                if order_childs:
+                    order_tree += order_childs
+        return order_tree
+    
+    def build_visit_tree(visit_list):
+        visit_tree = []
+        if get_visits:
+            for visit in visit_list:
+                visit_childs = []
+                visit_childs = build_order_tree(visit)
+                visit_node = {
+                    "id":"visit%s" % (visit.barcode.id),
+                    "text":"Прием %s" % (visit.barcode.id),
+                    "date":visit.created,
+                    "opetator": visit.operator.first_name,
                     "cls":"multi-line-text-node",
                     'singleClickExpand':True,
-                    "children": laborder_childs,
-                    "leaf": laborder_childs and False
+                    "children": visit_childs,
+                    "leaf": visit_childs and False
                 }
-                visit_childs.append(laborder_node)"""
-            visit_node = {
-                "id":"visit%s" % (visit.barcode.id),
-                "text":"Прием %s" % (visit.barcode.id),
-                "date":visit.created,
-                "opetator": visit.operator.first_name,
-                "cls":"multi-line-text-node",
-                'singleClickExpand':True,
-                "children": visit_childs,
-                "leaf": visit_childs and False
-            }
-            visit_tree.append(visit_node)
+                visit_tree.append(visit_node)
+        else:
+            for visit in visit_list:
+                visit_tree_part = build_order_tree(visit)
+                if visit_tree_part:
+                    visit_tree += visit_tree_part
         return visit_tree
     
     def build_month_tree(year_visit_list,year):
         month_tree = []
-        for month in range(1,13):
-            month_visit_list = year_visit_list.filter(created__month = month)
-            mchilds = build_visit_tree(month_visit_list)
-            if not month_visit_list:
-                continue
-            text = MONTH_NAMES[month]
-            if year == today.year:
-                if month == today.month:
-                    text = u'В этом месяце'
-                if month == today.month-1:
-                    text = u'В прошлом месяце'    
-            month_node = {
-                "id":'month_%s_%s' % (year,month),
-                "text": text,
-                "children":mchilds,
-                "cls":"multi-line-text-node",
-                "singleClickExpand":True,
-                "leaf":mchilds and False
-            }
-            month_tree.append(month_node)
+        if get_months:
+            for month in range(1,13):
+                month_visit_list = year_visit_list.filter(created__month = month)
+                mchilds = build_visit_tree(month_visit_list)
+                if not month_visit_list:
+                    continue
+                text = MONTH_NAMES[month]
+                if year == today.year:
+                    if month == today.month:
+                        text = u'В этом месяце'
+                    if month == today.month-1:
+                        text = u'В прошлом месяце'    
+                month_node = {
+                    "id":'month_%s_%s' % (year,month),
+                    "text": text,
+                    "children":mchilds,
+                    "cls":"multi-line-text-node",
+                    "singleClickExpand":True,
+                    "leaf":mchilds and False
+                }
+                if mchilds:
+                    month_tree.append(month_node)
+        else:
+            month_tree = build_visit_tree(year_visit_list)
         return month_tree
     
     def build_year_tree(visit_list,year1,year2):
         year_tree = []
-        for year in range(year1,year2+1):
-            visits_for_year = visit_list.filter(created__year = year)
-            if get_months:
+        if get_years:
+            for year in range(year1,year2+1):
+                visits_for_year = visit_list.filter(created__year = year)
                 ychilds = build_month_tree(visits_for_year,year)
-            else:
-                ychilds = build_visit_tree(visits_for_year)
-            text = year
-            if year == today.year:
-                text = u'В этом году'
-            if year == today.year-1:
-                text = u'В прошлом году'
-            year_node = {
-                "id":'year_%s' % (year),
-                "text": text,
-                "children":ychilds,
-                "cls":"multi-line-text-node",
-                "singleClickExpand":True,
-                "leaf":ychilds and False
-            }
-            year_tree.append(year_node)
+                text = year
+                if year == today.year:
+                    text = u'В этом году'
+                if year == today.year-1:
+                    text = u'В прошлом году'
+                year_node = {
+                    "id":'year_%s' % (year),
+                    "text": text,
+                    "children":ychilds,
+                    "cls":"multi-line-text-node",
+                    "singleClickExpand":True,
+                    "leaf":ychilds and False
+                }
+                if ychilds:
+                    year_tree.append(year_node)
+        else:
+            year_tree = build_visit_tree(visit_list)
         return year_tree
     
-    if get_years:
+    def build_patient_tree(patient_id=False):
+        if patient_id:
+            try:
+                patient = Patient.objects.get(id=patient_id)
+            except:
+                return []
+            patient_history = build_year_tree(visits,min_date.year,max_date.year)
+            patient_node = {
+                "id":'patient_%s' % (patient_id),
+                "text": patient.full_name(),
+                "children":patient_history,
+                "cls":"multi-line-text-node",
+                "expanded":True,
+                "singleClickExpand":True,
+                "leaf":patient_history and False
+            }
+        return patient_node
+
+    tree = [build_patient_tree(patient)]
+    
+    """if get_years:
         tree = build_year_tree(visits,min_date.year,max_date.year)
     else:
-        tree = build_visit_tree(visits)
+        if get_visits:
+            tree = build_visit_tree(visits)
+        else:
+            for visit in visits:
+                orders = os_list.filter(order = visit.id)
+                if get_orders:
+                    order_tree_part = []
+                    order_tree_part = build_order_tree(visit)
+                    if order_tree_part:
+                        tree += order_tree_part
+                else:
+                    for order in orders:
+                        exam_tree_part = []
+                        exam_tree_part = build_exam_tree(order)
+                        if exam_tree_part:
+                            tree += exam_tree_part"""
     _result_tree = simplejson.dumps(tree,cls=DjangoJSONEncoder)
     return _result_tree
     
