@@ -181,6 +181,9 @@
 .x-grid-row-error {
 	background:#FF7373;
 }
+.x-grid-row-normal {
+	background:#D2FFC9;
+}
 .x-grid-row-stripe {
 	background:url(../images/stripe_warn.png);
 }

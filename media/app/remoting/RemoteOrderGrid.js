@@ -122,6 +122,9 @@ App.remoting.RemoteOrderGrid = Ext.extend(Ext.grid.GridPanel, {
             },{
                 text:'ожидание результата',
                 filterValue:'>'
+            },{
+                text:'выполненные',
+                filterValue:'з'
             }],
             changeHandler:function(btn, item){
             	this.storeFilter('status',item.filterValue);
@@ -181,6 +184,9 @@ App.remoting.RemoteOrderGrid = Ext.extend(Ext.grid.GridPanel, {
 		    				break;
 		    			case '!' : 
 		    				cls = 'x-grid-row-error';
+		    				break;
+		    			case 'з' : 
+		    				cls = 'x-grid-row-normal';
 		    				break;
 		    		}
 		    		return cls
@@ -245,18 +251,19 @@ App.remoting.RemoteOrderGrid = Ext.extend(Ext.grid.GridPanel, {
 	onSend : function() {
 		var ids = this.getSelectedId();
 		App.direct.remoting.postOrders(ids,function(result,e){
-			this.storeFilter('status',undefined);
-        	this.manageBtn();
+			this.modeBtn.setActiveItem(0);
+//			this.storeFilter('status',undefined);
+//        	this.manageBtn();
 		},this);
 	},
 	
 	onToLab : function() {
 		var ids = this.getSelectedId();
-		console.info(ids);
 		App.direct.visit.toLab(ids,function(result,e){
-			this.storeFilter('status',undefined);
-        	this.manageBtn();
-		});
+			this.modeBtn.setActiveItem(0);
+//			this.storeFilter('status',undefined);
+//        	this.manageBtn();
+		}, this);
 	}
 	
 });

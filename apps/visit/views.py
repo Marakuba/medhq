@@ -15,6 +15,8 @@ from django.http import HttpResponseBadRequest
 from extdirect.django.decorators import remoting
 from direct.providers import remote_provider
 import simplejson
+from tastypie.http import HttpBadRequest
+from service.exceptions import TubeIsNoneException
 autocomplete = AutocompleteView('visit')
 
 def all(request, visit_id):
@@ -81,7 +83,10 @@ def visit(request, visit_id):
 
 def sampling(request, visit_id):
     visit = get_object_or_404(Visit, pk=visit_id)
-    visit.generate_laborder()
+    try:
+        visit.generate_laborder()
+    except TubeIsNoneException, err:
+        return HttpBadRequest(err.__unicode__())
 
     patient = visit.patient
     # выводим все пробирки в одной таблице

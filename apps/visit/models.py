@@ -25,6 +25,7 @@ from django.core.exceptions import ObjectDoesNotExist
 from constance import config
 from django.contrib.contenttypes import generic
 from remoting.models import TransactionItem
+from service.exceptions import TubeIsNoneException
 
 class ReferralAgent(make_operator_object('referralagent')):
     """
@@ -307,6 +308,10 @@ class OrderedService(make_operator_object('ordered_service')):
         s = self.service
         ext_service = self.service.extendedservice_set.get(state=self.execution_place)
         if s.is_lab():
+            
+            if ext_service.tube is None:
+                raise TubeIsNoneException( u"В расширенной услуге <strong>'%s'</strong> для организации <strong>%s</strong> не указан тип пробирки" % 
+                                           (ext_service.base_service.name, ext_service.state) )
             
             sampling, created = Sampling.objects.get_or_create(visit=visit,
                                                                laboratory=self.execution_place,
