@@ -133,6 +133,11 @@ class PatientResource(ExtResource):
     ad_source = fields.ForeignKey(AdSourceResource, 'ad_source', null=True)
     discount = fields.ForeignKey(DiscountResource, 'discount', null=True)
     client_item = fields.OneToOneField(ClientItemResource, 'client_item', null=True)
+    
+    def hydrate_initial_account(self, bundle):
+        bundle.data['initial_account'] = str(bundle.data['initial_account'])
+        return bundle
+
 
     def dehydrate(self, bundle):
         bundle.data['discount_name'] = bundle.obj.discount and bundle.obj.discount or u'0%'
