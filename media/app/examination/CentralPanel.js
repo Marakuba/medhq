@@ -120,6 +120,22 @@ App.ExamCentralPanel = Ext.extend(Ext.Panel, {
                     },
                     scope:this
                 }]
+            },{
+                xtype: 'buttongroup',
+                title: 'Пациенты',
+                columns: 2,
+                defaults: {
+                    scale: 'small'
+                },
+                items: [{
+                    text: 'Список пациентов',
+                    scale:'medium',
+                    iconAlign: 'top',
+                    handler: function(){
+                    	this.launchApp('patientgridpanel');
+                    },
+                    scope:this
+                }]
             },'->',this.cmb,{
             	text:'Выход',
             	handler:function(){

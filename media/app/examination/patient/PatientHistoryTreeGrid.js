@@ -91,26 +91,26 @@ App.PatientHistoryTreeGrid = Ext.extend(Ext.ux.tree.TreeGrid,{
         	header:'Действие',
         	dataIndex:'text',
         	sortable:false,
-        	width:this.large ? 700 : 215
+        	width:400
         },{
         	header:'Дата',
         	dataIndex:'date',
         	sortable:false,
-        	width:50,
+        	width:60,
         	renderer:Ext.util.Format.dateRenderer('H:i / d.m.Y'),
         	align:'right'
         },{
         	header:'Врач',
         	dataIndex:'staff',
         	sortable:true,
-        	width:70,
+        	width:80,
         	align:'left'
         },{
         	header:'Оператор',
         	dataIndex:'operator',
         	sortable:false,
 //	        	hidden:true,
-        	width:50,
+        	width:80,
         	align:'left'
         }];
 	    this.monthBtn = new Ext.Button({
@@ -186,6 +186,7 @@ App.PatientHistoryTreeGrid = Ext.extend(Ext.ux.tree.TreeGrid,{
             }),*/
 		    header: false,
 	        animCollapse:false,
+	        bubbleEvents:['nodeclick'],
 	        animate: false,
 //	        containerScroll: false,
 	        autoScroll: true,
@@ -200,51 +201,19 @@ App.PatientHistoryTreeGrid = Ext.extend(Ext.ux.tree.TreeGrid,{
 	        		};
 	        	}
 	        },
-		    tbar: [new Ext.form.TextField({
-		    	id:'history-tree-filter',
-		        width: this.searchFieldWidth || 250,
-				emptyText:'Поиск по названию',
-                enableKeyEvents: true,
-				listeners:{
-					render: function(f){
-                    	this.filter = new Ext.tree.TreeFilter(this, {
-                    		clearBlank: true,
-                    		autoClear: true
-                    	});
-					},
-                    keydown: {
-                        fn: this.filterTree,
-                        buffer: 350,
-                        scope: this
-                    },
-                    scope: this
-				}
-		    }),{
-		    	hidden:!this.wideActions,
-		    	text:'Сбросить кэш',
-		    	handler:function(){
-		    		
+		    tbar: [
+			    this.yearBtn,
+			    this.monthBtn,
+			    this.visitBtn,
+			    this.orderBtn,
+			    '->',{
+			    	iconCls:'x-tbar-loading',
+			    	handler:function(){
+			    		this.getLoader().load(this.getRootNode());
+			    	},
+			    	scope:this
 		    	}
-		    },{
-		    	xtype:'datefield',
-		    	hidden:!this.wideActions,
-		    	listeners:{
-		    		select:function(df){
-		    			
-		    		}
-		    	}
-		    },
-		    this.yearBtn,
-		    this.monthBtn,
-		    this.visitBtn,
-		    this.orderBtn,
-		    '->',{
-		    	iconCls:'x-tbar-loading',
-		    	handler:function(){
-		    		this.getLoader().load(this.getRootNode());
-		    	},
-		    	scope:this
-		    }]
+		    ]
 		};
 
 		Ext.apply(this, Ext.apply(this.initialConfig, config));

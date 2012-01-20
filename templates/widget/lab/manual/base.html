@@ -1,0 +1,33 @@
+{% extends "print/off_blank.html" %}
+
+{% load lab_tags flatblock_tags %}
+
+{% block title %}{{ order }} - Результаты{% endblock %}
+
+{% block body %}
+
+
+<div id="print-box">
+	<a href="javascript:window.print();">Печать</a>
+</div>
+
+<div class="page_wrapper_A4_book">
+<div class="page_wrapper">
+{% include "print/lab/manual/header.html" %}
+
+<table class="results">
+	<tr>
+		<td colspan="4" class="group">{{ service }}</td>
+	</tr>
+	
+	{% block data %}
+	{% endblock %}	
+
+</table>
+
+
+<div class="comment">{% autoescape off %}{{ laborder.comment }}{% endautoescape %}</div>
+<div class="print_time">{{ object.print_date|default:'---' }}</div>
+</div>
+</div>
+{% endblock %}

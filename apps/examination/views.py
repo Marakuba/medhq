@@ -82,7 +82,7 @@ def get_history_tree(request):
         10: u'Октябрь',
         11: u'Ноябрь',
         12: u'Декабрь'
-                   }
+    }
     
     patient = request.GET.get('patient')
     if not patient:
@@ -92,29 +92,7 @@ def get_history_tree(request):
     get_months = request.GET.get('get_months')
     get_visits = request.GET.get('get_visits')
     get_orders = request.GET.get('get_orders')
-    tree = []
     
-    """cards = Card.objects.filter(ordered_service__order__patient = patient)\
-        .order_by('ordered_service__order__id')
-    results = Result.objects.filter(order__visit__patient = patient)\
-        .order_by('order__visit__id','analysis__service__id')
-        
-    all_services = {}
-    for card in cards:
-        if not all_services.has_key(card.ordered_service.order.id):
-            all_services[card.ordered_service.order.id] = {'cards':{},'results':{}}
-        if not all_services[card.ordered_service.order.id].has_key(card.order.service.id):
-            all_services[card.ordered_service.order.id]['cards'][card.order.service.id] = []
-        all_services[card.ordered_service.order.id]['cards'][card.order.service.id].append(card)
-            
-    for result in results:
-        if not all_services.has_key(result.order.visit.id):
-            all_services[result.order.visit.id] = {'cards':{},'results':{}}
-        if not all_services[result.order.visit.id]['results'].has_key(result.analysis.service.id):
-            all_services[result.order.visit.id]['results'][result.analysis.service.id] = {}
-        if not all_services[result.order.visit.id]['results'][result.analysis.service.id][]
-        all_services[result['order__visit__id']]['results'][result['analysis__service__id']].append(result)"""
-        
     visits = Visit.objects.filter(patient = patient).order_by('created')
     os_list = OrderedService.objects.filter(order__patient = patient)
     cards = Card.objects.filter(ordered_service__order__patient = patient).order_by('ordered_service__order__id')
@@ -129,11 +107,10 @@ def get_history_tree(request):
         exams = cards.filter(ordered_service = order.id)
         for excard in exams:
             exam_node = {
-                "id":"exam%s" % (excard.id),
+                "id":"exam_%s" % (excard.id),
                 "text":excard.print_name,
                 "date":excard.created,
                 "staff":order.staff and order.staff.short_name() or '',
-                "cls":"multi-line-text-node",
                 "singleClickExpand":True,
                 "leaf": True
             }
@@ -146,7 +123,15 @@ def get_history_tree(request):
         for serv in services:
             order_childs = build_exam_tree(serv)
             if get_orders:
-                prefix = serv.service.lab_group and 'labservice' or 'order'
+                if serv.service.lab_group:
+                    prefix = 'labservice'
+                    try:
+                        prefix = serv.service.labservice.is_manual and 'manual'+prefix or prefix
+                    except:
+                        pass
+                else:
+                    prefix = 'order'
+                
                 order_node = {
                     "id":"%s_%s" % (prefix,serv.id),
                     "text":serv.service.name,
@@ -156,7 +141,7 @@ def get_history_tree(request):
                     "cls":"multi-line-text-node",
                     'singleClickExpand':True,
                     "children": order_childs,
-                    "leaf": order_childs and False
+                    "leaf": len(order_childs) == 0
                 }
                 order_tree.append(order_node)
             else:
@@ -171,14 +156,13 @@ def get_history_tree(request):
                 visit_childs = []
                 visit_childs = build_order_tree(visit)
                 visit_node = {
-                    "id":"visit%s" % (visit.barcode.id),
+                    "id":"visit_%s" % (visit.barcode.id),
                     "text":"Прием %s" % (visit.barcode.id),
                     "date":visit.created,
                     "opetator": visit.operator.first_name,
-                    "cls":"multi-line-text-node",
                     'singleClickExpand':True,
                     "children": visit_childs,
-                    "leaf": visit_childs and False
+                    "leaf": len(visit_childs) == 0
                 }
                 visit_tree.append(visit_node)
         else:
@@ -206,9 +190,8 @@ def get_history_tree(request):
                     "id":'month_%s_%s' % (year,month),
                     "text": text,
                     "children":mchilds,
-                    "cls":"multi-line-text-node",
                     "singleClickExpand":True,
-                    "leaf":mchilds and False
+                    "leaf": len(mchilds) == 0
                 }
                 if mchilds:
                     month_tree.append(month_node)
@@ -231,9 +214,8 @@ def get_history_tree(request):
                     "id":'year_%s' % (year),
                     "text": text,
                     "children":ychilds,
-                    "cls":"multi-line-text-node",
                     "singleClickExpand":True,
-                    "leaf":ychilds and False
+                    "leaf": len(ychilds) == 0
                 }
                 if ychilds:
                     year_tree.append(year_node)
@@ -252,7 +234,6 @@ def get_history_tree(request):
                 "id":'patient_%s' % (patient_id),
                 "text": patient.full_name(),
                 "children":patient_history,
-                "cls":"multi-line-text-node",
                 "expanded":True,
                 "singleClickExpand":True,
                 "leaf":patient_history and False
@@ -283,8 +264,6 @@ def get_history_tree(request):
     _result_tree = simplejson.dumps(tree,cls=DjangoJSONEncoder)
     return _result_tree
     
-    #doc_type = request.GET.get('nocache')
-
 @gzip_page
 def history_tree(request):
     resp = get_history_tree(request)

@@ -97,6 +97,13 @@ App.examorder.ExamOrderGrid = Ext.extend(Ext.grid.GridPanel, {
 			}
 		};
 		
+		this.historyBtn = new Ext.Button({
+			text:'История пациента',
+			disabled:true,
+			handler:this.onOpenHistory,
+			scope:this
+		});
+		
 		this.ttb = new Ext.Toolbar({ 
 			items:[{
 				text:'Добавить карту осмотра',
@@ -123,7 +130,7 @@ App.examorder.ExamOrderGrid = Ext.extend(Ext.grid.GridPanel, {
 					}
 				},
 				scope:this
-			},'-',{
+			},this.historyBtn,'-',{
 				text:'Обновить',
 				iconCls:'x-tbar-loading',
 				scope:this,
@@ -198,12 +205,14 @@ App.examorder.ExamOrderGrid = Ext.extend(Ext.grid.GridPanel, {
 						if (!rec.data.executed) {
 							Ext.getCmp(this.tmp_id+'order-exec').enable()
 						};
-						Ext.getCmp(this.tmp_id+'add-exam').enable()
+						Ext.getCmp(this.tmp_id+'add-exam').enable();
+						this.historyBtn.enable();
 						
 					},
 					rowdeselect: function() {
 						Ext.getCmp(this.tmp_id+'order-exec').disable();
-						Ext.getCmp(this.tmp_id+'add-exam').disable()
+						Ext.getCmp(this.tmp_id+'add-exam').disable();
+						this.historyBtn.disable()
 					},
 					scope:this
 				}
@@ -303,6 +312,24 @@ App.examorder.ExamOrderGrid = Ext.extend(Ext.grid.GridPanel, {
 	
 	getSelected: function() {
 		return this.getSelectionModel().getSelected()
+	},
+	
+	onOpenHistory: function(){
+		var rec = this.getSelected();
+		if (rec) {
+			config = {
+				closable:true,
+        		patient:rec.data.patient,
+        		patient_name: rec.data.patient_name,
+        		ordered_service:rec.data.resource_uri,
+				title: 'Пациент ' + rec.data.patient_name,
+				service:rec.data.service,
+				print_name:rec.data.service_name,
+				staff:this.staff
+//				scope:this
+			}
+			App.eventManager.fireEvent('launchapp', 'patienthistory',config);
+		}
 	}
 
 	

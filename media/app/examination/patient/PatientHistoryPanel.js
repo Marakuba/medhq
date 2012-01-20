@@ -13,7 +13,7 @@ App.examination.PatientHistoryPanel = Ext.extend(Ext.Panel, {
 				get_visits:true,
 				get_orders:true
     		},
-    		
+    		bubbleEvents:['nodeclick']
     	});
     	
     	var config = {

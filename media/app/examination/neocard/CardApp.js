@@ -58,7 +58,6 @@ App.examination.CardApp = Ext.extend(Ext.Panel, {
 		});
 	
 		var config = {
-			id: 'neocard-cmp',
 			closable:true,
 			title: 'Карта осмотра',
 			layout: 'border',	
@@ -92,6 +91,7 @@ App.examination.CardApp = Ext.extend(Ext.Panel, {
 				fieldSetStore : this.fieldSetStore,
 				subSectionStore : this.subSectionStore,
 				generalTab: this.generalTab,
+				patient:this.patient,
 				isCard:true,
 				staff:this.staff,
 				title:'Заголовок',

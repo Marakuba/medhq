@@ -72,7 +72,14 @@ App.examination.TemplateBody = Ext.extend(Ext.TabPanel, {
 			scope:this
 		});
 		
-		this.ttb = [this.addSecBtn, this.addSubSecBtn,'-',this.previewBtn, this.closeBtn];
+		this.historyBtn = new Ext.Button({
+			visible:this.isCard,
+			text: 'История пациента',
+			handler:this.onHistoryOpen.createDelegate(this),
+			scope:this
+		});
+		
+		this.ttb = [this.addSecBtn, this.addSubSecBtn,'-',this.previewBtn, this.closeBtn, this.historyBtn];
 		
 		this.equipTab = new App.examination.EquipmentTab({
 			id:'equip-tab',
@@ -345,6 +352,16 @@ App.examination.TemplateBody = Ext.extend(Ext.TabPanel, {
 		});
 		this.add(this.svgTab);
 		this.setActiveTab(this.svgTab);
+	},
+	
+	onHistoryOpen: function(){
+		config = {
+			closable:true,
+    		patient:this.patient,
+    		patient_name: this.patient_name,
+			staff:this.staff
+		}
+		App.eventManager.fireEvent('launchapp', 'patienthistory',config);
 	}
 	
 
