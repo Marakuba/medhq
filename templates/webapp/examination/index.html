@@ -118,7 +118,7 @@
 			return [API_URL,'dashboard',resource].join("/");
 		}
 	</script>
-
+	
     <!-- LIBS -->
     <script type="text/javascript" src="{{ STATIC_URL }}extjs/adapter/ext/ext-base.js"></script>
     <!-- <script type="text/javascript" src="{{ STATIC_URL }}libs/markdown.js"></script> -->
@@ -137,7 +137,6 @@
 
     <script type="text/javascript" src="{{ STATIC_URL }}extjs/ux/PortalColumn.js"></script> 
     <script type="text/javascript" src="{{ STATIC_URL }}extjs/ux/Portal.js"></script> 
-    
     
     <script type="text/javascript" src="{{ STATIC_URL }}app/ux/GSearchField.js"></script>
     <script type="text/javascript" src="{{ STATIC_URL }}app/ux/StatusBar.js"></script>
@@ -172,7 +171,6 @@
     <script type="text/javascript" src="{{ STATIC_URL }}app/ux/remotetree/js/Ext.ux.tree.TreeFilterX.js"></script>
     <script type="text/javascript" src="{{ STATIC_URL }}app/ux/remotetree/js/WebPage.js"></script>
     
-    
     <!-- Editor app -->
 	<script type="text/javascript" src="{{ STATIC_URL }}app/ux/DropDownList.js"></script>
 	
@@ -199,9 +197,12 @@
     <script type="text/javascript" src="{{ STATIC_URL }}app/examination/editor/Editor.js"></script>
     <script type="text/javascript" src="{{ STATIC_URL }}app/examination/editor/card.js"></script>
     
+    <!-- Patient History -->
+    <script type="text/javascript" src="{{ STATIC_URL }}app/examination/patient/PatientHistoryTreeGrid.js"></script>
+    <script type="text/javascript" src="{{ STATIC_URL }}app/examination/patient/PatientHistoryPanel.js"></script>
+    <script type="text/javascript" src="{{ STATIC_URL }}app/examination/patient/PatientHistory.js"></script>
+    
     <!-- NeoCard app -->
-    <script type="text/javascript" src="{{ STATIC_URL }}app/registry/patient/PatientHistoryTreeGrid.js"></script>
-    <script type="text/javascript" src="{{ STATIC_URL }}app/examination/neocard/PatientHistoryPanel.js"></script>
     <script type="text/javascript" src="{{ STATIC_URL }}app/examination/neocard/CardStartPanel.js"></script>
     <script type="text/javascript" src="{{ STATIC_URL }}app/examination/neocard/CardGeneralTab.js"></script>
     <script type="text/javascript" src="{{ STATIC_URL }}app/examination/neocard/CardApp.js"></script>
@@ -224,6 +225,9 @@
     <script type="text/javascript" src="{{ STATIC_URL }}app/examination/cards/ExamCardGrid.js"></script>
     <script type="text/javascript" src="{{ STATIC_URL }}app/examination/cards/ExamBackend.js"></script>
     <script type="text/javascript" src="{{ STATIC_URL }}app/examination/cards/AllExamGrid.js"></script>
+    
+    <script type="text/javascript" src="{{ STATIC_URL }}app/examination/patient/PatientGrid.js"></script>
+    <script type="text/javascript" src="{{ STATIC_URL }}app/examination/patient/PatientGridPanel.js"></script>
     
 {% include "webapp/includes/active_profile.html" %}
 

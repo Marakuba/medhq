@@ -107,7 +107,7 @@ def get_history_tree(request):
         exams = cards.filter(ordered_service = order.id)
         for excard in exams:
             exam_node = {
-                "id":"exam%s" % (excard.id),
+                "id":"exam_%s" % (excard.id),
                 "text":excard.print_name,
                 "date":excard.created,
                 "staff":order.staff and order.staff.short_name() or '',
@@ -156,7 +156,7 @@ def get_history_tree(request):
                 visit_childs = []
                 visit_childs = build_order_tree(visit)
                 visit_node = {
-                    "id":"visit%s" % (visit.barcode.id),
+                    "id":"visit_%s" % (visit.barcode.id),
                     "text":"Прием %s" % (visit.barcode.id),
                     "date":visit.created,
                     "opetator": visit.operator.first_name,
