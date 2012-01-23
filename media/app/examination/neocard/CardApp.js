@@ -73,6 +73,7 @@ App.examination.CardApp = Ext.extend(Ext.Panel, {
 		this.on('afterrender',function(){
 			this.startPanel = this.newStartPanel({
 				service:this.service,
+				ordered_service:this.ordered_service,
 				staff:this.staff
 			});
 			this.contentPanel.add(this.startPanel);
