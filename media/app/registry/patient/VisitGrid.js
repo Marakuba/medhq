@@ -48,7 +48,7 @@ App.patient.VisitGrid = Ext.extend(Ext.grid.GridPanel, {
 		    	}
 		    	//editor: new Ext.form.TextField({})
 		    },*/{
-		    	width: 80, 
+		    	width: 30, 
 		    	sortable: true, 
 		    	dataIndex: 'cls', 
 		    	renderer: function(val) {
@@ -82,18 +82,18 @@ App.patient.VisitGrid = Ext.extend(Ext.grid.GridPanel, {
 		    	}
 		    },*/{
 		    	header: "№ заказа", 
-		    	width: 150, 
+		    	width: 65, 
 		    	sortable: true, 
 		    	dataIndex: 'barcode_id'
 		    },{
 		    	header: "Дата", 
-		    	width: 280, 
+		    	width: 100, 
 		    	sortable: true, 
 		    	dataIndex: 'created',
 		    	renderer:Ext.util.Format.dateRenderer('d.m.Y H:i')
 		    },{
 		    	header: "Сумма, руб.", 
-		    	width: 200, 
+		    	width: 80, 
 		    	sortable: true, 
 		    	dataIndex: 'total_price', 
 		    	renderer: function(v,params,rec){
@@ -115,7 +115,7 @@ App.patient.VisitGrid = Ext.extend(Ext.grid.GridPanel, {
 		    	}
 		    }*/,{
 		    	header: "Скидка, %", 
-		    	width: 15, 
+		    	width: 70, 
 		    	sortable: true, 
 		    	dataIndex: 'discount_value', 
 		    	renderer: function(v,params,rec){
@@ -125,8 +125,8 @@ App.patient.VisitGrid = Ext.extend(Ext.grid.GridPanel, {
 		    		return v
 		    	}
 		    },{
-		    	header: "Сумма скидки, руб.", 
-		    	width: 15, 
+		    	header: "Скидка, руб.", 
+		    	width: 80, 
 		    	sortable: true, 
 		    	dataIndex: 'discount_value', 
 		    	renderer: function(val, params, rec) {
@@ -137,23 +137,23 @@ App.patient.VisitGrid = Ext.extend(Ext.grid.GridPanel, {
 		    	}
 		    },{
 		    	header: "Кто направил", 
-		    	width: 45, 
+		    	width: 180, 
 		    	sortable: true, 
 		    	dataIndex: 'referral_name', 
 		    	editor: new Ext.form.TextField({})
 		    },{
 		    	header: "*", 
-		    	width: 1, 
+		    	width: 25, 
 		    	sortable: true, 
 		    	dataIndex: 'payment_type'
 		    },{
 		    	header: "Офис", 
-		    	width: 22, 
+		    	width: 120, 
 		    	sortable: true, 
 		    	dataIndex: 'office_name' 
 		    },{
 		    	header: "Оператор", 
-		    	width: 20, 
+		    	width: 100, 
 		    	sortable: true, 
 		    	dataIndex: 'operator_name', 
 		    	//editor: new Ext.form.TextField({})

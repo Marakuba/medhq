@@ -43,16 +43,16 @@ App.CentralPanel = Ext.extend(Ext.Panel, {
 					scale:'medium'
 				},
 				items:[{
+					text:'Заказы',
+					handler:function(){
+						this.launchApp('remoteordergrid');
+					},
+					scope:this
+				},{
 					text:'Результаты',
 					tooltip:'Журнал результатов анализов',
 					handler:function(){
 						this.launchApp('results');
-					},
-					scope:this
-				},{
-					text:'Orders',
-					handler:function(){
-						this.launchApp('remoteordergrid');
 					},
 					scope:this
 				}]

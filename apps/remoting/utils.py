@@ -100,20 +100,21 @@ def get_ordered_service(request, data):
                     execution_place = ex_services[0]
             else:
                 raise Exception(u"Исследование с кодом '%s' имеет неверные настройки" % data['order']['code'])
-            
+            print u'Для услуги',service, u'найдено место выполнения:', execution_place.state
             ordered_service = OrderedService.objects.create(order=visit,
                                                             execution_place=execution_place.state,
                                                             service=service,
                                                             operator=visit.operator)
-            print "OrderedService created", ordered_service
+            print "OrderedService created", ordered_service.service
             ordered_service.to_lab()
+            print "Sended to lab...", ordered_service.service, execution_place.state
             SyncObject.objects.create(content_object=ordered_service, 
                                       state=remote_state, 
                                       sync_id=data['order']['id'])
         except ObjectDoesNotExist:
             raise Exception(u"Исследование с кодом '%s' не найдено" % data['order']['code'])
-        except:
-            pass 
+        except Exception, err:
+            print "какая-то неизввестная ошибка:", err
     return ordered_service
 
 
@@ -139,7 +140,10 @@ def get_result(request, data):
         result.value = r['value']
         result.validation = 1
         result.save()
+        return result
     except ObjectDoesNotExist:
         raise Exception(u"Результат %s для заказа %s не найден" % (r['name'],visit_id) )
     except:
         pass
+    
+    return None

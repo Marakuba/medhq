@@ -99,7 +99,7 @@ def print_results(request, order):
                 result_list.append({'class':'blank','object':cur_service.gen_ref_interval or ' '})
             cur_service = result.analysis.service
             set_len = cur_service.analysis_set.all().count()
-            group = ", ".join([node.__unicode__() for node in cur_service.get_ancestors()]) 
+            group = cur_service.parent.__unicode__()#", ".join([node.__unicode__() for node in cur_service.get_ancestors()]) 
             if cur_group != group:
                 cur_group = group
                 result_list.append({'class':'group','object':cur_group}) 

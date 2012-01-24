@@ -1586,6 +1586,7 @@ class ClientAccountResource(ExtResource):
         resource_name = 'clientaccount'
         authorization = DjangoAuthorization()
         filtering = {
+            'id':ALL,
             'client_item' : ALL_WITH_RELATIONS,
         }
         

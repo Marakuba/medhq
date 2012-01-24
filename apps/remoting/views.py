@@ -12,6 +12,7 @@ from django.utils import simplejson
 from django.core.serializers.json import DjangoJSONEncoder
 from remoting.utils import get_ordered_service, get_visit_sync_id, get_result
 from remoting.models import Transaction, TransactionItem, SyncObject
+from django.db.models.aggregates import Count
 
 def post_orders_to_local(request, data_set):
     result = []
@@ -38,6 +39,7 @@ def post_results_to_local(request, data_set):
 
     result = []
     print "results:",data_set
+    lab_orders = {}
     for data in data_set:
         success = True
         visit_id = data['visit']['id']
@@ -45,10 +47,16 @@ def post_results_to_local(request, data_set):
         msg = u'Результат %s (%s) принят' % (data['result']['name'], visit_id)
         
         try:
-            get_result(request, data)
+            res = get_result(request, data)
         except Exception, err:
             msg = err.__unicode__()
             success = False
+        
+        if success:
+            if not lab_orders.has_key(res.order.id):
+                lab_orders[res.order.id] = res.order
+                res.order.revert_results()
+
             
         result.append({
             'result':name,
@@ -56,6 +64,24 @@ def post_results_to_local(request, data_set):
             'success': success,
             'message':msg
         })
+
+#TODO: переделать как метод класса LabOrder
+    for k,lab_order in lab_orders.iteritems(): 
+        lab_order.confirm_results()
+#        lab_order.is_completed = True
+#        for result in lab_order.result_set.all():
+#            if not result.is_completed():
+#                lab_order.is_completed = False
+#                break
+#        lab_order.save()
+#        if lab_order.is_completed:
+#            key = 'analysis__service__id'
+#            res = lab_order.result_set.all().order_by(key).values(key).annotate(c=Count(key))
+#            ids = [r[key] for r in res]
+#            OrderedService.objects.filter(order=lab_order.visit, 
+#                                          service__id__in=ids).update(status=u'з', 
+#                                                                      executed=lab_order.executed)
+
     return result
 
 
