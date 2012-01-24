@@ -91,6 +91,9 @@ App.remoting.RemoteOrderGrid = Ext.extend(Ext.grid.GridPanel, {
 	    			case 'л' : 
 	    				return 'К отправке';
 	    				break;
+	    			case 'з' : 
+	    				return 'Готово';
+	    				break;
 	    			case '!' : 
 	    				return String.format('{0}', rec.data.message) ;
 	    				break;
