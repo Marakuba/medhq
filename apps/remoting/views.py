@@ -6,7 +6,7 @@ from django.http import HttpResponse
 import urllib2
 from extdirect.django.decorators import remoting
 from direct.providers import remote_provider
-from visit.models import OrderedService
+from visit.models import OrderedService, Visit
 from collections import defaultdict
 from django.utils import simplejson
 from django.core.serializers.json import DjangoJSONEncoder
@@ -14,7 +14,7 @@ from remoting.utils import get_ordered_service, get_visit_sync_id, get_result
 from remoting.models import Transaction, TransactionItem, SyncObject
 from django.db.models.aggregates import Count
 
-def post_orders_to_local(request, data_set):
+def post_orders_to_local(request, data_set, options):
     result = []
     for data in data_set:
         success = True
@@ -35,16 +35,27 @@ def post_orders_to_local(request, data_set):
 
     return result
 
-def post_results_to_local(request, data_set):
+def post_results_to_local(request, data_set, options):
 
     result = []
     print "results:",data_set
     lab_orders = {}
+    _visit_cache = {}
     for data in data_set:
         success = True
         visit_id = data['visit']['id']
         name = data['result']['name']
         msg = u'Результат %s (%s) принят' % (data['result']['name'], visit_id)
+        
+#        if not _visit_cache.has_key(visit_id):
+#            visit = Visit.objects.get(id=visit_id)
+#            _visit_cache[visit_id] = visit
+#        else:
+#            visit = _visit_cache[visit_id]
+#        for lab_order in visit.laborder_set.all():
+#            if not lab_orders.has_key(lab_order.id):
+#                lab_orders[lab_order.id] = lab_order
+#                lab_order.revert_results()
         
         try:
             res = get_result(request, data)
@@ -55,7 +66,7 @@ def post_results_to_local(request, data_set):
         if success:
             if not lab_orders.has_key(res.order.id):
                 lab_orders[res.order.id] = res.order
-                res.order.revert_results()
+#                res.order.revert_results()
 
             
         result.append({
@@ -65,22 +76,9 @@ def post_results_to_local(request, data_set):
             'message':msg
         })
 
-#TODO: переделать как метод класса LabOrder
-    for k,lab_order in lab_orders.iteritems(): 
-        lab_order.confirm_results()
-#        lab_order.is_completed = True
-#        for result in lab_order.result_set.all():
-#            if not result.is_completed():
-#                lab_order.is_completed = False
-#                break
-#        lab_order.save()
-#        if lab_order.is_completed:
-#            key = 'analysis__service__id'
-#            res = lab_order.result_set.all().order_by(key).values(key).annotate(c=Count(key))
-#            ids = [r[key] for r in res]
-#            OrderedService.objects.filter(order=lab_order.visit, 
-#                                          service__id__in=ids).update(status=u'з', 
-#                                                                      executed=lab_order.executed)
+    if 'confirm' in options and options['confirm']:
+        for k,lab_order in lab_orders.iteritems(): 
+            lab_order.confirm_results()
 
     return result
 
@@ -96,14 +94,14 @@ def router(request):
     data = simplejson.loads(request.raw_post_data)
     action = data['action']
     data_set = data['data']
-    
+    options = data['options']
     if action in ACTIONS:
         func = ACTIONS[action]
-        result = func(request, data_set)
+        result = func(request, data_set, options)
     
     return HttpResponse(simplejson.dumps(result), mimetype="application/json")    
     
-def post_data_to_remote(lab,action,data):
+def post_data_to_remote(lab, action, data, options={}):
     """
     """
     domain = lab.remotestate.domain_url
@@ -111,7 +109,8 @@ def post_data_to_remote(lab,action,data):
     path = domain+url
     json_data = simplejson.dumps({ 
         'action':action,
-        'data':data 
+        'data':data,
+        'options':options
     }, cls=DjangoJSONEncoder)
     try:
         req = urllib2.Request(path, json_data, {'Content-Type': 'application/json'})
@@ -124,7 +123,7 @@ def post_data_to_remote(lab,action,data):
         print 'error:',err
 
 
-def post_results(lab_order):
+def post_results(lab_order, confirm):
     lab = lab_order.visit.office
     
     results = []
@@ -149,12 +148,16 @@ def post_results(lab_order):
         }
         results.append(data)
     
+    options = {
+        'confirm':confirm
+    }
+    
 #    data_set = simplejson.dumps(results)
 
 #    transaction = Transaction.objects.create(type='lab.out',
 #                                             sender=request.active_profile.department.state,
 #                                             reciever=_labs_cache[lab])
-    result = post_data_to_remote(lab,'post_results',results)
+    result = post_data_to_remote(lab,'post_results',results, options)
     
     return result
     

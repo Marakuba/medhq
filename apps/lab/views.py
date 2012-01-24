@@ -271,7 +271,14 @@ def confirm_results(request):
             if lab_order.is_completed:
                 try:
                     state = lab_order.visit.office.remotestate
-                    resp = post_results(lab_order)
+                    all_lab_orders = lab_order.visit.laborder_set.all()
+                    confirm = True
+                    for l in all_lab_orders:
+                        if not l.is_completed:
+                            confirm = False
+                            break
+                    print "Подтверждение всех ордеров:", confirm
+                    resp = post_results(lab_order, confirm)
                     for r in resp:
                         print r['success'],r['message']
                 except Exception, err:
