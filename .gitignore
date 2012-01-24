@@ -2,7 +2,7 @@
 *~
 production.py
 local_urls.py
-development*.py
+settings/development*
 manage.py
 medhq_main
 media/cache

@@ -11,6 +11,7 @@ App.patient.PatientCard = Ext.extend(Ext.TabPanel, {
         	defaults: {
 				border:false
 			},
+			enableTabScroll:true,
 			header:true,
 	        disabled:true,
     		activeTab:0,

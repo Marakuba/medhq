@@ -23,4 +23,5 @@ urlpatterns = patterns('',
     (r'^helpdesk/$','webapp.views.helpdesk'),    
     (r'^calendar/$','webapp.views.calendar'),
     (r'^settings/$','webapp.views.js_settings'),
+    (r'^treatmentroom/$','webapp.views.treatmentroom'),
 )

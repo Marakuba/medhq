@@ -6,6 +6,7 @@ PAYMENT_TYPES = [
     (u'б',u'Безналичный перевод'),
     (u'л',u'Евромед Лузана'),
     (u'д',u'ДМС'),
+    (u'к',u'Корпоративные расчеты'),
 ]
 
 PAYMENT_STATUSES = (
@@ -24,9 +25,12 @@ CANCEL_STATUSES = (
 )
 
 VISIT_STATUSES = (
-    (u'п',u'Предварительная запись'),
     (u'т',u'Текущий'),
     (u'з',u'Завершен'),
 ) + CANCEL_STATUSES
 
-ORDER_STATUSES = VISIT_STATUSES
+ORDER_STATUSES = VISIT_STATUSES + (
+    (u'л',u'Отправлен в лабораторию'),
+    (u'!',u'Ошибка отправки'),
+    (u'>',u'В обработке'),
+)

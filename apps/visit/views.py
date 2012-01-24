@@ -12,6 +12,11 @@ from django.db.models.aggregates import Sum
 from autocomplete.views import AutocompleteView
 from staff.models import Position
 from django.http import HttpResponseBadRequest
+from extdirect.django.decorators import remoting
+from direct.providers import remote_provider
+import simplejson
+from tastypie.http import HttpBadRequest
+from service.exceptions import TubeIsNoneException
 autocomplete = AutocompleteView('visit')
 
 def all(request, visit_id):
@@ -78,7 +83,10 @@ def visit(request, visit_id):
 
 def sampling(request, visit_id):
     visit = get_object_or_404(Visit, pk=visit_id)
-    visit.generate_laborder()
+    try:
+        visit.generate_laborder()
+    except TubeIsNoneException, err:
+        return HttpBadRequest(err.__unicode__())
 
     patient = visit.patient
     # выводим все пробирки в одной таблице
@@ -121,4 +129,15 @@ def daily_staff_report(request):
     return direct_to_template(request=request, 
                               template="visit/daily_staff_report.html", 
                               extra_context=ec)
-    
+
+
+@remoting(remote_provider, len=1, action='visit', name='toLab')
+def to_lab(request):
+    """
+    """
+    data = simplejson.loads(request.raw_post_data)
+    ids = data['data'][0]
+    object_list = OrderedService.objects.filter(id__in=ids)
+    for obj in object_list:
+        obj.to_lab()
+    return dict(success=True, data='some data')

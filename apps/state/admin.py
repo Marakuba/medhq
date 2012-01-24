@@ -4,6 +4,18 @@ from django.contrib import admin
 from models import State, Department
 from django import forms
 from state.models import STATE_TYPES
+from remoting.admin import RemoteStateInlineAdmin
+from django_extensions.db.fields import UUIDField
+
+
+#actions
+
+def create_uuid(modeladmin, request, queryset):
+    for obj in queryset:
+        obj.uuid = UUIDField().create_uuid()
+        obj.save()
+
+#admins
 
 class DepartmentAdmin(admin.ModelAdmin):
 
@@ -13,6 +25,7 @@ class StateAdminForm(forms.ModelForm):
     """
     """
     #type = forms.CharField(widget=forms.HiddenInput())
+    uuid = forms.CharField()
     
     class Meta:
         model = State
@@ -23,6 +36,10 @@ class StateAdmin(admin.ModelAdmin):
     """
     
     add_form = StateAdminForm
+    form = StateAdminForm
+    list_display = ('name','official_title','uuid')
+    inlines = [RemoteStateInlineAdmin]
+    actions = [create_uuid]
     
     def get_form(self, request, obj=None, **kwargs):
         """

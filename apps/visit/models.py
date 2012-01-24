@@ -23,16 +23,9 @@ from django.utils.encoding import smart_unicode
 from visit.settings import CANCEL_STATUSES
 from django.core.exceptions import ObjectDoesNotExist
 from constance import config
-
-logger = logging.getLogger()
-hdlr = logging.FileHandler(settings.LOG_FILE)
-formatter = logging.Formatter('[%(asctime)s]%(levelname)-8s"%(message)s"','%Y-%m-%d %a %H:%M:%S') 
-
-hdlr.setFormatter(formatter)
-logger.addHandler(hdlr)
-logger.setLevel(logging.NOTSET)
-
-
+from django.contrib.contenttypes import generic
+from remoting.models import TransactionItem
+from service.exceptions import TubeIsNoneException
 
 class ReferralAgent(make_operator_object('referralagent')):
     """
@@ -275,6 +268,8 @@ class OrderedService(make_operator_object('ordered_service')):
     sampling = models.ForeignKey('lab.Sampling', 
                                  null=True, blank=True)
     
+    transactions = generic.GenericRelation(TransactionItem)
+
     objects = models.Manager()
 
     def __unicode__(self):
@@ -289,11 +284,21 @@ class OrderedService(make_operator_object('ordered_service')):
         super(OrderedService, self).save(*args, **kwargs)
         self.order.update_total_price()
         
+    def latest_transaction(self):
+        all = self.transactions.all()
+        if all:
+            return all.latest('id')
+        return None
+        
     def total_discount(self):
         return self.order.discount_value*self.total_price/100
     
     def discount_price(self):
         return self.total_price - self.total_discount()
+    
+    def get_results(self):
+        results = Result.objects.filter(analysis__service=self.service, order__visit=self.order)
+        return results
     
     @transaction.commit_on_success
     def to_lab(self):
@@ -304,53 +309,34 @@ class OrderedService(make_operator_object('ordered_service')):
         ext_service = self.service.extendedservice_set.get(state=self.execution_place)
         if s.is_lab():
             
+            if ext_service.tube is None:
+                raise TubeIsNoneException( u"В расширенной услуге <strong>'%s'</strong> для организации <strong>%s</strong> не указан тип пробирки" % 
+                                           (ext_service.base_service.name, ext_service.state) )
+            
             sampling, created = Sampling.objects.get_or_create(visit=visit,
                                                                laboratory=self.execution_place,
                                                                is_barcode=ext_service.is_manual,
                                                                tube=ext_service.tube)
-#            if created:
-#                logger.info('sampling id%s %s created' % (sampling.id,sampling.__unicode__()) )
-                #if ext_service.is_manual:
-                #    sampling.number = generate_numerator()
-                #    sampling.save()
-                #    logger.info( "Generated number: %s" % sampling.number )
-#            else:
-#                logger.info('sampling id%s %s found' % (sampling.id,sampling.__unicode__()) )
-            
-#            if s.is_manual():
             lab_order, created = LabOrder.objects.get_or_create(visit=visit,  
                                                        laboratory=self.execution_place,
                                                        lab_group=s.lab_group,
                                                        is_manual=s.is_manual())
-#                created = True
-#            else:
-#                lab_order, created = LabOrder.objects.get_or_create(visit=visit,  
-#                                                                    laboratory=self.execution_place,
-#                                                                    lab_group=s.lab_group,
-#                                                                    is_manual=s.is_manual())
-#            if created:
-#                logger.info('laborder %s created' % lab_order.id)
-#            else:
-#                logger.info('laborder %s found' % lab_order.id)
                 
             for item in self.service.analysis_set.all():
                 result, created = Result.objects.get_or_create(order=lab_order,
                                                                analysis=item, 
                                                                sample=sampling)
-#                if created:
-#                    logger.info('result id%s %s created' % (result.id,result.__unicode__()) )
-#                else:
-#                    logger.info('result id%s %s found' % (result.id,result.__unicode__()) )
     
             if sampling:
                 self.sampling = sampling
-                self.save()
+            self.status = u'л'    
+            self.save()
             
             ### Generating AssayTask
             
             assays = s.equipmentassay_set.filter(is_active=True)
             for assay in assays:
-                EquipmentTask.objects.create(equipment_assay=assay, ordered_service=self)
+                EquipmentTask.objects.get_or_create(equipment_assay=assay, ordered_service=self)
                 
     def get_absolute_url(self):
         return u"/admin/visit/orderedservice/%s/" % self.id

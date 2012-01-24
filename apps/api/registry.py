@@ -38,6 +38,7 @@ from django.db.models.query_utils import Q
 from crm.models import AdSource
 from constance import config
 from promotion.models import Promotion
+from remoting.models import RemoteState
 
 class UserResource(ModelResource):
 
@@ -132,6 +133,11 @@ class PatientResource(ExtResource):
     ad_source = fields.ForeignKey(AdSourceResource, 'ad_source', null=True)
     discount = fields.ForeignKey(DiscountResource, 'discount', null=True)
     client_item = fields.OneToOneField(ClientItemResource, 'client_item', null=True)
+    
+    def hydrate_initial_account(self, bundle):
+        bundle.data['initial_account'] = str(bundle.data['initial_account'])
+        return bundle
+
 
     def dehydrate(self, bundle):
         bundle.data['discount_name'] = bundle.obj.discount and bundle.obj.discount or u'0%'
@@ -264,9 +270,21 @@ class OwnStateResource(ModelResource):
             'id':ALL,
             'name':('istartswith',)
         }
-        
+
+class RemoteStateResource(ModelResource):
+    
+    state = fields.ForeignKey('apps.api.registry.StateResource','state')
+    
+    class Meta:
+        queryset = RemoteState.objects.all()
+        resource_name = 'remotestate'
+        filtering = {
+            'id':ALL
+        }
 
 class StateResource(ModelResource):
+    
+    remotestate = fields.OneToOneField(RemoteStateResource,'remotestate', null=True)
 
     class Meta:
         queryset = State.objects.all() 
@@ -275,7 +293,9 @@ class StateResource(ModelResource):
         filtering = {
             'id':ALL,
             'type':ALL,
-            'name':('istartswith',)
+            'name':('istartswith',),
+            'uuid':ALL,
+            'remotestate':ALL_WITH_RELATIONS
         }
         
         
@@ -844,6 +864,7 @@ class OrderedServiceResource(ExtResource):
     service = fields.ToOneField(BaseServiceResource, 'service')
     staff = fields.ToOneField(PositionResource, 'staff', full=True, null=True)
     sampling = fields.ForeignKey(SamplingResource, 'sampling', null=True)
+    execution_place = fields.ForeignKey(StateResource, 'execution_place')
 
     def obj_create(self, bundle, request=None, **kwargs):
         kwargs['operator']=request.user
@@ -861,7 +882,10 @@ class OrderedServiceResource(ExtResource):
         bundle.data['created'] = bundle.obj.order.created
         bundle.data['visit_id'] = bundle.obj.order.id
         bundle.data['barcode'] = bundle.obj.order.barcode.id
-        bundle.data['laboratory'] = bundle.obj.execution_place
+        bundle.data['patient_name'] = bundle.obj.order.patient.short_name()
+#        bundle.data['operator_name'] = bundle.obj.operator
+#        bundle.data['laboratory'] = bundle.obj.execution_place
+#        bundle.data['sampling'] = bundle.obj.sampling and bundle.obj.sampling.short_title()
         return bundle
     
     class Meta:
@@ -871,9 +895,40 @@ class OrderedServiceResource(ExtResource):
         limit = 100
         filtering = {
             'order': ALL_WITH_RELATIONS,
-            'sampling': ALL_WITH_RELATIONS
+            'sampling': ALL_WITH_RELATIONS,
+            'execution_place' : ALL_WITH_RELATIONS
         }
-
+        
+class LabOrderedServiceResource(OrderedServiceResource):
+    
+    def dehydrate(self, bundle):
+        o = bundle.obj
+        service = o.service
+        bundle.data['service_name'] = service.short_name or service.name
+        bundle.data['service_full_name'] = service.name
+        bundle.data['created'] = bundle.obj.order.created
+        bundle.data['visit_id'] = bundle.obj.order.id
+        bundle.data['barcode'] = bundle.obj.order.barcode.id
+        bundle.data['patient_name'] = bundle.obj.order.patient.short_name()
+        bundle.data['operator_name'] = bundle.obj.operator
+        bundle.data['laboratory'] = bundle.obj.execution_place
+        bundle.data['sampling'] = bundle.obj.sampling and bundle.obj.sampling.short_title()
+        bundle.data['message'] = o.latest_transaction()
+        return bundle    
+    
+    class Meta:
+        queryset = OrderedService.objects.all()
+        resource_name = 'laborderedservice'
+        authorization = DjangoAuthorization()
+        limit = 100
+        filtering = {
+            'order': ALL_WITH_RELATIONS,
+            'sampling': ALL_WITH_RELATIONS,
+            'status' : ALL,
+            'execution_place' : ALL_WITH_RELATIONS
+        }
+        
+        
 class LabServiceResource(ExtResource):
     """
     """
@@ -1531,6 +1586,7 @@ class ClientAccountResource(ExtResource):
         resource_name = 'clientaccount'
         authorization = DjangoAuthorization()
         filtering = {
+            'id':ALL,
             'client_item' : ALL_WITH_RELATIONS,
         }
         
@@ -1619,6 +1675,38 @@ class InvoiceItemResource(ExtResource):
             'invoice' : ALL_WITH_RELATIONS
         }
         
+######### remoting
+
+
+class ServiceToSend(ExtResource):
+    """
+    """
+
+    order = fields.ToOneField(VisitResource, 'order')
+    service = fields.ToOneField(BaseServiceResource, 'service')
+    staff = fields.ToOneField(PositionResource, 'staff', full=True, null=True)
+    execution_place = fields.ForeignKey(StateResource, 'execution_place')
+    sampling = fields.ForeignKey(SamplingResource, 'sampling', null=True)
+
+    def dehydrate(self, bundle):
+        bundle.data['operator_name'] = bundle.obj.operator
+        bundle.data['service_name'] = bundle.obj.service
+        bundle.data['patient_id'] = bundle.obj.order.patient.id
+        bundle.data['patient_name'] = bundle.obj.order.patient.full_name()
+        bundle.data['patient_birthday'] = bundle.obj.order.patient.birth_day
+        bundle.data['sku'] = bundle.obj.service.code
+        return bundle
+    
+    class Meta:
+        queryset = OrderedService.objects.filter(service__lab_group__isnull=False)
+        resource_name = 'servicetosend'
+        authorization = DjangoAuthorization()
+        limit = 200
+        filtering = {
+            'id' : ALL,
+            'state':ALL_WITH_RELATIONS
+        }        
+        
 
 api = Api(api_name=get_api_name('dashboard'))
 
@@ -1632,6 +1720,7 @@ api.register(InsurancePolicyResource())
 api.register(VisitResource())
 api.register(ReferralResource())
 api.register(OrderedServiceResource())
+api.register(LabOrderedServiceResource())
 api.register(SamplingServiceResource())
 api.register(ServiceBasketResource())   
 api.register(RefundResource())
@@ -1673,6 +1762,9 @@ api.register(MedStateResource())
 api.register(OwnStateResource())
 api.register(InsuranceStateResource())
 api.register(DoctorResource())
+
+#remoting
+api.register(RemoteStateResource())
 
 #pricelist
 api.register(DiscountResource())
@@ -1721,6 +1813,9 @@ api.register(PromotionResource())
 #crm
 api.register(AdSourceResource())
 
+
+#remoting
+api.register(ServiceToSend())
 
 #reporting
 #api.register(ReportResource())
