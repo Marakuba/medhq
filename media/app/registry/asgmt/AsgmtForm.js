@@ -130,7 +130,7 @@ App.assignment.AsgmtForm = Ext.extend(Ext.FormPanel, {
 	},
 	
 	addRow: function(attrs, cb, scope) {
-		this.preorderGrid.addRow.createDelegate(this.preorderGrid, [attrs, attrs.shiftKey, cb, scope])();
+		this.preorderGrid.addRow.createDelegate(this.preorderGrid, [attrs, true, cb, scope])();
 	},
 	
 	onServiceClick : function(node) {

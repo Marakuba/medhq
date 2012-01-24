@@ -149,6 +149,12 @@ def helpdesk(request):
     return {}
     
 
+@login_required
+@render_to('webapp/treatmentroom/index.html')
+def treatmentroom(request):
+    return {}
+    
+
 def get_service_tree(request):
     """
     Генерирует дерево в json-формате.

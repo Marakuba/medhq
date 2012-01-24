@@ -12,6 +12,7 @@ from annoying.decorators import render_to
 from django.db.models.aggregates import Count
 from collections import defaultdict
 import operator
+from remoting.views import post_results
 
 @render_to('print/lab/register.html')
 def print_register(request):
@@ -98,7 +99,7 @@ def print_results(request, order):
                 result_list.append({'class':'blank','object':cur_service.gen_ref_interval or ' '})
             cur_service = result.analysis.service
             set_len = cur_service.analysis_set.all().count()
-            group = ", ".join([node.__unicode__() for node in cur_service.get_ancestors()]) 
+            group = cur_service.parent.__unicode__()#", ".join([node.__unicode__() for node in cur_service.get_ancestors()]) 
             if cur_group != group:
                 cur_group = group
                 result_list.append({'class':'group','object':cur_group}) 
@@ -267,6 +268,21 @@ def confirm_results(request):
                     break
             lab_order.save()
             msg = lab_order.is_completed and u'Лабораторный ордер подтвержден' or u'Присутствуют пустые значения. Лабораторный ордер не подтвержден'
+            if lab_order.is_completed:
+                try:
+                    state = lab_order.visit.office.remotestate
+                    all_lab_orders = lab_order.visit.laborder_set.all()
+                    confirm = True
+                    for l in all_lab_orders:
+                        if not l.is_completed:
+                            confirm = False
+                            break
+                    print "Подтверждение всех ордеров:", confirm
+                    resp = post_results(lab_order, confirm)
+                    for r in resp:
+                        print r['success'],r['message']
+                except Exception, err:
+                    print "error", err
             return HttpResponse(simplejson.dumps({
                                                     'success':lab_order.is_completed,
                                                     'message':msg

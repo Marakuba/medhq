@@ -13,16 +13,10 @@ import logging
 from django.conf import settings
 from django.utils.encoding import smart_unicode
 from core.models import GENDER_TYPES, make_operator_object
+from django.db.models.aggregates import Count
+from django.contrib.contenttypes.models import ContentType
 
 
-
-logger = logging.getLogger()
-hdlr = logging.FileHandler(settings.LOG_FILE)
-formatter = logging.Formatter('[%(asctime)s]%(levelname)-8s"%(message)s"','%Y-%m-%d %a %H:%M:%S') 
-
-hdlr.setFormatter(formatter)
-logger.addHandler(hdlr)
-logger.setLevel(logging.NOTSET)
 
 class LabService(models.Model):
     """
@@ -172,6 +166,42 @@ class LabOrder(models.Model):
     def get_absolute_url(self):
         return "/lab/laborder/%s/" % self.id
     
+    def confirm_results(self):
+        Result.objects.filter(analysis__service__labservice__is_manual=False, 
+                              order=self, 
+                              validation=0).delete()
+        Result.objects.filter(order=self, 
+                              validation=-1).update(validation=1)
+        self.is_completed = True
+        for result in self.result_set.all():
+            if not result.is_completed():
+                self.is_completed = False
+                break
+        if self.is_completed:
+            ordered_services = self.visit.orderedservice_set.filter(execution_place=self.laboratory,
+                                                                    service__lab_group=self.lab_group)
+            if self.is_manual:
+                ordered_services.filter(labservice__is_manual=True)
+            ordered_services.update(status=u'з',
+                                    executed=self.executed)
+        self.save()
+        
+    def revert_results(self):
+        ordered_services = self.visit.orderedservice_set.filter(execution_place=self.laboratory,
+                                                                service__lab_group=self.lab_group)
+        if self.is_manual:
+            ordered_services.filter(labservice__is_manual=True)
+        for ordered_service in ordered_services:
+            for analysis in ordered_service.service.analysis_set.all():
+                result, created = Result.objects.get_or_create(order=self,
+                                                               analysis=analysis, 
+                                                               sample=ordered_service.sampling)
+        for result in self.result_set.all():
+            if not result.is_completed():
+                self.is_completed = False
+                break
+        self.save()
+
     def operator(self):
         operator = self.visit.operator
         try:
@@ -255,7 +285,10 @@ class Sampling(models.Model):
     status = models.ForeignKey(Status, blank=True, null=True)
     
     def __unicode__(self):
-        return u"материал №%s, %s, %s, к заказу %s" % (self.id, self.tube, self.laboratory, self.visit.id)
+        return u"№%s, %s, %s, к заказу %s" % (self.id, self.tube, self.laboratory, self.visit.id)
+    
+    def short_title(self):
+        return u"№%s, %s" % (self.id, self.tube)
     
     def get_services(self):
         print self.orderedservice_set.all()

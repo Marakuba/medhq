@@ -17,9 +17,9 @@ def update_total_price(modeladmin, request, queryset):
         for item in p.promotionitem_set.all():
             price = item.base_service.price(state=item.execution_place)*item.count
             total_price+=price
-        p.total_price = total_price
         if p.discount:
-            p.total_price = p.total_price*float((100-p.discount.value)/100)
+            total_price = total_price*float((100-p.discount.value)/100)
+        p.total_price = str(total_price)
         p.save()
 update_total_price.short_description = u'Обновить стоимость комплексной услуги/акции'
 
