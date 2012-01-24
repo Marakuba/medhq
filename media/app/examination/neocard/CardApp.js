@@ -84,6 +84,7 @@ App.examination.CardApp = Ext.extend(Ext.Panel, {
 	newCardBody: function(config){
 		
 		this.generalTab = new App.examination.CardGeneralTab({
+			record:config.record,
 			print_name:this.print_name
 		});
 		
@@ -92,16 +93,14 @@ App.examination.CardApp = Ext.extend(Ext.Panel, {
 				fieldSetStore : this.fieldSetStore,
 				subSectionStore : this.subSectionStore,
 				generalTab: this.generalTab,
-				patient:this.patient,
+				patient:this.patient, // для открытия истории пациента
 				isCard:true,
 				staff:this.staff,
 				title:'Заголовок',
 				listeners:{
 					movearhcivetmp:function(){
-						this.onServiceClick(this.attrs)
 					},
 					deletetmp:function(){
-						this.onServiceClick(this.attrs)
 					},
 					changetitle: function(text){
 						this.contentPanel.setTitle(text);
@@ -139,6 +138,24 @@ App.examination.CardApp = Ext.extend(Ext.Panel, {
 			this.contentPanel.setTitle(this.cardBody.print_name);
 			this.contentPanel.add(this.cardBody);
 			this.contentPanel.doLayout();
+		},this);
+		
+		startPanel.on('editcard',function(record){
+			this.contentPanel.removeAll(true); // cardStore из CardStartPanel уничтожен
+			this.print_name = record.data.print_name;
+			this.cardStore.setBaseParam('id',record.data.id);
+			this.cardStore.load({callback:function(records){
+				if (records.length){
+					this.cardBody = this.newCardBody({
+						print_name: records[0].data.print_name,
+						record:records[0],
+						card:true // признак того, что это карта
+					});
+					this.contentPanel.setTitle(records[0].data.print_name);
+					this.contentPanel.add(this.cardBody);
+					this.contentPanel.doLayout();
+				}
+			},scope:this})
 		},this);
 		
 		return startPanel;

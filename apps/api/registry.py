@@ -1234,7 +1234,9 @@ class CardResource(ExtResource):
     def dehydrate(self, bundle):
         obj = bundle.obj
         bundle.data['view'] = obj.__unicode__()
+        bundle.data['patient_name'] = obj.ordered_service.order.patient.short_name()
         bundle.data['staff_id'] = obj.ordered_service.staff and obj.ordered_service.staff.id
+        bundle.data['assistant_name'] = obj.assistant and obj.assistant.staff.short_name() or ''
         return bundle
     
     class Meta:
