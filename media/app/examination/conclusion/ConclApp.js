@@ -33,8 +33,6 @@ App.examination.ConclApp = Ext.extend(Ext.Panel, {
 		this.examGrid = new App.examination.ConclGrid({
 			staff:this.staff,
 			border: false,
-			collapsible:true,
-			collapseMode:'mini',
 			split:true,
 			listeners:{
 				rowclick:function(grid,rowIndex,e){
@@ -63,6 +61,8 @@ App.examination.ConclApp = Ext.extend(Ext.Panel, {
 		this.conclPanel = new Ext.Panel({
 			region:'west',
  			border:true,
+ 			collapsible:true,
+			collapseMode:'mini',
  			width:550,
  			margins:'5 5 5 0',
  			layout: 'fit',
@@ -94,6 +94,7 @@ App.examination.ConclApp = Ext.extend(Ext.Panel, {
 		});
 		this.contentPanel.removeAll();
 		this.contentPanel.add(list);
+		this.contentPanel.setTitle('Предпросмотр');
 		this.contentPanel.doLayout();
 		this.doLayout();
 	},

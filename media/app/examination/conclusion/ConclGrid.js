@@ -77,7 +77,7 @@ App.examination.ConclGrid = Ext.extend(Ext.grid.EditorGridPanel, {
         this.columns =  [
             {
                 header: "Дата создания",
-                width: 40, 
+                width: 100, 
                 sortable: true, 
                 dataIndex: 'created',
                 renderer:Ext.util.Format.dateRenderer('d.m.Y H:i')
@@ -93,14 +93,13 @@ App.examination.ConclGrid = Ext.extend(Ext.grid.EditorGridPanel, {
                 dataIndex: 'patient_name'
             },{
                 header: "Лаборант", 
-                width: 100, 
+                width: 80, 
                 sortable: true, 
                 dataIndex: 'assistant', 
                 editor: this.assistant,
                 renderer: Ext.util.Format.comboRenderer(this.assistant,'assistant_name')
             },{
                 header: "Лаборант", 
-                width: 100, 
                 sortable: true, 
                 hidden:true,
                 dataIndex: 'assistant_name' 
@@ -117,7 +116,6 @@ App.examination.ConclGrid = Ext.extend(Ext.grid.EditorGridPanel, {
 
         config = {
 //            id: 'concl-grid',
-            title: 'Журнал заказов',
 			loadMask : {
 				msg : 'Подождите, идет загрузка...'
 			},
@@ -126,21 +124,9 @@ App.examination.ConclGrid = Ext.extend(Ext.grid.EditorGridPanel, {
             border:false,
             store: this.store,
             columns : this.columns,
-            closable: 'true',
 			sm : new Ext.grid.RowSelectionModel({
 						singleSelect : true
 					}),
-            tbar: [{
-                text: 'Добавить',
-                iconCls: 'silk-add',
-                scope: this,
-                handler: this.onAdd
-            }, '-', {
-                text: 'Удалить',
-                iconCls: 'silk-delete',
-                scope: this,
-                handler: this.onDelete
-            }, '-'],
 	        bbar: new Ext.PagingToolbar({
 	            pageSize: 30,
 	            store: this.store,
@@ -164,28 +150,6 @@ App.examination.ConclGrid = Ext.extend(Ext.grid.EditorGridPanel, {
 		
 		this.on('rowclick',function(grid,rowIndex,e){});
 		this.on('rowdblclick',function(grid,rowIndex,e){});
-    },    
-    /**
-     * onAdd
-     */
-    onAdd: function (btn, ev) {
-        var data = {
-            'name' : ''
-        }
-        var u = new this.store.recordType(data);
-        this.stopEditing();
-        this.store.insert(0, u);
-        this.startEditing(0,1);
-    },
-    /**
-     * onDelete
-     */
-    onDelete: function () {
-        var rec = this.getSelectionModel().getSelected();
-        if (!rec) {
-            return false;
-        }
-        this.store.remove(rec);
     }
 
 });
