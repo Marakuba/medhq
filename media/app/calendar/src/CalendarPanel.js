@@ -457,17 +457,23 @@ Ext.calendar.CalendarPanel = Ext.extend(Ext.Panel, {
     	 */
     	var st = new Date();
     	var e = new Date();
-    	st = st.add(Date.DAY,-(st.getDate()+7));
-//    	st.setDate(22);
-    	e = e.add(Date.DAY,(31-e.getDate()+7));
-//    	e.setDate(7);
-//    	console.log('st = ', st, '; e = ',e);
     	if (id == "app-calendar-month") {
         	this.eventStore.setBaseParam('timeslot',false);
-    	} else {
+        	st = st.add(Date.DAY,-(st.getDate()+7));
+        	e = e.add(Date.DAY,(31-e.getDate()+7));
+    	} 
+    	
+    	if (id == "app-calendar-week") {
     		this.eventStore.setBaseParam('timeslot',true);
+    		var offset = st.getDay() - 1;
+    		st = st.add(Date.DAY, -offset).clearTime(true);
+    		e = st.add(Date.DAY,7)
     	};
-
+    	if (id == "app-calendar-day") {
+    		this.eventStore.setBaseParam('timeslot',true);
+    		e = e.add(Date.DAY,1);
+    	};
+        
         this.eventStore.setBaseParam('start__gte',st.format('Y-m-d'));
         this.eventStore.setBaseParam('end__lt',e.format('Y-m-d'));
     	this.eventStore.load({
