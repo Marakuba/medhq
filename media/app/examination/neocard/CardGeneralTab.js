@@ -183,7 +183,16 @@ App.examination.CardGeneralTab = Ext.extend(Ext.form.FormPanel, {
 		App.examination.CardGeneralTab.superclass.initComponent.apply(this, arguments);
 		
 		this.on('afterrender',function(){
+			if (!this.record){
+				return false
+			};
+			if (this.record.data.assistant){
+				this.assistant.setValue(this.record.data.assistant)
+			};
 			
+			if (this.record.data.mkb_diag){
+				this.mkb.setValue(this.record.data.mkb_diag)
+			}
 		});
 	},
 	

@@ -95,6 +95,14 @@ App.ExamCentralPanel = Ext.extend(Ext.Panel, {
                     	this.launchApp('glossarytree');
                     },
                     scope:this
+                },{
+                	text: 'Заключения',
+                    scale:'medium',
+                    iconAlign: 'top',
+                    handler: function(){
+                    	this.launchApp('conclusion',{staff:App.getApiUrl('position')+'/'+active_profile});
+                    },
+                    scope:this
                 }]
             },{
                 xtype: 'buttongroup',

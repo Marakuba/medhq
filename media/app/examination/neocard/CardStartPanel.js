@@ -205,7 +205,7 @@ App.examination.CardStartPanel = Ext.extend(Ext.Panel, {
             listeners:{
             	check: function(r,checked){
             		if (checked){
-            			this.radio = r.getValue().inputValue;
+            			this.radio = r.inputValue;
             			this.cardGrid.hide();
             			if (this.previewPanel.hidden){
             				this.previewPanel.show();
@@ -236,7 +236,7 @@ App.examination.CardStartPanel = Ext.extend(Ext.Panel, {
             listeners:{
             	check: function(r,checked){
             		if (checked){
-            			this.radio = r.getValue().inputValue;
+            			this.radio = r.inputValue;
             			if (this.previewPanel.hidden){
             				this.previewPanel.show();
             			};
@@ -247,7 +247,6 @@ App.examination.CardStartPanel = Ext.extend(Ext.Panel, {
         						return
         					}
         					this.cardGrid.getSelectionModel().selectFirstRow();
-        					this.onPreview('card');
         					if (this.cardGrid.hidden){
 								this.cardGrid.show();
 								this.gridPanel.show();
@@ -298,7 +297,7 @@ App.examination.CardStartPanel = Ext.extend(Ext.Panel, {
                                     	check: function(r,checked){
                                     		if (checked){
                                     			this.cardGrid.hide();
-                                    			this.radio = r.getValue().inputValue;
+                                    			this.radio = r.inputValue;
                                     			this.tmpGrid.hide();
                                     			this.gridPanel.hide();
                                     			this.previewPanel.hide();
@@ -321,7 +320,7 @@ App.examination.CardStartPanel = Ext.extend(Ext.Panel, {
                                     listeners:{
                                     	check: function(r,checked){
                                     		if (checked){
-                                    			this.radio = r.getValue().inputValue;
+                                    			this.radio = r.inputValue;
                                     			if (!this.previewPanel.hidden){
                                     				this.previewPanel.hide();
                                     			};
@@ -358,7 +357,7 @@ App.examination.CardStartPanel = Ext.extend(Ext.Panel, {
                                     listeners:{
                                     	check: function(r,checked){
                                     		if (checked){
-                                    			this.radio = r.getValue().inputValue;
+                                    			this.radio = r.inputValue;
                                     			if (!this.previewPanel.hidden){
                                     				this.previewPanel.hide();
                                     			};
@@ -448,16 +447,20 @@ App.examination.CardStartPanel = Ext.extend(Ext.Panel, {
     },
     
     onNext: function(){
-    	
+    	console.log(this.radio)
     	if (this.radio === 'empty'){
     		this.fireEvent('opentmp');
-    	} else {
-    		var record = this.tmpGrid.getSelectionModel().getSelected();
+    	} else if (this.radio == 'card'){
+    		var record = this.cardGrid.getSelectionModel().getSelected();
     		if (record){
-    			console.log(record);
-    			this.fireEvent('opentmp',record)
+    			this.fireEvent('editcard',record)
     		} else {
-    			console.log('не выбран источник')
+	    		var record = this.tmpGrid.getSelectionModel().getSelected();
+	    		if (record){
+	    			this.fireEvent('opentmp',record)
+	    		} else {
+	    			console.log('не выбран источник')
+	    		}
     		}
     	}
 	},
@@ -466,7 +469,6 @@ App.examination.CardStartPanel = Ext.extend(Ext.Panel, {
 		if (!type){
 			return false
 		};
-		console.log('type ', type);
 		if (type=='card'){
 			var source = 'card'
 		} else {

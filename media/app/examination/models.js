@@ -122,9 +122,12 @@ App.models.Template = new Ext.data.Record.create([
 	
 App.models.Card = new Ext.data.Record.create([
    	{name: 'id'},
+   	{name: 'created'},
+   	{name: 'modified'},
 	{name: 'resource_uri'},
 	{name: 'print_name'},
 	{name: 'print_date'},
+	{name: 'patient_name'},
 	{name: 'ordered_service'},
 	{name: 'assistant'},
 	{name: 'data'},
@@ -134,7 +137,8 @@ App.models.Card = new Ext.data.Record.create([
 	{name: 'thickness'},
 	{name: 'width'},
 	{name: 'contrast_enhancement'},
-	{name: 'assistent'},
+	{name: 'assistant'},
+	{name: 'assistant_name'},
 	{name: 'mkb_diag'}
 ]);
 
