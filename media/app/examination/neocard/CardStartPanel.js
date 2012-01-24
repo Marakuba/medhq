@@ -57,7 +57,6 @@ App.examination.CardStartPanel = Ext.extend(Ext.Panel, {
     	this.tmpGrid = new Ext.grid.GridPanel({
 			store: this.tmpStore,
 			hidden:true,
-			region:'center',
 			autoScroll:true,
 			columns:  [
 			    {
@@ -91,7 +90,7 @@ App.examination.CardStartPanel = Ext.extend(Ext.Panel, {
 				forceFit:true
 			},
 			listeners: {
-				rowclick:this.onPreview.createDelegate(this,'tmp'),
+				rowclick:this.onPreview.createDelegate(this,['tmp']),
 				scope:this
 			}
 			
@@ -101,7 +100,10 @@ App.examination.CardStartPanel = Ext.extend(Ext.Panel, {
             restful: true,    
             autoLoad: false, 
 			autoDestroy:true,
-            baseParams: this.baseParams,
+            baseParams: {
+            	format:'json',
+            	ordered_service:App.uriToId(this.ordered_service)
+            },
 		    paramNames: {
 			    start : 'offset',
 			    limit : 'limit',
@@ -127,7 +129,6 @@ App.examination.CardStartPanel = Ext.extend(Ext.Panel, {
         this.cardGrid = new Ext.grid.GridPanel({
 			store: this.cardStore,
 			hidden:true,
-			region:'center',
 			autoScroll:true,
 			columns:  [
 			    {
@@ -161,11 +162,20 @@ App.examination.CardStartPanel = Ext.extend(Ext.Panel, {
 				forceFit:true
 			},
 			listeners: {
-				rowclick:this.onPreview.createDelegate(this,'card'),
+				rowclick:this.onPreview.createDelegate(this,['card']),
 				scope:this
 			}
 			
 		});
+		
+		this.gridPanel = new Ext.Panel({
+			layout:'card',
+			region:'center',
+			hidden:true,
+			items:[
+				this.cardGrid, this.tmpGrid
+			]
+		})
         
 		this.previewPanel = new Ext.Panel({
 			region: 'south',
@@ -196,7 +206,7 @@ App.examination.CardStartPanel = Ext.extend(Ext.Panel, {
             	check: function(r,checked){
             		if (checked){
             			this.radio = r.getValue().inputValue;
-            			this.cardGrid.hide()
+            			this.cardGrid.hide();
             			if (this.previewPanel.hidden){
             				this.previewPanel.show();
             			};
@@ -212,6 +222,7 @@ App.examination.CardStartPanel = Ext.extend(Ext.Panel, {
         				if (!this.tmpGrid.hidden){
     						this.tmpGrid.hide();
     					};
+    					this.gridPanel.hide();
             		}
             	},
             	scope:this
@@ -239,6 +250,7 @@ App.examination.CardStartPanel = Ext.extend(Ext.Panel, {
         					this.onPreview('card');
         					if (this.cardGrid.hidden){
 								this.cardGrid.show();
+								this.gridPanel.show();
 							};
         				},scope:this});
             		}
@@ -288,6 +300,7 @@ App.examination.CardStartPanel = Ext.extend(Ext.Panel, {
                                     			this.cardGrid.hide();
                                     			this.radio = r.getValue().inputValue;
                                     			this.tmpGrid.hide();
+                                    			this.gridPanel.hide();
                                     			this.previewPanel.hide();
                                     		}
                                     	},
@@ -325,6 +338,7 @@ App.examination.CardStartPanel = Ext.extend(Ext.Panel, {
                                 				if (this.tmpGrid.hidden){
                             						this.tmpGrid.show();
                             					};
+                            					this.gridPanel.show();
                                     				
                                     		}
                                     	},
@@ -360,6 +374,7 @@ App.examination.CardStartPanel = Ext.extend(Ext.Panel, {
                                 				},scope:this});
                                 				if (this.tmpGrid.hidden){
                             						this.tmpGrid.show();
+                            						this.gridPanel.show();
                             					};
                                     		}
                                     	},
@@ -390,9 +405,7 @@ App.examination.CardStartPanel = Ext.extend(Ext.Panel, {
                     ]
                 },
                 
-                this.tmpGrid,
-                
-                this.cardGrid,
+                this.gridPanel,
 
                 this.previewPanel
             ]
@@ -407,7 +420,6 @@ App.examination.CardStartPanel = Ext.extend(Ext.Panel, {
 				if (records.length){
 					this.fromCardRadio.setValue(true);
 					this.cardGrid.getSelectionModel().selectFirstRow();
-					this.cardGrid.show();
 					this.onPreview('card');
 				} else {
 					this.fromCardRadio.disable();
@@ -453,7 +465,8 @@ App.examination.CardStartPanel = Ext.extend(Ext.Panel, {
 	onPreview: function(type){
 		if (!type){
 			return false
-		}
+		};
+		console.log('type ', type);
 		if (type=='card'){
 			var source = 'card'
 		} else {
@@ -461,6 +474,7 @@ App.examination.CardStartPanel = Ext.extend(Ext.Panel, {
 		}
 		this.previewPanel.removeAll(true);
 		var record = this[type+'Grid'].getSelectionModel().getSelected();
+		console.log(record)
 		if (record) {
 			var list = new Ext.Panel({
 				autoLoad:String.format('/widget/examination/{0}/{1}/',source,record.data.id)
