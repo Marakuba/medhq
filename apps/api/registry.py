@@ -1331,6 +1331,7 @@ class EquipmentResultResource(ExtResource):
         }   
         
 class PromotionResource(ExtResource):
+    discount = fields.ForeignKey(DiscountResource,'discount',null=True)
     class Meta:
         queryset = Promotion.objects.all()
         resource_name = 'promotion'
@@ -1390,7 +1391,8 @@ class ExtPreorderResource(ExtResource):
         bundle.data['ptype_name'] = obj.get_payment_type_display()
         bundle.data['execution_place'] = obj.service and obj.service.state.id
         bundle.data['execution_place_name'] = obj.service and obj.service.state.name
-        bundle.data['promotion_name'] = obj.promotion and obj.promotion.name
+        bundle.data['promotion_name'] = obj.promotion and obj.promotion.name or ''
+        bundle.data['promo_discount'] = obj.promotion and obj.promotion.discount.id or ''
         bundle.data['staff'] = obj.timeslot and obj.timeslot.cid
         bundle.data['staff_name'] = obj.timeslot and obj.get_staff_name()
         bundle.data['price'] = obj.service and obj.service.get_actual_price()
