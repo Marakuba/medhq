@@ -486,6 +486,20 @@ App.visit.VisitForm = Ext.extend(Ext.FormPanel, {
 					var ptRec = this.paymentTypeCB.findRecord(this.paymentTypeCB.valueField,pt);
 					this.onPaymentTypeChoice(ptRec);
 				}
+				var discount = rec.data.promo_discount;
+				if (discount){
+					var dsc = this.discountCmb;
+					dsc.getStore().load({
+						callback:function(){
+							var r = dsc.findRecord(dsc.valueField,get_api_url('discount')+'/'+discount);
+							if(r) {
+								dsc.setValue(r.data.resource_uri);
+								this.orderedService.onSumChange();
+							}
+						},
+						scope:this
+					});
+				}
 			}
 		},this);
 	},
@@ -648,7 +662,7 @@ App.visit.VisitForm = Ext.extend(Ext.FormPanel, {
 		this.orderedService.preorders.add(record.data.resource_uri,record);
 		if (this.preorderWindow){
 			this.preorderWindow.close();
-		}
+		};
 	},
 	
 	onPaymentTypeChoice : function(rec){
