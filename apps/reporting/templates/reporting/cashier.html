@@ -12,12 +12,24 @@
             <th class="number">{{results.0.1}}</th>
         </tr>
 
-        {% for row in results.0.0 %}
+        {% for group1 in results.0.0 %}
+            <tr class="group">
+                <td colspan="2">{{group1.0|default:'<em>Организация не указана</em>'}}</td>
+                <td class="number">{{group1.1}}</td>
+            </tr>
+            {% for group2 in group1.2 %}
+            <tr class="group2">
+                <td colspan="2">{{ group2.0 }}</td>
+                <td class="number">{{group2.1}}</td>
+            </tr>
+            {% for row in group2.2 %}
             <tr>
-                <td>{{row.0}}</td>
-                <td>{{row.1}}</td>
+                <td>{{ row.0 }}</td>
+                <td>{{ row.1 }}</td>
                 <td class="number">{{row.2}}</td>
             </tr>
+            {% endfor %}
+            {% endfor %}
         {% endfor %}
 
 {% endblock %}

@@ -5,6 +5,7 @@ from interlayer.models import ClientItem
 from django.contrib.contenttypes.models import ContentType
 from django.contrib.contenttypes import generic
 from django.db.models import Sum
+from state.models import State
 
 PAYMENT_TYPES = (
     (u'cash',u'Наличные'),
@@ -39,10 +40,11 @@ class ClientAccount(models.Model):
 class Payment(models.Model):
     operator = models.ForeignKey(User)
     created = models.DateTimeField(u'Дата создания', auto_now_add=True)
+    office = models.ForeignKey(State, blank=True, null=True, verbose_name=u'Офис')
     doc_date = models.DateTimeField(u'Дата документа')
     client_account = models.ForeignKey(ClientAccount)
     amount = models.FloatField(u'Сумма')
-    income = models.BooleanField(u'Приход')
+    income = models.BooleanField(u'Поступление')
     payment_type = models.CharField(u'Вид оплаты', max_length=10, choices=PAYMENT_TYPES, blank=True, null=True)
     content_type = models.ForeignKey(ContentType, blank=True, null=True)
     object_id = models.PositiveIntegerField(blank=True, null=True)
@@ -59,13 +61,17 @@ class Payment(models.Model):
         #print self.income
         self.client_account.account.setSum()
         self.client_account.client_item.client.updBalance()
+        
+    def get_client(self):
+        return self.client_account.client_item.client.short_name()
+    get_client.short_description = u'Клиент'
        
     def __unicode__(self):
         return "%s" % (self.id)
     
     class Meta:
-        verbose_name = u'Платежка'
-        verbose_name_plural = u'Платежки'
-        ordering = ('-id',)
+        verbose_name = u'кассовый ордер'
+        verbose_name_plural = u'кассовые ордеры'
+        ordering = ('-doc_date',)
 
     

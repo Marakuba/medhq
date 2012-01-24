@@ -1603,6 +1603,7 @@ class PaymentResource(ExtResource):
     
     def obj_create(self, bundle, request=None, **kwargs):
         kwargs['operator']=request.user
+        kwargs['office']=request.active_profile.department.state
         result = super(PaymentResource, self).obj_create(bundle=bundle, request=request, **kwargs)
         return result
     
