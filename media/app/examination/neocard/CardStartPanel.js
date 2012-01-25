@@ -447,22 +447,22 @@ App.examination.CardStartPanel = Ext.extend(Ext.Panel, {
     },
     
     onNext: function(){
-    	console.log(this.radio)
     	if (this.radio === 'empty'){
     		this.fireEvent('opentmp');
     	} else if (this.radio == 'card'){
     		var record = this.cardGrid.getSelectionModel().getSelected();
     		if (record){
     			this.fireEvent('editcard',record)
-    		} else {
+    		}
+    	} else {
 	    		var record = this.tmpGrid.getSelectionModel().getSelected();
+	    		console.log(record)
 	    		if (record){
 	    			this.fireEvent('opentmp',record)
 	    		} else {
 	    			console.log('не выбран источник')
 	    		}
     		}
-    	}
 	},
 	
 	onPreview: function(type){

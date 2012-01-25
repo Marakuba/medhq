@@ -127,9 +127,9 @@ App.models.Card = new Ext.data.Record.create([
 	{name: 'resource_uri'},
 	{name: 'print_name'},
 	{name: 'print_date'},
+	{name: 'patient_id'},
 	{name: 'patient_name'},
 	{name: 'ordered_service'},
-	{name: 'assistant'},
 	{name: 'data'},
 	{name: 'equipment'},
 	{name: 'area'},
@@ -139,7 +139,8 @@ App.models.Card = new Ext.data.Record.create([
 	{name: 'contrast_enhancement'},
 	{name: 'assistant'},
 	{name: 'assistant_name'},
-	{name: 'mkb_diag'}
+	{name: 'mkb_diag'},
+	{name: 'executed'}
 ]);
 
 App.models.FieldSet = new Ext.data.Record.create([
