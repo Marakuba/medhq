@@ -28,7 +28,7 @@ App.examination.CardApp = Ext.extend(Ext.Panel, {
 		
 		this.subSectionStore = new Ext.data.RESTStore({
 			autoSave: false,
-			autoLoad : true,
+			autoLoad : false,
 			apiUrl : get_api_url('examsubsection'),
 			model: App.models.SubSection
 		});
@@ -62,7 +62,7 @@ App.examination.CardApp = Ext.extend(Ext.Panel, {
 			title: 'Карта осмотра',
 			layout: 'border',	
      		items: [
-				this.patientPanel,
+//				this.patientPanel,
 				this.contentPanel
 			]
 		};
@@ -71,13 +71,30 @@ App.examination.CardApp = Ext.extend(Ext.Panel, {
 		App.examination.CardApp.superclass.initComponent.apply(this, arguments);
 		
 		this.on('afterrender',function(){
-			this.startPanel = this.newStartPanel({
-				service:this.service,
-				ordered_service:this.ordered_service,
-				staff:this.staff
-			});
-			this.contentPanel.add(this.startPanel);
+			if (this.record){
+				//форма карты осмотра открывается быстрее, чем успевает загрузиться store 
+				// с разделами и подразделами, поэтому форма будет открываться после загрузки 
+				// this.subSectionStore
+			}
+			else {
+				this.startPanel = this.newStartPanel({
+					service:this.service,
+					ordered_service:this.ordered_service,
+					staff:this.staff
+				});
+				this.contentPanel.add(this.startPanel);
+			}
 		},this);
+		
+		this.fieldSetStore.on('load',function(){
+			this.subSectionStore.load()
+		},this)
+		
+		this.subSectionStore.on('load',function(){
+			if (this.record){
+				this.onEditCard(this.record)
+			}
+		},this)
 		
 	},
 	
@@ -131,7 +148,7 @@ App.examination.CardApp = Ext.extend(Ext.Panel, {
 			this.record.set('ordered_service',this.ordered_service);
 			this.cardStore.add(this.record);
 			this.cardBody = this.newCardBody({
-				print_name:this.record.data.print_name ? this.record.data.print_name: this.print_name,
+				print_name:source.print_name,//this.record.data.print_name ? this.record.data.print_name: this.print_name,
 				record:this.record,
 				card:true // признак того, что это карта
 			});
@@ -141,24 +158,27 @@ App.examination.CardApp = Ext.extend(Ext.Panel, {
 		},this);
 		
 		startPanel.on('editcard',function(record){
-			this.contentPanel.removeAll(true); // cardStore из CardStartPanel уничтожен
-			this.print_name = record.data.print_name;
-			this.cardStore.setBaseParam('id',record.data.id);
-			this.cardStore.load({callback:function(records){
-				if (records.length){
-					this.cardBody = this.newCardBody({
-						print_name: records[0].data.print_name,
-						record:records[0],
-						card:true // признак того, что это карта
-					});
-					this.contentPanel.setTitle(records[0].data.print_name);
-					this.contentPanel.add(this.cardBody);
-					this.contentPanel.doLayout();
-				}
-			},scope:this})
+			this.onEditCard(record)
 		},this);
 		
 		return startPanel;
+	},
+	onEditCard: function(record){
+		this.contentPanel.removeAll(true); // cardStore из CardStartPanel уничтожен
+		this.print_name = record.data.print_name;
+		this.cardStore.setBaseParam('id',record.data.id);
+		this.cardStore.load({callback:function(records){
+			if (records.length){
+				this.cardBody = this.newCardBody({
+					print_name: records[0].data.print_name,
+					record:records[0],
+					card:true // признак того, что это карта
+				});
+				this.contentPanel.setTitle(records[0].data.print_name);
+				this.contentPanel.add(this.cardBody);
+				this.contentPanel.doLayout();
+			}
+		},scope:this});
 	}
 });
 

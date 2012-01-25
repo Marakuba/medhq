@@ -103,15 +103,15 @@ App.examorder.ExamOrderGrid = Ext.extend(Ext.grid.GridPanel, {
 			handler:this.onOpenHistory,
 			scope:this
 		});
+		this.addBtn = new Ext.Button({
+			text:'Добавить карту осмотра',
+			iconCls:'silk-add',
+			disabled:true,
+			handler:this.onAdd.createDelegate(this, [])
+		});
 		
 		this.ttb = new Ext.Toolbar({ 
-			items:[{
-				text:'Добавить карту осмотра',
-				id: this.tmp_id + 'add-exam',
-				iconCls:'silk-add',
-				disabled:true,
-				handler:this.onAdd.createDelegate(this, [])
-			},{
+			items:[this.addBtn,{
 				text:'Подтвердить выполнение',
 				iconCls:'silk-accept',
 				id: this.tmp_id + 'order-exec',
@@ -204,14 +204,16 @@ App.examorder.ExamOrderGrid = Ext.extend(Ext.grid.GridPanel, {
 					rowselect:function(model,ind,rec) {
 						if (!rec.data.executed) {
 							Ext.getCmp(this.tmp_id+'order-exec').enable()
+							this.addBtn.enable();
+						} else {
+							this.addBtn.disable();
 						};
-						Ext.getCmp(this.tmp_id+'add-exam').enable();
 						this.historyBtn.enable();
 						
 					},
 					rowdeselect: function() {
 						Ext.getCmp(this.tmp_id+'order-exec').disable();
-						Ext.getCmp(this.tmp_id+'add-exam').disable();
+						this.addBtn.disable();
 						this.historyBtn.disable()
 					},
 					scope:this

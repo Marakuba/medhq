@@ -240,7 +240,7 @@ App.examination.TemplateBody = Ext.extend(Ext.TabPanel, {
 					if (this.items.length == 1) {
 						this.addSubSecBtn.disable();
 					};
-					this.removeTab(p.section);
+//					this.removeTab(p.section);
 				},
 				'ticketdataupdate': function(){
 					this.updateRecord();

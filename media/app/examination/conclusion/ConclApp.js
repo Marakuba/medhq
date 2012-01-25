@@ -35,24 +35,18 @@ App.examination.ConclApp = Ext.extend(Ext.Panel, {
 			border: false,
 			split:true,
 			listeners:{
-				rowclick:function(grid,rowIndex,e){
-					var record = grid.getSelectionModel().getSelected();
+				rowselect:function(record){
 					if (record){
 						this.onPreview(record.data.id);
 					}
 				},
 				rowdblclick:function(grid,rowIndex,e){
 					var record = grid.getSelectionModel().getSelected();
+					if (!record || record.data.executed){
+						return false
+					}
 					this.print_name = record.data.name;
-					this.contentPanel.removeAll(true);
-					this.contentPanel.setTitle(record.data.print_name);
-					this.cardBody = this.newCardBody({
-						print_name: record.data.print_name,
-						record:record,
-						card:true // признак того, что это карта
-					});
-					this.contentPanel.add(this.cardBody);
-					this.contentPanel.doLayout();
+					this.editCard(record);
 				},
 				scope:this
 			}
@@ -99,32 +93,22 @@ App.examination.ConclApp = Ext.extend(Ext.Panel, {
 		this.doLayout();
 	},
 	
-	newCardBody: function(config){
+	editCard: function(record){
 		
-		this.generalTab = new App.examination.CardGeneralTab({
-			print_name:config.print_name,
-			record:config.record
-		});
+		config = {
+			closable:true,
+    		patient:record.data.patient_id,
+    		patient_name: record.data.patient_name,
+    		ordered_service:record.data.ordered_service,
+			title: 'Пациент ' + record.data.patient_name,
+			print_name:record.data.service_name,
+			record:record,
+			staff:this.staff
+		};
 		
-		return new App.examination.TemplateBody (Ext.apply(
-			{
-				fieldSetStore : this.fieldSetStore,
-				subSectionStore : this.subSectionStore,
-				generalTab: this.generalTab,
-				patient:this.patient, // для открытия истории пациента
-				isCard:true,
-				staff:this.staff,
-				title:'Заголовок',
-				listeners:{
-					changetitle: function(text){
-						this.contentPanel.setTitle(text);
-					},
-					scope:this
-				}
-			},
-			config)
-		);
-	},
+		App.eventManager.fireEvent('launchapp', 'neocard',config);
+		
+	}
 });
 
 Ext.reg('conclusion', App.examination.ConclApp);
