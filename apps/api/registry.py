@@ -947,6 +947,25 @@ class LabServiceResource(ExtResource):
         bundle.data['barcode'] = bundle.obj.order.barcode.id
         return bundle
     
+    def build_filters(self, filters=None):
+        if filters is None:
+            filters = {}
+
+        orm_filters = super(LabServiceResource, self).build_filters(filters)
+
+        if "search" in filters:
+            smart_filters = smartFilter(filters['search'], 'order__patient')
+            if len(smart_filters.keys())==1:
+                try:
+                    orm_filters = ComplexQuery( Q(order__barcode__id=int(filters['search'])) | Q(**smart_filters), \
+                                      **orm_filters)
+                except:
+                    orm_filters.update(**smart_filters)
+            else:
+                orm_filters.update(**smart_filters)
+            
+        return orm_filters
+
     class Meta:
         queryset = OrderedService.objects.filter(service__labservice__is_manual=True) #all lab services
         resource_name = 'labservice'
