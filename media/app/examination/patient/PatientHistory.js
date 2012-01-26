@@ -54,7 +54,7 @@ App.examination.PatientHistory = Ext.extend(Ext.Panel, {
 	
 		var config = {
 			closable:true,
-			title: 'История пациента',
+//			title: 'История пациента',
 			layout: 'border',	
      		items: [
 				this.patientPanel,

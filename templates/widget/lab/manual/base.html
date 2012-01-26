@@ -7,12 +7,8 @@
 {% block body %}
 
 
-<div id="print-box">
-	<a href="javascript:window.print();">Печать</a>
-</div>
 
-<div class="page_wrapper_A4_book">
-<div class="page_wrapper">
+
 {% include "widget/lab/manual/header.html" %}
 
 <table class="results">
@@ -28,6 +24,4 @@
 
 <div class="comment">{% autoescape off %}{{ laborder.comment }}{% endautoescape %}</div>
 <div class="print_time">{{ object.print_date|default:'---' }}</div>
-</div>
-</div>
 {% endblock %}

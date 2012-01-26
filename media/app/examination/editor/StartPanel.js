@@ -92,6 +92,7 @@ App.examination.StartPanel = Ext.extend(Ext.Panel, {
 			},
 			listeners: {
 				rowclick:this.onPreview,
+				rowdblclick:this.onNext.createDelegate(this),
 				scope:this
 			}
 			

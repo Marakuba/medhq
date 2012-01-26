@@ -59,7 +59,7 @@ App.examination.CardApp = Ext.extend(Ext.Panel, {
 	
 		var config = {
 			closable:true,
-			title: 'Карта осмотра',
+//			title: 'Карта осмотра',
 			layout: 'border',	
      		items: [
 //				this.patientPanel,
@@ -121,6 +121,9 @@ App.examination.CardApp = Ext.extend(Ext.Panel, {
 					},
 					changetitle: function(text){
 						this.contentPanel.setTitle(text);
+					},
+					cardclose:function(){
+						this.destroy();
 					},
 					scope:this
 				}
