@@ -25,7 +25,7 @@ class StateAdminForm(forms.ModelForm):
     """
     """
     #type = forms.CharField(widget=forms.HiddenInput())
-    uuid = forms.CharField()
+    uuid = forms.CharField(required=False)
     
     class Meta:
         model = State
