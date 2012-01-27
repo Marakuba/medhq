@@ -86,11 +86,18 @@ App.examination.CardStartPanel = Ext.extend(Ext.Panel, {
 			    	dataIndex: 'modified' 
 			    }
 			],
+			sm : new Ext.grid.RowSelectionModel({
+				singleSelect : true,
+				listeners: {
+					rowselect:this.onPreview.createDelegate(this,['tmp']),
+					scope:this
+				}
+			}),
 			viewConfig:{
 				forceFit:true
 			},
 			listeners: {
-				rowclick:this.onPreview.createDelegate(this,['tmp']),
+				rowdblclick:this.onNext.createDelegate(this),
 				scope:this
 			}
 			
@@ -158,11 +165,19 @@ App.examination.CardStartPanel = Ext.extend(Ext.Panel, {
 			    	dataIndex: 'modified' 
 			    }
 			],
+			sm : new Ext.grid.RowSelectionModel({
+				singleSelect : true,
+				listeners: {
+					rowselect:this.onPreview.createDelegate(this,['card']),
+					scope:this
+				}
+			}),
 			viewConfig:{
 				forceFit:true
 			},
 			listeners: {
-				rowclick:this.onPreview.createDelegate(this,['card']),
+//				show:this.onPreview.createDelegate(this,['card']),
+				rowdblclick:this.onNext.createDelegate(this),
 				scope:this
 			}
 			
@@ -280,10 +295,10 @@ App.examination.CardStartPanel = Ext.extend(Ext.Panel, {
                     align: 'stretch',
                     items: [{
                             xtype: 'panel',
-                            items: [this.fromTmpRadio]
+                            items: [this.fromCardRadio]
                     	},{
                             xtype: 'panel',
-                            items: [this.fromCardRadio]
+                            items: [this.fromTmpRadio]
                     	},{
                             xtype: 'panel',
                             items: [

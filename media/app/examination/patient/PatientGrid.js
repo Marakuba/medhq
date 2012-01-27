@@ -113,11 +113,6 @@ App.examination.PatientGrid = Ext.extend(Ext.grid.GridPanel, {
 	
 	onGlobalSearch: function(v){
 		var s = this.store;
-//		s.baseParams = { format:'json' };
-//		vi = parseInt(v);
-//		if (!isNaN(vi)){
-//			s.setBaseParam('visit_id', vi);
-//		} else {
 			s.setBaseParam('search', v);
 //		}
 		s.load();
@@ -129,10 +124,12 @@ App.examination.PatientGrid = Ext.extend(Ext.grid.GridPanel, {
 			return false
 		};
 		var name = patient.data.first_name + ' ' + patient.data.mid_name + ' ' + patient.data.last_name; 
+		var short_name = patient.data.first_name + ': История ';
 		config = {
 			closable:true,
     		patient:patient.data.id,
     		patient_name: name,
+    		title: short_name,
 			staff:this.staff
 		}
 		App.eventManager.fireEvent('launchapp', 'patienthistory',config);

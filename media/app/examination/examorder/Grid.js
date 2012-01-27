@@ -45,7 +45,7 @@ App.examorder.ExamOrderGrid = Ext.extend(Ext.grid.GridPanel, {
 		    	dataIndex: 'barcode'
 		    },{
 		    	header: "Дата", 
-		    	hidden:true,
+		    	hidden:false,
 		    	sortable: true, 
 		    	dataIndex: 'created',
 		    	renderer:Ext.util.Format.dateRenderer('d.m.Y')
@@ -261,13 +261,13 @@ App.examorder.ExamOrderGrid = Ext.extend(Ext.grid.GridPanel, {
 	
 	onAdd: function() {
 		var rec = this.getSelected();
-		if (rec) {
+		if (rec && !rec.data.executed) {
 			config = {
 				closable:true,
         		patient:rec.data.patient,
         		patient_name: rec.data.patient_name,
         		ordered_service:rec.data.resource_uri,
-				title: 'Пациент ' + rec.data.patient_name,
+				title: rec.data.patient_name +  ': ' + rec.data.service_name,
 				service:rec.data.service,
 				print_name:rec.data.service_name,
 				staff:this.staff
@@ -324,7 +324,7 @@ App.examorder.ExamOrderGrid = Ext.extend(Ext.grid.GridPanel, {
         		patient:rec.data.patient,
         		patient_name: rec.data.patient_name,
         		ordered_service:rec.data.resource_uri,
-				title: 'Пациент ' + rec.data.patient_name,
+				title: rec.data.patient_name + ': История',
 				service:rec.data.service,
 				print_name:rec.data.service_name,
 				staff:this.staff

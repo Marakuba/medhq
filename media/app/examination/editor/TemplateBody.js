@@ -79,7 +79,7 @@ App.examination.TemplateBody = Ext.extend(Ext.TabPanel, {
 			scope:this
 		});
 		
-		this.ttb = [this.addSecBtn, this.addSubSecBtn,'-',this.previewBtn, this.closeBtn, this.historyBtn];
+		this.ttb = [this.addSecBtn, this.addSubSecBtn,'-',this.previewBtn,'-', this.closeBtn,'-', this.historyBtn];
 		
 		this.equipTab = new App.examination.EquipmentTab({
 			id:'equip-tab',
@@ -328,7 +328,11 @@ App.examination.TemplateBody = Ext.extend(Ext.TabPanel, {
 	},
 	
 	onClose: function(){
-		this.fireEvent('tmpclose');
+		if (this.isCard){
+			this.fireEvent('cardclose');
+		} else {
+			this.fireEvent('tmpclose');
+		}
 	},
 	
 	removeTicket:function(section,ticketTitle){
