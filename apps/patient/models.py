@@ -94,10 +94,10 @@ class Patient(make_person_object('patient')):
     
     def updBalance(self):
         orders = Payment.objects.filter(client_account__client_item = self.client_item).aggregate(Sum("amount"))
-        sales = Visit.objects.filter(patient = self).aggregate(Sum("total_price"))
-        discount = Visit.objects.filter(patient = self).aggregate(Sum("total_discount"))
+        visits = Visit.objects.filter(patient = self, payment_type__in=[u'н',u'б'], cls=u'п')
+        sales = visits.aggregate(Sum("total_price"))
+        discount = visits.aggregate(Sum("total_discount"))
         self.balance = (float(orders['amount__sum'] or 0) + float(discount['total_discount__sum'] or 0) - float( sales['total_price__sum'] or 0 )) or 0
-        print 'sales %s' % (sales['total_price__sum'])
         self.save()
         
     class Meta:

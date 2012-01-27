@@ -50,7 +50,7 @@ class Staff(make_person_object('staff')):
         if not hasattr(self,'_position'):
             p = self.position_set.all()
             self._position = len(p) and p[0] or None
-        return self._position.title
+        return self._position and self._position.title or u''
         
     def full_name(self):
         return u"%s %s %s%s" % (self.last_name, self.first_name, self.mid_name, self.get_position() and u', %s' % self.get_position() or u'')
