@@ -142,6 +142,7 @@ App.examination.Editor = Ext.extend(Ext.Panel, {
 				subSectionStore : this.subSectionStore,
 				staff:this.staff,
 				generalTab: this.generalTab,
+				patient_name:this.patient_name,
 				title:'Заголовок',
 				listeners:{
 					movearhcivetmp:function(){

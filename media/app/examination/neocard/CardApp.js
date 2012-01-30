@@ -111,6 +111,7 @@ App.examination.CardApp = Ext.extend(Ext.Panel, {
 				subSectionStore : this.subSectionStore,
 				generalTab: this.generalTab,
 				patient:this.patient, // для открытия истории пациента
+				patient_name:this.patient_name,
 				isCard:true,
 				staff:this.staff,
 				title:'Заголовок',

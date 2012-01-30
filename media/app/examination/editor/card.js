@@ -84,7 +84,7 @@ Ext.ux.form.Ticket = Ext.extend(Ext.Panel,{
 					var cfg = {
 						allowBlur:false,
 	                    shadow: false,
-	                    completeOnEnter: false,
+	                    completeOnEnter: true,
 	                    cancelOnEsc: true,
 	                    updateEl: true,
 	                    ignoreNoChange: true,

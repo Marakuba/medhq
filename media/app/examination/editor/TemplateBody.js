@@ -73,7 +73,7 @@ App.examination.TemplateBody = Ext.extend(Ext.TabPanel, {
 		});
 		
 		this.historyBtn = new Ext.Button({
-			visible:this.isCard,
+			hidden:!this.isCard,
 			text: 'История пациента',
 			handler:this.onHistoryOpen.createDelegate(this),
 			scope:this
@@ -376,8 +376,11 @@ App.examination.TemplateBody = Ext.extend(Ext.TabPanel, {
 	},
 	
 	onHistoryOpen: function(){
+		var name = this.patient_name.split(' ');
+		
 		config = {
 			closable:true,
+			title:name[0] + ': История',
     		patient:this.patient,
     		patient_name: this.patient_name,
 			staff:this.staff
