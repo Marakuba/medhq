@@ -5,7 +5,7 @@ App.examination.TicketPanel = Ext.extend(Ext.ux.Portal,{
 //	title:'Новый раздел',
 	autoScroll:true,
 	cls: 'placeholder',
-	bubbleEvents:['beforeticketremove','ticketremove','ticketdataupdate','ticketeditstart','drop'],
+	bubbleEvents:['beforeticketremove','ticketremove','ticketdataupdate','ticketeditstart','drop','ticketheadeeditrstart'],
 	closable: true
 });
 
@@ -170,7 +170,7 @@ App.examination.TicketTab = Ext.extend(Ext.Panel, {
 		    labelAlign: 'top',
 		    autoSctoll:true,
 		    closable:true,
-		    bubbleEvents:['beforeticketremove','ticketremove','ticketdataupdate','ticketeditstart','editorclose','drop'],
+		    bubbleEvents:['beforeticketremove','ticketremove','ticketdataupdate','ticketeditstart','editorclose','drop','ticketheadeeditrstart'],
 		    items: [
 		       this.ticketPanel, this.glossPanel
 		    ]
@@ -236,10 +236,10 @@ App.examination.TicketTab = Ext.extend(Ext.Panel, {
 		this.on('beforeclose',function(){
 			var data = Ext.decode(this.record.data.data);
 			Ext.each(data,function(sec,i){
-				if (sec.section === this.section){
+				if (sec.section == this.section){
 					delete data[i];
 				}
-			});
+			},this);
 			this.record.set('data',Ext.encode(data));
 		},this);
 		
@@ -327,12 +327,24 @@ App.examination.TicketTab = Ext.extend(Ext.Panel, {
 			};
 			this.ticket = panel;
 		},this);
+		
+		this.on('ticketheadeeditstart',function(panel){
+			if (this.ticket){
+				this.ticket.body.removeClass('selected')
+			};
+			
+			this.ticket = panel;
+			this.ticket.body.addClass('selected')
+		},this)
 
 		this.on('ticketdataupdate', function(ticket, data){
 			// в тикете обновились данные 
 //			this.ctxEditor = undefined;
 //			this.ticket = undefined;
-			this.ticket.body.addClass('selected');
+//			this.ticket = ticket;
+			if(this.ticket){
+				this.ticket.body.addClass('selected');
+			};
 			this.glossDropDown.unbindCurrentElement();
 			this.glossDropDown.clearBuffer();
 		},this);

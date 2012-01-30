@@ -435,12 +435,14 @@ App.examination.CardStartPanel = Ext.extend(Ext.Panel, {
 					this.fromCardRadio.setValue(true);
 					this.cardGrid.getSelectionModel().selectFirstRow();
 					this.onPreview('card');
+					this.radio = 'card';
 				} else {
 					this.fromCardRadio.disable();
 					this.tmpStore.load({callback:function(recs){
 					if (recs.length){
 						this.fromTmpRadio.setValue(true);
 						this.tmpGrid.getSelectionModel().selectFirstRow();
+						this.radio = 'tmp';
 					} else {
 						this.fromTmpRadio.disable();
 					}
@@ -508,11 +510,13 @@ App.examination.CardStartPanel = Ext.extend(Ext.Panel, {
 	},
 	previewInTab: function(){
 		if (this.radio=='card'){
-			var source = 'card'
+			var source = 'card';
+			var gridname = 'card';
 		} else {
-			var source = 'template'
+			var source = 'template';
+			var gridname = 'tmp';
 		}
-		var record = this.tmpGrid.getSelectionModel().getSelected();
+		var record = this[gridname+'Grid'].getSelectionModel().getSelected();
 		if (!record) {
 			return false
 		}

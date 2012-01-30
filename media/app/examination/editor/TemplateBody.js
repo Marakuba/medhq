@@ -224,7 +224,7 @@ App.examination.TemplateBody = Ext.extend(Ext.TabPanel, {
 	},
 	
 	onAddSection: function(section,title,order,data){
-		var new_tab = this.insert(order,new App.examination.TicketTab({
+		var new_tab = new App.examination.TicketTab({
 			title:title,
 			section:section,
 			base_service:this.base_service,
@@ -240,6 +240,7 @@ App.examination.TemplateBody = Ext.extend(Ext.TabPanel, {
 					if (this.items.length == 1) {
 						this.addSubSecBtn.disable();
 					};
+//					this.updateRecord();
 //					this.removeTab(p.section);
 				},
 				'ticketdataupdate': function(){
@@ -250,7 +251,21 @@ App.examination.TemplateBody = Ext.extend(Ext.TabPanel, {
 				},
 				scope:this
 			}
-		}));
+		});
+		if(this.items.items.length){
+			Ext.each(this.items,function(item,i){
+				if (this.items.items[i].order > order){
+					this.insert(i,new_tab);
+					return
+				}
+				if (i ==this.items.items.length-1){
+					this.insert(i+1,new_tab);
+					return
+				} 
+			},this)
+		} else {
+			this.insert(0,new_tab);
+		}
 		this.sectionMenu.remove(section);
 		if (this.sectionMenu.items.length == 0) {
 			this.addSecBtn.disable();
@@ -259,7 +274,9 @@ App.examination.TemplateBody = Ext.extend(Ext.TabPanel, {
 		this.setActiveTab(new_tab);
 //		this.fillSubSecMenu(section);
 		this.doLayout();
-		this.updateRecord();
+		if (!this.dataLoading){
+			this.updateRecord();
+		};
 		return new_tab;
 	},
 	
@@ -287,7 +304,7 @@ App.examination.TemplateBody = Ext.extend(Ext.TabPanel, {
 			return false;
 		};
 		var data = [];
-		for (var i =0; i< this.items.length; i++) {
+		for (var i =0; i< this.items.items.length; i++) {
 			var tab = this.items.items[i];
 			var section = {};
 			if (tab.getData){

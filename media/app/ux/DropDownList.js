@@ -49,7 +49,7 @@ Ext.ux.DropDownList = Ext.extend(Ext.Layer, {
         						Ext.EventObject.PAGEUP,
         						Ext.EventObject.PAUSE,
         						Ext.EventObject.PRINT_SCREEN,
-        						Ext.EventObject.ENTER,
+//        						Ext.EventObject.ENTER,
 //        						Ext.EventObject.NUM_CENTER,
 //        						Ext.EventObject.NUM_DIVISION,
 //        						Ext.EventObject.NUM_MULTIPLY,
@@ -136,7 +136,12 @@ Ext.ux.DropDownList = Ext.extend(Ext.Layer, {
             },
 
             "enter": function(e) {
-            	if (this.isVisible()) this.onViewClick();
+            	if (this.itemInserted == true){
+            		this.itemInserted = false
+            		return false
+            	} else {
+            		return true
+            	}
             },
 
             "esc": function(e) {
@@ -149,7 +154,7 @@ Ext.ux.DropDownList = Ext.extend(Ext.Layer, {
                 //if (this.forceSelection === true) {
                 //    this.collapse();
                 //} else {
-                this.onViewClick(false);
+//                this.onViewClick(false);
                 //}
                 return true;
             },
@@ -232,15 +237,28 @@ Ext.ux.DropDownList = Ext.extend(Ext.Layer, {
 		}
 		
 		if(this.clearFilterList.indexOf(key) > -1) {
+			
 			this.clearBuffer();
-			if (this.isVisible()) {
-                this.collapse(false);
-            };
+//			if (this.isVisible()) {
+//                this.collapse(false);
+//            };
             return
 		};
 		var f = e.browserEvent
 		if (f.keyCode) {
 			// if BACKSPACE
+//			console.log(f.keyCode)
+			if (f.keyCode == 13){
+				if (this.isVisible()){
+					this.onViewClick();
+					this.itemInserted = true;
+				} else {
+					this.clearBuffer();
+				};
+				if (f.ctrlKey){
+					this.currentEl.blur();
+				}
+			}
 			if (f.keyCode == 8 && this.buffer){
 				if (f.ctrlKey){
 					this.clearBuffer();
@@ -323,7 +341,6 @@ Ext.ux.DropDownList = Ext.extend(Ext.Layer, {
             s = this.store,
             r = s.getAt(index);
         if (r) {
-//        	console.log('onViewClick ',this.buffer);
             this.view.fireEvent('itemselected', this, r, index);
             this.collapse(false);
         } else {
@@ -331,7 +348,8 @@ Ext.ux.DropDownList = Ext.extend(Ext.Layer, {
         }
         if (doFocus !== false) {
             this.currentEl.focus();
-        }
+        };
+        return false
     },
 
     collapse: function(userClose) {
