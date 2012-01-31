@@ -443,6 +443,7 @@ App.dict.XGlossaryTree = Ext.extend(Ext.ux.tree.RemoteTreePanel, {
 				Ext.fly(options.node.getUI().elNode).set({'ext:tree-node-id':o.objects.id});
 				this.registerNode(options.node);
 				options.node.attributes['id'] = o.objects.id;
+				options.node.attributes['resource_uri'] = App.getApiUrl('glossary')+'/'+o.objects.id;
 				options.node.select();
 			break;
 		}

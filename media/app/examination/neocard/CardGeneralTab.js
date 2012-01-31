@@ -105,6 +105,14 @@ App.examination.CardGeneralTab = Ext.extend(Ext.form.FormPanel, {
 			scope:this
 		});
 		
+		this.moveArchiveBtn = new Ext.Button({
+			text: 'Переместить в архив',
+			handler:function(){
+				this.fireEvent('movearhcivecard')
+			},
+			scope:this
+		});
+		
 		this.headerElt = new Ext.BoxComponent({
 			html:this.print_name? this.print_name:'Нет заголовка',
 			cls:'tpl-print-name',
@@ -163,7 +171,8 @@ App.examination.CardGeneralTab = Ext.extend(Ext.form.FormPanel, {
 	        	margins:'5 5 5 0'
 	        },
 			items:[
-				this.equipBtn
+				this.equipBtn,
+				this.moveArchiveBtn
 			]
 		});
 		

@@ -152,7 +152,7 @@ App.examination.CardApp = Ext.extend(Ext.Panel, {
 			this.record.set('ordered_service',this.ordered_service);
 			this.cardStore.add(this.record);
 			this.cardBody = this.newCardBody({
-				print_name:source.print_name,//this.record.data.print_name ? this.record.data.print_name: this.print_name,
+				print_name: source ? source.print_name : this.record.data.print_name ? this.record.data.print_name: this.print_name,
 				record:this.record,
 				card:true // признак того, что это карта
 			});
