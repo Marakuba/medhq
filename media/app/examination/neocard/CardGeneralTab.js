@@ -122,7 +122,7 @@ App.examination.CardGeneralTab = Ext.extend(Ext.form.FormPanel, {
 		this.titlePanel = new Ext.Panel({
 			region:'center',
 			layout:'anchor',
-			border:true,
+			border:false,
 			margins:'5 5 5 5',
 			padding:10,
 			items:[{
@@ -137,13 +137,51 @@ App.examination.CardGeneralTab = Ext.extend(Ext.form.FormPanel, {
 			},this.headerElt]
 		});
 		
+		this.mkbPanel = new Ext.Panel({
+			region:'center',
+			layout:'anchor',
+			border:false,
+			margins:'5 5 5 5',
+			padding:10,
+			items:[{
+				xtype:'box',
+				html:'Диагноз по МКБ-10',
+				cls:'tab-title'
+			}/*,{
+				xtype:'box',
+				html:'Выводится в качестве заголовка при печати',
+				anchor:'100%',
+				cls:'tab-subtitle'
+			}*/,this.mkb]
+		});
+		
+		this.assistantPanel = new Ext.Panel({
+			region:'center',
+			layout:'anchor',
+			border:false,
+			margins:'5 5 5 5',
+			padding:10,
+			items:[{
+				xtype:'box',
+				html:'Лаборант',
+				cls:'tab-title'
+			}/*,{
+				xtype:'box',
+				html:'Выводится в качестве заголовка при печати',
+				anchor:'100%',
+				cls:'tab-subtitle'
+			}*/,this.assistant]
+		});
+		
+		
+		
 		this.centralPanel = new Ext.Panel({
 			layout:'form',
 			region: 'center',
 			border:false,
 			items:[this.titlePanel,
-				this.mkb,
-				this.assistant]
+				this.mkbPanel,
+				this.assistantPanel]
 		});
 		
 		this.menuPanel = new Ext.Panel({

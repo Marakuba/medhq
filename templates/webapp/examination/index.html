@@ -90,6 +90,24 @@
     		font-style: italic;
     	}
     	
+    	.placeholder .content em {
+    		font-style: italic;
+    	}
+    	
+    	.placeholder .content strong {
+    		font-weight: bold;
+    	}
+    	
+    	.placeholder .content ol {
+    		list-style-type: decimal;
+    		list-style-position: inside;
+    	}
+    	
+    	.placeholder .content ul {
+    		list-style-type: disc;
+    		list-style-position: inside;
+    	}
+    	
     	.text-editor {
     		font-size:10pt;
     	}
@@ -121,7 +139,7 @@
 	
     <!-- LIBS -->
     <script type="text/javascript" src="{{ STATIC_URL }}extjs/adapter/ext/ext-base.js"></script>
-    <!-- <script type="text/javascript" src="{{ STATIC_URL }}libs/markdown.js"></script> -->
+    <script type="text/javascript" src="{{ STATIC_URL }}libs/markdown.js"></script>
     <!-- ENDLIBS -->
 
     <script type="text/javascript" src="{{ STATIC_URL }}extjs/ext-all-debug.js"></script>
