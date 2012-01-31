@@ -63,6 +63,14 @@ App.ExamCentralPanel = Ext.extend(Ext.Panel, {
                     },
                     scope:this
                 },{
+                    text: 'Старые карты',
+                    scale:'medium',
+                    iconAlign: 'top',
+                    handler: function(){
+                    	this.launchApp('oldordergrid');
+                    },
+                    scope:this
+                },{
                     text: 'Обследования',
                     scale:'medium',
                     iconAlign: 'top',
