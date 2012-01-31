@@ -7,6 +7,13 @@ App.examination.TemplateBody = Ext.extend(Ext.TabPanel, {
 		String.prototype.splice = function( idx, rem, s ) {
 		    return (this.slice(0,idx) + s + this.slice(idx + Math.abs(rem)));
 		};
+		
+		this.tmpStore = new Ext.data.RESTStore({
+			autoSave: true,
+			autoLoad : false,
+			apiUrl : get_api_url('examtemplate'),
+			model: App.models.Template
+		});
 
 		
 		this.menuBtns = {};
@@ -169,6 +176,17 @@ App.examination.TemplateBody = Ext.extend(Ext.TabPanel, {
 		this.generalTab.on('movearhcivetmp',function(){
 			this.record.set('base_service','');
 			this.fireEvent('movearhcivetmp');
+		},this);
+		
+		this.generalTab.on('movearhcivecard',function(){
+			var archiveRecord = new this.tmpStore.model();
+			Ext.applyIf(archiveRecord.data,this.record.data);
+			archiveRecord.set('staff',this.staff);
+			delete archiveRecord.data['base_service']
+			delete archiveRecord.data['id'];
+			this.tmpStore.add(archiveRecord);
+			
+			this.fireEvent('movearhcivecard');
 		},this);
 				
 		this.generalTab.on('deletetmp',function(){
