@@ -113,6 +113,14 @@ App.examination.CardGeneralTab = Ext.extend(Ext.form.FormPanel, {
 			scope:this
 		});
 		
+		this.asgmtBtn = new Ext.Button({
+			text: 'Направления',
+			handler:function(){
+				this.fireEvent('openasgmt')
+			},
+			scope:this
+		});
+		
 		this.headerElt = new Ext.BoxComponent({
 			html:this.print_name? this.print_name:'Нет заголовка',
 			cls:'tpl-print-name',
@@ -210,7 +218,8 @@ App.examination.CardGeneralTab = Ext.extend(Ext.form.FormPanel, {
 	        },
 			items:[
 				this.equipBtn,
-				this.moveArchiveBtn
+				this.moveArchiveBtn,
+				this.asgmtBtn
 			]
 		});
 		

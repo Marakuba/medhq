@@ -1,4 +1,5 @@
 Ext.ns('App.examination');
+Ext.ns('App.patient');
 
 App.examination.TemplateBody = Ext.extend(Ext.TabPanel, {
 	
@@ -14,8 +15,15 @@ App.examination.TemplateBody = Ext.extend(Ext.TabPanel, {
 			apiUrl : get_api_url('examtemplate'),
 			model: App.models.Template
 		});
-
 		
+		//Для создания направлений нужна запись текущего пациента
+		this.patientStore = new Ext.data.RESTStore({
+			autoSave: false,
+			autoLoad : false,
+			apiUrl : get_api_url('patient'),
+			model: App.models.Patient
+		});
+
 		this.menuBtns = {};
 		this.subSecBtns = {}
 		
@@ -178,6 +186,28 @@ App.examination.TemplateBody = Ext.extend(Ext.TabPanel, {
 			this.fireEvent('movearhcivetmp');
 		},this);
 		
+		this.generalTab.on('openasgmt',function(){
+			if(this.asgmtTab){
+				this.setActiveTab(this.asgmtTab);
+			} else {
+				this.patientStore.setBaseParam('id',this.patient);
+				this.patientStore.load({callback:function(records){
+					if (!records.length){
+						return
+					}
+					this.patientRecord = records[0]
+					this.asgmtTab = this.newAsgmtTab();
+					this.asgmtTab.setActivePatient(this.patientRecord);
+					this.insert(this.asgmtTab.order,this.asgmtTab)
+					this.setActiveTab(this.asgmtTab);
+					this.doLayout();	
+				},scope:this})
+				
+				this.fireEvent('openasgmt');
+			}
+			
+		},this);
+		
 		this.generalTab.on('movearhcivecard',function(){
 			var archiveRecord = new this.tmpStore.model();
 			Ext.applyIf(archiveRecord.data,this.record.data);
@@ -235,6 +265,24 @@ App.examination.TemplateBody = Ext.extend(Ext.TabPanel, {
 			if (this.record.data.equipment){
 				this.add(this.equipTab);
 				this.equipTab.loadRecord(this.record);
+			};
+			
+			if (this.isCard){
+				var asgmt_tab = this.newAsgmtTab();
+				asgmt_tab.store.setBaseParam('patient',this.patient);
+				asgmt_tab.store.load({callback:function(records){
+					if (!records.length){
+						return
+					};
+					this.patientStore.setBaseParam('id',this.patient);
+					this.patientStore.load({callback:function(records){
+						if(records.length){
+							this.asgmtTab = asgmt_tab;
+							this.asgmtTab['patientRecord'] = records[0];
+							this.insert(this.asgmtTab.order,this.asgmtTab);
+						}
+					},scope:this})
+				},scope:this})
 			};
 			this.setActiveTab(0);
 			
@@ -404,6 +452,15 @@ App.examination.TemplateBody = Ext.extend(Ext.TabPanel, {
 			staff:this.staff
 		}
 		App.eventManager.fireEvent('launchapp', 'patienthistory',config);
+	},
+	
+	newAsgmtTab: function(){
+		var asgmt_tab = new App.patient.AsgmtGrid({
+			title:'Направления',
+			closable:false,
+			order:100
+		});
+		return asgmt_tab
 	}
 	
 

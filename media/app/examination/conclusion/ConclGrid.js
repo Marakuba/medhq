@@ -161,7 +161,7 @@ App.examination.ConclGrid = Ext.extend(Ext.grid.EditorGridPanel, {
 
 		this.on('afterrender', function(){
 			if (this.staff){
-				this.store.setBaseParam('staff',this.staff);
+				this.store.setBaseParam('staff',App.uriToId(this.staff));
 				this.store.load();
 			}
 		}, this);

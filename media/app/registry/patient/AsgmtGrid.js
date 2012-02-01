@@ -373,6 +373,8 @@ App.patient.AsgmtGrid = Ext.extend(Ext.grid.GridPanel, {
 				},
 				scope:this
 			});
+		} else {
+			console.log('не указан пациент')
 		}
 	},
 	staffWindow: function(index, service){
