@@ -315,8 +315,12 @@ Ext.ux.DropDownList = Ext.extend(Ext.Layer, {
 	            //Если на середине слова нет совпадений в store, то приостанавливаем поиск до следующего слова
 	            this.pause = true;
 	            var buffer = this.getBuffer();
-	            this.pauseBuffer = buffer.substring(0,buffer.length-1)
-	            console.log('pauseBuffer', this.pauseBuffer);
+	            this.pauseBuffer = buffer.substring(0,buffer.length-1);
+	            // TODO: 
+	            //если совпадений не найдено, но размер pauseBuffer = 4 символа, то возможно там уже есть
+	            // пробел. Если он там есть, то нужно сбросить буфер и продолжить поиск со следующего символа после 
+	            //пробела.
+	            console.log('pauseBuffer ', this.pauseBuffer);
 			}
 		}, scope:this})
     },
