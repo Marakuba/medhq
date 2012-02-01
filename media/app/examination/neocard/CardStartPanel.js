@@ -58,6 +58,7 @@ App.examination.CardStartPanel = Ext.extend(Ext.Panel, {
 			store: this.tmpStore,
 			hidden:true,
 			autoScroll:true,
+			border:false,
 			columns:  [
 			    {
 			    	header: "Наименование", 
@@ -137,6 +138,7 @@ App.examination.CardStartPanel = Ext.extend(Ext.Panel, {
 			store: this.cardStore,
 			hidden:true,
 			autoScroll:true,
+			border:false,
 			columns:  [
 			    {
 			    	header: "Наименование", 
@@ -198,7 +200,7 @@ App.examination.CardStartPanel = Ext.extend(Ext.Panel, {
             width: 100,
             border: false,
             hidden:true,
-            title: 'Просмотр',
+//            title: 'Просмотр',
             autoScroll:true,
             tbar: {
                 xtype: 'toolbar',
@@ -317,6 +319,16 @@ App.examination.CardStartPanel = Ext.extend(Ext.Panel, {
                                     			this.gridPanel.hide();
                                     			this.previewPanel.hide();
                                     		}
+                                    	},
+                                    	afterrender : function(r){
+                                    		Ext.QuickTips.register({
+                                				autoHide:true,
+                                			    target: r.wrap,
+                                			    title: 'Пустая карта осмотра',
+                                			    text: 'Все разделы и подразделы задаются вручную.',
+                                			    width: 300,
+                                			    dismissDelay: 3000
+                                			});
                                     	},
                                     	scope:this
                                     }
@@ -496,6 +508,7 @@ App.examination.CardStartPanel = Ext.extend(Ext.Panel, {
 		console.log(record)
 		if (record) {
 			var list = new Ext.Panel({
+				border:false,
 				autoLoad:String.format('/widget/examination/{0}/{1}/',source,record.data.id)
 			});
 			this.previewPanel.add(list);

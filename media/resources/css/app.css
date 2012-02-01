@@ -19,6 +19,12 @@
 .ex-place-7 {
 	background-image: url(../images/state_7.png) !important; background-repeat: no-repeat;
 }
+.med-laboratory {
+	background-image: url(../images/laboratory.png) !important; background-repeat: no-repeat;
+}
+.med-doctor {
+	background-image: url(../images/doctor.png) !important; background-repeat: no-repeat;
+}
 .x-tree-node-anchor {
 	white-space:normal;
 }
@@ -171,4 +177,3 @@
 	color:red;
 	font-weight: bold;
 }
-

@@ -26,7 +26,7 @@ def examination_template(request, object_id):
     data = tpl.data and simplejson.loads(tpl.data) or []
     for d in data:
         for t in d['tickets']:
-            if t['private'] == False:
+            if t['private'] == True:
                 d['tickets'].remove(t)
         d['title'] = field_sets[d['section']]
     
@@ -53,7 +53,7 @@ def examination_card(request, object_id):
     data = card.data and simplejson.loads(card.data) or []
     for d in data:
         for t in d['tickets']:
-            if t['printable'] == False:
+            if t['private'] == True:
                 d['tickets'].remove(t)
         d['title'] = field_sets[d['section']]
     

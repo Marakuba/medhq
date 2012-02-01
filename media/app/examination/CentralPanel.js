@@ -41,15 +41,16 @@ App.ExamCentralPanel = Ext.extend(Ext.Panel, {
 			items:[this.mainPanel],
 			tbar:[{
 				xtype: 'buttongroup',
-				title: '№ заказа или фамилия',
+//				title: '№ заказа или фамилия',
 				padding:5,
 				items:[{
-					xtype:'gsearchfield'
+					xtype:'gsearchfield',
+					emptyText:'№ заказа или фамилия'
 					
 				}]
 			},{
                 xtype: 'buttongroup',
-                title: 'Журналы',
+//                title: 'Журналы',
 //                columns: 3,
                 defaults: {
                     scale: 'small'
@@ -71,39 +72,6 @@ App.ExamCentralPanel = Ext.extend(Ext.Panel, {
                     },
                     scope:this
                 },{
-                    text: 'Обследования',
-                    scale:'medium',
-                    iconAlign: 'top',
-                    handler: function(){
-                    	this.launchApp('allexamgrid');
-                    },
-                    scope:this
-                },{
-                	text:'Выписка',
-                	scale:'medium',
-                	handler:function(){
-                		var win = new App.examination.EpicrisisWindow({
-                			
-                		});
-                		win.show();
-                	}
-                },{
-                	text: 'Конструктор',
-                    scale:'medium',
-                    iconAlign: 'top',
-                    handler: function(){
-                    	this.launchApp('editor');
-                    },
-                    scope:this
-                },{
-                	text: 'Глоссарий',
-                    scale:'medium',
-                    iconAlign: 'top',
-                    handler: function(){
-                    	this.launchApp('glossarytree');
-                    },
-                    scope:this
-                },{
                 	text: 'Заключения',
                     scale:'medium',
                     iconAlign: 'top',
@@ -114,12 +82,12 @@ App.ExamCentralPanel = Ext.extend(Ext.Panel, {
                 }]
             },{
                 xtype: 'buttongroup',
-                title: 'Шаблоны',
+//                title: 'Шаблоны',
                 columns: 2,
                 defaults: {
                     scale: 'small'
                 },
-                items: [{
+                items: [/*{
                     text: 'Список шаблонов',
                     scale:'medium',
                     iconAlign: 'top',
@@ -135,16 +103,24 @@ App.ExamCentralPanel = Ext.extend(Ext.Panel, {
                     	this.launchApp('groupgrid');
                     },
                     scope:this
+                },*/{
+                	text: 'Конструктор шаблонов',
+                    scale:'medium',
+                    iconAlign: 'top',
+                    handler: function(){
+                    	this.launchApp('editor');
+                    },
+                    scope:this
                 }]
             },{
                 xtype: 'buttongroup',
-                title: 'Пациенты',
+//                title: 'Пациенты',
                 columns: 2,
                 defaults: {
                     scale: 'small'
                 },
                 items: [{
-                    text: 'Список пациентов',
+                    text: 'Реестр пациентов',
                     scale:'medium',
                     iconAlign: 'top',
                     handler: function(){

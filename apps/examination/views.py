@@ -137,9 +137,10 @@ def get_history_tree(request):
                     "text":serv.service.name,
                     "date":serv.created,
                     "staff":serv.staff and serv.staff.staff.short_name() or '',
-                    "opetator": visit.operator.username,
+                    "operator": visit.operator.username,
                     "cls":"multi-line-text-node",
                     'singleClickExpand':True,
+                    "iconCls":prefix=='order' and "med-doctor" or "med-laboratory",
                     "children": order_childs,
                     "leaf": len(order_childs) == 0
                 }
@@ -159,7 +160,7 @@ def get_history_tree(request):
                     "id":"visit_%s" % (visit.barcode.id),
                     "text":"Прием %s" % (visit.barcode.id),
                     "date":visit.created,
-                    "opetator": visit.operator.first_name,
+                    "operator": visit.operator.first_name,
                     'singleClickExpand':True,
                     "children": visit_childs,
                     "leaf": len(visit_childs) == 0
@@ -191,6 +192,7 @@ def get_history_tree(request):
                     "text": text,
                     "children":mchilds,
                     "singleClickExpand":True,
+                    "iconCls":"silk-calendar-view-month",
                     "leaf": len(mchilds) == 0
                 }
                 if mchilds:
@@ -215,6 +217,7 @@ def get_history_tree(request):
                     "text": text,
                     "children":ychilds,
                     "singleClickExpand":True,
+                    "iconCls":"silk-calendar",
                     "leaf": len(ychilds) == 0
                 }
                 if ychilds:
@@ -232,6 +235,7 @@ def get_history_tree(request):
             patient_history = build_year_tree(visits,min_date.year,max_date.year)
             patient_node = {
                 "id":'patient_%s' % (patient_id),
+                "iconCls":patient.gender==u'М' and 'silk-user' or 'silk-user-female',
                 "text": patient.full_name(),
                 "children":patient_history,
                 "expanded":True,
