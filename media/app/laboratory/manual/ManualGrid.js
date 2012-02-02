@@ -176,6 +176,7 @@ App.manual.ManualGrid = Ext.extend(Ext.grid.GridPanel, {
 
 		Ext.apply(this, Ext.apply(this.initialConfig, config));
 		App.manual.ManualGrid.superclass.initComponent.apply(this, arguments);
+		App.eventManager.on('globalsearch', this.onGlobalSearch, this);
 		
 	},
 	
@@ -212,6 +213,12 @@ App.manual.ManualGrid = Ext.extend(Ext.grid.GridPanel, {
 			this.store.setBaseParam(field, value);
 		}
 		this.store.load();
+	},
+	
+	onGlobalSearch: function(v){
+		var s = this.store;
+		s.setBaseParam('search', v);
+		s.load();
 	},
 	
 	getSelected: function() {

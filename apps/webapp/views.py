@@ -24,6 +24,7 @@ from django.db.models import Max
 from staff.models import Position
 import datetime
 import time
+from django.core.serializers.json import DjangoJSONEncoder
 
 
 def auth(request, authentication_form=AuthenticationForm):
@@ -148,6 +149,12 @@ def helpdesk(request):
     return {}
     
 
+@login_required
+@render_to('webapp/treatmentroom/index.html')
+def treatmentroom(request):
+    return {}
+    
+
 def get_service_tree(request):
     """
     Генерирует дерево в json-формате.
@@ -188,6 +195,7 @@ def get_service_tree(request):
             'leaf':True,
             'nodes':[node_dict(node) for node in obj.promotionitem_set.all()],
             'discount':obj.discount and obj.discount.id or None,
+            'price':obj.total_price,
             'isComplex':True
         }
                 
@@ -357,7 +365,7 @@ def get_service_tree(request):
                 tree.append(tree_node)
         s = clear_tree(nodes,[])
         tree.extend(s)
-        _cached_tree = simplejson.dumps(tree)
+        _cached_tree = simplejson.dumps(tree, cls=DjangoJSONEncoder)
         
         # кэш не обновляется, если есть параметр nocache
         if not nocache:

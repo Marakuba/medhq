@@ -10,11 +10,13 @@ App.Patients = Ext.extend(Ext.Panel, {
 		this.patientCard = new App.patient.PatientCard({
 			region:'center'
 		});
+		
+		this.defaultTitle = 'Выберите пациента';
 
 		this.cardPanel = new Ext.Panel({
 			region:'center',
 			border:false,
-			title:'Выберите пациента',
+			title:this.defaultTitle,
 			layout:'fit',
 			tools:[{
 				id:'refresh',
@@ -23,8 +25,22 @@ App.Patients = Ext.extend(Ext.Panel, {
 				},
 				scope:this,
 				qtip:'Обновить карточку пациента'
+			},{
+				id:'close',
+				handler:function(){
+					this.cardPanel.remove(this.patientCard);
+					this.patientCard = new App.patient.PatientCard({
+						region:'center'
+					});
+					this.initEvents();
+					this.cardPanel.setTitle(this.defaultTitle);
+					this.cardPanel.add(this.patientCard);
+					this.cardPanel.doLayout();
+				},
+				scope:this,
+				qtip:'Закрыть карту'
 			}],
-			items:this.patientCard
+			items:[this.patientCard]
 		});
 
 		this.quickForm = new App.patient.QuickForm({
@@ -50,8 +66,11 @@ App.Patients = Ext.extend(Ext.Panel, {
 		Ext.apply(this, Ext.apply(this.initialConfig, config));
 		App.Patients.superclass.initComponent.apply(this, arguments);
 		
+		this.initEvents();
+	},
+	
+	initEvents : function() {
 		this.patientGrid.on('patientselect', this.patientSelect, this);
-
 	},
 	
 	titleTpl : new Ext.XTemplate(

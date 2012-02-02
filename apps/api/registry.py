@@ -40,6 +40,7 @@ from django.db.models.query_utils import Q
 from crm.models import AdSource
 from constance import config
 from promotion.models import Promotion
+from remoting.models import RemoteState
 
 class UserResource(ModelResource):
 
@@ -96,6 +97,7 @@ class DiscountResource(ModelResource):
     class Meta:
         queryset = Discount.objects.exclude(type=u'arc') 
         resource_name = 'discount'
+        limit = 100
         filtering = {
             'id':ALL,
             'name':('istartswith',)
@@ -134,6 +136,11 @@ class PatientResource(ExtResource):
     ad_source = fields.ForeignKey(AdSourceResource, 'ad_source', null=True)
     discount = fields.ForeignKey(DiscountResource, 'discount', null=True)
     client_item = fields.OneToOneField(ClientItemResource, 'client_item', null=True)
+    
+    def hydrate_initial_account(self, bundle):
+        bundle.data['initial_account'] = str(bundle.data['initial_account'])
+        return bundle
+
 
     def dehydrate(self, bundle):
         bundle.data['discount_name'] = bundle.obj.discount and bundle.obj.discount or u'0%'
@@ -266,9 +273,21 @@ class OwnStateResource(ModelResource):
             'id':ALL,
             'name':('istartswith',)
         }
-        
+
+class RemoteStateResource(ModelResource):
+    
+    state = fields.ForeignKey('apps.api.registry.StateResource','state')
+    
+    class Meta:
+        queryset = RemoteState.objects.all()
+        resource_name = 'remotestate'
+        filtering = {
+            'id':ALL
+        }
 
 class StateResource(ModelResource):
+    
+    remotestate = fields.OneToOneField(RemoteStateResource,'remotestate', null=True)
 
     class Meta:
         queryset = State.objects.all() 
@@ -277,7 +296,9 @@ class StateResource(ModelResource):
         filtering = {
             'id':ALL,
             'type':ALL,
-            'name':('istartswith',)
+            'name':('istartswith',),
+            'uuid':ALL,
+            'remotestate':ALL_WITH_RELATIONS
         }
         
         
@@ -846,6 +867,7 @@ class OrderedServiceResource(ExtResource):
     service = fields.ToOneField(BaseServiceResource, 'service')
     staff = fields.ToOneField(PositionResource, 'staff', full=True, null=True)
     sampling = fields.ForeignKey(SamplingResource, 'sampling', null=True)
+    execution_place = fields.ForeignKey(StateResource, 'execution_place')
 
     def obj_create(self, bundle, request=None, **kwargs):
         kwargs['operator']=request.user
@@ -863,7 +885,10 @@ class OrderedServiceResource(ExtResource):
         bundle.data['created'] = bundle.obj.order.created
         bundle.data['visit_id'] = bundle.obj.order.id
         bundle.data['barcode'] = bundle.obj.order.barcode.id
-        bundle.data['laboratory'] = bundle.obj.execution_place
+        bundle.data['patient_name'] = bundle.obj.order.patient.short_name()
+#        bundle.data['operator_name'] = bundle.obj.operator
+#        bundle.data['laboratory'] = bundle.obj.execution_place
+#        bundle.data['sampling'] = bundle.obj.sampling and bundle.obj.sampling.short_title()
         return bundle
     
     class Meta:
@@ -873,9 +898,40 @@ class OrderedServiceResource(ExtResource):
         limit = 100
         filtering = {
             'order': ALL_WITH_RELATIONS,
-            'sampling': ALL_WITH_RELATIONS
+            'sampling': ALL_WITH_RELATIONS,
+            'execution_place' : ALL_WITH_RELATIONS
         }
-
+        
+class LabOrderedServiceResource(OrderedServiceResource):
+    
+    def dehydrate(self, bundle):
+        o = bundle.obj
+        service = o.service
+        bundle.data['service_name'] = service.short_name or service.name
+        bundle.data['service_full_name'] = service.name
+        bundle.data['created'] = bundle.obj.order.created
+        bundle.data['visit_id'] = bundle.obj.order.id
+        bundle.data['barcode'] = bundle.obj.order.barcode.id
+        bundle.data['patient_name'] = bundle.obj.order.patient.short_name()
+        bundle.data['operator_name'] = bundle.obj.operator
+        bundle.data['laboratory'] = bundle.obj.execution_place
+        bundle.data['sampling'] = bundle.obj.sampling and bundle.obj.sampling.short_title()
+        bundle.data['message'] = o.latest_transaction()
+        return bundle    
+    
+    class Meta:
+        queryset = OrderedService.objects.all()
+        resource_name = 'laborderedservice'
+        authorization = DjangoAuthorization()
+        limit = 100
+        filtering = {
+            'order': ALL_WITH_RELATIONS,
+            'sampling': ALL_WITH_RELATIONS,
+            'status' : ALL,
+            'execution_place' : ALL_WITH_RELATIONS
+        }
+        
+        
 class LabServiceResource(ExtResource):
     """
     """
@@ -894,6 +950,25 @@ class LabServiceResource(ExtResource):
         bundle.data['barcode'] = bundle.obj.order.barcode.id
         return bundle
     
+    def build_filters(self, filters=None):
+        if filters is None:
+            filters = {}
+
+        orm_filters = super(LabServiceResource, self).build_filters(filters)
+
+        if "search" in filters:
+            smart_filters = smartFilter(filters['search'], 'order__patient')
+            if len(smart_filters.keys())==1:
+                try:
+                    orm_filters = ComplexQuery( Q(order__barcode__id=int(filters['search'])) | Q(**smart_filters), \
+                                      **orm_filters)
+                except:
+                    orm_filters.update(**smart_filters)
+            else:
+                orm_filters.update(**smart_filters)
+            
+        return orm_filters
+
     class Meta:
         queryset = OrderedService.objects.filter(service__labservice__is_manual=True) #all lab services
         resource_name = 'labservice'
@@ -1454,6 +1529,7 @@ class EquipmentResultResource(ExtResource):
         }   
         
 class PromotionResource(ExtResource):
+    discount = fields.ForeignKey(DiscountResource,'discount',null=True)
     class Meta:
         queryset = Promotion.objects.all()
         resource_name = 'promotion'
@@ -1513,7 +1589,8 @@ class ExtPreorderResource(ExtResource):
         bundle.data['ptype_name'] = obj.get_payment_type_display()
         bundle.data['execution_place'] = obj.service and obj.service.state.id
         bundle.data['execution_place_name'] = obj.service and obj.service.state.name
-        bundle.data['promotion_name'] = obj.promotion and obj.promotion.name
+        bundle.data['promotion_name'] = obj.promotion and obj.promotion.name or ''
+        bundle.data['promo_discount'] = obj.promotion and obj.promotion.discount.id or ''
         bundle.data['staff'] = obj.timeslot and obj.timeslot.cid
         bundle.data['staff_name'] = obj.timeslot and obj.get_staff_name()
         bundle.data['price'] = obj.service and obj.service.get_actual_price()
@@ -1654,6 +1731,7 @@ class ClientAccountResource(ExtResource):
         resource_name = 'clientaccount'
         authorization = DjangoAuthorization()
         filtering = {
+            'id':ALL,
             'client_item' : ALL_WITH_RELATIONS,
         }
         
@@ -1670,6 +1748,7 @@ class PaymentResource(ExtResource):
     
     def obj_create(self, bundle, request=None, **kwargs):
         kwargs['operator']=request.user
+        kwargs['office']=request.active_profile.department.state
         result = super(PaymentResource, self).obj_create(bundle=bundle, request=request, **kwargs)
         return result
     
@@ -1742,6 +1821,38 @@ class InvoiceItemResource(ExtResource):
             'invoice' : ALL_WITH_RELATIONS
         }
         
+######### remoting
+
+
+class ServiceToSend(ExtResource):
+    """
+    """
+
+    order = fields.ToOneField(VisitResource, 'order')
+    service = fields.ToOneField(BaseServiceResource, 'service')
+    staff = fields.ToOneField(PositionResource, 'staff', full=True, null=True)
+    execution_place = fields.ForeignKey(StateResource, 'execution_place')
+    sampling = fields.ForeignKey(SamplingResource, 'sampling', null=True)
+
+    def dehydrate(self, bundle):
+        bundle.data['operator_name'] = bundle.obj.operator
+        bundle.data['service_name'] = bundle.obj.service
+        bundle.data['patient_id'] = bundle.obj.order.patient.id
+        bundle.data['patient_name'] = bundle.obj.order.patient.full_name()
+        bundle.data['patient_birthday'] = bundle.obj.order.patient.birth_day
+        bundle.data['sku'] = bundle.obj.service.code
+        return bundle
+    
+    class Meta:
+        queryset = OrderedService.objects.filter(service__lab_group__isnull=False)
+        resource_name = 'servicetosend'
+        authorization = DjangoAuthorization()
+        limit = 200
+        filtering = {
+            'id' : ALL,
+            'state':ALL_WITH_RELATIONS
+        }        
+        
 
 api = Api(api_name=get_api_name('dashboard'))
 
@@ -1755,6 +1866,7 @@ api.register(InsurancePolicyResource())
 api.register(VisitResource())
 api.register(ReferralResource())
 api.register(OrderedServiceResource())
+api.register(LabOrderedServiceResource())
 api.register(SamplingServiceResource())
 api.register(ServiceBasketResource())   
 api.register(RefundResource())
@@ -1796,6 +1908,9 @@ api.register(MedStateResource())
 api.register(OwnStateResource())
 api.register(InsuranceStateResource())
 api.register(DoctorResource())
+
+#remoting
+api.register(RemoteStateResource())
 
 #pricelist
 api.register(DiscountResource())
@@ -1849,6 +1964,9 @@ api.register(PromotionResource())
 #crm
 api.register(AdSourceResource())
 
+
+#remoting
+api.register(ServiceToSend())
 
 #reporting
 #api.register(ReportResource())

@@ -70,5 +70,5 @@ class Discount(models.Model):
     class Meta:
         verbose_name = u'скидка'
         verbose_name_plural = u'скидки'
-        ordering = ('id',)
+        ordering = ('name',)
     

@@ -25,6 +25,7 @@ from django.views.generic.simple import direct_to_template
 from django.db.models.expressions import F
 from service.forms import PriceForm
 from lab.admin import LabServiceInline
+import StringIO
 
 
 class StandardServiceAdmin(TreeEditor):
@@ -54,82 +55,133 @@ def is_leaf(obj):
 #is_lab.short_description = u'Лаборатория'
 
 
-def add_tube(tube_pk, queryset):
-    tube = Tube.objects.get(pk=tube_pk)
-    for obj in queryset:
-        for analysis in obj.analysis_set.all():
-            if not tube in analysis.tube.all():
-                analysis.tube.add(tube)
-
-def red_tube(modeladmin, request, queryset):
-    add_tube(2, queryset)
-red_tube.short_description = u'Добавить красную пробирку'
-
-def violete_tube(modeladmin, request, queryset):
-    add_tube(4, queryset)
-violete_tube.short_description = u'Добавить фиолетовую пробирку'
-
-def green_tube(modeladmin, request, queryset):
-    add_tube(7, queryset)
-green_tube.short_description = u'Добавить зеленую пробирку'
-
-def blue_tube(modeladmin, request, queryset):
-    add_tube(5, queryset)
-blue_tube.short_description = u'Добавить голубую пробирку'
-
-def more_violete_tube(modeladmin, request, queryset):
-    add_tube(18, queryset)
-more_violete_tube.short_description = u'Добавить дополнительную фиолетовую пробирку'
-
-TUBES = (
-    (2,u'Добавить красную пробирку'),
-    (4,u'Добавить фиолетовую пробирку'),
-    (7,u'Добавить зеленую пробирку'),
-    (5,u'Добавить голубую пробирку'),
-    (18,u'Добавить дополнительную фиолетовую пробирку'),
-)
-
-
-def make_cons_action(modeladmin, request, queryset):
-    queryset.update(execution_form=u'к')
-make_cons_action.short_description = u'Вид исполнения: консультативная услуга'
-
-def make_proc_action(modeladmin, request, queryset):
-    queryset.update(execution_form=u'п')
-make_proc_action.short_description = u'Вид исполнения: процедурный кабинет'
-
-def make_other_action(modeladmin, request, queryset):
-    queryset.update(execution_form=u'д')
-make_other_action.short_description = u'Вид исполнения: другой'
-
 def make_inactive_action(modeladmin, request, queryset):
-    queryset.update(is_active=False)
-make_inactive_action.short_description = u'Сделать неактивной'
+    for s in queryset:
+        dsc = s.get_descendants()
+        for d in dsc:
+            d.extendedservice_set.filter(is_active=True).update(is_active=False)
+make_inactive_action.short_description = u'Сделать неактивной все дочерние услуги'
 
-def make_is_lab_action(modeladmin, request, queryset):
-    queryset.update(is_lab=True)
-make_is_lab_action.short_description = u'Включать в направления'
+def iterate_service(service):
+    """
+    BaseService:
+        parent
+        name
+        short_name
+        code
+        execution_time
+        gen_ref_interval
+        is_group
+    ExtendedService:
+        tube
+        tube_count
+        is_manual
+    LabService:
+        is_manual
+        code
+    Analysis:
+        name
+        code
+        input_list
+        measurement
+        tube
+        ref_range_text
+        order
+    
+    item sample dump:
+    
+    [{
+        'name':'abc',
+        ....
+        extended_service:[{
+            'tube':'ssfdsdf'
+            ...
+        },...],
+        lab_service:{
+            'is_manual':False,
+        },
+        analysis:[{
+            'name':'seerwwerwer',
+            ...
+        },...],
+        children:[{....},...]
+    },...]
+    
+    
+    
+    ************
+    For loading:
+    ************
+    
+    Required params:
+        initial parent (root e.q. None),
+        initial branch and/or ex.service state (by name or uuid),
+        
+    Options:
+        make top service object (name,short_name) - wraps all items into new group
+        
+    """
+    data = {
+        'name':service.name,
+        'short_name':service.short_name,
+        'code':service.code,
+        'execution_time':service.execution_time,
+        'gen_ref_interval':service.gen_ref_interval,
+        'is_group':service.is_group
+    }
+    extended_service = service.extendedservice_set.filter(is_active=True)
+    if extended_service:
+        data['extended_service'] = []
+        for es in extended_service:
+            data['extended_service'].append({
+                'tube':es.tube and {
+                    'name':es.tube.name,
+                    'bc_count':es.tube.bc_count
+                },
+                'tube_count':es.tube_count,
+                'is_manual':es.is_manual
+            })
+    try:
+        lab_service = service.labservice
+        if lab_service:
+            data['lab_service'] = {
+                'code':lab_service.code,
+                'is_manual':lab_service.is_manual
+            }
+    except:
+        pass
+    
+    analysis = service.analysis_set.all()
+    if analysis:
+        data['analysis'] = []
+        for a in analysis:
+            data['analysis'].append({
+                'name':a.name,
+                'code':a.code,
+                'input_list':[il.name for il in a.input_list.all()],
+                'measurement':a.measurement and a.measurement.name,
+                'ref_range_text':a.ref_range_text,
+                'order':a.order
+            })
+    
+    children = service.get_children()
+    if children:
+        data['children'] = []
+        for child in children:
+            data['children'].append(iterate_service(child))
+    
+    return data
+    
+    
 
-def unmake_is_lab_action(modeladmin, request, queryset):
-    queryset.update(is_lab=False)
-unmake_is_lab_action.short_description = u'Не включать в направления'
-
-
-
-#pl = {u'Ек':State.objects.get(name=u"Евромед (КИМ)"),
-#      u'Ел':State.objects.get(name=u"Евромед (Лузана)"),
-#      u'К':State.objects.get(name=u"КЛЦ"),
-#      u'Д':State.objects.get(name=u"ДЦ")}
-
-#def make_place_column(symbol):
-#    def em_lab(obj):
-#        result = obj.execution_place.filter(id=pl[symbol].id)
-#        return len(result) and u"<img src='/media/resources/images/state_%s.png' title='%s'>" % (pl[symbol].id, pl[symbol].name) or u""
-#    
-#    em_lab.short_description = pl[symbol]
-#    em_lab.allow_tags = True
-#    return em_lab
-
+def dump_for_load(modeladmin, request, queryset):
+    result = [iterate_service(s) for s in queryset]
+    json_file = StringIO.StringIO()
+    json_file.write(simplejson.dumps(result))
+    json_file.seek(0)
+    response =  HttpResponse(json_file, mimetype='application/json')
+    response['Content-Disposition'] = 'attachment; filename=services_%s.json' % datetime.datetime.today()
+    return response
 
 class ExecutionPlaceAdmin(admin.TabularInline):
     
@@ -188,7 +240,7 @@ class BaseServiceAdmin(TreeEditor):
 #              settings.STATIC_URL + "jquery/jquery.ui.tabs.js",
 #              "resources/js/csv_button.js")
     
-    list_per_page = 1200
+    list_per_page = 2000
     #change_form_template = "admin/tabbed/change_form.html"
     list_display = ('name','short_name',
                     #make_place_column(u'Ек'),make_place_column(u'Ел'),make_place_column(u'К'),make_place_column(u'Д'),
@@ -200,9 +252,7 @@ class BaseServiceAdmin(TreeEditor):
     save_as = True
     exclude = ('standard_service','normal_tubes','transport_tubes','staff','individual_tube')
     search_fields = ['name','short_name']
-    actions = [red_tube, violete_tube, green_tube, blue_tube, more_violete_tube,
-               make_cons_action, make_proc_action, make_other_action, make_inactive_action,
-               make_is_lab_action, unmake_is_lab_action]
+    actions = [make_inactive_action,dump_for_load]
     
     def export_csv(self, request):
         response =  HttpResponse(mimetype='text/csv')

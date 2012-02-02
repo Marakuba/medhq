@@ -6,6 +6,7 @@
 
 
 from django.db import models
+from django_extensions.db.fields import UUIDField
 
 
 #TODO: реквизиты организаций
@@ -21,6 +22,7 @@ class State(models.Model):
     name = models.CharField(u"Рабочее наименование", max_length=200)
     print_name = models.CharField(u"Наименование для печати", max_length=200, default=u'')
     official_title = models.CharField(u"Официальное наименование", max_length=200)
+    uuid = UUIDField(auto=False, blank=True)
     #address = models.ForeignKey(City, related_name="work_address", null=True, default=None)
     address_street = models.CharField(u"Адрес", max_length=200, blank=True,
                                       help_text=u'Индекс, регион, населенный пункт, улица, дом')

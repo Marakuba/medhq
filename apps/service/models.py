@@ -179,12 +179,21 @@ class BaseService(models.Model):
         return self.name 
     
     def is_manual(self):
-        if self.labservice:
-            return self.labservice.is_manual
+        try:
+            if self.labservice:
+                return self.labservice.is_manual
+        except:
+            pass
+        
         return False
     
     def is_lab(self):
-        return self.lab_group is not None
+        try:
+            ls = self.labservice
+            is_lab = True
+        except:
+            is_lab = self.lab_group is not None
+        return is_lab 
     
     def get_ex_place(self):
         try:
