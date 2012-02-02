@@ -11,6 +11,7 @@ from lab.models import Result
 from django.views.generic.simple import direct_to_template
 from service.models import BaseService
 import operator
+from scheduler.models import Preorder
 
 @render_to('widget/examination/template.html')
 def examination_template(request, object_id):
@@ -49,6 +50,9 @@ def examination_card(request, object_id):
         general_data.append({'title':'Диагноз по МКБ-10',
                              'text':"%s, %s" % (card.mkb_diag.code, card.mkb_diag.name)
                              })
+    # TODO: фильтр по текущей карте осмотра
+    asgmt_list = Preorder.objects.filter(patient=card.ordered_service.order.patient.id)
+    assigments = [{'count':a.count,'text':a.service and a.service.base_service.name or u'Нет названия'} for a in asgmt_list]
     field_sets = dict([(fs.name, fs.title) for fs in FieldSet.objects.all()]) 
     data = card.data and simplejson.loads(card.data) or []
     for d in data:
@@ -60,7 +64,8 @@ def examination_card(request, object_id):
     ctx = {
         'card':card,
         'data':data,
-        'gdata':general_data
+        'gdata':general_data,
+        'asgmts':assigments
     }
 
     return ctx

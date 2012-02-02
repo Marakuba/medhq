@@ -217,9 +217,7 @@ App.examination.CardGeneralTab = Ext.extend(Ext.form.FormPanel, {
 	        	margins:'5 5 5 0'
 	        },
 			items:[
-				this.equipBtn,
-				this.moveArchiveBtn,
-				this.asgmtBtn
+				this.moveArchiveBtn
 			]
 		});
 		

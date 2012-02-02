@@ -125,8 +125,7 @@ App.examination.GeneralTab = Ext.extend(Ext.form.FormPanel, {
 	        },
 			items:[
 				this.moveArchiveBtn,
-				this.dltBtn,
-				this.equipBtn
+				this.dltBtn
 			]
 		});
 		

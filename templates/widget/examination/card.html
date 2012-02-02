@@ -65,6 +65,18 @@
 	<h2>{{ d.title }}</h2>
 	<p>{{ d.text }}</p>
 {% endfor %}
+{% if asgmts %}
+	<h2> Рекомендации </h2>
+	<table class="results">
+	<tr>
+		<td>Услуга</td><td>Количество</td>
+	</tr>
+	{% for a in asgmts %}
+	<tr>
+		<td>{{a.text}}</td><td>{{a.count}}</td>
+	</tr>	
+	{% endfor %}
+{% endif %}
 <div class="footer">Врач
 	<span>___________________ {{ request.active_profile }}</span>
 </div>
