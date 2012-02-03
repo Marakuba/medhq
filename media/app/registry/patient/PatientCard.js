@@ -5,6 +5,52 @@ App.patient.PatientCard = Ext.extend(Ext.TabPanel, {
 	
 	initComponent:function(){
 		
+		this.cards = App.settings.strictMode ? [{
+			title:'Приемы',
+			layout:'fit',
+			xtype:'patientvisitgrid'
+		},{
+			title:'Результаты',
+			layout:'fit',
+			xtype:'patientlabgrid'
+		},{
+			title:'Исследования',
+			layout:'fit',
+			xtype:'patientmanualgrid'
+		},{
+			title:'Оказанные услуги',
+			layout:'fit',
+			xtype:'patientservicegrid'
+		}] : [{
+			title:'Приемы',
+			layout:'fit',
+			xtype:'patientvisitgrid'
+		},{
+			title:'Результаты',
+			layout:'fit',
+			xtype:'patientlabgrid'
+		},{
+			title:'Исследования',
+			layout:'fit',
+			xtype:'patientmanualgrid'
+		},{
+			title:'Назначения',
+			layout:'fit',
+			xtype:'asgmtgrid'
+		},{
+			title:'Оказанные услуги',
+			layout:'fit',
+			xtype:'patientservicegrid'
+		},{
+			title:'Карты осмотра',
+			layout:'fit',
+			xtype:'regexamgrid'
+		},{
+			title:'Оплаты',
+			layout:'fit',
+			xtype:'paymentgrid'
+		}];
+		
 		config = {
 			closable:true,
 			border:false,
@@ -15,43 +61,7 @@ App.patient.PatientCard = Ext.extend(Ext.TabPanel, {
 			header:true,
 	        disabled:true,
     		activeTab:0,
-			items:[{
-				title:'Приемы',
-				layout:'fit',
-				xtype:'patientvisitgrid'
-			},{
-				title:'Результаты',
-				layout:'fit',
-				xtype:'patientlabgrid'
-			},{
-				title:'Исследования',
-				layout:'fit',
-				xtype:'patientmanualgrid'
-			},{
-				title:'Назначения',
-				layout:'fit',
-				xtype:'asgmtgrid'
-			},{
-				title:'Карты осмотра',
-				layout:'fit',
-				xtype:'regexamgrid'
-			},{
-				title:'Оплаты',
-				layout:'fit',
-				xtype:'paymentgrid'
-			},{
-				title:'Оказанные услуги',
-				layout:'fit',
-				xtype:'patientservicegrid'
-			}/*,{
-				title:'Возвраты',
-				layout:'fit',
-				xtype:'patientrefundgrid'
-			},{
-				title:'Информация',
-				layout:'fit',
-				xtype:'patientinfo'
-			}*/]
+			items:this.cards
 		}
 
 		Ext.apply(this, Ext.apply(this.initialConfig, config));

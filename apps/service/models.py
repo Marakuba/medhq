@@ -265,7 +265,7 @@ class ExtendedService(models.Model):
                               limit_choices_to = {'type__in':(u'm',u'b')})
     branches = models.ManyToManyField('state.State', 
                               verbose_name=u'Филиалы',
-                              limit_choices_to = {'type__in':(u'b')},
+                              limit_choices_to = {'type__in':(u'b',u'p')},
                               related_name = 'branches')
     tube = models.ForeignKey('lab.Tube', 
                              related_name='tube', 

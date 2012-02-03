@@ -36,7 +36,11 @@ class PatientAdmin(OperatorAdmin, TabbedMedia):
         (u'Контакты и адрес',{
             'fields':('mobile_phone','work_phone','home_phone','home_address_street','work_address_street','email'),
         }),
+        (u'Прочее',{
+            'fields':('state',),
+        }),
     )
+    readonly_fields = ('state',)
     list_display = ('zid','full_name','birth_day','billed_account','operator',)
     search_fields = ['last_name','first_name','mid_name']
     inlines = [InsurancePolicyInlineAdmin]

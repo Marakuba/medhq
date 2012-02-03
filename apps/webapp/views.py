@@ -295,8 +295,9 @@ def get_service_tree(request):
             on_date = TODAY
     
     state = None
-    if settings.SERVICETREE_ONLY_OWN and request.active_profile and not all:
-        state = request.active_profile.department.state
+    ap = request.active_profile
+    if (settings.SERVICETREE_ONLY_OWN or ap.department.state.type=='p') and ap and not all:
+        state = ap.department.state
 
     try:
         cache = get_cache('service')

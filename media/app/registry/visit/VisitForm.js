@@ -48,7 +48,8 @@ App.visit.VisitForm = Ext.extend(Ext.FormPanel, {
 	        			promotion:true
 	        		}
 	        	}
-	        }
+	        },
+	        hidePrice:App.settings.strictMode
 	    });	
 
 ///
@@ -146,12 +147,14 @@ App.visit.VisitForm = Ext.extend(Ext.FormPanel, {
 		this.lab = {
 			layout:'form',
 			hideLabel:true,
+			hidden:App.settings.strictMode,
 			items:new Ext.form.LazyComboBox({
-//	        	fieldLabel:'Лаборатория',
+	        	fieldLabel:'Лаборатория',
 	        	name:'source_lab',
 			    minChars:3,
 			    emptyText:'Выберите лабораторию...',
-			    proxyUrl:get_api_url('lab')
+			    proxyUrl:get_api_url('lab'),
+			    value:App.settings.strictMode ? App.getApiUrl('lab',active_state_id) : ''
 			})
 		};
 
@@ -211,7 +214,8 @@ App.visit.VisitForm = Ext.extend(Ext.FormPanel, {
 					format:'H:i',
 					increment:15,
 					name:'sampled_time',
-					emptyText:'время'
+					emptyText:'время',
+					width:50
 				}]
 			}
 		};

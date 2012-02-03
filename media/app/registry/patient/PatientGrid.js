@@ -5,10 +5,16 @@ App.patient.PatientGrid = Ext.extend(Ext.grid.GridPanel, {
 	initComponent : function() {
 		
 		this.store = new Ext.data.RESTStore({
-			autoLoad : true,
+			autoLoad : false,
 			apiUrl : get_api_url('patient'),
 			model: App.models.Patient
 		});
+		
+		if(App.settings.strictMode) {
+			this.store.setBaseParam('state',active_state_id);
+		}
+		
+		this.store.load();
 		
 		this.columns =  [
 		    {

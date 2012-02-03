@@ -73,7 +73,11 @@ App.Patients = Ext.extend(Ext.Panel, {
 		this.patientGrid.on('patientselect', this.patientSelect, this);
 	},
 	
-	titleTpl : new Ext.XTemplate(
+	titleTpl : App.settings.strictMode ? new Ext.XTemplate(
+			'Пациент: ',
+			'{last_name} {first_name} {mid_name}',
+			{}
+		) : new Ext.XTemplate(
 		'Пациент: ',
 		'{last_name} {first_name} {mid_name}. ',
 		'Скидка: {discount_name}. ',
