@@ -114,21 +114,40 @@ App.ExamCentralPanel = Ext.extend(Ext.Panel, {
                 }]
             },{
                 xtype: 'buttongroup',
-//                title: 'Пациенты',
-                columns: 2,
-                defaults: {
-                    scale: 'small'
-                },
-                items: [{
-                    text: 'Реестр пациентов',
-                    scale:'medium',
-                    iconAlign: 'top',
-                    handler: function(){
-                    	this.launchApp('patientgridpanel');
-                    },
+//              title: 'Пациенты',
+              columns: 2,
+              defaults: {
+                  scale: 'small'
+              },
+              items: [{
+                  text: 'Реестр пациентов',
+                  scale:'medium',
+                  iconAlign: 'top',
+                  handler: function(){
+                  	this.launchApp('patientgridpanel');
+                  },
+                  scope:this
+              }]
+          },{
+              xtype: 'buttongroup',
+//            title: 'Пациенты',
+	            columns: 2,
+	            defaults: {
+	                scale: 'small'
+	            },
+	            items: [{
+                	text:'Расписание',
+                	scale:'medium',
+                	handler:function(){
+                		this.launchApp('doctorscheduler',{
+                			closable:true,
+                			doctorMode:true,
+                			title:'Расписание'
+                		});
+                	},
                     scope:this
                 }]
-            },'->',this.cmb,{
+	        },'->',this.cmb,{
             	text:'Выход',
             	handler:function(){
             		window.location.href = '/webapp/logout/';

@@ -258,7 +258,59 @@
     
     <script type="text/javascript" src="{{ STATIC_URL }}app/examination/patient/PatientGrid.js"></script>
     <script type="text/javascript" src="{{ STATIC_URL }}app/examination/patient/PatientGridPanel.js"></script>
+
+    <!-- calendar -->
+	<script type="text/javascript" src="{{ STATIC_URL }}app/calendar/EventManager.js"></script>
+	<script type="text/javascript" src="{{ STATIC_URL }}app/calendar/src/Ext.calendar.js"></script>
+
     
+	<script type="text/javascript" src="{{ STATIC_URL }}app/calendar/src/templates/DayHeaderTemplate.js"></script>
+	<script type="text/javascript" src="{{ STATIC_URL }}app/calendar/src/templates/DayBodyTemplate.js"></script>
+	<script type="text/javascript" src="{{ STATIC_URL }}app/calendar/src/templates/DayViewTemplate.js"></script>
+    <script type="text/javascript" src="{{ STATIC_URL }}app/calendar/src/templates/BoxLayoutTemplate.js"></script>
+    <script type="text/javascript" src="{{ STATIC_URL }}app/calendar/src/templates/MonthViewTemplate.js"></script>
+    
+    <script type="text/javascript" src="{{ STATIC_URL }}app/calendar/src/dd/CalendarScrollManager.js"></script>
+
+    <script type="text/javascript" src="{{ STATIC_URL }}app/calendar/src/dd/StatusProxy.js"></script>
+    <script type="text/javascript" src="{{ STATIC_URL }}app/calendar/src/dd/CalendarDD.js"></script>
+    <script type="text/javascript" src="{{ STATIC_URL }}app/calendar/src/dd/DayViewDD.js"></script>
+    
+    <script type="text/javascript" src="{{ STATIC_URL }}app/calendar/src/EventRecord.js"></script>
+    <script type="text/javascript" src="{{ STATIC_URL }}app/calendar/src/views/MonthDayDetailView.js"></script>
+    <script type="text/javascript" src="{{ STATIC_URL }}app/calendar/src/WeekEventRenderer.js"></script>
+
+    <script type="text/javascript" src="{{ STATIC_URL }}app/calendar/src/widgets/CalendarPicker.js"></script>
+    <script type="text/javascript" src="{{ STATIC_URL }}app/calendar/src/widgets/StaffPicker.js"></script>
+    <script type="text/javascript" src="{{ STATIC_URL }}app/calendar/src/widgets/StaffGrid.js"></script>
+    <script type="text/javascript" src="{{ STATIC_URL }}app/calendar/src/views/CalendarView.js"></script>
+    <script type="text/javascript" src="{{ STATIC_URL }}app/calendar/src/views/DayView.js"></script>
+    <script type="text/javascript" src="{{ STATIC_URL }}app/calendar/src/views/DayBodyView.js"></script>
+
+    <script type="text/javascript" src="{{ STATIC_URL }}app/calendar/src/views/MonthView.js"></script>
+    <script type="text/javascript" src="{{ STATIC_URL }}app/calendar/src/views/DayHeaderView.js"></script>
+    <script type="text/javascript" src="{{ STATIC_URL }}app/calendar/src/views/WeekView.js"></script>
+    
+    <script type="text/javascript" src="{{ STATIC_URL }}app/calendar/src/widgets/DateRangeField.js"></script>
+    <script type="text/javascript" src="{{ STATIC_URL }}app/calendar/src/widgets/ReminderField.js"></script>
+    
+    <script type="text/javascript" src="{{ STATIC_URL }}app/calendar/app/timeslot/ServiceGrid.js"></script>
+
+    <script type="text/javascript" src="{{ STATIC_URL }}app/calendar/app/timeslot/PatientGrid.js"></script>
+    <script type="text/javascript" src="{{ STATIC_URL }}app/calendar/app/timeslot/VacantTimeslotGrid.js"></script>
+    <script type="text/javascript" src="{{ STATIC_URL }}app/calendar/app/timeslot/PreorderedServiceInlineGrid.js"></script>
+    
+	<script type="text/javascript" src="{{ STATIC_URL }}app/calendar/src/EventEditForm.js"></script>
+    <script type="text/javascript" src="{{ STATIC_URL }}app/calendar/src/EventEditWindow.js"></script>
+    <script type="text/javascript" src="{{ STATIC_URL }}app/calendar/app/timeslot/TimeslotInfoWindow.js"></script>
+
+    <script type="text/javascript" src="{{ STATIC_URL }}app/calendar/app/timeslot/TimeslotEditForm.js"></script>
+    <script type="text/javascript" src="{{ STATIC_URL }}app/calendar/app/timeslot/TimeslotEditWindow.js"></script>
+    <script type="text/javascript" src="{{ STATIC_URL }}app/calendar/src/CalendarPanel.js"></script>
+    <script type="text/javascript" src="{{ STATIC_URL }}app/calendar/app/DoctorScheduler.js"></script>
+    
+    
+        
 {% include "webapp/includes/active_profile.html" %}
 
 {% endblock %}
