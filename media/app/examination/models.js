@@ -103,4 +103,109 @@ App.models.Dicom = new Ext.data.Record.create([
 	{name: 'photo'},
 	{name: 'thumb'}
 ]);
+
+App.models.Template = new Ext.data.Record.create([
+   	{name: 'id'},
+	{name: 'resource_uri'},
+	{name: 'print_name'},
+	{name: 'print_date'},
+	{name: 'base_service'},
+	{name: 'staff'},
+	{name: 'data'},
+	{name: 'equipment'},
+	{name: 'area'},
+	{name: 'scan_mode'},
+	{name: 'thickness'},
+	{name: 'width'},
+	{name: 'contrast_enhancement'}
+]);
 	
+App.models.Card = new Ext.data.Record.create([
+   	{name: 'id'},
+   	{name: 'created'},
+   	{name: 'modified'},
+	{name: 'resource_uri'},
+	{name: 'print_name'},
+	{name: 'print_date'},
+	{name: 'patient_id'},
+	{name: 'patient_name'},
+	{name: 'ordered_service'},
+	{name: 'data'},
+	{name: 'equipment'},
+	{name: 'area'},
+	{name: 'scan_mode'},
+	{name: 'thickness'},
+	{name: 'width'},
+	{name: 'contrast_enhancement'},
+	{name: 'assistant'},
+	{name: 'assistant_name'},
+	{name: 'mkb_diag'},
+	{name: 'executed'}
+]);
+
+App.models.FieldSet = new Ext.data.Record.create([
+   	{name: 'id'},
+	{name: 'resource_uri'},
+	{name: 'name'},
+	{name: 'order'},
+	{name: 'title'}
+]);
+
+App.models.SubSection = new Ext.data.Record.create([
+   	{name: 'id'},
+	{name: 'resource_uri'},
+	{name: 'section'},
+	{name: 'section_name'},
+	{name: 'title'}
+]);
+
+App.models.patientModel = new Ext.data.Record.create([
+	{name: 'id'},
+	{name: 'resource_uri'},
+	{name: 'first_name', allowBlank: false},
+	{name: 'mid_name'},
+	{name: 'last_name', allowBlank: false},
+	{name: 'gender', allowBlank: false},
+	{name: 'mobile_phone'},
+	{name: 'home_address_street'},
+	{name: 'email'},
+	{name: 'birth_day', allowBlank: false, type:'date'},
+	{name: 'discount'},
+	{name: 'discount_name'},
+	{name: 'ad_source'},
+	{name: 'ad_source_name'},
+	{name: 'client_item'},
+	{name: 'balance'},
+	{name: 'initial_account'},
+	{name: 'billed_account'},
+	{name: 'doc'},
+	{name: 'hid_card'}
+]);
+
+App.models.preorderModel = new Ext.data.Record.create([
+    {name: 'id'},
+	{name: 'resource_uri'},
+	{name: 'patient'},
+	{name: 'patient_name'},
+	{name: 'timeslot'},
+	{name: 'comment'},
+	{name: 'visit'},
+	{name: 'service'},
+	{name: 'base_service'},
+	{name: 'service_name'},
+	{name: 'price'},
+	{name: 'department'},
+	{name: 'staff'},
+	{name: 'staff_name'},
+	{name: 'payment_type'},
+	{name: 'ptype_name'},
+	{name: 'execution_place'},
+	{name: 'execution_place_name'},
+	{name: 'patient_phone'},
+	{name: 'promotion'},
+	{name: 'promotion_name'},
+	{name: 'count'},
+	{name: 'start', type: 'date',format:'c'}
+]);
+
+App.models.Patient = App.models.patientModel // patientModel will deprecate

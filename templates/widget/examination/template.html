@@ -1,0 +1,53 @@
+{% load markup %}
+
+<style>
+	.template-preview {
+		font-famlily:"Arial";
+		padding:4pt;
+		font-size:10pt;
+	}
+
+	.template-preview h1 {
+		font-size:15pt;
+		margin:4pt 0;
+		color: gray;
+		border-bottom: 1px gray solid;
+	}
+	
+	.template-preview h2 {
+		font-size:12pt;
+		margin:8pt 0 4pt 0;
+	}
+	
+	.template-preview p {
+	}
+	
+	.template-preview .footer {
+		margin-top:1cm;
+	}
+	
+	.template-preview .footer span {
+		float:right;
+	}
+	
+</style>
+
+<div class="template-preview">
+<h1>{{ tpl.print_name }}</h1>
+
+{% for d in data %}
+	{% for ticket in d.tickets %}
+	<h2>{{ ticket.title }}</h2>
+	<p>{{ ticket.text|markdown }}</p>
+	{% endfor %}
+{% endfor %}
+{% for d in gdata %}
+	<h2>{{ d.title }}</h2>
+	<p>{{ d.text }}</p>
+{% endfor %}
+<div class="footer">Врач
+	<span>___________________ {{ request.active_profile }}</span>
+</div>
+<br style="clear:both">
+</div>
+

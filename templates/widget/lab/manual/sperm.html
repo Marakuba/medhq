@@ -1,0 +1,36 @@
+{% extends "widget/lab/manual/base.html" %}
+
+{% load lab_tags flatblock_tags %}
+
+{% block title %}{{ order }} - Результаты{% endblock %}
+
+{% block data %}
+	<tr>
+		<th>Наименование исследования</th>
+		<th>Результат</th>
+		<th>Значение нормы</th>
+	</tr>
+	
+	{% for result in results %}
+	{% if result.class == 'group' or result.class == 'service' or result.class == 'blank'%}
+	<tr>
+		<td colspan="4" class="{{ result.class }}">{{ result.name }}</td>
+	</tr>
+	{% endif %}
+	{% if result.class == 'result' %}
+	<tr>
+		<td class="analysis">{{ result.name }}</td>
+		<td>{% autoescape off %}{{ result.object.get_result }}{% endautoescape %}</td>
+		<!-- <td>{{ result.object.analysis.measurement|default:"---" }}</td> -->
+		<td>{{ result.object.analysis.ref_range_text|default:""|linebreaks }}</td>
+	</tr>
+	{% endif %}
+	{% if result.class == 'progress' %}
+	<tr>
+		<td class="analysis">{{ result.object.get_title }}</td>
+		<td colspan="3" class="progress">В работе</td>
+	</tr>
+	{% endif %}
+	{% endfor %}
+	
+{% endblock %}

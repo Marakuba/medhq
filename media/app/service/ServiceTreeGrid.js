@@ -65,18 +65,38 @@ App.ServiceTreeGrid = Ext.extend(Ext.ux.tree.TreeGrid,{
 	
 	initComponent:function(){
 		this.hiddenPkgs = [];
+		this.columns = [{
+	        	header:'Наименование',
+	        	dataIndex:'text',
+	        	sortable:false,
+	        	width:this.large ? 700 : 215
+	        },{
+	        	header:'Цена',
+	        	dataIndex:'price',
+	        	sortable:false,
+	        	hidden: this.hidePrice ? true : false,
+	        	width:50,
+	        	align:'right'
+	        }/*,{
+	        	header:'Время вып-я',
+	        	dataIndex:'exec_time',
+	        	sortable:false,
+//	        	hidden:true,
+	        	width:50,
+	        	align:'left'
+	        }*/];
 		config = {
 			border:false,
 		    rootVisible: false,
-		    lines: false,
 		    header: false,
 	        animCollapse:false,
 	        animate: false,
-	        containerScroll: false,
+//	        containerScroll: false,
 	        autoScroll: true,
 	        rootVisible: false,
 	        loader:new Ext.ux.tree.TreeGridLoader({
-				baseParams:{
+				baseParams:this.baseParams ? this.baseParams : 
+				{
 					payment_type:'н'
 				},
 			    createNode : function(attr) {
@@ -94,25 +114,7 @@ App.ServiceTreeGrid = Ext.extend(Ext.ux.tree.TreeGrid,{
 	        	}
 	        }),
 	        enableSort: false,
-	        columns:[{
-	        	header:'Наименование',
-	        	dataIndex:'text',
-	        	sortable:false,
-	        	width:this.large ? 700 : 215
-	        },{
-	        	header:'Цена',
-	        	dataIndex:'price',
-	        	sortable:false,
-	        	width:50,
-	        	align:'right'
-	        }/*,{
-	        	header:'Время вып-я',
-	        	dataIndex:'exec_time',
-	        	sortable:false,
-//	        	hidden:true,
-	        	width:50,
-	        	align:'left'
-	        }*/],
+	        columns:this.columns,
 	        listeners:{
 	        	click:function(node,e){
 	        		if(node.leaf) {
@@ -123,7 +125,7 @@ App.ServiceTreeGrid = Ext.extend(Ext.ux.tree.TreeGrid,{
 	        },
 		    tbar: [new Ext.form.TextField({
 		    	id:'service-tree-filter',
-		        width: 250,
+		        width: this.searchFieldWidth || 250,
 				emptyText:'Поиск по названию',
                 enableKeyEvents: true,
 				listeners:{

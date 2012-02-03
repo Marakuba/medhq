@@ -1,0 +1,27 @@
+{% extends "print/off_blank.html" %}
+
+{% load lab_tags flatblock_tags %}
+
+{% block title %}{{ order }} - Результаты{% endblock %}
+
+{% block body %}
+
+
+
+
+{% include "widget/lab/manual/header.html" %}
+
+<table class="results">
+	<tr>
+		<td colspan="4" class="group">{{ service }}</td>
+	</tr>
+	
+	{% block data %}
+	{% endblock %}	
+
+</table>
+
+
+<div class="comment">{% autoescape off %}{{ laborder.comment }}{% endautoescape %}</div>
+<div class="print_time">{{ object.print_date|default:'---' }}</div>
+{% endblock %}

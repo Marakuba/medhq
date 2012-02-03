@@ -33,6 +33,10 @@ App.visit.VisitForm = Ext.extend(Ext.FormPanel, {
 		this.servicePanel = new App.ServiceTreeGrid({
 	        region: 'east',
 		    margins:'5 5 5 0',
+		    baseParams:{
+				payment_type:'н',
+				promotion:true
+			},
 	        width: 300,
 		    collapsible: true,
 		    collapseMode: 'mini',

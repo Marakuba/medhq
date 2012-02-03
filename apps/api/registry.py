@@ -1,6 +1,7 @@
 # -*- coding: utf-8 -*-
 
 from tastypie.resources import ModelResource
+from django.http import HttpResponse
 from patient.models import Patient, InsurancePolicy
 from visit.models import Visit, Referral, OrderedService
 from tastypie import fields
@@ -28,7 +29,8 @@ from scheduler.models import Calendar, Event, Preorder, getToday
 from billing.models import Account, Payment, ClientAccount
 from interlayer.models import ClientItem
 from django.contrib.contenttypes.models import ContentType
-from examination.models import TemplateGroup, DICOM
+from examination.models import TemplateGroup, DICOM, Card, Template, FieldSet,\
+    SubSection, Glossary
 from tastypie.cache import SimpleCache
 from django.contrib.auth.models import User
 from examination.models import Equipment as ExamEquipment
@@ -1296,7 +1298,128 @@ class ExaminationCardResource(ExtResource):
             'name':ALL
         }
         #limit = 1000
+        
+class CardResource(ExtResource):
+    
+    ordered_service = fields.ForeignKey(OrderedServiceResource, 'ordered_service', null=True)
+    assistant = fields.ForeignKey(PositionResource, 'assistant', null = True)
+    mkb_diag = fields.ForeignKey(ICD10Resource, 'mkb_diag', null=True)
+    equipment = fields.ForeignKey(ExamEquipmentResource, 'equipment', null=True)
 
+    def dehydrate(self, bundle):
+        obj = bundle.obj
+        bundle.data['view'] = obj.__unicode__()
+        bundle.data['patient_id'] = obj.ordered_service.order.patient.id
+        bundle.data['patient_name'] = obj.ordered_service.order.patient.short_name()
+        bundle.data['staff_id'] = obj.ordered_service.staff and obj.ordered_service.staff.id
+        bundle.data['executed'] = obj.ordered_service.executed and True or False
+        bundle.data['assistant_name'] = obj.assistant and obj.assistant.staff.short_name() or ''
+        return bundle
+    
+    class Meta:
+        queryset = Card.objects.all()
+        resource_name = 'card'
+        default_format = 'application/json'
+        authorization = DjangoAuthorization()
+        filtering = {
+            'ordered_service':ALL_WITH_RELATIONS,
+            'id':ALL,
+            'name':ALL
+        }
+        
+class TemplateResource(ExtResource):
+    
+    base_service = fields.ForeignKey(BaseServiceResource, 'base_service',null=True)
+    staff = fields.ForeignKey(StaffResource, 'staff', null=True)
+    equipment = fields.ForeignKey(ExamEquipmentResource, 'equipment', null=True)
+    
+    def dehydrate(self, bundle):
+        obj = bundle.obj
+        bundle.data['service_name'] = obj.base_service and obj.base_service.name
+        return bundle
+    
+    class Meta:
+        queryset = Template.objects.all()
+        resource_name = 'examtemplate'
+        default_format = 'application/json'
+        authorization = DjangoAuthorization()
+        filtering = {
+            'base_service':ALL_WITH_RELATIONS,
+            'id':ALL,
+            'print_name':ALL,
+            'staff':ALL_WITH_RELATIONS
+        }
+        
+class FieldSetResource(ExtResource):
+    
+    class Meta:
+        queryset = FieldSet.objects.all().order_by('order')
+        resource_name = 'examfieldset'
+        default_format = 'application/json'
+        authorization = DjangoAuthorization()
+        filtering = {
+            'name':ALL,
+            'order':ALL
+        }
+        
+class SubSectionResource(ExtResource):
+    section = fields.ForeignKey(FieldSetResource,'section')
+    
+    def dehydrate(self, bundle):
+        obj = bundle.obj
+        bundle.data['section_name'] = obj.section.name
+        return bundle
+    
+    class Meta:
+        queryset = SubSection.objects.all().order_by('section')
+        resource_name = 'examsubsection'
+        default_format = 'application/json'
+        authorization = DjangoAuthorization()
+        filtering = {
+            'section':ALL_WITH_RELATIONS,
+            'order':ALL
+        }
+        
+class GlossaryResource(ExtResource):
+    
+    base_service = fields.ForeignKey(BaseServiceResource, 'base_service', null=True)
+    staff = fields.ForeignKey(StaffResource, 'staff', null=True)
+    parent = fields.ForeignKey('self','parent', null=True)
+    
+    def dehydrate(self, bundle):
+        bundle.data['parent'] =  bundle.obj.parent and bundle.obj.parent.id
+        if bundle.obj.is_leaf_node():
+            bundle.data['leaf'] = bundle.obj.is_leaf_node()
+        return bundle
+    
+
+    def build_filters(self, filters=None):
+        if filters is None:
+            filters = {}
+
+        orm_filters = super(GlossaryResource, self).build_filters(filters)
+
+        if "parent" in filters:
+            if filters['parent']=='root':
+                del orm_filters['parent__exact']
+                orm_filters['parent__isnull'] = True
+
+        return orm_filters
+    
+    class Meta:
+        queryset = Glossary.objects.all()
+        resource_name = 'glossary'
+        default_format = 'application/json'
+        authorization = DjangoAuthorization()
+        filtering = {
+            'base_service':ALL_WITH_RELATIONS,
+            'staff':ALL_WITH_RELATIONS,
+            'id':ALL,
+            'text':ALL,
+            'parent':ALL,
+            'section':ALL
+        }
+        
 class RegExamCardResource(ExtResource):
     ordered_service = fields.ForeignKey(OrderedServiceResource, 'ordered_service', null=True)
     
@@ -1804,6 +1927,11 @@ api.register(CardTemplateResource())
 api.register(ExaminationCardResource())
 api.register(ExamEquipmentResource())
 api.register(DicomResource())
+api.register(FieldSetResource())
+api.register(SubSectionResource())
+api.register(TemplateResource())
+api.register(CardResource())
+api.register(GlossaryResource())
 
 #helpdesk
 api.register(IssueTypeResource())

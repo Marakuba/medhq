@@ -903,7 +903,7 @@ App.examination.ExamCardForm = Ext.extend(Ext.form.FormPanel, {
 				var Model = this.model;
 				this.record = new Model();
 			} else {
-				Ext.MessageBox.alert('Ошибка','нет модели');
+				console.log('нет модели');
 				var Model = this.examModel;
 				this.record = new Model();
 			}

@@ -1,5 +1,6 @@
 Ext.ns('App');
 Ext.ns('App.services');
+Ext.ns('App.examination');
 
 App.ExamCentralPanel = Ext.extend(Ext.Panel, {
 	
@@ -40,15 +41,16 @@ App.ExamCentralPanel = Ext.extend(Ext.Panel, {
 			items:[this.mainPanel],
 			tbar:[{
 				xtype: 'buttongroup',
-				title: '№ заказа или фамилия',
+//				title: '№ заказа или фамилия',
 				padding:5,
 				items:[{
-					xtype:'gsearchfield'
+					xtype:'gsearchfield',
+					emptyText:'№ заказа или фамилия'
 					
 				}]
 			},{
                 xtype: 'buttongroup',
-                title: 'Журналы',
+//                title: 'Журналы',
 //                columns: 3,
                 defaults: {
                     scale: 'small'
@@ -62,42 +64,30 @@ App.ExamCentralPanel = Ext.extend(Ext.Panel, {
                     },
                     scope:this
                 },{
-                    text: 'Обследования',
+                    text: 'Старые карты',
                     scale:'medium',
                     iconAlign: 'top',
                     handler: function(){
-                    	this.launchApp('allexamgrid');
+                    	this.launchApp('oldordergrid');
                     },
                     scope:this
                 },{
-                	text:'Выписка',
-                	scale:'medium',
-                	handler:function(){
-                		var win = new App.examination.EpicrisisWindow({
-                			
-                		});
-                		win.show();
-                	}
-                },{
-                	text:'Расписание',
-                	scale:'medium',
-                	handler:function(){
-                		this.launchApp('doctorscheduler',{
-                			closable:true,
-                			doctorMode:true,
-                			title:'Расписание'
-                		});
-                	},
+                	text: 'Заключения',
+                    scale:'medium',
+                    iconAlign: 'top',
+                    handler: function(){
+                    	this.launchApp('conclusion',{staff:App.getApiUrl('position')+'/'+active_profile});
+                    },
                     scope:this
                 }]
             },{
                 xtype: 'buttongroup',
-                title: 'Шаблоны',
+//                title: 'Шаблоны',
                 columns: 2,
                 defaults: {
                     scale: 'small'
                 },
-                items: [{
+                items: [/*{
                     text: 'Список шаблонов',
                     scale:'medium',
                     iconAlign: 'top',
@@ -113,8 +103,51 @@ App.ExamCentralPanel = Ext.extend(Ext.Panel, {
                     	this.launchApp('groupgrid');
                     },
                     scope:this
+                },*/{
+                	text: 'Конструктор шаблонов',
+                    scale:'medium',
+                    iconAlign: 'top',
+                    handler: function(){
+                    	this.launchApp('editor');
+                    },
+                    scope:this
                 }]
-            },'->',this.cmb,{
+            },{
+                xtype: 'buttongroup',
+//              title: 'Пациенты',
+              columns: 2,
+              defaults: {
+                  scale: 'small'
+              },
+              items: [{
+                  text: 'Реестр пациентов',
+                  scale:'medium',
+                  iconAlign: 'top',
+                  handler: function(){
+                  	this.launchApp('patientgridpanel');
+                  },
+                  scope:this
+              }]
+          },{
+              xtype: 'buttongroup',
+//            title: 'Пациенты',
+	            columns: 2,
+	            defaults: {
+	                scale: 'small'
+	            },
+	            items: [{
+                	text:'Расписание',
+                	scale:'medium',
+                	handler:function(){
+                		this.launchApp('doctorscheduler',{
+                			closable:true,
+                			doctorMode:true,
+                			title:'Расписание'
+                		});
+                	},
+                    scope:this
+                }]
+	        },'->',this.cmb,{
             	text:'Выход',
             	handler:function(){
             		window.location.href = '/webapp/logout/';
