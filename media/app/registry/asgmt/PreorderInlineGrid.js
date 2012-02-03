@@ -6,6 +6,11 @@ App.assignment.PreorderInlineGrid = Ext.extend(Ext.grid.EditorGridPanel, {
 	loadInstant: false,
 	initComponent : function() {
 		
+		var today = new Date();
+		
+		this.expiration = today.add(Date.DAY,30)
+		console.log(this.expiration)
+		
 		this.proxy = new Ext.data.HttpProxy({
 		    url: get_api_url('extpreorder')
 		});
@@ -83,12 +88,23 @@ App.assignment.PreorderInlineGrid = Ext.extend(Ext.grid.EditorGridPanel, {
 			    {name: 'staff_name', mapping:'text'}
 			])
 		})
+		
+		
 		this.columns =  [new Ext.grid.RowNumberer({width: 30}),
 		    {
 		    	header: "Услуга", 
 		    	width: 50, 
 		    	sortable: true, 
 		    	dataIndex: 'service_name' 
+		    },{
+		    	header: "Дата выполнения", 
+		    	width: 32, 
+		    	sortable: true, 
+		    	dataIndex: 'expiration',
+		    	renderer:Ext.util.Format.dateRenderer('d.m.y'),
+		    	editor: new Ext.form.DateField({
+		    		minValue: today
+		    	})
 		    },{
 		    	header: "Кол-во", 
 		    	width: 10, 
@@ -188,12 +204,17 @@ App.assignment.PreorderInlineGrid = Ext.extend(Ext.grid.EditorGridPanel, {
 		var id = attrs.id;
 		var Preorder = this.store.recordType;
 		var state = this.getPlace(id);
+		if (this.card_id){
+			var card_resource = App.getApiUrl('card') + '/' + this.card_id
+		};
 		var s = new Preorder({
-			service:App.getApiUrl('extendedservice')+'/'+id, //TODO: replace to App.getApiUrl
+			service:App.getApiUrl('extendedservice')+'/'+id, 
 			service_name:text,
 			promotion: attrs.promotion ? App.getApiUrl('promotion')+'/'+attrs.promotion : '',
 			patient:this.patientRecord.data.resource_uri,
 			execution_place : state,
+			expiration: this.expiration,
+			card:card_resource ? card_resource : '',
 			count:attrs.c || 1
 		});
 		this.store.add(s);

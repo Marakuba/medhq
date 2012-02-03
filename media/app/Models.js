@@ -55,6 +55,9 @@ App.models.preorderModel = new Ext.data.Record.create([
 	{name: 'promotion'},
 	{name: 'promotion_name'},
 	{name: 'count'},
+	{name: 'completed_count'},
+	{name: 'expiration', type: 'date',format:'c'},
+	{name: 'price'},
 	{name: 'card'},
 	{name: 'start', type: 'date',format:'c'}
 ]);
@@ -368,7 +371,7 @@ App.models.ServiceToSend = new Ext.data.Record.create([
     {name: 'patient_id'},
     {name: 'patient_sync_id'},
     {name: 'patient_name'},
-    {name: 'patient_birth_day', type:'date', format:'c'},
+    {name: 'patient_birth_day', type:'date', format:'c'}
 ]);
 
 App.models.Patient = App.models.patientModel // patientModel will deprecate

@@ -19,6 +19,7 @@ App.assignment.AsgmtTab = Ext.extend(Ext.Panel, {
 			model:this.model,
         	record:this.record,
         	patientRecord:this.patientRecord,
+        	card_id:this.card_id,
         	type:this.type,
 			fn:function(record){
 				this.record = record;
@@ -180,9 +181,9 @@ App.assignment.AsgmtTab = Ext.extend(Ext.Panel, {
 	getTitleText: function() {
 		var title;
 		if(this.record && this.record.data.id) {
-			title = this.type == 'visit' ? 'Прием №'+this.record.data.id : 'Поступление биоматериала №'+this.record.data.id;
+			title = 'Направление №'+this.record.data.id;
 		} else {
-			title = this.type == 'visit' ? 'Новый прием' : 'Новое поступление биоматериала';
+			title = 'Новое направление';
 		}
 		return title
 	}

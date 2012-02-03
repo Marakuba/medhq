@@ -21,6 +21,7 @@ App.assignment.AsgmtForm = Ext.extend(Ext.FormPanel, {
 			record:this.record,
 			type:this.type,
 			patientRecord:this.patientRecord,
+			card_id:this.card_id,
 			region:'center'
 		});
 		

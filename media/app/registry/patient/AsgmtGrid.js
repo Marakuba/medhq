@@ -107,6 +107,12 @@ App.patient.AsgmtGrid = Ext.extend(Ext.grid.GridPanel, {
 		    	dataIndex: 'start',
 		    	renderer:Ext.util.Format.dateRenderer('H:i / d.m.y')
 		    },{
+		    	header: "Дата выполнения", 
+		    	width: 32, 
+		    	sortable: true, 
+		    	dataIndex: 'expiration',
+		    	renderer:Ext.util.Format.dateRenderer('d.m.y')
+		    },{
 		    	header: "Место выполнения", 
 		    	width: 40, 
 		    	sortable: true, 
@@ -371,6 +377,7 @@ App.patient.AsgmtGrid = Ext.extend(Ext.grid.GridPanel, {
 		if (this.patientRecord) {
 			App.eventManager.fireEvent('launchapp','asgmttab',{
 				patientRecord:this.patientRecord,
+				card_id:this.card_id,
 				fn: function(){
 					this.store.load();
 				},
