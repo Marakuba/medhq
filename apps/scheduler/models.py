@@ -169,6 +169,8 @@ class Preorder(models.Model):
     promotion = models.ForeignKey(Promotion,blank = True, null=True)
     count = models.PositiveIntegerField(u'Количество', default=1)
     card = models.ForeignKey(Card, null = True, blank = True)
+    completed_count = models.PositiveIntegerField(u'Количество выполненных', default=0)
+    price = models.DecimalField(u'Цена', max_digits=10, decimal_places=2, null=True)
     objects = models.Manager()
     
     def get_staff_name(self):
