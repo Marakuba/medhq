@@ -485,7 +485,7 @@ App.examination.CardStartPanel = Ext.extend(Ext.Panel, {
     		}
     	} else {
 	    		var record = this.tmpGrid.getSelectionModel().getSelected();
-	    		console.log(record)
+//	    		console.log(record)
 	    		if (record){
 	    			this.fireEvent('opentmp',record)
 	    		} else {
@@ -505,7 +505,7 @@ App.examination.CardStartPanel = Ext.extend(Ext.Panel, {
 		}
 		this.previewPanel.removeAll(true);
 		var record = this[type+'Grid'].getSelectionModel().getSelected();
-		console.log(record)
+//		console.log(record)
 		if (record) {
 			var list = new Ext.Panel({
 				border:false,

@@ -272,6 +272,7 @@ App.examination.TemplateBody = Ext.extend(Ext.TabPanel, {
 			if (this.isCard){
 				var asgmt_tab = this.newAsgmtTab();
 				asgmt_tab.store.setBaseParam('patient',this.patient);
+				asgmt_tab.store.setBaseParam('card',this.record.data.id);
 				asgmt_tab.store.load({callback:function(records){
 					if (!records.length){
 						this.sectionMenu.insert(99,this.menuBtns['services'])
@@ -462,6 +463,7 @@ App.examination.TemplateBody = Ext.extend(Ext.TabPanel, {
 		var asgmt_tab = new App.patient.AsgmtGrid({
 			title:'Услуги',
 			closable:false,
+			card_id:this.record.data.id,
 			order:99,
 			listeners:{
 				'close': function(p){
@@ -489,6 +491,7 @@ App.examination.TemplateBody = Ext.extend(Ext.TabPanel, {
 				}
 				this.patientRecord = records[0]
 				this.asgmtTab = this.newAsgmtTab();
+				this.asgmtTab.store.setBaseParam('card',this.record.data.id);
 				this.asgmtTab.setActivePatient(this.patientRecord);
 				this.insert(this.asgmtTab.order,this.asgmtTab)
 				this.setActiveTab(this.asgmtTab);

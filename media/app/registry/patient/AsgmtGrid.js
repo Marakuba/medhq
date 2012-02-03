@@ -234,6 +234,9 @@ App.patient.AsgmtGrid = Ext.extend(Ext.grid.GridPanel, {
 		this.patientRecord = rec;
 		var s = this.store;
 		s.baseParams = {format:'json','patient': id, visit__isnull:true};
+		if (this.card_id){
+			s.setBaseParam('card',this.card_id);
+		}
 		s.load();
 	},
 	

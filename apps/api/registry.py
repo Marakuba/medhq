@@ -1556,6 +1556,7 @@ class PreorderResource(ExtResource):
     timeslot = fields.OneToOneField('apps.api.registry.EventResource','timeslot', null=True)
     service = fields.ForeignKey(ExtendedServiceResource, 'service', null=True)
     promotion = fields.ForeignKey(PromotionResource, 'promotion', null=True)
+    card = fields.ForeignKey(CardResource, 'card', null = True)
     
     def obj_create(self, bundle, request=None, **kwargs):
         kwargs['operator']=request.user
@@ -1570,7 +1571,8 @@ class PreorderResource(ExtResource):
             'patient':ALL_WITH_RELATIONS,
             'timeslot':ALL,
             'service':ALL_WITH_RELATIONS,
-            'payment_type':ALL
+            'payment_type':ALL,
+            'card':ALL_WITH_RELATIONS
         }
         
 class ExtPreorderResource(ExtResource):
@@ -1579,6 +1581,7 @@ class ExtPreorderResource(ExtResource):
     visit = fields.OneToOneField(VisitResource,'visit',null=True)
     service = fields.ForeignKey(ExtendedServiceResource, 'service', null=True)
     promotion = fields.ForeignKey(PromotionResource, 'promotion', null=True)
+    card = fields.ForeignKey(CardResource, 'card', null = True)
     
     def obj_create(self, bundle, request=None, **kwargs):
         kwargs['operator']=request.user
@@ -1613,6 +1616,7 @@ class ExtPreorderResource(ExtResource):
             'timeslot':ALL_WITH_RELATIONS,
             'service':ALL_WITH_RELATIONS,
             'visit':ALL_WITH_RELATIONS,
+            'card':ALL_WITH_RELATIONS,
             'payment_type':ALL
         }
         limit = 500
@@ -1633,6 +1637,7 @@ class VisitPreorderResource(ExtPreorderResource):
             'timeslot':ALL_WITH_RELATIONS,
             'service':ALL_WITH_RELATIONS,
             'visit':ALL_WITH_RELATIONS,
+            'card':ALL_WITH_RELATIONS,
             'payment_type':ALL
         }
         limit = 500

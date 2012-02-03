@@ -100,6 +100,7 @@ App.models.preorderModel = new Ext.data.Record.create([
 	{name: 'promotion_name'},
 	{name: 'promo_discount'},
 	{name: 'count'},
+	{name: 'card'},
 	{name: 'start', type: 'date',format:'c'}
 ]);
 

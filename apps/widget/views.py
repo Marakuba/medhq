@@ -50,8 +50,7 @@ def examination_card(request, object_id):
         general_data.append({'title':'Диагноз по МКБ-10',
                              'text':"%s, %s" % (card.mkb_diag.code, card.mkb_diag.name)
                              })
-    # TODO: фильтр по текущей карте осмотра
-    asgmt_list = Preorder.objects.filter(patient=card.ordered_service.order.patient.id)
+    asgmt_list = Preorder.objects.filter(patient=card.ordered_service.order.patient.id,card=card.id)
     assigments = [{'count':a.count,'text':a.service and a.service.base_service.name or u'Нет названия'} for a in asgmt_list]
     field_sets = dict([(fs.name, fs.title) for fs in FieldSet.objects.all()]) 
     data = card.data and simplejson.loads(card.data) or []

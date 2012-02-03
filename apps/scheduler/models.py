@@ -21,6 +21,7 @@ import exceptions
 from datetime import timedelta
 from service.models import ExtendedService
 from promotion.models import Promotion
+from examination.models import Card
 
 add_introspection_rules([], ["^scheduler\.models\.CustomDateTimeField"])
 
@@ -167,6 +168,7 @@ class Preorder(models.Model):
                                     choices=PAYMENT_TYPES)
     promotion = models.ForeignKey(Promotion,blank = True, null=True)
     count = models.PositiveIntegerField(u'Количество', default=1)
+    card = models.ForeignKey(Card, null = True, blank = True)
     objects = models.Manager()
     
     def get_staff_name(self):
