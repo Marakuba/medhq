@@ -2,11 +2,32 @@ Ext.ns('App');
 Ext.ns('App.services');
 
 App.StatusBar = new Ext.ux.StatusBar({
+	hidden:true,
 	defaultText: 'Готово',
 	defaultIconCls: 'x-status-valid',
 	autoClear:3000,
 	items:[String.format('{0}, {1}', active_user, active_state)]
 }); 
+
+function onProfileCheck() {
+	console.info(arguments);
+}
+
+profileItems = ['<b class="menu-title">Выберите профиль</b>'];
+Ext.each(profiles, function(profile){
+	config = {
+		profileId:profile[0],
+		text:profile[1],
+		checked:profile[0]==active_profile,
+		group:'profile',
+		checkHandler:function(menuitem,checked){
+			if(checked){
+				window.location.href = String.format('/webapp/setactiveprofile/{0}/?redirect_to=/webapp/registry/',menuitem.profileId);
+			}
+		}
+	}
+	profileItems.push(config);
+});
 
 App.CentralPanel = Ext.extend(Ext.Panel, {
 	
@@ -179,36 +200,23 @@ App.CentralPanel = Ext.extend(Ext.Panel, {
 				},
 				items:[{
 					iconCls:'silk-cog',
-					menu:[new Ext.form.ComboBox({
-						fieldLabel:'Профиль',
-						name:'payment_type',
-						store:new Ext.data.ArrayStore({
-							fields:['id','title'],
-							data: profiles
-						}),
-						listeners:{
-							select: function(c, rec, i){
-								var p = rec.data.id;
-								window.location.href = '/webapp/setactiveprofile/'+p+'/?redirect_to=/webapp/registry/';
+					iconAlign:'right',
+					text:String.format('{0}, {1}', active_user, active_state),
+					menu:new Ext.menu.Menu({
+						items:[{
+							text:'Профиль',
+							menu:{
+								items:profileItems
 							}
-						},
-						width:300,
-						typeAhead: true,
-						triggerAction: 'all',
-						valueField:'id',
-						displayField:'title',
-						mode: 'local',
-						forceSelection:true,
-						selectOnFocus:true,
-						editable:false,
-						value:active_profile
-				    })]
-				},{
-	            	text:'Выход',
-	            	handler:function(){
-	            		window.location.href = '/webapp/logout/';
-	            	}
-	            }]
+						},{
+			            	text:'Выход',
+			            	iconCls:'silk-door-out',
+			            	handler:function(){
+			            		window.location.href = '/webapp/logout/';
+			            	}
+			            }]
+					})
+				}]
 			}]
 		});
 

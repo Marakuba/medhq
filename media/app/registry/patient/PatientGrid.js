@@ -49,13 +49,13 @@ App.patient.PatientGrid = Ext.extend(Ext.grid.GridPanel, {
 			scope:this
 		});
 		
-		this.cardButton = new Ext.Button({
+		this.cardButton = new Ext.menu.Item({
 			text:'Амбулаторная карта',
 			disabled:true,
 			handler: this.goToSlug.createDelegate(this, ['print_card']),
 			scope:this
 		});
-		this.contractButton = new Ext.Button({
+		this.contractButton = new Ext.menu.Item({
 			text:'Договор',
 			disabled:true,
 			handler: this.goToSlug.createDelegate(this, ['contract']),
@@ -99,7 +99,10 @@ App.patient.PatientGrid = Ext.extend(Ext.grid.GridPanel, {
 					});
 				},
 				scope:this
-			},'->',this.cardButton,this.contractButton],
+			},'->',{
+				iconCls:'silk-bullet-wrench',
+				menu:[this.cardButton,this.contractButton]
+			}],
 	        bbar: new Ext.PagingToolbar({
 	            pageSize: 20,
 	            store: this.store,

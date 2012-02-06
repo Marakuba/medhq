@@ -100,7 +100,16 @@ App.patient.AsgmtGrid = Ext.extend(Ext.grid.GridPanel, {
 		    	width: 20, 
 		    	sortable: true, 
 		    	dataIndex: 'completed_count'
-		    },{
+		    }, new Ext.ux.ProgressColumn({
+                header: '%',
+                width: 70, 
+                dataIndex: 'completed_count',
+                divisor: 'count',
+                align: 'center',
+                renderer: function(value, meta, record, rowIndex, colIndex, store, pct) {
+                    return Ext.util.Format.number(pct, "0.00%");
+                }
+            }),{
 		    	header: "Цена", 
 		    	width: 20, 
 		    	sortable: true, 
