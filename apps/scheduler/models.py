@@ -17,6 +17,7 @@ from django.conf import settings
 from visit.models import Visit
 from django.db.models.signals import pre_delete
 import exceptions
+from core.utils import model_to_dict
 
 from datetime import timedelta
 from service.models import ExtendedService
@@ -189,13 +190,11 @@ class Preorder(models.Model):
         if self.visit:
             self.completed_count += 1
             if self.count > self.completed_count:
-                new_preorder = deepcopy(self)
-                new_preorder.id = None
-                new_preorder.visit = None
+                args_list = model_to_dict(self,['created','modified','visit','id','timeslot','expiration'])
                 if self.expiration and self.created:
-                    dt = self.expiration - self.created.date()
-                    new_preorder.expiration += dt
-                new_preorder.save()
+                    dt = self.expiration - self.created
+                    args_list['expiration'] = self.expiration + dt
+                Preorder.objects.create(**args_list)
             
         super(Preorder, self).save(*args, **kwargs) 
         
@@ -211,7 +210,7 @@ class Preorder(models.Model):
         ordering = ('id',)
         
     def __unicode__(self):
-        return self.patient.full_name()
+        return self.patient and self.patient.full_name() or self.id
     
     
 ### SIGNALS
