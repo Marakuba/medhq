@@ -22,6 +22,7 @@ from datetime import timedelta
 from service.models import ExtendedService
 from promotion.models import Promotion
 from examination.models import Card
+from copy import deepcopy
 
 add_introspection_rules([], ["^scheduler\.models\.CustomDateTimeField"])
 
@@ -185,6 +186,17 @@ class Preorder(models.Model):
         if self.timeslot:
             self.timeslot.vacant = False
             self.timeslot.save()
+        if self.visit:
+            self.completed_count += 1
+            if self.count > self.completed_count:
+                new_preorder = deepcopy(self)
+                new_preorder.id = None
+                new_preorder.visit = None
+                if self.expiration and self.created:
+                    dt = self.expiration - self.created.date()
+                    new_preorder.expiration += dt
+                new_preorder.save()
+            
         super(Preorder, self).save(*args, **kwargs) 
         
     def delete(self, *args, **kwargs):

@@ -872,6 +872,7 @@ class OrderedServiceResource(ExtResource):
     staff = fields.ToOneField(PositionResource, 'staff', full=True, null=True)
     sampling = fields.ForeignKey(SamplingResource, 'sampling', null=True)
     execution_place = fields.ForeignKey(StateResource, 'execution_place')
+    assigment = fields.ForeignKey('apps.api.registry.PreorderResource', 'assigment', null=True)
 
     def obj_create(self, bundle, request=None, **kwargs):
         kwargs['operator']=request.user
@@ -1142,6 +1143,7 @@ class ServiceBasketResource(ExtResource):
     service = fields.ToOneField(BaseServiceResource, 'service', null=True)
     staff = fields.ToOneField(PositionResource, 'staff', null=True)
     execution_place = fields.ToOneField(StateResource, 'execution_place')
+    assigment = fields.ForeignKey('apps.api.registry.PreorderResource', 'assigment', null=True)
 
     def obj_create(self, bundle, request=None, **kwargs):
         kwargs['operator']=request.user
@@ -1600,7 +1602,7 @@ class ExtPreorderResource(ExtResource):
         bundle.data['promo_discount'] = obj.promotion and obj.promotion.discount.id or ''
         bundle.data['staff'] = obj.timeslot and obj.timeslot.cid
         bundle.data['staff_name'] = obj.timeslot and obj.get_staff_name()
-        bundle.data['price'] = obj.service and obj.service.get_actual_price()
+        bundle.data['price'] = obj.price or (obj.service and obj.service.get_actual_price())
         bundle.data['start'] = obj.timeslot and obj.timeslot.start
         bundle.data['base_service'] = obj.service and obj.service.base_service.id
         bundle.data['patient_phone'] = obj.patient.mobile_phone

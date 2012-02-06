@@ -9,7 +9,6 @@ App.assignment.PreorderInlineGrid = Ext.extend(Ext.grid.EditorGridPanel, {
 		var today = new Date();
 		
 		this.expiration = today.add(Date.DAY,30)
-		console.log(this.expiration)
 		
 		this.proxy = new Ext.data.HttpProxy({
 		    url: get_api_url('extpreorder')
@@ -106,6 +105,12 @@ App.assignment.PreorderInlineGrid = Ext.extend(Ext.grid.EditorGridPanel, {
 		    		minValue: today
 		    	})
 		    },{
+		    	header: "Цена", 
+		    	width: 10, 
+		    	sortable: false, 
+		    	hidden: this.shortMode,
+		    	dataIndex: 'price' 
+		    },{
 		    	header: "Кол-во", 
 		    	width: 10, 
 		    	sortable: false, 
@@ -115,6 +120,15 @@ App.assignment.PreorderInlineGrid = Ext.extend(Ext.grid.EditorGridPanel, {
 		    		minValue: 1,
             		maxValue: 20
             	})
+		    },{
+		    	header: "Сумма", 
+		    	width: 10, 
+		    	sortable: false,
+		    	hidden: this.shortMode,
+		    	dataIndex: 'total',
+		    	renderer: function(v,params,rec){
+		    		return rec.data.count*rec.data.price
+		    	}
 		    }
 		];		
 		
@@ -212,9 +226,10 @@ App.assignment.PreorderInlineGrid = Ext.extend(Ext.grid.EditorGridPanel, {
 			service_name:text,
 			promotion: attrs.promotion ? App.getApiUrl('promotion')+'/'+attrs.promotion : '',
 			patient:this.patientRecord.data.resource_uri,
+			price:attrs.price || null,
 			execution_place : state,
 			expiration: this.expiration,
-			card:card_resource ? card_resource : '',
+			card:card_resource || '',
 			count:attrs.c || 1
 		});
 		this.store.add(s);

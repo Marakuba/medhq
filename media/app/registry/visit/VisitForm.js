@@ -464,6 +464,9 @@ App.visit.VisitForm = Ext.extend(Ext.FormPanel, {
 		this.on('afterrender', function(){
 			if(this.record) {
 				this.getForm().loadRecord(this.record);
+				var docSum = this.record.data.total_price-this.record.data.total_discount;
+				this.totalSum.setValue(docSum);
+				this.totalSum.originalValue = docSum
 			};
 			if (this.preorderRecord ){
 
@@ -656,6 +659,7 @@ App.visit.VisitForm = Ext.extend(Ext.FormPanel, {
 		p.beginEdit();
 		p.set('preorder',record.data.resource_uri);
 		p.set('price',record.data.price);
+		p.set('assigment',record.data.resource_uri);
 		p.set('service_name',record.data.service_name);
 		p.set('service',App.getApiUrl('baseservice',record.data.base_service));
 		if (record.data.staff){

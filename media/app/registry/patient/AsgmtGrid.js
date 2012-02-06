@@ -91,6 +91,16 @@ App.patient.AsgmtGrid = Ext.extend(Ext.grid.GridPanel, {
 		    	sortable: true, 
 		    	dataIndex: 'service_name'
 		     },{
+		    	header: "Количество", 
+		    	width: 20, 
+		    	sortable: true, 
+		    	dataIndex: 'count'
+		    },{
+		    	header: "Выполнено", 
+		    	width: 20, 
+		    	sortable: true, 
+		    	dataIndex: 'completed_count'
+		    },{
 		    	header: "Цена", 
 		    	width: 20, 
 		    	sortable: true, 

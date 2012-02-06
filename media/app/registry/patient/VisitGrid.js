@@ -20,6 +20,7 @@ App.patient.VisitGrid = Ext.extend(Ext.grid.GridPanel, {
 				    {name: 'discount_value'},
 				    {name: 'source_lab'},
 				    {name: 'total_price'},
+				    {name: 'total_discount'},
 				    {name: 'total_paid'},
 				    {name: 'operator_name'},
 				    {name: 'patient_name'},
