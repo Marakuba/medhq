@@ -57,7 +57,7 @@ App.invoice.InvoiceItemGrid = Ext.extend(Ext.grid.GridPanel, {
 			store:this.store,
 			columns:this.columns,
 			sm : new Ext.grid.RowSelectionModel({
-				singleSelect : true,
+				singleSelect : false,
 				listeners:{
 					rowselect:function(sm,i,rec) {
 					},
@@ -138,9 +138,12 @@ App.invoice.InvoiceItemGrid = Ext.extend(Ext.grid.GridPanel, {
 	},
 	
 	onRemove: function(){
-		var rec = this.getSelected();
-		if(rec) {
-			this.store.remove(rec);
+		var records = this.getSelectionModel().getSelections();
+		if(records) {
+			this.store.autoSave=false;
+			this.store.remove(records);
+			this.store.save();
+			this.store.autoSave=true;
 		}
 	},
 	
