@@ -14,12 +14,20 @@ App.CentralPanel = Ext.extend(Ext.Panel, {
 		this.mainPanel = new App.MainPanel({});
 		
 		this.ttb = new Ext.Toolbar({
-			items:[{
+			items:[/*{
+				xtype:'button',
+				width:100,
+				scale:'medium',
+				iconCls:'icon-main-button',
+				menu:[{
+				}]
+			},*/{
 				xtype: 'buttongroup',
 				padding:5,
 				items:[{
 					id:'global-search-field',
 					xtype:'gsearchfield',
+					emptyText:'Ф.И.О. д/р или № заказа',
 					stripCharsRe:new RegExp('[\;\?]')
 				}]
 			},{

@@ -193,3 +193,12 @@
 .x-grid-row-stripe {
 	background:url(../images/stripe_warn.png);
 }
+
+.icon-main-button { 
+	background-image: url(../images/main-button.png) !important; 
+	background-repeat: no-repeat;
+}
+
+button.icon-main-button {
+	width:100px!important;
+}

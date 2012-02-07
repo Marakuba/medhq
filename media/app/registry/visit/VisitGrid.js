@@ -184,9 +184,12 @@ App.visit.VisitGrid = Ext.extend(Ext.grid.GridPanel, {
 			items:[{
 				xtype:'button',
 				iconCls:'silk-printer',
-				text:'Печать',
-				handler:this.onPrint.createDelegate(this, [])
-			},'->','Период',{
+				text:'Печать счета',
+				handler:this.toPrint.createDelegate(this,['visit'])
+			},'-',{
+				text:'Печать заказа',
+				handler:this.toPrint.createDelegate(this,['sampling'])
+        	},'->','Период',{
 				id:'visits-start-date-filter',
 				xtype:'datefield',
 				format:'d.m.Y',
@@ -231,7 +234,7 @@ App.visit.VisitGrid = Ext.extend(Ext.grid.GridPanel, {
 						singleSelect : true
 					}),
 			listeners: {
-				rowdblclick:this.onPrint.createDelegate(this, [])
+				rowdblclick:this.toPrint.createDelegate(this,['visit'])
 			},
 			tbar:this.ttb,
 	        bbar: new Ext.PagingToolbar({
@@ -325,10 +328,12 @@ App.visit.VisitGrid = Ext.extend(Ext.grid.GridPanel, {
 		return "/visit/visit/"+id+"/";
 	},
 	
-	onPrint: function() {
-		var id = this.getSelected().data.id;
-		var url = ['/visit/print/visit',id,''].join('/');
-		window.open(url);
+	toPrint:function(slug){
+		var rec = this.getSelected();
+		if(rec){
+			var url = String.format('/visit/print/{0}/{1}/',slug,rec.id);
+			window.open(url);
+		}
 	},
 	
 	goToSlug: function(slug) {
