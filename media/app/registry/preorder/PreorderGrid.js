@@ -6,9 +6,97 @@ App.registry.PreorderGrid = Ext.extend(Ext.grid.GridPanel, {
 		
 		this.start_date = new Date();
 		
+		this.medstateStore = this.medstateStore || new Ext.data.RESTStore({
+			autoSave: true,
+			autoLoad : true,
+			apiUrl : get_api_url('medstate'),
+			model: App.models.MedState
+		});
+
+		this.visitButton = new Ext.Button({
+			iconCls:'silk-add',
+			disabled:true,
+			text:'Оформить заказ',
+			handler:this.onVisitButtonClick.createDelegate(this, []),
+			scope:this
+		});
+		
+		this.pTypeButton = new Ext.CycleButton({
+            showText: true,
+            prependText: 'Оплата: ',
+            items: [{
+                text:'все',
+                checked:true,
+                filterValue:undefined
+            },{
+                text:'Наличные',
+                filterValue:'н'
+            },{
+                text:'ДМС',
+                filterValue:'д'
+            },{
+                text:'Безнал',
+                filterValue:'б'
+            }],
+            changeHandler:function(btn, item){
+                    this.storeFilter('payment_type',item.filterValue);
+            },
+            scope:this
+        });
+        
+		this.clearButton = new Ext.Button({
+			iconCls:'silk-cancel',
+			disabled:true,
+			text:'Отменить предзаказ',
+			handler:this.onDelPreorderClick.createDelegate(this, []),
+			scope:this
+		});
+		
+		this.ttb = new Ext.Toolbar({
+			items:[this.visitButton,this.clearButton,'-',{
+				text:'Реестр',
+				handler:function(){
+					Ext.ux.Printer.print(this);
+				},
+				scope:this
+			},'->',this.pTypeButton]
+		});
+
+		this.medstateStore.on('load',function(store,records){
+			var stateMenu = []
+			stateMenu.push({
+				text:'все',
+				checked:true,
+				filterValue:undefined
+			});
+			if (records.length){
+				Ext.each(records,function(rec){
+					stateMenu.push({
+						text:rec.data.name,
+						filterValue:rec.data.id
+					})
+				})
+			}
+			this.stateButton = new Ext.CycleButton({
+	            showText: true,
+	            prependText: 'Организация: ',
+	            items: stateMenu,
+	            changeHandler:function(btn, item){
+	                    this.storeFilter('service__state',item.filterValue);
+	            },
+	            scope:this
+	        });
+	        
+	        this.ttb.add(this.stateButton);
+		},this);
+		
 		this.store = new Ext.data.RESTStore({
 			autoLoad : false,
 			autoSave : true,
+			baseParams:this.baseParams ? this.baseParams : {
+				format:'json',
+				'timeslot__isnull':false
+			},
 			apiUrl : get_api_url('extpreorder'),
 			model: App.models.preorderModel
 		});
@@ -38,7 +126,7 @@ App.registry.PreorderGrid = Ext.extend(Ext.grid.GridPanel, {
 		    	width: 60, 
 		    	sortable: true, 
 		    	dataIndex: 'patient_name',
-		    	hide: this.patient ? true : false
+		    	hidden: this.hasPatient ? true : false
 		    },{
 		    	header: "Услуга", 
 		    	width: 100, 
@@ -84,62 +172,6 @@ App.registry.PreorderGrid = Ext.extend(Ext.grid.GridPanel, {
 		    }
 		];		
 		
-		this.visitButton = new Ext.Button({
-			iconCls:'silk-add',
-			disabled:true,
-			text:'Оформить заказ',
-			handler:this.onVisitButtonClick.createDelegate(this, []),
-			scope:this
-		});
-		
-		this.pTypeButton = new Ext.CycleButton({
-            showText: true,
-            prependText: 'Оплата: ',
-            items: [{
-                text:'все',
-//                        iconCls:'icon-state-question',
-                checked:true,
-                filterValue:undefined
-            },{
-                text:'Наличные',
-//                iconCls:'icon-state-question',
-                filterValue:'н'
-            },{
-                text:'ДМС',
-//                iconCls:'icon-state-yes',
-                filterValue:'д'
-            },{
-                text:'Безнал',
-//                iconCls:'icon-state-no',
-                filterValue:'б'
-            }],
-            changeHandler:function(btn, item){
-                    this.storeFilter('payment_type',item.filterValue);
-            },
-            scope:this
-        });
-        
-        this.stateButton = new Ext.CycleButton({
-            showText: true,
-            prependText: 'Организация: ',
-            items: [{
-                text:'все',
-                checked:true,
-                filterValue:undefined
-            }],
-            changeHandler:function(btn, item){
-                    this.storeFilter('service_state',item.filterValue);
-            },
-            scope:this
-        })
-		
-		this.clearButton = new Ext.Button({
-			iconCls:'silk-cancel',
-			disabled:true,
-			text:'Отменить предзаказ',
-			handler:this.onDelPreorderClick.createDelegate(this, []),
-			scope:this
-		});
 		
 		this.startDateField = new Ext.form.DateField({
 			format:'d.m.Y',
@@ -153,19 +185,9 @@ App.registry.PreorderGrid = Ext.extend(Ext.grid.GridPanel, {
 			}
 		});
 		
-		 this.ttb = new Ext.Toolbar({
-			items:[this.visitButton,this.clearButton,'-',{
-				text:'Реестр',
-				handler:function(){
-					Ext.ux.Printer.print(this);
-				},
-				scope:this
-			},'->',this.pTypeButton]
-		});
-		
 		var config = {
-			id:'preorder-grid',
-			title:'Предзаказы',
+//			id:'preorder-grid',
+//			title:'Предзаказы',
 			loadMask : {
 				msg : 'Подождите, идет загрузка...'
 			},
@@ -256,10 +278,12 @@ App.registry.PreorderGrid = Ext.extend(Ext.grid.GridPanel, {
 		}, this);
 		this.on('serviceselect', this.onServiceSelect, this);
 		this.on('afterrender', function(){
-			this.store.setBaseParam('timeslot__start__range',String.format('{0},{1}',this.start_date.format('Y-m-d 00:00'),this.start_date.format('Y-m-d 23:59')))
-			this.store.setBaseParam('timeslot__isnull',false);
-			this.store.load()}, 
-		this);
+			if (!this.hasPatient){
+				this.store.setBaseParam('timeslot__start__range',String.format('{0},{1}',this.start_date.format('Y-m-d 00:00'),this.start_date.format('Y-m-d 23:59')))
+				this.store.setBaseParam('timeslot__isnull',false);
+				this.store.load();
+			}
+		},this);
 		App.calendar.eventManager.on('preorderwrite', function(){
 			this.store.load()}, 
 		this);
@@ -401,51 +425,7 @@ App.registry.PreorderGrid = Ext.extend(Ext.grid.GridPanel, {
 	},
 	
 	initToolbar: function(){
-		// laboratory
-		Ext.Ajax.request({
-			url:get_api_url('medstate'),
-			method:'GET',
-			success:function(resp, opts) {
-				this.ttb.add({
-					xtype:'button',
-					enableToggle:true,
-					toggleGroup:'ex-place-cls',
-					text:'Без услуги',
-					pressed: false,
-					handler:function(button){
-						this.storeFilter('service__isnull',button.pressed?true:undefined)
-					},
-					scope:this
-				});
-				this.ttb.add({
-					xtype:'tbtext',
-					text:'Организация: '
-				});
-				this.ttb.add({
-					xtype:'button',
-					enableToggle:true,
-					toggleGroup:'ex-place-cls',
-					text:'Все',
-					pressed: true,
-					handler:this.storeFilter.createDelegate(this,['service__state'])
-				});
-				var jsonResponse = Ext.util.JSON.decode(resp.responseText);
-				Ext.each(jsonResponse.objects, function(item,i){
-					this.ttb.add({
-						xtype:'button',
-						enableToggle:true,
-						toggleGroup:'ex-place-cls',
-						text:item.name,
-						handler:this.storeFilter.createDelegate(this,['service__state',item.id])
-					});
-				}, this);
-				//this.ttb.addSeparator();
-				//this.ttb.add();
-				//this.ttb.add()
-				this.ttb.doLayout();
-			},
-			scope:this
-		});
+		this.ttb.doLayout();
 	}
 });
 

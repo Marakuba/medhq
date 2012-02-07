@@ -5,6 +5,82 @@ App.patient.AsgmtGrid = Ext.extend(Ext.grid.GridPanel, {
 	loadInstant: false,
 	
 	initComponent : function() {
+		
+		this.medstateStore = this.medstateStore || new Ext.data.RESTStore({
+			autoSave: true,
+			autoLoad : true,
+			apiUrl : get_api_url('medstate'),
+			model: App.models.MedState
+		});
+
+		this.visitButton = new Ext.Button({
+			iconCls:'silk-add',
+			disabled:true,
+			text:'Оформить заказ',
+			handler:this.onVisitButtonClick.createDelegate(this, []),
+			scope:this
+		});
+		
+		this.clearButton = new Ext.Button({
+			iconCls:'silk-cancel',
+			disabled:true,
+			text:'Отменить предзаказ',
+			handler:this.onDelPreorderClick.createDelegate(this, []),
+			scope:this
+		});
+		
+		this.setTimeButton = new Ext.Button({
+			xtype:'button',
+			text:'Назначить время',
+			handler:this.staffWindow.createDelegate(this, []),
+			scope:this
+		});
+		
+		this.ttb = new Ext.Toolbar({
+			items:[{
+					iconCls:'med-usersetup',
+					text:'Новое направление',
+					handler:this.onCreate.createDelegate(this),
+					scope:this
+				},'-',
+				this.visitButton, this.clearButton, this.setTimeButton,'-',
+				{
+					text:'Реестр',
+					handler:function(){
+						Ext.ux.Printer.print(this);
+					},
+					scope:this
+			},'->']
+		});
+
+		this.medstateStore.on('load',function(store,records){
+			var stateMenu = []
+			stateMenu.push({
+				text:'все',
+				checked:true,
+				filterValue:undefined
+			});
+			if (records.length){
+				Ext.each(records,function(rec){
+					stateMenu.push({
+						text:rec.data.name,
+						filterValue:rec.data.id
+					})
+				})
+			}
+			this.stateButton = new Ext.CycleButton({
+	            showText: true,
+	            prependText: 'Организация: ',
+	            items: stateMenu,
+	            changeHandler:function(btn, item){
+	                    this.storeFilter('service__state',item.filterValue);
+	            },
+	            scope:this
+	        });
+	        
+	        this.ttb.add(this.stateButton);
+		},this);
+		
 		// Определяет, можно ли выписывать визит для услуг других организаций
 		this.serviceTreeOnlyOwn = App.settings.serviceTreeOnlyOwn; // 
 		
@@ -84,8 +160,13 @@ App.patient.AsgmtGrid = Ext.extend(Ext.grid.GridPanel, {
 		}); 
 		
 		
-		this.columns =  [
-		    {
+		this.columns =  [{
+		    	header: "Пациент", 
+		    	width: 60, 
+		    	sortable: true, 
+		    	dataIndex: 'patient_name',
+		    	hidden: this.hasPatient ? true : false
+		    },{
 		    	header: "Услуга", 
 		    	width: 100, 
 		    	sortable: true, 
@@ -149,29 +230,6 @@ App.patient.AsgmtGrid = Ext.extend(Ext.grid.GridPanel, {
 		    }
 		];		
 		
-		this.visitButton = new Ext.Button({
-			iconCls:'silk-add',
-			disabled:true,
-			text:'Оформить заказ',
-			handler:this.onVisitButtonClick.createDelegate(this, []),
-			scope:this
-		});
-		
-		this.clearButton = new Ext.Button({
-			iconCls:'silk-cancel',
-			disabled:true,
-			text:'Отменить предзаказ',
-			handler:this.onDelPreorderClick.createDelegate(this, []),
-			scope:this
-		});
-		
-		this.setTimeButton = new Ext.Button({
-			xtype:'button',
-			text:'Назначить время',
-			handler:this.staffWindow.createDelegate(this, []),
-			scope:this
-		});
-		
 		var config = {
 			loadMask : {
 				msg : 'Подождите, идет загрузка...'
@@ -193,20 +251,7 @@ App.patient.AsgmtGrid = Ext.extend(Ext.grid.GridPanel, {
                     scope:this
                 }
 			}),
-			tbar:[{
-					iconCls:'med-usersetup',
-					text:'Новое направление',
-					handler:this.onCreate.createDelegate(this),
-					scope:this
-				},'-',
-				this.visitButton, this.clearButton, this.setTimeButton,'-',
-				{
-					text:'Реестр',
-					handler:function(){
-						Ext.ux.Printer.print(this);
-					},
-					scope:this
-			}],
+			tbar:this.ttb,
 	        bbar: new Ext.PagingToolbar({
 	            pageSize: 100,
 	            store: this.store,
@@ -463,7 +508,24 @@ App.patient.AsgmtGrid = Ext.extend(Ext.grid.GridPanel, {
 			border:false
     	});
        	freeTimeslotWindow.show();
-    }
+    },
+    
+    storeFilter: function(field, value){
+		if(!value) {
+			delete this.store.baseParams[field]
+		} else {
+			this.store.setBaseParam(field, value);
+		}
+		this.store.load({callback:function(){
+			var record = this.getSelected();
+			if (record){
+				this.onServiceSelect(record);
+			} else {
+				this.btnSetDisabled(true);
+			};
+		},scope:this});
+		this.btnSetDisabled(true);
+	}
 	
 	
 });

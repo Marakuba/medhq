@@ -35,8 +35,9 @@ App.patient.PatientCard = Ext.extend(Ext.TabPanel, {
 			xtype:'patientmanualgrid'
 		},{
 			title:'Назначения',
-			layout:'fit',
-			xtype:'asgmtgrid'
+//			layout:'fit',
+			hasPatient:true,
+			xtype:'preordermanager'
 		},{
 			title:'Оказанные услуги',
 			layout:'fit',

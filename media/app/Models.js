@@ -374,4 +374,11 @@ App.models.ServiceToSend = new Ext.data.Record.create([
     {name: 'patient_birth_day', type:'date', format:'c'}
 ]);
 
+App.models.MedState = new Ext.data.Record.create([
+    {name: 'id'},
+    {name: 'resource_uri'},
+    {name: 'name'},
+    {name: 'print_name'}
+]);
+
 App.models.Patient = App.models.patientModel // patientModel will deprecate

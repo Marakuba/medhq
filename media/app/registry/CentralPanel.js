@@ -1,5 +1,6 @@
 Ext.ns('App');
 Ext.ns('App.services');
+Ext.ns('App.registry');
 
 App.StatusBar = new Ext.ux.StatusBar({
 	hidden:true,
@@ -33,6 +34,33 @@ App.CentralPanel = Ext.extend(Ext.Panel, {
 	
 	initComponent: function(){
 		this.mainPanel = new App.MainPanel({});
+		
+		this.preorderBtn = new Ext.SplitButton({
+			text:'Предзаказы',
+			tooltip:'Управление предзаказами',
+			handler:function(){
+				this.launchApp('preordermanager',{closable:true,openTab:'preorderTab'});
+			},
+			menu: new Ext.menu.Menu({
+		        items: [
+		        	// these items will render as dropdown menu items when the arrow is clicked:
+			        {text: 'Ближайшие предзаказы', handler: function(){
+							this.launchApp('preordermanager',{closable:true,openTab:'preorderTab'});
+						},
+					scope:this
+					},
+			        {text: 'Направления', handler: function(){
+							this.launchApp('preordermanager',{closable:true,openTab:'assigmentTab'});
+						}, scope: this
+					},
+					{text: 'Выполненные предзаказы', handler: function(){
+							this.launchApp('preordermanager',{closable:true,openTab:'completedTab'});
+						}, scope: this
+					}
+		        ]
+		   	}),
+			scope:this
+		});
 		
 		this.ttb = new Ext.Toolbar({
 			items:[/*{
@@ -117,14 +145,7 @@ App.CentralPanel = Ext.extend(Ext.Panel, {
 						this.launchApp('doctorscheduler',{closable:true});
 					},
 					scope:this
-				},{
-					text:'Предзаказы',
-					tooltip:'Управление предзаказами',
-					handler:function(){
-						this.launchApp('preordergrid',{closable:true});
-					},
-					scope:this
-				}]
+				},this.preorderBtn]
 			},{
 				xtype:'buttongroup',
 				defaults:{
