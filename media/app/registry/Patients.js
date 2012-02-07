@@ -20,9 +20,7 @@ App.Patients = Ext.extend(Ext.Panel, {
 			layout:'fit',
 			tools:[{
 				id:'refresh',
-				handler:function(){
-					this.patientCard.doRefresh();
-				},
+				handler:this.updatePatientInfo.createDelegate(this),
 				scope:this,
 				qtip:'Обновить карточку пациента'
 			},{
@@ -67,6 +65,14 @@ App.Patients = Ext.extend(Ext.Panel, {
 		App.Patients.superclass.initComponent.apply(this, arguments);
 		
 		this.initEvents();
+		
+		App.eventManager.on('visitclose', this.updatePatientInfo, this); //
+		App.eventManager.on('refundclose', this.updatePatientInfo, this); //
+		this.on('destroy', function(){
+			App.eventManager.un('visitclose', this.updatePatientInfo, this); //
+			App.eventManager.un('refundclose', this.updatePatientInfo, this); //
+		},this);
+
 	},
 	
 	initEvents : function() {
@@ -82,7 +88,7 @@ App.Patients = Ext.extend(Ext.Panel, {
 		'{last_name} {first_name} {mid_name}. ',
 		'Скидка: {discount_name}. ',
 		'Общая сумма: {billed_account}. ',
-		'Баланс: <FONT COLOR="red">{balance}</FONT>. ',
+		'Баланс: <span style="color:{color}">{balance}</span>. ',
 		'{ad_source_name:this.isEmpty}',
 		{
 			isEmpty:function(v){
@@ -91,8 +97,35 @@ App.Patients = Ext.extend(Ext.Panel, {
 		}
 	),
 	
+	updatePatientInfo : function(){
+		var rec = this.patientCard.record;
+		if(rec){
+			App.direct.patient.updatePatientInfo(rec.id, function(res,e){
+				var data = res.data;
+				rec.beginEdit();
+				for(k in data){
+					rec.set(k,data[k]);
+					console.info(k,data[k]);
+				}
+				console.info(rec.data);
+//				rec.endEdit();
+				this.patientSelect(rec);
+//				this.patientCard.doRefresh();
+			}, this);
+		}
+	},
+	
 	patientSelect: function(rec){
-		this.cardPanel.setTitle(this.titleTpl.apply(rec.data));
+		var d = {};
+		Ext.apply(d, rec.data);
+		if(rec.data.balance>0) {
+			d.color='green';
+		} else if(rec.data.balance==0) {
+			d.color='';
+		} else {
+			d.color='red';
+		}
+		this.cardPanel.setTitle(this.titleTpl.apply(d));
 		this.quickForm.setActiveRecord(rec);
 		this.patientCard.setActivePatient.createDelegate(this.patientCard,[rec])();
 	}
