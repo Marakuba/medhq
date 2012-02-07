@@ -16,3 +16,4 @@ urlpatterns = patterns(
 
 import remoting.views
 import visit.views
+import patient.views
