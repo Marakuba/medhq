@@ -79,46 +79,29 @@ App.patient.AsgmtGrid = Ext.extend(Ext.grid.GridPanel, {
 	        });
 	        
 	        this.ttb.add(this.stateButton);
+	        this.ttb.add({
+	        	text:'Обновить',
+	        	handler:function(){
+	        		this.store.load();
+	        	},
+	        	scope:this
+	        });
+	        this.doLayout()
 		},this);
 		
 		// Определяет, можно ли выписывать визит для услуг других организаций
 		this.serviceTreeOnlyOwn = App.settings.serviceTreeOnlyOwn; // 
 		
-	
-		this.proxy = new Ext.data.HttpProxy({
-		    url: get_api_url('visitpreorder')
-		});
-		
-		this.reader = new Ext.data.JsonReader({
-		    totalProperty: 'meta.total_count',
-		    //successProperty: 'success',
-		    idProperty: 'id',
-		    root: 'objects'
-		}, App.models.preorderModel);
-		
-		this.writer = new Ext.data.JsonWriter({
-		    encode: false,
-		    writeAllFields: true
-		});
-		
-		this.store = new Ext.data.GroupingStore({
-			autoSave:true,
-		    baseParams: {
-		    	format:'json',
-		    	visit__isnull:true
-		    },
-		    paramNames: {
-			    start : 'offset',  // The parameter name which specifies the start row
-			    limit : 'limit',  // The parameter name which specifies number of rows to return
-			    sort : 'sort',    // The parameter name which specifies the column to sort on
-			    dir : 'dir'       // The parameter name which specifies the sort direction
+		this.store = new Ext.data.RESTStore({
+			autoLoad : false,
+			autoSave : true,
+			baseParams:this.baseParams ? this.baseParams : {
+				format:'json',
+				visit__isnull:true
 			},
-			remoteSort: true,
-		    restful: true,     // <-- This Store is RESTful
-		    proxy: this.proxy,
-		    reader: this.reader,
-		    writer: this.writer    // <-- plug a DataWriter into the store just as you would a Reader
-		});
+			apiUrl : get_api_url('visitpreorder'),
+			model: App.models.preorderModel
+		}); 
 		
 		
 		this.eventModel = new Ext.data.Record.create([
@@ -227,6 +210,11 @@ App.patient.AsgmtGrid = Ext.extend(Ext.grid.GridPanel, {
 		    	width: 35, 
 		    	sortable: false, 
 		    	dataIndex: 'promotion_name'
+		    },{
+		    	header: "Оператор", 
+		    	width: 35, 
+		    	sortable: true, 
+		    	dataIndex: 'operator_name'
 		    }
 		];		
 		
@@ -252,14 +240,9 @@ App.patient.AsgmtGrid = Ext.extend(Ext.grid.GridPanel, {
                 }
 			}),
 			tbar:this.ttb,
-	        bbar: new Ext.PagingToolbar({
-	            pageSize: 100,
-	            store: this.store,
-	            displayInfo: true,
-	            displayMsg: 'Показана запись {0} - {1} из {2}',
-	            emptyMsg: "Нет записей"
-	        }),
+	        bbar: [],
 			viewConfig : {
+				emptyText:'На выбранную дату направлений нет',
 				forceFit : true,
 				showPreview:true,
 				enableRowBody:true,

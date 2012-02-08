@@ -241,8 +241,9 @@ App.billing.PaymentForm = Ext.extend(Ext.form.FormPanel, {
 			if(this.record) {
 				this.getForm().loadRecord(this.record);
 				var clientCombo = Ext.getCmp(this.tmp_id+'client');
-				clientCombo.setValue(this.record.data.client);
-				clientCombo.originalValue = this.record.data.client;
+				var patient = App.getApiUrl('patient') + '/' + this.record.data.client
+				clientCombo.setValue(patient);
+				clientCombo.originalValue = patient;
 			}
 			else {
                 var d = new Date;

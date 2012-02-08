@@ -1606,6 +1606,7 @@ class ExtPreorderResource(ExtResource):
         bundle.data['start'] = obj.timeslot and obj.timeslot.start
         bundle.data['base_service'] = obj.service and obj.service.base_service.id
         bundle.data['patient_phone'] = obj.patient and obj.patient.mobile_phone
+        bundle.data['operator_name'] = obj.operator or ''
         return bundle
     
     class Meta:

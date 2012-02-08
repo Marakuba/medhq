@@ -16,6 +16,7 @@ App.registry.PreorderGrid = Ext.extend(Ext.grid.GridPanel, {
 		this.visitButton = new Ext.Button({
 			iconCls:'silk-add',
 			disabled:true,
+			hidden:this.completed ? true : false,
 			text:'Оформить заказ',
 			handler:this.onVisitButtonClick.createDelegate(this, []),
 			scope:this
@@ -47,6 +48,7 @@ App.registry.PreorderGrid = Ext.extend(Ext.grid.GridPanel, {
 		this.clearButton = new Ext.Button({
 			iconCls:'silk-cancel',
 			disabled:true,
+			hidden:this.completed ? true : false,
 			text:'Отменить предзаказ',
 			handler:this.onDelPreorderClick.createDelegate(this, []),
 			scope:this
@@ -88,6 +90,14 @@ App.registry.PreorderGrid = Ext.extend(Ext.grid.GridPanel, {
 	        });
 	        
 	        this.ttb.add(this.stateButton);
+	        this.ttb.add({
+	        	text:'Обновить',
+	        	handler:function(){
+	        		this.store.load();
+	        	},
+	        	scope:this
+	        });
+	        this.doLayout();
 		},this);
 		
 		this.store = new Ext.data.RESTStore({
@@ -169,7 +179,13 @@ App.registry.PreorderGrid = Ext.extend(Ext.grid.GridPanel, {
 		    	width: 35, 
 		    	sortable: false, 
 		    	dataIndex: 'patient_phone'
+		    },{
+		    	header: "Оператор", 
+		    	width: 35, 
+		    	sortable: true, 
+		    	dataIndex: 'operator_name'
 		    }
+		    
 		];		
 		
 		
@@ -192,7 +208,6 @@ App.registry.PreorderGrid = Ext.extend(Ext.grid.GridPanel, {
 				msg : 'Подождите, идет загрузка...'
 			},
 			border: false,
-			emptyText:'На эту дату предзаказов нет',
 			store:this.store,
 			columns:this.columns,
 			sm : new Ext.grid.RowSelectionModel({
@@ -231,6 +246,7 @@ App.registry.PreorderGrid = Ext.extend(Ext.grid.GridPanel, {
 			viewConfig : {
 				forceFit : true,
 				showPreview:true,
+				emptyText:'На выбранную дату предзаказов нет',
 				enableRowBody:true,
 				getRowClass: function(record, index, p, store) {
             		var service = record.get('service');
