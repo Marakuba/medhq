@@ -139,7 +139,11 @@ class PatientResource(ExtResource):
     client_item = fields.OneToOneField(ClientItemResource, 'client_item', null=True)
     
     def hydrate_initial_account(self, bundle):
-        bundle.data['initial_account'] = str(bundle.data['initial_account'])
+#TODO: only for Python 2.6 trick. Will be remove later.
+        try:
+            bundle.data['initial_account'] = str(bundle.data['initial_account'])
+        except KeyError:
+            pass
         return bundle
 
 
