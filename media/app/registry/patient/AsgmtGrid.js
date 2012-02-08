@@ -6,6 +6,20 @@ App.patient.AsgmtGrid = Ext.extend(Ext.grid.GridPanel, {
 	
 	initComponent : function() {
 		
+		this.start_date = new Date();
+		
+		this.startDateField = new Ext.form.DateField({
+			format:'d.m.Y',
+			value:this.start_date,
+			listeners: {
+				select: function(df, date){
+					this.start_date = date;
+					this.storeFilter('expiration__range',String.format('{0},{1}',this.start_date.format('Y-m-d 00:00'),this.start_date.format('Y-m-d 23:59')));
+				},
+				scope:this
+			}
+		});
+		
 		this.medstateStore = this.medstateStore || new Ext.data.RESTStore({
 			autoSave: true,
 			autoLoad : true,
@@ -240,7 +254,22 @@ App.patient.AsgmtGrid = Ext.extend(Ext.grid.GridPanel, {
                 }
 			}),
 			tbar:this.ttb,
-	        bbar: [],
+	        bbar: {
+            	cls: 'ext-cal-toolbar',
+            	border: true,
+            	buttonAlign: 'center',
+            	items: [{
+//	                id: this.id + '-tb-prev',
+                	handler: this.onPrevClick,
+                	scope: this,
+                	iconCls: 'x-tbar-page-prev'
+            	},this.startDateField,{
+//	                id: this.id + '-tb-next',
+                	handler: this.onNextClick,
+                	scope: this,
+                	iconCls: 'x-tbar-page-next'
+            	}]
+            },
 			viewConfig : {
 				emptyText:'На выбранную дату направлений нет',
 				forceFit : true,
@@ -266,6 +295,16 @@ App.patient.AsgmtGrid = Ext.extend(Ext.grid.GridPanel, {
 
 		Ext.apply(this, Ext.apply(this.initialConfig, config));
 		App.patient.AsgmtGrid.superclass.initComponent.apply(this, arguments);
+		
+		this.on('afterrender', function(){
+			if (!this.hasPatient){
+				this.store.setBaseParam('expiration__range',String.format('{0},{1}',this.start_date.format('Y-m-d 00:00'),this.start_date.format('Y-m-d 23:59')))
+				this.store.load();
+			}
+		},this);
+		App.calendar.eventManager.on('preorderwrite', function(){
+			this.store.load()}, 
+		this);
 		
 		this.store.on('write', function(){
 			var record = this.getSelected();
@@ -507,6 +546,20 @@ App.patient.AsgmtGrid = Ext.extend(Ext.grid.GridPanel, {
 				this.btnSetDisabled(true);
 			};
 		},scope:this});
+		this.btnSetDisabled(true);
+	},
+	
+	onPrevClick: function(){
+		this.start_date = this.start_date.add(Date.DAY,-1);
+		this.startDateField.setValue(this.start_date);
+		this.storeFilter('expirationt__range',String.format('{0},{1}',this.start_date.format('Y-m-d 00:00'),this.start_date.format('Y-m-d 23:59')));
+		this.btnSetDisabled(true);
+	},
+	
+	onNextClick: function(){
+		this.start_date = this.start_date.add(Date.DAY,1);
+		this.startDateField.setValue(this.start_date);
+		this.storeFilter('expiration__range',String.format('{0},{1}',this.start_date.format('Y-m-d 00:00'),this.start_date.format('Y-m-d 23:59')));
 		this.btnSetDisabled(true);
 	}
 	

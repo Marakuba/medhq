@@ -1641,6 +1641,7 @@ class VisitPreorderResource(ExtPreorderResource):
         filtering = {
             'patient':ALL,
             'start':ALL,
+            'expiration':ALL,
             'timeslot':ALL_WITH_RELATIONS,
             'service':ALL_WITH_RELATIONS,
             'visit':ALL_WITH_RELATIONS,

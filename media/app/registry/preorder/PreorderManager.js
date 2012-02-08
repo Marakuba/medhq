@@ -34,7 +34,7 @@ App.registry.PreorderManager = Ext.extend(Ext.TabPanel, {
 		});
 		
 		config = {
-			id:'preorder-manager',
+			id:this.hasPatient? Ext.id() : 'preorder-manager',
 			title:'Предзаказы',
 			tabPosition:'bottom',
 			items:[
@@ -50,7 +50,7 @@ App.registry.PreorderManager = Ext.extend(Ext.TabPanel, {
 		App.eventManager.on('globalsearch', this.onGlobalSearch, this);
 		this.on('afterrender', function(){
 			this.setActiveTab(this[this.openTab] || 0);
-			this.assigmentTab.store.load();
+//			this.assigmentTab.store.load();
 		},this);
 	},
 
