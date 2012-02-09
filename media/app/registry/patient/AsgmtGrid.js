@@ -254,7 +254,7 @@ App.patient.AsgmtGrid = Ext.extend(Ext.grid.GridPanel, {
                 }
 			}),
 			tbar:this.ttb,
-	        bbar: {
+	        bbar: this.hasPatient ? [] : {
             	cls: 'ext-cal-toolbar',
             	border: true,
             	buttonAlign: 'center',

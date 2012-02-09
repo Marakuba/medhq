@@ -5,6 +5,7 @@ App.billing.PaymentGrid = Ext.extend(Ext.grid.GridPanel, {
 	initComponent : function() {
 		
 		this.store = new Ext.data.RESTStore({
+			autoLoad:false,
 		    apiUrl : get_api_url('payment'),
 		    model: App.models.paymentModel
 		});
@@ -172,11 +173,13 @@ App.billing.PaymentGrid = Ext.extend(Ext.grid.GridPanel, {
 
 		
 		this.on('afterrender', function(){
-			var first_day = new Date();
-			first_day.setDate(1);
-			Ext.getCmp('date_gte'+this.tmp_id).setValue(first_day);
-			this.store.setBaseParam('doc_date__gte', first_day.format('Y-m-d'));
-			this.store.load();
+			if (!this.hasPatient){
+				var first_day = new Date();
+				first_day.setDate(1);
+				Ext.getCmp('date_gte'+this.tmp_id).setValue(first_day);
+				this.store.setBaseParam('doc_date__gte', first_day.format('Y-m-d'));
+				this.store.load();
+			}
 		}, this);
 	},
 	

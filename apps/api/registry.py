@@ -1605,7 +1605,7 @@ class ExtPreorderResource(ExtResource):
         bundle.data['promotion_name'] = obj.promotion and obj.promotion.name or ''
         bundle.data['promo_discount'] = obj.promotion and obj.promotion.discount.id or ''
         bundle.data['staff'] = obj.timeslot and obj.timeslot.cid
-        bundle.data['staff_name'] = obj.timeslot and obj.get_staff_name()
+        bundle.data['staff_name'] = obj.timeslot and obj.timeslot.cid and obj.get_staff_name()
         bundle.data['price'] = obj.price or (obj.service and obj.service.get_actual_price())
         bundle.data['start'] = obj.timeslot and obj.timeslot.start
         bundle.data['base_service'] = obj.service and obj.service.base_service.id
