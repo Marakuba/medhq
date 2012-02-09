@@ -107,7 +107,7 @@ App.patient.PatientCard = Ext.extend(Ext.TabPanel, {
 	
 	onVisitClose: function() {
 		if (this.record) {
-			this.setActivePatient(this.record);
+//			this.setActivePatient(this.record);
 		} else {
 		}
 	}
