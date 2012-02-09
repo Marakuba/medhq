@@ -52,7 +52,7 @@ App.models.paymentModel = new Ext.data.Record.create([
 	{name: 'client', allowBlank: true}, 
 	{name: 'amount', allowBlank: true},
 	{name: 'account_id', allowBlank: true},
-	{name: 'income', allowBlank: true},
+	{name: 'direction', allowBlank: true},
 	{name: 'payment_type', allowBlank: true},
 	{name: 'comment', allowBlank: true},
 	{name: 'content_type', allowBlank: true},

@@ -31,7 +31,7 @@ App.regBackend('payment', new App.Backend({
 	    	    {name: 'client', allowBlank: true}, 
 	    	    {name: 'amount', allowBlank: true},
 	    	    {name: 'account_id', allowBlank: true},
-	    	    {name: 'income', allowBlank: true},
+	    	    {name: 'direction', allowBlank: true},
 	    	    {name: 'payment_type', allowBlank: true},
 	    	    {name: 'content_type', allowBlank: true}
 			]),
