@@ -11,16 +11,24 @@ App.registry.PreorderManager = Ext.extend(Ext.TabPanel, {
 			model: App.models.MedState
 		});
 		
+		this.patientStore = new Ext.data.RESTStore({
+			autoLoad : false,
+			autoSave : false,
+			apiUrl : get_api_url('patient'),
+			model: App.models.patientModel
+		});
 		
 		this.preorderTab = new App.registry.PreorderGrid({
 			title:'Ближайшие',
 			hasPatient:this.hasPatient,
+			patientStore: this.patientStore,
 			medstateStore: this.medstateStore
 		});
 		this.completedTab = new App.registry.PreorderGrid({
 			hasPatient:this.hasPatient,
 			completed:true,
 			medstateStore: this.medstateStore,
+			patientStore: this.patientStore,
 			title:'Выполненные',
 			baseParams:{
 				format:'json',
@@ -30,7 +38,8 @@ App.registry.PreorderManager = Ext.extend(Ext.TabPanel, {
 		});
 		this.assigmentTab = new App.patient.AsgmtGrid({
 			hasPatient:this.hasPatient,
-			medstateStore: this.medstateStore
+			medstateStore: this.medstateStore,
+			patientStore: this.patientStore
 		});
 		
 		config = {

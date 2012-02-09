@@ -1635,7 +1635,7 @@ class VisitPreorderResource(ExtPreorderResource):
     """
     
     class Meta:
-        queryset = Preorder.objects.filter(Q(timeslot__start__gte=getToday()) | Q(timeslot__isnull=True)).order_by('-timeslot__start')
+        queryset = Preorder.objects.filter(timeslot__isnull=True).order_by('-expiration')
         resource_name = 'visitpreorder'
         authorization = DjangoAuthorization()
         filtering = {

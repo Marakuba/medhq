@@ -26,6 +26,13 @@ App.patient.AsgmtGrid = Ext.extend(Ext.grid.GridPanel, {
 			apiUrl : get_api_url('medstate'),
 			model: App.models.MedState
 		});
+		
+		this.patientStore = this.patientStore || new Ext.data.RESTStore({
+			autoLoad : false,
+			autoSave : false,
+			apiUrl : get_api_url('patient'),
+			model: App.models.patientModel
+		});
 
 		this.visitButton = new Ext.Button({
 			iconCls:'silk-add',
@@ -245,9 +252,10 @@ App.patient.AsgmtGrid = Ext.extend(Ext.grid.GridPanel, {
 				listeners: {
                     rowselect: function(sm, row, rec) {
                     	this.fireEvent('preorderselect', rec);
+                    	this.btnSetDisabled(false);
                     },
                     rowdeselect: function(sm, row, rec) {
-                    	this.fireEvent('preorderselect', rec);
+//                    	this.fireEvent('preorderselect', rec);
                     	this.btnSetDisabled(true);
                     },
                     scope:this
@@ -346,20 +354,16 @@ App.patient.AsgmtGrid = Ext.extend(Ext.grid.GridPanel, {
 	},
 	
 	onPreorderSelect: function(record){
+		var patient_list = []
 		var records = this.getSelectionModel().getSelections();
 		if (records.length != 1){
 			this.setTimeButton.setDisabled(true)
 		} else {
 			this.setTimeButton.setDisabled(false)
 		}
-        if (!record.data.visit) {
-        	this.visitButton.setDisabled(false);
-        } else {
-        	this.visitButton.setDisabled(true);
-        };
-        if (!record.data.visit) {
-        	this.clearButton.setDisabled(false);
-        };
+		
+		this.visitButton.setDisabled(false);
+        this.clearButton.setDisabled(false);
 	},
 	
     getSelected: function() {
@@ -368,26 +372,22 @@ App.patient.AsgmtGrid = Ext.extend(Ext.grid.GridPanel, {
 	
 	onVisitButtonClick: function() {
         var records = this.getSelectionModel().getSelections();
+        
         if (records.length) {
-/*        	if (record.data.visit){
-        		Ext.Msg.alert('Уведомление','Предзаказ уже был оформлен')
-        		return
-        	} else {
-	    		if (!record.data.service){
-			    	Ext.Msg.confirm(
-						'Создать приём?',
-						'В выбранном предзаказе не указана услуга. Создать приём всё равно?',
-						function(btn){
-							if (btn=='yes'){
-								this.visitAdd(record)
-							}
-						},
-						this
-					);
-	    		} else {
-	    			this.visitAdd(record);
-	    		}
-		    };*/
+        	var only_one = true;
+        	var patient = records[0].data.patient
+        	Ext.each(records,function(rec){
+	        	if (rec.data.patient != patient){
+	        		only_one = false
+	        		return
+	        	}
+	        });
+        	
+	        if (!only_one){
+	        	Ext.Msg.alert('Ошибка!','Выбрано несколько пациентов!');
+	        	return
+	        }
+	        
         	var recs = new Array();
         	Ext.each(records, function(record){
     	    	if (!record.data.patient){
@@ -403,11 +403,27 @@ App.patient.AsgmtGrid = Ext.extend(Ext.grid.GridPanel, {
         			recs.push(record);
         		}
         	}, this);
-			App.eventManager.fireEvent('launchapp','visittab',{
-				preorderRecord:recs,
-				patientRecord:this.patientRecord,
-				type:'visit'
-			});
+			if (this.hasPatient){
+				App.eventManager.fireEvent('launchapp','visittab',{
+					preorderRecord:recs,
+					patientRecord:this.patientRecord,
+					type:'visit'
+				});
+	    	} else {
+	    		this.patientStore.setBaseParam('id',App.uriToId(recs[0].data.patient));
+		    	this.patientStore.load({callback:function(records,opt,success){
+		    		if (!records) {
+		    			Ext.msg.alert('Ошибка','Не указан пациент');
+		    			return
+		    		};
+		    		this.patientRecord = records[0];
+		    		App.eventManager.fireEvent('launchapp','visittab',{
+						preorderRecord:recs,
+						patientRecord:this.patientRecord,
+						type:'visit'
+					});
+		    	}})
+	    	}
         } else {
         	Ext.Msg.alert('Уведомление','Не выбран ни один предзаказ')
         }
@@ -438,25 +454,6 @@ App.patient.AsgmtGrid = Ext.extend(Ext.grid.GridPanel, {
     	s.remove(r);
     	s.save();
     	s.autoSave = true;
-    },
-    
-    visitAdd : function(records) {
-    	this.records = records;
-    	if (record){
-	    	if (!record.data.patient){
-	    		Ext.Msg.alert('Ошибка!','Не указан пациент!');
-	    		return
-	    	};
-	    	if (!(state == record.data.execution_place) && record.data.service && this.serviceTreeOnlyOwn){
-	    		Ext.Msg.alert('Ошибка!','Вы не можете работать с этой организацией!');
-	    		return
-	    	};
-			App.eventManager.fireEvent('launchapp','visittab',{
-				preorderRecord:this.records,
-				patientRecord:this.patientRecord,
-				type:'visit'
-			});
-    	}
     },
     
     onCreate: function(){
@@ -491,7 +488,7 @@ App.patient.AsgmtGrid = Ext.extend(Ext.grid.GridPanel, {
 			var win = new App.visit.StaffWindow({index:index, staffList:sl});
 			win.on('validstaff', this.onMovePreorder, this);
 			win.show();
-		},scope:this})
+		},scope:this});
 	},
 	
 	updateStaff: function(rec, id, staff_name){
@@ -552,7 +549,7 @@ App.patient.AsgmtGrid = Ext.extend(Ext.grid.GridPanel, {
 	onPrevClick: function(){
 		this.start_date = this.start_date.add(Date.DAY,-1);
 		this.startDateField.setValue(this.start_date);
-		this.storeFilter('expirationt__range',String.format('{0},{1}',this.start_date.format('Y-m-d 00:00'),this.start_date.format('Y-m-d 23:59')));
+		this.storeFilter('expiration__range',String.format('{0},{1}',this.start_date.format('Y-m-d 00:00'),this.start_date.format('Y-m-d 23:59')));
 		this.btnSetDisabled(true);
 	},
 	

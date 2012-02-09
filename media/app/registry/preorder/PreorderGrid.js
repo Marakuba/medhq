@@ -123,7 +123,7 @@ App.registry.PreorderGrid = Ext.extend(Ext.grid.GridPanel, {
 			apiUrl : get_api_url('event'),
 			model: this.eventModel
 		});
-		this.patientStore = new Ext.data.RESTStore({
+		this.patientStore = this.patientStore || new Ext.data.RESTStore({
 			autoLoad : false,
 			autoSave : false,
 			apiUrl : get_api_url('patient'),
@@ -341,27 +341,14 @@ App.registry.PreorderGrid = Ext.extend(Ext.grid.GridPanel, {
         	var today = new Date();
         	var actual = record.data.start.clearTime() >= today.clearTime();
         	if (record.data.visit){
-        		Ext.Msg.alert('Уведомление','Предзаказ уже был оформлен')
+        		Ext.Msg.alert('Уведомление','Предзаказ уже был оформлен');
         		return
         	};
         	if (!record.data.visit && actual) {
-        		if (!record.data.service){
-			    	Ext.Msg.confirm(
-						'Создать приём?',
-						'В выбранном предзаказе не указана услуга. Создать приём всё равно?',
-						function(btn){
-							if (btn=='yes'){
-								this.visitAdd(record)
-							}
-						},
-						this
-					);
-        		} else {
-   	    			this.visitAdd(record);
-        		}
+    			this.visitAdd(record);
     	    };
         } else {
-        	Ext.Msg.alert('Уведомление','Не выбран ни один предзаказ')
+        	Ext.Msg.alert('Уведомление','Не выбран ни один предзаказ');
         }
     },
     
