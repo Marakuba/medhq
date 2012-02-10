@@ -1,6 +1,6 @@
 Ext.ns('App.patient');
 
-App.patient.AsgmtGrid = Ext.extend(Ext.grid.GridPanel, {
+App.patient.AsgmtGrid = Ext.extend(Ext.grid.EditorGridPanel, {
 
 	loadInstant: false,
 	
@@ -215,7 +215,13 @@ App.patient.AsgmtGrid = Ext.extend(Ext.grid.GridPanel, {
 		    	width: 32, 
 		    	sortable: true, 
 		    	dataIndex: 'expiration',
-		    	renderer:Ext.util.Format.dateRenderer('d.m.y')
+		    	renderer:Ext.util.Format.dateRenderer('d.m.y'),
+		    	editor: new Ext.form.DateField({
+		    		plugins:[new Ext.ux.netbox.InputTextMask('99.99.9999')], // маска ввода __.__._____ - не надо точки ставить
+					minValue:new Date(1901,1,1),
+					format:'d.m.Y'
+		    	})
+				
 		    },{
 		    	header: "Место выполнения", 
 		    	width: 40, 
