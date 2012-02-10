@@ -98,7 +98,6 @@ App.registry.PatientPreorderGrid = Ext.extend(Ext.grid.GridPanel, {
 
 		Ext.apply(this, Ext.apply(this.initialConfig, config));
 		App.registry.PatientPreorderGrid.superclass.initComponent.apply(this, arguments);
-		App.eventManager.on('globalsearch', this.onGlobalSearch, this);
 //		App.eventManager.on('patientwrite', this.onPatientWrite, this);
 		this.on('serviceselect', this.onServiceSelect, this);
 		this.on('afterrender', function(){this.store.load()}, this);

@@ -282,7 +282,6 @@ App.registry.PreorderGrid = Ext.extend(Ext.grid.GridPanel, {
 
 		Ext.apply(this, Ext.apply(this.initialConfig, config));
 		App.registry.PreorderGrid.superclass.initComponent.apply(this, arguments);
-		App.eventManager.on('globalsearch', this.onGlobalSearch, this);
 		this.store.on('write', function(){
 			var record = this.getSelected();
 			if (record){
@@ -300,9 +299,12 @@ App.registry.PreorderGrid = Ext.extend(Ext.grid.GridPanel, {
 				this.store.load();
 			}
 		},this);
-		App.calendar.eventManager.on('preorderwrite', function(){
-			this.store.load()}, 
-		this);
+		App.calendar.eventManager.on('preorderwrite', this.store.load,this);
+		App.eventManager.on('patientselect', this.onPatientSelect, this); //
+		this.on('destroy', function(){
+		    App.calendar.eventManager.un('preorderwrite', this.store.load,this);
+			App.eventManager.un('patientselect', this.onPatientSelect, this); //
+		});
 		//this.store.on('write', this.onStoreWrite, this);
 	},
 

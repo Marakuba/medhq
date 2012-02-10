@@ -56,7 +56,6 @@ App.registry.PreorderManager = Ext.extend(Ext.TabPanel, {
 		}
 		Ext.apply(this, Ext.apply(this.initialConfig, config));
 		App.registry.PreorderManager.superclass.initComponent.apply(this, arguments);
-		App.eventManager.on('globalsearch', this.onGlobalSearch, this);
 		this.on('afterrender', function(){
 			this.setActiveTab(this[this.openTab] || 0);
 //			this.assigmentTab.store.load();

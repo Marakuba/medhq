@@ -200,6 +200,9 @@ App.laborder.LaborderGrid = Ext.extend(Ext.grid.GridPanel, {
 		Ext.apply(this, Ext.apply(this.initialConfig, config));
 		App.laborder.LaborderGrid.superclass.initComponent.apply(this, arguments);
 		App.eventManager.on('globalsearch', this.onGlobalSearch, this);
+		this.on('destroy', function(){
+		    App.eventManager.un('globalsearch', this.onGlobalSearch, this); 
+		});
 		
 		this.initToolbar();
 		//this.on('rowcontextmenu', this.onContextMenu, this);

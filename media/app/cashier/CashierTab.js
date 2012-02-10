@@ -187,7 +187,6 @@ App.cashier.CashierTab = Ext.extend(Ext.Panel, {
 		}
 		Ext.apply(this, Ext.apply(this.initialConfig, config));
 		App.cashier.CashierTab.superclass.initComponent.apply(this, arguments);
-		//App.eventManager.on('globalsearch', this.onGlobalSearch, this);
 	},
 	
 	onVisitSearch: function(v){

@@ -310,9 +310,11 @@ App.patient.AsgmtGrid = Ext.extend(Ext.grid.GridPanel, {
 				this.store.load();
 			}
 		},this);
-		App.calendar.eventManager.on('preorderwrite', function(){
-			this.store.load()}, 
-		this);
+		App.calendar.eventManager.on('preorderwrite', this.store.load,this);
+		
+		this.on('destroy', function(){
+			App.calendar.eventManager.un('preorderwrite', this.store.load,this);
+		},this);
 		
 		this.store.on('write', function(){
 			var record = this.getSelected();

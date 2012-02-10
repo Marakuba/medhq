@@ -102,6 +102,10 @@ App.invoice.InvoiceForm = Ext.extend(Ext.FormPanel, {
 				this.getForm().loadRecord(this.record);
 			}
 		},this);
+		
+		this.on('destroy', function(){
+		    App.eventManager.un('invoicecreate',this.onInvoiceCreate, this); 
+		});
 	},
 	
 	onInvoiceCreate: function(rec){

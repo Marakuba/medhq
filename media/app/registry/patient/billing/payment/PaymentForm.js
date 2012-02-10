@@ -255,6 +255,10 @@ App.billing.PaymentForm = Ext.extend(Ext.form.FormPanel, {
             };
             this.amountField.focus(true,1500);
 		},this);
+		
+		this.on('destroy', function(){
+		    App.eventManager.un('paymentcreate', this.onPmCreate, this); 
+		});
 	
 		/*this.on('paymentcreate', function(record){
 			this.record = record;

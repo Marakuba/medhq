@@ -168,7 +168,6 @@ App.billing.PaymentGrid = Ext.extend(Ext.grid.GridPanel, {
 		
 		Ext.apply(this, Ext.apply(this.initialConfig, config));
 		App.billing.PaymentGrid.superclass.initComponent.apply(this, arguments);
-		//App.eventManager.on('globalsearch', this.onGlobalSearch, this);
 		App.eventManager.on('paymentsave', this.reloadStore, this);
 
 		
@@ -181,6 +180,10 @@ App.billing.PaymentGrid = Ext.extend(Ext.grid.GridPanel, {
 				this.store.load();
 			}
 		}, this);
+		
+		this.on('destroy', function(){
+		    App.eventManager.un('paymentsave', this.reloadStore, this);
+		});
 	},
 	
 	onGlobalSearch: function(v) {

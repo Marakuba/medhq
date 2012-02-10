@@ -178,6 +178,10 @@ App.manual.ManualGrid = Ext.extend(Ext.grid.GridPanel, {
 		App.manual.ManualGrid.superclass.initComponent.apply(this, arguments);
 		App.eventManager.on('globalsearch', this.onGlobalSearch, this);
 		
+		this.on('destroy', function(){
+		    App.eventManager.un('globalsearch', this.onGlobalSearch, this); 
+		});
+		
 	},
 	
 	saveSDT: function(rec) {

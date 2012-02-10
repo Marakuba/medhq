@@ -48,6 +48,9 @@ App.examination.ExamCardWindow = Ext.extend(Ext.Window, {
 		Ext.apply(this, Ext.apply(this.initialConfig, config));
 		App.examination.ExamCardWindow.superclass.initComponent.apply(this, arguments);
 		App.eventManager.on('examcardcreate', this.onExamCardCreate, this);
+		this.on('destroy', function(){
+		    App.eventManager.un('examcardcreate', this.onExamCardCreate, this); 
+		});
 	},
 	
 	onFormSave: function() {

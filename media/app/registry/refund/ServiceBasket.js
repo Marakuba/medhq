@@ -320,6 +320,10 @@ App.refund.ServiceBasket = Ext.extend(Ext.grid.EditorGridPanel, {
 		Ext.apply(this, Ext.apply(this.initialConfig, config));
 		App.refund.ServiceBasket.superclass.initComponent.apply(this, arguments);
 		App.eventManager.on('servicedblclick', this.addRow, this);
+		
+		this.on('destroy', function(){
+		    App.eventManager.un('servicedblclick', this.addRow, this); 
+		});
 	},
 	
 	staffWindow: function(index, service){

@@ -24,6 +24,7 @@ from service.models import ExtendedService
 from promotion.models import Promotion
 from examination.models import Card
 from copy import deepcopy
+from django.core.exceptions import ObjectDoesNotExist
 
 add_introspection_rules([], ["^scheduler\.models\.CustomDateTimeField"])
 
@@ -177,8 +178,10 @@ class Preorder(models.Model):
     
     def get_staff_name(self):
         if self.timeslot:
-            staff_name = Position.objects.get(id=self.timeslot.cid).staff.short_name()
-            return staff_name
+            try:
+                return Position.objects.get(id=self.timeslot.cid).staff.short_name()
+            except ObjectDoesNotExist:
+                return ''
         else:
             return ''
     

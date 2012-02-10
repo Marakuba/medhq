@@ -179,11 +179,11 @@ App.examination.TicketTab = Ext.extend(Ext.Panel, {
 		Ext.apply(this, Ext.apply(this.initialConfig, config));
 		App.examination.TicketTab.superclass.initComponent.apply(this, arguments);
 		
-		App.eventManager.on('tmptabchange',function(){
-			if(this.ctxEditor){
-				this.ctxEditor.completeEdit();
-			}
-		},this)
+		App.eventManager.on('tmptabchange',this.closeEditor,this);
+		
+		this.on('destroy', function(){
+		    App.eventManager.un('tmptabchange',this.closeEditor,this); 
+		});
 		
 		this.on('afterrender',function(panel){
 			
@@ -464,6 +464,12 @@ App.examination.TicketTab = Ext.extend(Ext.Panel, {
 			if (ind < genInd || (genInd == -1 && ind > -1)) genInd = ind;
 		});
 		return genInd;
+	},
+	
+	closeEditor: function(){
+		if(this.ctxEditor){
+			this.ctxEditor.completeEdit();
+		}
 	}
 	
 	
