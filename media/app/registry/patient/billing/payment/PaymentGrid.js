@@ -183,7 +183,7 @@ App.billing.PaymentGrid = Ext.extend(Ext.grid.GridPanel, {
 		
 		this.on('destroy', function(){
 		    App.eventManager.un('paymentsave', this.reloadStore, this);
-		});
+		},this);
 	},
 	
 	onGlobalSearch: function(v) {

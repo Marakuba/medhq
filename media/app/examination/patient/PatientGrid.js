@@ -91,7 +91,7 @@ App.examination.PatientGrid = Ext.extend(Ext.grid.GridPanel, {
 		
 		this.on('destroy', function(){
 		    App.eventManager.un('globalsearch', this.onGlobalSearch, this); 
-		});
+		},this);
 		
 	},
 	

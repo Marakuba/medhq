@@ -340,7 +340,7 @@ App.examination.CardTemplateForm = Ext.extend(Ext.form.FormPanel, {
 		this.on('destroy', function(){
 		    App.eventManager.un('cardtemplatecreate', this.onCardTemplateCreate, this);
 			App.eventManager.un('savetemplatecard', this.onSaveTmpCard, this);
-		});
+		},this);
 	},
 	
 	onSaveTmpCard: function(record) {

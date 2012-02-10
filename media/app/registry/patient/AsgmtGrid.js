@@ -8,6 +8,8 @@ App.patient.AsgmtGrid = Ext.extend(Ext.grid.EditorGridPanel, {
 		
 		this.start_date = new Date();
 		
+		this.emptyText = this.hasPatient? 'Для данного пациента направлений нет':'На выбранную дату направлений нет',
+		
 		this.startDateField = new Ext.form.DateField({
 			format:'d.m.Y',
 			plugins:[new Ext.ux.netbox.InputTextMask('99.99.9999')], // маска ввода __.__._____ - не надо точки ставить
@@ -270,7 +272,7 @@ App.patient.AsgmtGrid = Ext.extend(Ext.grid.EditorGridPanel, {
                 }
 			}),
 			tbar:this.ttb,
-	        bbar: this.hasPatient ? [] : {
+	        bbar: this.hasPatient ? undefined : {
             	cls: 'ext-cal-toolbar',
             	border: true,
             	buttonAlign: 'center',
@@ -287,7 +289,7 @@ App.patient.AsgmtGrid = Ext.extend(Ext.grid.EditorGridPanel, {
             	}]
             },
 			viewConfig : {
-				emptyText:'На выбранную дату направлений нет',
+				emptyText :this.emptyText,
 				forceFit : true,
 				showPreview:true,
 				enableRowBody:true,
@@ -304,7 +306,8 @@ App.patient.AsgmtGrid = Ext.extend(Ext.grid.EditorGridPanel, {
             			return 'preorder-other-place-row-body';
             		};
             		return 'preorder-actual-row-body';
-        		}
+        		},
+        		scope:this
 			}
 			
 		}

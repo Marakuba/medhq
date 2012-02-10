@@ -182,7 +182,7 @@ App.manual.ManualGrid = Ext.extend(Ext.grid.GridPanel, {
 		
 		this.on('destroy', function(){
 		    App.eventManager.un('globalsearch', this.onGlobalSearch, this); 
-		});
+		},this);
 		
 	},
 	

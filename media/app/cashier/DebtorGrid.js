@@ -112,7 +112,7 @@ App.cashier.DebtorGrid = Ext.extend(Ext.grid.GridPanel, {
 		this.on('destroy', function(){
 		    App.eventManager.un('paymentsave', this.reloadStore, this);
 			App.eventManager.un('visitcreate', this.reloadStore, this); 
-		});
+		},this);
 //		App.eventManager.on('patientwrite', this.onPatientWrite, this);
 		//this.on('patientselect', this.onPatientSelect, this);
 		//this.store.on('write', this.onStoreWrite, this);

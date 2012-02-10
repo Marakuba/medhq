@@ -26,7 +26,7 @@ App.laboratory.LabBoard = Ext.extend(Ext.Panel, {
 		App.eventManager.on('globalsearch', this.onGlobalSearch, this);
 		this.on('destroy', function(){
 		    App.eventManager.un('globalsearch', this.onGlobalSearch, this); 
-		});
+		},this);
 		
 		this.LabOrderGrid.getSelectionModel().on('rowselect', function(sm,i,rec){
 			this.ResultCard.enable();

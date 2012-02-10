@@ -53,7 +53,7 @@ App.PatientCard = Ext.extend(Ext.Panel, {
 		
 		this.on('destroy', function(){
 		    App.eventManager.un('visitclose', this.onVisitClose, this); 
-		});
+		},this);
 	},
 	
 	setActivePatient: function(rec) {

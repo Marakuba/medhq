@@ -6,6 +6,8 @@ App.registry.PreorderGrid = Ext.extend(Ext.grid.GridPanel, {
 		
 		this.start_date = new Date();
 		
+		this.emptyText = this.hasPatient ? 'Для данного пациента предзаказов нет':'На выбранную дату предзаказов нет'; 
+		
 		this.medstateStore = this.medstateStore || new Ext.data.RESTStore({
 			autoSave: true,
 			autoLoad : true,
@@ -229,7 +231,7 @@ App.registry.PreorderGrid = Ext.extend(Ext.grid.GridPanel, {
                 }
 			}),
 			tbar:this.ttb,
-	        bbar: this.hasPatient ? [] :{
+	        bbar: this.hasPatient ? undefined :{
             	cls: 'ext-cal-toolbar',
             	border: true,
             	buttonAlign: 'center',
@@ -248,7 +250,7 @@ App.registry.PreorderGrid = Ext.extend(Ext.grid.GridPanel, {
 			viewConfig : {
 				forceFit : true,
 				showPreview:true,
-				emptyText:'На выбранную дату предзаказов нет',
+				emptyText :this.emptyText,
 				enableRowBody:true,
 				getRowClass: function(record, index, p, store) {
             		var service = record.get('service');
@@ -306,7 +308,7 @@ App.registry.PreorderGrid = Ext.extend(Ext.grid.GridPanel, {
 		this.on('destroy', function(){
 		    App.calendar.eventManager.un('preorderwrite', this.store.load,this);
 			App.eventManager.un('patientselect', this.onPatientSelect, this); //
-		});
+		},this);
 		//this.store.on('write', this.onStoreWrite, this);
 	},
 

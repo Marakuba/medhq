@@ -268,7 +268,7 @@ App.CentralPanel = Ext.extend(Ext.Panel, {
 		this.on('destroy', function(){
 		    App.eventManager.un('launchapp', this.launchApp, this);
 			App.eventManager.un('closeapp', this.closeApp, this); 
-		});
+		},this);
 	},
 	
 	closeApp: function(appId) {

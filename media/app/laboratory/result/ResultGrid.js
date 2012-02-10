@@ -258,7 +258,7 @@ App.result.ResultGrid = Ext.extend(Ext.grid.EditorGridPanel, {
 		
 		this.on('destroy', function(){
 		    App.eventManager.un('globalsearch', this.onGlobalSearch, this); 
-		});
+		},this);
 		
 		if(this.labOrderRecord) {
 			var d = this.labOrderRecord.data;

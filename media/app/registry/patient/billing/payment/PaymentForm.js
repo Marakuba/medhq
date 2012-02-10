@@ -226,6 +226,7 @@ App.billing.PaymentForm = Ext.extend(Ext.form.FormPanel, {
 		this.store.on('write', this.onStoreWrite, this);
 		this.on('destroy', function(){
 			this.store.un('write', this.onStoreWrite, this);
+			App.eventManager.un('paymentcreate', this.onPmCreate, this); 
 		},this);
 		
 		
@@ -256,10 +257,6 @@ App.billing.PaymentForm = Ext.extend(Ext.form.FormPanel, {
             this.amountField.focus(true,1500);
 		},this);
 		
-		this.on('destroy', function(){
-		    App.eventManager.un('paymentcreate', this.onPmCreate, this); 
-		});
-	
 		/*this.on('paymentcreate', function(record){
 			this.record = record;
 			this.getForm().loadRecord(this.record);

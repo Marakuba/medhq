@@ -323,7 +323,7 @@ App.refund.ServiceBasket = Ext.extend(Ext.grid.EditorGridPanel, {
 		
 		this.on('destroy', function(){
 		    App.eventManager.un('servicedblclick', this.addRow, this); 
-		});
+		},this);
 	},
 	
 	staffWindow: function(index, service){

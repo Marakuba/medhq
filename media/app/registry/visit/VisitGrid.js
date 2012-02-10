@@ -269,7 +269,7 @@ App.visit.VisitGrid = Ext.extend(Ext.grid.GridPanel, {
 		
 		this.on('destroy', function(){
 		    App.eventManager.un('globalsearch', this.onGlobalSearch, this); 
-		});
+		},this);
 		
 		if(!App.settings.strictMode) {
 			this.initToolbar();

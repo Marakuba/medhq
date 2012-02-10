@@ -183,7 +183,7 @@ App.examination.TicketTab = Ext.extend(Ext.Panel, {
 		
 		this.on('destroy', function(){
 		    App.eventManager.un('tmptabchange',this.closeEditor,this); 
-		});
+		},this);
 		
 		this.on('afterrender',function(panel){
 			

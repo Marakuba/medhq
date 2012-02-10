@@ -109,7 +109,7 @@ App.invoice.InvoiceGrid = Ext.extend(Ext.grid.GridPanel, {
 		
 		this.on('destroy', function(){
 		    App.eventManager.un('invoicecreate',this.onInvoiceCreate, this); 
-		});
+		},this);
 	},
 	
 	onInvoiceCreate: function(){

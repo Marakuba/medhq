@@ -210,7 +210,7 @@ App.laborder.LabServiceGrid = Ext.extend(Ext.grid.GridPanel, {
 		
 		this.on('destroy', function(){
 		    App.eventManager.un('globalsearch', this.onGlobalSearch, this); 
-		});
+		},this);
 	},
 	
 	onContextMenu: function(grid, index, e) {

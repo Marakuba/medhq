@@ -128,7 +128,7 @@ App.patient.PatientGrid = Ext.extend(Ext.grid.GridPanel, {
 		this.store.on('write', this.onStoreWrite, this);
 		this.on('destroy', function(){
 		    App.eventManager.un('globalsearch', this.onGlobalSearch, this); 
-		});
+		},this);
 	},
 	
 	btnSetDisabled: function(status) {

@@ -274,7 +274,7 @@ App.visit.VisitGrid = Ext.extend(Ext.grid.GridPanel, {
 		this.store.load();		
 		this.on('destroy', function(){
 		    App.eventManager.un('globalsearch', this.onGlobalSearch, this); 
-		});
+		},this);
 	},
 
 	storeFilter:function(k,v){

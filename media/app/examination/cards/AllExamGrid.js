@@ -157,7 +157,7 @@ App.AllExamGrid = Ext.extend(Ext.grid.GridPanel, {
 		App.eventManager.on('examcardgrid_reload', this.reloadStore, this)
 		this.on('destroy', function(){
 		    App.eventManager.un('examcardgrid_reload', this.reloadStore, this) 
-		});
+		},this);
 	},
 	
 	reloadStore: function() {

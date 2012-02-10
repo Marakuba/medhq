@@ -231,7 +231,7 @@ App.examorder.ExamOrderGrid = Ext.extend(Ext.grid.GridPanel, {
 		
 		this.on('destroy', function(){
 		    App.eventManager.un('globalsearch', this.onGlobalSearch, this); 
-		});
+		},this);
 		
 		this.on('afterrender',function(){
            	this.store.setBaseParam('staff',active_profile);

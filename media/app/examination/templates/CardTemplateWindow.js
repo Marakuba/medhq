@@ -42,7 +42,7 @@ App.examination.CardTemplateWindow = Ext.extend(Ext.Window, {
 		
 		this.on('destroy', function(){
 		    App.eventManager.un('cardtemplatecreate', this.onCardTemplateCreate, this); 
-		});
+		},this);
 	},
 	
 	onFormSave: function() {
