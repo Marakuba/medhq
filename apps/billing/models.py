@@ -14,8 +14,8 @@ PAYMENT_TYPES = (
 )
 
 PAYMENT_DIRECTION = (
-    (u'0',u'Приходный'),
-    (u'1',u'Расходный')
+    (u'1',u'Приходный'),
+    (u'2',u'Расходный')
 )
 
 class Account(models.Model):
@@ -50,8 +50,8 @@ class Payment(models.Model):
     client_account = models.ForeignKey(ClientAccount)
     amount = models.FloatField(u'Сумма')
     income = models.BooleanField(u'Поступление')
-    direction = models.CharField(u'Направление оплаты', max_length=10, choices=PAYMENT_DIRECTION)
-    payment_type = models.CharField(u'Вид оплаты', max_length=10, choices=PAYMENT_DIRECTION, blank=True, null=True)
+    direction = models.CharField(u'Направление оплаты', max_length=1, choices=PAYMENT_DIRECTION)
+    payment_type = models.CharField(u'Вид оплаты', max_length=10, choices=PAYMENT_TYPES, blank=True, null=True)
     content_type = models.ForeignKey(ContentType, blank=True, null=True)
     object_id = models.PositiveIntegerField(blank=True, null=True)
     document = generic.GenericForeignKey('content_type', 'object_id')
