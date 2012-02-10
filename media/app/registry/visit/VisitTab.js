@@ -73,7 +73,7 @@ App.visit.VisitTab = Ext.extend(Ext.Panel, {
     	this.payButton = new Ext.Button({
 			text:'Сохранить и оплатить',
 			handler: this.onFormSave.createDelegate(this,[true]),
-			hidden:App.settings.strictMode,
+			hidden:App.settings.strictMode || this.type!='visit',
 //			disabled:true,
 			scope:this
     	});
