@@ -8,14 +8,14 @@ class Migration(SchemaMigration):
 
     def forwards(self, orm):
         
-        # Changing field 'Payment.payment_type'
-        db.alter_column('billing_payment', 'payment_type', self.gf('django.db.models.fields.CharField')(max_length=1, null=True))
+        # Changing field 'Payment.direction'
+        db.alter_column('billing_payment', 'direction', self.gf('django.db.models.fields.CharField')(max_length=1))
 
 
     def backwards(self, orm):
         
-        # Changing field 'Payment.payment_type'
-        db.alter_column('billing_payment', 'payment_type', self.gf('django.db.models.fields.CharField')(max_length=10, null=True))
+        # Changing field 'Payment.direction'
+        db.alter_column('billing_payment', 'direction', self.gf('django.db.models.fields.CharField')(max_length=10))
 
 
     models = {
@@ -68,14 +68,14 @@ class Migration(SchemaMigration):
             'comment': ('django.db.models.fields.TextField', [], {'null': 'True', 'blank': 'True'}),
             'content_type': ('django.db.models.fields.related.ForeignKey', [], {'to': "orm['contenttypes.ContentType']", 'null': 'True', 'blank': 'True'}),
             'created': ('django.db.models.fields.DateTimeField', [], {'auto_now_add': 'True', 'blank': 'True'}),
-            'direction': ('django.db.models.fields.CharField', [], {'max_length': '10'}),
+            'direction': ('django.db.models.fields.CharField', [], {'max_length': '1'}),
             'doc_date': ('django.db.models.fields.DateTimeField', [], {}),
             'id': ('django.db.models.fields.AutoField', [], {'primary_key': 'True'}),
             'income': ('django.db.models.fields.BooleanField', [], {'default': 'False'}),
             'object_id': ('django.db.models.fields.PositiveIntegerField', [], {'null': 'True', 'blank': 'True'}),
             'office': ('django.db.models.fields.related.ForeignKey', [], {'to': "orm['state.State']", 'null': 'True', 'blank': 'True'}),
             'operator': ('django.db.models.fields.related.ForeignKey', [], {'to': "orm['auth.User']"}),
-            'payment_type': ('django.db.models.fields.CharField', [], {'max_length': '1', 'null': 'True', 'blank': 'True'}),
+            'payment_type': ('django.db.models.fields.CharField', [], {'max_length': '10', 'null': 'True', 'blank': 'True'}),
             'print_check': ('django.db.models.fields.BooleanField', [], {'default': 'False'})
         },
         'contenttypes.contenttype': {
