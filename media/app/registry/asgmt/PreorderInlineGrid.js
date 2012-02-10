@@ -102,7 +102,9 @@ App.assignment.PreorderInlineGrid = Ext.extend(Ext.grid.EditorGridPanel, {
 		    	dataIndex: 'expiration',
 		    	renderer:Ext.util.Format.dateRenderer('d.m.y'),
 		    	editor: new Ext.form.DateField({
-		    		minValue: today
+		    		minValue: today,
+		    		plugins:[new Ext.ux.netbox.InputTextMask('99.99.9999')], // маска ввода __.__._____ - не надо точки ставить
+		    		format:'d.m.Y'
 		    	})
 		    },{
 		    	header: "Цена", 

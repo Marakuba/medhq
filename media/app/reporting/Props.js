@@ -19,7 +19,12 @@ Ext.onReady(function(){
    });
 
    var datetime = new Ext.form.CompositeField({
-   	items:[new Ext.form.DateField({}), new Ext.form.TimeField({})]
+   	items:[new Ext.form.DateField({
+	   		plugins:[new Ext.ux.netbox.InputTextMask('99.99.9999')], // маска ввода __.__._____ - не надо точки ставить
+			minValue:new Date(1901,1,1),
+			format:'d.m.Y'
+	   	}), 
+	   	new Ext.form.TimeField({})]
    });
    
    var propsGrid = new Ext.grid.PropertyGrid({
@@ -34,7 +39,12 @@ Ext.onReady(function(){
 	    customEditors: {
             'Category': new Ext.grid.GridEditor(comboCategory),
     	    'Active'  : new Ext.grid.GridEditor(active),
-    	    'created': new Ext.grid.GridEditor(new Ext.form.DateField({ altFormats:'d.m.Y',format:'d.m.Y' }))
+    	    'created': new Ext.grid.GridEditor(new Ext.form.DateField({
+    	    	altFormats:'d.m.Y',
+    	    	format:'d.m.Y',
+    	    	plugins:[new Ext.ux.netbox.InputTextMask('99.99.9999')], // маска ввода __.__._____ - не надо точки ставить
+				minValue:new Date(1901,1,1),
+    	    }))
         }
     });
 

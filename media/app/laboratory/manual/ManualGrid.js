@@ -19,6 +19,8 @@ App.manual.ManualGrid = Ext.extend(Ext.grid.GridPanel, {
 		this.dateField = new Ext.form.DateField({
 			emptyText:'дата',
 			format:'d.m.Y',
+			plugins:[new Ext.ux.netbox.InputTextMask('99.99.9999')], // маска ввода __.__._____ - не надо точки ставить
+			minValue:new Date(1901,1,1),
 			width:80
 		});
 		

@@ -10,6 +10,8 @@ App.patient.AsgmtGrid = Ext.extend(Ext.grid.EditorGridPanel, {
 		
 		this.startDateField = new Ext.form.DateField({
 			format:'d.m.Y',
+			plugins:[new Ext.ux.netbox.InputTextMask('99.99.9999')], // маска ввода __.__._____ - не надо точки ставить
+			minValue:new Date(1901,1,1),
 			value:this.start_date,
 			listeners: {
 				select: function(df, date){
