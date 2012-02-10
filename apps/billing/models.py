@@ -13,6 +13,11 @@ PAYMENT_TYPES = (
     (u'card',u'Банковская карта')
 )
 
+PAYMENT_DIRECTION = (
+    (u'0',u'Приходный'),
+    (u'1',u'Расходный')
+)
+
 class Account(models.Model):
     created = models.DateTimeField(u'Дата создания', auto_now_add=True)
     amount = models.FloatField(u'Сумма',default=0)
@@ -45,7 +50,8 @@ class Payment(models.Model):
     client_account = models.ForeignKey(ClientAccount)
     amount = models.FloatField(u'Сумма')
     income = models.BooleanField(u'Поступление')
-    payment_type = models.CharField(u'Вид оплаты', max_length=10, choices=PAYMENT_TYPES, blank=True, null=True)
+    direction = models.CharField(u'Направление оплаты', max_length=10, choices=PAYMENT_DIRECTION)
+    payment_type = models.CharField(u'Вид оплаты', max_length=10, choices=PAYMENT_DIRECTION, blank=True, null=True)
     content_type = models.ForeignKey(ContentType, blank=True, null=True)
     object_id = models.PositiveIntegerField(blank=True, null=True)
     document = generic.GenericForeignKey('content_type', 'object_id')
@@ -53,12 +59,9 @@ class Payment(models.Model):
     print_check = models.BooleanField(u'Чек напечатан', default=False)
     
     def save(self, *args, **kwargs):
-        if self.income == 'false':
+        if self.direction == '2':
             self.amount = -(abs(self.amount))   
-            self.income = False
-            print self.amount  
         super(Payment, self).save(*args, **kwargs)
-        #print self.income
         self.client_account.account.setSum()
         self.client_account.client_item.client.updBalance()
         

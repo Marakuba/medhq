@@ -206,9 +206,9 @@ App.billing.PaymentForm = Ext.extend(Ext.form.FormPanel, {
 							},
 							{
 								xtype:'hidden',
-								name:'income',
+								name:'direction',
 								allowBlank:true,
-								value:this.is_income==true ? true : false
+								value:this.is_income==true ? '1' : '2'
 							}
 							]
                         }]

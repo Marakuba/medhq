@@ -27,7 +27,7 @@ class Migration(DataMigration):
             p.objective_data = json.dumps(objective_data, separators=(',',':'))
             p.anamnesis = json.dumps(anamnesis, separators=(',',':'))
             p.diagnosis = json.dumps(diagnosis, separators=(',',':'))
-            p.save();
+            p.save()
             
             orm.ExaminationDetail.objects.create(exam_card = p,\
                                                   equipment = p.equipment,\

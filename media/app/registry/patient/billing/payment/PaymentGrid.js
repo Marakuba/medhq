@@ -13,11 +13,11 @@ App.billing.PaymentGrid = Ext.extend(Ext.grid.GridPanel, {
 		
 		this.addButton = new Ext.SplitButton({
    			text: 'Добавить',
-   			handler: this.onCreate.createDelegate(this,[true]), 
+   			handler: this.onCreate.createDelegate(this,['1']), 
    			menu: new Ext.menu.Menu({
         		items: [
-	    		    {text: 'Приходный', handler: this.onCreate.createDelegate(this,[true])},
-	    		    {text: 'Расходный', handler: this.onCreate.createDelegate(this,[false])}	    		    	    		    
+	    		    {text: 'Приходный', handler: this.onCreate.createDelegate(this,['1'])},
+	    		    {text: 'Расходный', handler: this.onCreate.createDelegate(this,['2'])}	    		    	    		    
         		]
    			})
 		});
@@ -39,7 +39,7 @@ App.billing.PaymentGrid = Ext.extend(Ext.grid.GridPanel, {
 		    	width: 20, 
 		    	sortable: true, 
 		    	renderer: function(v,params,rec){
-		    		if (rec.data.income === true) {
+		    		if (rec.data.direction == '1') {
 		    			return 'Приходный ордер'
 		    		} else {
 		    			return 'Расходный ордер'
@@ -88,7 +88,7 @@ App.billing.PaymentGrid = Ext.extend(Ext.grid.GridPanel, {
 				text:'Приходные ордеры',
                 scope:this,
 			    handler: function(){
-                    this.store.filter('income',"true")
+                    this.store.filter('direction',"1")
                 }
 		    },{	xtype:'button',
 				enableToggle:true,
@@ -96,7 +96,7 @@ App.billing.PaymentGrid = Ext.extend(Ext.grid.GridPanel, {
 				text:'Расходные ордеры',
                 scope:this,
 			    handler: function(){
-                    this.store.filter('income',"false")
+                    this.store.filter('direction',"2")
                 }
 		    },{
 				xtype:'button',
@@ -208,7 +208,7 @@ App.billing.PaymentGrid = Ext.extend(Ext.grid.GridPanel, {
 		//if (this.patientRecord) {
 			this.win = new App.billing.PaymentWindow({
 				store:this.store,
-				is_income : type,
+				is_income : type == '1' ? true : false,
 				patientRecord:this.patientRecord
 			});
 			this.win.show();
@@ -219,7 +219,7 @@ App.billing.PaymentGrid = Ext.extend(Ext.grid.GridPanel, {
 			var rec = this.getSelected();
 			if(rec) {
     			var data = {
-    				is_income:rec.data.income,
+    				is_income:rec.data.direction == 1 ? true : false,
 	    			record:rec,
 	    			patientRecord:this.patientRecord,
 	    			store:this.store
