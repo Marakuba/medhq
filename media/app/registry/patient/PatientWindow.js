@@ -18,6 +18,7 @@ App.patient.PatientWindow = Ext.extend(Ext.Window, {
 			fn:function(record){
 				this.record = record;
 				this.store.insertRecord(this.record);
+				this.popStep()
 			},
 			scope:this			
 		});

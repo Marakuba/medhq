@@ -63,6 +63,14 @@ App.visit.VisitTab = Ext.extend(Ext.Panel, {
 			scope:this	
 	    });
 	    
+	    this.patientButton = new Ext.Button({
+			text:'Пациент',
+			iconCls: 'silk-pencil',
+			handler: this.onPatientEdit.createDelegate(this,[]),
+			disabled:true,
+			scope:this
+    	});
+	    
 		this.saveButton = new Ext.Button({
 			text:'Сохранить',
 			handler: this.onFormSave.createDelegate(this,[]),
@@ -87,7 +95,7 @@ App.visit.VisitTab = Ext.extend(Ext.Panel, {
 //			    split: true,
 				//baseCls:'x-border-layout-ct',
 			},
-			tbar:[this.getPatientTitle(),
+			tbar:[this.patientButton,
 			      {
 					xtype:'button',
 					iconCls:'silk-accept',
@@ -115,6 +123,8 @@ App.visit.VisitTab = Ext.extend(Ext.Panel, {
 		
 		this.on('render', function(){
 			this.setTitle(this.getTitleText());
+			this.getPatientTitle();
+			this.patientStore = this.patientRecord.store;
 		},this);
 		
 	},
@@ -207,18 +217,16 @@ App.visit.VisitTab = Ext.extend(Ext.Panel, {
 
 	getPatientTitle : function(){
 		var rec = this.patientRecord;
-		v = {};
-		Ext.apply(v, rec.data);
-		if(this.record && this.record.id) {
-			Ext.apply(v,{
-				visit:String.format(', прием №{0}',this.record.id)
-			});
+		var text = '';
+		if (rec){
+			text = 'Пациент: ' + rec.data.last_name + ' ' + rec.data.first_name + ' ' + rec.data.mid_name;
+			this.patientButton.setText(text);
+			this.patientButton.enable()
+		} else {
+			this.patientButton.disable();
+			console.log('Не указан пациент')
 		}
-		tpl = new Ext.Template(
-			'Пациент: {last_name} {first_name} {mid_name}',
-			'{visit}'
-		);
-		return tpl.apply(v);
+		return text
 	},
 	
 	getTitleText: function() {
@@ -229,6 +237,31 @@ App.visit.VisitTab = Ext.extend(Ext.Panel, {
 			title = this.type == 'visit' ? 'Новый прием' : 'Новое поступление биоматериала';
 		}
 		return title
+	},
+	
+	onPatientEdit: function(){
+		var rec = this.patientRecord;
+		if (!rec){
+			return false
+		}
+		this.pWin = new App.patient.PatientWindow({
+			fn:function(record){
+				this.patientRecord = record;
+				this.getPatientTitle()
+//				this.pWin.close()
+			},
+			listeners:{
+				savecomplete:function(){
+					this.pWin.close();
+					this.patientStore.load();
+				},
+				scope:this
+			},
+			record:this.patientRecord,
+			scope:this
+		});
+		
+		this.pWin.show();
 	}
 });
 

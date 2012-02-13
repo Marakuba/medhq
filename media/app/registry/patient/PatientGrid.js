@@ -202,11 +202,13 @@ App.patient.PatientGrid = Ext.extend(Ext.grid.GridPanel, {
 		if( res.success && this.win ) {
 			this.store.filter('id',rs.data.id);
 			this.getSelectionModel().selectFirstRow();
-			this.fireEvent('patientselect',rs);
+			if(action=='create') {
+//				App.eventManager.fireEvent('patientcreate',rs);
+				this.fireEvent('patientselect',rs);
+			}
+			
 		}
-//		if(action=='create') {
-//			App.eventManager.fireEvent('patientcreate',rs);
-//		}
+		
 	}
 	
 });
