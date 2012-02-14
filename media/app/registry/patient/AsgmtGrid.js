@@ -326,9 +326,11 @@ App.patient.AsgmtGrid = Ext.extend(Ext.grid.EditorGridPanel, {
 			}
 		},this);
 		App.calendar.eventManager.on('preorderwrite', this.storeReload,this);
+		App.eventManager.on('globalsearch', this.onGlobalSearch, this);
 		
 		this.on('destroy', function(){
 			App.calendar.eventManager.un('preorderwrite', this.storeReload,this);
+			App.eventManager.un('globalsearch', this.onGlobalSearch, this);
 		},this);
 		
 		this.store.on('write', function(){
@@ -573,6 +575,18 @@ App.patient.AsgmtGrid = Ext.extend(Ext.grid.EditorGridPanel, {
 	
 	storeReload: function(){
 		this.store.load()
+	},
+	
+	onGlobalSearch: function(v){
+		if(this.hasPatient) return
+		var s = this.store;
+		if (v){
+			s.setBaseParam('search', v);
+		} else {
+			delete s.baseParams['search']
+		}
+		s.load();
+
 	}
 	
 	

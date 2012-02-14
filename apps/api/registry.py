@@ -1569,6 +1569,24 @@ class PreorderResource(ExtResource):
         result = super(PreorderResource, self).obj_create(bundle=bundle, request=request, **kwargs)
         return result
     
+    def build_filters(self, filters=None):
+        if filters is None:
+            filters = {}
+
+        orm_filters = super(PreorderResource, self).build_filters(filters)
+
+        if "search" in filters:
+            smart_filters = smartFilter(filters['search'], 'patient')
+            if len(smart_filters.keys())==1:
+                try:
+                    orm_filters = ComplexQuery( Q(barcode__id=int(filters['search'])) | Q(**smart_filters), \
+                                      **orm_filters)
+                except:
+                    orm_filters.update(**smart_filters)
+            else:
+                orm_filters.update(**smart_filters)
+        return orm_filters
+    
     class Meta:
         queryset = Preorder.objects.all()
         resource_name = 'preorder'
@@ -1593,6 +1611,24 @@ class ExtPreorderResource(ExtResource):
         kwargs['operator']=request.user
         result = super(ExtPreorderResource, self).obj_create(bundle=bundle, request=request, **kwargs)
         return result
+    
+    def build_filters(self, filters=None):
+        if filters is None:
+            filters = {}
+
+        orm_filters = super(ExtPreorderResource, self).build_filters(filters)
+
+        if "search" in filters:
+            smart_filters = smartFilter(filters['search'], 'patient')
+            if len(smart_filters.keys())==1:
+                try:
+                    orm_filters = ComplexQuery( Q(barcode__id=int(filters['search'])) | Q(**smart_filters), \
+                                      **orm_filters)
+                except:
+                    orm_filters.update(**smart_filters)
+            else:
+                orm_filters.update(**smart_filters)
+        return orm_filters
     
     def dehydrate(self, bundle):
         obj = bundle.obj
@@ -1634,6 +1670,24 @@ class VisitPreorderResource(ExtPreorderResource):
     Используется в форме визита при выборе предзаказа.
     Содержит неоформленные предзаказы начиная с сегодняшнего дня и направления
     """
+    
+    def build_filters(self, filters=None):
+        if filters is None:
+            filters = {}
+
+        orm_filters = super(VisitPreorderResource, self).build_filters(filters)
+
+        if "search" in filters:
+            smart_filters = smartFilter(filters['search'], 'patient')
+            if len(smart_filters.keys())==1:
+                try:
+                    orm_filters = ComplexQuery( Q(barcode__id=int(filters['search'])) | Q(**smart_filters), \
+                                      **orm_filters)
+                except:
+                    orm_filters.update(**smart_filters)
+            else:
+                orm_filters.update(**smart_filters)
+        return orm_filters
     
     class Meta:
         queryset = Preorder.objects.filter(timeslot__isnull=True).order_by('-expiration')
