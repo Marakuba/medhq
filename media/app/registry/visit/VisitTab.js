@@ -114,13 +114,13 @@ App.visit.VisitTab = Ext.extend(Ext.Panel, {
 			if (!this.patientId){
 				return false
 			};
+			this.setTitle(this.getTitleText());
 			this.patientStore.setBaseParam('id',this.patientId);
 			this.patientStore.load({callback:function(records){
 				if (!records.length){
 					return
 				};
 				this.patientRecord = records[0];
-				this.setTitle(this.getTitleText());
 				this.getPatientTitle();
 				this.form.setPatientRecord(this.patientRecord);
 			},scope:this});
@@ -142,7 +142,6 @@ App.visit.VisitTab = Ext.extend(Ext.Panel, {
 					Ext.each(this.preorderRecord,function(rec){
 						preorderIDs.push(rec.data.id)
 					})
-					preorderIDs = this.preorderRecord;
 				} else if (this.preorderRecord.data) {
 					preorderIDs = [this.preorderRecord.data.id];
 				};
@@ -261,8 +260,8 @@ App.visit.VisitTab = Ext.extend(Ext.Panel, {
 	
 	getTitleText: function() {
 		var title;
-		if(this.record && this.record.data.id) {
-			title = this.type == 'visit' ? 'Прием №'+this.record.data.id : 'Поступление биоматериала №'+this.record.data.id;
+		if(this.visitId) {
+			title = this.type == 'visit' ? 'Прием №'+this.visitId : 'Поступление биоматериала №'+this.visitId;
 		} else {
 			title = this.type == 'visit' ? 'Новый прием' : 'Новое поступление биоматериала';
 		}

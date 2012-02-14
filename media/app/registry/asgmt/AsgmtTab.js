@@ -84,13 +84,13 @@ App.assignment.AsgmtTab = Ext.extend(Ext.Panel, {
 			if (!this.patientId){
 				return false
 			};
+			this.setTitle(this.getTitleText());
 			this.patientStore.setBaseParam('id',this.patientId);
 			this.patientStore.load({callback:function(records){
 				if (!records.length){
 					return
 				};
 				this.patientRecord = records[0];
-				this.setTitle(this.getTitleText());
 				this.getPatientTitle();
 				this.form.setPatientRecord(this.patientRecord);
 			},scope:this});
@@ -217,8 +217,8 @@ App.assignment.AsgmtTab = Ext.extend(Ext.Panel, {
 	
 	getTitleText: function() {
 		var title;
-		if(this.record && this.record.data.id) {
-			title = 'Направление №'+this.record.data.id;
+		if(this.preorderId) {
+			title = 'Направление №'+this.preorderId;
 		} else {
 			title = 'Новое направление';
 		}
