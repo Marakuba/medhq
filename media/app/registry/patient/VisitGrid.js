@@ -7,35 +7,7 @@ App.patient.VisitGrid = Ext.extend(Ext.grid.GridPanel, {
 		this.store = new Ext.data.RESTStore({
 			autoLoad : false,
 			apiUrl : get_api_url('visit'),
-			model: [
-				    {name: 'id'},
-				    {name: 'created', type:'date',format:'c'},
-				    {name: 'cls', allowBlank: false},
-				    {name: '_cache'},
-				    {name: 'patient', allowBlank: false},
-				    {name: 'patient_id'},
-				    {name: 'referral'},
-				    {name: 'barcode_id'},
-				    {name: 'discount'},
-				    {name: 'discount_value'},
-				    {name: 'source_lab'},
-				    {name: 'total_price'},
-				    {name: 'total_discount'},
-				    {name: 'total_paid'},
-				    {name: 'operator_name'},
-				    {name: 'patient_name'},
-				    {name: 'payment_type'},
-				    {name: 'insurance_policy'},
-				    {name: 'comment'},
-				    {name: 'pregnancy_week'},
-				    {name: 'menses_day'},
-				    {name: 'menopause'},
-				    {name: 'diagnosis'},
-				    {name: 'is_billed', type:'boolean'},
-				    {name: 'is_cito', allowBlank: true, type:'boolean'},
-				    {name: 'referral_name'},
-				    {name: 'office_name'}
-				],
+			model: App.models.visitModel
 		});
 		
 		this.columns =  [
@@ -357,7 +329,7 @@ App.patient.VisitGrid = Ext.extend(Ext.grid.GridPanel, {
 	onCreate: function(type){
 		if (this.patientRecord) {
 			App.eventManager.fireEvent('launchapp','visittab',{
-				patientRecord:this.patientRecord,
+				patientId:this.patientRecord.data.id,
 				type:type
 			});
 		}
@@ -369,9 +341,9 @@ App.patient.VisitGrid = Ext.extend(Ext.grid.GridPanel, {
 			if (rec) {
 				var type = rec.data.cls=='п' ? 'visit' : 'material'; /// TODO: тип формы надо определять как-то иначе
 				App.eventManager.fireEvent('launchapp','visittab',{
-					store:this.store,
-					record:rec,
-					patientRecord:this.patientRecord,
+//					store:this.store,
+					visitId:rec.data.id,
+					patientId:this.patientRecord.data.id,
 					type:type
 				});
 			}

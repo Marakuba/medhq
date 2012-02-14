@@ -13,12 +13,12 @@ App.visit.VisitForm = Ext.extend(Ext.FormPanel, {
 					    encode: false,
 					    writeAllFields: false
 					}),
-			apiUrl : get_api_url('visitpreorder'),
+			apiUrl : get_api_url('extpreorder'),
 			model: App.models.preorderModel
 		});
 		
 		this.orderedService = new App.visit.OrderedServiceInlineGrid({
-			record:this.record,
+//			record:this.record,
 			type:this.type,
 			region:'center'
 		});
@@ -102,7 +102,7 @@ App.visit.VisitForm = Ext.extend(Ext.FormPanel, {
 					iconCls:'silk-add',
 					handler:function(){
 						var win;
-						if(!win) {
+						if(!win && this.patientRecord) {
 							win = new App.insurance.PolicyWindow({
 								patientRecord:this.patientRecord
 							});
@@ -350,7 +350,7 @@ App.visit.VisitForm = Ext.extend(Ext.FormPanel, {
 		this.defaultItems = [{
 			xtype:'hidden',
 			name:'patient',
-			value:this.patientRecord.data.resource_uri
+			value:this.patientRecord ? this.patientRecord.data.resource_uri : ''
         }];
 		
 		this.types = {
@@ -462,25 +462,6 @@ App.visit.VisitForm = Ext.extend(Ext.FormPanel, {
 		Ext.apply(this, Ext.apply(this.initialConfig, config));
 		App.visit.VisitForm.superclass.initComponent.apply(this, arguments);
 		this.on('afterrender', function(){
-			if(this.record) {
-				this.getForm().loadRecord(this.record);
-				var docSum = this.record.data.total_price-this.record.data.total_discount;
-				this.totalSum.setValue(docSum);
-				this.totalSum.originalValue = docSum
-			};
-			if (this.preorderRecord ){
-
-				var recs = [];
-				
-				if(Ext.isArray(this.preorderRecord)){
-					recs = this.preorderRecord;
-				} else if (this.preorderRecord.data) {
-					recs = [this.preorderRecord];
-				}
-				
-				this.addPreorderRecords(recs);
-				
-			}
 		},this);
 		this.orderedService.on('sumchange', this.updateTotalSum, this);
 		this.servicePanel.on('serviceclick', this.onServiceClick, this);
@@ -547,7 +528,9 @@ App.visit.VisitForm = Ext.extend(Ext.FormPanel, {
 			var Record = this.getRecord();
 			f.updateRecord(Record);
 			if(!Record.phantom) {
+				console.log(this.inlines)
 				this.inlines.each(function(inline,i,l){
+					console.log(inline)
 					inline.onSave();
 				});
 			}
@@ -691,6 +674,35 @@ App.visit.VisitForm = Ext.extend(Ext.FormPanel, {
 			this.policyCmb.reset();
 			this.policyBar.hide();
 		}
+	},
+	
+	setPatientRecord: function(record){
+		this.patientRecord = record;
+		this.policyCmb.getStore().setBaseParam('patient',this.patientRecord.data.id);
+		this.discountCmb.setValue(this.patientRecord.data.discount);
+		this.getForm().findField('patient').setValue(this.patientRecord.data.resource_uri);
+	},
+	
+	setVisitRecord: function(record){
+		if(record) {
+			this.record = record;
+			this.getForm().loadRecord(this.record);
+			var docSum = this.record.data.total_price-this.record.data.total_discount;
+			this.totalSum.setValue(docSum);
+			this.totalSum.originalValue = docSum;
+			this.orderedService.setRecord(record);
+		};
+	},
+	
+	setPreorderRecord: function(record){
+		var recs = [];
+		if(Ext.isArray(record)){
+			recs = record;
+		} else if (record.data) {
+			recs = [record];
+		}
+		
+		this.addPreorderRecords(recs);
 	}
 	
 });

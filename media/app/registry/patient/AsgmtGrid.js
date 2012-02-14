@@ -38,6 +38,14 @@ App.patient.AsgmtGrid = Ext.extend(Ext.grid.EditorGridPanel, {
 			model: App.models.patientModel
 		});
 
+		this.createButton = new Ext.Button({
+			iconCls:'med-usersetup',
+			text:'Новое направление',
+			hidden:!this.hasPatient,
+			handler:this.onCreate.createDelegate(this),
+			scope:this
+		});
+		
 		this.visitButton = new Ext.Button({
 			iconCls:'silk-add',
 			disabled:true,
@@ -57,17 +65,13 @@ App.patient.AsgmtGrid = Ext.extend(Ext.grid.EditorGridPanel, {
 		this.setTimeButton = new Ext.Button({
 			xtype:'button',
 			text:'Назначить время',
+			disabled:true,
 			handler:this.staffWindow.createDelegate(this, []),
 			scope:this
 		});
 		
 		this.ttb = new Ext.Toolbar({
-			items:[{
-					iconCls:'med-usersetup',
-					text:'Новое направление',
-					handler:this.onCreate.createDelegate(this),
-					scope:this
-				},'-',
+			items:[this.createButton,'-',
 				this.visitButton, this.clearButton, this.setTimeButton,'-',
 				{
 					text:'Реестр',
@@ -321,10 +325,10 @@ App.patient.AsgmtGrid = Ext.extend(Ext.grid.EditorGridPanel, {
 				this.store.load();
 			}
 		},this);
-		App.calendar.eventManager.on('preorderwrite', this.store.load,this);
+		App.calendar.eventManager.on('preorderwrite', this.storeReload,this);
 		
 		this.on('destroy', function(){
-			App.calendar.eventManager.un('preorderwrite', this.store.load,this);
+			App.calendar.eventManager.un('preorderwrite', this.storeReload,this);
 		},this);
 		
 		this.store.on('write', function(){
@@ -359,10 +363,12 @@ App.patient.AsgmtGrid = Ext.extend(Ext.grid.EditorGridPanel, {
 			if (record.data.visit){
 				this.visitButton.setDisabled(true);
 	        	this.clearButton.setDisabled(true);
+//	        	this.setTimeButton.setDisabled(true);
 			}
 		} else {
 	        this.visitButton.setDisabled(status);
 	        this.clearButton.setDisabled(status);
+//	        this.setTimeButton.setDisabled(true);
 		}
 	},
 	
@@ -419,23 +425,15 @@ App.patient.AsgmtGrid = Ext.extend(Ext.grid.EditorGridPanel, {
 			if (this.hasPatient){
 				App.eventManager.fireEvent('launchapp','visittab',{
 					preorderRecord:recs,
-					patientRecord:this.patientRecord,
+					patientId:this.patientRecord.data.id,
 					type:'visit'
 				});
 	    	} else {
-	    		this.patientStore.setBaseParam('id',App.uriToId(recs[0].data.patient));
-		    	this.patientStore.load({callback:function(records,opt,success){
-		    		if (!records) {
-		    			Ext.msg.alert('Ошибка','Не указан пациент');
-		    			return
-		    		};
-		    		this.patientRecord = records[0];
-		    		App.eventManager.fireEvent('launchapp','visittab',{
-						preorderRecord:recs,
-						patientRecord:this.patientRecord,
-						type:'visit'
-					});
-		    	}})
+	    		App.eventManager.fireEvent('launchapp','visittab',{
+					preorderRecord:recs,
+					patientId:App.uriToId(recs[0].data.patient),
+					type:'visit'
+				});
 	    	}
         } else {
         	Ext.Msg.alert('Уведомление','Не выбран ни один предзаказ')
@@ -472,7 +470,7 @@ App.patient.AsgmtGrid = Ext.extend(Ext.grid.EditorGridPanel, {
     onCreate: function(){
 		if (this.patientRecord) {
 			App.eventManager.fireEvent('launchapp','asgmttab',{
-				patientRecord:this.patientRecord,
+				patientId:this.patientId,
 				card_id:this.card_id,
 				fn: function(){
 					this.store.load();
@@ -511,7 +509,7 @@ App.patient.AsgmtGrid = Ext.extend(Ext.grid.EditorGridPanel, {
 		rec.endEdit();
 	},
 	
-	 onMovePreorder: function(service,staff_id){
+	onMovePreorder: function(service,staff_id){
 		var preorder = this.getSelected();
     	var freeTimeslotWindow;
         	
@@ -571,6 +569,10 @@ App.patient.AsgmtGrid = Ext.extend(Ext.grid.EditorGridPanel, {
 		this.startDateField.setValue(this.start_date);
 		this.storeFilter('expiration__range',String.format('{0},{1}',this.start_date.format('Y-m-d 00:00'),this.start_date.format('Y-m-d 23:59')));
 		this.btnSetDisabled(true);
+	},
+	
+	storeReload: function(){
+		this.store.load()
 	}
 	
 	

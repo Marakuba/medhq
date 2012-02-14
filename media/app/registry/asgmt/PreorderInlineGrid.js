@@ -50,11 +50,6 @@ App.assignment.PreorderInlineGrid = Ext.extend(Ext.grid.EditorGridPanel, {
 		    }
 		});
 		
-		if (this.record) {
-			this.store.setBaseParam('order',this.record.id);
-			this.store.load();
-		};
-		
 		this.serviceStore = new Ext.data.Store({
 			autoDestroy:true,
 			proxy: new Ext.data.HttpProxy({
@@ -175,9 +170,9 @@ App.assignment.PreorderInlineGrid = Ext.extend(Ext.grid.EditorGridPanel, {
 
 		Ext.apply(this, Ext.apply(this.initialConfig, config));
 		App.assignment.PreorderInlineGrid.superclass.initComponent.apply(this, arguments);
-		App.eventManager.on('visitcreate', this.onVisitCreate, this);
+		App.eventManager.on('assigmentcreate', this.onAssigmentCreate, this);
 		this.on('destroy', function(){
-			App.eventManager.un('visitcreate', this.onVisitCreate, this);
+			App.eventManager.un('assigmentcreate', this.onAssigmentCreate, this);
 		},this);
 	},
 	
@@ -285,9 +280,19 @@ App.assignment.PreorderInlineGrid = Ext.extend(Ext.grid.EditorGridPanel, {
 		return steps;
 	},
 	
-	onVisitCreate: function(record) {
+	onAssigmentCreate: function(record) {
 		this.record = record;
 		this.onSave();
+	},
+	
+	setPatientRecord: function(record){
+		this.patientRecord = record
+	},
+	
+	setAssigmentRecord: function(record){
+		this.record = record;
+		this.store.setBaseParam('order',this.record.id);
+		this.store.load();
 	}
 	
 });

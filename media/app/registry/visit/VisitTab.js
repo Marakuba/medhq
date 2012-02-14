@@ -8,33 +8,20 @@ App.visit.VisitTab = Ext.extend(Ext.Panel, {
 		this.store = this.store || new Ext.data.RESTStore({
 			autoLoad : false,
 			apiUrl : get_api_url('visit'),
-			model: [
-				    {name: 'id'},
-				    {name: 'resource_uri'},
-				    {name: 'created', type:'date',format:'c'},
-				    {name: 'cls', allowBlank: false},
-				    {name: '_cache'},
-				    {name: 'patient', allowBlank: false},
-				    {name: 'patient_id'},
-				    {name: 'barcode_id'},
-				    {name: 'referral'},
-				    {name: 'discount'},
-				    {name: 'source_lab'},
-				    {name: 'total_price'},
-				    {name: 'total_paid'},
-				    {name: 'total_sum'},
-				    {name: 'operator_name'},
-				    {name: 'patient_name'},
-				    {name: 'payment_type'},
-				    {name: 'insurance_policy'},
-				    {name: 'comment'},
-				    {name: 'pregnancy_week'},
-				    {name: 'menses_day'},
-				    {name: 'menopause'},
-				    {name: 'diagnosis'},
-				    {name: 'is_billed', type:'boolean'},
-				    {name: 'referral_name'}
-				]
+			model: App.models.visitModel
+		});
+		
+		this.preorderStore = new Ext.data.RESTStore({
+			autoLoad : false,
+			autoSave : true,
+			apiUrl : get_api_url('extpreorder'),
+			model: App.models.preorderModel
+		});
+		
+		this.patientStore = this.patientStore || new Ext.data.RESTStore({
+			autoLoad : false,
+			apiUrl : get_api_url('patient'),
+			model: App.models.patientModel
 		});
 		
 		this.model = this.store.recordType;
@@ -51,13 +38,15 @@ App.visit.VisitTab = Ext.extend(Ext.Panel, {
 	    	region:'center',
         	baseCls:'x-border-layout-ct',
 			model:this.model,
-        	record:this.record,
-        	patientRecord:this.patientRecord,
+//        	record:this.record,
+//        	patientRecord:this.patientRecord,
         	preorderRecord:this.preorderRecord,
         	type:this.type,
 			fn:function(record){
+				console.log(record)
 				this.record = record;
 				this.store.insertRecord(record);
+				console.log(this.store)
 				Ext.callback(this.fn, this.scope || window, [this.record]);
 			},
 			scope:this	
@@ -122,9 +111,49 @@ App.visit.VisitTab = Ext.extend(Ext.Panel, {
 		},this);
 		
 		this.on('render', function(){
-			this.setTitle(this.getTitleText());
-			this.getPatientTitle();
-			this.patientStore = this.patientRecord.store;
+			if (!this.patientId){
+				return false
+			};
+			this.patientStore.setBaseParam('id',this.patientId);
+			this.patientStore.load({callback:function(records){
+				if (!records.length){
+					return
+				};
+				this.patientRecord = records[0];
+				this.setTitle(this.getTitleText());
+				this.getPatientTitle();
+				this.form.setPatientRecord(this.patientRecord);
+			},scope:this});
+			if (this.visitId){
+				this.store.setBaseParam('id',this.visitId);
+				this.store.load({callback:function(records){
+					if (!records.length){
+						return
+					};
+					this.record = records[0];
+					this.form.setVisitRecord(this.record);
+				},scope:this});
+			};
+			
+			//ищем записи предзаказов во внутреннем store для независимости от внешних хранилищ
+			if (this.preorderRecord){
+				var preorderIDs = [];
+				if(Ext.isArray(this.preorderRecord)){
+					Ext.each(this.preorderRecord,function(rec){
+						preorderIDs.push(rec.data.id)
+					})
+					preorderIDs = this.preorderRecord;
+				} else if (this.preorderRecord.data) {
+					preorderIDs = [this.preorderRecord.data.id];
+				};
+				this.preorderStore.setBaseParam('id__in',preorderIDs)
+				this.preorderStore.load({callback:function(records){
+					if (!records.length) return false;
+					this.form.setPreorderRecord(records);
+					console.log(records)
+				},scope:this})
+				console.log(preorderIDs)
+			}
 		},this);
 		
 	},
@@ -197,6 +226,7 @@ App.visit.VisitTab = Ext.extend(Ext.Panel, {
 			App.eventManager.fireEvent('visitcreate',rs);
 		}
 		this.record = rs;
+		console.log('write')
 		this.popStep();
 	},
 	

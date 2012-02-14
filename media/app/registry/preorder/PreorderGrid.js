@@ -303,10 +303,10 @@ App.registry.PreorderGrid = Ext.extend(Ext.grid.GridPanel, {
 				this.store.load();
 			}
 		},this);
-		App.calendar.eventManager.on('preorderwrite', this.store.load,this);
+		App.calendar.eventManager.on('preorderwrite', this.storeReload,this);
 		App.eventManager.on('patientselect', this.onPatientSelect, this); //
 		this.on('destroy', function(){
-		    App.calendar.eventManager.un('preorderwrite', this.store.load,this);
+		    App.calendar.eventManager.un('preorderwrite', this.storeReload,this);
 			App.eventManager.un('patientselect', this.onPatientSelect, this); //
 		},this);
 		//this.store.on('write', this.onStoreWrite, this);
@@ -387,19 +387,12 @@ App.registry.PreorderGrid = Ext.extend(Ext.grid.GridPanel, {
     		Ext.Msg.alert('Ошибка!','Вы не можете работать с этой организацией!');
     		return
     	};
-    	this.patientStore.setBaseParam('id',App.uriToId(record.data.patient));
-    	this.patientStore.load({callback:function(records,opt,success){
-    		if (!records) {
-    			Ext.msg.alert('Ошибка','Не указан пациент');
-    			return
-    		};
-    		this.patientRecord = records[0];
-    		App.eventManager.fireEvent('launchapp','visittab',{
-				preorderRecord:this.record,
-				patientRecord:this.patientRecord,
-				type:'visit'
-			});
-    	},scope:this});
+    	
+		App.eventManager.fireEvent('launchapp','visittab',{
+			preorderRecord:this.record,
+			patientId:App.uriToId(record.data.patient),
+			type:'visit'
+		});
     },
     
     storeFilter: function(field, value){
@@ -435,6 +428,10 @@ App.registry.PreorderGrid = Ext.extend(Ext.grid.GridPanel, {
 	
 	initToolbar: function(){
 		this.ttb.doLayout();
+	},
+	
+	storeReload: function(){
+		this.store.load()
 	}
 });
 

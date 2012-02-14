@@ -394,6 +394,14 @@ App.visit.OrderedServiceInlineGrid = Ext.extend(Ext.grid.EditorGridPanel, {
 	onVisitCreate: function(record) {
 		this.record = record;
 		this.onSave();
+	},
+	
+	setRecord: function(record){
+		this.record = record;
+		if (this.record) {
+			this.store.setBaseParam('order',this.record.id);
+			this.store.load();
+		}
 	}
 	
 });
