@@ -253,6 +253,7 @@ App.CentralPanel = Ext.extend(Ext.Panel, {
 		App.CentralPanel.superclass.initComponent.apply(this, arguments);
 		App.eventManager.on('launchapp', this.launchApp, this);
 		App.eventManager.on('closeapp', this.closeApp, this);
+		App.eventManager.on('visitcreate', this.onVisitCreate, this);
 		this.on('afterrender', function(){
 /*			Ext.QuickTips.register({
 				autoHide:false,
@@ -267,12 +268,19 @@ App.CentralPanel = Ext.extend(Ext.Panel, {
 		
 		this.on('destroy', function(){
 		    App.eventManager.un('launchapp', this.launchApp, this);
-			App.eventManager.un('closeapp', this.closeApp, this); 
+			App.eventManager.un('closeapp', this.closeApp, this);
+			App.eventManager.un('visitcreate', this.onVisitCreate, this);
 		},this);
 	},
 	
 	closeApp: function(appId) {
 		this.mainPanel.remove(appId);
+	},
+	
+	onVisitCreate: function(rs,patientId){
+		if (patientId){
+			this.mainPanel.setActiveTab(0);
+		}
 	},
 	
 	launchApp: function(appId,config, setActive) {

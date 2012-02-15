@@ -114,7 +114,7 @@ App.patient.PatientWindow = Ext.extend(Ext.Window, {
 			}
 			if(this.post_visit) {
 				App.eventManager.fireEvent('launchapp','visittab',{
-					patientRecord:this.record,
+					patientId:this.record.data.id,
 					type:this.post_visit
 				});
 			}

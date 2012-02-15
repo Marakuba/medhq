@@ -528,9 +528,7 @@ App.visit.VisitForm = Ext.extend(Ext.FormPanel, {
 			var Record = this.getRecord();
 			f.updateRecord(Record);
 			if(!Record.phantom) {
-				console.log(this.inlines)
 				this.inlines.each(function(inline,i,l){
-					console.log(inline)
 					inline.onSave();
 				});
 			}
@@ -614,6 +612,13 @@ App.visit.VisitForm = Ext.extend(Ext.FormPanel, {
 	},
 	
 	onPreorderChoice : function(){
+		
+		//собираем уже выбранные предзаказы, чтобы в окне их уже не показывать
+		var preorderList = []
+		this.orderedService.store.each(function(record){
+			if (record.data.preorder) preorderList.push(App.uriToId(record.data.preorder));
+		});
+		
         this.preorderGrid = new App.registry.PatientPreorderGrid({
        		scope:this,
        		patient : this.patientRecord,
@@ -631,9 +636,30 @@ App.visit.VisitForm = Ext.extend(Ext.FormPanel, {
 			border:false
     	});
     	var today = new Date();
+    	today.setHours(0);
+    	today.setMinutes(0);
+    	today.setSeconds(0);
+    	console.log(today)
 //    	this.preorderGrid.store.setBaseParam('timeslot__start__gte',today.format('Y-m-d 00:00'));
     	this.preorderGrid.store.setBaseParam('visit__isnull',true);
     	this.preorderGrid.store.setBaseParam('patient',App.uriToId(this.patientRecord.data.resource_uri));
+    	this.preorderGrid.store.on('load',function(store,records){
+    		store.filterBy(function(record,id){
+    			in_array = false;
+    			Ext.each(preorderList,function(pr){
+    				if (record.data.id == pr) in_array = true;
+    			});
+    			//не выводить все предзаказы до сегодняшнего дня
+    			var actual = true;
+    			if(record.data.start){
+    				console.log(record.data.id)
+    				console.log(record.data.start.getTime())
+    				console.log()
+    				actual = record.data.start.getTime() > today.getTime();
+    			}
+    			return !in_array && actual
+    		})
+    	})
        	this.preorderWindow.show();
 	},
 	

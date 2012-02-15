@@ -222,7 +222,7 @@ App.visit.VisitTab = Ext.extend(Ext.Panel, {
 	
 	onStoreWrite: function(store, action, result, res, rs) {
 		if(action=='create') {
-			App.eventManager.fireEvent('visitcreate',rs);
+			App.eventManager.fireEvent('visitcreate',rs,this.patientId);
 		}
 		this.record = rs;
 		console.log('write')
