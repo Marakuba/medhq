@@ -71,6 +71,7 @@ App.examination.TemplateBody = Ext.extend(Ext.TabPanel, {
 		};
 		
 		this.addSecBtn = new Ext.Button({
+			iconCls:'silk-add',
 			text:'Добавить раздел',
 			menu:this.sectionMenu,
 			scope:this
@@ -81,17 +82,25 @@ App.examination.TemplateBody = Ext.extend(Ext.TabPanel, {
 		};
 		
 		this.addSubSecBtn = new Ext.Button({
-			iconCls:'silk-add',
+			iconCls:'silk-page-white-add',
 			text:'Добавить подраздел',
 			menu:this.subSectionMenu,
 			disabled:true
 		});
 		this.previewBtn = new Ext.Button({
+			iconCls:'silk-zoom',
 			text: 'Просмотр',
 			handler:this.onPreview.createDelegate(this,[this.card]),
 			scope:this
 		});
+		this.printBtn = new Ext.Button({
+			iconCls:'silk-printer',
+			text: 'Печать',
+			handler:this.onPrint.createDelegate(this,[this.card]),
+			scope:this
+		});
 		this.closeBtn = new Ext.Button({
+			iconCls:'silk-door-out',
 			text: this.isCard ? 'Закрыть карту осмотра' : 'Закрыть шаблон',
 			handler:this.onClose.createDelegate(this),
 			scope:this
@@ -104,13 +113,14 @@ App.examination.TemplateBody = Ext.extend(Ext.TabPanel, {
 		});
 		
 		this.historyBtn = new Ext.Button({
+			iconCls:'silk-package',
 			hidden:!this.isCard,
 			text: 'История пациента',
 			handler:this.onHistoryOpen.createDelegate(this),
 			scope:this
 		});
 		
-		this.ttb = [this.addSecBtn, this.addSubSecBtn,'-',this.previewBtn,'-', this.closeBtn,'-', this.historyBtn];
+		this.ttb = [this.addSecBtn, this.addSubSecBtn,'-',this.printBtn,this.previewBtn,'-', this.historyBtn,'-', this.closeBtn];
 		
 /*		this.equipTab = new App.examination.EquipmentTab({
 			id:'equip-tab',
@@ -406,13 +416,30 @@ App.examination.TemplateBody = Ext.extend(Ext.TabPanel, {
 		
 	},
 	
+	printUrlTpl : "/exam/card/{0}/",
+	
 	onPreview: function(isCard){
 		var essence = isCard?'card':'template';
 		App.eventManager.fireEvent('launchapp','panel',{
 			title:'Просмотр: ' + this.record.data.print_name,
 			closable:true,
+			autoScroll:true,
+			tbar:[{
+				iconCls:'silk-printer',
+				text:'Печать',
+				handler:function(){
+					var url = String.format(this.printUrlTpl,this.record.data.id);
+					window.open(url);
+				},
+				scope:this
+			}],
 			autoLoad:String.format('/widget/examination/{0}/{1}/',essence,this.record.data.id)
 		});
+	},
+	
+	onPrint : function(){
+		var url = String.format(this.printUrlTpl,this.record.data.id);
+		window.open(url);
 	},
 	
 	onClose: function(){
