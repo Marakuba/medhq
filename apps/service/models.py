@@ -239,6 +239,17 @@ class BaseService(models.Model):
                 prices[slug]=None
         return prices                
     
+    def top_level_named(self):
+        if self.is_leaf_node():
+            try:
+                top = self.get_ancestors()[0]
+                return u"%s / %s" % (top.__unicode__(), self.__unicode__())
+            except:
+                pass
+        return self.__unicode__()
+            
+        
+    
     def get_absolute_url(self):
         return "/service/baseservice/%s/" % self.id
     

@@ -4,11 +4,33 @@
 """
 from django.contrib import admin
 from promotion.models import PromotionItem, Promotion
+from django import forms
+from service.fields import ServiceModelChoiceField
+from service.models import BaseService
+from django.db.models.expressions import F
+
+lookups = {}
+lookups[BaseService._meta.right_attr] = F(BaseService._meta.left_attr)+1
+qs = BaseService.objects.filter(**lookups).order_by(BaseService._meta.tree_id_attr, BaseService._meta.left_attr, 'level')
+
+class PromotionItemForm(forms.ModelForm):
+    """
+    """
+    
+    base_service = ServiceModelChoiceField(label="Услуга",
+                                           queryset=qs, 
+                                           required=True)
+    
+    class Meta:
+        model = PromotionItem
+    
+    
 
 class PromotionItemAdmin(admin.TabularInline):
     """
     """
     model = PromotionItem
+    form = PromotionItemForm
 
 
 def update_total_price(modeladmin, request, queryset):
