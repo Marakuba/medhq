@@ -1794,6 +1794,7 @@ class ClientAccountResource(ExtResource):
     
     def dehydrate(self, bundle):
         bundle.data['client_name'] = bundle.obj.client_item.client
+        bundle.data['client_balance'] = bundle.obj.client_item.client.balance
         bundle.data['account_id'] = bundle.obj.account.id
         bundle.data['amount'] = bundle.obj.account.amount
         return bundle
@@ -1823,6 +1824,24 @@ class PaymentResource(ExtResource):
         kwargs['office']=request.active_profile.department.state
         result = super(PaymentResource, self).obj_create(bundle=bundle, request=request, **kwargs)
         return result
+    
+    def build_filters(self, filters=None):
+        if filters is None:
+            filters = {}
+
+        orm_filters = super(PaymentResource, self).build_filters(filters)
+
+        if "search" in filters:
+            smart_filters = smartFilter(filters['search'], 'client_account__client_item__client')
+            if len(smart_filters.keys())==1:
+                try:
+                    orm_filters = ComplexQuery( Q(barcode__id=int(filters['search'])) | Q(**smart_filters), \
+                                      **orm_filters)
+                except:
+                    orm_filters.update(**smart_filters)
+            else:
+                orm_filters.update(**smart_filters)
+        return orm_filters
     
     class Meta:
         queryset = Payment.objects.all()

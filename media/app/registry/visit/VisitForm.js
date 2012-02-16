@@ -652,9 +652,6 @@ App.visit.VisitForm = Ext.extend(Ext.FormPanel, {
     			//не выводить все предзаказы до сегодняшнего дня
     			var actual = true;
     			if(record.data.start){
-    				console.log(record.data.id)
-    				console.log(record.data.start.getTime())
-    				console.log()
     				actual = record.data.start.getTime() > today.getTime();
     			}
     			return !in_array && actual

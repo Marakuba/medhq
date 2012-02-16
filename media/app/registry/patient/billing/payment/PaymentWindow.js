@@ -22,7 +22,6 @@ App.billing.PaymentWindow = Ext.extend(Ext.Window, {
 				this.record = record;
 				this.store.insertRecord(record);
 				Ext.callback(this.fn, this.scope || window, [this.record]);
-				this.hide();
 			},
 			scope:this			
 		});
@@ -78,10 +77,11 @@ App.billing.PaymentWindow = Ext.extend(Ext.Window, {
 		}
 		App.eventManager.fireEvent('paymentsave',rs);
 		this.record = rs;
-		this.statusbar.setStatus({
-        	text: 'Документ успешно сохранён',
-            iconCls: 'silk-status-accept'
-        });
+		//Убрал статус бар, т.к. возникала ошибка при автоматическом закрытии окна(закрывалось раньше чем установится статус)
+//		this.statusbar.setStatus({
+//        	text: 'Документ успешно сохранён',
+//            iconCls: 'silk-status-accept'
+//        });
 	},
 	
 	onSave: function() {

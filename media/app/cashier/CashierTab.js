@@ -116,7 +116,7 @@ App.cashier.CashierTab = Ext.extend(Ext.Panel, {
 			s.baseParams = { format:'json' };
 			var num = parseInt(this.visitField.getValue());
 			if (num>0){
-				s.setBaseParam('id', num);
+				s.setBaseParam('barcode', num);
 			};
 			s.load({callback:this.onVisitFinded,scope:this});
 			rec = s.getAt(0);

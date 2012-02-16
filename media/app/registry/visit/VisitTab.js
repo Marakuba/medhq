@@ -149,9 +149,7 @@ App.visit.VisitTab = Ext.extend(Ext.Panel, {
 				this.preorderStore.load({callback:function(records){
 					if (!records.length) return false;
 					this.form.setPreorderRecord(records);
-					console.log(records)
 				},scope:this})
-				console.log(preorderIDs)
 			}
 		},this);
 		
@@ -222,7 +220,14 @@ App.visit.VisitTab = Ext.extend(Ext.Panel, {
 	
 	onStoreWrite: function(store, action, result, res, rs) {
 		if(action=='create') {
-			App.eventManager.fireEvent('visitcreate',rs,this.patientId);
+			//если форма вызвана из карты пациента, то передавать this.patientId не надо. тогда просто
+			//перегрузится visitStore в таблице визитов в карте пациента
+			//иначе в таблице пациентов выберется текущий пациент и загрузятся его данные
+			if (this.hasPatient){
+				App.eventManager.fireEvent('visitcreate',rs);
+			} else {
+				App.eventManager.fireEvent('visitcreate',rs,this.patientId);
+			}
 		}
 		this.record = rs;
 		console.log('write')

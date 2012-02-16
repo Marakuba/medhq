@@ -330,6 +330,7 @@ App.patient.VisitGrid = Ext.extend(Ext.grid.GridPanel, {
 		if (this.patientRecord) {
 			App.eventManager.fireEvent('launchapp','visittab',{
 				patientId:this.patientRecord.data.id,
+				hasPatient:true,
 				type:type
 			});
 		}
@@ -343,6 +344,7 @@ App.patient.VisitGrid = Ext.extend(Ext.grid.GridPanel, {
 				App.eventManager.fireEvent('launchapp','visittab',{
 //					store:this.store,
 					visitId:rec.data.id,
+					hasPatient:true,
 					patientId:this.patientRecord.data.id,
 					type:type
 				});

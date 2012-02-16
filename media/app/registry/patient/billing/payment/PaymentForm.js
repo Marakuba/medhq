@@ -7,8 +7,7 @@ App.billing.PaymentForm = Ext.extend(Ext.form.FormPanel, {
 
 	initComponent: function(){
 		
-		this.tmp_id = Ext.id();
-		this.store = this.store || new Ext.data.RESTStore({
+		this.store = new Ext.data.RESTStore({
 		    apiUrl : get_api_url('payment'),
 		    baseParams:{
 		    	format:'json'
@@ -24,7 +23,7 @@ App.billing.PaymentForm = Ext.extend(Ext.form.FormPanel, {
 			}),
 			root:'objects',
 			idProperty:'resource_uri',
-			fields:['resource_uri','client_item','account_id'],
+			fields:['resource_uri','client_item','account_id','client_balance'],
 			writer : new Ext.data.JsonWriter({
 		    	encode: false,
             	writeAllFields: true 
@@ -51,6 +50,41 @@ App.billing.PaymentForm = Ext.extend(Ext.form.FormPanel, {
 		    	format:'json'
 			}
     	});
+    	
+    	this.clientCmb = new Ext.form.LazyComboBox({
+			fieldLabel:'Пациент',
+			allowBlank:false,
+			displayField: 'full_name',
+			queryParam:'last_name__istartswith',
+			hidden:this.patientRecord||this.patient_id? true : false,
+			disabled:this.patientRecord||this.patient_id? true : false,
+			anchor:'71%',
+			store: this.patient_store,
+        	//name:'client_item',
+        	listeners: 
+        	{
+                scope:this,
+                'select':function(combo, record, index){
+                	var client_id = App.uriToId(record.data.resource_uri);
+                	this.cl_accCmb.store.setBaseParam('client_item__client',client_id);
+                	this.cl_accCmb.store.load({callback:this.setAccount,scope:this});
+                	this.cl_accCmb.enable();
+                	this.setBalance(record.data.balance);
+               		//this.balanceButton.setDisabled((!(record.data.balance <0 == this.is_income))||(record.data.balance==0));
+                }
+        	}
+		}),
+		
+		this.cl_accCmb = new Ext.form.LazyComboBox({
+			fieldLabel:'Лицевой счет',
+			anchor:'71%',
+        	name:'client_account',
+        	store:this.cl_acc_store,
+        	disabled:(this.patientRecord||this.patient_id)? false : true,
+            allowBlank:false,
+		    displayField: 'account_id',
+		    selectOnFocus:true
+		}),
     	
     	this.balanceButton = new Ext.Button({
     		text:'...',//будет обновляться при выборе пациента
@@ -139,42 +173,8 @@ App.billing.PaymentForm = Ext.extend(Ext.form.FormPanel, {
 						},
 						items:[{
 							columnWidth:1,
-							items:[new Ext.form.LazyComboBox({
-								fieldLabel:'Пациент',
-								allowBlank:false,
-								displayField: 'full_name',
-								id:this.tmp_id+'client',
-								queryParam:'last_name__istartswith',
-								hidden:this.patientRecord||this.patient_id? true : false,
-								disabled:this.patientRecord||this.patient_id? true : false,
-								anchor:'71%',
-								store: this.patient_store,
-					        	//name:'client_item',
-					        	listeners: 
-					        	{
-                                    scope:this,
-                                    'select':function(combo, record, index){
-                                    	var client_id = App.uriToId(record.data.resource_uri); 
-                                    	var combo = this.getForm().findField('client_account'); 
-                                    	combo.store.setBaseParam('client_item__client',client_id);
-                                    	combo.store.load({callback:this.setAccount,scope:this});
-                                    	combo.enable();
-                                    	this.balanceButton.setText(String.format("{0}",record.data.balance));
-                                    	this.balanceButton.setDisabled(this.is_income == (record.data.balance >0));
-                                   		//this.balanceButton.setDisabled((!(record.data.balance <0 == this.is_income))||(record.data.balance==0));
-                                    }
-					        	}
-							}),
-							new Ext.form.LazyComboBox({
-								fieldLabel:'Лицевой счет',
-								anchor:'71%',
-					        	name:'client_account',
-					        	store:this.cl_acc_store,
-					        	disabled:this.patientRecord||this.patient_id? false : true,
-                                allowBlank:false,
-							    displayField: 'account_id',
-							    selectOnFocus:true
-							}),
+							items:[this.clientCmb,
+								this.cl_accCmb,
 							new Ext.form.ComboBox({
 								name : 'payment_type',
 								fieldLabel: 'Вид оплаты',
@@ -219,32 +219,33 @@ App.billing.PaymentForm = Ext.extend(Ext.form.FormPanel, {
 		}
 		Ext.apply(this, Ext.apply(this.initialConfig, config));
 		App.billing.PaymentForm.superclass.initComponent.apply(this, arguments);
-		App.eventManager.on('paymentcreate', this.onPmCreate, this);
+//		App.eventManager.on('paymentcreate', this.onPmCreate, this);
 		//App.eventManager.on('accountcreate', this.onAccountCreate, this);
 		//App.eventManager.on('clientaccountcreate', this.onClientAccountCreate, this);
 		
-		this.store.on('write', this.onStoreWrite, this);
-		this.on('destroy', function(){
-			this.store.un('write', this.onStoreWrite, this);
-			App.eventManager.un('paymentcreate', this.onPmCreate, this); 
-		},this);
+//		this.store.on('write', this.onStoreWrite, this);
+//		this.on('destroy', function(){
+//			this.store.un('write', this.onStoreWrite, this);
+////			App.eventManager.un('paymentcreate', this.onPmCreate, this); 
+//		},this);
 		
 		
 		
 		this.on('afterrender', function(){
 			if (this.patientRecord || this.patient_id) {
-				var patient_id = this.patientRecord ? this.patientRecord.data.id : this.patient_id;
-                this.getForm().findField('client_account').store.setBaseParam('client_item__client',
-                														patient_id);
-                this.getForm().findField('client_account').store.load({callback:this.setAccount,scope:this});
+				if (this.patientRecord){
+					this.patient_id = this.patientRecord.data.id;
+				};
+                this.cl_accCmb.store.setBaseParam('client_item__client',
+                														this.patient_id);
+                this.cl_accCmb.store.load({callback:this.setAccount,scope:this});
                 //this.getForm().findField('client_account').setValue(this.patientRecord.data.resource_uri);
             }
 			if(this.record) {
 				this.getForm().loadRecord(this.record);
-				var clientCombo = Ext.getCmp(this.tmp_id+'client');
 				var patient = App.getApiUrl('patient') + '/' + this.record.data.client
-				clientCombo.setValue(patient);
-				clientCombo.originalValue = patient;
+				this.clientCmb.setValue(patient);
+				this.clientCmb.originalValue = patient;
 			}
 			else {
                 var d = new Date;
@@ -323,16 +324,16 @@ App.billing.PaymentForm = Ext.extend(Ext.form.FormPanel, {
 	},
 	
 	setAccount: function(records,opt,success){
-		var combo = this.getForm().findField('client_account');
 		if (records) {
 			var rec = records[0];
-			combo.setValue(rec.data.resource_uri);
-			combo.originalValue = rec.data.resource_uri;
+			this.cl_accCmb.setValue(rec.data.resource_uri);
+			this.cl_accCmb.originalValue = rec.data.resource_uri;
+			this.setBalance(rec.data.client_balance);
 		}
 	},
 	
 	onStoreWrite: function(store, action, result, res, rs) {
-		App.eventManager.fireEvent('paymentsave',rs);
+//		App.eventManager.fireEvent('paymentsave',rs);
 		this.record = rs;
 	},
 	
@@ -361,7 +362,14 @@ App.billing.PaymentForm = Ext.extend(Ext.form.FormPanel, {
 	
 	onBalanceClick: function(){
 		this.amountField.setValue(Math.abs(parseInt(this.balanceButton.getText())))
-	}
+	},
+	
+	setBalance: function(balance){
+		if (balance==null) balance = 0;
+		this.balanceButton.setText(String.format("{0}",balance));
+        this.balanceButton.setDisabled((balance==0) || (this.is_income == (balance > 0)));
+    }
+	
 });
 
 Ext.reg('paymentform',App.billing.PaymentForm);
