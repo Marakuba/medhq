@@ -49,13 +49,13 @@ App.patient.PatientGrid = Ext.extend(Ext.grid.GridPanel, {
 			scope:this
 		});
 		
-		this.cardButton = new Ext.Button({
+		this.cardButton = new Ext.menu.Item({
 			text:'Амбулаторная карта',
 			disabled:true,
 			handler: this.goToSlug.createDelegate(this, ['print_card']),
 			scope:this
 		});
-		this.contractButton = new Ext.Button({
+		this.contractButton = new Ext.menu.Item({
 			text:'Договор',
 			disabled:true,
 			handler: this.goToSlug.createDelegate(this, ['contract']),
@@ -99,7 +99,10 @@ App.patient.PatientGrid = Ext.extend(Ext.grid.GridPanel, {
 					});
 				},
 				scope:this
-			},'->',this.cardButton,this.contractButton],
+			},'->',{
+				iconCls:'silk-bullet-wrench',
+				menu:[this.cardButton,this.contractButton]
+			}],
 	        bbar: new Ext.PagingToolbar({
 	            pageSize: 20,
 	            store: this.store,
@@ -120,9 +123,14 @@ App.patient.PatientGrid = Ext.extend(Ext.grid.GridPanel, {
 		Ext.apply(this, Ext.apply(this.initialConfig, config));
 		App.patient.PatientGrid.superclass.initComponent.apply(this, arguments);
 		App.eventManager.on('globalsearch', this.onGlobalSearch, this);
+		App.eventManager.on('visitcreate', this.onVisitCreate, this);
 //		App.eventManager.on('patientwrite', this.onPatientWrite, this);
 		this.on('patientselect', this.onPatientSelect, this);
 		this.store.on('write', this.onStoreWrite, this);
+		this.on('destroy', function(){
+		    App.eventManager.un('globalsearch', this.onGlobalSearch, this); 
+		    App.eventManager.un('visitcreate', this.onVisitCreate, this);
+		},this);
 	},
 	
 	btnSetDisabled: function(status) {
@@ -196,11 +204,23 @@ App.patient.PatientGrid = Ext.extend(Ext.grid.GridPanel, {
 		if( res.success && this.win ) {
 			this.store.filter('id',rs.data.id);
 			this.getSelectionModel().selectFirstRow();
-			this.fireEvent('patientselect',rs);
+			if(action=='create') {
+//				App.eventManager.fireEvent('patientcreate',rs);
+				this.fireEvent('patientselect',rs);
+			}
+			
 		}
-//		if(action=='create') {
-//			App.eventManager.fireEvent('patientcreate',rs);
-//		}
+		
+	},
+	
+	onVisitCreate: function(rs,patientId){
+		if (patientId){
+			this.store.load({params:{'id':App.uriToId(rs.data.patient)},callback:function(records){
+				if (!records.length) return
+				this.getSelectionModel().selectFirstRow();
+				this.fireEvent('patientselect',records[0])
+			},scope:this})
+		}
 	}
 	
 });

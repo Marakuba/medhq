@@ -117,14 +117,22 @@ App.insurance.PolicyGrid = Ext.extend(Ext.grid.GridPanel, {
 		    	sortable: true, 
 		    	dataIndex: 'start_date',
 		    	renderer:Ext.util.Format.dateRenderer('d.m.Y'), 
-		    	editor: new Ext.form.DateField({ format:'d.m.Y' })
+		    	editor: new Ext.form.DateField({
+		    		format:'d.m.Y',
+		    		plugins:[new Ext.ux.netbox.InputTextMask('99.99.9999')], // маска ввода __.__._____ - не надо точки ставить
+					minValue:new Date(1901,1,1)
+		    	})
 		    },{
 		    	header: "Заканчивается", 
 		    	width: 80, 
 		    	sortable: true, 
 		    	dataIndex: 'end_date',
 		    	renderer:Ext.util.Format.dateRenderer('d.m.Y'), 
-		    	editor: new Ext.form.DateField({ format:'d.m.Y' })
+		    	editor: new Ext.form.DateField({
+		    		format:'d.m.Y',
+		    		plugins:[new Ext.ux.netbox.InputTextMask('99.99.9999')], // маска ввода __.__._____ - не надо точки ставить
+					minValue:new Date(1901,1,1)
+		    	})
 		    }
 		];
 		

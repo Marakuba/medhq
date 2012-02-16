@@ -139,7 +139,11 @@ class PatientResource(ExtResource):
     client_item = fields.OneToOneField(ClientItemResource, 'client_item', null=True)
     
     def hydrate_initial_account(self, bundle):
-        bundle.data['initial_account'] = str(bundle.data['initial_account'])
+#TODO: only for Python 2.6 trick. Will be remove later.
+        try:
+            bundle.data['initial_account'] = str(bundle.data['initial_account'])
+        except KeyError:
+            pass
         return bundle
 
 
@@ -872,6 +876,7 @@ class OrderedServiceResource(ExtResource):
     staff = fields.ToOneField(PositionResource, 'staff', full=True, null=True)
     sampling = fields.ForeignKey(SamplingResource, 'sampling', null=True)
     execution_place = fields.ForeignKey(StateResource, 'execution_place')
+    assigment = fields.ForeignKey('apps.api.registry.PreorderResource', 'assigment', null=True)
 
     def obj_create(self, bundle, request=None, **kwargs):
         kwargs['operator']=request.user
@@ -1142,6 +1147,7 @@ class ServiceBasketResource(ExtResource):
     service = fields.ToOneField(BaseServiceResource, 'service', null=True)
     staff = fields.ToOneField(PositionResource, 'staff', null=True)
     execution_place = fields.ToOneField(StateResource, 'execution_place')
+    assigment = fields.ForeignKey('apps.api.registry.PreorderResource', 'assigment', null=True)
 
     def obj_create(self, bundle, request=None, **kwargs):
         kwargs['operator']=request.user
@@ -1563,6 +1569,24 @@ class PreorderResource(ExtResource):
         result = super(PreorderResource, self).obj_create(bundle=bundle, request=request, **kwargs)
         return result
     
+    def build_filters(self, filters=None):
+        if filters is None:
+            filters = {}
+
+        orm_filters = super(PreorderResource, self).build_filters(filters)
+
+        if "search" in filters:
+            smart_filters = smartFilter(filters['search'], 'patient')
+            if len(smart_filters.keys())==1:
+                try:
+                    orm_filters = ComplexQuery( Q(barcode__id=int(filters['search'])) | Q(**smart_filters), \
+                                      **orm_filters)
+                except:
+                    orm_filters.update(**smart_filters)
+            else:
+                orm_filters.update(**smart_filters)
+        return orm_filters
+    
     class Meta:
         queryset = Preorder.objects.all()
         resource_name = 'preorder'
@@ -1588,22 +1612,41 @@ class ExtPreorderResource(ExtResource):
         result = super(ExtPreorderResource, self).obj_create(bundle=bundle, request=request, **kwargs)
         return result
     
+    def build_filters(self, filters=None):
+        if filters is None:
+            filters = {}
+
+        orm_filters = super(ExtPreorderResource, self).build_filters(filters)
+
+        if "search" in filters:
+            smart_filters = smartFilter(filters['search'], 'patient')
+            if len(smart_filters.keys())==1:
+                try:
+                    orm_filters = ComplexQuery( Q(barcode__id=int(filters['search'])) | Q(**smart_filters), \
+                                      **orm_filters)
+                except:
+                    orm_filters.update(**smart_filters)
+            else:
+                orm_filters.update(**smart_filters)
+        return orm_filters
+    
     def dehydrate(self, bundle):
         obj = bundle.obj
         bundle.data['service_name'] = obj.service and obj.service.base_service.name
-        bundle.data['patient_name'] = obj.patient.full_name()
-        bundle.data['patient_birthday'] = obj.patient.birth_day
+        bundle.data['patient_name'] = obj.patient and obj.patient.full_name() or u'Пациент не указан'
+        bundle.data['patient_birthday'] = obj.patient and obj.patient.birth_day
         bundle.data['ptype_name'] = obj.get_payment_type_display()
         bundle.data['execution_place'] = obj.service and obj.service.state.id
         bundle.data['execution_place_name'] = obj.service and obj.service.state.name
         bundle.data['promotion_name'] = obj.promotion and obj.promotion.name or ''
         bundle.data['promo_discount'] = obj.promotion and obj.promotion.discount.id or ''
         bundle.data['staff'] = obj.timeslot and obj.timeslot.cid
-        bundle.data['staff_name'] = obj.timeslot and obj.get_staff_name()
-        bundle.data['price'] = obj.service and obj.service.get_actual_price()
+        bundle.data['staff_name'] = obj.timeslot and obj.timeslot.cid and obj.get_staff_name()
+        bundle.data['price'] = obj.price or (obj.service and obj.service.get_actual_price())
         bundle.data['start'] = obj.timeslot and obj.timeslot.start
         bundle.data['base_service'] = obj.service and obj.service.base_service.id
-        bundle.data['patient_phone'] = obj.patient.mobile_phone
+        bundle.data['patient_phone'] = obj.patient and obj.patient.mobile_phone
+        bundle.data['operator_name'] = obj.operator or ''
         return bundle
     
     class Meta:
@@ -1617,7 +1660,8 @@ class ExtPreorderResource(ExtResource):
             'service':ALL_WITH_RELATIONS,
             'visit':ALL_WITH_RELATIONS,
             'card':ALL_WITH_RELATIONS,
-            'payment_type':ALL
+            'payment_type':ALL,
+            'id':ALL
         }
         limit = 500
         
@@ -1627,13 +1671,32 @@ class VisitPreorderResource(ExtPreorderResource):
     Содержит неоформленные предзаказы начиная с сегодняшнего дня и направления
     """
     
+    def build_filters(self, filters=None):
+        if filters is None:
+            filters = {}
+
+        orm_filters = super(VisitPreorderResource, self).build_filters(filters)
+
+        if "search" in filters:
+            smart_filters = smartFilter(filters['search'], 'patient')
+            if len(smart_filters.keys())==1:
+                try:
+                    orm_filters = ComplexQuery( Q(barcode__id=int(filters['search'])) | Q(**smart_filters), \
+                                      **orm_filters)
+                except:
+                    orm_filters.update(**smart_filters)
+            else:
+                orm_filters.update(**smart_filters)
+        return orm_filters
+    
     class Meta:
-        queryset = Preorder.objects.filter(Q(timeslot__start__gte=getToday()) | Q(timeslot__isnull=True)).order_by('-timeslot__start')
+        queryset = Preorder.objects.filter(timeslot__isnull=True).order_by('-expiration')
         resource_name = 'visitpreorder'
         authorization = DjangoAuthorization()
         filtering = {
             'patient':ALL,
             'start':ALL,
+            'expiration':ALL,
             'timeslot':ALL_WITH_RELATIONS,
             'service':ALL_WITH_RELATIONS,
             'visit':ALL_WITH_RELATIONS,
@@ -1731,6 +1794,7 @@ class ClientAccountResource(ExtResource):
     
     def dehydrate(self, bundle):
         bundle.data['client_name'] = bundle.obj.client_item.client
+        bundle.data['client_balance'] = bundle.obj.client_item.client.balance
         bundle.data['account_id'] = bundle.obj.account.id
         bundle.data['amount'] = bundle.obj.account.amount
         return bundle
@@ -1760,6 +1824,24 @@ class PaymentResource(ExtResource):
         kwargs['office']=request.active_profile.department.state
         result = super(PaymentResource, self).obj_create(bundle=bundle, request=request, **kwargs)
         return result
+    
+    def build_filters(self, filters=None):
+        if filters is None:
+            filters = {}
+
+        orm_filters = super(PaymentResource, self).build_filters(filters)
+
+        if "search" in filters:
+            smart_filters = smartFilter(filters['search'], 'client_account__client_item__client')
+            if len(smart_filters.keys())==1:
+                try:
+                    orm_filters = ComplexQuery( Q(barcode__id=int(filters['search'])) | Q(**smart_filters), \
+                                      **orm_filters)
+                except:
+                    orm_filters.update(**smart_filters)
+            else:
+                orm_filters.update(**smart_filters)
+        return orm_filters
     
     class Meta:
         queryset = Payment.objects.all()

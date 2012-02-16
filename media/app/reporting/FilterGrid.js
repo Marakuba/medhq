@@ -109,7 +109,11 @@ App.reporting.FilterGrid = Ext.extend(Ext.grid.EditorGridPanel, {
 		
 		this.editors = {
 			'default': new Ext.grid.GridEditor(new Ext.form.TextField({})),
-			datefield: new Ext.grid.GridEditor(new Ext.form.DateField({ format:'d.m.Y' })),
+			datefield: new Ext.grid.GridEditor(new Ext.form.DateField({ 
+												format:'d.m.Y',
+												plugins:[new Ext.ux.netbox.InputTextMask('99.99.9999')], 
+												minValue:new Date(1901,1,1)
+											})),
 			booleanfield: new Ext.grid.GridEditor(new Ext.form.Checkbox({}))
 		};
 		

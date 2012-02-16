@@ -48,6 +48,8 @@ App.calendar.VacantTimeslotGrid = Ext.extend(Ext.grid.GridPanel, {
 		
 		
 		this.startDateField = new Ext.form.DateField({
+			plugins:[new Ext.ux.netbox.InputTextMask('99.99.9999')], // маска ввода __.__._____ - не надо точки ставить
+			minValue:new Date(1901,1,1),
 			format:'d.m.Y',
 			value:this.start_date,
 			listeners: {
@@ -121,6 +123,9 @@ App.calendar.VacantTimeslotGrid = Ext.extend(Ext.grid.GridPanel, {
 		Ext.apply(this, Ext.apply(this.initialConfig, config));
 		App.calendar.VacantTimeslotGrid.superclass.initComponent.apply(this, arguments);
 		App.eventManager.on('globalsearch', this.onGlobalSearch, this);
+		this.on('destroy', function(){
+		    App.eventManager.un('globalsearch', this.onGlobalSearch, this); 
+		},this);
 		this.store.on('write', function(){
 			var record = this.getSelected();
 			if (record){

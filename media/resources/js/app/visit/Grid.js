@@ -259,6 +259,10 @@ App.visit.VisitGrid = Ext.extend(Ext.grid.GridPanel, {
 		App.visit.VisitGrid.superclass.initComponent.apply(this, arguments);
 		App.eventManager.on('globalsearch', this.onGlobalSearch, this);
 		this.store.load();		
+		
+		this.on('destroy', function(){
+		    App.eventManager.un('globalsearch', this.onGlobalSearch, this); 
+		},this);
 	},
 
 	storeFilter:function(k,v){

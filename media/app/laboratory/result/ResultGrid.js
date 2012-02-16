@@ -256,6 +256,10 @@ App.result.ResultGrid = Ext.extend(Ext.grid.EditorGridPanel, {
 			});
 		}, this);
 		
+		this.on('destroy', function(){
+		    App.eventManager.un('globalsearch', this.onGlobalSearch, this); 
+		},this);
+		
 		if(this.labOrderRecord) {
 			var d = this.labOrderRecord.data;
 			this.staffField.setValue(d.staff);

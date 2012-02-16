@@ -10,7 +10,6 @@ App.eventManager.addEvents('globalsearch',
 	'servicedblclick',
 	'updatetotalsum',
 	'patientwrite',
-	'paymentsave',
 	'sumchange');
 	
 App.eventManager.addEvents('nodeclick');
@@ -18,4 +17,4 @@ App.eventManager.addEvents('addform');
 App.eventManager.addEvents('clientcreate');
 App.eventManager.addEvents('globalsearch');
 App.eventManager.addEvents('openform');
-App.eventManager.addEvents('paymentsave');
+//App.eventManager.addEvents('paymentsave');

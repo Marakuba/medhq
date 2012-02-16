@@ -197,6 +197,10 @@ App.results.Grid = Ext.extend(Ext.grid.GridPanel, {
 		App.results.Grid.superclass.initComponent.apply(this, arguments);
 		App.eventManager.on('globalsearch', this.onGlobalSearch, this);
 		
+		this.on('destroy', function(){
+		    App.eventManager.un('globalsearch', this.onGlobalSearch, this); 
+		},this);
+		
 		this.initToolbar();
 	},
 	

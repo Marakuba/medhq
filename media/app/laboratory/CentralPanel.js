@@ -100,6 +100,11 @@ App.CentralPanel = Ext.extend(Ext.Panel, {
 		App.CentralPanel.superclass.initComponent.apply(this, arguments);
 		App.eventManager.on('launchapp', this.launchApp, this);
 		App.eventManager.on('closeapp', this.closeApp, this);
+		
+		this.on('destroy', function(){
+		    App.eventManager.un('launchapp', this.launchApp, this);
+			App.eventManager.un('closeapp', this.closeApp, this); 
+		},this);
 	},
 	
 	closeApp: function(appId) {

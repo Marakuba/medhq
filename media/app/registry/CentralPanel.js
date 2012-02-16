@@ -1,17 +1,66 @@
 Ext.ns('App');
 Ext.ns('App.services');
+Ext.ns('App.registry');
 
 App.StatusBar = new Ext.ux.StatusBar({
+	hidden:true,
 	defaultText: 'Готово',
 	defaultIconCls: 'x-status-valid',
 	autoClear:3000,
 	items:[String.format('{0}, {1}', active_user, active_state)]
 }); 
 
+function onProfileCheck() {
+	console.info(arguments);
+}
+
+profileItems = ['<b class="menu-title">Выберите профиль</b>'];
+Ext.each(profiles, function(profile){
+	config = {
+		profileId:profile[0],
+		text:profile[1],
+		checked:profile[0]==active_profile,
+		group:'profile',
+		checkHandler:function(menuitem,checked){
+			if(checked){
+				window.location.href = String.format('/webapp/setactiveprofile/{0}/?redirect_to=/webapp/registry/',menuitem.profileId);
+			}
+		}
+	}
+	profileItems.push(config);
+});
+
 App.CentralPanel = Ext.extend(Ext.Panel, {
 	
 	initComponent: function(){
 		this.mainPanel = new App.MainPanel({});
+		
+		this.preorderBtn = new Ext.SplitButton({
+			text:'Предзаказы',
+			tooltip:'Управление предзаказами',
+			handler:function(){
+				this.launchApp('preordermanager',{closable:true,openTab:'preorderTab'});
+			},
+			menu: new Ext.menu.Menu({
+		        items: [
+		        	// these items will render as dropdown menu items when the arrow is clicked:
+			        {text: 'Ближайшие предзаказы', handler: function(){
+							this.launchApp('preordermanager',{closable:true,openTab:'preorderTab'});
+						},
+					scope:this
+					},
+			        {text: 'Направления', handler: function(){
+							this.launchApp('preordermanager',{closable:true,openTab:'assigmentTab'});
+						}, scope: this
+					},
+					{text: 'Выполненные предзаказы', handler: function(){
+							this.launchApp('preordermanager',{closable:true,openTab:'completedTab'});
+						}, scope: this
+					}
+		        ]
+		   	}),
+			scope:this
+		});
 		
 		this.ttb = new Ext.Toolbar({
 			items:[/*{
@@ -96,14 +145,7 @@ App.CentralPanel = Ext.extend(Ext.Panel, {
 						this.launchApp('doctorscheduler',{closable:true});
 					},
 					scope:this
-				},{
-					text:'Предзаказы',
-					tooltip:'Управление предзаказами',
-					handler:function(){
-						this.launchApp('preordergrid',{closable:true});
-					},
-					scope:this
-				}]
+				},this.preorderBtn]
 			},{
 				xtype:'buttongroup',
 				defaults:{
@@ -179,36 +221,23 @@ App.CentralPanel = Ext.extend(Ext.Panel, {
 				},
 				items:[{
 					iconCls:'silk-cog',
-					menu:[new Ext.form.ComboBox({
-						fieldLabel:'Профиль',
-						name:'payment_type',
-						store:new Ext.data.ArrayStore({
-							fields:['id','title'],
-							data: profiles
-						}),
-						listeners:{
-							select: function(c, rec, i){
-								var p = rec.data.id;
-								window.location.href = '/webapp/setactiveprofile/'+p+'/?redirect_to=/webapp/registry/';
+					iconAlign:'right',
+					text:String.format('{0}, {1}', active_user, active_state),
+					menu:new Ext.menu.Menu({
+						items:[{
+							text:'Профиль',
+							menu:{
+								items:profileItems
 							}
-						},
-						width:300,
-						typeAhead: true,
-						triggerAction: 'all',
-						valueField:'id',
-						displayField:'title',
-						mode: 'local',
-						forceSelection:true,
-						selectOnFocus:true,
-						editable:false,
-						value:active_profile
-				    })]
-				},{
-	            	text:'Выход',
-	            	handler:function(){
-	            		window.location.href = '/webapp/logout/';
-	            	}
-	            }]
+						},{
+			            	text:'Выход',
+			            	iconCls:'silk-door-out',
+			            	handler:function(){
+			            		window.location.href = '/webapp/logout/';
+			            	}
+			            }]
+					})
+				}]
 			}]
 		});
 
@@ -224,6 +253,7 @@ App.CentralPanel = Ext.extend(Ext.Panel, {
 		App.CentralPanel.superclass.initComponent.apply(this, arguments);
 		App.eventManager.on('launchapp', this.launchApp, this);
 		App.eventManager.on('closeapp', this.closeApp, this);
+		App.eventManager.on('visitcreate', this.onVisitCreate, this);
 		this.on('afterrender', function(){
 /*			Ext.QuickTips.register({
 				autoHide:false,
@@ -235,10 +265,22 @@ App.CentralPanel = Ext.extend(Ext.Panel, {
 			});*/
 
 		});
+		
+		this.on('destroy', function(){
+		    App.eventManager.un('launchapp', this.launchApp, this);
+			App.eventManager.un('closeapp', this.closeApp, this);
+			App.eventManager.un('visitcreate', this.onVisitCreate, this);
+		},this);
 	},
 	
 	closeApp: function(appId) {
 		this.mainPanel.remove(appId);
+	},
+	
+	onVisitCreate: function(rs,patientId){
+		if (patientId){
+			this.mainPanel.setActiveTab(0);
+		}
 	},
 	
 	launchApp: function(appId,config, setActive) {

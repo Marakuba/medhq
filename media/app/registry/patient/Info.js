@@ -23,6 +23,10 @@ App.PatientInfo = Ext.extend(Ext.Panel, {
 		
 		App.eventManager.on('patientselect', this.onPatientSelect, this); //
 		
+		this.on('destroy', function(){
+		    App.eventManager.un('patientselect', this.onPatientSelect, this); 
+		},this);
+		
 	},
 	
 	setActivePatient: function(rec) {

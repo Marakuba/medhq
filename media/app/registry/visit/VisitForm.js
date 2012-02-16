@@ -13,12 +13,12 @@ App.visit.VisitForm = Ext.extend(Ext.FormPanel, {
 					    encode: false,
 					    writeAllFields: false
 					}),
-			apiUrl : get_api_url('visitpreorder'),
+			apiUrl : get_api_url('extpreorder'),
 			model: App.models.preorderModel
 		});
 		
 		this.orderedService = new App.visit.OrderedServiceInlineGrid({
-			record:this.record,
+//			record:this.record,
 			type:this.type,
 			region:'center'
 		});
@@ -32,7 +32,7 @@ App.visit.VisitForm = Ext.extend(Ext.FormPanel, {
 		
 		this.servicePanel = new App.ServiceTreeGrid({
 	        region: 'east',
-		    margins:'5 5 5 0',
+//		    margins:'5 5 5 0',
 		    baseParams:{
 				payment_type:'н',
 				promotion:true
@@ -102,7 +102,7 @@ App.visit.VisitForm = Ext.extend(Ext.FormPanel, {
 					iconCls:'silk-add',
 					handler:function(){
 						var win;
-						if(!win) {
+						if(!win && this.patientRecord) {
 							win = new App.insurance.PolicyWindow({
 								patientRecord:this.patientRecord
 							});
@@ -350,7 +350,7 @@ App.visit.VisitForm = Ext.extend(Ext.FormPanel, {
 		this.defaultItems = [{
 			xtype:'hidden',
 			name:'patient',
-			value:this.patientRecord.data.resource_uri
+			value:this.patientRecord ? this.patientRecord.data.resource_uri : ''
         }];
 		
 		this.types = {
@@ -462,22 +462,6 @@ App.visit.VisitForm = Ext.extend(Ext.FormPanel, {
 		Ext.apply(this, Ext.apply(this.initialConfig, config));
 		App.visit.VisitForm.superclass.initComponent.apply(this, arguments);
 		this.on('afterrender', function(){
-			if(this.record) {
-				this.getForm().loadRecord(this.record);
-			};
-			if (this.preorderRecord ){
-
-				var recs = [];
-				
-				if(Ext.isArray(this.preorderRecord)){
-					recs = this.preorderRecord;
-				} else if (this.preorderRecord.data) {
-					recs = [this.preorderRecord];
-				}
-				
-				this.addPreorderRecords(recs);
-				
-			}
 		},this);
 		this.orderedService.on('sumchange', this.updateTotalSum, this);
 		this.servicePanel.on('serviceclick', this.onServiceClick, this);
@@ -628,6 +612,13 @@ App.visit.VisitForm = Ext.extend(Ext.FormPanel, {
 	},
 	
 	onPreorderChoice : function(){
+		
+		//собираем уже выбранные предзаказы, чтобы в окне их уже не показывать
+		var preorderList = []
+		this.orderedService.store.each(function(record){
+			if (record.data.preorder) preorderList.push(App.uriToId(record.data.preorder));
+		});
+		
         this.preorderGrid = new App.registry.PatientPreorderGrid({
        		scope:this,
        		patient : this.patientRecord,
@@ -645,9 +636,27 @@ App.visit.VisitForm = Ext.extend(Ext.FormPanel, {
 			border:false
     	});
     	var today = new Date();
+    	today.setHours(0);
+    	today.setMinutes(0);
+    	today.setSeconds(0);
+    	console.log(today)
 //    	this.preorderGrid.store.setBaseParam('timeslot__start__gte',today.format('Y-m-d 00:00'));
     	this.preorderGrid.store.setBaseParam('visit__isnull',true);
     	this.preorderGrid.store.setBaseParam('patient',App.uriToId(this.patientRecord.data.resource_uri));
+    	this.preorderGrid.store.on('load',function(store,records){
+    		store.filterBy(function(record,id){
+    			in_array = false;
+    			Ext.each(preorderList,function(pr){
+    				if (record.data.id == pr) in_array = true;
+    			});
+    			//не выводить все предзаказы до сегодняшнего дня
+    			var actual = true;
+    			if(record.data.start){
+    				actual = record.data.start.getTime() > today.getTime();
+    			}
+    			return !in_array && actual
+    		})
+    	})
        	this.preorderWindow.show();
 	},
 	
@@ -656,6 +665,7 @@ App.visit.VisitForm = Ext.extend(Ext.FormPanel, {
 		p.beginEdit();
 		p.set('preorder',record.data.resource_uri);
 		p.set('price',record.data.price);
+		p.set('assigment',record.data.resource_uri);
 		p.set('service_name',record.data.service_name);
 		p.set('service',App.getApiUrl('baseservice',record.data.base_service));
 		if (record.data.staff){
@@ -687,6 +697,35 @@ App.visit.VisitForm = Ext.extend(Ext.FormPanel, {
 			this.policyCmb.reset();
 			this.policyBar.hide();
 		}
+	},
+	
+	setPatientRecord: function(record){
+		this.patientRecord = record;
+		this.policyCmb.getStore().setBaseParam('patient',this.patientRecord.data.id);
+		this.discountCmb.setValue(this.patientRecord.data.discount);
+		this.getForm().findField('patient').setValue(this.patientRecord.data.resource_uri);
+	},
+	
+	setVisitRecord: function(record){
+		if(record) {
+			this.record = record;
+			this.getForm().loadRecord(this.record);
+			var docSum = this.record.data.total_price-this.record.data.total_discount;
+			this.totalSum.setValue(docSum);
+			this.totalSum.originalValue = docSum;
+			this.orderedService.setRecord(record);
+		};
+	},
+	
+	setPreorderRecord: function(record){
+		var recs = [];
+		if(Ext.isArray(record)){
+			recs = record;
+		} else if (record.data) {
+			recs = [record];
+		}
+		
+		this.addPreorderRecords(recs);
 	}
 	
 });

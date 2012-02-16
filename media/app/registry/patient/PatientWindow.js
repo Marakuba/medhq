@@ -18,8 +18,29 @@ App.patient.PatientWindow = Ext.extend(Ext.Window, {
 			fn:function(record){
 				this.record = record;
 				this.store.insertRecord(this.record);
+				this.popStep()
 			},
 			scope:this			
+		});
+		
+		this.postMaterialBtn = new Ext.Button({
+			iconCls:'med-testtubes',
+			text:'Сохранить и перейти к поступлению б/м',
+			handler:this.onFormSave.createDelegate(this,['material']),
+			scope:this
+		});
+		
+		this.postVisitlBtn = new Ext.SplitButton({
+			iconCls:'med-usersetup',
+			text:'Сохранить и перейти к приему',
+			handler:this.onFormSave.createDelegate(this,['visit']),
+			menu:[{
+				iconCls:'med-testtubes',
+				text:'Сохранить и перейти к поступлению б/м',
+				handler:this.onFormSave.createDelegate(this,['material']),
+				scope:this
+			}],
+			scope:this
 		});
 		
 		config = {
@@ -38,11 +59,7 @@ App.patient.PatientWindow = Ext.extend(Ext.Window, {
 				text:'Сохранить',
 				handler:this.onFormSave.createDelegate(this,[false]),
 				scope:this
-			},{
-				text:'Сохранить и перейти к приему',
-				handler:this.onFormSave.createDelegate(this,[true]),
-				scope:this
-			}]
+			},App.settings.strictMode ? this.postMaterialBtn : this.postVisitlBtn]
 		}
 		Ext.apply(this, Ext.apply(this.initialConfig, config));
 		App.patient.PatientWindow.superclass.initComponent.apply(this, arguments);
@@ -97,8 +114,8 @@ App.patient.PatientWindow = Ext.extend(Ext.Window, {
 			}
 			if(this.post_visit) {
 				App.eventManager.fireEvent('launchapp','visittab',{
-					patientRecord:this.record,
-					type:'visit'
+					patientId:this.record.data.id,
+					type:this.post_visit
 				});
 			}
 			if(this.inCard) {

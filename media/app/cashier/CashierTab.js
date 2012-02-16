@@ -116,7 +116,7 @@ App.cashier.CashierTab = Ext.extend(Ext.Panel, {
 			s.baseParams = { format:'json' };
 			var num = parseInt(this.visitField.getValue());
 			if (num>0){
-				s.setBaseParam('id', num);
+				s.setBaseParam('barcode', num);
 			};
 			s.load({callback:this.onVisitFinded,scope:this});
 			rec = s.getAt(0);
@@ -187,7 +187,6 @@ App.cashier.CashierTab = Ext.extend(Ext.Panel, {
 		}
 		Ext.apply(this, Ext.apply(this.initialConfig, config));
 		App.cashier.CashierTab.superclass.initComponent.apply(this, arguments);
-		//App.eventManager.on('globalsearch', this.onGlobalSearch, this);
 	},
 	
 	onVisitSearch: function(v){

@@ -8,33 +8,20 @@ App.visit.VisitTab = Ext.extend(Ext.Panel, {
 		this.store = this.store || new Ext.data.RESTStore({
 			autoLoad : false,
 			apiUrl : get_api_url('visit'),
-			model: [
-				    {name: 'id'},
-				    {name: 'resource_uri'},
-				    {name: 'created', type:'date',format:'c'},
-				    {name: 'cls', allowBlank: false},
-				    {name: '_cache'},
-				    {name: 'patient', allowBlank: false},
-				    {name: 'patient_id'},
-				    {name: 'barcode_id'},
-				    {name: 'referral'},
-				    {name: 'discount'},
-				    {name: 'source_lab'},
-				    {name: 'total_price'},
-				    {name: 'total_paid'},
-				    {name: 'total_sum'},
-				    {name: 'operator_name'},
-				    {name: 'patient_name'},
-				    {name: 'payment_type'},
-				    {name: 'insurance_policy'},
-				    {name: 'comment'},
-				    {name: 'pregnancy_week'},
-				    {name: 'menses_day'},
-				    {name: 'menopause'},
-				    {name: 'diagnosis'},
-				    {name: 'is_billed', type:'boolean'},
-				    {name: 'referral_name'}
-				]
+			model: App.models.visitModel
+		});
+		
+		this.preorderStore = new Ext.data.RESTStore({
+			autoLoad : false,
+			autoSave : true,
+			apiUrl : get_api_url('extpreorder'),
+			model: App.models.preorderModel
+		});
+		
+		this.patientStore = this.patientStore || new Ext.data.RESTStore({
+			autoLoad : false,
+			apiUrl : get_api_url('patient'),
+			model: App.models.patientModel
 		});
 		
 		this.model = this.store.recordType;
@@ -51,17 +38,27 @@ App.visit.VisitTab = Ext.extend(Ext.Panel, {
 	    	region:'center',
         	baseCls:'x-border-layout-ct',
 			model:this.model,
-        	record:this.record,
-        	patientRecord:this.patientRecord,
+//        	record:this.record,
+//        	patientRecord:this.patientRecord,
         	preorderRecord:this.preorderRecord,
         	type:this.type,
 			fn:function(record){
+				console.log(record)
 				this.record = record;
 				this.store.insertRecord(record);
+				console.log(this.store)
 				Ext.callback(this.fn, this.scope || window, [this.record]);
 			},
 			scope:this	
 	    });
+	    
+	    this.patientButton = new Ext.Button({
+			text:'Пациент',
+			iconCls: 'silk-pencil',
+			handler: this.onPatientEdit.createDelegate(this,[]),
+			disabled:true,
+			scope:this
+    	});
 	    
 		this.saveButton = new Ext.Button({
 			text:'Сохранить',
@@ -73,7 +70,7 @@ App.visit.VisitTab = Ext.extend(Ext.Panel, {
     	this.payButton = new Ext.Button({
 			text:'Сохранить и оплатить',
 			handler: this.onFormSave.createDelegate(this,[true]),
-			hidden:App.settings.strictMode,
+			hidden:App.settings.strictMode || this.type!='visit',
 //			disabled:true,
 			scope:this
     	});
@@ -87,7 +84,7 @@ App.visit.VisitTab = Ext.extend(Ext.Panel, {
 //			    split: true,
 				//baseCls:'x-border-layout-ct',
 			},
-			tbar:[this.getPatientTitle(),
+			tbar:[this.patientButton,
 			      {
 					xtype:'button',
 					iconCls:'silk-accept',
@@ -114,7 +111,46 @@ App.visit.VisitTab = Ext.extend(Ext.Panel, {
 		},this);
 		
 		this.on('render', function(){
+			if (!this.patientId){
+				return false
+			};
 			this.setTitle(this.getTitleText());
+			this.patientStore.setBaseParam('id',this.patientId);
+			this.patientStore.load({callback:function(records){
+				if (!records.length){
+					return
+				};
+				this.patientRecord = records[0];
+				this.getPatientTitle();
+				this.form.setPatientRecord(this.patientRecord);
+			},scope:this});
+			if (this.visitId){
+				this.store.setBaseParam('id',this.visitId);
+				this.store.load({callback:function(records){
+					if (!records.length){
+						return
+					};
+					this.record = records[0];
+					this.form.setVisitRecord(this.record);
+				},scope:this});
+			};
+			
+			//ищем записи предзаказов во внутреннем store для независимости от внешних хранилищ
+			if (this.preorderRecord){
+				var preorderIDs = [];
+				if(Ext.isArray(this.preorderRecord)){
+					Ext.each(this.preorderRecord,function(rec){
+						preorderIDs.push(rec.data.id)
+					})
+				} else if (this.preorderRecord.data) {
+					preorderIDs = [this.preorderRecord.data.id];
+				};
+				this.preorderStore.baseParams['id__in']=preorderIDs.join(',');
+				this.preorderStore.load({callback:function(records){
+					if (!records.length) return false;
+					this.form.setPreorderRecord(records);
+				},scope:this})
+			}
 		},this);
 		
 	},
@@ -184,9 +220,17 @@ App.visit.VisitTab = Ext.extend(Ext.Panel, {
 	
 	onStoreWrite: function(store, action, result, res, rs) {
 		if(action=='create') {
-			App.eventManager.fireEvent('visitcreate',rs);
+			//если форма вызвана из карты пациента, то передавать this.patientId не надо. тогда просто
+			//перегрузится visitStore в таблице визитов в карте пациента
+			//иначе в таблице пациентов выберется текущий пациент и загрузятся его данные
+			if (this.hasPatient){
+				App.eventManager.fireEvent('visitcreate',rs);
+			} else {
+				App.eventManager.fireEvent('visitcreate',rs,this.patientId);
+			}
 		}
 		this.record = rs;
+		console.log('write')
 		this.popStep();
 	},
 	
@@ -207,28 +251,51 @@ App.visit.VisitTab = Ext.extend(Ext.Panel, {
 
 	getPatientTitle : function(){
 		var rec = this.patientRecord;
-		v = {};
-		Ext.apply(v, rec.data);
-		if(this.record && this.record.id) {
-			Ext.apply(v,{
-				visit:String.format(', прием №{0}',this.record.id)
-			});
+		var text = '';
+		if (rec){
+			text = 'Пациент: ' + rec.data.last_name + ' ' + rec.data.first_name + ' ' + rec.data.mid_name;
+			this.patientButton.setText(text);
+			this.patientButton.enable()
+		} else {
+			this.patientButton.disable();
+			console.log('Не указан пациент')
 		}
-		tpl = new Ext.Template(
-			'Пациент: {last_name} {first_name} {mid_name}',
-			'{visit}'
-		);
-		return tpl.apply(v);
+		return text
 	},
 	
 	getTitleText: function() {
 		var title;
-		if(this.record && this.record.data.id) {
-			title = this.type == 'visit' ? 'Прием №'+this.record.data.id : 'Поступление биоматериала №'+this.record.data.id;
+		if(this.visitId) {
+			title = this.type == 'visit' ? 'Прием №'+this.visitId : 'Поступление биоматериала №'+this.visitId;
 		} else {
 			title = this.type == 'visit' ? 'Новый прием' : 'Новое поступление биоматериала';
 		}
 		return title
+	},
+	
+	onPatientEdit: function(){
+		var rec = this.patientRecord;
+		if (!rec){
+			return false
+		}
+		this.pWin = new App.patient.PatientWindow({
+			fn:function(record){
+				this.patientRecord = record;
+				this.getPatientTitle()
+//				this.pWin.close()
+			},
+			listeners:{
+				savecomplete:function(){
+					this.pWin.close();
+					this.patientStore.load();
+				},
+				scope:this
+			},
+			record:this.patientRecord,
+			scope:this
+		});
+		
+		this.pWin.show();
 	}
 });
 

@@ -266,6 +266,13 @@ App.visit.VisitGrid = Ext.extend(Ext.grid.GridPanel, {
 		Ext.apply(this, Ext.apply(this.initialConfig, config));
 		App.visit.VisitGrid.superclass.initComponent.apply(this, arguments);
 		App.eventManager.on('globalsearch', this.onGlobalSearch, this);
+		App.eventManager.on('visitcreate', this.onVisitCreate, this);
+		
+		this.on('destroy', function(){
+		    App.eventManager.un('globalsearch', this.onGlobalSearch, this); 
+		    App.eventManager.un('visitcreate', this.onVisitCreate, this);
+		},this);
+		
 		if(!App.settings.strictMode) {
 			this.initToolbar();
 		}
@@ -347,6 +354,15 @@ App.visit.VisitGrid = Ext.extend(Ext.grid.GridPanel, {
 		s.baseParams = { format:'json' };
 		s.setBaseParam('search', v);
 		s.load();
+	},
+	
+	onVisitCreate: function(rs,patientId){
+		if (!patientId){
+			this.store.load({callback:function(records){
+				if (!records.length) return;
+//				this.getSelectionModel().selectFirstRow();
+			},scope:this})
+		}
 	}
 	
 });

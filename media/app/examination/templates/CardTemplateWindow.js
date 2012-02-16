@@ -39,6 +39,10 @@ App.examination.CardTemplateWindow = Ext.extend(Ext.Window, {
 		Ext.apply(this, Ext.apply(this.initialConfig, config));
 		App.examination.CardTemplateWindow.superclass.initComponent.apply(this, arguments);
 		App.eventManager.on('cardtemplatecreate', this.onCardTemplateCreate, this);
+		
+		this.on('destroy', function(){
+		    App.eventManager.un('cardtemplatecreate', this.onCardTemplateCreate, this); 
+		},this);
 	},
 	
 	onFormSave: function() {

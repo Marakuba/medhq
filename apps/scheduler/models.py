@@ -17,11 +17,14 @@ from django.conf import settings
 from visit.models import Visit
 from django.db.models.signals import pre_delete
 import exceptions
+from core.utils import model_to_dict
 
 from datetime import timedelta
 from service.models import ExtendedService
 from promotion.models import Promotion
 from examination.models import Card
+from copy import deepcopy
+from django.core.exceptions import ObjectDoesNotExist
 
 add_introspection_rules([], ["^scheduler\.models\.CustomDateTimeField"])
 
@@ -169,12 +172,16 @@ class Preorder(models.Model):
     promotion = models.ForeignKey(Promotion,blank = True, null=True)
     count = models.PositiveIntegerField(u'Количество', default=1)
     card = models.ForeignKey(Card, null = True, blank = True)
+    completed_count = models.PositiveIntegerField(u'Количество выполненных', default=0)
+    price = models.DecimalField(u'Цена', max_digits=10, decimal_places=2, null=True)
     objects = models.Manager()
     
     def get_staff_name(self):
         if self.timeslot:
-            staff_name = Position.objects.get(id=self.timeslot.cid).staff.short_name()
-            return staff_name
+            try:
+                return Position.objects.get(id=self.timeslot.cid).staff.short_name()
+            except ObjectDoesNotExist:
+                return ''
         else:
             return ''
     
@@ -183,6 +190,15 @@ class Preorder(models.Model):
         if self.timeslot:
             self.timeslot.vacant = False
             self.timeslot.save()
+        if self.visit:
+            self.completed_count += 1
+            if self.count > self.completed_count:
+                args_list = model_to_dict(self,['created','modified','visit','id','timeslot','expiration'])
+                if self.expiration and self.created:
+                    dt = self.expiration - self.created
+                    args_list['expiration'] = self.expiration + dt
+                Preorder.objects.create(**args_list)
+            
         super(Preorder, self).save(*args, **kwargs) 
         
     def delete(self, *args, **kwargs):
@@ -197,7 +213,7 @@ class Preorder(models.Model):
         ordering = ('id',)
         
     def __unicode__(self):
-        return self.patient.full_name()
+        return self.patient and self.patient.full_name() or self.id
     
     
 ### SIGNALS

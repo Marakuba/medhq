@@ -92,7 +92,7 @@ App.ServiceTreeGrid = Ext.extend(Ext.ux.tree.TreeGrid,{
 	        animCollapse:false,
 	        animate: false,
 //	        containerScroll: false,
-	        autoScroll: true,
+	        autoScroll: false,
 	        rootVisible: false,
 	        loader:new Ext.ux.tree.TreeGridLoader({
 				baseParams:this.baseParams ? this.baseParams : 

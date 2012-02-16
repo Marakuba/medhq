@@ -218,6 +218,10 @@ App.examorder.OldOrderGrid = Ext.extend(Ext.grid.GridPanel, {
 		App.examorder.OldOrderGrid.superclass.initComponent.apply(this, arguments);
 		App.eventManager.on('globalsearch', this.onGlobalSearch, this);
 		
+		this.on('destroy', function(){
+		    App.eventManager.un('globalsearch', this.onGlobalSearch, this); 
+		},this);
+		
 		//this.on('rowcontextmenu', this.onContextMenu, this);
 	},
 	

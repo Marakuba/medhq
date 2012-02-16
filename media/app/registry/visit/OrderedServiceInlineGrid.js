@@ -35,6 +35,7 @@ App.visit.OrderedServiceInlineGrid = Ext.extend(Ext.grid.EditorGridPanel, {
 		    {name: 'price', allowBlank: false},
 		    {name: 'execution_place', allowBlank: false},
 		    {name: 'total', allowBlank: true},
+		    {name: 'assigment', allowBlank: true},
 		    {name: 'preorder', allowBlank: true}
 		]);
 		
@@ -61,7 +62,7 @@ App.visit.OrderedServiceInlineGrid = Ext.extend(Ext.grid.EditorGridPanel, {
 		    listeners:{
 		    	add:this.onSumChange.createDelegate(this),
 		    	remove:this.onSumChange.createDelegate(this),
-		    	load:this.onSumChange.createDelegate(this),
+//		    	load:this.onSumChange.createDelegate(this),
 		    	scope:this
 		    }
 		});
@@ -250,13 +251,13 @@ App.visit.OrderedServiceInlineGrid = Ext.extend(Ext.grid.EditorGridPanel, {
 		var place = ids[1];
 		var Service = this.store.recordType;
 		var s = new Service({
-			service:"/api/v1/dashboard/baseservice/"+id, //TODO: replace to App.getApiUrl
+			service:App.getApiUrl('baseservice') + '/' + id, 
 			service_name:text,
 			price:attrs.price,
-			staff:attrs.staff_id ? "/api/v1/dashboard/staff/"+attrs.staff_id : null,
+			staff:attrs.staff_id ? App.getApiUrl('staff') + '/'+attrs.staff_id : null,
 			staff_name:attrs.staff_name || '',
 			count:attrs.c || 1,
-			execution_place:"/api/v1/dashboard/state/"+place  //TODO: replace to App.getApiUrl
+			execution_place:App.getApiUrl('state') + '/'+place 
 		});
 		this.store.add(s);
 		this.getView().focusRow(this.store.getCount()-1);
@@ -393,6 +394,14 @@ App.visit.OrderedServiceInlineGrid = Ext.extend(Ext.grid.EditorGridPanel, {
 	onVisitCreate: function(record) {
 		this.record = record;
 		this.onSave();
+	},
+	
+	setRecord: function(record){
+		this.record = record;
+		if (this.record) {
+			this.store.setBaseParam('order',this.record.id);
+			this.store.load();
+		}
 	}
 	
 });

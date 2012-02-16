@@ -5,11 +5,10 @@ App.billing.PaymentGrid = Ext.extend(Ext.grid.GridPanel, {
 	initComponent : function() {
 		
 		this.store = new Ext.data.RESTStore({
+			autoLoad:false,
 		    apiUrl : get_api_url('payment'),
 		    model: App.models.paymentModel
 		});
-		
-		this.tmp_id = Ext.id();
 		
 		this.addButton = new Ext.SplitButton({
    			text: 'Добавить',
@@ -21,6 +20,26 @@ App.billing.PaymentGrid = Ext.extend(Ext.grid.GridPanel, {
         		]
    			})
 		});
+		
+		this.gteDateField = new Ext.form.DateField({
+            format:'d.m.Y',
+            listeners: {
+                    select: function(df, date){
+                            this.storeFilter('doc_date__gte',date.format('Y-m-d'));
+                    },
+                    scope:this
+            }
+        });
+        
+        this.lteDateField = new Ext.form.DateField({
+            format:'d.m.Y',
+            listeners: {
+                    select: function(df, date){
+                            this.storeFilter('doc_date__lte',date.format('Y-m-d'));
+                    },
+                    scope:this
+            }
+        })
 		
 		this.columns =  [
 		    {
@@ -108,32 +127,12 @@ App.billing.PaymentGrid = Ext.extend(Ext.grid.GridPanel, {
 				handler: function(){
                     this.store.clearFilter()
                 }
-		    },'-','Период c ',{
-                                xtype:'datefield',
-                                id: 'date_gte'+this.tmp_id,
-                                format:'d.m.Y',
-                                listeners: {
-                                        select: function(df, date){
-                                                this.storeFilter('doc_date__gte',date.format('Y-m-d'));
-                                        },
-                                        scope:this
-                                }
-                        },' по ',{
-                                xtype:'datefield',
-                                id: 'date_lte'+this.tmp_id,
-                                format:'d.m.Y',
-                                listeners: {
-                                        select: function(df, date){
-                                                this.storeFilter('doc_date__lte',date.format('Y-m-d'));
-                                        },
-                                        scope:this
-                                }
-                        },'-',
+		    },'-','Период c ',this.gteDateField,' по ',this.lteDateField,'-',
 			'->']
 		}); 
 		
 		var config = {
-			id:'payment-grid',
+//			id:'payment-grid',
 			title:'Платежные документы',
 			loadMask : {
 				msg : 'Подождите, идет загрузка...'
@@ -167,17 +166,24 @@ App.billing.PaymentGrid = Ext.extend(Ext.grid.GridPanel, {
 		
 		Ext.apply(this, Ext.apply(this.initialConfig, config));
 		App.billing.PaymentGrid.superclass.initComponent.apply(this, arguments);
-		//App.eventManager.on('globalsearch', this.onGlobalSearch, this);
 		App.eventManager.on('paymentsave', this.reloadStore, this);
+		App.eventManager.on('globalsearch', this.onGlobalSearch, this);
 
 		
 		this.on('afterrender', function(){
-			var first_day = new Date();
-			first_day.setDate(1);
-			Ext.getCmp('date_gte'+this.tmp_id).setValue(first_day);
-			this.store.setBaseParam('doc_date__gte', first_day.format('Y-m-d'));
-			this.store.load();
+			if (!this.hasPatient){
+				var first_day = new Date();
+				first_day.setDate(1);
+				this.gteDateField.setValue(first_day);
+				this.store.setBaseParam('doc_date__gte', first_day.format('Y-m-d'));
+				this.store.load();
+			}
 		}, this);
+		
+		this.on('destroy', function(){
+		    App.eventManager.un('paymentsave', this.reloadStore, this);
+		    App.eventManager.un('globalsearch', this.onGlobalSearch, this);
+		},this);
 	},
 	
 	onGlobalSearch: function(v) {
@@ -222,6 +228,7 @@ App.billing.PaymentGrid = Ext.extend(Ext.grid.GridPanel, {
     				is_income:rec.data.direction == 1 ? true : false,
 	    			record:rec,
 	    			patientRecord:this.patientRecord,
+	    			patient_id:this.patientRecord.data.id,
 	    			store:this.store
     			};
     			this.win = new App.billing.PaymentWindow(data);
@@ -246,6 +253,9 @@ App.billing.PaymentGrid = Ext.extend(Ext.grid.GridPanel, {
 		if (this.store) {
 			this.store.load();
 			//this.btnSetDisabled(true);
+		};
+		if(this.win){
+			this.win.close();
 		}
 	}
 	

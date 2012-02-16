@@ -26,6 +26,7 @@ from constance import config
 from django.contrib.contenttypes import generic
 from remoting.models import TransactionItem
 from service.exceptions import TubeIsNoneException
+#from scheduler.models import Preorder
 
 class ReferralAgent(make_operator_object('referralagent')):
     """
@@ -269,6 +270,7 @@ class OrderedService(make_operator_object('ordered_service')):
                                  null=True, blank=True)
     
     transactions = generic.GenericRelation(TransactionItem)
+    assigment = models.ForeignKey('scheduler.Preorder', verbose_name=u'Направление', blank = True, null = True)
 
     objects = models.Manager()
 
@@ -277,7 +279,11 @@ class OrderedService(make_operator_object('ordered_service')):
     
     def save(self, *args, **kwargs):
         pt = config.PRICE_BY_PAYMENT_TYPE and self.order.payment_type or u'н'
-        price = self.service.price(self.execution_place, self.order.created, payment_type=pt)
+        if self.assigment and self.assigment.price:
+            price = self.assigment.price
+            print self.assigment.price
+        else:
+            price = self.service.price(self.execution_place, self.order.created, payment_type=pt)
         opr = OPERATIONS[self.order.cls]
         self.price = price*opr
         self.total_price = price*self.count

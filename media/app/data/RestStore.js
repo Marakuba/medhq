@@ -14,7 +14,7 @@ Ext.data.RESTStore = Ext.extend(Ext.data.Store, {
 
 					_new_records : [],
 					
-				    baseParams: {
+				    baseParams: config.baseParams || {
 				    	format:'json'
 				    },
 				    

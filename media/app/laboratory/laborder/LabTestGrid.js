@@ -232,6 +232,10 @@ App.laborder.LabTestGrid = Ext.extend(Ext.grid.GridPanel, {
 			this.storeFilter('created__lte', date.format('Y-m-d 23:59'), false);
 			this.store.load();
 		}, this);
+		
+		this.on('destroy', function(){
+		    App.eventManager.un('globalsearch', this.onGlobalSearch, this); 
+		},this);
 	},
 	
 	onContextMenu: function(grid, index, e) {

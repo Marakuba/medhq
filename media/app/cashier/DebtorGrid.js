@@ -7,25 +7,7 @@ App.cashier.DebtorGrid = Ext.extend(Ext.grid.GridPanel, {
 		this.store = new Ext.data.RESTStore({
 			autoLoad : true,
 			apiUrl : get_api_url('debtor'),
-			model: [
-				    {name: 'id'},
-				    {name: 'resource_uri'},
-				    {name: 'first_name', allowBlank: false},
-				    {name: 'mid_name'},
-				    {name: 'last_name', allowBlank: false},
-				    {name: 'gender', allowBlank: false},
-				    {name: 'mobile_phone'},
-				    {name: 'home_address_street'},
-				    {name: 'email'},
-				    {name: 'birth_day', allowBlank: false, type:'date'},
-				    {name: 'discount'},
-				    {name: 'client_item'},
-				    {name: 'balance'},
-				    {name: 'initial_account'},
-				    {name: 'billed_account'},
-				    {name: 'doc'},
-				    {name: 'hid_card'}
-				]
+			model: App.models.debtorModel
 		});
 		
 		this.columns =  [
@@ -106,9 +88,14 @@ App.cashier.DebtorGrid = Ext.extend(Ext.grid.GridPanel, {
 
 		Ext.apply(this, Ext.apply(this.initialConfig, config));
 		App.cashier.DebtorGrid.superclass.initComponent.apply(this, arguments);
-		//App.eventManager.on('globalsearch', this.onGlobalSearch, this);
+		App.eventManager.on('globalsearch', this.onGlobalSearch, this);
 		App.eventManager.on('paymentsave', this.reloadStore, this);
 		App.eventManager.on('visitcreate', this.reloadStore, this);
+		this.on('destroy', function(){
+		    App.eventManager.un('paymentsave', this.reloadStore, this);
+		    App.eventManager.un('globalsearch', this.onGlobalSearch, this);
+			App.eventManager.un('visitcreate', this.reloadStore, this); 
+		},this);
 //		App.eventManager.on('patientwrite', this.onPatientWrite, this);
 		//this.on('patientselect', this.onPatientSelect, this);
 		//this.store.on('write', this.onStoreWrite, this);
@@ -136,11 +123,7 @@ App.cashier.DebtorGrid = Ext.extend(Ext.grid.GridPanel, {
 		var s = this.store;
 		s.baseParams = { format:'json' };
 		vi = parseInt(v);
-		if (!isNaN(vi)){
-			s.setBaseParam('visit_id', vi);
-		} else {
-			s.setBaseParam('search', v);
-		}
+		s.setBaseParam('search', v);
 		s.load();
 	},
 	

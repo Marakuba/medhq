@@ -18,9 +18,10 @@ App.assignment.AsgmtForm = Ext.extend(Ext.FormPanel, {
 		});
 		
 		this.preorderGrid = new App.assignment.PreorderInlineGrid({
-			record:this.record,
+//			record:this.record,
 			type:this.type,
-			patientRecord:this.patientRecord,
+//			patientRecord:this.patientRecord,
+			card_id:this.card_id,
 			region:'center'
 		});
 		
@@ -214,6 +215,16 @@ App.assignment.AsgmtForm = Ext.extend(Ext.FormPanel, {
 			this.policyCmb.reset();
 			this.policyBar.hide();
 		}
+	},
+	
+	setPatientRecord: function(record){
+		this.patientRecord = record;
+		this.preorderGrid.setPatientRecord(record)
+	},
+	
+	setAssigmentRecord: function(record){
+		this.record = record;
+		this.preorderGrid.setAssigmentRecord(record)
 	}
 	
 });

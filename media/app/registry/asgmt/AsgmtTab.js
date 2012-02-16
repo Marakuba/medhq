@@ -5,6 +5,12 @@ Ext.ns('App.assignment');
 App.assignment.AsgmtTab = Ext.extend(Ext.Panel, {
 	initComponent : function() {
 		
+		this.patientStore = this.patientStore || new Ext.data.RESTStore({
+			autoLoad : false,
+			apiUrl : get_api_url('patient'),
+			model: App.models.patientModel
+		});
+		
 		this.store = this.store || new Ext.data.RESTStore({
 			autoLoad : false,
 			apiUrl : get_api_url('preorder'),
@@ -19,6 +25,7 @@ App.assignment.AsgmtTab = Ext.extend(Ext.Panel, {
 			model:this.model,
         	record:this.record,
         	patientRecord:this.patientRecord,
+        	card_id:this.card_id,
         	type:this.type,
 			fn:function(record){
 				this.record = record;
@@ -41,6 +48,14 @@ App.assignment.AsgmtTab = Ext.extend(Ext.Panel, {
 //			disabled:true,
 			scope:this
     	});
+    	
+    	this.patientButton = new Ext.Button({
+			text:'Пациент',
+			iconCls: 'silk-pencil',
+			handler: this.onPatientEdit.createDelegate(this,[]),
+			disabled:true,
+			scope:this
+    	});
 		
 		config = {
 			layout:'fit',
@@ -51,7 +66,7 @@ App.assignment.AsgmtTab = Ext.extend(Ext.Panel, {
 //			    split: true,
 				//baseCls:'x-border-layout-ct',
 			},
-			tbar:[this.getPatientTitle(),
+			tbar:[this.patientButton,
 			      '->',{
         		text:'Закрыть',
 				handler:this.onClose.createDelegate(this,[])
@@ -64,13 +79,38 @@ App.assignment.AsgmtTab = Ext.extend(Ext.Panel, {
 		
 //		this.setTitle(this.getTitleText()); //TODO: make correct title
 		
+		this.on('render', function(){
+			
+			if (!this.patientId){
+				return false
+			};
+			this.setTitle(this.getTitleText());
+			this.patientStore.setBaseParam('id',this.patientId);
+			this.patientStore.load({callback:function(records){
+				if (!records.length){
+					return
+				};
+				this.patientRecord = records[0];
+				this.getPatientTitle();
+				this.form.setPatientRecord(this.patientRecord);
+			},scope:this});
+			
+			//если направление уже существует
+			if (this.preorderId){
+				this.store.setBaseParam('id',this.preorderId);
+				this.store.load({callback:function(records){
+					if (!records.length){
+						return
+					};
+					this.record = records[0];
+					this.form.setAssigmentRecord(this.record);
+				},scope:this});
+			};
+		},this);
+		
 		this.store.on('write', this.onStoreWrite, this);
 		this.on('destroy', function(){
 			this.store.un('write', this.onStoreWrite, this);
-		},this);
-		
-		this.on('render', function(){
-			this.setTitle(this.getTitleText());
 		},this);
 		
 	},
@@ -139,7 +179,7 @@ App.assignment.AsgmtTab = Ext.extend(Ext.Panel, {
 	
 	onStoreWrite: function(store, action, result, res, rs) {
 		if(action=='create') {
-			App.eventManager.fireEvent('visitcreate',rs);
+			App.eventManager.fireEvent('assigmentcreate',rs);
 		}
 		this.record = rs;
 		this.popStep();
@@ -163,28 +203,51 @@ App.assignment.AsgmtTab = Ext.extend(Ext.Panel, {
 
 	getPatientTitle : function(){
 		var rec = this.patientRecord;
-		v = {};
-		Ext.apply(v, rec.data);
-		if(this.record && this.record.id) {
-			Ext.apply(v,{
-				visit:String.format(', прием №{0}',this.record.id)
-			});
+		var text = '';
+		if (rec){
+			text = 'Пациент: ' + rec.data.last_name + ' ' + rec.data.first_name + ' ' + rec.data.mid_name;
+			this.patientButton.setText(text);
+			this.patientButton.enable()
+		} else {
+			this.patientButton.disable();
+			console.log('Не указан пациент')
 		}
-		tpl = new Ext.Template(
-			'Пациент: {last_name} {first_name} {mid_name}',
-			'{visit}'
-		);
-		return tpl.apply(v);
+		return text
 	},
 	
 	getTitleText: function() {
 		var title;
-		if(this.record && this.record.data.id) {
-			title = this.type == 'visit' ? 'Прием №'+this.record.data.id : 'Поступление биоматериала №'+this.record.data.id;
+		if(this.preorderId) {
+			title = 'Направление №'+this.preorderId;
 		} else {
-			title = this.type == 'visit' ? 'Новый прием' : 'Новое поступление биоматериала';
+			title = 'Новое направление';
 		}
 		return title
+	},
+	
+	onPatientEdit: function(){
+		var rec = this.patientRecord;
+		if (!rec){
+			return false
+		}
+		this.pWin = new App.patient.PatientWindow({
+			fn:function(record){
+				this.patientRecord = record;
+				this.getPatientTitle()
+//				this.pWin.close()
+			},
+			listeners:{
+				savecomplete:function(){
+					this.pWin.close();
+					this.patientStore.load();
+				},
+				scope:this
+			},
+			record:this.patientRecord,
+			scope:this
+		});
+		
+		this.pWin.show();
 	}
 });
 
