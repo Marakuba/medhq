@@ -279,6 +279,7 @@ App.visit.VisitTab = Ext.extend(Ext.Panel, {
 			return false
 		}
 		this.pWin = new App.patient.PatientWindow({
+			fromVisit:true,
 			fn:function(record){
 				this.patientRecord = record;
 				this.getPatientTitle()

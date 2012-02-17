@@ -18,7 +18,7 @@ App.patient.PatientWindow = Ext.extend(Ext.Window, {
 			fn:function(record){
 				this.record = record;
 				this.store.insertRecord(this.record);
-				this.popStep()
+				if(!this.record.phantom) this.popStep()
 			},
 			scope:this			
 		});
@@ -27,6 +27,7 @@ App.patient.PatientWindow = Ext.extend(Ext.Window, {
 			iconCls:'med-testtubes',
 			text:'Сохранить и перейти к поступлению б/м',
 			handler:this.onFormSave.createDelegate(this,['material']),
+			disabled:this.fromVisit?true:false,//если окно открыто из визита, то новый визит создавать не надо
 			scope:this
 		});
 		
@@ -34,10 +35,12 @@ App.patient.PatientWindow = Ext.extend(Ext.Window, {
 			iconCls:'med-usersetup',
 			text:'Сохранить и перейти к приему',
 			handler:this.onFormSave.createDelegate(this,['visit']),
+			disabled:this.fromVisit?true:false,
 			menu:[{
 				iconCls:'med-testtubes',
 				text:'Сохранить и перейти к поступлению б/м',
 				handler:this.onFormSave.createDelegate(this,['material']),
+				disabled:this.fromVisit?true:false,
 				scope:this
 			}],
 			scope:this
@@ -88,6 +91,7 @@ App.patient.PatientWindow = Ext.extend(Ext.Window, {
 	},
 	
 	onStoreWrite: function(store, action, result, res, rs) {
+		console.log(rs)
 		if(action=='create') {
 			App.eventManager.fireEvent('patientcreate',rs);
 		}
