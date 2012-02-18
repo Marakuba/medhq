@@ -111,6 +111,14 @@ App.ExamCentralPanel = Ext.extend(Ext.Panel, {
                     	this.launchApp('editor');
                     },
                     scope:this
+                },{
+                	text: 'Мои шаблоны',
+                    scale:'medium',
+                    iconAlign: 'top',
+                    handler: function(){
+                    	this.launchApp('tmparchive',{staff:App.getApiUrl('position')+'/'+active_profile});
+                    },
+                    scope:this
                 }]
             },{
                 xtype: 'buttongroup',

@@ -42,6 +42,7 @@ App.examination.Editor = Ext.extend(Ext.Panel, {
 		this.serviceTree = new App.ServiceTreeGrid ({
 //			layout: 'fit',
 			region:'west',
+			hidden:this.editMode,
 			baseParams:{
 				payment_type:'н',
 				staff : active_profile,
@@ -86,6 +87,18 @@ App.examination.Editor = Ext.extend(Ext.Panel, {
 		App.examination.Editor.superclass.initComponent.apply(this, arguments);
 		
 		this.on('afterrender',function(form){
+			this.fieldSetStore.load({callback:function(records){
+				if(!records.length){
+					return
+				}
+				this.subSectionStore.load({callback:function(records){
+					if (this.editMode){
+						if (this.record){
+							this.onEditTmp(this.record)
+						}
+					}
+				},scope:this})
+			},scope:this})
 		});
 		
 		this.serviceTree.on('serviceclick',function(attrs){
@@ -132,7 +145,8 @@ App.examination.Editor = Ext.extend(Ext.Panel, {
 	newTmpBody: function(config){
 		
 		this.generalTab = new App.examination.GeneralTab({
-			print_name:this.print_name
+			print_name:this.print_name,
+			fromArchive:config.fromArchive
 		});
 		
 		return new App.examination.TemplateBody (Ext.apply(
@@ -195,7 +209,31 @@ App.examination.Editor = Ext.extend(Ext.Panel, {
 			this.contentPanel.doLayout();
 		},this);
 		
+		startPanel.on('edittmp',function(record){
+			this.onEditTmp(record)
+		},this);
+		
 		return startPanel;
+	},
+	
+	onEditTmp: function(record){
+		this.contentPanel.removeAll(true); // tmpStore из StartPanel уничтожен, нужно теперь искать запись в другом store
+		this.print_name = record.data.print_name;
+		this.tmpStore.setBaseParam('id',record.data.id);
+		this.tmpStore.load({callback:function(records){
+			if (records.length){
+				delete this.tmpStore.baseParams['id'];
+				this.tmpBody = this.newTmpBody({
+					print_name: records[0].data.print_name,
+					record:records[0],
+//					fromArchive:true,
+					card:false // признак того, что это не карта
+				});
+				this.contentPanel.setTitle(records[0].data.print_name);
+				this.contentPanel.add(this.tmpBody);
+				this.contentPanel.doLayout();
+			}
+		},scope:this});
 	}
 });
 

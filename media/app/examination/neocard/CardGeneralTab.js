@@ -107,6 +107,7 @@ App.examination.CardGeneralTab = Ext.extend(Ext.form.FormPanel, {
 		
 		this.moveArchiveBtn = new Ext.Button({
 			text: 'Переместить в архив',
+			hidden:this.fromArchive,
 			handler:function(){
 				this.fireEvent('movearhcivecard')
 			},
