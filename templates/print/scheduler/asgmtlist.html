@@ -1,0 +1,89 @@
+{% extends "print/off_blank.html" %}
+
+
+{% block body %}
+<style>
+	table.service-list {
+		margin-top:12pt;
+	}
+	table.service-list td,table.service-list th  {
+		border:1px solid;
+		padding:3px;
+		font-size:10pt;
+	}
+	table.service-list th {
+		background-color:#EEE;
+	}
+	.details {
+		font-size:12pt;
+		line-height:120%;
+		margin:5px 0 10px 0;
+	}
+	.title {
+		font-size:16pt;
+		font-weight:bold;
+		text-align:center;
+		margin:8pt 0;
+	}
+	.rt {
+		text-align:right;
+	}
+	
+</style>
+	
+<div id="print-box">
+	<script>
+		function printDoc(){
+			if(jsPrintSetup){
+				jsPrintSetup.setOption('marginTop',10);
+				jsPrintSetup.setOption('marginBottom',10);
+				jsPrintSetup.setOption('marginLeft',10);
+				jsPrintSetup.setOption('marginRight',10);
+				jsPrintSetup.print();
+			} else {
+				window.print();
+			}
+		}
+	</script>
+	<a href="javascript:printDoc();">Печать</a>
+</div>
+<div class="page_wrapper_A4_book">
+	<div class="page_wrapper">
+		{% include "print/header.html" %}
+		<h1 class="title">Реестр направлений</h1>
+		<div class="details">
+			<div>Пациент: <strong>{{ patient.full_name }}</strong></div>
+			<div>Дата: <strong>{{ created|date:"d.m.Y" }}</strong></div>
+			{% if promotion %}<div>Акция: <strong>{{ promotion }}</strong></div>{% endif %}
+			
+			<table width="100%" class="service-list">
+				<tr>
+					<th width="1%">№ п/п</th>
+					<th>Наименование</th>
+					<th>Количество</th>
+					<th>Цена</th>
+					<th>Скидка</th>
+					<th>Итого</th>
+				</tr>
+				{% for preorder in preorders %}
+				<tr>
+					<td>{{ forloop.counter }}</td>
+					<td>{{ preorder.service }}</td>
+					<td class="rt">{{ preorder.count }}</td>
+					<td class="rt">{{ preorder.price }}</td>
+					<td class="rt">{{ preorder.get_discount|floatformat:2 }}</td>
+					<td class="rt">{{ preorder.get_total_price|floatformat:2 }}</td>
+				</tr>
+				{% endfor %}
+				<tr style="font-weight: bold;">
+					<td colspan="2" class="rt">Всего услуг:</td>
+					<td class="rt">{{ total_count }}</td>
+					<td colspan="2" class="rt">Итого, руб.:</td>
+					<td class="rt">{{ total_price }}</td>
+				</tr>
+			</table>
+		</div>
+	</div>
+</div>
+
+{% endblock %}

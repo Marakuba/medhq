@@ -195,7 +195,7 @@ App.assignment.AsgmtTab = Ext.extend(Ext.Panel, {
 			if(this.msgBox) {
 				this.msgBox.hide();
 			}
-			Ext.callback(this.fn, this.scope || window);
+			Ext.callback(this.fn, this.scope || window, [this]);
 			this.onClose(true);
 //			this.fireEvent('savecomplete');
 		}

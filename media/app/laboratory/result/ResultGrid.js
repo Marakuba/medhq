@@ -189,9 +189,9 @@ App.result.ResultGrid = Ext.extend(Ext.grid.EditorGridPanel, {
 			listeners: {
 				afteredit: function(e) {
 					if(e.column==4) {
-//						e.record.beginEdit();
+						e.record.beginEdit();
 						e.record.set('validation',e.value ? 1 : 0);
-//						e.record.endEdit();
+						e.record.endEdit();
 						this.store.save();
 					}
 				},
@@ -274,7 +274,7 @@ App.result.ResultGrid = Ext.extend(Ext.grid.EditorGridPanel, {
 	
 	onChangeState: function(val){
 		var records = this.getSelectionModel().getSelections();
-		this.store.autoSave = false;
+//		this.store.autoSave = false;
 		Ext.each(records, function(rec){
 			if(rec) {
 				rec.beginEdit();
@@ -283,7 +283,7 @@ App.result.ResultGrid = Ext.extend(Ext.grid.EditorGridPanel, {
 			}
 		},this);
 		this.store.save();
-		this.store.autoSave = true;
+//		this.store.autoSave = true;
 	},
 	
 	setActiveRecord: function(rec) {

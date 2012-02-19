@@ -274,7 +274,7 @@ class MedStateResource(ModelResource):
 class OwnStateResource(ModelResource):
 
     class Meta:
-        queryset = State.objects.filter(type__in=('b',)).order_by('id',)
+        queryset = State.objects.filter(type__in=('b','p')).order_by('id',)
         resource_name = 'ownstate'
         limit = 20
         filtering = {

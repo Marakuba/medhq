@@ -206,6 +206,14 @@ class Preorder(models.Model):
             self.timeslot.vacant = True 
             self.timeslot.save()
         super(Preorder, self).delete(*args, **kwargs) 
+    
+    def get_discount(self):
+        if self.promotion:
+            return self.price*(self.promotion.discount.value/100)*self.count
+        return 0
+    
+    def get_total_price(self):
+        return self.price*self.count - self.get_discount()
 
     class Meta:
         verbose_name = u'предзаказ'

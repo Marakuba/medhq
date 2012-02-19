@@ -1,3 +1,5 @@
 from django.conf.urls.defaults import *
 
-# place app url patterns here
+urlpatterns = patterns('scheduler.views',
+    (r'^asgmtlist/$','asgmt_list'),
+)

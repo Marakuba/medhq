@@ -474,8 +474,17 @@ App.patient.AsgmtGrid = Ext.extend(Ext.grid.EditorGridPanel, {
 			App.eventManager.fireEvent('launchapp','asgmttab',{
 				patientId:this.patientId,
 				card_id:this.card_id,
-				fn: function(){
+				fn: function(asgmttab){
 					this.store.load();
+					var idList = [];
+					var s = asgmttab.form.preorderGrid.store;
+					s.each(function(rec){
+						idList.push(rec.id);
+					});
+					var win = new App.patient.AsgmtListWindow({
+						idList:idList.join(",")
+					});
+					win.show();
 				},
 				scope:this
 			});
