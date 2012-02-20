@@ -51,6 +51,19 @@ App.examination.ArchiveGrid = Ext.extend(Ext.grid.EditorGridPanel, {
             reader: this.reader,
             writer: this.writer
         });
+        
+        this.editBtn = new Ext.Button({
+			text:'Изменить',
+			disabled:true,
+			iconCls:'silk-pencil',
+			handler:function(){
+				var record = this.getSelectionModel().getSelected()
+				if (record){
+					this.fireEvent('edittmp',record);
+				}
+			},
+			scope:this
+		});
     	
 		var config = {
 			store: this.tmpStore,
@@ -91,15 +104,13 @@ App.examination.ArchiveGrid = Ext.extend(Ext.grid.EditorGridPanel, {
 					scope:this,
 					rowselect:function(selModel,rowIndex,record){
 						this.fireEvent('rowselect',record);
+						this.editBtn.enable();
+					},rowdeselect:function(selModel,rowIndex,record){
+						this.editBtn.disable();
 					}
 				}
 			}),
-//			tbar:[{
-//				text:'Изменить',
-//				iconCls:'silk-pencil',
-//				handler:this.fireEvent('tmpedit'),
-//				scope:this
-//			}],
+			tbar:[this.editBtn],
             viewConfig: {
                 forceFit: true
             }

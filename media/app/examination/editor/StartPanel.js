@@ -306,7 +306,7 @@ App.examination.StartPanel = Ext.extend(Ext.Panel, {
     printNameRenderer: function(){
     	var self = this;
     	return function(value,metaData,record){
-    		if (self.printName){
+    		if (self.print_name){
     			return value
     		} else {
     			return record.data.service_name

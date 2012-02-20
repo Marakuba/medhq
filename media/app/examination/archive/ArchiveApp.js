@@ -45,9 +45,9 @@ App.examination.ArchiveApp = Ext.extend(Ext.Panel, {
 					if (!record){
 						return false
 					}
-					this.print_name = record.data.name;
 					this.editTmp(record);
 				},
+				edittmp:this.editTmp,
 				scope:this
 			}
 		});
@@ -70,7 +70,7 @@ App.examination.ArchiveApp = Ext.extend(Ext.Panel, {
 		
 		var config = {
 			closable:true,
-			title: 'Журнал заключений',
+			title: 'Мои шаблоны',
 			layout: 'border',	
      		items: [
 				this.archivePanel,
@@ -94,6 +94,12 @@ App.examination.ArchiveApp = Ext.extend(Ext.Panel, {
 	},
 	
 	editTmp: function(record){
+		if(!record){
+			console.log('нет записи');
+			return false
+		}
+		
+		this.print_name = record.data.name;
 		
 		config = {
 			editMode: true,

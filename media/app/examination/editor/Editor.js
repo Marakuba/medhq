@@ -27,14 +27,14 @@ App.examination.Editor = Ext.extend(Ext.Panel, {
 		
 		this.fieldSetStore = new Ext.data.RESTStore({
 			autoSave: false,
-			autoLoad : true,
+			autoLoad : false,
 			apiUrl : get_api_url('examfieldset'),
 			model: App.models.FieldSet
 		});
 		
 		this.subSectionStore = new Ext.data.RESTStore({
 			autoSave: false,
-			autoLoad : true,
+			autoLoad : false,
 			apiUrl : get_api_url('examsubsection'),
 			model: App.models.SubSection
 		});
@@ -220,9 +220,11 @@ App.examination.Editor = Ext.extend(Ext.Panel, {
 		this.contentPanel.removeAll(true); // tmpStore из StartPanel уничтожен, нужно теперь искать запись в другом store
 		this.print_name = record.data.print_name;
 		this.tmpStore.setBaseParam('id',record.data.id);
+		delete this.tmpStore.baseParams['base_service'];
 		this.tmpStore.load({callback:function(records){
 			if (records.length){
 				delete this.tmpStore.baseParams['id'];
+				this.tmpStore.setBaseParam('base_service',this.base_service);
 				this.tmpBody = this.newTmpBody({
 					print_name: records[0].data.print_name,
 					record:records[0],

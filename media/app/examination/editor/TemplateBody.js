@@ -308,6 +308,7 @@ App.examination.TemplateBody = Ext.extend(Ext.TabPanel, {
 		var new_tab = new App.examination.TicketTab({
 			title:title,
 			section:section,
+//			closable:false,
 			base_service:this.base_service,
 			staff:this.staff,
 			data:data,
@@ -323,6 +324,15 @@ App.examination.TemplateBody = Ext.extend(Ext.TabPanel, {
 					};
 //					this.updateRecord();
 //					this.removeTab(p.section);
+				},
+				'closetab':function(p){
+					this.sectionMenu.insert(p.order,this.menuBtns[p.section]);
+					this.addSecBtn.enable();
+					if (this.items.length == 1) {
+						this.addSubSecBtn.disable();
+					};
+					p.removeTab();
+					this.remove(p)
 				},
 				'ticketdataupdate': function(){
 					this.updateRecord();
@@ -492,6 +502,7 @@ App.examination.TemplateBody = Ext.extend(Ext.TabPanel, {
 			closable:false,
 			card_id:this.record.data.id,
 			order:99,
+			hasPatient:true,
 			listeners:{
 				'close': function(p){
 					this.sectionMenu.insert(99,this.menuBtns['service']);
