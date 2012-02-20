@@ -252,6 +252,35 @@ App.examination.CardStartPanel = Ext.extend(Ext.Panel, {
             }
         });
         
+        this.continueCardRadio = new Ext.form.Radio({
+            boxLabel: 'Продолжить карту осмотра',
+            name: 'input-choice', 
+            inputValue: 'card',
+            listeners:{
+            	check: function(r,checked){
+            		if (checked){
+            			this.radio = r.inputValue;
+            			if (this.previewPanel.hidden){
+            				this.previewPanel.show();
+            			};
+        				this.cardStore.setBaseParam('ordered_service',App.uriToId(this.ordered_service));
+        				this.cardStore.load({callback:function(records){
+        					if (!records.length){
+        						this.previewPanel.hide();
+        						return
+        					}
+        					this.cardGrid.getSelectionModel().selectFirstRow();
+        					if (this.cardGrid.hidden){
+								this.cardGrid.show();
+								this.gridPanel.show();
+							};
+        				},scope:this});
+            		}
+            	},
+            	scope:this
+            }
+        });
+        
         this.fromCardRadio = new Ext.form.Radio({
             boxLabel: 'Продолжить карту осмотра',
             name: 'input-choice', 
@@ -395,6 +424,9 @@ App.examination.CardStartPanel = Ext.extend(Ext.Panel, {
                     align: 'stretch',
                     items: [{
                             xtype: 'panel',
+                            items: [this.continueCardRadio]
+                    	},{
+                    		 xtype: 'panel',
                             items: [this.fromCardRadio]
                     	},{
                             xtype: 'panel',
@@ -446,12 +478,12 @@ App.examination.CardStartPanel = Ext.extend(Ext.Panel, {
             this.tmpStore.setBaseParam('base_service',App.uriToId(this.service));
 			this.cardStore.load({callback:function(records){
 				if (records.length){
-					this.fromCardRadio.setValue(true);
+					this.continueCardRadio.setValue(true);
 					this.cardGrid.getSelectionModel().selectFirstRow();
 					this.onPreview('card');
 					this.radio = 'card';
 				} else {
-					this.fromCardRadio.disable();
+					this.continueCardRadio.disable();
 					this.tmpStore.load({callback:function(recs){
 					if (recs.length){
 						this.fromTmpRadio.setValue(true);

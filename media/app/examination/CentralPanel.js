@@ -116,7 +116,7 @@ App.ExamCentralPanel = Ext.extend(Ext.Panel, {
                     scale:'medium',
                     iconAlign: 'top',
                     handler: function(){
-                    	this.launchApp('tmparchive',{staff:App.getApiUrl('position')+'/'+active_profile});
+                    	this.launchApp('tmparchive');
                     },
                     scope:this
                 }]

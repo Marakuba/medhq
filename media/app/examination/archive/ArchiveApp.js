@@ -3,6 +3,8 @@ Ext.ns('App.examination');
 App.examination.ArchiveApp = Ext.extend(Ext.Panel, {
 	initComponent : function() {
 		
+		this.staff = App.getApiUrl('staff')+ '/' + active_staff;
+		
 		this.fieldSetStore = new Ext.data.RESTStore({
 			autoSave: false,
 			autoLoad : true,

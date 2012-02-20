@@ -5,18 +5,7 @@ Ext.ns('Ext.ux');
 App.examination.Editor = Ext.extend(Ext.Panel, {
 	initComponent : function() {
 		
-		Ext.Ajax.request({
-			url:get_api_url('position'),
-			method:'GET',
-			params: {id: active_profile},
-			success:function(resp, opts) {
-				var jsonResponse = Ext.util.JSON.decode(resp.responseText);
-				Ext.each(jsonResponse.objects, function(item,i){
-					this.staff = item.staff;
-				}, this);
-			},
-			scope: this
-		});
+		this.staff = App.getApiUrl('staff')+ '/' + active_staff;
 		
 		this.tmpStore = new Ext.data.RESTStore({
 			autoSave: true,

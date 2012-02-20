@@ -160,13 +160,6 @@ App.examination.TicketTab = Ext.extend(Ext.Panel, {
 			}
 		});
 		
-		this.deleteBtn = new Ext.Button({
-			text: 'Удалить раздел',
-			handler:function(){
-				this.fireEvent('closetab',this);
-			},
-			scope:this
-		});
 //		this.bb = new Ext.Toolbar({
 //			items:[]
 //		});
@@ -180,12 +173,11 @@ App.examination.TicketTab = Ext.extend(Ext.Panel, {
 //		    title: 'Оборудование',
 		    labelAlign: 'top',
 		    autoSctoll:true,
-		    closable:false,
+		    closable:true,
 		    bubbleEvents:['beforeticketremove','ticketremove','ticketdataupdate','ticketeditstart','editorclose','drop','ticketheadeeditrstart'],
 		    items: [
 		       this.ticketPanel, this.glossPanel
-		    ],
-		    bbar: [this.deleteBtn]
+		    ]
 		}
 								
 		Ext.apply(this, Ext.apply(this.initialConfig, config));
@@ -246,7 +238,9 @@ App.examination.TicketTab = Ext.extend(Ext.Panel, {
 		},this);
 		
 		this.on('beforeclose',function(){
-			this.removeTab();
+			this.fireEvent('closetab',this)
+			return false
+//			this.removeTab();
 		},this);
 		
 		this.on('editorclose',function(){

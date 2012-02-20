@@ -326,13 +326,18 @@ App.examination.TemplateBody = Ext.extend(Ext.TabPanel, {
 //					this.removeTab(p.section);
 				},
 				'closetab':function(p){
-					this.sectionMenu.insert(p.order,this.menuBtns[p.section]);
-					this.addSecBtn.enable();
-					if (this.items.length == 1) {
-						this.addSubSecBtn.disable();
-					};
-					p.removeTab();
-					this.remove(p)
+					Ext.Msg.confirm('Удаление','Удалить раздел?',function(button){
+						if(button=='yes'){
+							this.sectionMenu.insert(p.order,this.menuBtns[p.section]);
+							this.addSecBtn.enable();
+							if (this.items.length == 1) {
+								this.addSubSecBtn.disable();
+							};
+							p.removeTab();
+							this.remove(p)
+						}
+					},this)
+					
 				},
 				'ticketdataupdate': function(){
 					this.updateRecord();

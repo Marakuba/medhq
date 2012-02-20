@@ -4,18 +4,7 @@ App.examorder.ExamOrderGrid = Ext.extend(Ext.grid.GridPanel, {
 
 	initComponent : function() {
 		
-		Ext.Ajax.request({
-			url:get_api_url('position'),
-			method:'GET',
-			params: {id: active_profile},
-			success:function(resp, opts) {
-				var jsonResponse = Ext.util.JSON.decode(resp.responseText);
-				Ext.each(jsonResponse.objects, function(item,i){
-					this.staff = item.staff;
-				}, this);
-			},
-			scope: this
-		});
+		this.staff = App.getApiUrl('staff')+ '/' + active_staff;
 		
 		this.tmp_id = Ext.id();
 		
