@@ -152,7 +152,9 @@ App.examination.Editor = Ext.extend(Ext.Panel, {
 						this.onServiceClick(this.attrs)
 					},
 					deletetmp:function(){
-						this.onServiceClick(this.attrs)
+						if(this.attrs){
+							this.onServiceClick(this.attrs)
+						}
 					},
 					changetitle: function(text){
 						this.contentPanel.setTitle(text);

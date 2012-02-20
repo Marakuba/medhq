@@ -133,7 +133,7 @@ App.examination.StartPanel = Ext.extend(Ext.Panel, {
             listeners:{
             	check: function(r,checked){
             		if (checked){
-            			this.radio = r.getValue().inputValue;
+            			this.radio = r.inputValue;
             			this.tmpGrid.hide();
             			this.previewPanel.hide();
             		}
@@ -149,7 +149,7 @@ App.examination.StartPanel = Ext.extend(Ext.Panel, {
             listeners:{
             	check: function(r,checked){
             		if (checked){
-            			this.radio = r.getValue().inputValue;
+            			this.radio = r.inputValue;
             			if (!this.previewPanel.hidden){
             				this.previewPanel.hide();
             			};
@@ -178,7 +178,7 @@ App.examination.StartPanel = Ext.extend(Ext.Panel, {
             listeners:{
             	check: function(r,checked){
             		if (checked){
-            			this.radio = r.getValue().inputValue;
+            			this.radio = r.inputValue;
             			if (!this.previewPanel.hidden){
             				this.previewPanel.hide();
             			};
@@ -206,7 +206,7 @@ App.examination.StartPanel = Ext.extend(Ext.Panel, {
             listeners:{
             	check: function(r,checked){
             		if (checked){
-            			this.radio = r.getValue().inputValue;
+            			this.radio = r.inputValue;
             			if (!this.previewPanel.hidden){
             				this.previewPanel.hide();
             			};
@@ -301,6 +301,10 @@ App.examination.StartPanel = Ext.extend(Ext.Panel, {
         
 		Ext.apply(this, Ext.apply(this.initialConfig, config));
         App.examination.StartPanel.superclass.initComponent.call(this);
+        
+        this.on('afterrender',function(){
+        	this.radio = 'empty'
+        })
     },
     
     printNameRenderer: function(){
@@ -315,6 +319,7 @@ App.examination.StartPanel = Ext.extend(Ext.Panel, {
     },
     
     onNext: function(){
+    	console.log(this.radio)
     	
     	if (this.radio === 'empty'){
     		this.fireEvent('opentmp');
