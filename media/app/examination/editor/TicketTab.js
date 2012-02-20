@@ -177,7 +177,8 @@ App.examination.TicketTab = Ext.extend(Ext.Panel, {
 		    bubbleEvents:['beforeticketremove','ticketremove','ticketdataupdate','ticketeditstart','editorclose','drop','ticketheadeeditrstart'],
 		    items: [
 		       this.ticketPanel, this.glossPanel
-		    ]
+		    ],
+//		    bbar: [this.deleteBtn]
 		}
 								
 		Ext.apply(this, Ext.apply(this.initialConfig, config));

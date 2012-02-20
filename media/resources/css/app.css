@@ -1,3 +1,9 @@
+.x-icon-expand-all {
+    background-image: url(../images/expand-all.gif) !important; background-repeat: no-repeat;
+}
+.x-icon-collapse-all {
+    background-image: url(../images/collapse-all.gif) !important; background-repeat: no-repeat;
+}
 .med-testtubes {
 	background-image: url(icons/TestTubes.png) !important; background-repeat: no-repeat;
 }
