@@ -284,24 +284,30 @@ App.examination.TemplateBody = Ext.extend(Ext.TabPanel, {
 			};
 			
 			if (this.isCard){
-				var asgmt_tab = this.newAsgmtTab();
-				asgmt_tab.store.setBaseParam('patient',this.patient);
-				asgmt_tab.store.setBaseParam('card',this.record.data.id);
-				asgmt_tab.store.load({callback:function(records){
-					if (!records.length){
-						this.sectionMenu.insert(99,this.menuBtns['services'])
-						this.subSecBtns['services']=[];
-						return
-					};
-					this.patientStore.setBaseParam('id',this.patient);
-					this.patientStore.load({callback:function(records){
-						if(records.length){
-							this.asgmtTab = asgmt_tab;
-							this.asgmtTab['patientRecord'] = records[0];
-							this.insert(this.asgmtTab.order,this.asgmtTab);
-						}
+				if (!this.record.data.id){
+					this.sectionMenu.insert(99,this.menuBtns['services'])
+					this.subSecBtns['services']=[];
+					return
+				} else {
+					var asgmt_tab = this.newAsgmtTab();
+					asgmt_tab.store.setBaseParam('patient',this.patient);
+					asgmt_tab.store.setBaseParam('card',this.record.data.id);
+					asgmt_tab.store.load({callback:function(records){
+						if (!records.length){
+							this.sectionMenu.insert(99,this.menuBtns['services'])
+							this.subSecBtns['services']=[];
+							return
+						};
+						this.patientStore.setBaseParam('id',this.patient);
+						this.patientStore.load({callback:function(records){
+							if(records.length){
+								this.asgmtTab = asgmt_tab;
+								this.asgmtTab['patientRecord'] = records[0];
+								this.insert(this.asgmtTab.order,this.asgmtTab);
+							}
+						},scope:this})
 					},scope:this})
-				},scope:this})
+				}
 			};
 			this.setActiveTab(0);
 			

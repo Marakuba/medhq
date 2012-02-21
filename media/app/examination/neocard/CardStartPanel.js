@@ -55,56 +55,19 @@ App.examination.CardStartPanel = Ext.extend(Ext.Panel, {
             writer: this.writer
         });
     	
-    	this.tmpGrid = new Ext.grid.GridPanel({
+    	this.tmpGrid = App.examination.TemplateGrid({
 			store: this.tmpStore,
 			hidden:true,
 			autoScroll:true,
 			border:false,
-			columns:  [
-			    {
-			    	header: "Наименование", 
-			    	width:400,
-			    	sortable: true, 
-			    	hidden:false,
-			    	dataIndex: 'print_name',
-			    	renderer:this.printNameRenderer()
-			    },{
-			    	header: "Наименование1", 
-			    	width:400,
-			    	sortable: true, 
-			    	hidden:true,
-			    	dataIndex: 'service_name' 
-			    },{
-			    	header: "Создано", 
-			    	width:70,
-			    	sortable: true, 
-			    	renderer:Ext.util.Format.dateRenderer('H:i / d.m.Y'),
-			    	dataIndex: 'created' 
-			    },{
-			    	header: "Изменено", 
-			    	width:70,
-			    	sortable: true, 
-			    	renderer:Ext.util.Format.dateRenderer('H:i / d.m.Y'),
-			    	dataIndex: 'modified' 
-			    }
-			],
 			tbar:[{
 				text:'Изменить',
 				iconCls:'silk-pencil',
 				handler:this.tmpEdit.createDelegate(this),
 				scope:this
 			}],
-			sm : new Ext.grid.RowSelectionModel({
-				singleSelect : true,
-				listeners: {
-					rowselect:this.onPreview.createDelegate(this,['tmp']),
-					scope:this
-				}
-			}),
-			viewConfig:{
-				forceFit:true
-			},
 			listeners: {
+				rowselect:this.onPreview.createDelegate(this,['tmp']),
 				rowdblclick:this.onNext.createDelegate(this),
 				scope:this
 			}
@@ -142,52 +105,13 @@ App.examination.CardStartPanel = Ext.extend(Ext.Panel, {
 	        })
         });
     	
-        this.cardGrid = new Ext.grid.GridPanel({
-			store: this.cardStore,
-			hidden:true,
-			autoScroll:true,
-			border:false,
-			columns:  [
-			    {
-			    	header: "Наименование", 
-			    	width:400,
-			    	sortable: true, 
-			    	hidden:false,
-			    	dataIndex: 'print_name',
-			    	renderer:this.printNameRenderer()
-			    },{
-			    	header: "Наименование1", 
-			    	width:400,
-			    	sortable: true, 
-			    	hidden:true,
-			    	dataIndex: 'service_name' 
-			    },{
-			    	header: "Создано", 
-			    	width:70,
-			    	sortable: true, 
-			    	renderer:Ext.util.Format.dateRenderer('H:i / d.m.Y'),
-			    	dataIndex: 'created' 
-			    },{
-			    	header: "Изменено", 
-			    	width:70,
-			    	sortable: true, 
-			    	renderer:Ext.util.Format.dateRenderer('H:i / d.m.Y'),
-			    	dataIndex: 'modified' 
-			    }
-			],
-			sm : new Ext.grid.RowSelectionModel({
-				singleSelect : true,
-				listeners: {
-					rowselect:this.onPreview.createDelegate(this,['card']),
-					scope:this
-				}
-			}),
-			viewConfig:{
-				forceFit:true
-			},
+        this.cardGrid = new App.examination.CardGrid({
+        	hidden:true,
+        	store:this.cardStore,
+			printName:this.printName,
 			listeners: {
-//				show:this.onPreview.createDelegate(this,['card']),
 				rowdblclick:this.onNext.createDelegate(this),
+				rowselect:this.onPreview.createDelegate(this,['card']),
 				scope:this
 			}
 			

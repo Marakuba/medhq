@@ -119,7 +119,17 @@ App.ExamCentralPanel = Ext.extend(Ext.Panel, {
                     	this.launchApp('tmparchive');
                     },
                     scope:this
-                }]
+                }
+//                ,{
+//                	text: 'Корзина',
+//                    scale:'medium',
+//                    iconAlign: 'top',
+//                    handler: function(){
+//                    	this.launchApp('extrash');
+//                    },
+//                    scope:this
+//                }
+                ]
             },{
                 xtype: 'buttongroup',
 //              title: 'Пациенты',

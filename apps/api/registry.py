@@ -1335,6 +1335,7 @@ class CardResource(ExtResource):
         filtering = {
             'ordered_service':ALL_WITH_RELATIONS,
             'id':ALL,
+            'deleted':ALL,
             'name':ALL
         }
         
@@ -1358,6 +1359,7 @@ class TemplateResource(ExtResource):
             'base_service':ALL_WITH_RELATIONS,
             'id':ALL,
             'print_name':ALL,
+            'deleted':ALL,
             'staff':ALL_WITH_RELATIONS
         }
         
