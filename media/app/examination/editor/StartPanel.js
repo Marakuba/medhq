@@ -11,7 +11,8 @@ App.examination.StartPanel = Ext.extend(Ext.Panel, {
         	url: get_api_url('examtemplate')
         });
 		this.baseParams = {
-            format:'json'
+            format:'json',
+            deleted:false
         };
     
         this.reader = new Ext.data.JsonReader({

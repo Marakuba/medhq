@@ -11,8 +11,9 @@ App.examination.CardStartPanel = Ext.extend(Ext.Panel, {
         	url: get_api_url('examtemplate')
         });
 		this.baseParams = {
-            format:'json'
-        };
+			format:'json',
+			deleted:false
+		},
     
         this.reader = new Ext.data.JsonReader({
             totalProperty: 'meta.total_count',
@@ -116,7 +117,8 @@ App.examination.CardStartPanel = Ext.extend(Ext.Panel, {
 			autoDestroy:true,
             baseParams: {
             	format:'json',
-            	ordered_service:App.uriToId(this.ordered_service)
+            	ordered_service:App.uriToId(this.ordered_service),
+            	deleted:false
             },
 		    paramNames: {
 			    start : 'offset',
@@ -263,6 +265,8 @@ App.examination.CardStartPanel = Ext.extend(Ext.Panel, {
             			if (this.previewPanel.hidden){
             				this.previewPanel.show();
             			};
+        				delete this.cardStore.baseParams['ordered_service__order__patient'];
+        				delete this.cardStore.baseParams['ordered_service__staff__staff'];
         				this.cardStore.setBaseParam('ordered_service',App.uriToId(this.ordered_service));
         				this.cardStore.load({callback:function(records){
         					if (!records.length){
@@ -270,6 +274,9 @@ App.examination.CardStartPanel = Ext.extend(Ext.Panel, {
         						return
         					}
         					this.cardGrid.getSelectionModel().selectFirstRow();
+        					if (!this.tmpGrid.hidden){
+	    						this.tmpGrid.hide();
+	    					};
         					if (this.cardGrid.hidden){
 								this.cardGrid.show();
 								this.gridPanel.show();
@@ -282,7 +289,7 @@ App.examination.CardStartPanel = Ext.extend(Ext.Panel, {
         });
         
         this.fromCardRadio = new Ext.form.Radio({
-            boxLabel: 'Продолжить карту осмотра',
+            boxLabel: 'из предыдущих карт осмотра',
             name: 'input-choice', 
             inputValue: 'card',
             listeners:{
@@ -292,13 +299,18 @@ App.examination.CardStartPanel = Ext.extend(Ext.Panel, {
             			if (this.previewPanel.hidden){
             				this.previewPanel.show();
             			};
-        				this.cardStore.setBaseParam('ordered_service',App.uriToId(this.ordered_service));
+        				delete this.cardStore.baseParams['ordered_service'];
+        				this.cardStore.setBaseParam('ordered_service__order__patient',this.patient);
+        				this.cardStore.setBaseParam('ordered_service__staff__staff',active_staff);
         				this.cardStore.load({callback:function(records){
         					if (!records.length){
         						this.previewPanel.hide();
         						return
         					}
         					this.cardGrid.getSelectionModel().selectFirstRow();
+        					if (!this.tmpGrid.hidden){
+	    						this.tmpGrid.hide();
+	    					};
         					if (this.cardGrid.hidden){
 								this.cardGrid.show();
 								this.gridPanel.show();
@@ -474,7 +486,7 @@ App.examination.CardStartPanel = Ext.extend(Ext.Panel, {
 		Ext.apply(this, Ext.apply(this.initialConfig, config));
         App.examination.CardStartPanel.superclass.initComponent.call(this);
         this.on('afterrender',function(){
-        	this.tmpStore.setBaseParam('staff',App.uriToId(this.staff));
+        	this.tmpStore.setBaseParam('staff',active_staff);
             this.tmpStore.setBaseParam('base_service',App.uriToId(this.service));
 			this.cardStore.load({callback:function(records){
 				if (records.length){
@@ -484,16 +496,21 @@ App.examination.CardStartPanel = Ext.extend(Ext.Panel, {
 					this.radio = 'card';
 				} else {
 					this.continueCardRadio.disable();
-					this.tmpStore.load({callback:function(recs){
+					this.radio = 'empty'
+				};
+				this.tmpStore.load({callback:function(recs){
 					if (recs.length){
 						this.fromTmpRadio.setValue(true);
 						this.tmpGrid.getSelectionModel().selectFirstRow();
 						this.radio = 'tmp';
 					} else {
 						this.fromTmpRadio.disable();
+					};
+					
+					if (this.radio =='empty'){
+						this.emptyCardRadio.setValue(true);
 					}
 				},scope:this});
-				}
 			},scope:this});
         });
     },

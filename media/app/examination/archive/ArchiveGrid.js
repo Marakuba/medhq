@@ -9,7 +9,8 @@ App.examination.ArchiveGrid = Ext.extend(Ext.grid.EditorGridPanel, {
         	url: get_api_url('examtemplate')
         });
 		this.baseParams = {
-            format:'json'
+            format:'json',
+            deleted:false
         };
     
         this.reader = new Ext.data.JsonReader({
@@ -64,7 +65,15 @@ App.examination.ArchiveGrid = Ext.extend(Ext.grid.EditorGridPanel, {
 			},
 			scope:this
 		});
-    	
+		
+		this.delBtn = new Ext.Button({
+			text:'Удалить',
+			disabled:true,
+			iconCls:'silk-delete',
+			handler:this.onDelete.createDelegate(this, []),
+			scope:this
+		});
+		
 		var config = {
 			store: this.tmpStore,
 			hidden:false,
@@ -105,12 +114,25 @@ App.examination.ArchiveGrid = Ext.extend(Ext.grid.EditorGridPanel, {
 					rowselect:function(selModel,rowIndex,record){
 						this.fireEvent('rowselect',record);
 						this.editBtn.enable();
+						this.delBtn.enable();
 					},rowdeselect:function(selModel,rowIndex,record){
 						this.editBtn.disable();
+						this.delBtn.disable();
 					}
 				}
 			}),
-			tbar:[this.editBtn],
+			tbar:[this.editBtn,
+				this.delBtn,
+				{
+					xtype:'button',
+					text:'Обновить',
+					iconCls:'x-tbar-loading',
+					handler:function(){
+						this.store.load()
+					},
+					scope:this
+				}
+			],
             viewConfig: {
                 forceFit: true
             }
@@ -138,6 +160,15 @@ App.examination.ArchiveGrid = Ext.extend(Ext.grid.EditorGridPanel, {
     		}
     	}
     },
+    
+    onDelete: function() {
+        var rec = this.getSelectionModel().getSelected();
+        if (!rec) {
+            return false;
+        }
+        rec.set('deleted',true);
+        this.store.load();
+    }
 
 });
 

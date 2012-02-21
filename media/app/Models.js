@@ -251,7 +251,8 @@ App.models.Template = new Ext.data.Record.create([
 	{name: 'scan_mode'},
 	{name: 'thickness'},
 	{name: 'width'},
-	{name: 'contrast_enhancement'}
+	{name: 'contrast_enhancement'},
+	{name: 'deleted'}
 ]);
 	
 App.models.Card = new Ext.data.Record.create([
@@ -274,7 +275,8 @@ App.models.Card = new Ext.data.Record.create([
 	{name: 'assistant'},
 	{name: 'assistant_name'},
 	{name: 'mkb_diag'},
-	{name: 'executed'}
+	{name: 'executed'},
+	{name: 'deleted'}
 ]);
 
 App.models.LabService = new Ext.data.Record.create([

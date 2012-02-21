@@ -314,6 +314,7 @@ class Card(models.Model):
     thickness = models.TextField(u'Толщина реконструктивного среза', null=True, blank=True)
     width = models.TextField(u'ширина/шаг', null=True, blank=True)
     contrast_enhancement = models.TextField(u'Контрастное усиление', null=True, blank=True)
+    deleted = models.BooleanField(u'Удалено', default=False)
     
     
     def __unicode__(self):
@@ -339,6 +340,7 @@ class Template(models.Model):
     thickness = models.TextField(u'Толщина реконструктивного среза', null=True, blank=True)
     width = models.TextField(u'ширина/шаг', null=True, blank=True)
     contrast_enhancement = models.TextField(u'Контрастное усиление', null=True, blank=True)
+    deleted = models.BooleanField(u'Удалено', default=False)
     
     
 class Glossary(MPTTModel):

@@ -11,7 +11,12 @@ App.examination.Editor = Ext.extend(Ext.Panel, {
 			autoSave: true,
 			autoLoad : false,
 			apiUrl : get_api_url('examtemplate'),
-			model: App.models.Template
+			model: App.models.Template,
+			baseParams:{
+				format:'json',
+				staff:active_staff,
+				deleted:false
+			}
 		});
 		
 		this.fieldSetStore = new Ext.data.RESTStore({
@@ -62,7 +67,7 @@ App.examination.Editor = Ext.extend(Ext.Panel, {
 		});
 		
 		var config = {
-			id: 'editor-cmp',
+//			id: 'editor-cmp',
 			closable:true,
 			title: 'Конструктор',
 			layout: 'border',	
@@ -140,6 +145,7 @@ App.examination.Editor = Ext.extend(Ext.Panel, {
 		
 		return new App.examination.TemplateBody (Ext.apply(
 			{
+				editMode: this.editMode,
 				base_service : this.base_service,
 				fieldSetStore : this.fieldSetStore,
 				subSectionStore : this.subSectionStore,
@@ -152,6 +158,10 @@ App.examination.Editor = Ext.extend(Ext.Panel, {
 						this.onServiceClick(this.attrs)
 					},
 					deletetmp:function(){
+						if(this.editMode){
+							this.fireEvent('close',this);
+						}
+						this.contentPanel.removeAll();
 						if(this.attrs){
 							this.onServiceClick(this.attrs)
 						}
@@ -160,9 +170,13 @@ App.examination.Editor = Ext.extend(Ext.Panel, {
 						this.contentPanel.setTitle(text);
 					},
 					tmpclose: function(){
-						this.contentPanel.removeAll(true);
-						this.contentPanel.setTitle('Выберите услугу');
-						this.contentPanel.doLayout();
+						if(this.editMode){
+							this.fireEvent('close',this);
+						} else {
+							this.contentPanel.removeAll(true);
+							this.contentPanel.setTitle('Выберите услугу');
+							this.contentPanel.doLayout();
+						}
 					},
 					scope:this
 				}

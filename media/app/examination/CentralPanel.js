@@ -179,11 +179,14 @@ App.ExamCentralPanel = Ext.extend(Ext.Panel, {
 	
 	launchApp: function(appId,config) {
         var app_config = {
-            xtype:appId
+            xtype:appId            
         };
         config = config || {};
 		Ext.apply(app_config, config);
 		var new_app = this.mainPanel.add(app_config);
+		new_app.on('close',function(app){
+			this.closeApp(app)
+		},this)
 		this.mainPanel.setActiveTab(new_app);
 	}
 });

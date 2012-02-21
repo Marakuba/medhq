@@ -9,6 +9,10 @@ App.examination.CardApp = Ext.extend(Ext.Panel, {
 			autoSave: true,
 			autoLoad : false,
 			apiUrl : get_api_url('examtemplate'),
+			baseParams:{
+				format:'json',
+				deleted:false
+			},
 			model: App.models.Template
 		});
 		
@@ -16,6 +20,10 @@ App.examination.CardApp = Ext.extend(Ext.Panel, {
 			autoSave: true,
 			autoLoad : false,
 			apiUrl : get_api_url('card'),
+			baseParams:{
+				format:'json',
+				deleted:false
+			},
 			model: App.models.Card
 		});
 		
@@ -80,7 +88,8 @@ App.examination.CardApp = Ext.extend(Ext.Panel, {
 				this.startPanel = this.newStartPanel({
 					service:this.service,
 					ordered_service:this.ordered_service,
-					staff:this.staff
+					staff:this.staff,
+					patient:this.patient
 				});
 				this.contentPanel.add(this.startPanel);
 			}

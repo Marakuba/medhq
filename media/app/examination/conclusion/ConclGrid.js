@@ -10,7 +10,8 @@ App.examination.ConclGrid = Ext.extend(Ext.grid.EditorGridPanel, {
             url: get_api_url('card')
         });
 		this.baseParams = {
-            format:'json'
+            format:'json',
+            deleted: false
         };
     
         this.reader = new Ext.data.JsonReader({

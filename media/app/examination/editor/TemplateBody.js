@@ -13,6 +13,10 @@ App.examination.TemplateBody = Ext.extend(Ext.TabPanel, {
 			autoSave: true,
 			autoLoad : false,
 			apiUrl : get_api_url('examtemplate'),
+			baseParams:{
+				format:'json',
+				deleted:false
+			},
 			model: App.models.Template
 		});
 		
@@ -232,7 +236,7 @@ App.examination.TemplateBody = Ext.extend(Ext.TabPanel, {
 		},this);
 				
 		this.generalTab.on('deletetmp',function(){
-			this.record.store.remove(this.record);
+			this.record.set('deleted',true);
 			this.fireEvent('deletetmp');
 		},this);
 				
