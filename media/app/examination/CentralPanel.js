@@ -83,7 +83,7 @@ App.ExamCentralPanel = Ext.extend(Ext.Panel, {
             },{
                 xtype: 'buttongroup',
 //                title: 'Шаблоны',
-                columns: 2,
+                columns: 3,
                 defaults: {
                     scale: 'small'
                 },

@@ -43,6 +43,10 @@ App.examination.TmpGrid = Ext.extend(Ext.grid.EditorGridPanel, {
             writer: this.writer
         });
         
+        this.store.on('load', function(){
+			this.getSelectionModel().selectFirstRow();
+		}, this);
+        
         this.editBtn = new Ext.Button({
 			text:'Изменить',
 			disabled:true,
@@ -66,17 +70,23 @@ App.examination.TmpGrid = Ext.extend(Ext.grid.EditorGridPanel, {
 			scope:this
 		});
 		
-		this.tbar = this.tbar || [this.editBtn,
-				this.delBtn];
-		this.tbar.push({
-			xtype:'button',
-			text:'Обновить',
-			iconCls:'x-tbar-loading',
-			handler:function(){
-				this.store.load()
-			},
-			scope:this
-		});
+		if(!this.emptyTbar){
+			
+			this.tbar = this.tbar || [this.editBtn,	this.delBtn];
+			
+			this.tbar.push({
+				xtype:'button',
+				text:'Обновить',
+				iconCls:'x-tbar-loading',
+				handler:function(){
+					this.store.load()
+				},
+				scope:this
+			});
+		} else {
+			this.tbar = []
+		};
+		
 		
 		var config = {
 			store: this.store,

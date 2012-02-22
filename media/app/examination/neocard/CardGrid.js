@@ -7,11 +7,11 @@ App.examination.CardGrid = Ext.extend(Ext.grid.EditorGridPanel, {
 		this.proxy = new Ext.data.HttpProxy({
         	url: get_api_url('card')
         });
-		this.baseParams = Ext.apply(this.baseParams,{
+		this.baseParams = Ext.apply({
             format:'json',
             deleted:false,
             'ordered_service__staff': active_profile
-        });
+        },this.baseParams);
     
         this.reader = new Ext.data.JsonReader({
             totalProperty: 'meta.total_count',
@@ -72,6 +72,23 @@ App.examination.CardGrid = Ext.extend(Ext.grid.EditorGridPanel, {
                 return record ? record.get(combo.displayField) : (rec ? rec.get(field) : combo.valueNotFoundText);
             }
         };
+        
+        if(!this.emptyTbar){
+			
+			this.tbar = this.tbar || [this.editBtn,	this.delBtn];
+			
+			this.tbar.push({
+				xtype:'button',
+				text:'Обновить',
+				iconCls:'x-tbar-loading',
+				handler:function(){
+					this.store.load()
+				},
+				scope:this
+			});
+		} else {
+			this.tbar = []
+		};
 
         this.columns =  [
         	{
@@ -153,16 +170,7 @@ App.examination.CardGrid = Ext.extend(Ext.grid.EditorGridPanel, {
             viewConfig: {
                 forceFit: true
             },
-			tbar:[{
-					xtype:'button',
-					text:'Обновить',
-					iconCls:'x-tbar-loading',
-					handler:function(){
-						this.store.load()
-					},
-					scope:this
-				}
-			]
+			tbar:this.tbar
         };
         Ext.apply(this, Ext.apply(this.initialConfig, config));
 	    App.examination.CardGrid.superclass.initComponent.apply(this, arguments);
