@@ -22,6 +22,7 @@ App.examination.ArchiveApp = Ext.extend(Ext.Panel, {
 		this.contentPanel = new Ext.Panel({
 			region:'center',
  			border:true,
+ 			autoScroll:true,
  			margins:'5 5 5 0',
  			layout: 'fit',
  			title:'Предпросмотр',
@@ -89,14 +90,10 @@ App.examination.ArchiveApp = Ext.extend(Ext.Panel, {
 	},
 	
 	onPreview: function(tmp_id){
-		var list = new Ext.Panel({
-			autoLoad:String.format('/widget/examination/template/{0}/',tmp_id)
+		var url = String.format('/widget/examination/template/{0}/',tmp_id);
+		this.contentPanel.load({
+			url:url
 		});
-		this.contentPanel.removeAll();
-		this.contentPanel.add(list);
-		this.contentPanel.setTitle('Предпросмотр');
-		this.contentPanel.doLayout();
-		this.doLayout();
 	},
 	
 	editTmp: function(record){
