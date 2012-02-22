@@ -18,20 +18,30 @@ App.examination.TrashApp = Ext.extend(Ext.Panel, {
     		]
 		});
 		
-		this.trashTmpGrid = new App.examination.TemplateGrid({
+		this.restoreTmpBtn = new Ext.Button({
+			text:'Восстановить',
+			disabled:true,
+			handler:this.restoreRecord.createDelegate(this,['trashTmpGrid']),
+			scope:this
+		});
+		
+		this.trashTmpGrid = new App.examination.TmpGrid({
 			baseParams:{
-				format:'json',
-				staff : active_staff,
 				deleted:true
 			},
 			staff:this.staff,
 			border: false,
 			split:true,
+			tbar:[this.restoreTmpBtn],
 			listeners:{
 				rowselect:function(record){
 					if (record){
 						this.onPreview(record.data.id);
+						this.restoreTmpBtn.enable();
 					}
+				},
+				rowdeselect:function(record){
+					this.restoreTmpBtn.disable();
 				},
 				scope:this
 			}
@@ -55,7 +65,7 @@ App.examination.TrashApp = Ext.extend(Ext.Panel, {
 		
 		var config = {
 			closable:true,
-			title: 'Мои шаблоны',
+			title: 'Корзина',
 			layout: 'border',	
      		items: [
 				this.trashPanel,
@@ -78,26 +88,22 @@ App.examination.TrashApp = Ext.extend(Ext.Panel, {
 		this.doLayout();
 	},
 	
-	editTmp: function(record){
+	restoreRecord: function(gridName){
+		var grid = this[gridName];
+		var record = grid.getSelectionModel().getSelected();
 		if(!record){
 			console.log('нет записи');
 			return false
-		}
-		
-		this.print_name = record.data.name;
-		
-		config = {
-			editMode: true,
-			closable:true,
-			title: record.data.print_name,
-			print_name:record.data.print_name,
-			record:record,
-			staff:this.staff
 		};
-		
-		App.eventManager.fireEvent('launchapp', 'editor',config);
-		
+		Ext.Msg.confirm('Восстановление','Восстановить запись?',function(btn){
+			if (btn=='yes'){
+				record.set('deleted',false);
+				record.store.load();
+				this.contentPanel.removeAll();
+				this.restoreTmpBtn.disable();
+			}
+		},this);
 	}
 });
 
-Ext.reg('trashapp', App.examination.TrashApp);
+Ext.reg('extrash', App.examination.TrashApp);

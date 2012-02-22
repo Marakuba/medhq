@@ -30,7 +30,7 @@ App.examination.ConclApp = Ext.extend(Ext.Panel, {
     		]
 		});
 		
-		this.examGrid = new App.examination.ConclGrid({
+		this.examGrid = new App.examination.CardGrid({
 			staff:this.staff,
 			border: false,
 			split:true,

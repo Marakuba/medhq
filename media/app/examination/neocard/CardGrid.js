@@ -4,17 +4,14 @@ App.examination.CardGrid = Ext.extend(Ext.grid.EditorGridPanel, {
 	
 	initComponent: function(){
 
-		//передаваемые параметры: 
-		//editable - показывает кнопки Изменить и Удалить
-		
 		this.proxy = new Ext.data.HttpProxy({
         	url: get_api_url('card')
         });
-		this.baseParams = {
+		this.baseParams = Ext.apply(this.baseParams,{
             format:'json',
             deleted:false,
             'ordered_service__staff': active_profile
-        };
+        });
     
         this.reader = new Ext.data.JsonReader({
             totalProperty: 'meta.total_count',
@@ -31,7 +28,7 @@ App.examination.CardGrid = Ext.extend(Ext.grid.EditorGridPanel, {
     
         this.store =  this.store || new Ext.data.Store({
             restful: true,    
-            autoLoad: false, 
+            autoLoad: true, 
 			autoDestroy:true,
             baseParams: this.baseParams,
 		    paramNames: {
@@ -45,83 +42,118 @@ App.examination.CardGrid = Ext.extend(Ext.grid.EditorGridPanel, {
             writer: this.writer
         });
         
-        this.editBtn = new Ext.Button({
-			text:'Изменить',
-			hidden:!this.editable,
-			disabled:true,
-			iconCls:'silk-pencil',
-			handler:function(){
-				var record = this.getSelectionModel().getSelected()
-				if (record){
-					this.fireEvent('editcard',record);
-				}
-			},
-			scope:this
-		});
+		this.store.on('load', function(){
+			this.getSelectionModel().selectFirstRow();
+		}, this);
 		
-		this.delBtn = new Ext.Button({
-			text:'Удалить',
-			hidden:!this.editable,
-			disabled:true,
-			iconCls:'silk-delete',
-			handler:this.onDelete.createDelegate(this, []),
-			scope:this
-		});
-		
-		var config = {
-			store: this.store,
-			autoScroll:true,
-			border:false,
-			columns:  [
-			    {
-			    	header: "Наименование", 
-			    	width:400,
-			    	sortable: true, 
-			    	hidden:false,
-			    	dataIndex: 'print_name',
-			    	renderer:this.printNameRenderer()
-			    },{
-			    	header: "Наименование1", 
-			    	width:400,
-			    	sortable: true, 
-			    	hidden:true,
-			    	dataIndex: 'service_name' 
-			    },{
-			    	header: "Создано", 
-			    	width:70,
-			    	sortable: true, 
-			    	renderer:Ext.util.Format.dateRenderer('H:i / d.m.Y'),
-			    	dataIndex: 'created' 
-			    },{
-			    	header: this.fromTrash ? "Удалено": "Изменено", 
-			    	width:70,
-			    	sortable: true, 
-			    	renderer:Ext.util.Format.dateRenderer('H:i / d.m.Y'),
-			    	dataIndex: 'modified' 
-			    }
-			],
-			sm : new Ext.grid.RowSelectionModel({
-				singleSelect : true,
-				listeners:{
-					scope:this,
-					rowselect:function(selModel,rowIndex,record){
-						this.fireEvent('rowselect',record);
-						if(this.editable){
-							this.editBtn.enable();
-							this.delBtn.enable();
-						}
-					},
-					rowdeselect:function(selModel,rowIndex,record){
-						if(this.editable){
-							this.editBtn.disable();
-							this.delBtn.disable();
-						}
-					}
-				}
+		this.assistant = new Ext.form.LazyClearableComboBox({
+			fieldLabel:'Лаборант',
+			name:'assistant',
+			anchor:'50%',
+			valueField:'resource_uri',
+			queryParam : 'staff__last_name__istartswith',
+			store:new Ext.data.RESTStore({
+				autoLoad : true,
+				apiUrl : get_api_url('position'),
+				model: ['id','name','resource_uri']
 			}),
-			tbar:[this.editBtn,
-				this.delBtn,
-				{
+		    minChars:2,
+		    emptyText:'Выберите врача...',
+		    listeners:{
+		    	select: function(combo, rec,i) {
+		    	},
+		    	scope:this
+		    }
+		});
+		
+		Ext.util.Format.comboRenderer = function(combo,field){
+            return function(value, meta, rec){
+                var record = combo.findRecord(combo.valueField, value);
+                return record ? record.get(combo.displayField) : (rec ? rec.get(field) : combo.valueNotFoundText);
+            }
+        };
+
+        this.columns =  [
+        	{
+                header: "Выполнено",
+                width: 30, 
+                sortable: true, 
+                dataIndex: 'executed',
+                renderer:function(val, meta, record) {
+		    		var p = record.data.executed;
+		    		var flag = p ? 'yes' : 'no';
+		    		var img = "<img src='"+MEDIA_URL+"admin/img/admin/icon-"+flag+".gif'>"
+		    		return String.format("{0}", img);
+		    	} 
+            },
+            {
+                header: "Дата создания",
+                width: 40, 
+                sortable: true, 
+                dataIndex: 'created',
+                renderer:Ext.util.Format.dateRenderer('d.m.Y H:i')
+            },{
+                header: "Услуга", 
+                width: 100, 
+                sortable: true, 
+                dataIndex: 'print_name'
+            },{
+                header: "Пациент", 
+                width: 100, 
+                sortable: true, 
+                dataIndex: 'patient_name'
+            },{
+                header: "Лаборант", 
+                width: 80, 
+                sortable: true, 
+                dataIndex: 'assistant', 
+                editor: this.assistant,
+                renderer: Ext.util.Format.comboRenderer(this.assistant,'assistant_name')
+            },{
+                header: "Лаборант", 
+                sortable: true, 
+                hidden:true,
+                dataIndex: 'assistant_name' 
+            },{
+                header: "Дата изменения", 
+                width: 40, 
+                sortable: true, 
+                dataIndex: 'modified',
+                renderer:Ext.util.Format.dateRenderer('d.m.Y H:i')
+            }
+        ];
+    
+    
+
+        config = {
+			loadMask : {
+				msg : 'Подождите, идет загрузка...'
+			},
+            height: 300,
+            clicksToEdit: 1,
+            border:false,
+            store: this.store,
+            columns : this.columns,
+			sm : new Ext.grid.RowSelectionModel({
+						singleSelect : true,
+						listeners:{
+							scope:this,
+							rowselect:function(selModel,rowIndex,record){
+								this.fireEvent('rowselect',record);
+							}
+						}
+					}),
+	        bbar: new Ext.PagingToolbar({
+	            pageSize: 30,
+	            store: this.store,
+	            displayInfo: true,
+	            displayMsg: 'Показана запись {0} - {1} из {2}',
+	            emptyMsg: "Нет записей"
+	        }),
+            viewConfig: {
+                forceFit: true
+            },
+			tbar:[{
 					xtype:'button',
 					text:'Обновить',
 					iconCls:'x-tbar-loading',
@@ -130,10 +162,7 @@ App.examination.CardGrid = Ext.extend(Ext.grid.EditorGridPanel, {
 					},
 					scope:this
 				}
-			],
-            viewConfig: {
-                forceFit: true
-            }
+			]
         };
         Ext.apply(this, Ext.apply(this.initialConfig, config));
 	    App.examination.CardGrid.superclass.initComponent.apply(this, arguments);
@@ -141,37 +170,6 @@ App.examination.CardGrid = Ext.extend(Ext.grid.EditorGridPanel, {
 		this.on('afterrender', function(){
 		}, this);
 		
-    },
-    
-    printNameRenderer: function(){
-    	var self = this;
-    	return function(value,metaData,record){
-    		if (self.printName){
-    			return value
-    		} else {
-    			return record.data.print_name
-    		}
-    	}
-    },
-    
-    onDelete: function() {
-        var rec = this.getSelectionModel().getSelected();
-        if (!rec) {
-            return false;
-        }
-        rec.set('deleted',true);
-        this.store.load();
-    },
-    
-    printNameRenderer: function(){
-    	var self = this;
-    	return function(value,metaData,record){
-    		if (self.printName){
-    			return value
-    		} else {
-    			return record.data.service_name
-    		}
-    	}
     }
 
 });

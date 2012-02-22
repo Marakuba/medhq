@@ -32,10 +32,14 @@ App.examination.ArchiveApp = Ext.extend(Ext.Panel, {
     		]
 		});
 		
-		this.archiveGrid = new App.examination.ArchiveGrid({
+		this.archiveGrid = new App.examination.TmpGrid({
 			staff:this.staff,
 			border: false,
 			split:true,
+			editable:true,
+			baseParams:{
+				base_service__isnull:true
+			},
 			listeners:{
 				rowselect:function(record){
 					if (record){

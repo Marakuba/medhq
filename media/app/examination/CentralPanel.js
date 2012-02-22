@@ -120,15 +120,15 @@ App.ExamCentralPanel = Ext.extend(Ext.Panel, {
                     },
                     scope:this
                 }
-//                ,{
-//                	text: 'Корзина',
-//                    scale:'medium',
-//                    iconAlign: 'top',
-//                    handler: function(){
-//                    	this.launchApp('extrash');
-//                    },
-//                    scope:this
-//                }
+                ,{
+                	text: 'Корзина',
+                    scale:'medium',
+                    iconAlign: 'top',
+                    handler: function(){
+                    	this.launchApp('extrash');
+                    },
+                    scope:this
+                }
                 ]
             },{
                 xtype: 'buttongroup',

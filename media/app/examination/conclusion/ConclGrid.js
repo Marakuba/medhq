@@ -11,7 +11,8 @@ App.examination.ConclGrid = Ext.extend(Ext.grid.EditorGridPanel, {
         });
 		this.baseParams = {
             format:'json',
-            deleted: false
+            deleted: false,
+            staff: active_profile
         };
     
         this.reader = new Ext.data.JsonReader({
@@ -30,7 +31,7 @@ App.examination.ConclGrid = Ext.extend(Ext.grid.EditorGridPanel, {
         this.store = new Ext.data.Store({
 //            id: 'name',
             restful: true,    
-            autoLoad: false, 
+            autoLoad: true, 
 			autoDestroy:true,
             baseParams: this.baseParams,
 		    paramNames: {

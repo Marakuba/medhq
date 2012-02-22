@@ -55,43 +55,15 @@ App.examination.StartPanel = Ext.extend(Ext.Panel, {
             writer: this.writer
         });
     	
-    	this.tmpGrid = new Ext.grid.GridPanel({
+    	this.tmpGrid = new App.examination.TmpGrid({
 			store: this.tmpStore,
 			hidden:true,
 			region:'center',
 			autoScroll:true,
-			columns:  [
-			    {
-			    	header: "Наименование", 
-			    	width:400,
-			    	sortable: true, 
-			    	hidden:false,
-			    	dataIndex: 'print_name',
-			    	renderer:this.printNameRenderer()
-			    },{
-			    	header: "Наименование1", 
-			    	width:400,
-			    	sortable: true, 
-			    	hidden:true,
-			    	dataIndex: 'service_name' 
-			    },{
-			    	header: "Создано", 
-			    	width:70,
-			    	sortable: true, 
-			    	renderer:Ext.util.Format.dateRenderer('H:i / d.m.Y'),
-			    	dataIndex: 'created' 
-			    },{
-			    	header: "Изменено", 
-			    	width:70,
-			    	sortable: true, 
-			    	renderer:Ext.util.Format.dateRenderer('H:i / d.m.Y'),
-			    	dataIndex: 'modified' 
-			    }
-			],
 			tbar:[{
 				text:'Изменить',
 				iconCls:'silk-pencil',
-				handler:this.tmpEdit.createDelegate(this),
+				handler:this.tmpEdit.createDelegate(this,[]),
 				scope:this
 			}],
 			viewConfig:{
@@ -99,7 +71,7 @@ App.examination.StartPanel = Ext.extend(Ext.Panel, {
 			},
 			listeners: {
 				rowclick:this.onPreview,
-				rowdblclick:this.onNext.createDelegate(this),
+				rowdblclick:this.onNext.createDelegate(this,[]),
 				scope:this
 			}
 			

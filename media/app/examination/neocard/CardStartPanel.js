@@ -55,7 +55,7 @@ App.examination.CardStartPanel = Ext.extend(Ext.Panel, {
             writer: this.writer
         });
     	
-    	this.tmpGrid = App.examination.TemplateGrid({
+    	this.tmpGrid = new App.examination.TmpGrid({
 			store: this.tmpStore,
 			hidden:true,
 			autoScroll:true,

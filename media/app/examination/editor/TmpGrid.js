@@ -1,6 +1,6 @@
 Ext.ns('App.examination');
 
-App.examination.TemplateGrid = Ext.extend(Ext.grid.EditorGridPanel, {
+App.examination.TmpGrid = Ext.extend(Ext.grid.EditorGridPanel, {
 	
 	initComponent: function(){
 
@@ -8,10 +8,11 @@ App.examination.TemplateGrid = Ext.extend(Ext.grid.EditorGridPanel, {
 		this.proxy = new Ext.data.HttpProxy({
         	url: get_api_url('examtemplate')
         });
-		this.baseParams = {
+		this.baseParams = Ext.apply({
             format:'json',
-            deleted:false
-        };
+            deleted:false,
+            staff:active_staff
+        },this.baseParams);
     
         this.reader = new Ext.data.JsonReader({
             totalProperty: 'meta.total_count',
@@ -28,7 +29,7 @@ App.examination.TemplateGrid = Ext.extend(Ext.grid.EditorGridPanel, {
     
         this.store =  this.store || new Ext.data.Store({
             restful: true,    
-            autoLoad: false, 
+            autoLoad: true, 
 			autoDestroy:true,
             baseParams: this.baseParams,
 		    paramNames: {
@@ -62,6 +63,18 @@ App.examination.TemplateGrid = Ext.extend(Ext.grid.EditorGridPanel, {
 			hidden:!this.editable,
 			iconCls:'silk-delete',
 			handler:this.onDelete.createDelegate(this, []),
+			scope:this
+		});
+		
+		this.tbar = this.tbar || [this.editBtn,
+				this.delBtn];
+		this.tbar.push({
+			xtype:'button',
+			text:'Обновить',
+			iconCls:'x-tbar-loading',
+			handler:function(){
+				this.store.load()
+			},
 			scope:this
 		});
 		
@@ -105,36 +118,21 @@ App.examination.TemplateGrid = Ext.extend(Ext.grid.EditorGridPanel, {
 						this.editBtn.enable();
 						this.delBtn.enable();
 					},rowdeselect:function(selModel,rowIndex,record){
+						this.fireEvent('rowdeselect',record);
 						this.editBtn.disable();
 						this.delBtn.disable();
 					}
 				}
 			}),
-			tbar:[this.editBtn,
-				this.delBtn,
-				{
-					xtype:'button',
-					text:'Обновить',
-					iconCls:'x-tbar-loading',
-					handler:function(){
-						this.store.load()
-					},
-					scope:this
-				}
-			],
+			tbar:this.tbar,
             viewConfig: {
                 forceFit: true
             }
         };
         Ext.apply(this, Ext.apply(this.initialConfig, config));
-	    App.examination.TemplateGrid.superclass.initComponent.apply(this, arguments);
+	    App.examination.TmpGrid.superclass.initComponent.apply(this, arguments);
 
 		this.on('afterrender', function(){
-			if (this.staff){
-				this.store.setBaseParam('staff',App.uriToId(this.staff));
-				this.store.setBaseParam('base_service__isnull',true);
-				this.store.load();
-			}
 		}, this);
 		
     },
@@ -156,20 +154,11 @@ App.examination.TemplateGrid = Ext.extend(Ext.grid.EditorGridPanel, {
             return false;
         }
         rec.set('deleted',true);
+        this.editBtn.disable();
+        this.delBtn.disable();
         this.store.load();
-    },
-    
-    printNameRenderer: function(){
-    	var self = this;
-    	return function(value,metaData,record){
-    		if (self.printName){
-    			return value
-    		} else {
-    			return record.data.service_name
-    		}
-    	}
     }
 
 });
 
-Ext.reg('templategrid', App.examination.TemplateGrid);
+Ext.reg('tmpgrid', App.examination.TmpGrid);
