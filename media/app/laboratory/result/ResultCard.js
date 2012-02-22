@@ -207,6 +207,7 @@ App.result.ResultCard = Ext.extend(Ext.Panel, {
 		if(d.staff) {
 			this.staffField.setValue(d.staff);
 		} else {
+//			this.staffField.setValue(App.getApiUrl('position',active_profile));
 			this.staffField.setRawValue('');
 			this.staffField.originalValue='';
 			this.staffField.reset();
@@ -230,9 +231,7 @@ App.result.ResultCard = Ext.extend(Ext.Panel, {
 			rec.beginEdit();
 			rec.set('executed', d ? d : '');
 			rec.set('comment', this.ResultComment.getForm().findField('comment').getValue());
-			if(staff) {
-				rec.set('staff', staff);
-			}
+			rec.set('staff', staff || null);
 			rec.endEdit();
 		}
 	},

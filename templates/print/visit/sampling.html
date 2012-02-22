@@ -2,7 +2,7 @@
 
 {% load lab_tags %} 
 
-{% block title %}Направление{% endblock %}
+{% block title %}Направление в процедурный кабинет{% endblock %}
 
 
 {% block extra_head %}
@@ -88,7 +88,7 @@
 			<div class="details">
 			<div>Пациент: <strong>{{ visit.patient.full_name }}</strong></div>
 			<div>Дата: <strong>{{ visit.created|date:"d.m.Y" }}</strong></div>
-			<div>Номер визита: <strong>{{ visit.zid }}</strong></div>
+			<div>Номер визита: <strong>{{ visit.barcode.id }}</strong></div>
 			</div>
 			<table width="100%" class="service-list">
 				<tr>
