@@ -7,56 +7,7 @@ App.examination.CardStartPanel = Ext.extend(Ext.Panel, {
     	this.radio = 'empty';
     	this.printName = true; //в таблице шаблонов отображать колонку 'print_name'
     	
-        this.proxy = new Ext.data.HttpProxy({
-        	url: get_api_url('examtemplate')
-        });
-		this.baseParams = {
-			format:'json',
-			deleted:false
-		},
-    
-        this.reader = new Ext.data.JsonReader({
-            totalProperty: 'meta.total_count',
-            successProperty: 'success',
-            idProperty: 'id',
-            root: 'objects',
-            messageProperty: 'message'
-        }, [
-            {name: 'id'},
-            {name: 'created'},
-            {name: 'modified'},
-			{name: 'resource_uri'},
-			{name: 'print_name'},
-			{name: 'print_date'},
-			{name: 'base_service'},
-			{name: 'service_name'},
-			{name: 'staff'},
-			{name: 'data'}
-        ]);
-    
-        this.writer = new Ext.data.JsonWriter({
-            encode: false,
-            writeAllFields: true
-        }); 
-    
-        this.tmpStore = new Ext.data.Store({
-            restful: true,    
-            autoLoad: false, 
-			autoDestroy:true,
-            baseParams: this.baseParams,
-		    paramNames: {
-			    start : 'offset',
-			    limit : 'limit',
-			    sort : 'sort',
-			    dir : 'dir'
-			},
-            proxy: this.proxy,
-            reader: this.reader,
-            writer: this.writer
-        });
-    	
     	this.tmpGrid = new App.examination.TmpGrid({
-			store: this.tmpStore,
 			hidden:true,
 			autoScroll:true,
 			border:false,
@@ -74,40 +25,11 @@ App.examination.CardStartPanel = Ext.extend(Ext.Panel, {
 			
 		});
 		
-		this.cardStore = new Ext.data.Store({
-            restful: true,    
-            autoLoad: false, 
-			autoDestroy:true,
-            baseParams: {
-            	format:'json',
-            	ordered_service:App.uriToId(this.ordered_service),
-            	deleted:false
-            },
-		    paramNames: {
-			    start : 'offset',
-			    limit : 'limit',
-			    sort : 'sort',
-			    dir : 'dir'
-			},
-            proxy: new Ext.data.HttpProxy({
-		    	url: get_api_url('card')
-		    }),
-            reader: new Ext.data.JsonReader({
-	            totalProperty: 'meta.total_count',
-	            successProperty: 'success',
-	            idProperty: 'id',
-	            root: 'objects',
-	            messageProperty: 'message'
-	        }, App.models.Card),
-            writer: new Ext.data.JsonWriter({
-	            encode: false,
-	            writeAllFields: true
-	        })
-        });
-    	
         this.cardGrid = new App.examination.CardGrid({
         	hidden:true,
-        	store:this.cardStore,
+        	baseParams:{
+        		ordered_service:App.uriToId(this.ordered_service)
+        	},
 			printName:this.printName,
 			listeners: {
 				rowdblclick:this.onNext.createDelegate(this),
@@ -414,7 +336,8 @@ App.examination.CardStartPanel = Ext.extend(Ext.Panel, {
 		Ext.apply(this, Ext.apply(this.initialConfig, config));
         App.examination.CardStartPanel.superclass.initComponent.call(this);
         this.on('afterrender',function(){
-        	this.tmpStore.setBaseParam('staff',active_staff);
+        	this.cardStore = this.cardGrid.store;
+        	this.tmpStore = this.tmpGrid.store;
             this.tmpStore.setBaseParam('base_service',App.uriToId(this.service));
 			this.cardStore.load({callback:function(records){
 				if (records.length){
@@ -424,21 +347,20 @@ App.examination.CardStartPanel = Ext.extend(Ext.Panel, {
 					this.radio = 'card';
 				} else {
 					this.continueCardRadio.disable();
-					this.radio = 'empty'
+					this.tmpStore.load({callback:function(recs){
+						if (recs.length){
+							this.fromTmpRadio.setValue(true);
+							this.tmpGrid.getSelectionModel().selectFirstRow();
+							this.radio = 'tmp';
+						} else {
+							this.fromTmpRadio.disable();
+						};
+						
+						if (this.radio =='empty'){
+							this.emptyCardRadio.setValue(true);
+						}
+					},scope:this});
 				};
-				this.tmpStore.load({callback:function(recs){
-					if (recs.length){
-						this.fromTmpRadio.setValue(true);
-						this.tmpGrid.getSelectionModel().selectFirstRow();
-						this.radio = 'tmp';
-					} else {
-						this.fromTmpRadio.disable();
-					};
-					
-					if (this.radio =='empty'){
-						this.emptyCardRadio.setValue(true);
-					}
-				},scope:this});
 			},scope:this});
         });
     },

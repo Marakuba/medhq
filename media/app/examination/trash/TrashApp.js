@@ -138,6 +138,7 @@ App.examination.TrashApp = Ext.extend(Ext.Panel, {
 		});
 		
 		var config = {
+			id:'trash-app',
 			closable:true,
 			title: 'Корзина',
 			layout: 'border',	
@@ -149,6 +150,11 @@ App.examination.TrashApp = Ext.extend(Ext.Panel, {
 		
 		Ext.apply(this, Ext.apply(this.initialConfig, config));
 		App.examination.TrashApp.superclass.initComponent.apply(this, arguments);
+		
+		this.on('afterrender',function(){
+			this.templateGrid.store.load();
+			this.cardGrid.store.load();
+		},this);
 	},
 	
 	onPreview: function(id){

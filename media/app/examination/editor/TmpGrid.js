@@ -29,7 +29,7 @@ App.examination.TmpGrid = Ext.extend(Ext.grid.EditorGridPanel, {
     
         this.store =  this.store || new Ext.data.Store({
             restful: true,    
-            autoLoad: true, 
+            autoLoad: false, 
 			autoDestroy:true,
             baseParams: this.baseParams,
 		    paramNames: {

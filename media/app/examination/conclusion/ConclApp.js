@@ -34,6 +34,14 @@ App.examination.ConclApp = Ext.extend(Ext.Panel, {
 			staff:this.staff,
 			border: false,
 			split:true,
+			bbar: new Ext.PagingToolbar({
+	            pageSize: 30,
+	            store: this.store,
+	            displayInfo: true,
+	            displayMsg: 'Показана запись {0} - {1} из {2}',
+	            emptyMsg: "Нет записей"
+	        }),
+
 			listeners:{
 				rowselect:function(record){
 					if (record){
@@ -69,6 +77,7 @@ App.examination.ConclApp = Ext.extend(Ext.Panel, {
 		});
 		
 		var config = {
+			id:'concl-app',
 			closable:true,
 			title: 'Журнал заключений',
 			layout: 'border',	
@@ -80,6 +89,10 @@ App.examination.ConclApp = Ext.extend(Ext.Panel, {
 		
 		Ext.apply(this, Ext.apply(this.initialConfig, config));
 		App.examination.ConclApp.superclass.initComponent.apply(this, arguments);
+		
+		this.on('afterrender',function(){
+			this.examGrid.store.load();
+		},this)
 	},
 	
 	onPreview: function(card_id){

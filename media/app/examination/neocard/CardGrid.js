@@ -28,7 +28,7 @@ App.examination.CardGrid = Ext.extend(Ext.grid.EditorGridPanel, {
     
         this.store =  this.store || new Ext.data.Store({
             restful: true,    
-            autoLoad: true, 
+            autoLoad: false, 
 			autoDestroy:true,
             baseParams: this.baseParams,
 		    paramNames: {
@@ -75,7 +75,7 @@ App.examination.CardGrid = Ext.extend(Ext.grid.EditorGridPanel, {
         
         if(!this.emptyTbar){
 			
-			this.tbar = this.tbar || [this.editBtn,	this.delBtn];
+			this.tbar = this.tbar || [];
 			
 			this.tbar.push({
 				xtype:'button',
@@ -160,13 +160,6 @@ App.examination.CardGrid = Ext.extend(Ext.grid.EditorGridPanel, {
 							}
 						}
 					}),
-	        bbar: new Ext.PagingToolbar({
-	            pageSize: 30,
-	            store: this.store,
-	            displayInfo: true,
-	            displayMsg: 'Показана запись {0} - {1} из {2}',
-	            emptyMsg: "Нет записей"
-	        }),
             viewConfig: {
                 forceFit: true
             },

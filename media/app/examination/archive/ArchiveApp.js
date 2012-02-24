@@ -76,6 +76,7 @@ App.examination.ArchiveApp = Ext.extend(Ext.Panel, {
 		});
 		
 		var config = {
+			id:'archive-app',
 			closable:true,
 			title: 'Мои шаблоны',
 			layout: 'border',	
@@ -87,6 +88,10 @@ App.examination.ArchiveApp = Ext.extend(Ext.Panel, {
 		
 		Ext.apply(this, Ext.apply(this.initialConfig, config));
 		App.examination.ArchiveApp.superclass.initComponent.apply(this, arguments);
+		
+		this.on('afterrender',function(){
+			this.archiveGrid.store.load();
+		},this)
 	},
 	
 	onPreview: function(tmp_id){
