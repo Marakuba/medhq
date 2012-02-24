@@ -41,36 +41,32 @@ App.examination.CardStartPanel = Ext.extend(Ext.Panel, {
 		
 		this.gridPanel = new Ext.Panel({
 			layout:'card',
-			region:'west',
-			width:400,
+			region:'center',
 			hidden:true,
 			items:[
 				this.cardGrid, this.tmpGrid
 			]
-		});
-		
-//		this.tmpGrid.getTopToolbar().add({
-//            xtype: 'button',
-//            text: 'Открыть в новом окне',
-//            handler: this.previewInTab,
-//            scope: this
-//        });
-//        
-//		this.cardGrid.getTopToolbar().add({
-//            xtype: 'button',
-//            text: 'Открыть в новом окне',
-//            handler: this.previewInTab,
-//            scope: this
-//        });
+		})
         
 		this.previewPanel = new Ext.Panel({
-			region: 'center',
-//            height: 250,
-//            width: 100,
+			region: 'south',
+            height: 250,
+            width: 100,
             border: false,
             hidden:true,
 //            title: 'Просмотр',
-            autoScroll:true
+            autoScroll:true,
+            tbar: {
+                xtype: 'toolbar',
+                items: [
+                    {
+                        xtype: 'button',
+                        text: 'Открыть в новом окне',
+                        handler: this.previewInTab,
+                        scope: this
+                    }
+                ]
+            }
         });
 		
 		this.fromTmpRadio = new Ext.form.Radio({
