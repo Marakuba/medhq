@@ -81,9 +81,9 @@ App.examination.TemplateBody = Ext.extend(Ext.TabPanel, {
 			scope:this
 		});
 		
-		if (!this.fieldSetStore.data.length) {
-			this.addSecBtn.disable();
-		};
+//		if (!this.fieldSetStore.data.length) {
+//			this.addSecBtn.disable();
+//		};
 		
 		this.addSubSecBtn = new Ext.Button({
 			iconCls:'silk-page-white-add',
@@ -281,12 +281,14 @@ App.examination.TemplateBody = Ext.extend(Ext.TabPanel, {
 			} else {
 				this.sectionMenu.insert(98,this.menuBtns['equipment'])
 				this.subSecBtns['equipment']=[];
+				this.addSecBtn.enable();
 			};
 			
 			if (this.isCard){
 				if (!this.record.data.id){
 					this.sectionMenu.insert(99,this.menuBtns['services'])
 					this.subSecBtns['services']=[];
+					this.addSecBtn.enable();
 					return
 				} else {
 					var asgmt_tab = this.newAsgmtTab();
@@ -296,6 +298,7 @@ App.examination.TemplateBody = Ext.extend(Ext.TabPanel, {
 						if (!records.length){
 							this.sectionMenu.insert(99,this.menuBtns['services'])
 							this.subSecBtns['services']=[];
+							this.addSecBtn.enable();
 							return
 						};
 						this.patientStore.setBaseParam('id',this.patient);
@@ -378,7 +381,6 @@ App.examination.TemplateBody = Ext.extend(Ext.TabPanel, {
 		};
 		this.addSubSecBtn.enable();
 		this.setActiveTab(new_tab);
-//		this.fillSubSecMenu(section);
 		this.doLayout();
 		if (!this.dataLoading){
 			this.updateRecord();
@@ -551,7 +553,10 @@ App.examination.TemplateBody = Ext.extend(Ext.TabPanel, {
 				this.doLayout();	
 			},scope:this});
 		};
-		this.sectionMenu.remove('service');
+		this.sectionMenu.remove('services');
+		if (this.sectionMenu.items.length == 0) {
+			this.addSecBtn.disable();
+		};
 		this.doLayout();
 	},
 	
@@ -600,6 +605,9 @@ App.examination.TemplateBody = Ext.extend(Ext.TabPanel, {
 			this.setActiveTab(this.equipTab);
 		};
 		this.sectionMenu.remove('equipment');
+		if (this.sectionMenu.items.length == 0) {
+			this.addSecBtn.disable();
+		};
 		this.doLayout();
 	}
 	

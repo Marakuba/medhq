@@ -7,56 +7,8 @@ App.examination.StartPanel = Ext.extend(Ext.Panel, {
     	this.radio = 'empty';
     	this.printName = true;
     	
-        this.proxy = new Ext.data.HttpProxy({
-        	url: get_api_url('examtemplate')
-        });
-		this.baseParams = {
-            format:'json',
-            deleted:false
-        };
-    
-        this.reader = new Ext.data.JsonReader({
-            totalProperty: 'meta.total_count',
-            successProperty: 'success',
-            idProperty: 'id',
-            root: 'objects',
-            messageProperty: 'message'
-        }, [
-            {name: 'id'},
-			{name: 'resource_uri'},
-			{name: 'created'},
-            {name: 'modified'},
-			{name: 'print_name'},
-			{name: 'print_date'},
-			{name: 'base_service'},
-			{name: 'service_name'},
-			{name: 'staff'},
-			{name: 'data'}
-        ]);
-    
-        this.writer = new Ext.data.JsonWriter({
-            encode: false,
-            writeAllFields: true
-        }); 
-    
-        this.tmpStore = new Ext.data.Store({
-            restful: true,    
-            autoLoad: false, 
-			autoDestroy:true,
-            baseParams: this.baseParams,
-		    paramNames: {
-			    start : 'offset',
-			    limit : 'limit',
-			    sort : 'sort',
-			    dir : 'dir'
-			},
-            proxy: this.proxy,
-            reader: this.reader,
-            writer: this.writer
-        });
-    	
     	this.tmpGrid = new App.examination.TmpGrid({
-			store: this.tmpStore,
+//			store: this.tmpStore,
 			hidden:true,
 			region:'center',
 			autoScroll:true,
@@ -276,7 +228,9 @@ App.examination.StartPanel = Ext.extend(Ext.Panel, {
         App.examination.StartPanel.superclass.initComponent.call(this);
         
         this.on('afterrender',function(){
-        	this.radio = 'empty'
+        	this.radio = 'empty';
+        	this.tmpStore = this.tmpGrid.store;
+        	this.tmpStore.load();
         })
     },
     

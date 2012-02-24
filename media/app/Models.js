@@ -240,6 +240,8 @@ App.models.Dicom = new Ext.data.Record.create([
 
 App.models.Template = new Ext.data.Record.create([
    	{name: 'id'},
+   	{name: 'created'},
+   	{name: 'modified'},
 	{name: 'resource_uri'},
 	{name: 'print_name'},
 	{name: 'print_date'},

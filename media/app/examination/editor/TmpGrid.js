@@ -136,6 +136,7 @@ App.examination.TmpGrid = Ext.extend(Ext.grid.EditorGridPanel, {
 			}),
 			tbar:this.tbar,
             viewConfig: {
+            	emptyText:'нет шаблонов',
                 forceFit: true
             }
         };

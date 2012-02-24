@@ -8,7 +8,7 @@ App.examination.CardStartPanel = Ext.extend(Ext.Panel, {
     	this.printName = true; //в таблице шаблонов отображать колонку 'print_name'
     	
     	this.tmpGrid = new App.examination.TmpGrid({
-			hidden:true,
+//			hidden:true,
 			autoScroll:true,
 			border:false,
 			tbar:[{
@@ -26,7 +26,7 @@ App.examination.CardStartPanel = Ext.extend(Ext.Panel, {
 		});
 		
         this.cardGrid = new App.examination.CardGrid({
-        	hidden:true,
+//        	hidden:true,
         	baseParams:{
         		ordered_service:App.uriToId(this.ordered_service)
         	},
@@ -77,9 +77,8 @@ App.examination.CardStartPanel = Ext.extend(Ext.Panel, {
             	check: function(r,checked){
             		if (checked){
             			this.radio = r.inputValue;
-            			this.cardGrid.hide();
-            			if (this.previewPanel.hidden){
-            				this.previewPanel.show();
+            			if(!this.gridPanel.hidden){
+            				this.gridPanel.hide();
             			};
         				this.tmpStore.setBaseParam('staff',App.uriToId(this.staff));
         				this.tmpStore.setBaseParam('base_service',App.uriToId(this.service));
@@ -88,12 +87,7 @@ App.examination.CardStartPanel = Ext.extend(Ext.Panel, {
 //                				this.printName = false;
         				this.tmpStore.load({callback:function(){
         					this.tmpGrid.getSelectionModel().selectFirstRow();
-        					this.onPreview('tmp');
         				},scope:this});
-        				if (!this.tmpGrid.hidden){
-    						this.tmpGrid.hide();
-    					};
-    					this.gridPanel.hide();
             		}
             	},
             	scope:this
@@ -108,9 +102,10 @@ App.examination.CardStartPanel = Ext.extend(Ext.Panel, {
             	check: function(r,checked){
             		if (checked){
             			this.radio = r.inputValue;
-            			if (this.previewPanel.hidden){
-            				this.previewPanel.show();
+            			if(this.gridPanel.hidden){
+            				this.gridPanel.show();
             			};
+            			this.gridPanel.layout.setActiveItem(0);
         				delete this.cardStore.baseParams['ordered_service__order__patient'];
         				delete this.cardStore.baseParams['ordered_service__staff__staff'];
         				this.cardStore.setBaseParam('ordered_service',App.uriToId(this.ordered_service));
@@ -120,13 +115,6 @@ App.examination.CardStartPanel = Ext.extend(Ext.Panel, {
         						return
         					}
         					this.cardGrid.getSelectionModel().selectFirstRow();
-        					if (!this.tmpGrid.hidden){
-	    						this.tmpGrid.hide();
-	    					};
-        					if (this.cardGrid.hidden){
-								this.cardGrid.show();
-								this.gridPanel.show();
-							};
         				},scope:this});
             		}
             	},
@@ -137,14 +125,15 @@ App.examination.CardStartPanel = Ext.extend(Ext.Panel, {
         this.fromCardRadio = new Ext.form.Radio({
             boxLabel: 'из предыдущих карт осмотра',
             name: 'input-choice', 
-            inputValue: 'card',
+            inputValue: 'other_card',
             listeners:{
             	check: function(r,checked){
             		if (checked){
             			this.radio = r.inputValue;
-            			if (this.previewPanel.hidden){
-            				this.previewPanel.show();
+            			if(this.gridPanel.hidden){
+            				this.gridPanel.show();
             			};
+            			this.gridPanel.layout.setActiveItem(0);
         				delete this.cardStore.baseParams['ordered_service'];
         				this.cardStore.setBaseParam('ordered_service__order__patient',this.patient);
         				this.cardStore.setBaseParam('ordered_service__staff__staff',active_staff);
@@ -154,13 +143,6 @@ App.examination.CardStartPanel = Ext.extend(Ext.Panel, {
         						return
         					}
         					this.cardGrid.getSelectionModel().selectFirstRow();
-        					if (!this.tmpGrid.hidden){
-	    						this.tmpGrid.hide();
-	    					};
-        					if (this.cardGrid.hidden){
-								this.cardGrid.show();
-								this.gridPanel.show();
-							};
         				},scope:this});
             		}
             	},
@@ -176,9 +158,7 @@ App.examination.CardStartPanel = Ext.extend(Ext.Panel, {
             listeners:{
             	check: function(r,checked){
             		if (checked){
-            			this.cardGrid.hide();
             			this.radio = r.inputValue;
-            			this.tmpGrid.hide();
             			this.gridPanel.hide();
             			this.previewPanel.hide();
             		}
@@ -205,24 +185,20 @@ App.examination.CardStartPanel = Ext.extend(Ext.Panel, {
             	check: function(r,checked){
             		if (checked){
             			this.radio = r.inputValue;
-            			if (!this.previewPanel.hidden){
-            				this.previewPanel.hide();
-            			};
+            			if (this.gridPanel.hidden) this.gridPanel.show();
+            			this.gridPanel.layout.setActiveItem(1);
         				this.tmpStore.setBaseParam('base_service__isnull',true);
         				this.tmpStore.setBaseParam('staff__isnull',true);
         				delete this.tmpStore.baseParams['staff'];
         				delete this.tmpStore.baseParams['base_service'];
         				this.printName = true;
-        				this.tmpStore.load({callback:function(){
+        				this.tmpStore.load({callback:function(records){
+        					if(!records.length){
+        						this.previewPanel.hide();
+        						return
+        					}
         					this.tmpGrid.getSelectionModel().selectFirstRow();
-        					this.onPreview('tmp');
         				},scope:this});
-        				this.cardGrid.hide();
-        				if (this.tmpGrid.hidden){
-    						this.tmpGrid.show();
-    					};
-    					this.gridPanel.show();
-            				
             		}
             	},
             	scope:this
@@ -237,9 +213,8 @@ App.examination.CardStartPanel = Ext.extend(Ext.Panel, {
             	check: function(r,checked){
             		if (checked){
             			this.radio = r.inputValue;
-            			if (!this.previewPanel.hidden){
-            				this.previewPanel.hide();
-            			};
+            			if (this.gridPanel.hidden) this.gridPanel.show();
+            			this.gridPanel.layout.setActiveItem(1);
         				this.tmpStore.setBaseParam('base_service__isnull',true);
         				this.tmpStore.setBaseParam('staff',App.uriToId(this.staff));
         				delete this.tmpStore.baseParams['staff__isnull'];
@@ -248,12 +223,7 @@ App.examination.CardStartPanel = Ext.extend(Ext.Panel, {
         				this.cardGrid.hide();
         				this.tmpStore.load({callback:function(){
         					this.tmpGrid.getSelectionModel().selectFirstRow();
-        					this.onPreview('tmp');
         				},scope:this});
-        				if (this.tmpGrid.hidden){
-    						this.tmpGrid.show();
-    						this.gridPanel.show();
-    					};
             		}
             	},
             	scope:this
@@ -373,22 +343,38 @@ App.examination.CardStartPanel = Ext.extend(Ext.Panel, {
     },
     
     onNext: function(){
-    	if (this.radio === 'empty'){
-    		this.fireEvent('opentmp');
-    	} else if (this.radio == 'card'){
-    		var record = this.cardGrid.getSelectionModel().getSelected();
-    		if (record){
-    			this.fireEvent('editcard',record)
-    		}
-    	} else {
-	    		var record = this.tmpGrid.getSelectionModel().getSelected();
-//	    		console.log(record)
+    	
+    	switch (this.radio){
+    		case 'empty':
+    			this.fireEvent('opentmp');
+    			break;
+    		case 'card':
+    			var record = this.cardGrid.getSelectionModel().getSelected();
+	    		if (record){
+	    			this.fireEvent('editcard',record)
+	    		} else {
+	    			console.log('не выбран источник')
+	    		}
+	    		break;
+	    	case 'other_card':
+	    		var record = this.cardGrid.getSelectionModel().getSelected();
 	    		if (record){
 	    			this.fireEvent('opentmp',record)
 	    		} else {
 	    			console.log('не выбран источник')
 	    		}
-    		}
+	    		break;
+	    	case 'preset':
+	    	case 'archive':
+	    	case 'service':
+	    		var record = this.tmpGrid.getSelectionModel().getSelected();
+	    		if (record){
+	    			this.fireEvent('opentmp',record)
+	    		} else {
+	    			console.log('не выбран источник')
+	    		};
+	    		break
+    	}
 	},
 	
 	onPreview: function(type){

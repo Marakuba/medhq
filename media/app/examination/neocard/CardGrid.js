@@ -161,6 +161,7 @@ App.examination.CardGrid = Ext.extend(Ext.grid.EditorGridPanel, {
 						}
 					}),
             viewConfig: {
+            	emptyText:'нет карт осмотра',
                 forceFit: true
             },
 			tbar:this.tbar
