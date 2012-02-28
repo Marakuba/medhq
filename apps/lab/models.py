@@ -343,7 +343,7 @@ class Equipment(models.Model):
     """
     name = models.CharField(u'Наименование', max_length=100)
     slug = models.CharField(u'Короткое наименование', max_length=15)
-    address = models.CharField(max_length=15)
+    serial_number = models.CharField(max_length=30)
     is_active = models.BooleanField(u'Активно', default=True)
     order = models.IntegerField(u'Порядок', default=0)
 
@@ -361,6 +361,8 @@ class EquipmentAssay(models.Model):
     """
     equipment = models.ForeignKey(Equipment)
     service = models.ForeignKey('service.BaseService')
+    name = models.CharField(u'Название', max_length=20)
+    code = models.CharField(u'Код', max_length=20)
     is_active = models.BooleanField(u'Активно', default=True)
 
     def __unicode__(self):
@@ -394,14 +396,53 @@ class EquipmentTask(models.Model):
         verbose_name = u'задание для анализаторов'
         verbose_name_plural = u'задания для анализаторов' 
 
+RESULT_TYPE = (
+    ('F',u'Итоговый'),
+    ('I',u'Интерпретируемый'),
+    ('P',u'Инструментальный'),
+)
+
+RESULT_STATUS = (
+    ('F',u'Итоговый'),
+    ('R',u'Повторный'),
+    ('X',u'Невозможно выполнить тест'),
+)
 
 class EquipmentResult(models.Model):
     """
     """
+    equipment_task = models.ForeignKey(EquipmentTask, blank=True, null=True)
     created = models.DateTimeField(u'Получено', auto_now_add=True)
-    equipment = models.ForeignKey(Equipment, verbose_name=u'Анализатор')
-    order = models.CharField(u'Заказ', max_length=20)
-    assay = models.CharField(u'Исследование', max_length=20)
+    eq_serial_number = models.CharField(u'Серийный номер анализатора', max_length=30)
+    specimen = models.CharField(u'Заказ', max_length=20)
+    assay_name = models.CharField(u'Исследование', max_length=20)
+    assay_code = models.CharField(u'Исследование', max_length=20)
+    assay_protocol = models.CharField(u'Исследование', max_length=20)
+    result_type = models.CharField(u'Тип результата', max_length=1, choices=RESULT_TYPE)
+    result_status = models.CharField(u'Статус результата', max_length=1, choices=RESULT_STATUS)
+    abnormal_flags = models.CharField(u'Флаг незавершенных тестов', max_length=10)
     result = models.CharField(u'Результат', max_length=100)
-    measurement = models.CharField(u'Ед.изм.', max_length=15)
+    units = models.CharField(u'Ед.изм.', max_length=15)
     
+    def save(self, *args, **kwargs):
+        if not self.pk:
+            try:
+                equipment_task = EquipmentTask.objects.get(equipment_assay__equipment__serial_number=self.eq_serial_number,
+                                                           equipment_assay__name=self.assay_name,
+                                                           equipment_assay__code=self.assay_code,
+                                                           ordered_service__order__barcode__id=int(self.specimen))
+                if equipment_task:
+                    self.equipment_task = equipment_task
+                    if self.result_type=='F' and not self.abnormal_flags:
+                        visit = self.equipment_task.ordered_service.order
+                        try:
+                            result_obj = Result.objects.get(order__visit=visit,
+                                                            analysis__equipment_assay=self.equipment_task.equipment_assay)
+                            result_obj.value=self.result
+                            result_obj.save()
+                        except Exception, err:
+                            print err
+                        
+            except Exception, err:
+                print err
+        super(EquipmentResult, self).save(*args, **kwargs)

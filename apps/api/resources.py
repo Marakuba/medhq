@@ -154,4 +154,140 @@ class ExtResource(ModelResource):
             return self.apply_authorization_limits(request, base_object_list)
         except ValueError, e:
             raise BadRequest("Invalid resource lookup data provided (mismatched type).")
+
+
+class ExtBatchResource(ExtResource):
+    """
+    """
+    def deserialize(self, request, data, format='application/json'):
+        """
+        """
+        
+        def empty_to_none(d):
+            clean_data = {}
+            for k,v in d.iteritems():
+                if v=='':
+                    clean_data[k] = None
+                else:
+                    clean_data[k] = v
+            return clean_data
+        
+        deserialized = super(ExtResource, self).deserialize(request=request, data=data, format=format)
+        deserialized = deserialized['objects']
+        if isinstance(deserialized, dict):
+            deserialized = [deserialized]
+        return map(empty_to_none, deserialized)
     
+    
+    def build_list_response(self, request, updated_bundles, message=None, status=200):
+        """
+        """ 
+
+        desired_format = self.determine_format(request)
+        serialized_bundles = []
+        for updated_bundle in updated_bundles:
+            bundle = self.full_dehydrate(updated_bundle.obj)
+            serialized = self.serialize(request, bundle, desired_format)
+            serialized_bundles.append(serialized)
+        content = """{'success':true,
+                   'message':'%s',
+                   'objects':[%s]}"""  % (message or u'Операция выполнена успешно', ",".join(serialized_bundles)) 
+        return HttpResponse(content=content, 
+                            content_type=build_content_type(desired_format),
+                            status=status)
+       
+    def build_response(self, request, updated_bundle, message=None, status=200):
+        """
+        """ 
+
+        desired_format = self.determine_format(request)
+        bundle = self.full_dehydrate(updated_bundle.obj)
+        bundle.data = {'success':True,
+                       'message':message or u'Операция выполнена успешно',
+                       'objects':bundle.data} 
+        serialized = self.serialize(request, bundle, desired_format)
+        return HttpResponse(content=serialized, 
+                            content_type=build_content_type(desired_format),
+                            status=status)
+       
+    def post_list(self, request, **kwargs):
+        deserialized = self.deserialize(request, request.raw_post_data, format=request.META.get('CONTENT_TYPE', 'application/json'))
+        print "POST LIST"
+        print deserialized
+#        bundle = self.build_bundle(data=dict_strip_unicode_keys(deserialized))
+#        self.is_valid(bundle, request)
+#        updated_bundle = self.obj_create(bundle, request=request)
+#        
+#        return self.build_response(request, updated_bundle)
+    
+        bundles_seen = []
+        for object_data in deserialized:
+            bundle = self.build_bundle(data=dict_strip_unicode_keys(object_data))
+            self.is_valid(bundle, request)
+        
+            updated_bundle = self.obj_create(bundle, request=request, pk=kwargs.get('pk'))
+            bundles_seen.append(updated_bundle)
+        
+        return self.build_list_response(request, bundles_seen)    
+    
+        
+    def put_detail(self, request, **kwargs):
+        """
+        Either updates an existing resource or creates a new one with the
+        provided data.
+        
+        Calls ``obj_update`` with the provided data first, but falls back to
+        ``obj_create`` if the object does not already exist.
+        
+        If a new resource is created, return ``HttpCreated`` (201 Created).
+        If an existing resource is modified, return ``HttpAccepted`` (204 No Content).
+        """
+        deserialized = self.deserialize(request, request.raw_post_data, format=request.META.get('CONTENT_TYPE', 'application/json'))
+        
+        """
+        Предполагаем что передается массив bundles
+        """
+        if isinstance(deserialized, list) and len(deserialized):
+            deserialized = deserialized[0]
+
+        bundle = self.build_bundle(data=dict_strip_unicode_keys(deserialized))
+        self.is_valid(bundle, request)
+        
+        try:
+            updated_bundle = self.obj_update(bundle, request=request, pk=kwargs.get('pk'))
+            return self.build_response(request, updated_bundle) #return HttpAccepted()
+        except:
+            updated_bundle = self.obj_create(bundle, request=request, pk=kwargs.get('pk'))
+            return self.build_response(request, updated_bundle) #return HttpCreated(location=self.get_resource_uri(updated_bundle))
+        
+    def put_list(self, request, **kwargs):
+        """
+        Either updates an existing resource or creates a new one with the
+        provided data.
+        
+        Calls ``obj_update`` with the provided data first, but falls back to
+        ``obj_create`` if the object does not already exist.
+        
+        If a new resource is created, return ``HttpCreated`` (201 Created).
+        If an existing resource is modified, return ``HttpAccepted`` (204 No Content).
+        """
+        deserialized = self.deserialize(request, request.raw_post_data, format=request.META.get('CONTENT_TYPE', 'application/json'))
+        
+        """
+        Предполагаем что передается массив bundles
+        """
+        bundles_seen = []
+        for object_data in deserialized:
+            bundle = self.build_bundle(data=dict_strip_unicode_keys(object_data))
+            self.is_valid(bundle, request)
+        
+            try:
+                updated_bundle = self.obj_update(bundle, request=request, pk=kwargs.get('pk'))
+                bundles_seen.append(updated_bundle)
+                #return self.build_response(request, updated_bundle) #return HttpAccepted()
+            except:
+                updated_bundle = self.obj_create(bundle, request=request, pk=kwargs.get('pk'))
+                bundles_seen.append(updated_bundle)
+                #return self.build_response(request, updated_bundle) #return HttpCreated(location=self.get_resource_uri(updated_bundle))
+        
+        return self.build_list_response(request, bundles_seen)
