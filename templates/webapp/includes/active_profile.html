@@ -9,5 +9,6 @@
 		var active_state = '{{ request.active_profile.department.state }}';
 		var active_state_id = {{ request.active_profile.department.state.id }};
 		var active_user = '{{ request.user }}';
+		var active_staff = '{{ request.active_profile.staff.id }}';
 	</script>
 {% endspaceless %}	

@@ -908,7 +908,8 @@ class OrderedServiceResource(ExtResource):
         filtering = {
             'order': ALL_WITH_RELATIONS,
             'sampling': ALL_WITH_RELATIONS,
-            'execution_place' : ALL_WITH_RELATIONS
+            'execution_place' : ALL_WITH_RELATIONS,
+            'staff' : ALL_WITH_RELATIONS
         }
         
 class LabOrderedServiceResource(OrderedServiceResource):
@@ -1334,6 +1335,7 @@ class CardResource(ExtResource):
         filtering = {
             'ordered_service':ALL_WITH_RELATIONS,
             'id':ALL,
+            'deleted':ALL,
             'name':ALL
         }
         
@@ -1357,6 +1359,7 @@ class TemplateResource(ExtResource):
             'base_service':ALL_WITH_RELATIONS,
             'id':ALL,
             'print_name':ALL,
+            'deleted':ALL,
             'staff':ALL_WITH_RELATIONS
         }
         

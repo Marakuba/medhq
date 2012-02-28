@@ -1,17 +1,17 @@
 Ext.ns('App.examination');
 
-App.examination.ConclGrid = Ext.extend(Ext.grid.EditorGridPanel, {
+App.examination.CardGrid = Ext.extend(Ext.grid.EditorGridPanel, {
 	
 	initComponent: function(){
 
-//        this.Mess = new Ext.App({});
-		
-        this.proxy = new Ext.data.HttpProxy({
-            url: get_api_url('card')
+		this.proxy = new Ext.data.HttpProxy({
+        	url: get_api_url('card')
         });
-		this.baseParams = {
-            format:'json'
-        };
+		this.baseParams = Ext.apply({
+            format:'json',
+            deleted:false,
+            'ordered_service__staff': active_profile
+        },this.baseParams);
     
         this.reader = new Ext.data.JsonReader({
             totalProperty: 'meta.total_count',
@@ -26,8 +26,7 @@ App.examination.ConclGrid = Ext.extend(Ext.grid.EditorGridPanel, {
             writeAllFields: true
         }); 
     
-        this.store = new Ext.data.Store({
-//            id: 'name',
+        this.store =  this.store || new Ext.data.Store({
             restful: true,    
             autoLoad: false, 
 			autoDestroy:true,
@@ -42,7 +41,7 @@ App.examination.ConclGrid = Ext.extend(Ext.grid.EditorGridPanel, {
             reader: this.reader,
             writer: this.writer
         });
-
+        
 		this.store.on('load', function(){
 			this.getSelectionModel().selectFirstRow();
 		}, this);
@@ -73,11 +72,28 @@ App.examination.ConclGrid = Ext.extend(Ext.grid.EditorGridPanel, {
                 return record ? record.get(combo.displayField) : (rec ? rec.get(field) : combo.valueNotFoundText);
             }
         };
+        
+        if(!this.emptyTbar){
+			
+			this.tbar = this.tbar || [];
+			
+			this.tbar.push({
+				xtype:'button',
+				text:'Обновить',
+				iconCls:'x-tbar-loading',
+				handler:function(){
+					this.store.load()
+				},
+				scope:this
+			});
+		} else {
+			this.tbar = []
+		};
 
         this.columns =  [
         	{
                 header: "Выполнено",
-                width: 10, 
+                width: 30, 
                 sortable: true, 
                 dataIndex: 'executed',
                 renderer:function(val, meta, record) {
@@ -89,7 +105,7 @@ App.examination.ConclGrid = Ext.extend(Ext.grid.EditorGridPanel, {
             },
             {
                 header: "Дата создания",
-                width: 100, 
+                width: 40, 
                 sortable: true, 
                 dataIndex: 'created',
                 renderer:Ext.util.Format.dateRenderer('d.m.Y H:i')
@@ -117,7 +133,7 @@ App.examination.ConclGrid = Ext.extend(Ext.grid.EditorGridPanel, {
                 dataIndex: 'assistant_name' 
             },{
                 header: "Дата изменения", 
-                width: 60, 
+                width: 40, 
                 sortable: true, 
                 dataIndex: 'modified',
                 renderer:Ext.util.Format.dateRenderer('d.m.Y H:i')
@@ -127,7 +143,6 @@ App.examination.ConclGrid = Ext.extend(Ext.grid.EditorGridPanel, {
     
 
         config = {
-//            id: 'concl-grid',
 			loadMask : {
 				msg : 'Подождите, идет загрузка...'
 			},
@@ -145,28 +160,20 @@ App.examination.ConclGrid = Ext.extend(Ext.grid.EditorGridPanel, {
 							}
 						}
 					}),
-	        bbar: new Ext.PagingToolbar({
-	            pageSize: 30,
-	            store: this.store,
-	            displayInfo: true,
-	            displayMsg: 'Показана запись {0} - {1} из {2}',
-	            emptyMsg: "Нет записей"
-	        }),
             viewConfig: {
+            	emptyText:'нет карт осмотра',
                 forceFit: true
-            }
+            },
+			tbar:this.tbar
         };
         Ext.apply(this, Ext.apply(this.initialConfig, config));
-	    App.examination.ConclGrid.superclass.initComponent.apply(this, arguments);
+	    App.examination.CardGrid.superclass.initComponent.apply(this, arguments);
 
 		this.on('afterrender', function(){
-			if (this.staff){
-				this.store.setBaseParam('staff',App.uriToId(this.staff));
-				this.store.load();
-			}
 		}, this);
+		
     }
 
 });
 
-Ext.reg('conclgrid', App.examination.ConclGrid);
+Ext.reg('cardgrid', App.examination.CardGrid);

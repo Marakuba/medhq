@@ -83,7 +83,7 @@ App.ExamCentralPanel = Ext.extend(Ext.Panel, {
             },{
                 xtype: 'buttongroup',
 //                title: 'Шаблоны',
-                columns: 2,
+                columns: 3,
                 defaults: {
                     scale: 'small'
                 },
@@ -111,7 +111,25 @@ App.ExamCentralPanel = Ext.extend(Ext.Panel, {
                     	this.launchApp('editor');
                     },
                     scope:this
-                }]
+                },{
+                	text: 'Мои шаблоны',
+                    scale:'medium',
+                    iconAlign: 'top',
+                    handler: function(){
+                    	this.launchApp('tmparchive');
+                    },
+                    scope:this
+                }
+                ,{
+                	text: 'Корзина',
+                    scale:'medium',
+                    iconAlign: 'top',
+                    handler: function(){
+                    	this.launchApp('extrash');
+                    },
+                    scope:this
+                }
+                ]
             },{
                 xtype: 'buttongroup',
 //              title: 'Пациенты',
@@ -171,11 +189,14 @@ App.ExamCentralPanel = Ext.extend(Ext.Panel, {
 	
 	launchApp: function(appId,config) {
         var app_config = {
-            xtype:appId
+            xtype:appId            
         };
         config = config || {};
 		Ext.apply(app_config, config);
 		var new_app = this.mainPanel.add(app_config);
+		new_app.on('close',function(app){
+			this.closeApp(app)
+		},this)
 		this.mainPanel.setActiveTab(new_app);
 	}
 });

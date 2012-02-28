@@ -1,6 +1,27 @@
-{% load markup %}
+{% load markup lab_tags %}
 
 <style>
+	.patient, .results, .underwrite {
+		width: 100%;
+	}
+	
+	.patient {
+		border: 1px solid;
+		padding:6px;
+		margin-bottom:30px;
+	}
+	
+	.patient td {
+		padding:4px;
+	}
+	
+	.patient .name {
+		width:5cm;
+	}
+	
+	.patient .bold {
+		font-weight:bold;
+	}
 	.template-preview {
 		font-famlily:"Arial";
 		padding:4pt;
@@ -10,8 +31,8 @@
 	.template-preview h1 {
 		font-size:15pt;
 		margin:4pt 0;
-		color: gray;
-		border-bottom: 1px gray solid;
+		color: black;
+		text-align:center;
 	}
 	
 	.template-preview h2 {
@@ -47,10 +68,33 @@
    		list-style-type: disc;
    		list-style-position: inside;
    	}
-    	
-	
-	
 </style>
+
+
+	<table class="patient">
+		<tr>
+			<td>
+				<table>
+					<tr>
+						<td class="name">Ф.И.О.:</td><td class="bold">{{ card.ordered_service.order.patient.full_name }}</td>
+					</tr>
+					<tr>
+						<td class="name">Дата рождения:</td><td class="bold">{{ card.ordered_service.order.patient.birth_day|date:"d.m.Y" }}</td>
+					</tr>
+					<tr>
+						<td class="name">Дата обследования:</td><td class="bold">{{ card.ordered_service.order.created|date:"d.m.Y H:i" }}</td>
+					</tr>
+				</table>
+			</td>
+			<td align="right">
+				Заказ: <strong>{{ card.ordered_service.order.id|zid:"5" }}</strong><br>
+				Врач: <strong>{{ card.ordered_service.staff.id|zid:"5" }}</strong><br>
+				Направившее учреждение: <strong>{{ card.ordered_service.order.referral.id|zid:"5" }}</strong><br>
+				
+			</td>
+		</tr>
+	</table>
+	<br>
 
 <div class="template-preview">
 <h1>{{ card.print_name }}</h1>

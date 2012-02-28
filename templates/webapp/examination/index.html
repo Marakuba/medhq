@@ -20,7 +20,7 @@
 	<link rel="stylesheet" type="text/css" href="{{ STATIC_URL }}extjs/ux/css/Spinner.css" rel="stylesheet" />
 	<link rel="stylesheet" type="text/css" href="{{ STATIC_URL }}extjs/ux/css/RowEditor.css" rel="stylesheet" />
 	<link rel="stylesheet" type="text/css" href="{{ STATIC_URL }}extjs/ux/treegrid/treegrid.css" rel="stylesheet" />
-    <link rel="stylesheet" type="text/css" href="{{ STATIC_URL }}extjs/ux/progresscolumn/ProgressColumn.css"/>
+	<link rel="stylesheet" type="text/css" href="{{ STATIC_URL }}extjs/ux/progresscolumn/ProgressColumn.css"/>
 	
 	<!-- RemoteTree -->
     <link rel="stylesheet" type="text/css" href="{{ STATIC_URL }}app/ux/remotetree/css/empty.css"/>
@@ -164,6 +164,9 @@
 
     <script type="text/javascript" src="{{ STATIC_URL }}app/ux/InputTextMask.js"></script> 
     
+    <script type="text/javascript" src="{{ STATIC_URL }}app/ux/InputTextMask.js"></script>
+    <script type="text/javascript" src="{{ STATIC_URL }}extjs/ux/progresscolumn/ProgressColumn.js"></script>
+    
     <script type="text/javascript" src="{{ STATIC_URL }}app/ux/GSearchField.js"></script>
     <script type="text/javascript" src="{{ STATIC_URL }}app/ux/StatusBar.js"></script>
     <script type="text/javascript" src="{{ STATIC_URL }}app/App.js"></script>
@@ -175,7 +178,7 @@
 
     <script type="text/javascript" src="{{ STATIC_URL }}app/examination/backends.js"></script>
     <script type="text/javascript" src="{{ STATIC_URL }}app/Models.js"></script>
-
+    
     <script type="text/javascript" src="{{ STATIC_URL }}app/examination/examorder/Grid.js"></script>
     <script type="text/javascript" src="{{ STATIC_URL }}app/examination/examorder/OldGrid.js"></script>
 
@@ -201,13 +204,15 @@
     <!-- Editor app -->
 	<script type="text/javascript" src="{{ STATIC_URL }}app/ux/DropDownList.js"></script>
 	
-	    
     <script type="text/javascript" src="{{ STATIC_URL }}extjs/ux/treegrid/TreeGridSorter.js"></script>
     <script type="text/javascript" src="{{ STATIC_URL }}extjs/ux/treegrid/TreeGridColumnResizer.js"></script>
     <script type="text/javascript" src="{{ STATIC_URL }}extjs/ux/treegrid/TreeGridNodeUI.js"></script>
     <script type="text/javascript" src="{{ STATIC_URL }}extjs/ux/treegrid/TreeGridLoader.js"></script>
     <script type="text/javascript" src="{{ STATIC_URL }}extjs/ux/treegrid/TreeGridColumns.js"></script>
     <script type="text/javascript" src="{{ STATIC_URL }}extjs/ux/treegrid/TreeGrid.js"></script>
+    
+    <script type="text/javascript" src="{{ STATIC_URL }}app/examination/editor/TmpGrid.js"></script>
+    <script type="text/javascript" src="{{ STATIC_URL }}app/examination/neocard/CardGrid.js"></script>
     
     <script type="text/javascript" src="{{ STATIC_URL }}app/registry/ServicePanel.js"></script>
     <script type="text/javascript" src="{{ STATIC_URL }}app/service/ServiceTreeGrid.js"></script>
@@ -241,8 +246,13 @@
     <script type="text/javascript" src="{{ STATIC_URL }}app/examination/neocard/CardApp.js"></script>
     
     <!-- conclusion app -->
-    <script type="text/javascript" src="{{ STATIC_URL }}app/examination/conclusion/ConclGrid.js"></script>
     <script type="text/javascript" src="{{ STATIC_URL }}app/examination/conclusion/ConclApp.js"></script>
+    
+    <!-- archive app -->
+    <script type="text/javascript" src="{{ STATIC_URL }}app/examination/archive/ArchiveApp.js"></script>
+    
+    <!-- trash app -->
+    <script type="text/javascript" src="{{ STATIC_URL }}app/examination/trash/TrashApp.js"></script>
     
     <script type="text/javascript" src="{{ STATIC_URL }}app/examination/templates/CardTemplateWindow.js"></script>
     <script type="text/javascript" src="{{ STATIC_URL }}app/examination/templates/CardTemplateForm.js"></script>

@@ -160,6 +160,10 @@ App.examination.TicketTab = Ext.extend(Ext.Panel, {
 			}
 		});
 		
+//		this.bb = new Ext.Toolbar({
+//			items:[]
+//		});
+		
 		var config = {
 			
 //		    height: 636,
@@ -173,7 +177,8 @@ App.examination.TicketTab = Ext.extend(Ext.Panel, {
 		    bubbleEvents:['beforeticketremove','ticketremove','ticketdataupdate','ticketeditstart','editorclose','drop','ticketheadeeditrstart'],
 		    items: [
 		       this.ticketPanel, this.glossPanel
-		    ]
+		    ],
+//		    bbar: [this.deleteBtn]
 		}
 								
 		Ext.apply(this, Ext.apply(this.initialConfig, config));
@@ -234,13 +239,9 @@ App.examination.TicketTab = Ext.extend(Ext.Panel, {
 		},this);
 		
 		this.on('beforeclose',function(){
-			var data = Ext.decode(this.record.data.data);
-			Ext.each(data,function(sec,i){
-				if (sec.section == this.section){
-					delete data[i];
-				}
-			},this);
-			this.record.set('data',Ext.encode(data));
+			this.fireEvent('closetab',this)
+			return false
+//			this.removeTab();
 		},this);
 		
 		this.on('editorclose',function(){
@@ -357,6 +358,16 @@ App.examination.TicketTab = Ext.extend(Ext.Panel, {
 	},
 	
 	loadData: function(data){
+	},
+	
+	removeTab: function(){
+		var data = Ext.decode(this.record.data.data);
+		Ext.each(data,function(sec,i){
+			if (sec.section == this.section){
+				delete data[i];
+			}
+		},this);
+		this.record.set('data',Ext.encode(data));
 	},
 	
 	addTicket:function(title){

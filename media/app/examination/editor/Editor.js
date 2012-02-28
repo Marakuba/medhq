@@ -5,36 +5,30 @@ Ext.ns('Ext.ux');
 App.examination.Editor = Ext.extend(Ext.Panel, {
 	initComponent : function() {
 		
-		Ext.Ajax.request({
-			url:get_api_url('position'),
-			method:'GET',
-			params: {id: active_profile},
-			success:function(resp, opts) {
-				var jsonResponse = Ext.util.JSON.decode(resp.responseText);
-				Ext.each(jsonResponse.objects, function(item,i){
-					this.staff = item.staff;
-				}, this);
-			},
-			scope: this
-		});
+		this.staff = App.getApiUrl('staff')+ '/' + active_staff;
 		
 		this.tmpStore = new Ext.data.RESTStore({
 			autoSave: true,
 			autoLoad : false,
 			apiUrl : get_api_url('examtemplate'),
-			model: App.models.Template
+			model: App.models.Template,
+			baseParams:{
+				format:'json',
+				staff:active_staff,
+				deleted:false
+			}
 		});
 		
 		this.fieldSetStore = new Ext.data.RESTStore({
 			autoSave: false,
-			autoLoad : true,
+			autoLoad : false,
 			apiUrl : get_api_url('examfieldset'),
 			model: App.models.FieldSet
 		});
 		
 		this.subSectionStore = new Ext.data.RESTStore({
 			autoSave: false,
-			autoLoad : true,
+			autoLoad : false,
 			apiUrl : get_api_url('examsubsection'),
 			model: App.models.SubSection
 		});
@@ -42,6 +36,7 @@ App.examination.Editor = Ext.extend(Ext.Panel, {
 		this.serviceTree = new App.ServiceTreeGrid ({
 //			layout: 'fit',
 			region:'west',
+			hidden:this.editMode,
 			baseParams:{
 				payment_type:'н',
 				staff : active_profile,
@@ -72,7 +67,7 @@ App.examination.Editor = Ext.extend(Ext.Panel, {
 		});
 		
 		var config = {
-			id: 'editor-cmp',
+//			id: 'editor-cmp',
 			closable:true,
 			title: 'Конструктор',
 			layout: 'border',	
@@ -86,6 +81,18 @@ App.examination.Editor = Ext.extend(Ext.Panel, {
 		App.examination.Editor.superclass.initComponent.apply(this, arguments);
 		
 		this.on('afterrender',function(form){
+			this.fieldSetStore.load({callback:function(records){
+				if(!records.length){
+					return
+				}
+				this.subSectionStore.load({callback:function(records){
+					if (this.editMode){
+						if (this.record){
+							this.onEditTmp(this.record)
+						}
+					}
+				},scope:this})
+			},scope:this})
 		});
 		
 		this.serviceTree.on('serviceclick',function(attrs){
@@ -132,11 +139,13 @@ App.examination.Editor = Ext.extend(Ext.Panel, {
 	newTmpBody: function(config){
 		
 		this.generalTab = new App.examination.GeneralTab({
-			print_name:this.print_name
+			print_name:this.print_name,
+			fromArchive:config.fromArchive
 		});
 		
 		return new App.examination.TemplateBody (Ext.apply(
 			{
+				editMode: this.editMode,
 				base_service : this.base_service,
 				fieldSetStore : this.fieldSetStore,
 				subSectionStore : this.subSectionStore,
@@ -149,15 +158,25 @@ App.examination.Editor = Ext.extend(Ext.Panel, {
 						this.onServiceClick(this.attrs)
 					},
 					deletetmp:function(){
-						this.onServiceClick(this.attrs)
+						if(this.editMode){
+							this.fireEvent('close',this);
+						}
+						this.contentPanel.removeAll();
+						if(this.attrs){
+							this.onServiceClick(this.attrs)
+						}
 					},
 					changetitle: function(text){
 						this.contentPanel.setTitle(text);
 					},
 					tmpclose: function(){
-						this.contentPanel.removeAll(true);
-						this.contentPanel.setTitle('Выберите услугу');
-						this.contentPanel.doLayout();
+						if(this.editMode){
+							this.fireEvent('close',this);
+						} else {
+							this.contentPanel.removeAll(true);
+							this.contentPanel.setTitle('Выберите услугу');
+							this.contentPanel.doLayout();
+						}
 					},
 					scope:this
 				}
@@ -195,7 +214,33 @@ App.examination.Editor = Ext.extend(Ext.Panel, {
 			this.contentPanel.doLayout();
 		},this);
 		
+		startPanel.on('edittmp',function(record){
+			this.onEditTmp(record)
+		},this);
+		
 		return startPanel;
+	},
+	
+	onEditTmp: function(record){
+		this.contentPanel.removeAll(true); // tmpStore из StartPanel уничтожен, нужно теперь искать запись в другом store
+		this.print_name = record.data.print_name;
+		this.tmpStore.setBaseParam('id',record.data.id);
+		delete this.tmpStore.baseParams['base_service'];
+		this.tmpStore.load({callback:function(records){
+			if (records.length){
+				delete this.tmpStore.baseParams['id'];
+				this.tmpStore.setBaseParam('base_service',this.base_service);
+				this.tmpBody = this.newTmpBody({
+					print_name: records[0].data.print_name,
+					record:records[0],
+//					fromArchive:true,
+					card:false // признак того, что это не карта
+				});
+				this.contentPanel.setTitle(records[0].data.print_name);
+				this.contentPanel.add(this.tmpBody);
+				this.contentPanel.doLayout();
+			}
+		},scope:this});
 	}
 });
 

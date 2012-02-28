@@ -4,18 +4,7 @@ App.examorder.ExamOrderGrid = Ext.extend(Ext.grid.GridPanel, {
 
 	initComponent : function() {
 		
-		Ext.Ajax.request({
-			url:get_api_url('position'),
-			method:'GET',
-			params: {id: active_profile},
-			success:function(resp, opts) {
-				var jsonResponse = Ext.util.JSON.decode(resp.responseText);
-				Ext.each(jsonResponse.objects, function(item,i){
-					this.staff = item.staff;
-				}, this);
-			},
-			scope: this
-		});
+		this.staff = App.getApiUrl('staff',active_staff);
 		
 		this.tmp_id = Ext.id();
 		
@@ -56,32 +45,6 @@ App.examorder.ExamOrderGrid = Ext.extend(Ext.grid.GridPanel, {
 		    		return String.format("{0} {1}", img, p ? Ext.util.Format.date(p, 'd.m.Y H:i') : "");
 		    	} 
 		    }];		
-		
-		this.singleModeFunc = function(rec) {
-			return {
-				filtering: {
-					'ordered_service':App.uriToId(rec.data.id)
-				}
-			}
-		};
-		
-		this.orderModeFunc = function(rec) {
-			return {
-				filtering: {
-					'ordered_service__order__patient':rec.data.patient
-				}
-			}
-		};
-		
-		this.examorderModeFunc = function(rec) {
-			return {
-				filtering: {
-					'order__laboratory':App.uriToId(rec.data.execution_place),
-					'order__visit__barcode':rec.data.barcode
-				},
-				mode: 'examorder'
-			}
-		};
 		
 		this.historyBtn = new Ext.Button({
 			text:'История пациента',

@@ -7,179 +7,33 @@ App.examination.CardStartPanel = Ext.extend(Ext.Panel, {
     	this.radio = 'empty';
     	this.printName = true; //в таблице шаблонов отображать колонку 'print_name'
     	
-        this.proxy = new Ext.data.HttpProxy({
-        	url: get_api_url('examtemplate')
-        });
-		this.baseParams = {
-            format:'json'
-        };
-    
-        this.reader = new Ext.data.JsonReader({
-            totalProperty: 'meta.total_count',
-            successProperty: 'success',
-            idProperty: 'id',
-            root: 'objects',
-            messageProperty: 'message'
-        }, [
-            {name: 'id'},
-            {name: 'created'},
-            {name: 'modified'},
-			{name: 'resource_uri'},
-			{name: 'print_name'},
-			{name: 'print_date'},
-			{name: 'base_service'},
-			{name: 'service_name'},
-			{name: 'staff'},
-			{name: 'data'}
-        ]);
-    
-        this.writer = new Ext.data.JsonWriter({
-            encode: false,
-            writeAllFields: true
-        }); 
-    
-        this.tmpStore = new Ext.data.Store({
-            restful: true,    
-            autoLoad: false, 
-			autoDestroy:true,
-            baseParams: this.baseParams,
-		    paramNames: {
-			    start : 'offset',
-			    limit : 'limit',
-			    sort : 'sort',
-			    dir : 'dir'
-			},
-            proxy: this.proxy,
-            reader: this.reader,
-            writer: this.writer
-        });
-    	
-    	this.tmpGrid = new Ext.grid.GridPanel({
-			store: this.tmpStore,
-			hidden:true,
+    	this.tmpGrid = new App.examination.TmpGrid({
+//			hidden:true,
 			autoScroll:true,
 			border:false,
-			columns:  [
-			    {
-			    	header: "Наименование", 
-			    	width:400,
-			    	sortable: true, 
-			    	hidden:false,
-			    	dataIndex: 'print_name',
-			    	renderer:this.printNameRenderer()
-			    },{
-			    	header: "Наименование1", 
-			    	width:400,
-			    	sortable: true, 
-			    	hidden:true,
-			    	dataIndex: 'service_name' 
-			    },{
-			    	header: "Создано", 
-			    	width:70,
-			    	sortable: true, 
-			    	renderer:Ext.util.Format.dateRenderer('H:i / d.m.Y'),
-			    	dataIndex: 'created' 
-			    },{
-			    	header: "Изменено", 
-			    	width:70,
-			    	sortable: true, 
-			    	renderer:Ext.util.Format.dateRenderer('H:i / d.m.Y'),
-			    	dataIndex: 'modified' 
-			    }
-			],
-			sm : new Ext.grid.RowSelectionModel({
-				singleSelect : true,
-				listeners: {
-					rowselect:this.onPreview.createDelegate(this,['tmp']),
-					scope:this
-				}
-			}),
-			viewConfig:{
-				forceFit:true
-			},
+			tbar:[{
+				text:'Изменить',
+				iconCls:'silk-pencil',
+				handler:this.tmpEdit.createDelegate(this),
+				scope:this
+			}],
 			listeners: {
+				rowselect:this.onPreview.createDelegate(this,['tmp']),
 				rowdblclick:this.onNext.createDelegate(this),
 				scope:this
 			}
 			
 		});
 		
-		this.cardStore = new Ext.data.Store({
-            restful: true,    
-            autoLoad: false, 
-			autoDestroy:true,
-            baseParams: {
-            	format:'json',
-            	ordered_service:App.uriToId(this.ordered_service)
-            },
-		    paramNames: {
-			    start : 'offset',
-			    limit : 'limit',
-			    sort : 'sort',
-			    dir : 'dir'
-			},
-            proxy: new Ext.data.HttpProxy({
-		    	url: get_api_url('card')
-		    }),
-            reader: new Ext.data.JsonReader({
-	            totalProperty: 'meta.total_count',
-	            successProperty: 'success',
-	            idProperty: 'id',
-	            root: 'objects',
-	            messageProperty: 'message'
-	        }, App.models.Card),
-            writer: new Ext.data.JsonWriter({
-	            encode: false,
-	            writeAllFields: true
-	        })
-        });
-    	
-        this.cardGrid = new Ext.grid.GridPanel({
-			store: this.cardStore,
-			hidden:true,
-			autoScroll:true,
-			border:false,
-			columns:  [
-			    {
-			    	header: "Наименование", 
-			    	width:400,
-			    	sortable: true, 
-			    	hidden:false,
-			    	dataIndex: 'print_name',
-			    	renderer:this.printNameRenderer()
-			    },{
-			    	header: "Наименование1", 
-			    	width:400,
-			    	sortable: true, 
-			    	hidden:true,
-			    	dataIndex: 'service_name' 
-			    },{
-			    	header: "Создано", 
-			    	width:70,
-			    	sortable: true, 
-			    	renderer:Ext.util.Format.dateRenderer('H:i / d.m.Y'),
-			    	dataIndex: 'created' 
-			    },{
-			    	header: "Изменено", 
-			    	width:70,
-			    	sortable: true, 
-			    	renderer:Ext.util.Format.dateRenderer('H:i / d.m.Y'),
-			    	dataIndex: 'modified' 
-			    }
-			],
-			sm : new Ext.grid.RowSelectionModel({
-				singleSelect : true,
-				listeners: {
-					rowselect:this.onPreview.createDelegate(this,['card']),
-					scope:this
-				}
-			}),
-			viewConfig:{
-				forceFit:true
-			},
+        this.cardGrid = new App.examination.CardGrid({
+//        	hidden:true,
+        	baseParams:{
+        		ordered_service:App.uriToId(this.ordered_service)
+        	},
+			printName:this.printName,
 			listeners: {
-//				show:this.onPreview.createDelegate(this,['card']),
 				rowdblclick:this.onNext.createDelegate(this),
+				rowselect:this.onPreview.createDelegate(this,['card']),
 				scope:this
 			}
 			
@@ -223,9 +77,8 @@ App.examination.CardStartPanel = Ext.extend(Ext.Panel, {
             	check: function(r,checked){
             		if (checked){
             			this.radio = r.inputValue;
-            			this.cardGrid.hide();
-            			if (this.previewPanel.hidden){
-            				this.previewPanel.show();
+            			if(!this.gridPanel.hidden){
+            				this.gridPanel.hide();
             			};
         				this.tmpStore.setBaseParam('staff',App.uriToId(this.staff));
         				this.tmpStore.setBaseParam('base_service',App.uriToId(this.service));
@@ -234,19 +87,14 @@ App.examination.CardStartPanel = Ext.extend(Ext.Panel, {
 //                				this.printName = false;
         				this.tmpStore.load({callback:function(){
         					this.tmpGrid.getSelectionModel().selectFirstRow();
-        					this.onPreview('tmp');
         				},scope:this});
-        				if (!this.tmpGrid.hidden){
-    						this.tmpGrid.hide();
-    					};
-    					this.gridPanel.hide();
             		}
             	},
             	scope:this
             }
         });
         
-        this.fromCardRadio = new Ext.form.Radio({
+        this.continueCardRadio = new Ext.form.Radio({
             boxLabel: 'Продолжить карту осмотра',
             name: 'input-choice', 
             inputValue: 'card',
@@ -254,9 +102,12 @@ App.examination.CardStartPanel = Ext.extend(Ext.Panel, {
             	check: function(r,checked){
             		if (checked){
             			this.radio = r.inputValue;
-            			if (this.previewPanel.hidden){
-            				this.previewPanel.show();
+            			if(this.gridPanel.hidden){
+            				this.gridPanel.show();
             			};
+            			this.gridPanel.layout.setActiveItem(0);
+        				delete this.cardStore.baseParams['ordered_service__order__patient'];
+        				delete this.cardStore.baseParams['ordered_service__staff__staff'];
         				this.cardStore.setBaseParam('ordered_service',App.uriToId(this.ordered_service));
         				this.cardStore.load({callback:function(records){
         					if (!records.length){
@@ -264,10 +115,114 @@ App.examination.CardStartPanel = Ext.extend(Ext.Panel, {
         						return
         					}
         					this.cardGrid.getSelectionModel().selectFirstRow();
-        					if (this.cardGrid.hidden){
-								this.cardGrid.show();
-								this.gridPanel.show();
-							};
+        				},scope:this});
+            		}
+            	},
+            	scope:this
+            }
+        });
+        
+        this.fromCardRadio = new Ext.form.Radio({
+            boxLabel: 'из предыдущих карт осмотра',
+            name: 'input-choice', 
+            inputValue: 'other_card',
+            listeners:{
+            	check: function(r,checked){
+            		if (checked){
+            			this.radio = r.inputValue;
+            			if(this.gridPanel.hidden){
+            				this.gridPanel.show();
+            			};
+            			this.gridPanel.layout.setActiveItem(0);
+        				delete this.cardStore.baseParams['ordered_service'];
+        				this.cardStore.setBaseParam('ordered_service__order__patient',this.patient);
+        				this.cardStore.setBaseParam('ordered_service__staff__staff',active_staff);
+        				this.cardStore.load({callback:function(records){
+        					if (!records.length){
+        						this.previewPanel.hide();
+        						return
+        					}
+        					this.cardGrid.getSelectionModel().selectFirstRow();
+        				},scope:this});
+            		}
+            	},
+            	scope:this
+            }
+        });
+        
+        this.emptyCardRadio = new Ext.form.Radio({
+            boxLabel: 'Пустая карта осмотра',
+            name: 'input-choice', 
+            inputValue: 'empty', 
+            checked: true,
+            listeners:{
+            	check: function(r,checked){
+            		if (checked){
+            			this.radio = r.inputValue;
+            			this.gridPanel.hide();
+            			this.previewPanel.hide();
+            		}
+            	},
+            	afterrender : function(r){
+            		Ext.QuickTips.register({
+        				autoHide:true,
+        			    target: r.wrap,
+        			    title: 'Пустая карта осмотра',
+        			    text: 'Все разделы и подразделы задаются вручную.',
+        			    width: 300,
+        			    dismissDelay: 3000
+        			});
+            	},
+            	scope:this
+            }
+        });
+        
+        this.fromPresetRadio = new Ext.form.Radio({
+            boxLabel: 'Из заготовки',
+            name: 'input-choice', 
+            inputValue: 'preset',
+            listeners:{
+            	check: function(r,checked){
+            		if (checked){
+            			this.radio = r.inputValue;
+            			if (this.gridPanel.hidden) this.gridPanel.show();
+            			this.gridPanel.layout.setActiveItem(1);
+        				this.tmpStore.setBaseParam('base_service__isnull',true);
+        				this.tmpStore.setBaseParam('staff__isnull',true);
+        				delete this.tmpStore.baseParams['staff'];
+        				delete this.tmpStore.baseParams['base_service'];
+        				this.printName = true;
+        				this.tmpStore.load({callback:function(records){
+        					if(!records.length){
+        						this.previewPanel.hide();
+        						return
+        					}
+        					this.tmpGrid.getSelectionModel().selectFirstRow();
+        				},scope:this});
+            		}
+            	},
+            	scope:this
+            }
+        });
+        
+        this.fromArchiveRadio = new Ext.form.Radio({
+            boxLabel: 'Из архива',
+            name: 'input-choice', 
+            inputValue: 'archive',
+            listeners:{
+            	check: function(r,checked){
+            		if (checked){
+            			this.radio = r.inputValue;
+            			if (this.gridPanel.hidden) this.gridPanel.show();
+            			this.gridPanel.layout.setActiveItem(1);
+        				this.tmpStore.setBaseParam('base_service__isnull',true);
+        				this.tmpStore.setBaseParam('staff',App.uriToId(this.staff));
+        				delete this.tmpStore.baseParams['staff__isnull'];
+        				delete this.tmpStore.baseParams['base_service'];
+        				this.printName = true;
+        				this.cardGrid.hide();
+        				this.tmpStore.load({callback:function(){
+        					this.tmpGrid.getSelectionModel().selectFirstRow();
         				},scope:this});
             		}
             	},
@@ -297,117 +252,24 @@ App.examination.CardStartPanel = Ext.extend(Ext.Panel, {
                     align: 'stretch',
                     items: [{
                             xtype: 'panel',
+                            items: [this.continueCardRadio]
+                    	},{
+                    		 xtype: 'panel',
                             items: [this.fromCardRadio]
                     	},{
                             xtype: 'panel',
                             items: [this.fromTmpRadio]
                     	},{
                             xtype: 'panel',
-                            items: [
-                                {
-                                    xtype: 'radio',
-                                    boxLabel: 'Пустая карта осмотра',
-                                    name: 'input-choice', 
-                                    inputValue: 'empty', 
-                                    checked: true,
-                                    listeners:{
-                                    	check: function(r,checked){
-                                    		if (checked){
-                                    			this.cardGrid.hide();
-                                    			this.radio = r.inputValue;
-                                    			this.tmpGrid.hide();
-                                    			this.gridPanel.hide();
-                                    			this.previewPanel.hide();
-                                    		}
-                                    	},
-                                    	afterrender : function(r){
-                                    		Ext.QuickTips.register({
-                                				autoHide:true,
-                                			    target: r.wrap,
-                                			    title: 'Пустая карта осмотра',
-                                			    text: 'Все разделы и подразделы задаются вручную.',
-                                			    width: 300,
-                                			    dismissDelay: 3000
-                                			});
-                                    	},
-                                    	scope:this
-                                    }
-                                }
-                            ]
+                            items: [this.emptyCardRadio]
                         },
                         {
                             xtype: 'panel',
-                            title: 'My Panel',
-                            items: [
-                                {
-                                    xtype: 'radio',
-                                    boxLabel: 'Из заготовки',
-                                    name: 'input-choice', 
-                                    inputValue: 'preset',
-                                    listeners:{
-                                    	check: function(r,checked){
-                                    		if (checked){
-                                    			this.radio = r.inputValue;
-                                    			if (!this.previewPanel.hidden){
-                                    				this.previewPanel.hide();
-                                    			};
-                                				this.tmpStore.setBaseParam('base_service__isnull',true);
-                                				this.tmpStore.setBaseParam('staff__isnull',true);
-                                				delete this.tmpStore.baseParams['staff'];
-                                				delete this.tmpStore.baseParams['base_service'];
-                                				this.printName = true;
-                                				this.tmpStore.load({callback:function(){
-                                					this.tmpGrid.getSelectionModel().selectFirstRow();
-                                					this.onPreview('tmp');
-                                				},scope:this});
-                                				this.cardGrid.hide();
-                                				if (this.tmpGrid.hidden){
-                            						this.tmpGrid.show();
-                            					};
-                            					this.gridPanel.show();
-                                    				
-                                    		}
-                                    	},
-                                    	scope:this
-                                    }
-                                }
-                            ]
+                            items: [this.fromPresetRadio]
                         },
                         {
                             xtype: 'panel',
-                            items: [
-                                {
-                                    xtype: 'radio',
-                                    boxLabel: 'Из архива',
-                                    name: 'input-choice', 
-                                    inputValue: 'archive',
-                                    listeners:{
-                                    	check: function(r,checked){
-                                    		if (checked){
-                                    			this.radio = r.inputValue;
-                                    			if (!this.previewPanel.hidden){
-                                    				this.previewPanel.hide();
-                                    			};
-                                				this.tmpStore.setBaseParam('base_service__isnull',true);
-                                				this.tmpStore.setBaseParam('staff',App.uriToId(this.staff));
-                                				delete this.tmpStore.baseParams['staff__isnull'];
-                                				delete this.tmpStore.baseParams['base_service'];
-                                				this.printName = true;
-                                				this.cardGrid.hide();
-                                				this.tmpStore.load({callback:function(){
-                                					this.tmpGrid.getSelectionModel().selectFirstRow();
-                                					this.onPreview('tmp');
-                                				},scope:this});
-                                				if (this.tmpGrid.hidden){
-                            						this.tmpGrid.show();
-                            						this.gridPanel.show();
-                            					};
-                                    		}
-                                    	},
-                                    	scope:this
-                                    }
-                                }
-                            ]
+                            items: [this.fromArchiveRadio]
                         },
                         {
                             xtype: 'panel',
@@ -440,26 +302,31 @@ App.examination.CardStartPanel = Ext.extend(Ext.Panel, {
 		Ext.apply(this, Ext.apply(this.initialConfig, config));
         App.examination.CardStartPanel.superclass.initComponent.call(this);
         this.on('afterrender',function(){
-        	this.tmpStore.setBaseParam('staff',App.uriToId(this.staff));
+        	this.cardStore = this.cardGrid.store;
+        	this.tmpStore = this.tmpGrid.store;
             this.tmpStore.setBaseParam('base_service',App.uriToId(this.service));
 			this.cardStore.load({callback:function(records){
 				if (records.length){
-					this.fromCardRadio.setValue(true);
+					this.continueCardRadio.setValue(true);
 					this.cardGrid.getSelectionModel().selectFirstRow();
 					this.onPreview('card');
 					this.radio = 'card';
 				} else {
-					this.fromCardRadio.disable();
+					this.continueCardRadio.disable();
 					this.tmpStore.load({callback:function(recs){
-					if (recs.length){
-						this.fromTmpRadio.setValue(true);
-						this.tmpGrid.getSelectionModel().selectFirstRow();
-						this.radio = 'tmp';
-					} else {
-						this.fromTmpRadio.disable();
-					}
-				},scope:this});
-				}
+						if (recs.length){
+							this.fromTmpRadio.setValue(true);
+							this.tmpGrid.getSelectionModel().selectFirstRow();
+							this.radio = 'tmp';
+						} else {
+							this.fromTmpRadio.disable();
+						};
+						
+						if (this.radio =='empty'){
+							this.emptyCardRadio.setValue(true);
+						}
+					},scope:this});
+				};
 			},scope:this});
         });
     },
@@ -476,22 +343,38 @@ App.examination.CardStartPanel = Ext.extend(Ext.Panel, {
     },
     
     onNext: function(){
-    	if (this.radio === 'empty'){
-    		this.fireEvent('opentmp');
-    	} else if (this.radio == 'card'){
-    		var record = this.cardGrid.getSelectionModel().getSelected();
-    		if (record){
-    			this.fireEvent('editcard',record)
-    		}
-    	} else {
-	    		var record = this.tmpGrid.getSelectionModel().getSelected();
-//	    		console.log(record)
+    	
+    	switch (this.radio){
+    		case 'empty':
+    			this.fireEvent('opentmp');
+    			break;
+    		case 'card':
+    			var record = this.cardGrid.getSelectionModel().getSelected();
+	    		if (record){
+	    			this.fireEvent('editcard',record)
+	    		} else {
+	    			console.log('не выбран источник')
+	    		}
+	    		break;
+	    	case 'other_card':
+	    		var record = this.cardGrid.getSelectionModel().getSelected();
 	    		if (record){
 	    			this.fireEvent('opentmp',record)
 	    		} else {
 	    			console.log('не выбран источник')
 	    		}
-    		}
+	    		break;
+	    	case 'preset':
+	    	case 'archive':
+	    	case 'service':
+	    		var record = this.tmpGrid.getSelectionModel().getSelected();
+	    		if (record){
+	    			this.fireEvent('opentmp',record)
+	    		} else {
+	    			console.log('не выбран источник')
+	    		};
+	    		break
+    	}
 	},
 	
 	onPreview: function(type){
@@ -538,5 +421,12 @@ App.examination.CardStartPanel = Ext.extend(Ext.Panel, {
 			closable:true,
 			autoLoad:String.format('/widget/examination/{0}/{1}/',source,record.data.id)
 		});
+	},
+	
+	tmpEdit: function(){
+		var record = this.tmpGrid.getSelectionModel().getSelected();
+		if(record){
+			this.fireEvent('edittmp',record);
+		}
 	}
 });

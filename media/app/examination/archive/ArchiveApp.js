@@ -1,7 +1,9 @@
 Ext.ns('App.examination');
 
-App.examination.ConclApp = Ext.extend(Ext.Panel, {
+App.examination.ArchiveApp = Ext.extend(Ext.Panel, {
 	initComponent : function() {
+		
+		this.staff = App.getApiUrl('staff')+ '/' + active_staff;
 		
 		this.fieldSetStore = new Ext.data.RESTStore({
 			autoSave: false,
@@ -20,6 +22,7 @@ App.examination.ConclApp = Ext.extend(Ext.Panel, {
 		this.contentPanel = new Ext.Panel({
 			region:'center',
  			border:true,
+ 			autoScroll:true,
  			margins:'5 5 5 0',
  			layout: 'fit',
  			title:'Предпросмотр',
@@ -30,18 +33,14 @@ App.examination.ConclApp = Ext.extend(Ext.Panel, {
     		]
 		});
 		
-		this.examGrid = new App.examination.CardGrid({
+		this.archiveGrid = new App.examination.TmpGrid({
 			staff:this.staff,
 			border: false,
 			split:true,
-			bbar: new Ext.PagingToolbar({
-	            pageSize: 30,
-	            store: this.store,
-	            displayInfo: true,
-	            displayMsg: 'Показана запись {0} - {1} из {2}',
-	            emptyMsg: "Нет записей"
-	        }),
-
+			editable:true,
+			baseParams:{
+				base_service__isnull:true
+			},
 			listeners:{
 				rowselect:function(record){
 					if (record){
@@ -50,17 +49,17 @@ App.examination.ConclApp = Ext.extend(Ext.Panel, {
 				},
 				rowdblclick:function(grid,rowIndex,e){
 					var record = grid.getSelectionModel().getSelected();
-					if (!record || record.data.executed){
+					if (!record){
 						return false
 					}
-					this.print_name = record.data.name;
-					this.editCard(record);
+					this.editTmp(record);
 				},
+				edittmp:this.editTmp,
 				scope:this
 			}
 		});
 		
-		this.conclPanel = new Ext.Panel({
+		this.archivePanel = new Ext.Panel({
 			region:'west',
  			border:true,
  			collapsible:true,
@@ -72,56 +71,56 @@ App.examination.ConclApp = Ext.extend(Ext.Panel, {
  				border:false
  			},
     		items: [
-    			this.examGrid
+    			this.archiveGrid
     		]
 		});
 		
 		var config = {
-			id:'concl-app',
+			id:'archive-app',
 			closable:true,
-			title: 'Журнал заключений',
+			title: 'Мои шаблоны',
 			layout: 'border',	
      		items: [
-				this.conclPanel,
+				this.archivePanel,
 				this.contentPanel
 			]
 		};
 		
 		Ext.apply(this, Ext.apply(this.initialConfig, config));
-		App.examination.ConclApp.superclass.initComponent.apply(this, arguments);
+		App.examination.ArchiveApp.superclass.initComponent.apply(this, arguments);
 		
 		this.on('afterrender',function(){
-			this.examGrid.store.load();
+			this.archiveGrid.store.load();
 		},this)
 	},
 	
-	onPreview: function(card_id){
-		var list = new Ext.Panel({
-			autoLoad:String.format('/widget/examination/card/{0}/',card_id)
+	onPreview: function(tmp_id){
+		var url = String.format('/widget/examination/template/{0}/',tmp_id);
+		this.contentPanel.load({
+			url:url
 		});
-		this.contentPanel.removeAll();
-		this.contentPanel.add(list);
-		this.contentPanel.setTitle('Предпросмотр');
-		this.contentPanel.doLayout();
-		this.doLayout();
 	},
 	
-	editCard: function(record){
+	editTmp: function(record){
+		if(!record){
+			console.log('нет записи');
+			return false
+		}
+		
+		this.print_name = record.data.name;
 		
 		config = {
+			editMode: true,
 			closable:true,
-    		patient:record.data.patient_id,
-    		patient_name: record.data.patient_name,
-    		ordered_service:record.data.ordered_service,
-			title: 'Пациент ' + record.data.patient_name,
-			print_name:record.data.service_name,
+			title: record.data.print_name,
+			print_name:record.data.print_name,
 			record:record,
 			staff:this.staff
 		};
 		
-		App.eventManager.fireEvent('launchapp', 'neocard',config);
+		App.eventManager.fireEvent('launchapp', 'editor',config);
 		
 	}
 });
 
-Ext.reg('conclusion', App.examination.ConclApp);
+Ext.reg('tmparchive', App.examination.ArchiveApp);
