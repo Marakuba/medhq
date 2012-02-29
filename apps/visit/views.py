@@ -1,6 +1,6 @@
 # -*- coding: utf-8 -*-
 
-from django.shortcuts import get_object_or_404
+from django.shortcuts import get_object_or_404, render_to_response
 import datetime
 from django.views.generic.simple import direct_to_template
 from visit.models import Visit, OrderedService
@@ -102,9 +102,12 @@ def sampling(request, visit_id):
         'tubes_count':tubes_count,
         'bc_count':bc_count
     }
-    return direct_to_template(request=request, 
-                              template='print/visit/sampling.html', 
-                              extra_context=extra_context)
+#    return direct_to_template(request=request, 
+#                              template='print/visit/sampling.html', 
+#                              extra_context=extra_context)
+    return render_to_response(["print/visit/sampling_state_%s.html" % request.active_profile.state,"print/visit/sampling.html"],
+                              extra_context,
+                              context_instance=RequestContext(request))
     
     
 def daily_staff_report(request):
