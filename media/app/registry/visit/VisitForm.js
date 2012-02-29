@@ -706,7 +706,7 @@ App.visit.VisitForm = Ext.extend(Ext.FormPanel, {
 		this.getForm().findField('patient').setValue(this.patientRecord.data.resource_uri);
 	},
 	
-	setVisitRecord: function(record){
+	setVisitRecord: function(record,patientRecord){
 		if(record) {
 			this.record = record;
 			this.getForm().loadRecord(this.record);
@@ -714,6 +714,7 @@ App.visit.VisitForm = Ext.extend(Ext.FormPanel, {
 			this.totalSum.setValue(docSum);
 			this.totalSum.originalValue = docSum;
 			this.orderedService.setRecord(record);
+			this.getForm().findField('patient').originalValue = patientRecord.data.resource_uri;
 		};
 	},
 	

@@ -301,7 +301,7 @@ App.billing.PaymentForm = Ext.extend(Ext.form.FormPanel, {
 			f.updateRecord(Record);
 			if(this.fn) {
 				Ext.callback(this.fn, this.scope || window, [Record]);
-			}
+			};
             //this.markDirty(false);
 		} else {
 			Ext.MessageBox.alert('Предупреждение','Пожалуйста, заполните все поля формы!');

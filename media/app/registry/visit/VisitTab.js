@@ -123,17 +123,17 @@ App.visit.VisitTab = Ext.extend(Ext.Panel, {
 				this.patientRecord = records[0];
 				this.getPatientTitle();
 				this.form.setPatientRecord(this.patientRecord);
+				if (this.visitId){
+					this.store.setBaseParam('id',this.visitId);
+					this.store.load({callback:function(records){
+						if (!records.length){
+							return
+						};
+						this.record = records[0];
+						this.form.setVisitRecord(this.record,this.patientRecord);
+					},scope:this});
+				};
 			},scope:this});
-			if (this.visitId){
-				this.store.setBaseParam('id',this.visitId);
-				this.store.load({callback:function(records){
-					if (!records.length){
-						return
-					};
-					this.record = records[0];
-					this.form.setVisitRecord(this.record);
-				},scope:this});
-			};
 			
 			//ищем записи предзаказов во внутреннем store для независимости от внешних хранилищ
 			if (this.preorderRecord){
@@ -165,6 +165,7 @@ App.visit.VisitTab = Ext.extend(Ext.Panel, {
 		};
 		var f = this.form;
 		this.steps = f.getSteps();
+		console.log(this.steps);
 		this.tSteps = this.steps;
 		if(this.steps>0) {
 			this.msgBox = Ext.MessageBox.progress('Подождите','Идет сохранение документа!');

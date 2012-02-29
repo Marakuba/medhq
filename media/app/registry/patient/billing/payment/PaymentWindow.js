@@ -77,6 +77,7 @@ App.billing.PaymentWindow = Ext.extend(Ext.Window, {
 		}
 		App.eventManager.fireEvent('paymentsave',rs);
 		this.record = rs;
+		this.onClose();
 		//Убрал статус бар, т.к. возникала ошибка при автоматическом закрытии окна(закрывалось раньше чем установится статус)
 //		this.statusbar.setStatus({
 //        	text: 'Документ успешно сохранён',
