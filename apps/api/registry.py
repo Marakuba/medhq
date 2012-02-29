@@ -1511,6 +1511,8 @@ class EquipmentTaskResource(ExtResource):
     ordered_service = fields.ForeignKey(OrderedServiceResource, 'ordered_service')
     
     def dehydrate(self, bundle):
+        bundle.data['assay_code'] = bundle.obj.equipment_assay.code
+        bundle.data['assay_name'] = bundle.obj.equipment_assay.name
         bundle.data['status_name'] = bundle.obj.get_status_display()
         bundle.data['equipment_name'] = bundle.obj.equipment_assay.equipment
         bundle.data['service_name'] = bundle.obj.ordered_service.service

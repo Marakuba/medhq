@@ -189,9 +189,7 @@ class ExtBatchResource(ExtResource):
             bundle = self.full_dehydrate(updated_bundle.obj)
             serialized = self.serialize(request, bundle, desired_format)
             serialized_bundles.append(serialized)
-        content = """{'success':true,
-                   'message':'%s',
-                   'objects':[%s]}"""  % (message or u'Операция выполнена успешно', ",".join(serialized_bundles)) 
+        content = """{"success":true,"message":"%s","objects":[%s]}"""  % (message or u'Операция выполнена успешно', ",".join(serialized_bundles)) 
         return HttpResponse(content=content, 
                             content_type=build_content_type(desired_format),
                             status=status)

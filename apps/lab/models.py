@@ -386,7 +386,9 @@ class EquipmentTask(models.Model):
     created_by = models.ForeignKey(User, blank=True, null=True)
     equipment_assay = models.ForeignKey(EquipmentAssay)
     ordered_service = models.ForeignKey('visit.OrderedService')
+    assay_protocol = models.CharField(u'Протокол исследования', max_length=20, default="UNDILUTED")
     completed = models.DateTimeField(u'Выполнено', null=True, blank=True)
+    is_locked = models.BooleanField(u'Заблокировано', default=False)
     status = models.CharField(u'Статус', max_length=5, choices=ET_STATUS, default=u'wait')
     
     def __unicode__(self):
