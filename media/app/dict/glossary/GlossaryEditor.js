@@ -28,6 +28,18 @@ App.dict.GlossaryEditor = Ext.extend(Ext.Panel, {
 					this.node = node;
 					var text = node.attributes.text;
 					this.editor.body.update(text);
+				},
+				nodecreate:function(node){
+					this.node = node;
+					var text = node.attributes.text;
+					this.editor.body.update(text);
+				},
+				noderemove:function(){
+					this.node = undefined;
+					this.editor.body.update('')
+				},
+				nodeedit:function(node){
+					this.editor.body.update(node.attributes.text)
 				}
 			}
 		});
@@ -59,6 +71,7 @@ App.dict.GlossaryEditor = Ext.extend(Ext.Panel, {
 					rootNode.expand();
 					this.node = undefined;
 					this.editor.body.update('')
+					rootNode.setText('Глоссарий - ' + rec.data.title);
 	        	},
 	        	scope:this
 	        }
@@ -152,8 +165,7 @@ App.dict.GlossaryEditor = Ext.extend(Ext.Panel, {
 		this.menuPanel = new Ext.Panel({
 			region:'west',
  			border:true,
- 			collapsible:true,
-			collapseMode:'mini',
+ 			collapsible:false,
  			width:150,
  			margins:'5 5 5 0',
  			layout: 'fit',
@@ -185,7 +197,9 @@ App.dict.GlossaryEditor = Ext.extend(Ext.Panel, {
 					this.menuList.select(records[0]);
 					this.glossary.loader.baseParams['section'] = records[0].data.name;
 					this.glossary['section'] = records[0].data.name;
-					this.glossary.getRootNode().expand()
+					var rootNode = this.glossary.getRootNode()
+					rootNode.expand()
+					rootNode.setText('Глоссарий - ' + records[0].data.title);
 				} else {
 					this.glossary.disable()
 				}
