@@ -40,6 +40,14 @@ Ext.onReady(function(){
 			}
 		},{
             xtype:'button',
+            text: 'Обследование (стар. версия)',
+			scale: 'large',
+			hidden: !permissions['examination'],
+			handler: function(){
+				window.location.href = '/webapp/oldexam/';
+			}
+		},{
+            xtype:'button',
             text: 'Администрирование',
 			scale: 'large',
 			hidden: !permissions['admin'],
