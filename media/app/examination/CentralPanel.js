@@ -83,7 +83,7 @@ App.ExamCentralPanel = Ext.extend(Ext.Panel, {
             },{
                 xtype: 'buttongroup',
 //                title: 'Шаблоны',
-                columns: 3,
+                columns: 4,
                 defaults: {
                     scale: 'small'
                 },
@@ -119,13 +119,20 @@ App.ExamCentralPanel = Ext.extend(Ext.Panel, {
                     	this.launchApp('tmparchive');
                     },
                     scope:this
-                }
-                ,{
+                },{
                 	text: 'Корзина',
                     scale:'medium',
                     iconAlign: 'top',
                     handler: function(){
                     	this.launchApp('extrash');
+                    },
+                    scope:this
+                },{
+                	text: 'Глоссарий',
+                    scale:'medium',
+                    iconAlign: 'top',
+                    handler: function(){
+                    	this.launchApp('glosseditor');
                     },
                     scope:this
                 }

@@ -171,7 +171,6 @@ Ext.ux.form.Ticket = Ext.extend(Ext.Panel,{
 	                    }
 	                }, cfg));
 	                panel.body.on('click', function(e, t){
-	                	console.info(panel.body);
 	                	sectionEditor.startEdit(panel.body);
 	                }, null, {
 //	                	delegate:'div.content'

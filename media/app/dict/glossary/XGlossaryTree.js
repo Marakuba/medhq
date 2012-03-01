@@ -25,10 +25,11 @@ App.dict.XGlossaryTree = Ext.extend(Ext.ux.tree.RemoteTreePanel, {
 		this.filter = new Ext.ux.tree.TreeFilterX(this);
 		
 		this.loader = new Ext.tree.TreeLoader({
+			autoLoad:false,
         	nodeParameter:'parent',
         	dataUrl: get_api_url('glossary'),
         	requestMethod:'GET',
-        	baseParams:{
+        	baseParams:this.baseParams || {
         		format:'json',
         		section:this.section,
 				staff:App.uriToId(this.staff)
@@ -105,7 +106,7 @@ App.dict.XGlossaryTree = Ext.extend(Ext.ux.tree.RemoteTreePanel, {
 					 nodeType:'async'
 					,id:'root'
 					,text:'Глоссарий'
-					,expanded:true
+					,expanded:false
 					,uiProvider:false
 				},
 				tbar:['Добавить в',this.appendBtn,'\\',this.insertBtn,'-',this.editBtn],
@@ -176,7 +177,7 @@ App.dict.XGlossaryTree = Ext.extend(Ext.ux.tree.RemoteTreePanel, {
         	if (node.id=='root'){
         		return false
         	}
-			this.fireEvent('nodeclick',node.attributes);
+			this.fireEvent('nodeclick',node.attributes,node);
 			if (node.attributes.leaf) {
 				Ext.callback(this.fn, this.scope || window, [node]);
 			}
@@ -205,8 +206,7 @@ App.dict.XGlossaryTree = Ext.extend(Ext.ux.tree.RemoteTreePanel, {
 	
 	onTreeNodeDblClick: function(n) {
 //	    this.treeEditor.editNode = n;
-//	    console.log(n);
-	    this.fireEvent('nodeclick',n.attributes)
+	    this.fireEvent('nodeclick',n.attributes,n)
 //	    this.treeEditor.startEdit(n.ui.textNode);
 	},
 
@@ -278,10 +278,8 @@ App.dict.XGlossaryTree = Ext.extend(Ext.ux.tree.RemoteTreePanel, {
 				'Content-Type':'application/json'
 			},
 			success: function(answer,opt){
-				console.log(this.actionNode);
 				var obj = Ext.util.JSON.decode(answer.responseText);
 				node.id = obj.objects.id;
-				console.log(obj);
 			}
 		});
 		
@@ -435,6 +433,7 @@ App.dict.XGlossaryTree = Ext.extend(Ext.ux.tree.RemoteTreePanel, {
 
 			case 'removeNode':
 				options.node.parentNode.removeChild(options.node);
+				this.fireEvent('noderemove')
 			break;
 
 			case 'moveNode':
@@ -471,7 +470,7 @@ App.dict.XGlossaryTree = Ext.extend(Ext.ux.tree.RemoteTreePanel, {
 	},
 	
 	beforeStartEdit: function( editor, boundEl, value ) {
-		this.fireEvent('nodeclick',editor.editNode.attributes);
+		this.fireEvent('nodeclick',editor.editNode.attributes,editor.editNode);
 //		this.editNode();
 		return false;
 	}, 
@@ -493,6 +492,7 @@ App.dict.XGlossaryTree = Ext.extend(Ext.ux.tree.RemoteTreePanel, {
 				if (value){
 					this.renameNode(inode,value)
 					node.setText(value);
+					this.fireEvent('nodeedit',node)
 				} else {
 					this.removeNode(inode)
 				};
@@ -541,6 +541,7 @@ App.dict.XGlossaryTree = Ext.extend(Ext.ux.tree.RemoteTreePanel, {
 				} else {
 					child.setText(this.newText)
 				}
+				this.fireEvent('nodecreate',child);
 			},
 			scope:this
 		});
