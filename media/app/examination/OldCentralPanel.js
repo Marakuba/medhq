@@ -58,7 +58,7 @@ App.OldExamCentralPanel = Ext.extend(Ext.Panel, {
                     scale:'medium',
                     iconAlign: 'top',
                     handler: function(){
-                    	this.launchApp('examordergrid');
+                    	this.launchApp('oldordergrid');
                     },
                     scope:this
                 },{
