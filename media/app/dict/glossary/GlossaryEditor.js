@@ -53,6 +53,7 @@ App.dict.GlossaryEditor = Ext.extend(Ext.Panel, {
 	        	click:function(dv,index,node,e) {
 	        		var rootNode = this.glossary.getRootNode()
 	        		var rec = this.fieldSetStore.getAt(index);
+	        		this.glossary['section'] = rec.data.name;
 	        		this.glossary.loader.baseParams['section'] = rec.data.name;
 					this.glossary.loader.load(rootNode);
 					rootNode.expand();
@@ -97,7 +98,10 @@ App.dict.GlossaryEditor = Ext.extend(Ext.Panel, {
 	                    field: {
 	                        allowBlank: true,
 	                        xtype: 'textarea',
-//	                        width: 890,
+	                        width: 1000,
+	                        heigth:150,
+	                        autoScroll:true,
+	                        layout:'fit',
 	                        selectOnFocus: true,
 	                        cls:'text-editor',
 	                        grow:true,
@@ -180,6 +184,7 @@ App.dict.GlossaryEditor = Ext.extend(Ext.Panel, {
 				if(records.length){
 					this.menuList.select(records[0]);
 					this.glossary.loader.baseParams['section'] = records[0].data.name;
+					this.glossary['section'] = records[0].data.name;
 					this.glossary.getRootNode().expand()
 				} else {
 					this.glossary.disable()

@@ -206,8 +206,8 @@ App.dict.XGlossaryTree = Ext.extend(Ext.ux.tree.RemoteTreePanel, {
 	
 	onTreeNodeDblClick: function(n) {
 //	    this.treeEditor.editNode = n;
-//	    console.log(n);
-	    this.fireEvent('nodeclick',n.attributes)
+	    console.log(n);
+	    this.fireEvent('nodeclick',n.attributes,n)
 //	    this.treeEditor.startEdit(n.ui.textNode);
 	},
 
@@ -472,7 +472,7 @@ App.dict.XGlossaryTree = Ext.extend(Ext.ux.tree.RemoteTreePanel, {
 	},
 	
 	beforeStartEdit: function( editor, boundEl, value ) {
-		this.fireEvent('nodeclick',editor.editNode.attributes);
+		this.fireEvent('nodeclick',editor.editNode.attributes,editor.editNode);
 //		this.editNode();
 		return false;
 	}, 
