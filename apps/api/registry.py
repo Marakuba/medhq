@@ -1432,6 +1432,7 @@ class GlossaryResource(ExtResource):
             'parent':ALL,
             'section':ALL
         }
+        limit = 1000
         
 class RegExamCardResource(ExtResource):
     ordered_service = fields.ForeignKey(OrderedServiceResource, 'ordered_service', null=True)

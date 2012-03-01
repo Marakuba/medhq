@@ -302,7 +302,6 @@ App.examination.TicketTab = Ext.extend(Ext.Panel, {
 		});
 		
 		this.glossPanel.on('beforeexpand',function(panel){
-			console.log(panel);
 		});
 		
 		this.on('ticketeditstart', function(panel,editor,pos){

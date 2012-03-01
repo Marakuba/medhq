@@ -25,10 +25,11 @@ App.dict.XGlossaryTree = Ext.extend(Ext.ux.tree.RemoteTreePanel, {
 		this.filter = new Ext.ux.tree.TreeFilterX(this);
 		
 		this.loader = new Ext.tree.TreeLoader({
+			autoLoad:false,
         	nodeParameter:'parent',
         	dataUrl: get_api_url('glossary'),
         	requestMethod:'GET',
-        	baseParams:{
+        	baseParams:this.baseParams || {
         		format:'json',
         		section:this.section,
 				staff:App.uriToId(this.staff)
@@ -105,7 +106,7 @@ App.dict.XGlossaryTree = Ext.extend(Ext.ux.tree.RemoteTreePanel, {
 					 nodeType:'async'
 					,id:'root'
 					,text:'Глоссарий'
-					,expanded:true
+					,expanded:false
 					,uiProvider:false
 				},
 				tbar:['Добавить в',this.appendBtn,'\\',this.insertBtn,'-',this.editBtn],
@@ -176,7 +177,7 @@ App.dict.XGlossaryTree = Ext.extend(Ext.ux.tree.RemoteTreePanel, {
         	if (node.id=='root'){
         		return false
         	}
-			this.fireEvent('nodeclick',node.attributes);
+			this.fireEvent('nodeclick',node.attributes,node);
 			if (node.attributes.leaf) {
 				Ext.callback(this.fn, this.scope || window, [node]);
 			}
