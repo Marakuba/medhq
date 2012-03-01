@@ -122,9 +122,13 @@ class Event(models.Model):
             start = self.start
             end = self.end
             while start < end:
-                print start
+                
+                if start + timeslot > end:
+                    event_end = end
+                else:
+                    event_end = start + timeslot
                 Event.objects.create(staff = self.staff, cid = self.cid,title='',start = start,\
-                                     end = start+timeslot, timeslot = True, vacant = True, n = False, \
+                                     end = event_end, timeslot = True, vacant = True, n = False, \
                                      parent = self, rem = self.rem)
                 start += timeslot
 #        try:

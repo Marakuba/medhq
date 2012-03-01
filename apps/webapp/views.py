@@ -138,6 +138,11 @@ def examination(request):
     return {}
 
 @login_required
+@render_to('webapp/oldexam/index.html')
+def oldexam(request):
+    return {}
+
+@login_required
 @render_to('webapp/calendar/index.html')
 def calendar(request):
     return {}
