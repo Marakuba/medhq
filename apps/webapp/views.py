@@ -156,6 +156,11 @@ def treatmentroom(request):
     
 
 def get_service_tree(request):
+
+    import sys
+    
+    sys.setrecursionlimit(3000)
+
     """
     Генерирует дерево в json-формате.
     
@@ -206,6 +211,7 @@ def get_service_tree(request):
         empty - признак того, есть ли в текущей группе элементы
         child_list - двумерный список всех детей для еще не найденных родителей.
         '''
+        print len(tree)
         #Если список пуст, удалять больше нечего
         if len(tree)==0:
             return (child_list and child_list[0]) or []
@@ -231,7 +237,6 @@ def get_service_tree(request):
             else:
                 if node.is_leaf_node():
                     for service in result[node.id]:
-                        staff_all = Position.objects.filter(extendedservice=service)
                         tree_node = {
                                 "id":ext and service or '%s-%s' % (node.id,result[node.id][service]['extended_service__state__id']),
                                 "text":"%s" % (node.short_name or node.name),
@@ -241,9 +246,10 @@ def get_service_tree(request):
                                 "iconCls":"ex-place-%s" % result[node.id][service]['extended_service__state__id'],
                                 "parent":node.parent and node.parent.id,
                                 "leaf":True}
-                        
-                        if staff_all.count():
-                            tree_node['staff'] = [(pos.id,pos.__unicode__()) for pos in staff_all]
+                        if not ext:
+                            staff_all = Position.objects.filter(extendedservice=service)
+                            if staff_all.count():
+                                tree_node['staff'] = [(pos.id,pos.__unicode__()) for pos in staff_all]
                         tree_nodes.append(tree_node)    
                         #nodes.append(tree_node)
                 else: 
@@ -341,6 +347,8 @@ def get_service_tree(request):
             else:
                 result[val['extended_service__base_service__id']] = {}
                 result[val['extended_service__base_service__id']][val['extended_service__id']] = val
+        
+        print "Price loaded.."
             
         for base_service in BaseService.objects.all().order_by(BaseService._meta.tree_id_attr, BaseService._meta.left_attr, 'level'): #@UndefinedVariable
             if base_service.is_leaf_node():
@@ -349,6 +357,7 @@ def get_service_tree(request):
             else:
                 nodes.append(base_service)
         
+        print "Nodes appended..."
         
         tree = []
         
@@ -364,6 +373,8 @@ def get_service_tree(request):
                     'singleClickExpand':True
                 }
                 tree.append(tree_node)
+            print "Promotions added..."
+        print len(nodes)
         s = clear_tree(nodes,[])
         tree.extend(s)
         _cached_tree = simplejson.dumps(tree, cls=DjangoJSONEncoder)
