@@ -746,7 +746,7 @@ Ext.calendar.CalendarView = Ext.extend(Ext.BoxComponent, {
             // start from current month start, not view start:
             var end = start.add(Date.MONTH, 1).add(Date.SECOND, -1);
             // fill out to the end of the week:
-            this.viewEnd = end.add(Date.DAY, 6 - end.getDay());
+            this.viewEnd = end.add(Date.DAY, 7 - end.getDay());
             return;
 
         default:

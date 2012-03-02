@@ -455,32 +455,35 @@ Ext.calendar.CalendarPanel = Ext.extend(Ext.Panel, {
     	 * поэтому при переходе между view будем грузить все события текущего месяца 
     	 * плюс минус неделя
     	 */
-    	var st = new Date();
-    	var e = new Date();
+    	
+    	var l = this.layout;
+    			
+    			
+        l.setActiveItem(id);
+        console.log(l.activeItem.getViewBounds().start)
+    	var st = l.activeItem.getViewBounds().start;
+    	var e = l.activeItem.getViewBounds().end;
     	if (id == "app-calendar-month") {
         	this.eventStore.setBaseParam('timeslot',false);
-        	st = st.add(Date.DAY,-(st.getDate()+7));
-        	e = e.add(Date.DAY,(31-e.getDate()+7));
+//        	st = st.add(Date.DAY,-(st.getDate()+7));
+//        	e = e.add(Date.DAY,(31-e.getDate()+7));
     	} 
     	
     	if (id == "app-calendar-week") {
     		this.eventStore.setBaseParam('timeslot',true);
-    		var offset = st.getDay() - 1;
-    		st = st.add(Date.DAY, -offset).clearTime(true);
-    		e = st.add(Date.DAY,7)
+//    		var offset = st.getDay() - 1;
+//    		st = st.add(Date.DAY, -offset).clearTime(true);
+//    		e = st.add(Date.DAY,7)
     	};
     	if (id == "app-calendar-day") {
     		this.eventStore.setBaseParam('timeslot',true);
-    		e = e.add(Date.DAY,1);
+//    		e = e.add(Date.DAY,1);
     	};
         
         this.eventStore.setBaseParam('start__gte',st.format('Y-m-d'));
-        this.eventStore.setBaseParam('end__lt',e.format('Y-m-d'));
+        this.eventStore.setBaseParam('end__lte',e.format('Y-m-d'));
     	this.eventStore.load({
     		callback:function(){
-    			var l = this.layout;
-		        l.setActiveItem(id);
-		
 		        if (id == this.id + '-edit') {
 		            this.getTopToolbar().hide();
 		            this.doLayout();
@@ -509,7 +512,7 @@ Ext.calendar.CalendarPanel = Ext.extend(Ext.Panel, {
                 viewEnd: vb.end
             };
             this.eventStore.setBaseParam('start__gte',vb.start.format('Y-m-d'));
-            this.eventStore.setBaseParam('end__lt',vb.end.add(Date.DAY,1).format('Y-m-d'));
+            this.eventStore.setBaseParam('end__lte',vb.end.format('Y-m-d'));
             if (!loaded){
             	this.eventStore.load();
             }
