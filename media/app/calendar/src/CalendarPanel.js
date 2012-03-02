@@ -460,9 +460,9 @@ Ext.calendar.CalendarPanel = Ext.extend(Ext.Panel, {
     			
     			
         l.setActiveItem(id);
-        console.log(l.activeItem.getViewBounds().start)
-    	var st = l.activeItem.getViewBounds().start;
-    	var e = l.activeItem.getViewBounds().end;
+        var vb = l.activeItem.getViewBounds()
+    	var st = vb.start;
+    	var e = vb.end;
     	if (id == "app-calendar-month") {
         	this.eventStore.setBaseParam('timeslot',false);
 //        	st = st.add(Date.DAY,-(st.getDate()+7));
@@ -477,7 +477,7 @@ Ext.calendar.CalendarPanel = Ext.extend(Ext.Panel, {
     	};
     	if (id == "app-calendar-day") {
     		this.eventStore.setBaseParam('timeslot',true);
-//    		e = e.add(Date.DAY,1);
+    		e = e.add(Date.DAY,1);
     	};
         
         this.eventStore.setBaseParam('start__gte',st.format('Y-m-d'));
@@ -506,13 +506,19 @@ Ext.calendar.CalendarPanel = Ext.extend(Ext.Panel, {
 
         if (view.getViewBounds) {
             vb = view.getViewBounds();
+            var start = vb.start;
+            var end = vb.end;
             info = {
                 activeDate: view.getStartDate(),
                 viewStart: vb.start,
                 viewEnd: vb.end
             };
-            this.eventStore.setBaseParam('start__gte',vb.start.format('Y-m-d'));
-            this.eventStore.setBaseParam('end__lte',vb.end.format('Y-m-d'));
+            //для дня нужно дату end увеличить на день. Иначе никакие даннные не будут удовлетворять фильтру
+            if (view.id == "app-calendar-day") {
+	    		end = end.add(Date.DAY,1);
+	    	};
+            this.eventStore.setBaseParam('start__gte',start.format('Y-m-d'));
+            this.eventStore.setBaseParam('end__lte',end.format('Y-m-d'));
             if (!loaded){
             	this.eventStore.load();
             }
