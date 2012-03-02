@@ -176,14 +176,14 @@ App.regBackend('equipmentassay', new App.Backend({
 
 
 
-//App.models.EquipmentResult = new Ext.data.Record.create([
-//    {name: 'id'},
-//    {name: 'resource_uri'},
-//    {name: 'order'},
-//    {name: 'assay'},
-//    {name: 'result'},
-//    {name: 'measurement'}
-//]);
+App.models.EquipmentResult = new Ext.data.Record.create([
+    {name: 'id'},
+    {name: 'resource_uri'},
+    {name: 'order'},
+    {name: 'assay'},
+    {name: 'result'},
+    {name: 'measurement'}
+]);
 
 
 App.regBackend('equipmentresult', new App.Backend({

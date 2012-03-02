@@ -371,6 +371,7 @@ class EquipmentAssay(models.Model):
     class Meta:
         verbose_name = u'аппаратное исследование'
         verbose_name_plural = u'аппаратные исследования'    
+        ordering = ('name',)
         
 ET_STATUS = (
     (u'wait', u'Ожидание'),
@@ -397,6 +398,7 @@ class EquipmentTask(models.Model):
     class Meta:
         verbose_name = u'задание для анализаторов'
         verbose_name_plural = u'задания для анализаторов' 
+        
 
 RESULT_TYPE = (
     ('F',u'Итоговый'),
