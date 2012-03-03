@@ -36,15 +36,15 @@ Ext.onReady(function(){
 			scale: 'large',
 			hidden: !permissions['examination'],
 			handler: function(){
-				window.location.href = '/webapp/examination/';
+				window.location.href = '/webapp/oldexam/';
 			}
 		},{
             xtype:'button',
-            text: 'Обследование (стар. версия)',
+            text: 'Обследование (новая версия)',
 			scale: 'large',
 			hidden: !permissions['examination'],
 			handler: function(){
-				window.location.href = '/webapp/oldexam/';
+				window.location.href = '/webapp/examination/';
 			}
 		},{
             xtype:'button',

@@ -216,7 +216,6 @@ def get_service_tree(request):
         empty - признак того, есть ли в текущей группе элементы
         child_list - двумерный список всех детей для еще не найденных родителей.
         '''
-        print len(tree)
         #Если список пуст, удалять больше нечего
         if len(tree)==0:
             return (child_list and child_list[0]) or []
@@ -353,7 +352,6 @@ def get_service_tree(request):
                 result[val['extended_service__base_service__id']] = {}
                 result[val['extended_service__base_service__id']][val['extended_service__id']] = val
         
-        print "Price loaded.."
             
         for base_service in BaseService.objects.all().order_by(BaseService._meta.tree_id_attr, BaseService._meta.left_attr, 'level'): #@UndefinedVariable
             if base_service.is_leaf_node():
@@ -362,7 +360,6 @@ def get_service_tree(request):
             else:
                 nodes.append(base_service)
         
-        print "Nodes appended..."
         
         tree = []
         
@@ -378,8 +375,6 @@ def get_service_tree(request):
                     'singleClickExpand':True
                 }
                 tree.append(tree_node)
-            print "Promotions added..."
-        print len(nodes)
         s = clear_tree(nodes,[])
         tree.extend(s)
         _cached_tree = simplejson.dumps(tree, cls=DjangoJSONEncoder)

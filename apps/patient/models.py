@@ -89,7 +89,8 @@ class Patient(make_person_object('patient')):
                         self.discount = new_discount[0]
                         print "set new discount:", new_discount[0]
                     else:
-                        print "no discounts for current value!"
+                        pass
+#                        print "no discounts for current value!"
         #commit all changes
         self.save()
     
