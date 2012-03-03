@@ -1497,15 +1497,16 @@ class EquipmentAssayResource(ExtResource):
         return bundle
     
     class Meta:
-        queryset = EquipmentAssay.objects.all()
+        queryset = EquipmentAssay.objects.all().order_by('service__name',)
         resource_name = 'equipmentassay'
+        limit = 50
         authorization = DjangoAuthorization()
         filtering = {
             'equipment':ALL_WITH_RELATIONS,
             'service':ALL_WITH_RELATIONS,
         }        
 
-class EquipmentTaskResource(ExtResource):
+class EquipmentTaskResource(ExtBatchResource):
     
     equipment_assay = fields.ForeignKey(EquipmentAssayResource, 'equipment_assay')
     ordered_service = fields.ForeignKey(OrderedServiceResource, 'ordered_service')
@@ -1516,8 +1517,9 @@ class EquipmentTaskResource(ExtResource):
         bundle.data['status_name'] = bundle.obj.get_status_display()
         bundle.data['equipment_name'] = bundle.obj.equipment_assay.equipment
         bundle.data['service_name'] = bundle.obj.ordered_service.service
-        bundle.data['patient_name'] = bundle.obj.ordered_service.order.patient
+        bundle.data['patient_name'] = bundle.obj.ordered_service.order.patient.short_name()
         bundle.data['order'] = bundle.obj.ordered_service.order.barcode.id
+        bundle.data['result'] = bundle.obj.result and bundle.obj.result.get_full_result() or u''
         return bundle
     
     
@@ -1534,11 +1536,12 @@ class EquipmentTaskResource(ExtResource):
     class Meta:
         queryset = EquipmentTask.objects.all()
         resource_name = 'equipmenttask'
-        authorization = DjangoAuthorization()
+        authorization = LocalAuthorization()
         filtering = {
             'ordered_service':ALL_WITH_RELATIONS,
             'equipment':ALL_WITH_RELATIONS,
             'service':ALL_WITH_RELATIONS,
+            'status':ALL
         }        
 
 

@@ -80,7 +80,14 @@ App.CentralPanel = Ext.extend(Ext.Panel, {
                     	this.launchApp('equipmentresultgrid');
                     },
                     scope:this            	
-                }]
+                },{
+					text:'Дубликат штрих-кода',
+					tooltip:'Печать дубликата',
+					handler:function(btn){
+						var win = new App.barcodepackage.DuplicateWindow();
+						win.show(btn);
+					}
+				}]
             },{
             	xtype:'buttongroup',
             	title:'Анализаторы',

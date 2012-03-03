@@ -18,3 +18,4 @@ import remoting.views
 import visit.views
 import patient.views
 import lab.views
+import numeration.views

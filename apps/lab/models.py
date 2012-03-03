@@ -258,6 +258,9 @@ class Result(models.Model):
     def get_result(self):
         return self.value or self.input_list or u'---'
     
+    def get_full_result(self):
+        return smart_unicode(u"%s %s" % ( self.get_result(),self.analysis.measurement ))
+    
     def get_title(self):
         title = self.analysis.__unicode__()
         if self.test_form:
@@ -378,6 +381,7 @@ ET_STATUS = (
     (u'proc', u'В работе'),
     (u'done', u'Выполнен'),
     (u'disc', u'Отменен'),
+    (u'lock', u'Заблокирован'),
 )
 
 class EquipmentTask(models.Model):
@@ -388,6 +392,7 @@ class EquipmentTask(models.Model):
     equipment_assay = models.ForeignKey(EquipmentAssay)
     ordered_service = models.ForeignKey('visit.OrderedService')
     assay_protocol = models.CharField(u'Протокол исследования', max_length=20, default="UNDILUTED")
+    result = models.ForeignKey(Result, blank=True, null=True)
     completed = models.DateTimeField(u'Выполнено', null=True, blank=True)
     is_locked = models.BooleanField(u'Заблокировано', default=False)
     status = models.CharField(u'Статус', max_length=5, choices=ET_STATUS, default=u'wait')
@@ -398,6 +403,7 @@ class EquipmentTask(models.Model):
     class Meta:
         verbose_name = u'задание для анализаторов'
         verbose_name_plural = u'задания для анализаторов' 
+        ordering = ('-created',)
         
 
 RESULT_TYPE = (
@@ -437,16 +443,21 @@ class EquipmentResult(models.Model):
                                                            ordered_service__order__barcode__id=int(self.specimen))
                 if equipment_task:
                     self.equipment_task = equipment_task
-                    if self.result_type=='F' and not self.abnormal_flags:
+                    if self.result_type=='F':
                         visit = self.equipment_task.ordered_service.order
                         try:
                             result_obj = Result.objects.get(order__visit=visit,
-                                                            analysis__equipment_assay=self.equipment_task.equipment_assay)
+                                                            analysis__service=self.equipment_task.ordered_service.service)
+                            if result_obj.value:
+                                result_obj.previous_value = result_obj.value
                             result_obj.value=self.result
                             result_obj.save()
+                            self.equipment_task.result = result_obj
+                            self.equipment_task.status = u'done'
+                            self.equipment_task.save()
                         except Exception, err:
-                            print err
+                            print "Error during result finding:", err
                         
             except Exception, err:
-                print err
+                print "Error during eq/task finding:",err
         super(EquipmentResult, self).save(*args, **kwargs)

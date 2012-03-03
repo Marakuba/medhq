@@ -91,6 +91,19 @@
     <script type="text/javascript" src="{{ STATIC_URL }}app/laboratory/CentralPanel.js"></script>
     <script type="text/javascript" src="{{ STATIC_URL }}app/laboratory/MainPanel.js"></script>
     <script type="text/javascript" src="{{ STATIC_URL }}app/laboratory/app.js"></script>
+    
+    <script type="text/javascript" src="{{ STATIC_URL }}app/registry/barcodepackage/DuplicateWindow.js"></script>
+
+    <script type="text/javascript" src="{{ STATIC_URL }}resources/js/web-socket-js/swfobject.js"></script>
+  	<script type="text/javascript" src="{{ STATIC_URL }}resources/js/web-socket-js/web_socket.js"></script>
+
+	<script type="text/javascript">
+	    
+	    WEB_SOCKET_SUPPRESS_CROSS_DOMAIN_SWF_ERROR = true;
+		WEB_SOCKET_SWF_LOCATION = "{{ STATIC_URL }}resources/js/web-socket-js/WebSocketMain.swf";
+	    WEB_SOCKET_DEBUG = true;
+	    
+	  </script>
 
 {% include "webapp/includes/active_profile.html" %}
 

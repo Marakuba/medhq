@@ -349,7 +349,6 @@ def print_invoice(request, invoice_id):
 
 from direct.providers import remote_provider
 from extdirect.django.decorators import remoting
-import simplejson
 
 
 @remoting(remote_provider, len=1, action='lab', name='getSpecimenStatus')

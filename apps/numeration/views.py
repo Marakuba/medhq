@@ -5,7 +5,7 @@
 from django.shortcuts import get_object_or_404
 from visit.models import Visit
 from django.views.generic.simple import direct_to_template
-from numeration.models import BarcodePackage
+from numeration.models import BarcodePackage, BarcodePrinter
 import datetime
 from django.db.models.aggregates import Sum
 
@@ -59,3 +59,23 @@ def duplicate(request, code, count):
                               template='numeration/duplicate.html',
                               extra_context=ec)
 
+
+from direct.providers import remote_provider
+from extdirect.django.decorators import remoting
+import simplejson
+
+
+@remoting(remote_provider, len=1, action='numeration', name='getPrinterBySlug')
+def getPrinterBySlug(request):
+    data = simplejson.loads(request.raw_post_data)
+    slug = data['data'][0]
+    try:
+        printer = BarcodePrinter.objects.get(slug=slug)
+        data = {
+            'address':printer.address,
+            'port':printer.port
+        }
+        return dict(success=True, data=data)
+    except Exception, err:
+        print err
+        return dict(success=False, data={})

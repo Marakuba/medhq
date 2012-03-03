@@ -276,6 +276,7 @@ class ExtBatchResource(ExtResource):
         """
         bundles_seen = []
         for object_data in deserialized:
+            print object_data
             bundle = self.build_bundle(data=dict_strip_unicode_keys(object_data))
             self.is_valid(bundle, request)
         
@@ -283,7 +284,8 @@ class ExtBatchResource(ExtResource):
                 updated_bundle = self.obj_update(bundle, request=request, pk=kwargs.get('pk'))
                 bundles_seen.append(updated_bundle)
                 #return self.build_response(request, updated_bundle) #return HttpAccepted()
-            except:
+            except Exception, err:
+                print err
                 updated_bundle = self.obj_create(bundle, request=request, pk=kwargs.get('pk'))
                 bundles_seen.append(updated_bundle)
                 #return self.build_response(request, updated_bundle) #return HttpCreated(location=self.get_resource_uri(updated_bundle))
