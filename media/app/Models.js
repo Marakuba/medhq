@@ -110,6 +110,8 @@ App.models.patientModel = new Ext.data.Record.create([
 	{name: 'birth_day', allowBlank: false, type:'date'},
 	{name: 'discount'},
 	{name: 'discount_name'},
+	{name: 'ad_source'},
+	{name: 'ad_source_name'},
 	{name: 'client_item'},
 	{name: 'balance'},
 	{name: 'initial_account'},

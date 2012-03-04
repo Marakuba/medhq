@@ -11,22 +11,22 @@ class Migration(DataMigration):
         for p in orm.ExaminationCard.objects.all():
             p.icd = p.mbk_diag
             
-            objective_data = [{'title':u'Осложнения','text':p.complication},
-                                {'title':u'Объективные данные','text':p.objective_data},
-                                {'title':u'Психологический статус','text':p.psycho_status},
-                                {'title':u'ЭКГ','text':p.ekg}]
-                                
-            anamnesis = [{'title':u'История болезни','text':p.history},
-                           {'title':u'Анамнез','text':p.anamnesis},
-                           {'title':u'Характер заболевания','text':p.disease}]
-            
-            diagnosis = [{'title':u'Основной диагноз','text':p.gen_diag},
-                           {'title':u'Сопутствующий диагноз','text':p.concomitant_diag},
-                           {'title':u'Клинический диагноз','text':p.clinical_diag}]
-            
-            p.objective_data = json.dumps(objective_data, separators=(',',':'))
-            p.anamnesis = json.dumps(anamnesis, separators=(',',':'))
-            p.diagnosis = json.dumps(diagnosis, separators=(',',':'))
+#            objective_data = [{'title':u'Осложнения','text':p.complication},
+#                                {'title':u'Объективные данные','text':p.objective_data},
+#                                {'title':u'Психологический статус','text':p.psycho_status},
+#                                {'title':u'ЭКГ','text':p.ekg}]
+#                                
+#            anamnesis = [{'title':u'История болезни','text':p.history},
+#                           {'title':u'Анамнез','text':p.anamnesis},
+#                           {'title':u'Характер заболевания','text':p.disease}]
+#            
+#            diagnosis = [{'title':u'Основной диагноз','text':p.gen_diag},
+#                           {'title':u'Сопутствующий диагноз','text':p.concomitant_diag},
+#                           {'title':u'Клинический диагноз','text':p.clinical_diag}]
+#            
+#            p.objective_data = json.dumps(objective_data, separators=(',',':'))
+#            p.anamnesis = json.dumps(anamnesis, separators=(',',':'))
+#            p.diagnosis = json.dumps(diagnosis, separators=(',',':'))
             p.save()
             
             orm.ExaminationDetail.objects.create(exam_card = p,\

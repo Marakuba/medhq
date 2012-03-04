@@ -105,9 +105,9 @@ App.Patients = Ext.extend(Ext.Panel, {
 				rec.beginEdit();
 				for(k in data){
 					rec.set(k,data[k]);
-					console.info(k,data[k]);
+//					console.info(k,data[k]);
 				}
-				console.info(rec.data);
+//				console.info(rec.data);
 //				rec.endEdit();
 				this.patientSelect(rec);
 //				this.patientCard.doRefresh();
