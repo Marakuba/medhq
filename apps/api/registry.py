@@ -17,7 +17,7 @@ from state.models import State, Department
 from django.conf import settings
 from pricelist.models import Discount
 from api.utils import none_to_empty
-from api.resources import ExtResource, ComplexQuery
+from api.resources import ExtResource, ComplexQuery, ExtBatchResource
 from api import get_api_name
 from numeration.models import BarcodePackage, NumeratorItem, Barcode
 from django.shortcuts import get_object_or_404
@@ -41,6 +41,7 @@ from crm.models import AdSource
 from constance import config
 from promotion.models import Promotion
 from remoting.models import RemoteState
+from api.authorization import LocalAuthorization
 
 class UserResource(ModelResource):
 
@@ -1496,47 +1497,63 @@ class EquipmentAssayResource(ExtResource):
         return bundle
     
     class Meta:
-        queryset = EquipmentAssay.objects.all()
+        queryset = EquipmentAssay.objects.all().order_by('service__name',)
         resource_name = 'equipmentassay'
+        limit = 50
         authorization = DjangoAuthorization()
         filtering = {
             'equipment':ALL_WITH_RELATIONS,
             'service':ALL_WITH_RELATIONS,
         }        
 
-class EquipmentTaskResource(ExtResource):
+class EquipmentTaskResource(ExtBatchResource):
     
     equipment_assay = fields.ForeignKey(EquipmentAssayResource, 'equipment_assay')
     ordered_service = fields.ForeignKey(OrderedServiceResource, 'ordered_service')
     
     def dehydrate(self, bundle):
+        bundle.data['assay_code'] = bundle.obj.equipment_assay.code
+        bundle.data['assay_name'] = bundle.obj.equipment_assay.name
         bundle.data['status_name'] = bundle.obj.get_status_display()
         bundle.data['equipment_name'] = bundle.obj.equipment_assay.equipment
         bundle.data['service_name'] = bundle.obj.ordered_service.service
-        bundle.data['patient_name'] = bundle.obj.ordered_service.order.patient
+        bundle.data['patient_name'] = bundle.obj.ordered_service.order.patient.short_name()
         bundle.data['order'] = bundle.obj.ordered_service.order.barcode.id
+        bundle.data['result'] = bundle.obj.result and bundle.obj.result.get_full_result() or u''
         return bundle
     
+    
+    def build_filters(self, filters=None):
+        if filters is None:
+            filters = {}
+
+        orm_filters = super(EquipmentTaskResource, self).build_filters(filters)
+
+        if "order" in filters:
+            orm_filters.update(ordered_service__order__barcode__id=filters['order'])
+        return orm_filters
+
     class Meta:
         queryset = EquipmentTask.objects.all()
         resource_name = 'equipmenttask'
-        authorization = DjangoAuthorization()
+        authorization = LocalAuthorization()
         filtering = {
+            'ordered_service':ALL_WITH_RELATIONS,
             'equipment':ALL_WITH_RELATIONS,
             'service':ALL_WITH_RELATIONS,
+            'status':ALL
         }        
 
 
-class EquipmentResultResource(ExtResource):
+class EquipmentResultResource(ExtBatchResource):
 
     def dehydrate(self, bundle):
-        bundle.data['equipment_name'] = bundle.obj.equipment
         return bundle
         
     class Meta:
         queryset = EquipmentResult.objects.all()
         resource_name = 'equipmentresult'
-        authorization = DjangoAuthorization()
+        authorization = LocalAuthorization()
         filtering = {
             'order':ALL,
             'assay':ALL,

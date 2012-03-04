@@ -56,15 +56,21 @@ App.CentralPanel = Ext.extend(Ext.Panel, {
                 }]
             },{
             	xtype:'buttongroup',
-            	title:'Анализаторы',
+            	title:'Заказы',
             	defaults:{
-            		
+            		scale:'medium'
             	},
             	items:[{
-            		text:'Исследования',
+            		text:'Проверка образца',
+            		handler:function(btn){
+            			var win = new App.laboratory.ScannerWindow();
+            			win.show(btn);
+            		}
+            	},{
+            		text:'Задания',
             		scale:'medium',
                     handler: function(){
-                    	this.launchApp('equipmentassaygrid');
+                    	this.launchApp('equipmenttaskgrid');
                     },
                     scope:this            	
                 },{
@@ -75,17 +81,30 @@ App.CentralPanel = Ext.extend(Ext.Panel, {
                     },
                     scope:this            	
                 },{
+					text:'Дубликат штрих-кода',
+					tooltip:'Печать дубликата',
+					handler:function(btn){
+						var win = new App.barcodepackage.DuplicateWindow();
+						win.show(btn);
+					}
+				}]
+            },{
+            	xtype:'buttongroup',
+            	title:'Анализаторы',
+            	defaults:{
+            		scale:'medium'
+            	},
+            	items:[{
+            		text:'Исследования',
+                    handler: function(){
+                    	this.launchApp('equipmentassaygrid');
+                    },
+                    scope:this            	
+                },{
             		text:'Оборудование',
             		scale:'medium',
                     handler: function(){
                     	this.launchApp('equipmentgrid');
-                    },
-                    scope:this            	
-                },{
-            		text:'Задания',
-            		scale:'medium',
-                    handler: function(){
-                    	this.launchApp('equipmenttaskgrid');
                     },
                     scope:this            	
                 }]

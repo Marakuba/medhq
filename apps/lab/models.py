@@ -258,6 +258,9 @@ class Result(models.Model):
     def get_result(self):
         return self.value or self.input_list or u'---'
     
+    def get_full_result(self):
+        return smart_unicode(u"%s %s" % ( self.get_result(),self.analysis.measurement ))
+    
     def get_title(self):
         title = self.analysis.__unicode__()
         if self.test_form:
@@ -343,7 +346,7 @@ class Equipment(models.Model):
     """
     name = models.CharField(u'Наименование', max_length=100)
     slug = models.CharField(u'Короткое наименование', max_length=15)
-    address = models.CharField(max_length=15)
+    serial_number = models.CharField(max_length=30)
     is_active = models.BooleanField(u'Активно', default=True)
     order = models.IntegerField(u'Порядок', default=0)
 
@@ -361,6 +364,8 @@ class EquipmentAssay(models.Model):
     """
     equipment = models.ForeignKey(Equipment)
     service = models.ForeignKey('service.BaseService')
+    name = models.CharField(u'Название', max_length=20)
+    code = models.CharField(u'Код', max_length=20)
     is_active = models.BooleanField(u'Активно', default=True)
 
     def __unicode__(self):
@@ -369,12 +374,14 @@ class EquipmentAssay(models.Model):
     class Meta:
         verbose_name = u'аппаратное исследование'
         verbose_name_plural = u'аппаратные исследования'    
+        ordering = ('name',)
         
 ET_STATUS = (
     (u'wait', u'Ожидание'),
     (u'proc', u'В работе'),
     (u'done', u'Выполнен'),
     (u'disc', u'Отменен'),
+    (u'lock', u'Заблокирован'),
 )
 
 class EquipmentTask(models.Model):
@@ -384,7 +391,10 @@ class EquipmentTask(models.Model):
     created_by = models.ForeignKey(User, blank=True, null=True)
     equipment_assay = models.ForeignKey(EquipmentAssay)
     ordered_service = models.ForeignKey('visit.OrderedService')
+    assay_protocol = models.CharField(u'Протокол исследования', max_length=20, default="UNDILUTED")
+    result = models.ForeignKey(Result, blank=True, null=True)
     completed = models.DateTimeField(u'Выполнено', null=True, blank=True)
+    is_locked = models.BooleanField(u'Заблокировано', default=False)
     status = models.CharField(u'Статус', max_length=5, choices=ET_STATUS, default=u'wait')
     
     def __unicode__(self):
@@ -393,15 +403,61 @@ class EquipmentTask(models.Model):
     class Meta:
         verbose_name = u'задание для анализаторов'
         verbose_name_plural = u'задания для анализаторов' 
+        ordering = ('-created',)
+        
 
+RESULT_TYPE = (
+    ('F',u'Итоговый'),
+    ('I',u'Интерпретируемый'),
+    ('P',u'Инструментальный'),
+)
+
+RESULT_STATUS = (
+    ('F',u'Итоговый'),
+    ('R',u'Повторный'),
+    ('X',u'Невозможно выполнить тест'),
+)
 
 class EquipmentResult(models.Model):
     """
     """
+    equipment_task = models.ForeignKey(EquipmentTask, blank=True, null=True)
     created = models.DateTimeField(u'Получено', auto_now_add=True)
-    equipment = models.ForeignKey(Equipment, verbose_name=u'Анализатор')
-    order = models.CharField(u'Заказ', max_length=20)
-    assay = models.CharField(u'Исследование', max_length=20)
+    eq_serial_number = models.CharField(u'Серийный номер анализатора', max_length=30)
+    specimen = models.CharField(u'Заказ', max_length=20)
+    assay_name = models.CharField(u'Исследование', max_length=20)
+    assay_code = models.CharField(u'Исследование', max_length=20)
+    assay_protocol = models.CharField(u'Исследование', max_length=20)
+    result_type = models.CharField(u'Тип результата', max_length=1, choices=RESULT_TYPE)
+    result_status = models.CharField(u'Статус результата', max_length=1, choices=RESULT_STATUS)
+    abnormal_flags = models.CharField(u'Флаг незавершенных тестов', max_length=10)
     result = models.CharField(u'Результат', max_length=100)
-    measurement = models.CharField(u'Ед.изм.', max_length=15)
+    units = models.CharField(u'Ед.изм.', max_length=15)
     
+    def save(self, *args, **kwargs):
+        if not self.pk:
+            try:
+                equipment_task = EquipmentTask.objects.get(equipment_assay__equipment__serial_number=self.eq_serial_number,
+                                                           equipment_assay__name=self.assay_name,
+                                                           equipment_assay__code=self.assay_code,
+                                                           ordered_service__order__barcode__id=int(self.specimen))
+                if equipment_task:
+                    self.equipment_task = equipment_task
+                    if self.result_type=='F':
+                        visit = self.equipment_task.ordered_service.order
+                        try:
+                            result_obj = Result.objects.get(order__visit=visit,
+                                                            analysis__service=self.equipment_task.ordered_service.service)
+                            if result_obj.value:
+                                result_obj.previous_value = result_obj.value
+                            result_obj.value=self.result
+                            result_obj.save()
+                            self.equipment_task.result = result_obj
+                            self.equipment_task.status = u'done'
+                            self.equipment_task.save()
+                        except Exception, err:
+                            print "Error during result finding:", err
+                        
+            except Exception, err:
+                print "Error during eq/task finding:",err
+        super(EquipmentResult, self).save(*args, **kwargs)

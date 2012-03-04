@@ -56,6 +56,22 @@ class Barcode(models.Model):
     
     def __unicode__(self):
         return smart_unicode(u"штрих-код %s" % self.id)
+
+class BarcodePrinter(models.Model):
+    """
+    """
+    name = models.CharField(u'Наименование', max_length=50)
+    slug = models.SlugField(u'Тэг', max_length=20)
+    state = models.ForeignKey(State, limit_choices_to={'type__in':['b','p']})
+    address = models.CharField(u'Адрес',max_length=15)
+    port = models.IntegerField(u'Порт', default=8888)
+    
+    class Meta:
+        verbose_name = u'принтер штрих-кодов'
+        verbose_name_plural = u'принтеры штрих-кодов'
+    
+    def __unicode__(self):
+        return self.name
     
 
 RESET_ON = [(rrule.MONTHLY,u'Ежемесячно')]

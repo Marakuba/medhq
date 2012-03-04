@@ -183,7 +183,16 @@ class ResultAdmin(admin.ModelAdmin):
         return obj.order.visit.__unicode__()
     search_fields = ('order__visit__id','order__visit__patient__last_name')
     ordering = ('-order',)
+
+class EquipmentAdmin(admin.ModelAdmin):
+    list_display = ('name','serial_number','order','is_active')
     
+class EquipmentAssayAdmin(admin.ModelAdmin):
+    list_display = ('service','name','code','equipment','is_active')
+    list_filter = ('equipment','is_active')
+    
+class EquipmentResultAdmin(admin.ModelAdmin):
+    list_display = ('specimen','eq_serial_number','assay_name','assay_code','assay_protocol','abnormal_flags','result_type','result_status','result')
     
 admin.site.register(Analysis, AnalysisAdmin)
 admin.site.register(Sampling)
@@ -192,9 +201,9 @@ admin.site.register(Measurement)
 admin.site.register(Tube)
 admin.site.register(LabOrder,LabOrderAdmin)
 admin.site.register(Result, ResultAdmin)
-admin.site.register(Equipment)
-admin.site.register(EquipmentAssay)
+admin.site.register(Equipment,EquipmentAdmin)
+admin.site.register(EquipmentAssay, EquipmentAssayAdmin)
 admin.site.register(EquipmentTask)
-admin.site.register(EquipmentResult)
+admin.site.register(EquipmentResult, EquipmentResultAdmin)
 admin.site.register(Invoice)
 admin.site.register(InvoiceItem)

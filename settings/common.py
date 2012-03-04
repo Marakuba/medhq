@@ -7,6 +7,7 @@ PROJECT_ROOT = path(__file__).abspath().dirname().dirname()
 SITE_ROOT = PROJECT_ROOT.dirname()
 
 sys.path.append(SITE_ROOT)
+sys.path.append(SITE_ROOT / 'servers')
 sys.path.append(PROJECT_ROOT / 'apps')
 sys.path.append(PROJECT_ROOT / 'libs')
 
@@ -99,6 +100,7 @@ INSTALLED_APPS = [
 #    'sentry',
 #    'sentry.client',
 
+    'analyzers',
     'crm',
     'core',
     'direct',

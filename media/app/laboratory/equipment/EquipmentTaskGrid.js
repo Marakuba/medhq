@@ -4,9 +4,26 @@ App.equipment.EquipmentTaskGrid = Ext.extend(Ext.grid.EditorGridPanel, {
 
 	initComponent : function() {
 		
-		this.backend = App.getBackend('equipmenttask');		
+		this.model = new Ext.data.Record.create([
+			{name: 'id'},
+			{name: 'resource_uri'},
+			{name: 'equipment_assay'},
+			{name: 'ordered_service'},
+			{name: 'equipment_name'},
+			{name: 'service_name'},
+			{name: 'patient_name'},
+			{name: 'order'},
+			{name: 'result'},
+			{name: 'status'},
+			{name: 'status_name'},
+			{name: 'completed', type:'date', format:'c'},
+			{name: 'created', type:'date', format:'c'}
+		]);
 		
-		this.store = this.backend.store;
+		this.store = new Ext.data.RESTStore({
+			apiUrl : App.getApiUrl('equipmenttask'),
+			model: this.model
+		});
 		
 		this.columns =  [
 		    {
@@ -19,7 +36,12 @@ App.equipment.EquipmentTaskGrid = Ext.extend(Ext.grid.EditorGridPanel, {
 		    	width: 10,
 		    	dataIndex: 'order'
 		    },{
-		    	header: "Анализатор", 
+		    	header: "Пациент", 
+		    	width: 30, 
+		    	sortable: true, 
+		    	dataIndex: 'patient_name'
+		    },{
+		    	header: "Оборудование", 
 		    	width: 20, 
 		    	sortable: true, 
 		    	dataIndex: 'equipment_name'
@@ -29,6 +51,11 @@ App.equipment.EquipmentTaskGrid = Ext.extend(Ext.grid.EditorGridPanel, {
 		    	sortable: true, 
 		    	dataIndex: 'service_name'
 		    },{
+		    	header: "Результат", 
+		    	width: 20, 
+		    	sortable: false, 
+		    	dataIndex: 'result'
+		    },/*{
 		    	header: "Выполнено", 
 		    	width: 10, 
 		    	sortable: true, 
@@ -38,7 +65,7 @@ App.equipment.EquipmentTaskGrid = Ext.extend(Ext.grid.EditorGridPanel, {
 		    		return "<img src='"+MEDIA_URL+"admin/img/admin/icon-"+flag+".gif'>" 
 		    			+ (val ? Ext.util.Format.date(val,'d.m.Y') : '');
 		    	}
-		    },{
+		    },*/{
 		    	header: "Статус", 
 		    	width: 8, 
 		    	sortable: true, 
@@ -59,11 +86,63 @@ App.equipment.EquipmentTaskGrid = Ext.extend(Ext.grid.EditorGridPanel, {
 			sm : new Ext.grid.RowSelectionModel({
 				singleSelect : true
 			}),
-			tbar:[/*{
-				iconCls:'silk-add',
-				text:'Добавить',
-				handler:this.onAdd.createDelegate(this)
-			},*/'->',{
+			tbar:['Анализатор:',new Ext.form.ClearableComboBox({
+				emptyText:'Любой',
+			    queryParam:'name__istartswith',
+			    minChars:2,
+			    triggerAction: 'all',
+			    valueField: 'resource_uri',
+			    store: new Ext.data.JsonStore({
+					autoLoad:true,
+					proxy: new Ext.data.HttpProxy({
+						url:get_api_url('equipment'),
+						method:'GET'
+					}),
+					root:'objects',
+					idProperty:'id',
+					fields:['id','resource_uri','name']
+				}),
+				valueField:'id',
+				displayField:'name',
+				listeners:{
+					select:function(cmb,rec) {
+						this.storeFilter('equipment',rec.id);
+					},
+					clearclick:function(){
+						this.storeFilter('equipment');
+					},
+					scope:this
+				}
+			}),
+			new Ext.CycleButton({
+	            showText: true,
+	            prependText: 'Статус: ',
+	            items: [{
+	                text:'все',
+	                checked:true,
+	                filterValue:undefined
+	            },{
+	                text:'ожидание',
+//	                iconCls:'icon-state-yes',
+	                filterValue:'wait'
+	            },{
+	                text:'в работе',
+//	                iconCls:'icon-state-no',
+	                filterValue:'proc'
+	            },{
+	                text:'выполнено',
+//	                iconCls:'icon-state-no',
+	                filterValue:'done'
+	            },{
+	                text:'повторы',
+//	                iconCls:'icon-state-no',
+	                filterValue:'rept'
+	            }],
+	            changeHandler:function(btn, item){
+	            	this.storeFilter('status',item.filterValue);
+	            },
+	            scope:this
+	        }), '->',{
 				iconCls:'x-tbar-loading',
 				handler:function(){
 					this.store.load();
@@ -85,12 +164,6 @@ App.equipment.EquipmentTaskGrid = Ext.extend(Ext.grid.EditorGridPanel, {
 		Ext.apply(this, Ext.apply(this.initialConfig, config));
 		App.equipment.EquipmentTaskGrid.superclass.initComponent.apply(this, arguments);
 		
-	},
-	
-	onAdd: function() {
-		var s = this.getStore();
-		var Record = s.recordType;
-		s.insert(0, new Record({}));
 	},
 	
 	storeFilter: function(field, value){

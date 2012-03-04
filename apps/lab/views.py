@@ -1,12 +1,13 @@
 # -*- coding: utf-8 -*-
 from django.shortcuts import get_object_or_404, render_to_response
-from lab.models import LabOrder, Result, Invoice, InvoiceItem, Sampling
+from lab.models import LabOrder, Result, Invoice, InvoiceItem, Sampling,\
+    EquipmentTask
 from service.models import BaseService
 import datetime
 from django.views.generic.simple import direct_to_template
 import simplejson
 from django.http import HttpResponse, HttpResponseBadRequest
-from visit.models import OrderedService
+from visit.models import OrderedService, Visit
 from state.models import State
 from annoying.decorators import render_to
 from django.db.models.aggregates import Count
@@ -344,4 +345,29 @@ def print_invoice(request, invoice_id):
         'groups':groups,
         'samplings':samplings
     }
-    
+
+
+from direct.providers import remote_provider
+from extdirect.django.decorators import remoting
+
+
+@remoting(remote_provider, len=1, action='lab', name='getSpecimenStatus')
+def get_specimen_status(request):
+    data = simplejson.loads(request.raw_post_data)
+    barcode_id = data['data'][0]
+    try:
+        visit = Visit.objects.get(barcode__id=barcode_id)
+        tasks = EquipmentTask.objects.filter(ordered_service__order__barcode__id=barcode_id, status=u'wait') \
+            .order_by('equipment_assay__equipment__order')
+        try:
+            task = tasks[0]
+            next_place = task.equipment_assay.equipment.name
+        except Exception, err:
+            print err
+            next_place = u"Архив"
+    except:
+        next_place = u'Образец не найден'
+    data = {
+        'next':next_place
+    }
+    return dict(success=True, data=data)
