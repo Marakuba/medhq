@@ -21,7 +21,8 @@ App.equipment.EquipmentTaskGrid = Ext.extend(Ext.grid.EditorGridPanel, {
 		]);
 		
 		this.store = new Ext.data.RESTStore({
-			apiUrl : App.getApiUrl('equipmenttask'),
+			autoLoad : true,
+			apiUrl : App.getApiUrl('equipmenttaskro'),
 			model: this.model
 		});
 		
@@ -106,10 +107,10 @@ App.equipment.EquipmentTaskGrid = Ext.extend(Ext.grid.EditorGridPanel, {
 				displayField:'name',
 				listeners:{
 					select:function(cmb,rec) {
-						this.storeFilter('equipment',rec.id);
+						this.storeFilter('equipment_assay__equipment',rec.id);
 					},
 					clearclick:function(){
-						this.storeFilter('equipment');
+						this.storeFilter('equipment_assay__equipment');
 					},
 					scope:this
 				}
@@ -149,6 +150,16 @@ App.equipment.EquipmentTaskGrid = Ext.extend(Ext.grid.EditorGridPanel, {
 				},
 				scope:this
 			}],
+			
+			bbar: new Ext.PagingToolbar({
+	            pageSize: 50,
+	            store: this.store,
+	            displayInfo: true,
+	            displayMsg: '{0} - {1} | {2}',
+	            emptyMsg: "Нет записей",
+//	            items:['-',this.filterText]
+	        }),
+
 			listeners: {
 			},
 			view : new Ext.grid.GridView({

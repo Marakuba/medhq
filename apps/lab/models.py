@@ -9,13 +9,15 @@ import datetime
 from workflow.models import Status
 from django.contrib.auth.models import User
 from numeration.models import NumeratorItem
-import logging
 from django.conf import settings
 from django.utils.encoding import smart_unicode
 from core.models import GENDER_TYPES, make_operator_object
 from django.db.models.aggregates import Count
 from django.contrib.contenttypes.models import ContentType
+from django.core.exceptions import ObjectDoesNotExist, MultipleObjectsReturned
 
+import logging
+logger = logging.getLogger(__name__)
 
 
 class LabService(models.Model):
@@ -340,6 +342,15 @@ class InvoiceItem(make_operator_object('invoice_item')):
         ordering = ('id',)     
     
     
+class EquipmentAnalysis(models.Model):
+    analysis = models.OneToOneField(Analysis)
+    
+    def __unicode__(self):
+        return self.analysis.__unicode__()
+    
+    class Meta:
+        ordering = ('analysis__name',)
+        
 
 class Equipment(models.Model):
     """
@@ -363,13 +374,15 @@ class EquipmentAssay(models.Model):
     """
     """
     equipment = models.ForeignKey(Equipment)
-    service = models.ForeignKey('service.BaseService')
+    service = models.ForeignKey('service.BaseService', blank=True, null=True)
+    equipment_analysis = models.ForeignKey(EquipmentAnalysis, blank=True, null=True)
     name = models.CharField(u'Название', max_length=20)
     code = models.CharField(u'Код', max_length=20)
+    def_protocol = models.CharField(u'Протокол исследования', max_length=20, default="UNDILUTED")
     is_active = models.BooleanField(u'Активно', default=True)
 
     def __unicode__(self):
-        return smart_unicode( u"%s - %s" % (self.equipment, self.service) )
+        return smart_unicode( u"%s" % self.equipment_analysis )
     
     class Meta:
         verbose_name = u'аппаратное исследование'
@@ -391,15 +404,19 @@ class EquipmentTask(models.Model):
     created_by = models.ForeignKey(User, blank=True, null=True)
     equipment_assay = models.ForeignKey(EquipmentAssay)
     ordered_service = models.ForeignKey('visit.OrderedService')
-    assay_protocol = models.CharField(u'Протокол исследования', max_length=20, default="UNDILUTED")
+    assay_protocol = models.CharField(u'Протокол исследования', max_length=20, default='')
     result = models.ForeignKey(Result, blank=True, null=True)
     completed = models.DateTimeField(u'Выполнено', null=True, blank=True)
     is_locked = models.BooleanField(u'Заблокировано', default=False)
     status = models.CharField(u'Статус', max_length=5, choices=ET_STATUS, default=u'wait')
     
     def __unicode__(self):
-        return smart_unicode( u"%s - %s" % (self.ordered_service, self.equipment_assay) )
-    
+        return "<<EQTASK>>"
+#        return smart_unicode( u"%s - %s" % (self.ordered_service, self.equipment_assay) )
+    def save(self, *args, **kwargs):
+        if not self.pk and not self.assay_protocol:
+            self.assay_protocol = self.equipment_assay.def_protocol
+        super(EquipmentTask, self).save(*args, **kwargs)
     class Meta:
         verbose_name = u'задание для анализаторов'
         verbose_name_plural = u'задания для анализаторов' 
@@ -423,14 +440,14 @@ class EquipmentResult(models.Model):
     """
     equipment_task = models.ForeignKey(EquipmentTask, blank=True, null=True)
     created = models.DateTimeField(u'Получено', auto_now_add=True)
-    eq_serial_number = models.CharField(u'Серийный номер анализатора', max_length=30)
+    eq_serial_number = models.CharField(u'SN анализатора', max_length=30)
     specimen = models.CharField(u'Заказ', max_length=20)
     assay_name = models.CharField(u'Исследование', max_length=20)
     assay_code = models.CharField(u'Исследование', max_length=20)
     assay_protocol = models.CharField(u'Исследование', max_length=20)
     result_type = models.CharField(u'Тип результата', max_length=1, choices=RESULT_TYPE)
     result_status = models.CharField(u'Статус результата', max_length=1, choices=RESULT_STATUS)
-    abnormal_flags = models.CharField(u'Флаг незавершенных тестов', max_length=10)
+    abnormal_flags = models.CharField(u'Флаги', max_length=50)
     result = models.CharField(u'Результат', max_length=100)
     units = models.CharField(u'Ед.изм.', max_length=15)
     
@@ -447,7 +464,8 @@ class EquipmentResult(models.Model):
                         visit = self.equipment_task.ordered_service.order
                         try:
                             result_obj = Result.objects.get(order__visit=visit,
-                                                            analysis__service=self.equipment_task.ordered_service.service)
+                                                            analysis=self.equipment_task.equipment_assay.equipment_analysis.analysis)
+                            logger.debug(u"LAB: result %s" % result_obj.id)
                             if result_obj.value:
                                 result_obj.previous_value = result_obj.value
                             result_obj.value=self.result
@@ -455,9 +473,14 @@ class EquipmentResult(models.Model):
                             self.equipment_task.result = result_obj
                             self.equipment_task.status = u'done'
                             self.equipment_task.save()
+                        except MultipleObjectsReturned:
+                            logger.debug(u"LAB: MultipleObjectsReturned")
+                        except ObjectDoesNotExist:
+                            logger.debug(u"LAB: result not found")
                         except Exception, err:
-                            print "Error during result finding:", err
-                        
+                            logger.debug(u"LAB:Error during result finding:")
             except Exception, err:
-                print "Error during eq/task finding:",err
+                logger.debug(u"""LAB:Error during eq/task finding: %s SN: %s Name: %s Code: %s Specimen: %s""" % ( err.__unicode__(), self.eq_serial_number, self.assay_name, self.assay_code, self.specimen ) )
         super(EquipmentResult, self).save(*args, **kwargs)
+
+        

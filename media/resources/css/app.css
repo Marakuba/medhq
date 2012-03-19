@@ -155,7 +155,7 @@
 	display:block;
 }
 
-.x-grid3-col-laboratory p {
+.x-grid3-col-laboratory p, .x-grid3-col-staff p {
 	color:#081B85;
 	font-weight: bold;
 	text-align: right;

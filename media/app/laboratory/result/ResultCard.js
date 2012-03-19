@@ -214,7 +214,8 @@ App.result.ResultCard = Ext.extend(Ext.Panel, {
 		}
 		this.dateField.setValue(d.executed);
 		this.timeField.setValue(d.executed);
-		this.setTitle(String.format('Результаты: {0}', rec.data.patient_name));
+		this.setTitle(String.format('Результаты: {0}, {2} &nbsp;&nbsp;&nbsp; {1}', 
+				rec.data.patient_name, rec.data.info, rec.data.patient_age));
 		this.ResultGrid.setActiveRecord(rec);
 		this.items.itemAt(0).setActiveTab(0);
 		this.ResultComment.getForm().findField('comment').setValue(rec.data.comment);

@@ -13,6 +13,9 @@ from django.core.serializers.json import DjangoJSONEncoder
 from remoting.utils import get_ordered_service, get_visit_sync_id, get_result
 from remoting.models import Transaction, TransactionItem, SyncObject
 from django.db.models.aggregates import Count
+import logging
+
+logger = logging.getLogger('remoting')
 
 def post_orders_to_local(request, data_set, options):
     result = []
@@ -157,6 +160,8 @@ def post_results(lab_order, confirm):
 #    transaction = Transaction.objects.create(type='lab.out',
 #                                             sender=request.active_profile.department.state,
 #                                             reciever=_labs_cache[lab])
+#    msg = simplejson.dumps(results)
+#    logger.debug(msg)
     result = post_data_to_remote(lab,'post_results',results, options)
     
     return result

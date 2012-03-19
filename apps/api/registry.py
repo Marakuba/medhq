@@ -153,6 +153,7 @@ class PatientResource(ExtResource):
         bundle.data['full_name'] = bundle.obj.full_name()
         bundle.data['short_name'] = bundle.obj.short_name()
         bundle.data['ad_source_name'] = bundle.obj.ad_source and bundle.obj.ad_source or u''
+        bundle.data['lat'] = bundle.obj.translify()
         return bundle
 
     def obj_create(self, bundle, request=None, **kwargs):
@@ -251,7 +252,7 @@ class ReferralResource(ExtResource):
 class LabResource(ModelResource):
 
     class Meta:
-        queryset = State.objects.filter(type__in=('m','b','p')).exclude(id=config.MAIN_STATE_ID) 
+        queryset = State.objects.select_related().filter(type__in=('m','b','p')).exclude(id=config.MAIN_STATE_ID) 
         resource_name = 'lab'
         limit = 10
         filtering = {
@@ -263,7 +264,7 @@ class LabResource(ModelResource):
 class MedStateResource(ModelResource):
 
     class Meta:
-        queryset = State.objects.filter(type__in=('m','b','p')).order_by('type','id',)
+        queryset = State.objects.select_related().filter(type__in=('m','b','p')).order_by('type','id',)
         resource_name = 'medstate'
         limit = 20
         filtering = {
@@ -275,7 +276,7 @@ class MedStateResource(ModelResource):
 class OwnStateResource(ModelResource):
 
     class Meta:
-        queryset = State.objects.filter(type__in=('b','p')).order_by('id',)
+        queryset = State.objects.select_related().filter(type__in=('b','p')).order_by('id',)
         resource_name = 'ownstate'
         limit = 20
         filtering = {
@@ -440,7 +441,7 @@ class VisitResource(ExtResource):
         return orm_filters
     
     class Meta:
-        queryset = Visit.objects.filter(cls__in=(u'п',u'б'))
+        queryset = Visit.objects.select_related().filter(cls__in=(u'п',u'б'))
         resource_name = 'visit'
         authorization = DjangoAuthorization()
         filtering = {
@@ -492,21 +493,31 @@ class LabOrderResource(ExtResource):
     """
     visit = fields.ToOneField(VisitResource, 'visit', null=True)
     laboratory = fields.ForeignKey(MedStateResource, 'laboratory', null=True)
-    lab_group = fields.ForeignKey(LabServiceGroupResource, 'lab_group', null=True)
+#    lab_group = fields.ForeignKey(LabServiceGroupResource, 'lab_group', null=True)
     staff = fields.ForeignKey('api.registry.PositionResource', 'staff', null=True)
     
     def dehydrate(self, bundle):
         laborder = bundle.obj
         bundle.data['laboratory_name'] = laborder.laboratory
         if laborder.visit:
-            bundle.data['visit_created'] = laborder.visit.created
-            bundle.data['visit_is_cito'] = laborder.visit.is_cito
+            v = laborder.visit
+            info = []
+            if v.pregnancy_week:
+                info.append(u"Б: <font color='red'>%s</font>" % v.pregnancy_week)
+            if v.menses_day:
+                info.append(u"Д/ц: <font color='red'>%s</font>" % v.menses_day)
+            bundle.data['info'] = "; ".join(info)
+            bundle.data['visit_created'] = laborder.visit.created # -100
+            bundle.data['visit_is_cito'] = laborder.visit.is_cito # -100
             bundle.data['visit_id'] = laborder.visit.id
-            bundle.data['barcode'] = laborder.visit.barcode.id
+            bundle.data['barcode'] = laborder.visit.barcode.id # -100
             bundle.data['is_male'] = laborder.visit.patient.gender==u'М'
             bundle.data['patient_name'] = laborder.visit.patient.full_name()
-            bundle.data['operator_name'] = laborder.visit.operator
-        bundle.data['staff_name'] = laborder.staff and laborder.staff.staff.short_name() or ''
+            bundle.data['patient_age'] = laborder.visit.patient.full_age()
+            bundle.data['lat'] = laborder.visit.patient.translify()
+            bundle.data['operator_name'] = laborder.visit.operator # -100
+            bundle.data['office_name'] = laborder.visit.office # -100
+        bundle.data['staff_name'] = laborder.staff and laborder.staff.staff.short_name() or '' # -34
         return bundle
     
     def build_filters(self, filters=None):
@@ -601,7 +612,7 @@ class PositionResource(ModelResource):
         return bundle
     
     class Meta:
-        queryset = Position.objects.all()
+        queryset = Position.objects.select_related().all()
         resource_name = 'position'
         limit = 200
         filtering = {
@@ -1484,6 +1495,7 @@ class EquipmentResource(ExtResource):
         filtering = {
             'name':ALL,
             'slug':ALL,
+            'serial_number':ALL
         }        
 
 class EquipmentAssayResource(ExtResource):
@@ -1506,7 +1518,7 @@ class EquipmentAssayResource(ExtResource):
             'service':ALL_WITH_RELATIONS,
         }        
 
-class EquipmentTaskResource(ExtBatchResource):
+class EquipmentTaskReadOnlyResource(ExtBatchResource):
     
     equipment_assay = fields.ForeignKey(EquipmentAssayResource, 'equipment_assay')
     ordered_service = fields.ForeignKey(OrderedServiceResource, 'ordered_service')
@@ -1527,6 +1539,46 @@ class EquipmentTaskResource(ExtBatchResource):
         if filters is None:
             filters = {}
 
+        orm_filters = super(EquipmentTaskReadOnlyResource, self).build_filters(filters)
+
+        if "order" in filters:
+            orm_filters.update(ordered_service__order__barcode__id=filters['order'])
+        return orm_filters
+
+    class Meta:
+        queryset = EquipmentTask.objects.all()
+        resource_name = 'equipmenttaskro'
+        authorization = DjangoAuthorization()
+        limit = 50
+        filtering = {
+            'ordered_service':ALL_WITH_RELATIONS,
+            'equipment_assay':ALL_WITH_RELATIONS,
+            'service':ALL_WITH_RELATIONS,
+            'status':ALL
+        }        
+
+class EquipmentTaskResource(ExtBatchResource):
+    
+    equipment_assay = fields.ForeignKey(EquipmentAssayResource, 'equipment_assay')
+    ordered_service = fields.ForeignKey(OrderedServiceResource, 'ordered_service')
+    
+    def dehydrate(self, bundle):
+        bundle.data['assay_code'] = bundle.obj.equipment_assay.code
+        bundle.data['assay_name'] = bundle.obj.equipment_assay.name
+        bundle.data['status_name'] = bundle.obj.get_status_display()
+        bundle.data['equipment_name'] = bundle.obj.equipment_assay.equipment
+        bundle.data['service_name'] = bundle.obj.ordered_service.service
+        bundle.data['patient_name'] = bundle.obj.ordered_service.order.patient.short_name()
+        bundle.data['lat'] = bundle.obj.ordered_service.order.patient.translify()
+        bundle.data['order'] = bundle.obj.ordered_service.order.barcode.id
+        bundle.data['result'] = bundle.obj.result and bundle.obj.result.get_full_result() or u''
+        return bundle
+    
+    
+    def build_filters(self, filters=None):
+        if filters is None:
+            filters = {}
+
         orm_filters = super(EquipmentTaskResource, self).build_filters(filters)
 
         if "order" in filters:
@@ -1537,9 +1589,10 @@ class EquipmentTaskResource(ExtBatchResource):
         queryset = EquipmentTask.objects.all()
         resource_name = 'equipmenttask'
         authorization = LocalAuthorization()
+        limit = 1000
         filtering = {
             'ordered_service':ALL_WITH_RELATIONS,
-            'equipment':ALL_WITH_RELATIONS,
+            'equipment_assay':ALL_WITH_RELATIONS,
             'service':ALL_WITH_RELATIONS,
             'status':ALL
         }        
@@ -1554,6 +1607,20 @@ class EquipmentResultResource(ExtBatchResource):
         queryset = EquipmentResult.objects.all()
         resource_name = 'equipmentresult'
         authorization = LocalAuthorization()
+        filtering = {
+            'order':ALL,
+            'assay':ALL,
+        }   
+        
+class EquipmentResultReadOnlyResource(ExtBatchResource):
+
+    def dehydrate(self, bundle):
+        return bundle
+        
+    class Meta:
+        queryset = EquipmentResult.objects.all()
+        resource_name = 'equipmentresultro'
+        authorization = DjangoAuthorization()
         filtering = {
             'order':ALL,
             'assay':ALL,
@@ -2003,7 +2070,9 @@ api.register(TubeResource())
 api.register(EquipmentResource())
 api.register(EquipmentAssayResource())
 api.register(EquipmentResultResource())
+api.register(EquipmentResultReadOnlyResource())
 api.register(EquipmentTaskResource())
+api.register(EquipmentTaskReadOnlyResource())
 
 #service
 api.register(LSResource())

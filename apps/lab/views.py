@@ -21,6 +21,7 @@ def print_register(request):
         'visit__created__gte':u'Дата с',
         'visit__created__lte':u'Дата по',
         'laboratory':u'Лаборатория',
+        'visit__office':u'Офис',
         'visit__patient':u'Пациент',
         'visit__is_cito':u'cito'
     }

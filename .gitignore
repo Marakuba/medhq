@@ -1,4 +1,5 @@
 *.pyc
+*.log
 *~
 production.py
 local_urls.py

@@ -48,12 +48,13 @@ class Command(BaseCommand):
         
         f = args[0]
         table = UnicodeWriter(open(f,'wb'), delimiter=",")
-        rows = [[u'ID услуги',u'extID',u'Группа',u'Услуга',u'Краткое наименование',u'Организация',u'Активно',u'Цена (руб.коп)']]
-        services = BaseService.objects.all().order_by(BaseService._meta.tree_id_attr, BaseService._meta.left_attr, 'level')
+        rows = [[u'ID услуги',u'extID',u'ID группы',u'Группа',u'Услуга',u'Краткое наименование',u'Организация',u'Активно',u'Цена (руб.коп)']]
+        services = BaseService.objects.select_related().all().order_by(BaseService._meta.tree_id_attr, BaseService._meta.left_attr, 'level')
         for service in services:
             if not service.is_leaf_node():
                 rows.append([str(service.id), 
                              u'', 
+                             service.parent and str(service.parent.id) or u'.',
                              service.parent and service.parent.name or u'.',
                              service.name,
                              service.short_name,
@@ -65,6 +66,7 @@ class Command(BaseCommand):
                     price = item.get_actual_price()
                     rows.append([str(service.id), 
                                  str(item.id), 
+                                 service.parent and str(service.parent.id) or u'.',
                                  service.parent and service.parent.name or u'.',
                                  service.name,
                                  service.short_name,

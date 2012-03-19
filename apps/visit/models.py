@@ -87,7 +87,7 @@ class Visit(make_operator_object('visit')):
     """
     modified = models.DateTimeField(auto_now=True)
     cls = models.CharField(u'Класс', max_length=1, choices=CLS, default=u'п')   
-    office = models.ForeignKey(State, verbose_name=u'Офис', limit_choices_to={'type':u'b'}) 
+    office = models.ForeignKey(State, verbose_name=u'Офис', limit_choices_to={'type__in':[u'b',u'm',u'p']}) 
     patient = models.ForeignKey('patient.Patient', verbose_name=u'Пациент')
     on_date = models.DateTimeField(u'На дату', 
                                    null=True, blank=True)
@@ -226,6 +226,9 @@ class PlainVisit(Visit):
     def get_ad_source(self):
         return self.patient.ad_source.name
     
+    def __unicode__(self):
+        return smart_unicode(u"%s %s" % (self.barcode.id, self.patient.full_name()) )
+    
     class Meta:
         proxy=True
         verbose_name = u"прием (адм.)"
@@ -328,21 +331,25 @@ class OrderedService(make_operator_object('ordered_service')):
                                                        lab_group=s.lab_group,
                                                        is_manual=s.is_manual())
                 
-            for item in self.service.analysis_set.all():
+            for analysis in self.service.analysis_set.all():
                 result, created = Result.objects.get_or_create(order=lab_order,
-                                                               analysis=item, 
+                                                               analysis=analysis, 
                                                                sample=sampling)
+                try:
+                    eq_analysis = analysis.equipmentanalysis
+                    ### Generating AssayTask
+                    
+                    assays = eq_analysis.equipmentassay_set.filter(is_active=True)
+                    for assay in assays:
+                        EquipmentTask.objects.get_or_create(equipment_assay=assay, ordered_service=self)
+                except:
+                    pass
     
             if sampling:
                 self.sampling = sampling
             self.status = u'л'    
             self.save()
             
-            ### Generating AssayTask
-            
-            assays = s.equipmentassay_set.filter(is_active=True)
-            for assay in assays:
-                EquipmentTask.objects.get_or_create(equipment_assay=assay, ordered_service=self)
                 
     def get_absolute_url(self):
         return u"/admin/visit/orderedservice/%s/" % self.id

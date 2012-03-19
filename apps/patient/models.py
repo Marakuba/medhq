@@ -14,6 +14,7 @@ from django.db.models.signals import post_save
 from visit.models import Visit
 from crm.models import AdSource
 from constance import config
+import pytils
 
 
 class Patient(make_person_object('patient')):
@@ -52,7 +53,10 @@ class Patient(make_person_object('patient')):
         return delta.days / 365
     
     def short_name(self):
-        return u"%s %s.%s" % (self.last_name, self.first_name[0].capitalize(), self.mid_name and u" %s." % self.mid_name[0].capitalize() or u'')
+        return u"%s %s.%s" % (self.last_name, self.first_name[0].capitalize(), self.mid_name and u"%s." % self.mid_name[0].capitalize() or u'')
+    
+    def translify(self):
+        return pytils.translit.translify(self.short_name()).upper()
     
     def is_f(self):
         return self.gender==u'Ж'

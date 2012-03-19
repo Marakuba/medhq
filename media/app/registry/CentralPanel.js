@@ -129,7 +129,12 @@ App.CentralPanel = Ext.extend(Ext.Panel, {
 					scope:this
 				},{
 					text:'Дубликат',
-					tooltip:'Печать дубликата'
+					tooltip:'Печать дубликата',
+					handler:function(btn){
+						var win = new App.barcodepackage.DuplicateWindow({
+						});
+						win.show(btn);
+					}
 				}]
 			},{
 				xtype:'buttongroup',

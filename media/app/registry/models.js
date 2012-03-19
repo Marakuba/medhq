@@ -110,6 +110,7 @@ App.models.patientModel = new Ext.data.Record.create([
 	{name: 'first_name', allowBlank: false},
 	{name: 'mid_name'},
 	{name: 'last_name', allowBlank: false},
+	{name: 'lat'},
 	{name: 'gender', allowBlank: false},
 	{name: 'mobile_phone'},
 	{name: 'home_address_street'},

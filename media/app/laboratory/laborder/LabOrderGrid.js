@@ -45,21 +45,21 @@ App.laboratory.LabOrderGrid = Ext.extend(Ext.grid.GridPanel, {
 		    	dataIndex: 'patient_name'
 		    },{
 		    	id:'laboratory',
-		    	header: "Лаб. / Оператор", 
+		    	header: "Офис / Оператор", 
 		    	width: 18,
-		    	dataIndex: 'laboratory_name',
+		    	dataIndex: 'office_name',
 		    	renderer:function(v,opts,rec) {
 		    		return String.format("<div><b>{0}</b><p>{1}</p></div>", 
 		    				v, rec.data.operator_name) 
 		    	}
 		    },{
 		    	id:'staff',
-		    	header: "Выполнено", 
+		    	header: "Лаб. / Врач", 
 		    	width: 16,
 		    	dataIndex: 'staff_name',
 		    	renderer:function(v,opts,rec) {
-		    		return String.format("<div><b>{0}</b><span>{1}</span></div>", 
-		    				v, Ext.util.Format.date(rec.data.executed,'d.m.y')) 
+		    		return String.format("<div><b>{0}</b><p>{1}</p><span>{2}</span></div>", 
+		    				rec.data.laboratory_name, v, Ext.util.Format.date(rec.data.executed,'d.m.y')) 
 		    	}
 		    },{
 		    	header: "Выполнено", 
@@ -108,6 +108,10 @@ App.laboratory.LabOrderGrid = Ext.extend(Ext.grid.GridPanel, {
 				},
 				hidden:true,
 				scope:this
+			},'-',{
+				text:'Штрих-код',
+				handler:this.printBarcode.createDelegate(this),
+				scope:this
 			},'->',new Ext.CycleButton({
 	            showText: true,
 	            prependText: 'Выполнено: ',
@@ -141,6 +145,7 @@ App.laboratory.LabOrderGrid = Ext.extend(Ext.grid.GridPanel, {
 			},
 			border : false,
 			store:this.store,
+			stateful:false,
 			columns:this.columns,
 			sm : new Ext.grid.RowSelectionModel({
 				singleSelect : true,
@@ -184,6 +189,19 @@ App.laboratory.LabOrderGrid = Ext.extend(Ext.grid.GridPanel, {
 		}, this);
 	},
 	
+	printBarcode : function(){
+		var rec = this.getSelected();
+		if(rec){
+			var win = new App.barcodepackage.DuplicateWindow({
+				params:{
+					code:rec.data.barcode,
+					lat:rec.data.lat
+				}
+			});
+			win.show();
+		}
+	},
+	
 	updateFilters : function(filters) {
 		this.fireEvent('updatefilters');
 		if(filters) {
@@ -225,23 +243,10 @@ App.laboratory.LabOrderGrid = Ext.extend(Ext.grid.GridPanel, {
 		}
 	},
 	
-	onGlobalSearch: function(v) {
-		if(v) {
-			var letter = v.charAt(0);
-			if( letter=='#' || letter=='№') {
-				v = v.substring(1);
-			}
-			var vi = parseInt(v);
-			if (isNaN(vi)) {
-				this.storeFilter('search', v);
-			} else {
-				this.storeFilter('visit__barcode', vi);
-			}
-		} else {
-			delete this.store.baseParams['search'];
-			delete this.store.baseParams['visit__barcode'];
-			this.store.load();
-		}
+	onGlobalSearch: function(v){
+		var s = this.store;
+		s.setBaseParam('search', v);
+		s.load();
 	},
 	
 	storeFilter: function(field, value, autoLoad){

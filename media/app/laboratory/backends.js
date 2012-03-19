@@ -202,7 +202,7 @@ App.regBackend('equipmentresult', new App.Backend({
 			},
 		    restful: true,
 		    proxy: new Ext.data.HttpProxy({
-			    url: get_api_url('equipmentresult')
+			    url: get_api_url('equipmentresultro')
 			}),
 		    reader: new Ext.data.JsonReader({
 			    totalProperty: 'meta.total_count',

@@ -12,7 +12,7 @@ App.laboratory.ScannerWindow = Ext.extend(Ext.Window, {
 			labelWidth:130,
 			padding:10,
 			items:[{
-				xtype:'textfield',
+				xtype:'numberfield',
 				name:'barcode',
 				width:200,
 				fieldLabel:'Штрих-код образца',

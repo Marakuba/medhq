@@ -221,7 +221,7 @@ class PlainVisitAdmin(AutocompleteAdmin, admin.ModelAdmin):
     list_display = ('__unicode__','created','office','referral','operator','get_ad_source')
     list_filter = ('office',)
     date_hierarchy = 'created'
-    search_fields = ('patient__last_name','id')
+    search_fields = ('patient__last_name','barcode__id')
     readonly_fields = ('barcode',)
     
     def save_model(self, request, obj, form, change):

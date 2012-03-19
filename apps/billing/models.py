@@ -45,13 +45,15 @@ class ClientAccount(models.Model):
 class Payment(models.Model):
     operator = models.ForeignKey(User)
     created = models.DateTimeField(u'Дата создания', auto_now_add=True)
-    office = models.ForeignKey(State, blank=True, null=True, verbose_name=u'Офис')
+    office = models.ForeignKey(State, blank=True, null=True,
+                               limit_choices_to={'type__in':['b','p']}, 
+                               verbose_name=u'Офис')
     doc_date = models.DateTimeField(u'Дата документа')
-    client_account = models.ForeignKey(ClientAccount)
+    client_account = models.ForeignKey(ClientAccount, verbose_name=u'Лицевой счет')
     amount = models.FloatField(u'Сумма')
     income = models.BooleanField(u'Поступление')
-    direction = models.CharField(u'Направление оплаты', max_length=1, choices=PAYMENT_DIRECTION)
-    payment_type = models.CharField(u'Вид оплаты', max_length=10, choices=PAYMENT_TYPES, blank=True, null=True)
+    direction = models.CharField(u'Тип', max_length=1, choices=PAYMENT_DIRECTION)
+    payment_type = models.CharField(u'Способ оплаты', max_length=10, choices=PAYMENT_TYPES, blank=True, null=True)
     content_type = models.ForeignKey(ContentType, blank=True, null=True)
     object_id = models.PositiveIntegerField(blank=True, null=True)
     document = generic.GenericForeignKey('content_type', 'object_id')
@@ -70,7 +72,7 @@ class Payment(models.Model):
     get_client.short_description = u'Клиент'
        
     def __unicode__(self):
-        return "%s" % (self.id)
+        return u"№%s, %s" % (self.id, self.client_account.client_item.client.short_name())
     
     class Meta:
         verbose_name = u'кассовый ордер'

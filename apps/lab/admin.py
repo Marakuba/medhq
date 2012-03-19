@@ -10,6 +10,7 @@ from django.template.context import RequestContext
 from django import forms
 from django.conf import settings
 from django.utils.encoding import smart_unicode
+from lab.fields import EqAnlModelChoiceField
 
 class LabServiceInline(admin.TabularInline):
     """
@@ -181,18 +182,55 @@ class ResultAdmin(admin.ModelAdmin):
     
     def visit(self, obj):
         return obj.order.visit.__unicode__()
-    search_fields = ('order__visit__id','order__visit__patient__last_name')
+    search_fields = ('order__visit__id','order__visit__patient__last_name','analysis__service__short_name')
     ordering = ('-order',)
 
 class EquipmentAdmin(admin.ModelAdmin):
     list_display = ('name','serial_number','order','is_active')
     
 class EquipmentAssayAdmin(admin.ModelAdmin):
-    list_display = ('service','name','code','equipment','is_active')
+    list_display = ('equipment_analysis','name','code','def_protocol','equipment','is_active')
     list_filter = ('equipment','is_active')
+    list_editable = ('def_protocol',)
+    exclude = ('service',)
+    
+def set_to_wait(modeladmin, request, queryset):
+    queryset.update(status=u'wait')
+    
+class EquipmentTaskAdmin(admin.ModelAdmin):
+    list_display = ('visit_id','service_name','result','status','created')
+    list_filter = ('status',)
+    readonly_fields = ('ordered_service','result')
+    search_fields = ['ordered_service__order__barcode__id',]
+    actions = [set_to_wait]
+    
+    def service_name(self, obj):
+        return obj.ordered_service.service
+    
+    def visit_id(self, obj):
+        return obj.ordered_service.order.barcode.id
     
 class EquipmentResultAdmin(admin.ModelAdmin):
-    list_display = ('specimen','eq_serial_number','assay_name','assay_code','assay_protocol','abnormal_flags','result_type','result_status','result')
+    list_display = ('created','specimen','eq_serial_number','assay_name','assay_code','assay_protocol','abnormal_flags','result_type','result_status','result')
+    search_fields = ['specimen','assay_name']
+    
+    
+eq_analysis_qs = Analysis.objects.filter(service__isnull=False) \
+    .order_by('service__short_name')
+
+class EquipmentAnalysisAdminForm(forms.ModelForm):
+    
+    analysis = EqAnlModelChoiceField(label="Тест",
+                                           queryset=eq_analysis_qs, 
+                                           required=True)
+    
+    class Meta:
+        model = EquipmentAnalysis
+    
+class EquipmentAnalysisAdmin(admin.ModelAdmin):
+    """
+    """
+    form = EquipmentAnalysisAdminForm
     
 admin.site.register(Analysis, AnalysisAdmin)
 admin.site.register(Sampling)
@@ -202,8 +240,9 @@ admin.site.register(Tube)
 admin.site.register(LabOrder,LabOrderAdmin)
 admin.site.register(Result, ResultAdmin)
 admin.site.register(Equipment,EquipmentAdmin)
+admin.site.register(EquipmentAnalysis, EquipmentAnalysisAdmin)
 admin.site.register(EquipmentAssay, EquipmentAssayAdmin)
-admin.site.register(EquipmentTask)
+admin.site.register(EquipmentTask, EquipmentTaskAdmin)
 admin.site.register(EquipmentResult, EquipmentResultAdmin)
 admin.site.register(Invoice)
 admin.site.register(InvoiceItem)

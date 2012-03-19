@@ -235,23 +235,10 @@ App.laborder.LabServiceGrid = Ext.extend(Ext.grid.GridPanel, {
 		}
 	},
 	
-	onGlobalSearch: function(v) {
-		if(v) {
-			var letter = v.charAt(0);
-			if( letter=='#' || letter=='№') {
-				v = v.substring(1);
-			}
-			var vi = parseInt(v);
-			if (isNaN(vi)) {
-				this.storeFilter('search', v);
-			} else {
-				this.storeFilter('order__barcode', vi);
-			}
-		} else {
-			delete this.store.baseParams['search'];
-			delete this.store.baseParams['order__barcode'];
-			this.store.load();
-		}
+	onGlobalSearch: function(v){
+		var s = this.store;
+		s.setBaseParam('search', v);
+		s.load();
 	},
 	
 	storeFilter: function(field, value, autoLoad){

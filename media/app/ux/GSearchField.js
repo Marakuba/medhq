@@ -12,10 +12,15 @@ App.SearchField = Ext.extend(Ext.form.TwinTriggerField, {
                 this.onTrigger2Click();
             }
         }, this);
+
+		App.SearchField.superclass.initComponent.apply(this, arguments);
+
     },
 
-    validationEvent:false,
-    validateOnBlur:false,
+    autoStripChars:true,
+	stripCharsRe:new RegExp('[\;\?\#\№]'),
+//    validationEvent:false,
+//    validateOnBlur:false,
     trigger1Class:'x-form-clear-trigger',
     trigger2Class:'x-form-search-trigger',
     hideTrigger1:true,

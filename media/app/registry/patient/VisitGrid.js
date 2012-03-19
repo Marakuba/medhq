@@ -275,7 +275,8 @@ App.patient.VisitGrid = Ext.extend(Ext.grid.GridPanel, {
 		var visitId = record.id;
 		bc_win = new App.barcode.PrintWindow({
 			visitId:visitId,
-			record:record
+			record:record,
+			patient:this.patientRecord
 		});
 		bc_win.show();
 	},

@@ -50,7 +50,7 @@ App.laboratory.RegisterWindow = Ext.extend(Ext.Window, {
 				valueField:'id',
 				store:new Ext.data.RESTStore({
 					autoLoad : true,
-					apiUrl : get_api_url('ownstate'),
+					apiUrl : get_api_url('medstate'),
 					model: ['id','name']
 				}),
 			    minChars:2,

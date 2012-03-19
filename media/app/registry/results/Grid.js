@@ -179,7 +179,7 @@ App.results.Grid = Ext.extend(Ext.grid.GridPanel, {
 				rowdblclick:this.onPrint.createDelegate(this, [])
 			},
 			bbar: new Ext.PagingToolbar({
-	            pageSize: 20,
+	            pageSize: 100,
 	            store: this.store,
 	            displayInfo: true,
 	            displayMsg: 'Показана запись {0} - {1} из {2}',

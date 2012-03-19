@@ -18,11 +18,15 @@ App.barcode.PrintWindow = Ext.extend(Ext.Window, {
 				text:'Печатать',
 				handler:function(){
 					this.fireEvent('submit');
-					if(ws) {
+					
+					if(App.WebSocket && App.WebSocket.readyState!==0){
 						c = this.grid.getCount();
-						params = [this.record.data.barcode_id,"KIM",c];
-						ws.send(params.join("::"));
+						params = [this.record.data.barcode_id,"Euromed",c,this.patient.data.lat];
+						App.WebSocket.send(params.join("::"));
+					} else {
+						Ext.MessageBox.alert('Ошибка','Принтер штрих-кодов не подключен!');
 					}
+					this.close();
 					//var url = "/numeration/forvisit/" + this.visitId + "/";
 					//window.open(url);
 				},
@@ -38,6 +42,7 @@ App.barcode.PrintWindow = Ext.extend(Ext.Window, {
 
 		Ext.apply(this, Ext.apply(this.initialConfig, config));
 		App.barcode.PrintWindow.superclass.initComponent.apply(this, arguments);
+		console.info(this.patient);
 	}
 
 });

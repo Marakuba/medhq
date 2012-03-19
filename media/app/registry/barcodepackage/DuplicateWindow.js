@@ -4,6 +4,8 @@ App.barcodepackage.DuplicateWindow = Ext.extend(Ext.Window, {
 
 	initComponent:function(){
 		
+		this.params = this.params || {};
+		
 		this.form = new Ext.form.FormPanel({
 			baseCls:'x-plain',
 			defaults:{
@@ -12,11 +14,12 @@ App.barcodepackage.DuplicateWindow = Ext.extend(Ext.Window, {
 			},
 			labelAlign:'top',
 			items:[{
-				xtype:'textfield',
+				xtype:'numberfield',
 				allowBlank:false,
 				fieldLabel:'Введите штрих код вручную или через сканер',
 				name:'code',
-				width:200,
+				value:this.params.code || '',
+				anchor:'99%',
 				style:{
 					fontSize:'2em',
 					height:'1.3em'
@@ -24,7 +27,26 @@ App.barcodepackage.DuplicateWindow = Ext.extend(Ext.Window, {
 				listeners: {
 	                specialkey: function(field, e){
 	                    if (e.getKey() == e.ENTER) {
-	                        this.form.getForm().findField('count').focus(false,100);
+	                        this.form.getForm().findField('lat').focus(true,100);
+	                    }
+	                },
+	                scope:this
+	            }
+			},{
+				xtype:'textfield',
+				allowBlank:false,
+				fieldLabel:'ФИО пациента (лат.)',
+				name:'lat',
+				anchor:'99%',
+				style:{
+					fontSize:'2em',
+					height:'1.3em'
+				},
+				value:this.params.lat || '',
+				listeners: {
+	                specialkey: function(field, e){
+	                    if (e.getKey() == e.ENTER) {
+	                        this.form.getForm().findField('count').focus(true,100);
 	                    }
 	                },
 	                scope:this
@@ -38,7 +60,18 @@ App.barcodepackage.DuplicateWindow = Ext.extend(Ext.Window, {
 					fontSize:'2em',
 					height:'1.3em'
 				},
-				name:'count'
+				minValue:1,
+				maxValue:5,
+				name:'count',
+				value:this.params.count || 1,
+				listeners: {
+	                specialkey: function(field, e){
+	                    if (e.getKey() == e.ENTER) {
+	                        this.onPrint();
+	                    }
+	                },
+	                scope:this
+	            }
 			}]
 		});
 		
@@ -54,10 +87,10 @@ App.barcodepackage.DuplicateWindow = Ext.extend(Ext.Window, {
 				baseCls:'x-plain'
 			},
 			buttons:[{
-				text:'Сформировать',
+				text:'Печать',
 				handler:this.onPrint.createDelegate(this)
 			},{
-				text:'Отмена',
+				text:'Закрыть',
 				handler:function(){
 					this.close();
 				},
@@ -69,17 +102,32 @@ App.barcodepackage.DuplicateWindow = Ext.extend(Ext.Window, {
 		App.barcodepackage.DuplicateWindow.superclass.initComponent.apply(this, arguments);
 		
 		this.on('afterrender', function(){
-			this.form.getForm().findField('code').focus(false, 350);
+			//this.form.getForm().findField('code').focus(true, 350);
+			this.cleaningUp();
 		}, this);
 
 	},
 	
+	cleaningUp : function(){
+		var f = this.form.getForm();
+		f.findField('code').reset();
+		f.findField('code').focus(true, 350);
+		f.findField('count').reset();
+	},
+	
 	onPrint : function(){
-		if(App.WebSocket && App.WebSocket.readyState!==0){
-			code = this.form.getForm().findField('code').getValue();
-			count = this.form.getForm().findField('count').getValue();
-			params = [code,"Euromed",count];
-			App.WebSocket.send(params.join("::"));
+		var f = this.form.getForm();
+		if(App.WebSocket && App.WebSocket.readyState!==0 ){
+			if(f.isValid()) {
+				code = f.findField('code').getValue();
+				lat = f.findField('lat').getValue();
+				count = f.findField('count').getValue();
+				params = [code,"Euromed",count,lat];
+				App.WebSocket.send(params.join("::"));
+				this.cleaningUp();
+			} else {
+				Ext.MessageBox.alert('Ошибка','Необходимо заполнить все поля!');
+			}
 		} else {
 			Ext.MessageBox.alert('Ошибка','Принтер штрих-кодов не подключен!');
 		}

@@ -18,7 +18,7 @@ TEMPLATE_DIRS = [PROJECT_ROOT / 'templates']
 
 LOCALE_PATHS = (PROJECT_ROOT / 'locale',)
 
-LOG_FILE = SITE_ROOT / 'logs' / 'django.log'
+LOG_FILE = SITE_ROOT / 'logs' / 'medhq.log'
 
 DEBUG = True
 TEMPLATE_DEBUG = DEBUG
@@ -79,8 +79,6 @@ ROOT_URLCONF = 'medhq.urls'
 
 MIDDLEWARE_CLASSES = [
 #    'debug_toolbar.middleware.DebugToolbarMiddleware',
-    #'johnny.middleware.LocalStoreClearMiddleware',
-    #'johnny.middleware.QueryCacheMiddleware',
     'django.middleware.common.CommonMiddleware',
     'django.contrib.sessions.middleware.SessionMiddleware',
     'django.contrib.auth.middleware.AuthenticationMiddleware',
@@ -148,6 +146,63 @@ INSTALLED_APPS = [
     'tastypie',
     'tagging'
 ]
+
+LOGGING = {
+    'version': 1,
+    'disable_existing_loggers': True,
+    'formatters': {
+        'verbose': {
+            'format': '%(levelname)s %(asctime)s %(module)s %(process)d %(thread)d %(message)s'
+        },
+        'simple': {
+            'format': '%(levelname)s %(asctime)s %(message)s',
+            'datefmt':'%Y-%m-%d %H:%M:%S'
+        },
+    },
+    'handlers': {
+        'null': {
+            'level':'DEBUG',
+            'class':'django.utils.log.NullHandler',
+        },
+        'console':{
+            'level':'DEBUG',
+            'class':'logging.StreamHandler',
+            'formatter': 'simple'
+        },
+        'file':{
+            'level':'DEBUG',
+            'class':'logging.FileHandler',
+            'formatter':'simple',
+            'filename':LOG_FILE
+        },
+        'mail_admins': {
+            'level': 'ERROR',
+            'class': 'django.utils.log.AdminEmailHandler'
+        }
+    },
+    'loggers': {
+        'django': {
+            'handlers':['null'],
+            'propagate': True,
+            'level':'INFO',
+        },
+        'django.request': {
+            'handlers': ['mail_admins'],
+            'level': 'ERROR',
+            'propagate': False,
+        },
+        'lab.models':{
+            'handlers': ['file'],
+            'level':'DEBUG',
+            'propagate':False
+        },
+        'remoting':{
+            'handlers': ['file'],
+            'level':'DEBUG',
+            'propagate':False
+        }
+    }
+}
 
 APPSERVER_ADMIN_TITLE = u'Главная панель'
 
