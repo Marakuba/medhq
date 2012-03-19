@@ -217,6 +217,7 @@ App.visit.VisitTab = Ext.extend(Ext.Panel, {
 	close: function() {
 		App.eventManager.fireEvent('closeapp',this.id);
 		App.eventManager.fireEvent('visitclose');
+		App.eventManager.fireEvent('balanceupdate');
 	},
 	
 	onStoreWrite: function(store, action, result, res, rs) {

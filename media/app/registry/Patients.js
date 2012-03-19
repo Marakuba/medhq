@@ -66,10 +66,10 @@ App.Patients = Ext.extend(Ext.Panel, {
 		
 		this.initEvents();
 		
-		App.eventManager.on('visitclose', this.updatePatientInfo, this); //
+		App.eventManager.on('balanceupdate', this.updatePatientInfo, this); //
 		App.eventManager.on('refundclose', this.updatePatientInfo, this); //
 		this.on('destroy', function(){
-			App.eventManager.un('visitclose', this.updatePatientInfo, this); //
+			App.eventManager.un('balanceupdate', this.updatePatientInfo, this); //
 			App.eventManager.un('refundclose', this.updatePatientInfo, this); //
 		},this);
 

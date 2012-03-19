@@ -166,7 +166,7 @@ App.billing.PaymentGrid = Ext.extend(Ext.grid.GridPanel, {
 		
 		Ext.apply(this, Ext.apply(this.initialConfig, config));
 		App.billing.PaymentGrid.superclass.initComponent.apply(this, arguments);
-		App.eventManager.on('paymentsave', this.reloadStore, this);
+		App.eventManager.on('paymentsave', this.onPaymentSave, this);
 		App.eventManager.on('globalsearch', this.onGlobalSearch, this);
 
 		
@@ -181,7 +181,7 @@ App.billing.PaymentGrid = Ext.extend(Ext.grid.GridPanel, {
 		}, this);
 		
 		this.on('destroy', function(){
-		    App.eventManager.un('paymentsave', this.reloadStore, this);
+		    App.eventManager.un('paymentsave', this.onPaymentSave, this);
 		    App.eventManager.un('globalsearch', this.onGlobalSearch, this);
 		},this);
 	},
@@ -249,7 +249,10 @@ App.billing.PaymentGrid = Ext.extend(Ext.grid.GridPanel, {
 		s.load();
 	},
 	
-	reloadStore: function(record){
+	onPaymentSave: function(record){
+		if (this.hasPatient){
+			App.eventManager.fireEvent('balanceupdate')
+		}
 		if (this.store) {
 			this.store.load();
 			//this.btnSetDisabled(true);
