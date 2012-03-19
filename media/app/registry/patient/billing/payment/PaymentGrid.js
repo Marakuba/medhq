@@ -228,7 +228,7 @@ App.billing.PaymentGrid = Ext.extend(Ext.grid.GridPanel, {
     				is_income:rec.data.direction == 1 ? true : false,
 	    			record:rec,
 	    			patientRecord:this.patientRecord,
-	    			patient_id:this.patientRecord.data.id,
+	    			patient_id:rec.data.client,
 	    			store:this.store
     			};
     			this.win = new App.billing.PaymentWindow(data);

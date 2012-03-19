@@ -231,6 +231,40 @@ class DebtorResource(ExtResource):
             'hid_card':ALL
         }
         
+class DepositorResource(ExtResource):
+    
+    discount = fields.ForeignKey(DiscountResource, 'discount', null=True)
+    client_item = fields.OneToOneField(ClientItemResource, 'client_item', null=True)
+    
+    def build_filters(self, filters=None):
+        if filters is None:
+            filters = {}
+
+        orm_filters = super(DepositorResource, self).build_filters(filters)
+
+        if "visit_id" in filters:
+            visit = get_object_or_404(Visit, barcode__id=filters['visit_id'])
+
+            orm_filters = {"pk__exact": visit.patient.id }
+            
+        if "search" in filters:
+
+            orm_filters.update(smartFilter(filters['search']))
+
+        return orm_filters
+    
+    class Meta:
+        queryset = Patient.objects.filter(balance__gt = 0) #@UndefinedVariable
+        resource_name = 'depositor'
+        default_format = 'application/json'
+        authorization = DjangoAuthorization()
+        filtering = {
+            'last_name':('istartswith',),
+            'id':ALL,
+            'discount':ALL_WITH_RELATIONS,
+            'hid_card':ALL
+        }
+        
 class ReferralResource(ExtResource):
 
     def obj_create(self, bundle, request=None, **kwargs):
@@ -1902,7 +1936,7 @@ class PaymentResource(ExtResource):
     
     def dehydrate(self, bundle):
         bundle.data['client_name'] = bundle.obj.client_account.client_item.client.full_name()
-        bundle.data['client'] = bundle.obj.client_account.client_item.client
+        bundle.data['client'] = bundle.obj.client_account.client_item.client.id
         bundle.data['account_id'] = bundle.obj.client_account.account.id
         bundle.data['amount'] = abs(bundle.obj.amount)
         return bundle
@@ -1923,7 +1957,7 @@ class PaymentResource(ExtResource):
             smart_filters = smartFilter(filters['search'], 'client_account__client_item__client')
             if len(smart_filters.keys())==1:
                 try:
-                    orm_filters = ComplexQuery( Q(barcode__id=int(filters['search'])) | Q(**smart_filters), \
+                    orm_filters = ComplexQuery(Q(**smart_filters), \
                                       **orm_filters)
                 except:
                     orm_filters.update(**smart_filters)
@@ -2137,6 +2171,7 @@ api.register(ClientAccountResource())
 api.register(PaymentResource())
 
 api.register(DebtorResource())
+api.register(DepositorResource())
 
 
 api.register(InvoiceResource())

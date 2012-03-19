@@ -172,6 +172,10 @@ App.cashier.CashierTab = Ext.extend(Ext.Panel, {
 					title:'Должники',
 					layout:'fit',
 					xtype:'debtorgrid'
+				},{
+					title:'Депозиторы',
+					layout:'fit',
+					xtype:'depositorgrid'
 				}]
 		});
 	

@@ -1,13 +1,13 @@
 Ext.ns('App','App.cashier');
 
-App.cashier.DebtorGrid = Ext.extend(Ext.grid.GridPanel, {
+App.cashier.DepositorGrid = Ext.extend(Ext.grid.GridPanel, {
 
 	initComponent : function() {
 		
 		this.store = new Ext.data.RESTStore({
 			autoLoad : true,
-			apiUrl : get_api_url('debtor'),
-			model: App.models.debtorModel
+			apiUrl : get_api_url('depositor'),
+			model: App.models.depositorModel
 		});
 		
 		this.columns =  [
@@ -35,9 +35,9 @@ App.cashier.DebtorGrid = Ext.extend(Ext.grid.GridPanel, {
 		];		
 		this.payButton = new Ext.Button({
 			iconCls:'silk-add',
-			text:'Погасить долг',
+			text:'Возврат',
 			disabled:true,
-			handler:this.onPay.createDelegate(this),
+			handler:this.onReturn.createDelegate(this),
 			scope:this
 		});
 		this.refreshButton = new Ext.Button({
@@ -60,7 +60,7 @@ App.cashier.DebtorGrid = Ext.extend(Ext.grid.GridPanel, {
 			store:this.store,
 			columns:this.columns,
 			listeners: {
-				rowdblclick:this.onPay.createDelegate(this),
+				rowdblclick:this.onReturn.createDelegate(this),
 	        	scope:this
 			},
 			sm : new Ext.grid.RowSelectionModel({
@@ -98,7 +98,7 @@ App.cashier.DebtorGrid = Ext.extend(Ext.grid.GridPanel, {
 		}
 
 		Ext.apply(this, Ext.apply(this.initialConfig, config));
-		App.cashier.DebtorGrid.superclass.initComponent.apply(this, arguments);
+		App.cashier.DepositorGrid.superclass.initComponent.apply(this, arguments);
 		App.eventManager.on('globalsearch', this.onGlobalSearch, this);
 		App.eventManager.on('paymentsave', this.reloadStore, this);
 		App.eventManager.on('visitcreate', this.reloadStore, this);
@@ -138,11 +138,11 @@ App.cashier.DebtorGrid = Ext.extend(Ext.grid.GridPanel, {
 		s.load();
 	},
 	
-	onPay: function(){
+	onReturn: function(){
 		var record = this.getSelected();
 		if (record) {
 			this.win = new App.billing.PaymentWindow({
-				is_income : true,
+				is_income : false,
 				amount:Math.abs(record.data.balance),
 				patientRecord:record
 			});
@@ -186,4 +186,4 @@ App.cashier.DebtorGrid = Ext.extend(Ext.grid.GridPanel, {
 	
 });
 
-Ext.reg('debtorgrid', App.cashier.DebtorGrid);
+Ext.reg('depositorgrid', App.cashier.DepositorGrid);
