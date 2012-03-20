@@ -41,7 +41,7 @@ def post_orders_to_local(request, data_set, options):
 def post_results_to_local(request, data_set, options):
 
     result = []
-    print "results:",data_set
+#    print "results:",data_set
     lab_orders = {}
     _visit_cache = {}
     for data in data_set:
@@ -117,13 +117,15 @@ def post_data_to_remote(lab, action, data, options={}):
     }, cls=DjangoJSONEncoder)
     try:
         req = urllib2.Request(path, json_data, {'Content-Type': 'application/json'})
-        print 'data to send:',json_data
+#        print 'data to send:',json_data
+        logger.debug(u'data to send: %s' % json_data)
         f = urllib2.urlopen(req)
         response = f.read()
         f.close()
         return simplejson.loads(response)    
     except Exception, err:
-        print 'error:',err
+        logger.debug(u'Error during data send: %s' % err.__unicode__())
+#        print 'error:',err
 
 
 def post_results(lab_order, confirm):

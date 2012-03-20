@@ -284,7 +284,6 @@ class OrderedService(make_operator_object('ordered_service')):
         pt = config.PRICE_BY_PAYMENT_TYPE and self.order.payment_type or u'н'
         if self.assigment and self.assigment.price:
             price = self.assigment.price
-            print self.assigment.price
         else:
             price = self.service.price(self.execution_place, self.order.created, payment_type=pt)
         opr = OPERATIONS[self.order.cls]
