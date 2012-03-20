@@ -27,6 +27,9 @@ from service.forms import PriceForm
 from lab.admin import LabServiceInline
 import StringIO
 
+import logging
+logger = logging.getLogger('general')
+
 
 class StandardServiceAdmin(TreeEditor):
     list_per_page = 1000
@@ -279,7 +282,7 @@ class BaseServiceAdmin(TreeEditor):
             date = datetime.datetime.today()
         if not isinstance(date, datetime.datetime):
             date = datetime.datetime.strptime(date, "%d.%m.%Y")
-        print date
+        logger.debug(u"PRICELIST_PRINT: %s" % date)
         services = BaseService.objects.actual().order_by(BaseService._meta.tree_id_attr, #@UndefinedVariable
                                                       'level', 
                                                       "-"+BaseService._meta.left_attr) #@UndefinedVariable

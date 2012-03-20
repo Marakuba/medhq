@@ -200,6 +200,11 @@ LOGGING = {
             'handlers': ['file'],
             'level':'DEBUG',
             'propagate':False
+        },
+        'general':{
+            'handlers': ['file'],
+            'level':'DEBUG',
+            'propagate':False
         }
     }
 }

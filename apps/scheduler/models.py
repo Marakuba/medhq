@@ -30,7 +30,6 @@ add_introspection_rules([], ["^scheduler\.models\.CustomDateTimeField"])
 
 def datetimeIterator(from_date=None, to_date=None, delta=timedelta(minutes=30)):
     from_date = from_date or datetime.datetime.now()
-    print "timeslot %s" % (delta)
     while to_date is None or from_date <= to_date:
         yield from_date
         from_date = from_date + delta

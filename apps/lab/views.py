@@ -15,6 +15,9 @@ from collections import defaultdict
 import operator
 from remoting.views import post_results
 
+import logging
+logger = logging.getLogger('lab.models')
+
 @render_to('print/lab/register.html')
 def print_register(request):
     allowed_lookups = {
@@ -279,12 +282,12 @@ def confirm_results(request):
                         if not l.is_completed:
                             confirm = False
                             break
-                    print "Подтверждение всех ордеров:", confirm
+                    logger.debug(u"LAB: Подтверждение всех ордеров: %s" % confirm)
                     resp = post_results(lab_order, confirm)
                     for r in resp:
-                        print r['success'],r['message']
+                        logger.debug(u"LAB: %s %s" % (r['success'],r['message']))
                 except Exception, err:
-                    print "error", err
+                    logger.error(u"LAB: %s " % err)
             return HttpResponse(simplejson.dumps({
                                                     'success':lab_order.is_completed,
                                                     'message':msg
@@ -364,7 +367,7 @@ def get_specimen_status(request):
             task = tasks[0]
             next_place = task.equipment_assay.equipment.name
         except Exception, err:
-            print err
+            logger.error(u"LAB: %s " % err)
             next_place = u"Архив"
     except:
         next_place = u'Образец не найден'

@@ -6,6 +6,9 @@ from pricelist.models import Price
 from django.db.models.aggregates import Max
 from service.models import BaseService
 
+import logging
+logger = logging.getLogger('general')
+
 def unicode_csv_reader(unicode_csv_data, **kwargs):
     # csv.py doesn't do Unicode; encode temporarily as UTF-8:
     csv_reader = csv.reader(utf_8_encoder(unicode_csv_data), **kwargs)
@@ -31,7 +34,7 @@ def make_analysis(obj, analysises):
             new_input_mask, created = InputMask.objects.get_or_create(value=unicode(analysis[3],'utf-8'))
             new_analysis.input_mask = new_input_mask
         new_analysis.save()
-        print u"Добавлен анализ:", new_analysis
+        logger.debug(u"SERVICE: Добавлен анализ: %s" % new_analysis)
 
 
 def revert_tree_objects(obj):

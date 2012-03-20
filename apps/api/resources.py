@@ -210,8 +210,6 @@ class ExtBatchResource(ExtResource):
        
     def post_list(self, request, **kwargs):
         deserialized = self.deserialize(request, request.raw_post_data, format=request.META.get('CONTENT_TYPE', 'application/json'))
-        print "POST LIST"
-        print deserialized
 #        bundle = self.build_bundle(data=dict_strip_unicode_keys(deserialized))
 #        self.is_valid(bundle, request)
 #        updated_bundle = self.obj_create(bundle, request=request)
@@ -276,7 +274,6 @@ class ExtBatchResource(ExtResource):
         """
         bundles_seen = []
         for object_data in deserialized:
-            print object_data
             bundle = self.build_bundle(data=dict_strip_unicode_keys(object_data))
             self.is_valid(bundle, request)
         
@@ -285,7 +282,6 @@ class ExtBatchResource(ExtResource):
                 bundles_seen.append(updated_bundle)
                 #return self.build_response(request, updated_bundle) #return HttpAccepted()
             except Exception, err:
-                print err
                 updated_bundle = self.obj_create(bundle, request=request, pk=kwargs.get('pk'))
                 bundles_seen.append(updated_bundle)
                 #return self.build_response(request, updated_bundle) #return HttpCreated(location=self.get_resource_uri(updated_bundle))

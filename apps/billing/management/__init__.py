@@ -6,7 +6,7 @@ def myFunc(sender, **kwargs):
     #if not sender.is_income:
     #    sender.amount = -sender.amount
     #print sender.is_income
-    print '!!!'
+    pass
     #self.account.setSum()
 
 pre_save.connect(myFunc, sender=Payment)
