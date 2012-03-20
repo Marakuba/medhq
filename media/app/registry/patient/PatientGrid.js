@@ -214,6 +214,7 @@ App.patient.PatientGrid = Ext.extend(Ext.grid.GridPanel, {
 	},
 	
 	onVisitCreate: function(rs,patientId){
+		delete this.store.baseParams['search'];
 		if (patientId){
 			this.store.load({params:{'id':App.uriToId(rs.data.patient)},callback:function(records){
 				if (!records.length) return
