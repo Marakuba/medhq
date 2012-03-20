@@ -336,22 +336,32 @@ App.visit.VisitForm = Ext.extend(Ext.FormPanel, {
 			}
 		};		
 		
+		this.autoBarcode = new Ext.form.Checkbox({
+			boxLabel:'Автоматически создать штрихкод',
+			handler:this.setBarcode,
+			checked:true,
+			scope:this
+		});
+		
 		this.cito = {
-	            layout: 'form',
+	            layout: 'hbox',
+	            baseCls:'x-border-layout-ct',
 	            border:false,
 //	            columnWidth:0.5,
 	            items:[{
 					boxLabel:'Cito',
 					xtype:'checkbox',
 					name:'is_cito'
-				}]
+				},this.autoBarcode]
 			};
-		
+		this.barcodeField = new Ext.form.Hidden({
+			name:'barcode'
+		});
 		this.defaultItems = [{
 			xtype:'hidden',
 			name:'patient',
 			value:this.patientRecord ? this.patientRecord.data.resource_uri : ''
-        }];
+        },this.barcodeField];
 		
 		this.types = {
 			visit:[{
@@ -715,6 +725,8 @@ App.visit.VisitForm = Ext.extend(Ext.FormPanel, {
 			this.totalSum.originalValue = docSum;
 			this.orderedService.setRecord(record);
 			this.getForm().findField('patient').originalValue = patientRecord.data.resource_uri;
+			this.getForm().findField('barcode').originalValue = record.data.barcode;
+			this.autoBarcode.disable();
 		};
 	},
 	
@@ -727,8 +739,29 @@ App.visit.VisitForm = Ext.extend(Ext.FormPanel, {
 		}
 		
 		this.addPreorderRecords(recs);
-	}
+	},
 	
+	setBarcode: function(checkbox,checked){
+		if (checked) {
+			this.barcodeField.setValue('');
+		} else {
+			var barcodeWindow = new App.choices.BarcodeChoiceWindow({
+				patientId:this.patientRecord.data.id,
+				fn:function(record){
+					if (record){
+						console.log(record);
+						barcodeWindow['sended'] = true;
+						barcodeWindow.close();
+						this.barcodeField.setValue(record.data.resource_uri);
+					} else {
+						this.autoBarcode.setValue(true)
+					}
+				},
+				scope:this
+			});
+			barcodeWindow.show();
+		}
+	}
 });
 
 Ext.reg('visitform', App.visit.VisitForm);

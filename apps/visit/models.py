@@ -400,9 +400,10 @@ def BarcodeGenerator(sender, **kwargs):
     """
     if kwargs['created']:
         visit = kwargs['instance']
-        new_barcode = Barcode.objects.create() 
-        visit.barcode = new_barcode
-        visit.save()
+        if not visit.barcode:
+            new_barcode = Barcode.objects.create() 
+            visit.barcode = new_barcode
+            visit.save()
             
 post_save.connect(BarcodeGenerator, sender=Visit)              
 
