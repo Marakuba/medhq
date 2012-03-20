@@ -146,6 +146,10 @@
 	background-color: #FCF4BD;
 }
 
+.x-equipment-task-done {
+	background-color: #D2FFC9;
+}
+
 .x-grid3-col-order b,.x-grid3-col-staff b {
 	display:block;
 }

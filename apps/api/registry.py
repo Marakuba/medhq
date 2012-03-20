@@ -1535,15 +1535,15 @@ class EquipmentResource(ExtResource):
 class EquipmentAssayResource(ExtResource):
     
     equipment = fields.ForeignKey(EquipmentResource, 'equipment')
-    service = fields.ForeignKey(BaseServiceResource, 'service')
+    service = fields.ForeignKey(BaseServiceResource, 'service', null=True)
     
     def dehydrate(self, bundle):
         bundle.data['equipment_name'] = bundle.obj.equipment
-        bundle.data['service_name'] = bundle.obj.service
+        bundle.data['service_name'] = bundle.obj.equipment_analysis
         return bundle
     
     class Meta:
-        queryset = EquipmentAssay.objects.all().order_by('service__name',)
+        queryset = EquipmentAssay.objects.select_related().all().order_by('service__name',)
         resource_name = 'equipmentassay'
         limit = 50
         authorization = DjangoAuthorization()
@@ -1568,12 +1568,22 @@ class EquipmentTaskReadOnlyResource(ExtBatchResource):
         bundle.data['result'] = bundle.obj.result and bundle.obj.result.get_full_result() or u''
         return bundle
     
-    
     def build_filters(self, filters=None):
         if filters is None:
             filters = {}
 
         orm_filters = super(EquipmentTaskReadOnlyResource, self).build_filters(filters)
+
+        if "search" in filters:
+            smart_filters = smartFilter(filters['search'],'ordered_service__order__patient')
+            if len(smart_filters.keys())==1:
+                try:
+                    orm_filters = ComplexQuery( Q(ordered_service__order__barcode__id=int(filters['search'])) | Q(**smart_filters), \
+                                      **orm_filters)
+                except:
+                    orm_filters.update(**smart_filters)
+            else:
+                orm_filters.update(**smart_filters)
 
         if "order" in filters:
             orm_filters.update(ordered_service__order__barcode__id=filters['order'])

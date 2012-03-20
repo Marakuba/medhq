@@ -13,6 +13,7 @@ App.equipment.EquipmentAssayGrid = Ext.extend(Ext.grid.EditorGridPanel, {
             {name: 'service_name'},
             {name: 'name'},
             {name: 'code'},
+            {name: 'def_protocol'},
             {name: 'is_active'}
         ]);
 		
@@ -32,7 +33,7 @@ App.equipment.EquipmentAssayGrid = Ext.extend(Ext.grid.EditorGridPanel, {
 		this.columns =  [
 		    {
 		    	header: "Оборудование", 
-		    	width: 20,
+		    	width: 12,
 		    	dataIndex: 'equipment_name',
 //		    	editor:this.eqCmb,
 //		    	renderer: this.comboRenderer(this.eqCmb, 'equipment_name')
@@ -45,14 +46,22 @@ App.equipment.EquipmentAssayGrid = Ext.extend(Ext.grid.EditorGridPanel, {
 //		    	renderer: this.comboRenderer(this.serviceCmb, 'service_name')
 		    },{
 		    	header: "Название", 
-		    	width: 30, 
+		    	width: 20, 
 		    	sortable: false, 
-		    	dataIndex: 'name'
+		    	dataIndex: 'name',
+		    	editor : new Ext.form.TextField()
 		    },{
 		    	header: "Код", 
 		    	width: 10, 
 		    	sortable: false, 
-		    	dataIndex: 'code'
+		    	dataIndex: 'code',
+		    	editor : new Ext.form.TextField()
+		    },{
+		    	header: "Протокол", 
+		    	width: 15, 
+		    	sortable: false, 
+		    	dataIndex: 'def_protocol',
+		    	editor : new Ext.form.TextField()
 		    },{
 		    	header: "Активно", 
 		    	width: 8, 

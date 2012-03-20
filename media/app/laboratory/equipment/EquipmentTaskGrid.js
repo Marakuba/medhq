@@ -22,9 +22,12 @@ App.equipment.EquipmentTaskGrid = Ext.extend(Ext.grid.EditorGridPanel, {
 		
 		this.store = new Ext.data.RESTStore({
 			autoLoad : true,
+			autoSave : false,
 			apiUrl : App.getApiUrl('equipmenttaskro'),
 			model: this.model
 		});
+		
+		this.store.on('save',this.onStoreSave, this);
 		
 		this.columns =  [
 		    {
@@ -74,6 +77,46 @@ App.equipment.EquipmentTaskGrid = Ext.extend(Ext.grid.EditorGridPanel, {
 		    }
 		];		
 		
+		this.restoreBtn = new Ext.Button({
+			text:'Сбросить статус',
+			hidden:true,
+			handler: function(){
+				var records = this.getSelectionModel().getSelections();
+				Ext.each(records, function(rec,i){
+					rec.set('status','wait');
+				});
+				this.store.save();
+			},
+			scope:this
+		});
+		
+		this.statusBtn = new Ext.CycleButton({
+            showText: true,
+            prependText: 'Статус: ',
+            items: [{
+                text:'все',
+                checked:true,
+                filterValue:undefined
+            },{
+                text:'ожидание',
+                filterValue:'wait'
+            },{
+                text:'в работе',
+                filterValue:'proc'
+            },{
+                text:'выполнено',
+                filterValue:'done'
+            },{
+                text:'повторы',
+                filterValue:'rept'
+            }],
+            changeHandler:function(btn, item){
+            	this.storeFilter('status',item.filterValue);
+            	this.restoreBtn.setVisible(item.filterValue=='proc');
+            },
+            scope:this
+        });
+		
 		var config = {
 			id:'equipment-task-grid',
 			title:'Задания',
@@ -85,7 +128,7 @@ App.equipment.EquipmentTaskGrid = Ext.extend(Ext.grid.EditorGridPanel, {
 			store:this.store,
 			columns:this.columns,
 			sm : new Ext.grid.RowSelectionModel({
-				singleSelect : true
+				singleSelect : false
 			}),
 			tbar:['Анализатор:',new Ext.form.ClearableComboBox({
 				emptyText:'Любой',
@@ -115,35 +158,7 @@ App.equipment.EquipmentTaskGrid = Ext.extend(Ext.grid.EditorGridPanel, {
 					scope:this
 				}
 			}),
-			new Ext.CycleButton({
-	            showText: true,
-	            prependText: 'Статус: ',
-	            items: [{
-	                text:'все',
-	                checked:true,
-	                filterValue:undefined
-	            },{
-	                text:'ожидание',
-//	                iconCls:'icon-state-yes',
-	                filterValue:'wait'
-	            },{
-	                text:'в работе',
-//	                iconCls:'icon-state-no',
-	                filterValue:'proc'
-	            },{
-	                text:'выполнено',
-//	                iconCls:'icon-state-no',
-	                filterValue:'done'
-	            },{
-	                text:'повторы',
-//	                iconCls:'icon-state-no',
-	                filterValue:'rept'
-	            }],
-	            changeHandler:function(btn, item){
-	            	this.storeFilter('status',item.filterValue);
-	            },
-	            scope:this
-	        }), '->',{
+			this.statusBtn, this.restoreBtn, '->',{
 				iconCls:'x-tbar-loading',
 				handler:function(){
 					this.store.load();
@@ -175,13 +190,21 @@ App.equipment.EquipmentTaskGrid = Ext.extend(Ext.grid.EditorGridPanel, {
 		Ext.apply(this, Ext.apply(this.initialConfig, config));
 		App.equipment.EquipmentTaskGrid.superclass.initComponent.apply(this, arguments);
 		
+		App.eventManager.on('globalsearch', this.onGlobalSearch, this);
+		
+	},
+	
+	onStoreSave : function(){
+		this.statusBtn.setActiveItem(1);
+	},
+	
+	onGlobalSearch: function(v){
+		this.storeFilter('search', v)
 	},
 	
 	storeFilter: function(field, value){
 		if(!value) {
-			//console.log(this.store.baseParams[field]);
 			delete this.store.baseParams[field]
-			//this.store.setBaseParam(field, );
 		} else {
 			this.store.setBaseParam(field, value);
 		}

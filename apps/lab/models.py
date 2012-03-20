@@ -474,11 +474,12 @@ class EquipmentResult(models.Model):
                             self.equipment_task.status = u'done'
                             self.equipment_task.save()
                         except MultipleObjectsReturned:
-                            logger.debug(u"LAB: MultipleObjectsReturned")
+                            logger.exception(u"LAB: MultipleObjectsReturned")
                         except ObjectDoesNotExist:
-                            logger.debug(u"LAB: result not found")
+                            logger.exception(u"LAB: result not found")
                         except Exception, err:
-                            logger.debug(u"LAB:Error during result finding:")
+                            smart_unicode
+                            logger.exception(u"LAB:Error during result finding")
             except Exception, err:
                 logger.debug(u"""LAB:Error during eq/task finding: %s SN: %s Name: %s Code: %s Specimen: %s""" % ( err.__unicode__(), self.eq_serial_number, self.assay_name, self.assay_code, self.specimen ) )
         super(EquipmentResult, self).save(*args, **kwargs)

@@ -79,7 +79,7 @@ def get_ordered_service(request, data):
     visit = get_visit(request, data, patient)
     try:
         ordered_service = SyncObject.objects.get(sync_id=data['order']['id'], state=remote_state, content_type__model='orderedservice').content_object
-        print "orderedservice found in SyncTable"
+        logger.debug(u"orderedservice found in SyncTable")
     except:
         try:
             service = BaseService.objects.get(code=data['order']['code'])
@@ -115,11 +115,18 @@ def get_ordered_service(request, data):
                                       state=remote_state, 
                                       sync_id=data['order']['id'])
         except MultipleObjectsReturned:
-            raise
+            msg = u"Исследование с кодом '%s' имеет неверные настройки" % data['order']['code']
+            raise Exception(msg)
+            logger.debug(msg)
         except ObjectDoesNotExist:
-            raise Exception(u"Исследование с кодом '%s' не найдено" % data['order']['code'])
+            msg = u"Исследование с кодом '%s' не найдено" % data['order']['code']
+            raise Exception(msg)
+            logger.debug(msg)
         except Exception, err:
-            print "какая-то неизввестная ошибка:", err
+            msg = u"Неизввестная ошибка: %s" % err.__unicode__()
+            raise Exception(msg)
+            logger.debug(msg)
+            
     return ordered_service
 
 
