@@ -26,6 +26,9 @@ import datetime
 import time
 from django.core.serializers.json import DjangoJSONEncoder
 
+import logging
+logger = logging.getLogger('general')
+
 
 def auth(request, authentication_form=AuthenticationForm):
     
@@ -66,7 +69,7 @@ def auth(request, authentication_form=AuthenticationForm):
                 next = request.POST.get('next',None)
                 response['redirect_to'] = u'/webapp/setactiveprofile/%d/%s' % (active_profile.id, next and u'?redirect_to=%s' % next or u'')
             except Exception, err:
-                print err
+                logger.error(u"WEBAPP: %s" % err)
                 pass
             
         else:
@@ -196,7 +199,7 @@ def get_service_tree(request):
                     node['staff'] = [(pos.id,pos.__unicode__()) for pos in staff_all]
                 return node
             except Exception, err:
-                print err
+                logger.error(u"WEBAPP: %s" % err)
                 return None
             
         return {

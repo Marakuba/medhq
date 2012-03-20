@@ -16,6 +16,9 @@ from crm.models import AdSource
 from constance import config
 import pytils
 
+import logging
+logger = logging.getLogger('general')
+
 
 class Patient(make_person_object('patient')):
     
@@ -91,7 +94,7 @@ class Patient(make_person_object('patient')):
                     new_discount = Discount.objects.filter(type__iexact=u'accum', min__lte=full_total, max__gte=full_total)
                     if new_discount.count():
                         self.discount = new_discount[0]
-                        print "set new discount:", new_discount[0]
+                        logger.debug(u"PATIENT:set new discount: %s" % new_discount[0])
                     else:
                         pass
 #                        print "no discounts for current value!"

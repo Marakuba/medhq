@@ -16,7 +16,6 @@ class RangeNode(Node):
         self.num, self.context_name = num, context_name
     def render(self, context):
         if not isinstance(self.num, int):
-            print context
             model, attr = self.num.split('.')
             obj = getattr(context,model)
             self.num = getattr(obj, attr)

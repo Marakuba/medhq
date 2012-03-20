@@ -1,5 +1,13 @@
 Ext.ns('App','App.models');
 
+App.models.barcodeModel = new Ext.data.Record.create([
+    {name: 'id'},
+	{name: 'resource_uri'},
+	{name: 'status'},
+	{name: 'package'},
+	{name: 'duplicates'}
+]);
+
 App.models.paymentModel = new Ext.data.Record.create([
     {name: 'id'},
     {name: 'doc_date', allowBlank: true, type:'date', format: 'd.m.Y'}, 
@@ -68,6 +76,7 @@ App.models.visitModel = new Ext.data.Record.create([
 	{name: 'discount'},
 	{name: 'discount_value'},
 	{name: 'barcode_id'},
+	{name: 'barcode'},
 	{name: 'office_name'},
 	{name: 'operator_name'},
 	{name: 'payment_type'},

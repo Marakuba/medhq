@@ -423,6 +423,7 @@ class BarcodeResource(ModelResource):
         queryset = Barcode.objects.all()
         resource_name = 'barcode'
         filtering = {
+            'visit':ALL_WITH_RELATIONS
         }
 
 

@@ -51,7 +51,6 @@ class BaseServiceResource(ExtResource):
 
         if filters.has_key('parent_id'):
             id_list = children(filters['parent_id'])
-            print id_list
             try:
                 return self.get_object_list(request).filter(id__in=id_list)
             except ValueError, e:

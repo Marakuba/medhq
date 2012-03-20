@@ -296,7 +296,6 @@ class Sampling(models.Model):
         return u"№%s, %s" % (self.id, self.tube)
     
     def get_services(self):
-        print self.orderedservice_set.all()
         services = self.visit.orderedservice_set.all()
         services = services.filter(execution_place=self.laboratory, service__normal_tubes=self.tube)
         return services

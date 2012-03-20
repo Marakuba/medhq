@@ -9,6 +9,9 @@ from numeration.models import BarcodePackage, BarcodePrinter
 import datetime
 from django.db.models.aggregates import Sum
 
+import logging
+logger = logging.getLogger('general')
+
 def forvisit(request, visit_id):
     """
     """
@@ -77,5 +80,5 @@ def getPrinterBySlug(request):
         }
         return dict(success=True, data=data)
     except Exception, err:
-        print err
+        logger.error(u"NUMERATION: %s" % err)
         return dict(success=False, data={})
