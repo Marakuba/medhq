@@ -36,6 +36,9 @@ class Price(models.Model):
     value = models.DecimalField(u'Сумма, руб.', max_digits=10, decimal_places=2,
                                 null=True)
     on_date = models.DateField(u'Начало действия', default=datetime.date.today())
+    payer = models.ForeignKey(State, verbose_name=u'Плательщик',
+                              related_name='payer_in_pricelist',
+                              null=True, blank=True)
 
     def __unicode__(self):
         return smart_unicode(u"%s - %s" % (self.extended_service.state, self.get_price_type_display()))

@@ -205,12 +205,12 @@ class BaseService(models.Model):
                 return self.execution_place.get(id=config.MAIN_STATE_ID)
         return place
     
-    def price(self, state=None, date=None, payment_type=u'н'):
+    def price(self, state=None, date=None, payment_type=u'н', payer=None):
         """
         """
         if state:
             try:
-                price = self.extendedservice_set.get(state=state).get_actual_price(date=date, payment_type=payment_type)
+                price = self.extendedservice_set.get(state=state).get_actual_price(date=date, payment_type=payment_type, payer=payer)
                 return price
             except:
                 return 0
@@ -289,13 +289,18 @@ class ExtendedService(models.Model):
     
     objects = ExtendedServiceManager()
     
-    def get_actual_price(self, date=None, payment_type=u'н'):
+    def get_actual_price(self, date=None, payment_type=u'н', payer=None):
+        args = {}
+        if payer:
+            args['payer'] = payer
+        else:
+            args['payer__isnull'] = True
         try:
             date = date or datetime.date.today()
-            price_item = self.price_set.filter(price_type=u'r', payment_type=payment_type, on_date__lte=date).latest('on_date')
+            price_item = self.price_set.filter(price_type=u'r', payment_type=payment_type, on_date__lte=date, **args).latest('on_date')
             return int(price_item.value.normalize())
         except:
-            return None
+            return 0
     
     def get_absolute_url(self):
         return "/admin/service/extendedservice/%s/" % self.id

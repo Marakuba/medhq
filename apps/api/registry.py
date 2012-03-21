@@ -450,6 +450,7 @@ class VisitResource(ExtResource):
     office = fields.ToOneField(StateResource, 'office', null=True)
     referral = fields.ToOneField(ReferralResource,'referral', null=True)
     source_lab = fields.ToOneField(LabResource,'source_lab', null=True)
+    payer = fields.ToOneField(StateResource,'payer', null=True)
     discount = fields.ToOneField(DiscountResource,'discount', null=True)
     barcode = fields.ForeignKey(BarcodeResource,'barcode', null=True)
     insurance_policy = fields.ToOneField(InsurancePolicyResource,'insurance_policy', null=True)

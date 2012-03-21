@@ -150,11 +150,11 @@ App.visit.VisitForm = Ext.extend(Ext.FormPanel, {
 			hidden:App.settings.strictMode,
 			items:new Ext.form.LazyComboBox({
 	        	fieldLabel:'Лаборатория',
-	        	name:'source_lab',
+	        	name:'payer',
 			    minChars:3,
 			    emptyText:'Выберите лабораторию...',
 			    proxyUrl:get_api_url('lab'),
-			    value:App.settings.strictMode ? App.getApiUrl('lab',active_state_id) : ''
+			    value:App.settings.strictMode ? App.getApiUrl('state',active_state_id) : ''
 			})
 		};
 
