@@ -43,10 +43,8 @@ App.visit.VisitTab = Ext.extend(Ext.Panel, {
         	preorderRecord:this.preorderRecord,
         	type:this.type,
 			fn:function(record){
-				console.log(record)
 				this.record = record;
 				this.store.insertRecord(record);
-				console.log(this.store)
 				Ext.callback(this.fn, this.scope || window, [this.record]);
 			},
 			scope:this	
@@ -165,7 +163,6 @@ App.visit.VisitTab = Ext.extend(Ext.Panel, {
 		};
 		var f = this.form;
 		this.steps = f.getSteps();
-		console.log(this.steps);
 		this.tSteps = this.steps;
 		if(this.steps>0) {
 			this.msgBox = Ext.MessageBox.progress('Подождите','Идет сохранение документа!');
@@ -232,7 +229,6 @@ App.visit.VisitTab = Ext.extend(Ext.Panel, {
 			}
 		}
 		this.record = rs;
-		console.log('write')
 		this.popStep();
 	},
 	
