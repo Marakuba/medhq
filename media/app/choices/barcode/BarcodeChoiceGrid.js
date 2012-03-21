@@ -76,7 +76,7 @@ App.choices.BarcodeChoiceGrid = Ext.extend(Ext.grid.GridPanel, {
 		},this);
 		this.on('afterrender', function(){
 			if(this.patientId){
-				this.store.setBaseParam('visit__patient',this.patientId);
+				this.store.setBaseParam('patient',this.patientId);
 			};
 			this.store.load()
 		},this)

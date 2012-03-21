@@ -1,9 +1,9 @@
 Ext.ns('App.choices');
 
-App.choices.BarcodeChoiceWindow = Ext.extend(Ext.Window, {
+App.choices.PatientChoiceWindow = Ext.extend(Ext.Window, {
 
 	initComponent:function(){
-		this.grid = new App.choices.BarcodeChoiceGrid({
+		this.grid = new App.choices.PatientChoiceGrid({
 			patientId:this.patientId,
 			fn:function(record){
 				Ext.callback(this.fn, this.scope || window, [record]);
@@ -22,7 +22,7 @@ App.choices.BarcodeChoiceWindow = Ext.extend(Ext.Window, {
 		};
 		
 		Ext.apply(this, Ext.apply(this.initialConfig, config));
-		App.choices.BarcodeChoiceWindow.superclass.initComponent.apply(this, arguments);
+		App.choices.PatientChoiceWindow.superclass.initComponent.apply(this, arguments);
 		
 		this.on('beforeclose',function(){
 			if (!this.sended){

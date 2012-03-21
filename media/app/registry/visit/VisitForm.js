@@ -749,7 +749,6 @@ App.visit.VisitForm = Ext.extend(Ext.FormPanel, {
 				patientId:this.patientRecord.data.id,
 				fn:function(record){
 					if (record){
-						console.log(record);
 						barcodeWindow['sended'] = true;
 						barcodeWindow.close();
 						this.barcodeField.setValue(record.data.resource_uri);

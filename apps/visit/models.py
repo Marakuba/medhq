@@ -115,7 +115,7 @@ class Visit(make_operator_object('visit')):
                               limit_choices_to={'type__in':(u'b',u'm')}, 
                               null=True, blank=True,
                               help_text=u'Выбрать лабораторию, из которой поступил материал')
-    barcode = models.OneToOneField(Barcode, null=True, blank=True)
+    barcode = models.ForeignKey(Barcode, null=True, blank=True)
     total_price = models.DecimalField(u'Сумма, руб.', max_digits=10, 
                                       decimal_places=2, default=0, 
                                       null=True, blank=True)
