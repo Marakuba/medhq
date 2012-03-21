@@ -15,6 +15,7 @@
  */
 Ext.ns('Ext.calendar');
 Ext.ns('App.visit');
+Ext.ns('App.choices');
 Ext.ns('App');
 Ext.calendar.TimeslotEditWindow = Ext.extend(Ext.Window, {
 	initComponent: function() {
@@ -777,9 +778,8 @@ Ext.calendar.TimeslotEditWindow = Ext.extend(Ext.Window, {
     },
     
     onPatientChoice: function() {
-        var patientWindow;
-        	
-        var patientGrid = new App.calendar.PatientGrid({
+        var patientWindow = new App.choices.PatientChoiceWindow({
+        	title:'Пациенты',
        		scope:this,
        		fn:function(record){
        			if (!record){
@@ -795,16 +795,6 @@ Ext.calendar.TimeslotEditWindow = Ext.extend(Ext.Window, {
 				patientWindow.close();
 			}
        	 });
-        	
-       	patientWindow = new Ext.Window ({
-       		width:700,
-			height:500,
-			layout:'fit',
-			title:'Пациенты',
-			items:[patientGrid],
-			modal:true,
-			border:false
-    	});
        	patientWindow.show();
     },
     

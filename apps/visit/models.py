@@ -108,7 +108,6 @@ class Visit(make_operator_object('visit')):
                               choices=VISIT_STATUSES)
     payer = models.ForeignKey(State, verbose_name=u'Плательщик',
                               related_name='payer_in_visit',
-                              limit_choices_to={'type':u'j'}, 
                               null=True, blank=True)
     source_lab = models.ForeignKey(State, verbose_name=u'Лаборатория',
                               related_name='source_lab_in_visit',

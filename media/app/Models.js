@@ -89,6 +89,7 @@ App.models.visitModel = new Ext.data.Record.create([
 	{name: 'referral_name'},
     {name: '_cache'},
     {name: 'source_lab'},
+    {name: 'payer'},
     {name: 'pregnancy_week'},
     {name: 'menses_day'},
     {name: 'menopause'},

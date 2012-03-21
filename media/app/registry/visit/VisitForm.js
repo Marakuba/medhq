@@ -150,11 +150,11 @@ App.visit.VisitForm = Ext.extend(Ext.FormPanel, {
 			hidden:App.settings.strictMode,
 			items:new Ext.form.LazyComboBox({
 	        	fieldLabel:'Лаборатория',
-	        	name:'source_lab',
+	        	name:'payer',
 			    minChars:3,
 			    emptyText:'Выберите лабораторию...',
 			    proxyUrl:get_api_url('lab'),
-			    value:App.settings.strictMode ? App.getApiUrl('lab',active_state_id) : ''
+			    value:App.settings.strictMode ? App.getApiUrl('state',active_state_id) : ''
 			})
 		};
 
@@ -346,6 +346,7 @@ App.visit.VisitForm = Ext.extend(Ext.FormPanel, {
 		this.barcodeBtn = new Ext.Button({
 			text:'Автоматически',
 			handler:this.setBarcode.createDelegate(this,[false]),
+			disabled:true,
 			scope:this
 		});
 		
@@ -741,7 +742,6 @@ App.visit.VisitForm = Ext.extend(Ext.FormPanel, {
 			this.getForm().findField('patient').originalValue = patientRecord.data.resource_uri;
 			this.getForm().findField('barcode').originalValue = record.data.barcode;
 			this.autoBarcode.disable();
-			this.barcodeBtn.disable();
 		};
 	},
 	
@@ -759,7 +759,7 @@ App.visit.VisitForm = Ext.extend(Ext.FormPanel, {
 	setBarcode: function(checkbox,checked){
 		if (checked) {
 			this.barcodeField.setValue('');
-			this.barcodeBtn.setText('Автоматически создать штрих-код');
+			this.barcodeBtn.setText('Автоматически');
 		} else {
 			var barcodeWindow = new App.choices.BarcodeChoiceWindow({
 				patientId:this.patientRecord.data.id,
@@ -769,6 +769,7 @@ App.visit.VisitForm = Ext.extend(Ext.FormPanel, {
 						barcodeWindow.close();
 						this.barcodeField.setValue(record.data.resource_uri);
 						this.barcodeBtn.setText(record.data.id);
+						this.barcodeBtn.enable();
 					} else {
 						if (!this.barcodeField.getValue()){
 							this.autoBarcode.setValue(true);
