@@ -14,8 +14,9 @@ App.choices.PatientChoiceWindow = Ext.extend(Ext.Window, {
 		config = {
 			width:700,
 			height:500,
+			modal:true,
 			layout:'fit',
-			title:'Штрих-коды',
+			title:'Пациенты',
 			items:[
 				this.grid
 			]
