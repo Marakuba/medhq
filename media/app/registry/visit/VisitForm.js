@@ -337,23 +337,30 @@ App.visit.VisitForm = Ext.extend(Ext.FormPanel, {
 		};		
 		
 		this.autoBarcode = new Ext.form.Checkbox({
-			boxLabel:'Автоматически создать штрихкод',
+			boxLabel:'',
 			handler:this.setBarcode,
 			checked:true,
 			scope:this
 		});
 		
-		this.cito = {
-	            layout: 'hbox',
+		this.barcodeBtn = new Ext.Button({
+			text:'Автоматически',
+			handler:this.setBarcode.createDelegate(this,[false]),
+			scope:this
+		});
+		
+		this.barcode = new Ext.form.CompositeField({
+	            layout: 'column',
 	            baseCls:'x-border-layout-ct',
 	            border:false,
-//	            columnWidth:0.5,
-	            items:[{
-					boxLabel:'Cito',
-					xtype:'checkbox',
-					name:'is_cito'
-				},this.autoBarcode]
-			};
+	            items:[
+	            	{
+	            		xtype:'displayfield',
+	            		value:'Штрих-код:'
+	            	},
+	            	this.autoBarcode,this.barcodeBtn
+				]
+			});
 		this.barcodeField = new Ext.form.Hidden({
 			name:'barcode'
 		});
@@ -387,7 +394,7 @@ App.visit.VisitForm = Ext.extend(Ext.FormPanel, {
 	        			this.menstruation, 
 	        			this.diagnosis,
 	        			this.comment,
-	        			this.cito
+	        			this.barcode
 	        		]
         		},{
         			flex:60,
@@ -427,7 +434,7 @@ App.visit.VisitForm = Ext.extend(Ext.FormPanel, {
 	        			this.menstruation, 
 	        			this.diagnosis,
 	        			this.comment,
-	        			this.cito
+	        			this.barcode
 	        		]
         		}]       	
 		}
@@ -472,6 +479,14 @@ App.visit.VisitForm = Ext.extend(Ext.FormPanel, {
 		Ext.apply(this, Ext.apply(this.initialConfig, config));
 		App.visit.VisitForm.superclass.initComponent.apply(this, arguments);
 		this.on('afterrender', function(){
+			Ext.QuickTips.register({
+				autoHide:true,
+			    target: this.autoBarcode,
+			    title: 'Штрих-коды',
+			    text: 'Автоматически создать штрих-код',
+			    width: 300,
+			    dismissDelay: 30000 // Hide after 10 seconds hover
+			});
 		},this);
 		this.orderedService.on('sumchange', this.updateTotalSum, this);
 		this.servicePanel.on('serviceclick', this.onServiceClick, this);
@@ -649,7 +664,6 @@ App.visit.VisitForm = Ext.extend(Ext.FormPanel, {
     	today.setHours(0);
     	today.setMinutes(0);
     	today.setSeconds(0);
-    	console.log(today)
 //    	this.preorderGrid.store.setBaseParam('timeslot__start__gte',today.format('Y-m-d 00:00'));
     	this.preorderGrid.store.setBaseParam('visit__isnull',true);
     	this.preorderGrid.store.setBaseParam('patient',App.uriToId(this.patientRecord.data.resource_uri));
@@ -727,6 +741,7 @@ App.visit.VisitForm = Ext.extend(Ext.FormPanel, {
 			this.getForm().findField('patient').originalValue = patientRecord.data.resource_uri;
 			this.getForm().findField('barcode').originalValue = record.data.barcode;
 			this.autoBarcode.disable();
+			this.barcodeBtn.disable();
 		};
 	},
 	
@@ -744,6 +759,7 @@ App.visit.VisitForm = Ext.extend(Ext.FormPanel, {
 	setBarcode: function(checkbox,checked){
 		if (checked) {
 			this.barcodeField.setValue('');
+			this.barcodeBtn.setText('Автоматически создать штрих-код');
 		} else {
 			var barcodeWindow = new App.choices.BarcodeChoiceWindow({
 				patientId:this.patientRecord.data.id,
@@ -752,8 +768,12 @@ App.visit.VisitForm = Ext.extend(Ext.FormPanel, {
 						barcodeWindow['sended'] = true;
 						barcodeWindow.close();
 						this.barcodeField.setValue(record.data.resource_uri);
+						this.barcodeBtn.setText(record.data.id);
 					} else {
-						this.autoBarcode.setValue(true)
+						if (!this.barcodeField.getValue()){
+							this.autoBarcode.setValue(true);
+							this.barcodeBtn.setText('Автоматически');
+						}
 					}
 				},
 				scope:this
