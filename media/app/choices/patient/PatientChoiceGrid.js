@@ -1,6 +1,6 @@
-Ext.ns('App','App.calendar');
+Ext.ns('App','App.choices');
 
-App.calendar.PatientGrid = Ext.extend(Ext.grid.GridPanel, {
+App.choices.PatientChoiceGrid = Ext.extend(Ext.grid.GridPanel, {
 
 	initComponent : function() {
 		
@@ -122,7 +122,7 @@ App.calendar.PatientGrid = Ext.extend(Ext.grid.GridPanel, {
 		}
 
 		Ext.apply(this, Ext.apply(this.initialConfig, config));
-		App.calendar.PatientGrid.superclass.initComponent.apply(this, arguments);
+		App.choices.PatientChoiceGrid.superclass.initComponent.apply(this, arguments);
 		App.eventManager.on('globalsearch', this.onGlobalSearch, this);
 		this.on('destroy', function(){
 			App.eventManager.un('globalsearch', this.onGlobalSearch, this);
@@ -214,6 +214,3 @@ App.calendar.PatientGrid = Ext.extend(Ext.grid.GridPanel, {
 	
 });
 
-
-
-Ext.reg('patientgrid', App.calendar.PatientGrid);
