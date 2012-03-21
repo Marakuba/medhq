@@ -419,11 +419,29 @@ class InsurancePolicyResource(ExtResource):
 class BarcodeResource(ModelResource):
     """
     """
+    
+    def build_filters(self, filters=None):
+        if filters is None:
+            filters = {}
+
+        orm_filters = super(BarcodeResource, self).build_filters(filters)
+        
+        if "patient" in filters:
+            patient_id = filters['patient']
+            visit_list = Visit.objects.filter(patient=patient_id)
+            barcode_id_list = [visit.barcode.id for visit in visit_list]
+            orm_filters['id__in'] = barcode_id_list
+            
+        
+
+        return orm_filters
+    
     class Meta:
         queryset = Barcode.objects.all()
         resource_name = 'barcode'
         filtering = {
-            'visit':ALL_WITH_RELATIONS
+            'visit':ALL_WITH_RELATIONS,
+            'id':ALL
         }
 
 
@@ -433,7 +451,7 @@ class VisitResource(ExtResource):
     referral = fields.ToOneField(ReferralResource,'referral', null=True)
     source_lab = fields.ToOneField(LabResource,'source_lab', null=True)
     discount = fields.ToOneField(DiscountResource,'discount', null=True)
-    barcode = fields.ToOneField(BarcodeResource,'barcode', null=True)
+    barcode = fields.ForeignKey(BarcodeResource,'barcode', null=True)
     insurance_policy = fields.ToOneField(InsurancePolicyResource,'insurance_policy', null=True)
 
     def obj_create(self, bundle, request=None, **kwargs):
