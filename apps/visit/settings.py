@@ -1,4 +1,6 @@
 # -*- coding: utf-8 -*-
+from django.conf import settings
+
 
 
 PAYMENT_TYPES = [
@@ -8,6 +10,12 @@ PAYMENT_TYPES = [
     (u'д',u'ДМС'),
     (u'к',u'Корпоративные расчеты'),
 ]
+
+try:
+    CUSTOM_PAYMENT_TYPES = settings.CUSTOM_PAYMENT_TYPES
+    PAYMENT_TYPES += CUSTOM_PAYMENT_TYPES
+except:
+    pass
 
 PAYMENT_STATUSES = (
     (u'н',u'Не оплачено'),
