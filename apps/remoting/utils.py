@@ -104,16 +104,17 @@ def get_ordered_service(request, data):
             else:
                 raise Exception(u"Исследование с кодом '%s' имеет неверные настройки" % data['order']['code'])
             logger.debug( u'Для услуги %s найдено место выполнения: %s' % ( service, execution_place.state) )
-            ordered_service = OrderedService.objects.create(order=visit,
-                                                            execution_place=execution_place.state,
-                                                            service=service,
-                                                            operator=visit.operator)
-            logger.debug( "OrderedService created" )
-            ordered_service.to_lab()
-            logger.debug( "Sended to lab... %s %s" % ( ordered_service.service, execution_place.state))
-            SyncObject.objects.create(content_object=ordered_service, 
-                                      state=remote_state, 
-                                      sync_id=data['order']['id'])
+            ordered_service, created = OrderedService.objects.get_or_create(order=visit,
+                                                                            execution_place=execution_place.state,
+                                                                            service=service,
+                                                                            operator=visit.operator)
+            if created:
+                logger.debug( "OrderedService created" )
+                ordered_service.to_lab()
+                logger.debug( "Sended to lab... %s %s" % ( ordered_service.service, execution_place.state))
+                SyncObject.objects.create(content_object=ordered_service, 
+                                          state=remote_state, 
+                                          sync_id=data['order']['id'])
         except MultipleObjectsReturned:
             msg = u"Исследование с кодом '%s' имеет неверные настройки" % data['order']['code']
             raise Exception(msg)
