@@ -76,10 +76,7 @@ App.visit.VisitForm = Ext.extend(Ext.FormPanel, {
 //		    	'</div></tpl>'
 //		    )
 		});
-		
-		if(this.patientRecord) {
-			this.policyCmb.getStore().setBaseParam('patient',this.patientRecord.data.id);
-		};
+
 		
 		this.policyBar = new Ext.Panel({
 //			id:'policy-bar',
@@ -117,6 +114,45 @@ App.visit.VisitForm = Ext.extend(Ext.FormPanel, {
 				}
 			}]			
 		});
+		
+		
+		this.payerCmb = new Ext.form.LazyComboBox({
+	        	fieldLabel:'Плательщик',
+	        	anchor:'100%',
+	        	name:'payer',
+			    minChars:3,
+			    hidden:(App.settings.strictMode && this.types==='material'),
+			    emptyText:'Выберите лабораторию...',
+			    proxyUrl:get_api_url('state'),
+			    value:App.settings.strictMode ? App.getApiUrl('state',active_state_id) : '',
+			    listeners:{
+			    	select:function(combo,record){
+			    		var sp = this.servicePanel;
+						sp.getLoader().baseParams['payer'] = App.uriToId(record.data.resource_uri);
+						sp.getLoader().load(sp.getRootNode());
+						this.rePrice('б',record.data.id);
+			    	},
+			    	scope:this
+			    }
+		})
+		
+		
+		this.payerBar = new Ext.Panel({
+//			id:'policy-bar',
+			layout:'hbox',
+			hidden:this.record ? this.record.data.payment_type!='б' : true,
+			defaults:{
+				baseCls:'x-border-layout-ct',
+				border:false
+			},
+			items:[{
+				flex:1,
+				layout:'form',
+				items:this.payerCmb
+			}]			
+		});
+		
+		
 
 ///
 		this.discountCmb = new Ext.form.LazyClearableComboBox({
@@ -143,28 +179,6 @@ App.visit.VisitForm = Ext.extend(Ext.FormPanel, {
 		if(this.patientRecord) {
 			this.discountCmb.setValue(this.patientRecord.data.discount);
 		}
-
-		this.lab = {
-			layout:'form',
-			hideLabel:true,
-			hidden:App.settings.strictMode,
-			items:new Ext.form.LazyComboBox({
-	        	fieldLabel:'Лаборатория',
-	        	name:'payer',
-			    minChars:3,
-			    emptyText:'Выберите лабораторию...',
-			    proxyUrl:get_api_url('state'),
-			    value:App.settings.strictMode ? App.getApiUrl('state',active_state_id) : '',
-			    listeners:{
-			    	select:function(combo,record){
-			    		var sp = this.servicePanel;
-						sp.getLoader().baseParams['payer'] = App.uriToId(record.data.resource_uri);
-						sp.getLoader().load(sp.getRootNode())
-			    	},
-			    	scope:this
-			    }
-			})
-		};
 
 		this.referral = {
 			layout:'form',
@@ -334,6 +348,7 @@ App.visit.VisitForm = Ext.extend(Ext.FormPanel, {
 				items:[this.discounts, 
 					this.paymentTypeCB,
 					this.policyBar,
+					this.payerBar,
 					{
 						layout:'form',
 						border:false,
@@ -429,7 +444,7 @@ App.visit.VisitForm = Ext.extend(Ext.FormPanel, {
 						border:false
 					},
         			items:[
-        				this.lab,
+        				this.payerCmb,
         				this.referralBar,  
 	        			this.sample,
 	        			{
@@ -719,41 +734,96 @@ App.visit.VisitForm = Ext.extend(Ext.FormPanel, {
 	onPaymentTypeChoice : function(rec){
 		if(App.settings.reloadPriceByPaymentType) {
 			var sp = this.servicePanel;
+			delete sp.getLoader().baseParams['payer'];
 			sp.getLoader().baseParams['payment_type'] = rec.data.id;
 			sp.getLoader().load(sp.getRootNode())
 		}
-		this.policyCmb.show();
 		
 		switch(rec.data.id){
 			case 'д':
+				this.hidePaymentCmb('payer');
 				this.showPaymentCmb('policy');
+				this.rePrice('д');
 				break
 			case 'б':
 				this.hidePaymentCmb('policy');
+				this.showPaymentCmb('payer');
 				break
 			case 'н':
 				this.hidePaymentCmb('policy');
+				this.hidePaymentCmb('payer');
+				this.rePrice('н');
 				break
 			default:
 				this.hidePaymentCmb('policy');
+				this.hidePaymentCmb('payer');
 				break
 		};
-		this.policyCmb.show();
 		
+	},
+	
+	rePrice: function(ptype,payer){
+		if (!ptype){
+			console.log('пересчет цен: не указан тип цены')
+			return false
+		};
+		var base_services = this.orderedService.store.data.items;
+		//если услуг нет, ничего выполнять не надо
+		if (!base_services.length) return false
+		var bs_ids = {} // список услуг, который был до обновления цен
+		var id_list = [] // передается на сервер для выборки цен
+		Ext.each(base_services,function(rec){
+			var id = App.uriToId(rec.data.service)
+			bs_ids[id] = {
+				'price': rec.data.price,
+				'name': rec.data.service_name
+			};
+			id_list.push(id)
+		})
+		var params = {}
+		params['services'] = id_list;
+		params['ptype'] = ptype;
+		params['state'] = state;
+		params['payer'] = payer;
+		App.direct.service.getActualPrice(params,function(res){
+			var new_prices = res.data;
+			var missing_list = [];
+			var store = this.orderedService.store;
+			var ind;
+			Ext.each(id_list,function(id){
+				var service = App.getApiUrl('baseservice',id)
+				ind = store.find("service",service);
+				if (new_prices[id]==undefined || new_prices[id] == 0){
+					if (ind > -1){
+						store.removeAt(ind);
+						missing_list.push(bs_ids[id].name);
+					}
+				} else {
+					var rec = store.getAt(ind);
+					//если цена все-таки изменилась, то меняем в store
+					if (!bs_ids[id].price==new_prices[id]) {
+						rec.startEdit();
+						rec.set('price',new_prices[id])
+						rec.endEdit();
+					}
+				}
+			});
+			console.log(missing_list);
+		},this)
+
 	},
 	
 	hidePaymentCmb: function(type){
 		if (!type) return false
 		this[type+'Cmb'].allowBlank = true;
 		this[type+'Cmb'].reset();
-		this[type+'Cmb'].hide();
+		this[type+'Bar'].hide();
 	},
 	
 	showPaymentCmb: function(type){
 		if (!type) return false
 		this[type+'Cmb'].allowBlank = false;
-		this[type+'Cmb'].show();
-		this.policyCmb.show();
+		this[type+'Bar'].show();
 	},
 	
 	setPatientRecord: function(record){
@@ -792,6 +862,7 @@ App.visit.VisitForm = Ext.extend(Ext.FormPanel, {
 		if (checked) {
 			this.barcodeField.setValue('');
 			this.barcodeBtn.setText('Автоматически');
+			this.barcodeBtn.disable();
 		} else {
 			var barcodeWindow = new App.choices.BarcodeChoiceWindow({
 				patientId:this.patientRecord.data.id,
