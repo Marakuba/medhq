@@ -187,7 +187,7 @@ def get_service_tree(request):
             try:
                 bs = obj.base_service
                 es = bs.extendedservice_set.get(state=obj.execution_place)
-                price = es.get_actual_price(payment_type=payment_type)
+                price = es.get_actual_price(payment_type=payment_type,payer=payer.id)
                 node = {
                     "id":ext and es.id or '%s-%s' % (obj.base_service.id,obj.execution_place.id),
                     "text":"%s [%s]" % (obj.base_service.short_name or obj.base_service.name, price),
@@ -296,6 +296,7 @@ def get_service_tree(request):
     promotion = request.GET.get('promotion')
     all = request.GET.get('all')
     ext = request.GET.get('ext')
+    payer = request.GET.get('payer')
 
     TODAY = datetime.date.today()
     on_date = request.GET.get('on_date',TODAY)
@@ -317,7 +318,13 @@ def get_service_tree(request):
     except:
         raise "Service cache must be defined!"
             
-    _cache_key = u'%sservice_list_%s_%s' % (ext and 'ext_' or '', state and state.id or u'*', payment_type)
+    if payer:
+        try:
+            payer = State.objects.get(id=payer)
+        except:
+            payer = None
+        
+    _cache_key = u'%sservice_list_%s_%s_%s' % (ext and 'ext_' or '', state and state.id or u'*', payment_type, payer and payer.id or '*')
     
     # запрос с параметром recache удаляет ВСЕ записи в нём
     if recache:
@@ -341,6 +348,10 @@ def get_service_tree(request):
             args['extended_service__staff']=staff
         if state:
             args['extended_service__branches']=state.id
+        if payer:
+            args['payer'] = payer.id
+        else:
+            args['payer__isnull'] = True
     
         nodes = []
         values = Price.objects.filter(**args).\

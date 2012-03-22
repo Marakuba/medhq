@@ -153,8 +153,16 @@ App.visit.VisitForm = Ext.extend(Ext.FormPanel, {
 	        	name:'payer',
 			    minChars:3,
 			    emptyText:'Выберите лабораторию...',
-			    proxyUrl:get_api_url('lab'),
-			    value:App.settings.strictMode ? App.getApiUrl('state',active_state_id) : ''
+			    proxyUrl:get_api_url('state'),
+			    value:App.settings.strictMode ? App.getApiUrl('state',active_state_id) : '',
+			    listeners:{
+			    	select:function(combo,record){
+			    		var sp = this.servicePanel;
+						sp.getLoader().baseParams['payer'] = App.uriToId(record.data.resource_uri);
+						sp.getLoader().load(sp.getRootNode())
+			    	},
+			    	scope:this
+			    }
 			})
 		};
 
@@ -714,14 +722,38 @@ App.visit.VisitForm = Ext.extend(Ext.FormPanel, {
 			sp.getLoader().baseParams['payment_type'] = rec.data.id;
 			sp.getLoader().load(sp.getRootNode())
 		}
-		if(rec.data.id=='д') {
-			this.policyCmb.allowBlank = false;
-			this.policyBar.show();
-		} else {
-			this.policyCmb.allowBlank = true;
-			this.policyCmb.reset();
-			this.policyBar.hide();
-		}
+		this.policyCmb.show();
+		
+		switch(rec.data.id){
+			case 'д':
+				this.showPaymentCmb('policy');
+				break
+			case 'б':
+				this.hidePaymentCmb('policy');
+				break
+			case 'н':
+				this.hidePaymentCmb('policy');
+				break
+			default:
+				this.hidePaymentCmb('policy');
+				break
+		};
+		this.policyCmb.show();
+		
+	},
+	
+	hidePaymentCmb: function(type){
+		if (!type) return false
+		this[type+'Cmb'].allowBlank = true;
+		this[type+'Cmb'].reset();
+		this[type+'Cmb'].hide();
+	},
+	
+	showPaymentCmb: function(type){
+		if (!type) return false
+		this[type+'Cmb'].allowBlank = false;
+		this[type+'Cmb'].show();
+		this.policyCmb.show();
 	},
 	
 	setPatientRecord: function(record){
