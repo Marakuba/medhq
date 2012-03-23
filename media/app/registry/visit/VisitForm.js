@@ -824,6 +824,9 @@ App.visit.VisitForm = Ext.extend(Ext.FormPanel, {
 	hidePaymentCmb: function(type){
 		if (!type) return false
 		this[type+'Cmb'].allowBlank = true;
+		this[type+'Cmb'].setRawValue('');
+    	this[type+'Cmb'].originalValue = '';
+    	this[type+'Cmb'].value = '';
 		this[type+'Cmb'].reset();
 		this[type+'Bar'].hide();
 	},
