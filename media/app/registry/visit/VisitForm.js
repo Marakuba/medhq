@@ -118,11 +118,11 @@ App.visit.VisitForm = Ext.extend(Ext.FormPanel, {
 		
 		this.payerCmb = new Ext.form.LazyComboBox({
 	        	fieldLabel:'Плательщик',
-	        	anchor:'100%',
+	        	anchor:'98%',
 	        	name:'payer',
 			    minChars:3,
 			    hidden:(App.settings.strictMode && this.types==='material'),
-			    emptyText:'Выберите лабораторию...',
+			    emptyText:'Выберите плательщика...',
 			    proxyUrl:get_api_url('state'),
 			    value:App.settings.strictMode ? App.getApiUrl('state',active_state_id) : '',
 			    listeners:{
@@ -130,7 +130,7 @@ App.visit.VisitForm = Ext.extend(Ext.FormPanel, {
 			    		var sp = this.servicePanel;
 						sp.getLoader().baseParams['payer'] = App.uriToId(record.data.resource_uri);
 						sp.getLoader().load(sp.getRootNode());
-						this.rePrice('б',record.data.id);
+						this.rePrice('б',App.uriToId(record.data.resource_uri));
 			    	},
 			    	scope:this
 			    }
@@ -732,34 +732,41 @@ App.visit.VisitForm = Ext.extend(Ext.FormPanel, {
 	},
 	
 	onPaymentTypeChoice : function(rec){
-		if(App.settings.reloadPriceByPaymentType) {
-			var sp = this.servicePanel;
-			delete sp.getLoader().baseParams['payer'];
-			sp.getLoader().baseParams['payment_type'] = rec.data.id;
-			sp.getLoader().load(sp.getRootNode())
-		}
 		
 		switch(rec.data.id){
 			case 'д':
 				this.hidePaymentCmb('payer');
 				this.showPaymentCmb('policy');
+				this.reloadTree(rec.data.id);
 				this.rePrice('д');
 				break
 			case 'б':
+				this.servicePanel.getLoader().baseParams['payment_type'] = rec.data.id;
 				this.hidePaymentCmb('policy');
 				this.showPaymentCmb('payer');
 				break
 			case 'н':
 				this.hidePaymentCmb('policy');
 				this.hidePaymentCmb('payer');
+				this.reloadTree(rec.data.id);
 				this.rePrice('н');
 				break
 			default:
 				this.hidePaymentCmb('policy');
 				this.hidePaymentCmb('payer');
+				this.reloadTree(rec.data.id);
 				break
 		};
 		
+	},
+	
+	reloadTree:function(ptype_id){
+		if(App.settings.reloadPriceByPaymentType) {
+			var sp = this.servicePanel;
+			delete sp.getLoader().baseParams['payer'];
+			sp.getLoader().baseParams['payment_type'] = ptype_id;
+			sp.getLoader().load(sp.getRootNode())
+		}
 	},
 	
 	rePrice: function(ptype,payer){
@@ -801,8 +808,9 @@ App.visit.VisitForm = Ext.extend(Ext.FormPanel, {
 				} else {
 					var rec = store.getAt(ind);
 					//если цена все-таки изменилась, то меняем в store
-					if (!bs_ids[id].price==new_prices[id]) {
-						rec.startEdit();
+					console.log(rec)
+					if (!(bs_ids[id].price==String(new_prices[id]))) {
+						rec.beginEdit();
 						rec.set('price',new_prices[id])
 						rec.endEdit();
 					}
