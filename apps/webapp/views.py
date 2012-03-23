@@ -187,7 +187,7 @@ def get_service_tree(request):
             try:
                 bs = obj.base_service
                 es = bs.extendedservice_set.get(state=obj.execution_place)
-                price = es.get_actual_price(payment_type=payment_type,payer=payer.id)
+                price = es.get_actual_price(payment_type=payment_type,payer=payer)
                 node = {
                     "id":ext and es.id or '%s-%s' % (obj.base_service.id,obj.execution_place.id),
                     "text":"%s [%s]" % (obj.base_service.short_name or obj.base_service.name, price),
