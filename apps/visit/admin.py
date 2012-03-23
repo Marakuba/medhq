@@ -179,7 +179,7 @@ class PatientAutocomplete(AutocompleteSettings):
     search_fields = ('^last_name', '^first_name')
     limit = 20
     
-autocomplete.register(Visit.patient, PatientAutocomplete)
+#autocomplete.register(Visit.patient, PatientAutocomplete)
 
 
 def export_into_1c(modeladmin, request, queryset):
@@ -277,10 +277,13 @@ class ReferralAgentAdmin(admin.ModelAdmin):
             obj.operator=request.user
         obj.save()
         
+class OrderedServicePlainAdmin(admin.ModelAdmin):
+    search_fields = ('order__patient__last_name','order__barcode__id')
+    list_display = ('order','service')
 
 admin.site.register(PlainVisit, PlainVisitAdmin)
 admin.site.register(ReferralVisit, ReferralVisitAdmin)
 #admin.site.register(Visit, VisitAdmin)
 admin.site.register(Referral, ReferralAdmin)
 admin.site.register(ReferralAgent, ReferralAgentAdmin)
-admin.site.register(OrderedService)
+admin.site.register(OrderedService, OrderedServicePlainAdmin)
