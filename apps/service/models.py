@@ -243,7 +243,7 @@ class BaseService(models.Model):
         if self.is_leaf_node():
             try:
                 top = self.get_ancestors()[0]
-                return u"%s / %s" % (top.__unicode__(), self.__unicode__())
+                return u"%s / %s" % ( self.__unicode__(), top.__unicode__() )
             except:
                 pass
         return self.__unicode__()

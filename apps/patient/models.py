@@ -40,7 +40,7 @@ class Patient(make_person_object('patient')):
     objects = models.Manager()
     
     def __unicode__(self):
-        return u"%s - %s /%s/" % (self.zid(), self.full_name(), self.birth_day.strftime("%d.%m.%Y"))
+        return u"%s /%s/ - ID %s" % ( self.full_name(), self.birth_day.strftime("%d.%m.%Y"), self.zid())
     
     def zid(self):
         return str(self.id).zfill(7)

@@ -177,9 +177,9 @@ from autocomplete.admin import AutocompleteAdmin
 
 class PatientAutocomplete(AutocompleteSettings):
     search_fields = ('^last_name', '^first_name')
-    limit = 10
+    limit = 20
     
-#autocomplete.register(Visit.patient, PatientAutocomplete)
+autocomplete.register(Visit.patient, PatientAutocomplete)
 
 
 def export_into_1c(modeladmin, request, queryset):
