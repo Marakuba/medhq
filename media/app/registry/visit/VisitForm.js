@@ -738,7 +738,7 @@ App.visit.VisitForm = Ext.extend(Ext.FormPanel, {
 				this.hidePaymentCmb('payer');
 				this.showPaymentCmb('policy');
 				this.reloadTree(rec.data.id);
-				this.rePrice('д');
+				this.rePrice(rec.data.id);
 				break
 			case 'б':
 				this.servicePanel.getLoader().baseParams['payment_type'] = rec.data.id;
@@ -749,24 +749,23 @@ App.visit.VisitForm = Ext.extend(Ext.FormPanel, {
 				this.hidePaymentCmb('policy');
 				this.hidePaymentCmb('payer');
 				this.reloadTree(rec.data.id);
-				this.rePrice('н');
+				this.rePrice(rec.data.id);
 				break
 			default:
 				this.hidePaymentCmb('policy');
 				this.hidePaymentCmb('payer');
 				this.reloadTree(rec.data.id);
+				this.rePrice(rec.data.id);
 				break
 		};
 		
 	},
 	
 	reloadTree:function(ptype_id){
-		if(App.settings.reloadPriceByPaymentType) {
-			var sp = this.servicePanel;
-			delete sp.getLoader().baseParams['payer'];
-			sp.getLoader().baseParams['payment_type'] = ptype_id;
-			sp.getLoader().load(sp.getRootNode())
-		}
+		var sp = this.servicePanel;
+		delete sp.getLoader().baseParams['payer'];
+		sp.getLoader().baseParams['payment_type'] = ptype_id;
+		sp.getLoader().load(sp.getRootNode())
 	},
 	
 	rePrice: function(ptype,payer){
