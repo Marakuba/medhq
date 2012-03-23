@@ -3,6 +3,14 @@ Ext.ns('App.visit');
 App.visit.VisitForm = Ext.extend(Ext.FormPanel, {
 	
 	initComponent:function(){
+		
+		// устанавливается при изменении типа цены;используется для занесения 
+		// в лист истории при изменении плательщика и полиса.
+		this.ptype_id = '';
+		// лист истории действий. 
+		this.historyList = [];
+		// текущая позиция в истории действий
+		this.curActionPos = -1;
 
 		this.inlines = new Ext.util.MixedCollection({});
 		
@@ -68,7 +76,13 @@ App.visit.VisitForm = Ext.extend(Ext.FormPanel, {
     			idProperty:'resource_uri',
     			fields:['resource_uri','name','number','state_name','start_date','end_date']
     		}),
-		    displayField: 'name'
+		    displayField: 'name',
+		    listeners:{
+		    	beforeselect: function(combo,record){
+		    		this.saveAction();
+		    	},
+		    	scope:this
+		    }
 //		    itemSelector: 'div.x-combo-list-item',
 //		    tpl:new Ext.XTemplate(
 //		    	'<tpl for="."><div class="x-combo-list-item">',
@@ -126,6 +140,9 @@ App.visit.VisitForm = Ext.extend(Ext.FormPanel, {
 			    proxyUrl:get_api_url('state'),
 			    value:App.settings.strictMode ? App.getApiUrl('state',active_state_id) : '',
 			    listeners:{
+			    	beforeselect:function(combo,record){
+			    		this.saveAction();
+			    	},
 			    	select:function(combo,record){
 			    		var sp = this.servicePanel;
 						sp.getLoader().baseParams['payer'] = App.uriToId(record.data.resource_uri);
@@ -316,6 +333,10 @@ App.visit.VisitForm = Ext.extend(Ext.FormPanel, {
 			anchor:'98%',
 			value:'н',
 			listeners: {
+				beforeselect:function(combo,rec){
+					this.ptype_id = rec.data.id;
+					this.saveAction();
+				},
 				select:function(combo,rec,i){
 					this.onPaymentTypeChoice(rec);
 				},
@@ -467,7 +488,12 @@ App.visit.VisitForm = Ext.extend(Ext.FormPanel, {
 			var items = this.defaultItems.concat(this.types[this.type]);
 		} else {
 //			console.error('Не задан тип формы');
-		}
+		};
+		
+		this.undoBtn = new Ext.Button({
+			text:'Назад',
+			disabled:true
+		});
 		
 
 		config = {
@@ -513,6 +539,8 @@ App.visit.VisitForm = Ext.extend(Ext.FormPanel, {
 			});
 		},this);
 		this.orderedService.on('sumchange', this.updateTotalSum, this);
+		this.orderedService.on('undo',this.undoAction, this);
+		this.orderedService.on('redo',this.redoAction, this);
 		this.servicePanel.on('serviceclick', this.onServiceClick, this);
 		
 	},
@@ -761,9 +789,13 @@ App.visit.VisitForm = Ext.extend(Ext.FormPanel, {
 		
 	},
 	
-	reloadTree:function(ptype_id){
+	reloadTree:function(ptype_id,payer){
 		var sp = this.servicePanel;
-		delete sp.getLoader().baseParams['payer'];
+		if (payer){
+			sp.getLoader().baseParams['payer'] = payer;
+		} else {
+			delete sp.getLoader().baseParams['payer'];
+		};
 		sp.getLoader().baseParams['payment_type'] = ptype_id;
 		sp.getLoader().load(sp.getRootNode())
 	},
@@ -854,6 +886,7 @@ App.visit.VisitForm = Ext.extend(Ext.FormPanel, {
 			this.getForm().findField('patient').originalValue = patientRecord.data.resource_uri;
 			this.getForm().findField('barcode').originalValue = record.data.barcode;
 			this.autoBarcode.disable();
+			this.paymentTypeCB.disable();
 		};
 	},
 	
@@ -894,6 +927,92 @@ App.visit.VisitForm = Ext.extend(Ext.FormPanel, {
 			});
 			barcodeWindow.show();
 		}
+	},
+	
+	saveAction: function(){
+		this.historyTailPop();
+		var actionItem = {}
+		actionItem['services'] = this.orderedService.store.data.items;
+		actionItem['ptype'] = this.paymentTypeCB.getValue();
+		actionItem['payer'] = this.payerCmb.getValue();
+		actionItem['policy'] = this.policyCmb.getValue();
+		this.historyList.push(actionItem);
+		this.curActionPos += 1;
+	},
+	
+	resetActionHistory: function(){
+		this.historyList = [];
+		this.curActionPos = -1;
+		
+	},
+	
+	historyTailPop: function(){
+		var historyCount = this.historyList.length - 1;
+		if (historyCount < 0) return false;
+		while (historyCount > this.curActionPos){
+			this.historyList.pop();
+			historyCount -= 1;
+		}
+	},
+	
+	undoAction: function(){
+		if (this.curActionPos < 0) return false;
+		var actionItem = this.historyList[this.curActionPos];
+		var history = this.historyList;
+		var services = actionItem['services'];
+		this.orderedService.store.removeAll();
+		this.orderedService.store.add(services);
+		this.orderedService.doLayout();
+		var payer = actionItem['payer'];
+		var ptype = actionItem['ptype'];
+		var policy = actionItem['policy'];
+		this.paymentTypeCB.setValue(ptype);
+		switch(ptype){
+			case 'д':
+				if (policy){
+					this.polisyCmb.setValue(policy);
+				} else {
+					this.polisyCmb.setRawValue('');
+			    	this.polisyCmb.originalValue = '';
+			    	this.polisyCmb.value = '';
+					this.polisyCmb.reset();
+				};
+				this.reloadTree(ptype);
+				this.policyCmb.setValue(actionItem['policy']);
+				this.hidePaymentCmb('payer');
+				this.showPaymentCmb('policy');
+				break
+			case 'б':
+				if (payer){
+					this.payerCmb.setValue(payer);
+					this.reloadTree(ptype,App.uriToId(payer))
+				} else {
+					this.payerCmb.setRawValue('');
+			    	this.payerCmb.originalValue = '';
+			    	this.payerCmb.value = '';
+					this.payerCmb.reset();
+					this.reloadTree(ptype,App.uriToId(ptype))
+				} 
+				this.servicePanel.getLoader().baseParams['payment_type'] = ptype;
+				this.hidePaymentCmb('policy');
+				this.showPaymentCmb('payer');
+				break
+			case 'н':
+				this.hidePaymentCmb('policy');
+				this.hidePaymentCmb('payer');
+				this.reloadTree(ptype);
+				break
+			default:
+				this.hidePaymentCmb('policy');
+				this.hidePaymentCmb('payer');
+				this.reloadTree(ptype);
+				break
+		};
+		this.curActionPos -= 1;
+	},
+	
+	redoAction: function(){
+		
 	}
 });
 
