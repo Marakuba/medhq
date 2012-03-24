@@ -150,6 +150,24 @@ App.visit.OrderedServiceInlineGrid = Ext.extend(Ext.grid.EditorGridPanel, {
 		    }
 		];		
 		
+		this.undoBtn = new Ext.Button({
+			text:'Назад',
+//			disabled:true,
+			scope:this,
+			handler:function(){
+				this.fireEvent('undo');
+			}
+		});
+		
+		this.redoBtn = new Ext.Button({
+			text:'Вперед',
+			disabled:true,
+			scope:this,
+			handler:function(){
+				this.fireEvent('redo');
+			}
+		})
+		
 		var config = {
 			id:'ordered-service-inline-grid',
 			loadMask : {
@@ -185,7 +203,7 @@ App.visit.OrderedServiceInlineGrid = Ext.extend(Ext.grid.EditorGridPanel, {
 				text:'Изменить врача',
 				disabled:true,
 				handler:this.changeStaff.createDelegate(this)
-			}],
+			},this.undoBtn,this.redoBtn],
 			viewConfig : {
 				forceFit : true
 				//getRowClass : this.applyRowClass
