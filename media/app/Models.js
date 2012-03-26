@@ -118,6 +118,7 @@ App.models.preorderModel = new Ext.data.Record.create([
 	{name: 'patient_phone'},
 	{name: 'promotion'},
 	{name: 'promotion_name'},
+	{name: 'promo_discount'},
 	{name: 'count'},
 	{name: 'completed_count'},
 	{name: 'operator_name'},
