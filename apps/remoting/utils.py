@@ -15,120 +15,107 @@ import logging
 
 logger = logging.getLogger('remoting')
 
-def get_patient(request, data):
-    state = State.objects.get(uuid=data['source_lab'])
-    try:
-        patient = SyncObject.objects.get(sync_id=data['patient']['id'], state=state, content_type__model='patient').content_object
-        logger.debug( "patient found in SyncTable" )
-    except:
-        
-        patient, created = Patient.objects.get_or_create(last_name=data['patient']['last_name'],
-                                                first_name=data['patient']['first_name'],
-                                                mid_name=data['patient']['mid_name'],
-                                                birth_day=data['patient']['birth_day'],
-                                                gender=data['patient']['gender'], 
-                                                operator=state.remotestate.user)
-        need_to_sync = False
-        if created:
-            patient.mobile_phone = data['patient']['mobile_phone']
-            patient.state = state
-            patient.save()
-            need_to_sync = True
-            logger.debug( "patient created and will be synced" )
-        else:
-            try:
-                SyncObject.objects.get(content_type__model='patient',object_id=patient.id)
-                print "patient %s found in registry and in not need to sync" % patient.id
-            except Exception, err:
-                need_to_sync = True
-                print 'errrr:', err
-                print "patient %s found in registry and will be synced" % patient.id
-        
-        if need_to_sync:
-            SyncObject.objects.create(content_object=patient, 
-                                      state=state, 
-                                      sync_id=data['patient']['id'])
+def get_patient(request, data, state):
+
+    lookups = dict([ (k,data[k]) for k in ('last_name','first_name','mid_name','birth_day','gender')])
     
+    try:
+        patient = Patient.objects.get(**lookups)
+        msg = u'Пользователь %s найден' % patient.short_name()
+    except ObjectDoesNotExist:
+        data['state'] = state
+        data['operator'] = state.remotestate.user
+        patient = Patient.objects.create(**data)
+        msg = u'Пользователь %s создан' % patient.short_name()
+        
+    logger.info(msg)
     return patient
 
 
-def get_visit(request, data, patient):
-    state = State.objects.get(uuid=data['source_lab'])
-    try:
-        visit = SyncObject.objects.get(sync_id=data['visit']['id'], state=state, content_type__model='visit').content_object
-        logger.debug( "visit found in SyncTable" )
-    except:
-        visit = Visit.objects.create(cls=u'б',
-                                     office=state,
-                                     patient=patient,
-                                     payer=state,
-                                     source_lab=state,
-                                     payment_type=u'к',
-                                     operator=state.remotestate.user)
-        logger.debug( u"visit created %s" % visit )
-        SyncObject.objects.create(content_object=visit, 
-                          state=state, 
-                          sync_id=data['visit']['id'])
+def get_visit(request, data, state, patient):
+    
+    specimen = data['specimen']
+    visit, created = Visit.objects.get_or_create(cls=u'б',
+                                                 office=state,
+                                                 specimen=specimen,
+                                                 patient=patient,
+                                                 payer=state,
+                                                 source_lab=state,
+                                                 payment_type=u'к',
+                                                 operator=state.remotestate.user)
+    
+    msg = created and u'Визит для образца %s создан' % specimen or u'Визит для образца %s найден' % specimen
+    logger.info(msg)
+    
     return visit
 
 
 def get_ordered_service(request, data):
     remote_state = State.objects.get(uuid=data['source_lab'])
     office = State.objects.get(uuid=data['dest_lab'])
-    patient = get_patient(request, data)
-    visit = get_visit(request, data, patient)
+    patient = get_patient(request, data['patient'], remote_state)
+    visit = get_visit(request, data['visit'], remote_state, patient)
+
     try:
-        ordered_service = SyncObject.objects.get(sync_id=data['order']['id'], state=remote_state, content_type__model='orderedservice').content_object
-        logger.debug(u"orderedservice found in SyncTable")
-    except:
-        try:
-            service = BaseService.objects.get(code=data['order']['code'])
-            """
-            необходимо учесть что лаборатории могут быть разными
-            последовательность:
-            запрашиваются extended service
-            если количество результатов == 1, то берем единственный элемент
-            если больше 1, то фильтруем запрос таким образом, чтобы осталось одно собственное учреждение
-            если таковых нет, то берем первый результат из запроса
-            """
-            ex_services = service.extendedservice_set.active()
-            c = ex_services.count()
-            if c==1:
-                execution_place = ex_services[0]
-            elif c>1:
-                own_ex_services = ex_services.filter(state__type=u'b')
-                if own_ex_services.count()>0:
-                    execution_place = own_ex_services[0]
-                else:
-                    execution_place = ex_services[0]
+        service = BaseService.objects.get(code=data['order']['code'])
+
+    except ObjectDoesNotExist:
+        msg = u"Исследование с кодом '%s' не найдено" % data['order']['code']
+        logger.debug(msg)
+        raise Exception(msg)
+
+    except Exception, err:
+        msg = u"Ошибка поиска исследования '%s': %s" % (data['order']['code'], err.__unicode__())
+        logger.debug(msg)
+        raise Exception(msg)
+    
+    
+    if service:
+        """
+        необходимо учесть что лаборатории могут быть разными
+        последовательность:
+        запрашиваются extended service
+        если количество результатов == 1, то берем единственный элемент
+        если больше 1, то фильтруем запрос таким образом, чтобы осталось одно собственное учреждение
+        если таковых нет, то берем первый результат из запроса
+        """
+        ex_services = service.extendedservice_set.active()
+        c = ex_services.count()
+        if c==1:
+            ext_service = ex_services[0]
+        elif c>1:
+            own_ex_services = ex_services.filter(state__type=u'b')
+            if own_ex_services.count()>0:
+                ext_service = own_ex_services[0]
             else:
-                raise Exception(u"Исследование с кодом '%s' имеет неверные настройки" % data['order']['code'])
-            logger.debug( u'Для услуги %s найдено место выполнения: %s' % ( service, execution_place.state) )
+                ext_service = ex_services[0]
+        else:
+            raise Exception(u"Исследование с кодом '%s' имеет неверные настройки" % data['order']['code'])
+       
+        logger.debug( u'Для услуги %s найдено место выполнения: %s' % ( service, ext_service.state) )
+    
+    
+    if ext_service:
+        try:
             ordered_service, created = OrderedService.objects.get_or_create(order=visit,
-                                                                            execution_place=execution_place.state,
+                                                                            ext_service=ext_service.state,
                                                                             service=service,
                                                                             operator=visit.operator)
-            if created:
-                logger.debug( "OrderedService created" )
-                ordered_service.to_lab()
-                logger.debug( "Sended to lab... %s %s" % ( ordered_service.service, execution_place.state))
-                SyncObject.objects.create(content_object=ordered_service, 
-                                          state=remote_state, 
-                                          sync_id=data['order']['id'])
-        except MultipleObjectsReturned:
-            msg = u"Исследование с кодом '%s' имеет неверные настройки" % data['order']['code']
-            raise Exception(msg)
-            logger.debug(msg)
-        except ObjectDoesNotExist:
-            msg = u"Исследование с кодом '%s' не найдено" % data['order']['code']
-            raise Exception(msg)
-            logger.debug(msg)
         except Exception, err:
-            msg = u"Неизввестная ошибка: %s" % err.__unicode__()
-            raise Exception(msg)
-            logger.debug(msg)
-            
-    return ordered_service
+            logger.exception(u'Ошибка при создании заказа %s: %s' % (service, err.__unicode__()) )
+        
+        if created:
+            logger.info( "Заказ %s (%s) для образца %s создан" % (service, ext_service.state, visit.specimen) )
+
+        try:
+            ordered_service.to_lab()
+        except Exception, err:
+            logger.exception(u'Ошибка проведения лабораторной услуги %s: %s' % (service, err.__unicode__()))
+
+        return ordered_service
+
+    else:
+        return None
 
 
 def get_visit_sync_id(visit):
