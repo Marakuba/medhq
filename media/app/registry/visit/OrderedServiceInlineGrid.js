@@ -152,7 +152,7 @@ App.visit.OrderedServiceInlineGrid = Ext.extend(Ext.grid.EditorGridPanel, {
 		
 		this.undoBtn = new Ext.Button({
 			text:'Назад',
-//			disabled:true,
+			disabled:true,
 			scope:this,
 			handler:function(){
 				this.fireEvent('undo');
