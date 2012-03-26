@@ -1045,6 +1045,7 @@ App.visit.VisitForm = Ext.extend(Ext.FormPanel, {
 				this.hidePaymentCmb('payer');
 				break
 		};
+		this.orderedService.onSumChange();
 	}
 });
 
