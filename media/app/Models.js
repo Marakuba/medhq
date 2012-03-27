@@ -149,7 +149,14 @@ App.models.patientModel = new Ext.data.Record.create([
 	{name: 'initial_account'},
 	{name: 'billed_account'},
 	{name: 'doc'},
-	{name: 'hid_card'}
+	{name: 'hid_card'},
+	{name: 'id_card_type'},
+	{name: 'id_card_series'},
+	{name: 'id_card_number'},
+	{name: 'id_card_issue_date'},
+	{name: 'id_card_org'},
+	{name: 'accepted', type:'date'}
+	 
 ]);
 
 App.models.FieldSet = new Ext.data.Record.create([

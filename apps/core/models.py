@@ -50,6 +50,12 @@ def make_person_object(sub_model):
                                                blank=True, 
                                                help_text=u'Город, улица, дом, квартира')
         
+        id_card_type = models.CharField(u'тип документа', max_length=1,choices=IDCardTypes, blank=True, null=True)
+        id_card_series = models.CharField(u'серия', max_length=6, blank=True, null=True)
+        id_card_number = models.CharField(u'номер', max_length=10, blank=True, null=True)
+        id_card_issue_date = models.DateField(u'Дата выдачи', blank=True, null=True)
+        id_card_org = models.CharField(u"кем выдано", max_length=200, blank=True, null=True)
+        
         class Meta:
             abstract = True
     

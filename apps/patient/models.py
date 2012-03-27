@@ -36,6 +36,7 @@ class Patient(make_person_object('patient')):
     client_item = models.OneToOneField(ClientItem, null=True, blank= True, related_name = 'client')
     balance = models.FloatField(u'Баланс', blank=True, null=True)
     ad_source = models.ForeignKey(AdSource, blank=True, null=True, verbose_name=u'Источник рекламы')
+    accepted = models.DateTimeField(u'Время подписания согласия', null = True, blank=True)
     
     objects = models.Manager()
     

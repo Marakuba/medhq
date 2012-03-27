@@ -10,7 +10,12 @@ App.patient.PatientForm = Ext.extend(Ext.form.FormPanel, {
 			record:this.record
 		});
 		
+		this.idCard = new App.patient.IDCardForm({
+			record:this.record
+		})
+		
 		this.inlines.add('inspolicy', this.insPolicy);
+		this.inlines.add('idcard', this.idCard);
 		
 		this.cl_acc_grid = new App.patient.ClientAccountGrid({
 			clientHidden : true	,
@@ -88,6 +93,10 @@ App.patient.PatientForm = Ext.extend(Ext.form.FormPanel, {
 				border:false
 			},
 			items:[{
+				title:'Паспорт',
+				layout:'fit',
+				items:[this.idCard]
+			},{
 				title:'ДМС',
 				layout:'fit',
 				items:[this.insPolicy]
@@ -114,6 +123,10 @@ App.patient.PatientForm = Ext.extend(Ext.form.FormPanel, {
 					layout:'form',
 					labelWidth:115,
 					items:[{
+						xtype:'datefield',
+						name:'accepted',
+						hidden:true
+					},{
 						xtype:'textfield',
 						name:'last_name',
                     	fieldLabel: 'Фамилия',
@@ -211,7 +224,7 @@ App.patient.PatientForm = Ext.extend(Ext.form.FormPanel, {
 		this.on('afterrender', function(){
 			if(this.record) {
 				this.getForm().loadRecord(this.record);
-			}
+			};
 		},this);
 	},
 	
@@ -259,6 +272,13 @@ App.patient.PatientForm = Ext.extend(Ext.form.FormPanel, {
 			steps+=s;
 		});
 		return steps
+	},
+	
+	setAcceptedTime: function(){
+		var acceptedField = this.getForm().findField('accepted');
+		var today = new Date();
+		console.log(today)
+		acceptedField.setValue(today);
 	}
 
 });

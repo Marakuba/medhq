@@ -89,10 +89,14 @@ App.Patients = Ext.extend(Ext.Panel, {
 		'Скидка: {discount_name}. ',
 		'Общая сумма: {billed_account}. ',
 		'Баланс: <span style="color:{color}">{balance}</span>. ',
+		'{accepted:this.notAccepted}',
 		'{ad_source_name:this.isEmpty}',
 		{
 			isEmpty:function(v){
 				return v ? '' : '<span class="warn">Спросить источник рекламы!</span>'
+			},
+			notAccepted:function(v){
+				return v ? '' : '<span class="warn">НЕТ СОГЛАСИЯ!   </span>'
 			}
 		}
 	),
