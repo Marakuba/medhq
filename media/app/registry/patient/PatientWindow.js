@@ -62,7 +62,12 @@ App.patient.PatientWindow = Ext.extend(Ext.Window, {
 				text:'Сохранить',
 				handler:this.onFormSave.createDelegate(this,[false]),
 				scope:this
-			},App.settings.strictMode ? this.postMaterialBtn : this.postVisitlBtn]
+			},App.settings.strictMode ? this.postMaterialBtn : this.postVisitlBtn,
+			{
+				text:(this.record && this.record.data.accepted) ? 'Подтверждено от ' + this.record.data.accepted.format('d.m.y H:i'):'Подтвердить',
+				handler:this.onAccepted,
+				scope:this
+			}]
 		}
 		Ext.apply(this, Ext.apply(this.initialConfig, config));
 		App.patient.PatientWindow.superclass.initComponent.apply(this, arguments);
@@ -126,6 +131,15 @@ App.patient.PatientWindow = Ext.extend(Ext.Window, {
 				this.close();
 			}
 		}
+	},
+	
+	onAccepted: function(){
+		Ext.Msg.confirm('Подтверждение','Клиент росписался?',function(btn){
+			if (btn='yes'){
+				this.form.setAcceptedTime();
+			}
+		
+		},this)
 	}
 });
 
