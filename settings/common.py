@@ -175,6 +175,12 @@ LOGGING = {
             'formatter':'simple',
             'filename':LOG_FILE
         },
+        'ris_file':{
+            'level':'DEBUG',
+            'class':'logging.FileHandler',
+            'formatter':'simple',
+            'filename':SITE_ROOT / 'logs' / 'RIS.log'
+        },
         'mail_admins': {
             'level': 'ERROR',
             'class': 'django.utils.log.AdminEmailHandler'
@@ -203,6 +209,11 @@ LOGGING = {
         },
         'general':{
             'handlers': ['file'],
+            'level':'DEBUG',
+            'propagate':False
+        },
+        'RIS':{
+            'handlers': ['ris_file'],
             'level':'DEBUG',
             'propagate':False
         }
