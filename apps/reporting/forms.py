@@ -52,6 +52,10 @@ class ReportForm(forms.Form):
                                              queryset=places_filial,                                            
                                              required=False)
                                              
+    from_lab = forms.ModelChoiceField(label=u'Лаборатория (плательщик)',
+                                             queryset=places_filial,                                            
+                                             required=False)
+                                             
     execution_place_office = forms.ModelChoiceField(label=u'Место выполнения (ОФИС)',
                                              queryset=places_office,                                            
                                              required=False)

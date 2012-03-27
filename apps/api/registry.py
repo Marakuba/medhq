@@ -2010,7 +2010,7 @@ class PaymentResource(ExtResource):
         
 class InvoiceResource(ExtResource):
     
-    office = fields.ForeignKey(StateResource, 'office')
+    office = fields.ForeignKey(OwnStateResource, 'office')
     state = fields.ForeignKey(MedStateResource, 'state')
     
     def dehydrate(self, bundle):

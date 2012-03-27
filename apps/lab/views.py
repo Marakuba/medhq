@@ -301,6 +301,7 @@ def pull_invoice(request):
     if request.method=='POST':
         invoice_id = request.POST.get('invoice',None)
         state_id = request.POST.get('state',None)
+        office_id = request.POST.get('office',request.active_profile.department.state.id)
         if not state_id:
             return HttpResponseBadRequest()
         state = get_object_or_404(State, id=state_id)
@@ -310,7 +311,7 @@ def pull_invoice(request):
         else:
             return HttpResponseBadRequest()
 #            invoice = Invoice.objects.create(state=state)
-        items = OrderedService.objects.filter(order__office=request.active_profile.department.state,
+        items = OrderedService.objects.filter(order__office__id=office_id,
                                               invoiceitem__isnull=True, 
                                               sampling__isnull=False, 
                                               execution_place=state)

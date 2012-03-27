@@ -39,7 +39,7 @@ FROM \
 WHERE \
   TTvis.count is not null and TTvis.price is not null and \
   to_char(Tvis.created,'YYYY-MM-DD') BETWEEN '%s' and '%s'  \
-  %s %s %s %s %s %s %s %s %s"
+  %s %s %s %s %s %s %s %s %s %s"
     
     bq_exists_uzi = u"\
   and exists (SELECT * \
@@ -161,6 +161,10 @@ Where \
         if self.params['from_place_filial'] is not u'':
             from_place_filial = u"and Tvis.office_id = '%s'"% (self.params['from_place_filial'])
 
+        from_lab = ''
+        if self.params['from_lab'] is not u'':
+            from_lab = u"and Tvis.source_lab_id = '%s'"% (self.params['from_lab'])
+
         execution_place_office = ''
         if self.params['execution_place_office'] is not u'':
             execution_place_office = u"and Tstgr.id = '%s'"% (self.params['execution_place_office'])
@@ -181,7 +185,9 @@ Where \
                                 ,staff__department
                                 ,order__referral
                                 ,from_place_filial
+                                ,from_lab
                                 ,execution_place_office
                                 ,execution_place_filial
-                                ,order__payment_type )      
+                                ,order__payment_type
+                                )      
     

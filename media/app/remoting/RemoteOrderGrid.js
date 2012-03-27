@@ -253,10 +253,10 @@ App.remoting.RemoteOrderGrid = Ext.extend(Ext.grid.GridPanel, {
 	
 	onSend : function() {
 		var ids = this.getSelectedId();
+		this.sendBtn.disable();
 		App.direct.remoting.postOrders(ids,function(result,e){
 			this.modeBtn.setActiveItem(0);
-//			this.storeFilter('status',undefined);
-//        	this.manageBtn();
+			this.sendBtn.enable();
 		},this);
 	},
 	

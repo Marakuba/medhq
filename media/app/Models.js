@@ -434,6 +434,7 @@ App.models.Invoice = new Ext.data.Record.create([
     {name: 'created', type:'date',format:'c'},
     {name: 'state'},
     {name: 'state_name'},
+    {name: 'office'},
     {name: 'office_name'},
     {name: 'operator_name'},
     {name: 'comment'}

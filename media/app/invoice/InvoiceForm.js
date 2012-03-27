@@ -45,6 +45,26 @@ App.invoice.InvoiceForm = Ext.extend(Ext.FormPanel, {
 						name:'id',
 						readOnly:true
 					}]
+				},]
+			},{
+				layout:'hbox',
+				height:40,
+				padding:5,
+				border:false,
+				defaults:{
+					border:false,
+					margins:'0 5 0 0'
+				},
+				items:[{
+					layout:'form',
+					items:[new Ext.form.LazyComboBox({
+			        	fieldLabel:'Офис',
+			        	name:'office',
+					    minChars:3,
+					    emptyText:'Выберите офис...',
+					    proxyUrl:get_api_url('ownstate'),
+					    allowBlank:false
+					})]
 				},{
 					layout:'form',
 					items:[new Ext.form.LazyComboBox({
@@ -100,6 +120,9 @@ App.invoice.InvoiceForm = Ext.extend(Ext.FormPanel, {
 		this.on('afterrender', function(){
 			if(this.record) {
 				this.getForm().loadRecord(this.record);
+			} else {
+				console.info(App.getApiUrl('ownstate',active_state_id));
+				this.getForm().findField('office').setValue(App.getApiUrl('ownstate',active_state_id));
 			}
 		},this);
 		
@@ -123,6 +146,7 @@ App.invoice.InvoiceForm = Ext.extend(Ext.FormPanel, {
 			method:'POST',
 			params:{
 				invoice:this.record.id,
+				office:App.uriToId(this.record.data.office),
 				state:App.uriToId(this.record.data.state)
 			},
 			success:function(response, opts){
