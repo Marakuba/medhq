@@ -378,7 +378,7 @@ def get_service_tree(request):
         tree = []
         
         # если передан параметр promotions, добавляем их в дерево услуг
-        if promotion:
+        if not nocache or promotion:
             promotions = Promotion.objects.actual()
             if promotions.count():
                 tree_node = {
