@@ -123,9 +123,9 @@ App.patient.PatientForm = Ext.extend(Ext.form.FormPanel, {
 					layout:'form',
 					labelWidth:115,
 					items:[{
-						xtype:'datefield',
+						xtype:'hidden',
 						name:'accepted',
-						hidden:true
+//						hidden:true
 					},{
 						xtype:'textfield',
 						name:'last_name',
@@ -279,6 +279,8 @@ App.patient.PatientForm = Ext.extend(Ext.form.FormPanel, {
 		var today = new Date();
 		console.log(today)
 		acceptedField.setValue(today);
+		var d = acceptedField.getValue();
+		console.log(d)
 	}
 
 });
