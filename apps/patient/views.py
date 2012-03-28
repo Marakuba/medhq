@@ -3,7 +3,7 @@ from direct.providers import remote_provider
 from extdirect.django.decorators import remoting
 import simplejson
 from patient.models import Patient
-
+from django.views.generic.simple import direct_to_template
 
 @remoting(remote_provider, len=1, action='patient', name='updatePatientInfo')
 def update_patient_info(request):
@@ -20,3 +20,13 @@ def update_patient_info(request):
         'discount':d and d.value or 0
     }
     return dict(success=True, data=data)
+
+def acceptancePrint(request,patient_id):
+    
+    ec = {
+            
+    }
+    
+    return direct_to_template(request=request, 
+                              template="print/patient/agreement.html",
+                              extra_context=ec)
