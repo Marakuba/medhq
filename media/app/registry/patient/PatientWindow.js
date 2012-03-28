@@ -138,12 +138,14 @@ App.patient.PatientWindow = Ext.extend(Ext.Window, {
 	
 	onAccepted: function(){
 		
-		Ext.Msg.confirm('Подтверждение','Клиент расписался?',function(btn){
-			if (btn=='yes'){
-				this.form.setAcceptedTime();
-			}
-		
-		},this);
+		if (!this.record.data.accepted){
+			Ext.Msg.confirm('Подтверждение','Клиент расписался?',function(btn){
+				if (btn=='yes'){
+					this.form.setAcceptedTime();
+				}
+			
+			},this);
+		}
 		var url = String.format(this.acceptedUrlTpl,this.record.data.id);
 		window.open(url);
 	}
