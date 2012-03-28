@@ -21,12 +21,16 @@ def update_patient_info(request):
     }
     return dict(success=True, data=data)
 
+
 def acceptancePrint(request,patient_id):
     
+    patient = Patient.objects.get(id=patient_id)
+    
     ec = {
-            
+        'patient':patient,
+        'state':request.active_profile.department.state
     }
     
     return direct_to_template(request=request, 
-                              template="print/patient/agreement.html",
+                              template="print/patient/acceptance.html",
                               extra_context=ec)

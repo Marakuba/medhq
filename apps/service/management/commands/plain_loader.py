@@ -7,6 +7,7 @@ import csv
 from service.models import BaseService, ExtendedService
 from state.models import State
 from pricelist.models import Price
+import datetime
 
 class Command(BaseCommand):
 
@@ -16,6 +17,11 @@ class Command(BaseCommand):
         
         f = args[0]
         state_name = args[1]
+        price_type = args[2]
+        try:
+            on_date = args[3]
+        except:
+            on_date = datetime.date.today()
         
         try:
             state = State.objects.get(name=state_name)
@@ -33,7 +39,10 @@ class Command(BaseCommand):
                     print u"Услуга %s не выполняется в %s" % (name, state_name)
                     continue
                 ex = ex[0]
-                Price.objects.create(extended_service=ex, price_type=u'r', value=price)
+                Price.objects.create(extended_service=ex, 
+                                     price_type=price_type, 
+                                     value=price,
+                                     on_date=on_date)
                 print u"Для услуги %s установлена цена %s" % (name, price)
             except:
                 print u"Услуга %s не найдена" % name

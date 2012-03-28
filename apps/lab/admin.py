@@ -178,12 +178,13 @@ class AnalysisAdmin(admin.ModelAdmin):
 class ResultAdmin(admin.ModelAdmin):
     """
     """
-    list_display = ('visit','analysis')
+    list_display = ('visit','analysis','modified','modified_by')
+    readonly_fields = ('visit','analysis','sample')
     
     def visit(self, obj):
         return obj.order.visit.__unicode__()
     search_fields = ('order__visit__id','order__visit__patient__last_name','analysis__service__short_name')
-    ordering = ('-order',)
+#    ordering = ('-order',)
 
 class EquipmentAdmin(admin.ModelAdmin):
     list_display = ('name','serial_number','order','is_active')
