@@ -1,8 +1,12 @@
-Ext.ns('App','App.patient');
+Ext.ns('App','App.patient', 'App.direct');
 
 App.patient.PatientWindow = Ext.extend(Ext.Window, {
 
 	initComponent:function(){
+		
+		//устанавливается, если было подписано соглашение пациентом
+		//при сохранении отправляется запрос на создание экземпляра модели Agreement
+		this.setAcceptedDate = false; 
 		
 		this.store = this.store || new Ext.data.RESTStore({
 			autoLoad : true,
@@ -18,7 +22,7 @@ App.patient.PatientWindow = Ext.extend(Ext.Window, {
 			fn:function(record){
 				this.record = record;
 				this.store.insertRecord(this.record);
-				if(!this.record.phantom) this.popStep()
+//				if(!this.record.phantom) this.popStep()
 			},
 			scope:this			
 		});
@@ -62,13 +66,7 @@ App.patient.PatientWindow = Ext.extend(Ext.Window, {
 				text:'Сохранить',
 				handler:this.onFormSave.createDelegate(this,[false]),
 				scope:this
-			},App.settings.strictMode ? this.postMaterialBtn : this.postVisitlBtn,
-			{
-				text:(this.record && this.record.data.accepted) ? 'Согласие от ' + this.record.data.accepted.format('d.m.y H:i'):'Согласие',
-				handler:this.onAccepted,
-				iconCls: (this.record && this.record.data.accepted) ? 'silk-accept' : 'silk-error',
-				scope:this
-			}]
+			},App.settings.strictMode ? this.postMaterialBtn : this.postVisitlBtn]
 		}
 		Ext.apply(this, Ext.apply(this.initialConfig, config));
 		App.patient.PatientWindow.superclass.initComponent.apply(this, arguments);
@@ -83,6 +81,10 @@ App.patient.PatientWindow = Ext.extend(Ext.Window, {
 		this.post_visit = post_visit;
 		var f = this.form;
 		this.steps = f.getSteps();
+		if (this.setAcceptedDate){
+			this.steps += 1;
+			this.createAgreement();
+		}
 		this.tSteps = this.steps;
 		if(this.steps>0) {
 			this.msgBox = Ext.MessageBox.progress('Подождите','Идет сохранение документа!');
@@ -142,13 +144,26 @@ App.patient.PatientWindow = Ext.extend(Ext.Window, {
 		if (!this.record.data.accepted){
 			Ext.Msg.confirm('Подтверждение','Согласие подписано пациентом?',function(btn){
 				if (btn=='yes'){
-					this.form.setAcceptedTime();
+//					this.form.setAcceptedDate();
+					this.setAcceptedDate = true;
 				}
 			
 			},this);
 		}
 		var url = String.format(this.acceptedUrlTpl,this.record.data.id);
 		window.open(url);
+	},
+	
+	createAgreement: function(){
+		params = {}
+		params['patient'] = this.record.data.id;
+		params['state'] = state;
+		console.log(params)
+		App.direct.patient.setAcceptedDate(params,function(res){
+			console.log(res);
+			this.record.data['accepted']
+			this.popStep();
+		},this)
 	}
 });
 

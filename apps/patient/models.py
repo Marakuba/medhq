@@ -36,7 +36,6 @@ class Patient(make_person_object('patient')):
     client_item = models.OneToOneField(ClientItem, null=True, blank= True, related_name = 'client')
     balance = models.FloatField(u'Баланс', blank=True, null=True)
     ad_source = models.ForeignKey(AdSource, blank=True, null=True, verbose_name=u'Источник рекламы')
-    accepted = models.DateTimeField(u'Время подписания согласия', null = True, blank=True)
     
     objects = models.Manager()
     
@@ -118,6 +117,26 @@ class Patient(make_person_object('patient')):
         verbose_name_plural = u"Пациенты"
         ordering = ('last_name','first_name','mid_name')
         
+    def get_accepted_date(self,state):
+        try:
+            agrmt = Agreement.objects.get(patient=self,state=state)
+            return agrmt.accepted
+        except:
+            return ''
+
+class Agreement(models.Model):
+    """
+    """
+    patient = models.ForeignKey(Patient)
+    accepted = models.DateTimeField(u'Время подписания согласия', auto_now_add=True, null = True, blank=True)
+    state = models.ForeignKey(State)
+    
+    def __unicode__(self):
+        return smart_unicode(u'%s, %s' % (self.patient, self.state) )
+    
+    class Meta:
+        verbose_name = u'соглашение'
+        verbose_name_plural = u'соглашения'       
 
 class InsurancePolicy(make_operator_object('insurance_policy')):
     """

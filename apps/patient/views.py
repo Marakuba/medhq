@@ -2,8 +2,9 @@
 from direct.providers import remote_provider
 from extdirect.django.decorators import remoting
 import simplejson
-from patient.models import Patient
+from patient.models import Patient, Agreement
 from django.views.generic.simple import direct_to_template
+from state.models import State
 
 @remoting(remote_provider, len=1, action='patient', name='updatePatientInfo')
 def update_patient_info(request):
@@ -30,3 +31,24 @@ def acceptancePrint(request,patient_id):
     return direct_to_template(request=request, 
                               template="print/patient/agreement.html",
                               extra_context=ec)
+
+    
+@remoting(remote_provider, len=1, action='patient', name='setAcceptedDate')
+def set_accepted_date(request):
+    data = simplejson.loads(request.raw_post_data)
+    patient_id = data['data'][0]['patient']
+    state_id = data['data'][0]['state']
+    success = True
+
+    try:
+        state = State.objects.get(id=state_id)
+        patient = Patient.objects.get(id=patient_id)
+        agreement = Agreement.objects.create(patient=patient,state=state)
+        data = {'accepted':agreement.accepted.strftime("%m/%d/%Y %H:%M:%S")} 
+
+    except:
+        success = False
+        data = {}
+    
+    
+    return dict(success=success, data=data)
