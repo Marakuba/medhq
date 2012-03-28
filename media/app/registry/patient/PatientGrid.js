@@ -62,6 +62,13 @@ App.patient.PatientGrid = Ext.extend(Ext.grid.GridPanel, {
 			scope:this
 		});
 		
+		this.agreementButton = new Ext.Button({
+			text:'Согласие',
+			disabled:true,
+			handler: this.onAccepted.createDelegate(this),
+			scope:this
+		});
+		
 		var config = {
 			loadMask : {
 				msg : 'Подождите, идет загрузка...'
@@ -90,7 +97,7 @@ App.patient.PatientGrid = Ext.extend(Ext.grid.GridPanel, {
 				iconCls:'silk-add',
 				text:'Новый пациент',
 				handler:this.onPatientAdd.createDelegate(this, [])
-			},this.editButton,{
+			},this.editButton,this.agreementButton,{
 				text:'>',
 				handler:function(){
 					var rec = this.getSelectionModel().getSelected();
@@ -135,12 +142,21 @@ App.patient.PatientGrid = Ext.extend(Ext.grid.GridPanel, {
 	
 	btnSetDisabled: function(status) {
         this.editButton.setDisabled(status);
+        this.agreementButton.setDisabled(status);
         this.cardButton.setDisabled(status);
         this.contractButton.setDisabled(status);
 	},
 	
-	onPatientSelect: function(){
-//		this.btnSetDisable(false);
+	onPatientSelect: function(record){
+		if(!record) return false;
+		if (record.data.accepted){
+			var text = 'Согласие от ' + record.data.accepted.format('d.m.y H:i');
+			this.agreementButton.setIconClass('silk-accept');
+		} else {
+			var text = 'Cогласие';
+			this.agreementButton.setIconClass('silk-error');
+		}
+		this.agreementButton.setText(text);
 	},
 	
 	getSelected: function() {
@@ -178,9 +194,7 @@ App.patient.PatientGrid = Ext.extend(Ext.grid.GridPanel, {
 			}
 		});
 		this.win.show();
-		this.win.on('savecomplete', function(){
-			this.win.close();
-		},this);
+		this.win.on('savecomplete',this.onSaveComplete,this);
 	},
 	
 	onPatientEdit: function() {
@@ -194,12 +208,13 @@ App.patient.PatientGrid = Ext.extend(Ext.grid.GridPanel, {
     			}
     		});
     		this.win.show();
-    		this.win.on('savecomplete', function(){
-    			this.win.close();
-    		},this);
+    		this.win.on('savecomplete',this.onSaveComplete,this);
 		}	
 	},
 	
+	onSaveComplete: function(record){
+		if(this.win) this.win.close();
+	},
 	onStoreWrite: function(store, action, result, res, rs) {
 		if( res.success && this.win ) {
 			this.store.filter('id',rs.data.id);
@@ -222,6 +237,35 @@ App.patient.PatientGrid = Ext.extend(Ext.grid.GridPanel, {
 				this.fireEvent('patientselect',records[0])
 			},scope:this})
 		}
+	},
+	
+	acceptedUrlTpl: '/patient/acceptance/{0}/',
+	
+	onAccepted: function(){
+		
+		var record = this.getSelected();
+		if (!record) return false;
+		
+		if (!record.data.accepted){
+			Ext.Msg.confirm('Подтверждение','Согласие подписано пациентом?',function(btn){
+				if (btn=='yes'){
+					params = {}
+					params['patient'] = record.data.id;
+					params['state'] = state;
+					App.direct.patient.setAcceptedDate(params,function(res){
+						console.log(res);
+						var d = new Date();
+						var date = d.setTime(Date.parseDate(res.data.accepted));
+						console.log(date)
+						record.data['accepted'] = date;
+						this.fireEvent('patientselect',record)
+					},this)
+				}
+			
+			},this);
+		}
+		var url = String.format(this.acceptedUrlTpl,record.data.id);
+		window.open(url);
 	}
 	
 });

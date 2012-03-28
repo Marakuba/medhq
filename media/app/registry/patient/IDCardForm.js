@@ -23,12 +23,7 @@ App.patient.IDCardForm = Ext.extend(Ext.form.FormPanel, {
 			selectOnFocus:true,
 			editable:false,
 			anchor:'68%',
-			value:'1',
-			listeners: {
-				select:function(combo,rec,i){
-				},
-				scope:this
-			}
+			value:'1'
 		});
 		
 		config = {
@@ -42,7 +37,7 @@ App.patient.IDCardForm = Ext.extend(Ext.form.FormPanel, {
 			layout:'form',
 			labelWidth:115,
 			items:[
-				this.idCardTypeCB,{
+				{
 				xtype:'compositefield',
 				items:[{
 					xtype:'textfield',

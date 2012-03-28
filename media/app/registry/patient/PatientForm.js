@@ -123,9 +123,6 @@ App.patient.PatientForm = Ext.extend(Ext.form.FormPanel, {
 					layout:'form',
 					labelWidth:115,
 					items:[{
-						xtype:'hidden',
-						name:'accepted'
-					},{
 						xtype:'textfield',
 						name:'last_name',
                     	fieldLabel: 'Фамилия',
