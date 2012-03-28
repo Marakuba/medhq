@@ -75,6 +75,7 @@ App.patient.PatientWindow = Ext.extend(Ext.Window, {
 		this.on('destroy', function(){
 			this.store.un('write', this.onStoreWrite, this);
 		},this);
+		this.form.on('accepted',this.onFormSave.createDelegate(this,[false]),this)
 	},
 	
 	onFormSave: function(post_visit) {
@@ -133,13 +134,18 @@ App.patient.PatientWindow = Ext.extend(Ext.Window, {
 		}
 	},
 	
+	acceptedUrlTpl: '/patient/acceptance/{0}/',
+	
 	onAccepted: function(){
-		Ext.Msg.confirm('Подтверждение','Клиент росписался?',function(btn){
-			if (btn='yes'){
+		
+		Ext.Msg.confirm('Подтверждение','Клиент расписался?',function(btn){
+			if (btn=='yes'){
 				this.form.setAcceptedTime();
 			}
 		
-		},this)
+		},this);
+		var url = String.format(this.acceptedUrlTpl,this.record.data.id);
+		window.open(url);
 	}
 });
 

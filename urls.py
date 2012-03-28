@@ -32,6 +32,7 @@ urlpatterns = patterns('',
     url(r'^direct/', include('direct.urls')),
     url(r'^numeration/', include('numeration.urls')),
     url(r'^autocomplete/', include(autocomplete.urls)),
+    url(r'^patient/', include('patient.urls')),
     url(r'^timeslot/haspreorder/(?P<id>\d+)/$', 'scheduler.views.hasPreorder'),
 )
 
