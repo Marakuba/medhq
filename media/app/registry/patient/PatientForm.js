@@ -93,7 +93,7 @@ App.patient.PatientForm = Ext.extend(Ext.form.FormPanel, {
 				border:false
 			},
 			items:[{
-				title:'Паспорт',
+				title:'Удостоверение личности',
 				layout:'fit',
 				items:[this.idCard]
 			},{

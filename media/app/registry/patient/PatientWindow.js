@@ -64,8 +64,9 @@ App.patient.PatientWindow = Ext.extend(Ext.Window, {
 				scope:this
 			},App.settings.strictMode ? this.postMaterialBtn : this.postVisitlBtn,
 			{
-				text:(this.record && this.record.data.accepted) ? 'Подтверждено от ' + this.record.data.accepted.format('d.m.y H:i'):'Подтвердить',
+				text:(this.record && this.record.data.accepted) ? 'Согласие от ' + this.record.data.accepted.format('d.m.y H:i'):'Согласие',
 				handler:this.onAccepted,
+				iconCls: (this.record && this.record.data.accepted) ? 'silk-accept' : 'silk-error',
 				scope:this
 			}]
 		}
@@ -139,7 +140,7 @@ App.patient.PatientWindow = Ext.extend(Ext.Window, {
 	onAccepted: function(){
 		
 		if (!this.record.data.accepted){
-			Ext.Msg.confirm('Подтверждение','Клиент расписался?',function(btn){
+			Ext.Msg.confirm('Подтверждение','Согласие подписано пациентом?',function(btn){
 				if (btn=='yes'){
 					this.form.setAcceptedTime();
 				}
