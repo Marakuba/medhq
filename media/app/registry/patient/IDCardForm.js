@@ -4,6 +4,33 @@ App.patient.IDCardForm = Ext.extend(Ext.form.FormPanel, {
 
 	initComponent: function(){
 		
+		this.idCardTypeCB = new Ext.form.ComboBox({
+			fieldLabel:'Тип удостоверения',
+			name:'id_card_type',
+			store:new Ext.data.ArrayStore({
+				fields:['id','title'],
+				data: [
+					['1','Паспорт РФ'],
+					['2','Заграничный паспорт']
+				]
+			}),
+			typeAhead: true,
+			triggerAction: 'all',
+			valueField:'id',
+			displayField:'title',
+			mode: 'local',
+			forceSelection:true,
+			selectOnFocus:true,
+			editable:false,
+			anchor:'68%',
+			value:'1',
+			listeners: {
+				select:function(combo,rec,i){
+				},
+				scope:this
+			}
+		});
+		
 		config = {
 			baseCls:'x-plain',
 			border:false,
@@ -14,11 +41,8 @@ App.patient.IDCardForm = Ext.extend(Ext.form.FormPanel, {
 			bodyStyle:'padding:5px',
 			layout:'form',
 			labelWidth:115,
-			items:[{
-				xtype:'hidden',
-				name:'id_card_type',
-				value:'1'
-			},{
+			items:[
+				this.idCardTypeCB,{
 				xtype:'compositefield',
 				items:[{
 					xtype:'textfield',
@@ -27,6 +51,7 @@ App.patient.IDCardForm = Ext.extend(Ext.form.FormPanel, {
 					maxLength:6, 
 	            	fieldLabel: 'Серия',
 	            	allowBlank:true,
+	            	autoCreate: {tag: 'input', type: 'text', size: '6', autocomplete: 'off', maxlength: '6'},
 	            	value: ''
 				},{
 					xtype:'textfield',
@@ -35,6 +60,7 @@ App.patient.IDCardForm = Ext.extend(Ext.form.FormPanel, {
 					width:78,
 	            	fieldLabel: 'Номер',
 	            	value: '',
+	            	autoCreate: {tag: 'input', type: 'text', size: '10', autocomplete: 'off', maxlength: '10'},
 	            	allowBlank:true
 				}]
 			},{
@@ -51,7 +77,8 @@ App.patient.IDCardForm = Ext.extend(Ext.form.FormPanel, {
 				maxLength:200,
             	fieldLabel: 'Кем выдан',
             	value: '',
-            	width:300
+            	autoCreate: {tag: 'textarea', type: 'text', size: '200', autocomplete: 'off', maxlength: '200'},
+            	width:305
 			}]
 		}
 		Ext.apply(this, Ext.apply(this.initialConfig, config));
