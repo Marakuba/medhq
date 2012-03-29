@@ -150,6 +150,7 @@ App.models.patientModel = new Ext.data.Record.create([
 	{name: 'billed_account'},
 	{name: 'doc'},
 	{name: 'hid_card'},
+	{name: 'guardian'},
 	{name: 'id_card_type'},
 	{name: 'id_card_series'},
 	{name: 'id_card_number'},

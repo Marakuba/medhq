@@ -36,8 +36,12 @@ App.patient.IDCardForm = Ext.extend(Ext.form.FormPanel, {
 			bodyStyle:'padding:5px',
 			layout:'form',
 			labelWidth:115,
-			items:[
-				{
+			items:[{
+				xtype:'textfield',
+				fieldLabel:'Законный представитель',
+				name:'guardian',
+				anchor:'99%'
+			},{
 				xtype:'compositefield',
 				items:[{
 					xtype:'textfield',

@@ -314,8 +314,8 @@ App.visit.VisitForm = Ext.extend(Ext.FormPanel, {
 			store:new Ext.data.ArrayStore({
 				fields:['id','title'],
 				data: [
-					['н','Наличная оплата'],
-					['б','Безналичный перевод'],
+					['н','Касса'],
+					['б','Юридическое лицо'],
 					['д','ДМС']]
 			}),
 			typeAhead: true,

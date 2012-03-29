@@ -55,6 +55,9 @@ class Patient(make_person_object('patient')):
         delta = today - self.birth_day
         return delta.days / 365
     
+    def is_adult(self):
+        return self.full_age()>=18
+    
     def short_name(self):
         return u"%s %s.%s" % (self.last_name, self.first_name[0].capitalize(), self.mid_name and u"%s." % self.mid_name[0].capitalize() or u'')
     
