@@ -97,16 +97,7 @@ App.patient.PatientGrid = Ext.extend(Ext.grid.GridPanel, {
 				iconCls:'silk-add',
 				text:'Новый пациент',
 				handler:this.onPatientAdd.createDelegate(this, [])
-			},this.editButton,this.agreementButton,{
-				text:'>',
-				handler:function(){
-					var rec = this.getSelectionModel().getSelected();
-					App.eventManager.fireEvent('launchapp','patientcard',{
-						record:rec
-					});
-				},
-				scope:this
-			},'->',{
+			},this.editButton,this.agreementButton,'->',{
 				iconCls:'silk-bullet-wrench',
 				menu:[this.cardButton,this.contractButton]
 			}],
@@ -253,10 +244,7 @@ App.patient.PatientGrid = Ext.extend(Ext.grid.GridPanel, {
 					params['patient'] = record.data.id;
 					params['state'] = state;
 					App.direct.patient.setAcceptedDate(params,function(res){
-						console.log(res);
-						var d = new Date();
-						var date = d.setTime(Date.parseDate(res.data.accepted));
-						console.log(date)
+						var date = Date.parseDate(res.data.accepted,'m/d/Y H:i:s');
 						record.data['accepted'] = date;
 						this.fireEvent('patientselect',record)
 					},this)

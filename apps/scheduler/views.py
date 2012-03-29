@@ -29,7 +29,7 @@ def asgmt_list(request):
     total_count = 0
     for preorder in preorders:
         total_count+=preorder.count
-        total_price+= preorder.count*preorder.price
+        total_price+= preorder.count*preorder.price - preorder.get_discount()
     ctx = {
         'preorders':preorders,
         'promotion':preorders[0].promotion,

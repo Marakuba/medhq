@@ -9,7 +9,7 @@ from django.template import loader
 from django.template.context import RequestContext
 from django.db.models.aggregates import Sum
 
-from autocomplete.views import AutocompleteView
+#from autocomplete.views import AutocompleteView
 from staff.models import Position
 from django.http import HttpResponseBadRequest
 from extdirect.django.decorators import remoting
@@ -17,7 +17,7 @@ from direct.providers import remote_provider
 import simplejson
 from tastypie.http import HttpBadRequest
 from service.exceptions import TubeIsNoneException
-autocomplete = AutocompleteView('visit')
+#autocomplete = AutocompleteView('visit')
 
 def all(request, visit_id):
     visit = get_object_or_404(Visit, pk=visit_id)
@@ -75,11 +75,13 @@ def visit(request, visit_id):
         'f':patient.is_f() and u"а" or u"",
         'ff':patient.is_f() and u"на" or u"ен",
         'visit':visit,
-        'services':visit.orderedservice_set.all()
+        'services':visit.orderedservice_set.all(),
+        'state':request.active_profile.department.state
     }
-    return direct_to_template(request=request, 
-                              template='print/visit/visit.html', 
-                              extra_context=extra_context)
+    
+    return render_to_response(["print/visit/visit_state_%s.html" % request.active_profile.state,"print/visit/visit.html"],
+                              extra_context,
+                              context_instance=RequestContext(request))
 
 def sampling(request, visit_id):
     visit = get_object_or_404(Visit, pk=visit_id)

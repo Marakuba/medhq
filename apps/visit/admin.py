@@ -172,12 +172,12 @@ class VisitAdmin(admin.ModelAdmin):
               'resources/js/visit.js',
               )
         
-from autocomplete.views import autocomplete, AutocompleteSettings
-from autocomplete.admin import AutocompleteAdmin
-
-class PatientAutocomplete(AutocompleteSettings):
-    search_fields = ('^last_name', '^first_name')
-    limit = 20
+#from autocomplete.views import autocomplete, AutocompleteSettings
+#from autocomplete.admin import AutocompleteAdmin
+#
+#class PatientAutocomplete(AutocompleteSettings):
+#    search_fields = ('^last_name', '^first_name')
+#    limit = 20
     
 #autocomplete.register(Visit.patient, PatientAutocomplete)
 
@@ -213,7 +213,8 @@ def export_into_1c(modeladmin, request, queryset):
     return response
 export_into_1c.short_description = u"Экспорт документов в 1С (txt-формат)"
 
-class PlainVisitAdmin(AutocompleteAdmin, admin.ModelAdmin):
+#TODO: вернуть AutoComplete
+class PlainVisitAdmin(admin.ModelAdmin): 
     """
     """
     inlines = [OrderedServiceFullAdmin]
