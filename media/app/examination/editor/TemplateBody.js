@@ -138,11 +138,7 @@ App.examination.TemplateBody = Ext.extend(Ext.TabPanel, {
 			base_service:this.base_service,
 			record:this.record,
 			closable:false,
-			autoScroll:true,
-			listeners:{
-				scope:this,
-				sectionchange:this.fillSubSecMenu
-			}
+			autoScroll:true
 		})
 		
 		config = {
@@ -153,7 +149,6 @@ App.examination.TemplateBody = Ext.extend(Ext.TabPanel, {
 		},
 		this.on('tabchange',function(panel,tab){
 			if (tab){
-				this.fillSubSecMenu(tab.section);
 				App.eventManager.fireEvent('tmptabchange');
 			};
 		},this);
@@ -322,6 +317,8 @@ App.examination.TemplateBody = Ext.extend(Ext.TabPanel, {
 			};
 			this.setActiveTab(0);
 			
+			this.loadData();
+			
 		},this)
 	},
 	
@@ -340,12 +337,8 @@ App.examination.TemplateBody = Ext.extend(Ext.TabPanel, {
 		};
 	},
 	
-	fillSubSecMenu : function(section) {
-		
-	},
-	
-	onAddSubSection: function(title,section,order){
-		this.dataTab.addTicket(title);
+	onAddSubSection: function(title,section,order,data){
+		this.dataTab.addTicket(title,section,order,data);
 		this.doLayout();
 		this.updateRecord();
 	},
@@ -354,16 +347,8 @@ App.examination.TemplateBody = Ext.extend(Ext.TabPanel, {
 		if (this.dataLoading) {
 			return false;
 		};
-		var data = [];
-		for (var i =0; i< this.items.items.length; i++) {
-			var tab = this.items.items[i];
-			var section = {};
-			if (tab.getData){
-				section['section'] = tab.section;
-				section['tickets'] = tab.getData();
-				data.push(section);
-			};
-		};
+		var data = this.dataTab.getData();
+		
 		data = Ext.encode(data);
 		this.record.set('data', data);
 	},
@@ -376,11 +361,12 @@ App.examination.TemplateBody = Ext.extend(Ext.TabPanel, {
 		}
 		this.dataLoading = true;
 		var data = Ext.decode(recData);
-		Ext.each(data,function(section){
-			var sec = this.menuBtns[section.section];
-			var tab = this.onAddSection(section.section,sec.text,sec.order,section);
-			this.doLayout();
-		},this);
+		this.dataTab.loadData(data)
+//		Ext.each(data,function(section){
+//			var sec = this.sectionPlan[section.section];
+//			var tab = this.onAddSubSection(section.section,sec.name,sec.order,section);
+//			this.doLayout();
+//		},this);
 //		this.setActiveTab(0);
 		this.dataLoading = false;
 		
@@ -620,6 +606,8 @@ App.examination.TemplateBody = Ext.extend(Ext.TabPanel, {
 				
 				this.ttb.insert(0,this.addSubSecBtn);
 				this.doLayout();
+				
+				//После того, как кнопка с разделами сгенерировалась, можно загружать данные
 			
 			},scope:this})
 		},scope:this});
