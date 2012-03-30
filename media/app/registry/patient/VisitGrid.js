@@ -1,4 +1,4 @@
-Ext.ns('App.patient');
+Ext.ns('App.patient, App.choices');
 
 App.patient.VisitGrid = Ext.extend(Ext.grid.GridPanel, {
 
@@ -7,7 +7,15 @@ App.patient.VisitGrid = Ext.extend(Ext.grid.GridPanel, {
 		this.store = new Ext.data.RESTStore({
 			autoLoad : false,
 			apiUrl : get_api_url('visit'),
-			model: App.models.visitModel
+			model: App.models.visitModel,
+			listeners:{
+				write:function(){
+					if (this.barcodeWindow){
+						this.barcodeWindow.close();
+					}
+				},
+				scope:this
+			}
 		});
 		
 		this.columns =  [
@@ -150,6 +158,31 @@ App.patient.VisitGrid = Ext.extend(Ext.grid.GridPanel, {
 			
 		};
 		
+		this.barcodeEdtBtn = {
+			text:'Изменить штрих-код',
+			iconCls:'silk-pencil',
+			handler:this.onBarcodeEdit,
+			scope:this
+		};
+		
+		this.ptypeEdtBtn = {
+			text:'Изменить форму оплаты',
+			iconCls:'silk-pencil',
+			handler:this.onPtypeEdit,
+			scope:this
+		};
+		
+		this.editBtn = {
+			xtype:'splitbutton',
+			iconCls:'silk-pencil',
+			text:'Изменить',
+			handler:this.onChange.createDelegate(this, []),
+			menu:{
+				items:[this.barcodeEdtBtn, this.ptypeEdtBtn]
+			}
+			
+		};
+		
 		var config = {
 			stripeRows:true,
 			loadMask : {
@@ -175,14 +208,8 @@ App.patient.VisitGrid = Ext.extend(Ext.grid.GridPanel, {
 //				id:'patient-visit-tbl',
 				xtype:'toolbar',
 				//disabled:true,
-				items:[App.settings.strictMode ? this.materialBtn : this.completeBtn, {
-//					id:'vg-change-btn',
-					xtype:'button',
-					iconCls:'silk-pencil',
-					text:'Изменить',
-					//disabled:true,
-					handler:this.onChange.createDelegate(this, [])
-				},'-',{
+				items:[App.settings.strictMode ? this.materialBtn : this.completeBtn, 
+				this.editBtn,'-',{
 					xtype:'button',
 					text:'Пробирки',
 					handler:this.onSamplingEdit.createDelegate(this, [])
@@ -241,6 +268,12 @@ App.patient.VisitGrid = Ext.extend(Ext.grid.GridPanel, {
 		this.store.on('load',function(){
 			this.getSelectionModel().selectFirstRow();
 		},this);
+		
+		this.store.on('write',function(){
+			if(this.barcodeWindow){
+				this.barcodeWindow.close();
+			}
+		})
 		//this.ownerCt.ownerCt.on('patientselect', this.setActivePatient, this);
 		//App.eventManager.on('patientselect', this.onPatientSelect, this);
 	},
@@ -367,6 +400,39 @@ App.patient.VisitGrid = Ext.extend(Ext.grid.GridPanel, {
 		var Visit = this.store.recordType;
 		var v = new Visit(values);
 		this.store.insert(0,v);
+	},
+	
+	onBarcodeEdit: function(){
+		var visitRecord = this.getSelected();
+		if(!visitRecord) return false;
+		
+		this.barcodeWindow = new App.choices.BarcodeChoiceWindow({
+			patientId:this.patientId,
+			modal:true,
+			fn:function(record){
+				if (record){
+					var barcode = record.data.resource_uri;
+					visitRecord.set('barcode',barcode);
+					this.barcodeWindow.close();
+				} else {
+					this.barcodeWindow.close();
+				};
+				
+			},
+			scope:this
+		});
+		
+		this.barcodeWindow.show();
+	},
+	
+	onPtypeEdit: function(){
+//		var visitRecord = this.getSelected();
+//		if(!visitRecord) return false
+//		var win = new App.choices.PaymentTypeChoiceWindow({
+//			patientRecord:this.PatientRecord,
+//			patientId:this.patientId,
+//			record:visitRecord
+//		})
 	}
 	
 });
