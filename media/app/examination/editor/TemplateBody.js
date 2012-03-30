@@ -317,7 +317,7 @@ App.examination.TemplateBody = Ext.extend(Ext.TabPanel, {
 			};
 			this.setActiveTab(0);
 			
-			this.loadData();
+//			this.loadData();
 			
 		},this)
 	},
@@ -353,7 +353,7 @@ App.examination.TemplateBody = Ext.extend(Ext.TabPanel, {
 		this.record.set('data', data);
 	},
 	
-	loadData: function(){
+	loadData: function(sectionPlan){
 		var recData = this.record.data.data;
 		this.generalTab.setPrintName(this.record.data.print_name || this.print_name);
 		if (!recData){
@@ -361,7 +361,7 @@ App.examination.TemplateBody = Ext.extend(Ext.TabPanel, {
 		}
 		this.dataLoading = true;
 		var data = Ext.decode(recData);
-		this.dataTab.loadData(data)
+		this.dataTab.loadData(data,sectionPlan)
 //		Ext.each(data,function(section){
 //			var sec = this.sectionPlan[section.section];
 //			var tab = this.onAddSubSection(section.section,sec.name,sec.order,section);
@@ -607,9 +607,11 @@ App.examination.TemplateBody = Ext.extend(Ext.TabPanel, {
 				this.ttb.insert(0,this.addSubSecBtn);
 				this.doLayout();
 				
-				//После того, как кнопка с разделами сгенерировалась, можно загружать данные
+				//После того, как кнопка с разделами сгенерировалась, можно загружать данные,
+				//чтобы передать в форму тикетов порядок следования разделов, который может быть изменен в базе
 			
-			},scope:this})
+			},scope:this});
+			this.loadData(this.sectionPlan);
 		},scope:this});
 		
 	}

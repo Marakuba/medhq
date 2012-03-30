@@ -146,11 +146,12 @@ App.examination.TicketTab = Ext.extend(Ext.Panel, {
 					};
 					data[item.section].tickets.push(itemData)
 				},this);
-				//по старой структуре data содержит массив списков секций. так было потому что были разные вкладки на каждую секцию
+				//по старой структуре data содержит массив списков секций. так было потому, что были разные вкладки на каждую секцию
 				var dataArray = []
-				Ext.each(data,function(section){
-					dataArray.push(data[section])
-				},this)
+				for (sec in data){
+					dataArray.push(data[sec])
+				}
+				console.log(dataArray)
 				return dataArray
 			},
 			
@@ -179,25 +180,16 @@ App.examination.TicketTab = Ext.extend(Ext.Panel, {
 			}
 		});
 		
-//		this.bb = new Ext.Toolbar({
-//			items:[]
-//		});
-		
 		var config = {
 			
-//		    height: 636,
-//		    width: 771,
 			layout:'border',
-//		    padding: 10,
-//		    title: 'Оборудование',
 		    labelAlign: 'top',
 		    autoSctoll:true,
 		    closable:true,
 		    bubbleEvents:['beforeticketremove','ticketremove','ticketdataupdate','ticketeditstart','editorclose','drop','ticketheadeeditrstart'],
 		    items: [
 		       this.ticketPanel, this.glossPanel
-		    ],
-//		    bbar: [this.deleteBtn]
+		    ]
 		}
 								
 		Ext.apply(this, Ext.apply(this.initialConfig, config));
@@ -375,13 +367,58 @@ App.examination.TicketTab = Ext.extend(Ext.Panel, {
 		}
 	},
 	
-	loadData: function(data){
-		console.log(data)
-//		Ext.each(data,function(section){
-//			var sec = this.sectionPlan[section.section];
-//			var tab = this.onAddSubSection(section.section,sec.name,sec.order,section);
-//			this.doLayout();
-//		},this);
+	loadData: function(data,sectionPlan){
+		console.log(data);
+		this.sectionPlan = sectionPlan;
+		if(!data) return false;
+		
+		Ext.each(data,function(section){
+			Ext.each(section.tickets,function(ticket,i){
+				var new_ticket = new Ext.ux.form.Ticket({
+					data:{
+						title:ticket.title,
+						printable:ticket.printable,
+						private:ticket.private,
+						text:ticket.text
+					},
+					pos:ticket.pos,
+					section:section.section,
+					order:this.sectionPlan[section.section].order,
+					listeners:{
+						search: function(e,text){
+							this.glossDropDown.currentElKeyUp(e,text);
+							/*filter = this.glossPanel.filter;
+							var symbol = String.fromCharCode(e.getCharCode())
+							var key = e.getKey();
+							if(this.clearFilterList.indexOf(key) > -1) {
+								this.buffer = '';
+								filter.clear();
+							} else {
+								if (key == Ext.EventObject.BACKSPACE){
+									if(this.buffer){
+										this.buffer = this.buffer.substr(0, this.buffer.length-1)
+									}
+								} else {
+									this.buffer += symbol;
+								}
+								var re = new RegExp('.*' + this.buffer + '.*', 'i');
+								filter.clear();
+								filter.filter(re, 'text');
+							}*/
+						},
+						editorclick: function(){
+							this.buffer = '';
+//								this.glossPanel.filter.clear();
+							this.glossDropDown.clearBuffer();
+						},
+						scope:this
+					}
+				});
+				//вставляем тикет на свое место согласно позиции pos
+				this.insertTicketInPos(new_ticket,'pos')
+			},this);
+			this.doLayout();
+		},this);
 	},
 	
 	removeTab: function(){
@@ -432,31 +469,39 @@ App.examination.TicketTab = Ext.extend(Ext.Panel, {
 				scope:this
 			}
 		});
+		this.insertTicketInPos(new_ticket,'order');
+		this.doLayout();
+	},
+	
+	insertTicketInPos: function(ticket,paramName){
 		//вставляем тикет в нужное место согласно порядку order
-		var portalLength = this.portalColumn.items.length
-		if (portalLength == 0){
-			this.portalColumn.add(new_ticket);
+		//порядок тикетов может быть определен либо по значению order (если добавляется новый тикет)
+		//либо по значению pos (если загружаются сохраненные тикеты)
+		
+		//если тикетов еще нет, то добавляем в конец
+		if (!(this.portalColumn.items && this.portalColumn.items.length)){
+			this.portalColumn.add(ticket);
 		} else {
+			var portalLength = this.portalColumn.items.length;
 			var inserted = false;
 			Ext.each(this.portalColumn.items,function(obj,ind,portal){
 				if (inserted) return
 				var item = portal.items[ind];
 				if(ind==portalLength-1){
-					if (item.order > order){
-						this.portalColumn.insert(ind,new_ticket);
+					if (item[paramName] > ticket[paramName]){
+						this.portalColumn.insert(ind,ticket);
 					} else {
-						this.portalColumn.add(new_ticket);
+						this.portalColumn.add(ticket);
 					}
 					inserted = true;
 				} else {
-					if (item.order > order){
-						this.portalColumn.insert(ind,new_ticket);
+					if (item[paramName] > ticket[paramName]){
+						this.portalColumn.insert(ind,ticket);
 						inserted = true;
 					}
 				}
 			},this);
-		}
-		
+		};
 		this.doLayout();
 	},
 	

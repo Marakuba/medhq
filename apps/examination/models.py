@@ -361,8 +361,9 @@ class Glossary(MPTTModel):
         
 class FieldSet(models.Model):
     name = models.TextField(u'Имя')
-    order = models.IntegerField(u'Порядок')
+    order = models.IntegerField(u'Порядок', unique = True)
     title = models.TextField(u'Заголовок')
+    active = models.BooleanField(u'Активно',default=True)
     
     def __unicode__(self):
         return self.title
