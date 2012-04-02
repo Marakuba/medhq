@@ -35,7 +35,7 @@ App.choices.PaymentTypeChoiceWindow = Ext.extend(Ext.Window, {
 		
 		this.policyBar = new Ext.Panel({
 			layout:'hbox',
-			hidden:this.record ? this.record.data.payment_type!='д' : true,
+			hidden: true,
 			defaults:{
 				baseCls:'x-border-layout-ct',
 				border:false
@@ -81,10 +81,6 @@ App.choices.PaymentTypeChoiceWindow = Ext.extend(Ext.Window, {
 			    value:App.settings.strictMode ? App.getApiUrl('state',active_state_id) : '',
 			    listeners:{
 			    	select:function(combo,record){
-			    		var sp = this.servicePanel;
-						sp.getLoader().baseParams['payer'] = App.uriToId(record.data.resource_uri);
-						sp.getLoader().load(sp.getRootNode());
-						this.rePrice('б',App.uriToId(record.data.resource_uri));
 			    	},
 			    	scope:this
 			    }
@@ -93,7 +89,7 @@ App.choices.PaymentTypeChoiceWindow = Ext.extend(Ext.Window, {
 		
 		this.payerBar = new Ext.Panel({
 			layout:'hbox',
-			hidden:this.record ? this.record.data.payment_type!='б' : true,
+			hidden: true,
 			defaults:{
 				baseCls:'x-border-layout-ct',
 				border:false
@@ -111,12 +107,13 @@ App.choices.PaymentTypeChoiceWindow = Ext.extend(Ext.Window, {
 			store:new Ext.data.ArrayStore({
 				fields:['id','title'],
 				data: [
-					['н','Наличная оплата'],
-					['б','Безналичный перевод'],
+					['н','Касса'],
+					['б','Юридическое лицо'],
 					['д','ДМС']]
 			}),
 			typeAhead: true,
 			triggerAction: 'all',
+			baseCls:'x-border-layout-ct',
 			valueField:'id',
 			displayField:'title',
 			mode: 'local',
@@ -127,83 +124,78 @@ App.choices.PaymentTypeChoiceWindow = Ext.extend(Ext.Window, {
 			value:'н',
 			listeners: {
 				select:function(combo,rec,i){
-					this.onPaymentTypeChoice(rec);
+					this.onPaymentTypeChoice(rec.data.id);
+				},
+				afterrender:function(){
+					
 				},
 				scope:this
 			}
 		});
 		
-		this.paymentFs = {
-            layout: 'form',
+		this.paymentFs = new Ext.form.FormPanel({
+//            layout: 'form',
+            baseCls:'x-border-layout-ct',
             border:false,
-			items: {
-				title:'Оплата',
-				xtype:'fieldset',
-	            defaults:{
-	            	baseCls:'x-border-layout-ct',
-	            	border:false
-	            },
-				items:[this.discounts, 
-					this.paymentTypeCB,
-					this.policyBar,
-					this.payerBar,
-					{
-						layout:'form',
-						border:false,
-						baseCls:'x-border-layout-ct',
-						items:this.totalSum
-					}
-				]
-			}
-		};
+			items:[
+				this.paymentTypeCB,
+				this.policyBar,
+				this.payerBar
+			]
+		});
 		
 		config = {
-			width:700,
-			height:500,
+			width:500,
+			height:200,
 			modal:true,
-			layout:'fit',
-			title:'Штрих-коды',
+			layout:'form',
+//			baseCls:'x-border-layout-ct',
+			title:'Тип оплаты',
 			items:[
 				this.paymentFs
-			]
+			],
+			bbar:[{
+				text:'Ok',
+				handler:this.setPtype,
+				scope:this
+			}]
 		};
 		
 		Ext.apply(this, Ext.apply(this.initialConfig, config));
 		App.choices.PaymentTypeChoiceWindow.superclass.initComponent.apply(this, arguments);
 		
-		this.on('beforeclose',function(){
-			if (!this.sended){
-				Ext.callback(this.fn, this.scope || window, []);
+		this.on('afterrender',function(){
+			if (!this.record){
+				console.log('не передана запись визита!');
+				return false
 			}
+			this.paymentTypeCB.setValue(this.record.data.payment_type);
+			this.onPaymentTypeChoice(this.record.data.payment_type);
+			this.payerCmb.setValue(this.record.data.payer);
+			this.policyCmb.setValue(this.record.data.insurance_policy)
+			
 		},this)
 		
 	},
 	
-	onPaymentTypeChoice : function(rec){
+	onPaymentTypeChoice : function(id){
 		
-		switch(rec.data.id){
+		switch(id){
 			case 'д':
 				this.hidePaymentCmb('payer');
 				this.showPaymentCmb('policy');
-				this.reloadTree(rec.data.id);
-				this.rePrice(rec.data.id);
 				break
 			case 'б':
-				this.servicePanel.getLoader().baseParams['payment_type'] = rec.data.id;
 				this.hidePaymentCmb('policy');
 				this.showPaymentCmb('payer');
 				break
 			case 'н':
 				this.hidePaymentCmb('policy');
 				this.hidePaymentCmb('payer');
-				this.reloadTree(rec.data.id);
-				this.rePrice(rec.data.id);
 				break
 			default:
 				this.hidePaymentCmb('policy');
 				this.hidePaymentCmb('payer');
-				this.reloadTree(rec.data.id);
-				this.rePrice(rec.data.id);
 				break
 		};
 		
@@ -224,4 +216,25 @@ App.choices.PaymentTypeChoiceWindow = Ext.extend(Ext.Window, {
 		this[type+'Cmb'].allowBlank = false;
 		this[type+'Bar'].show();
 	},
+	
+	setPtype: function(){
+		var f = this.paymentFs.getForm();
+		if (!f.isValid()){
+			Ext.Msg.alert('Внимание!','Введите все поля формы!')
+			return false
+		}
+		params = {};
+		params['id'] = this.record.data.id;
+		params['ptype'] = this.paymentTypeCB.getValue();
+		params['payer'] = App.uriToId(this.payerCmb.getValue());
+		params['insurance_policy'] = this.policyCmb.getValue();
+		App.direct.visit.setPaymentType(params,function(res){
+			//НЕ УДАЛЯТЬ console.log(res.data) !!!
+			console.log(res.data);
+			if(res.success){
+				App.eventManager.fireEvent('balanceupdate');
+				this.close();				
+			}
+		},this)
+	}
 });

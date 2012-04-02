@@ -7,15 +7,7 @@ App.patient.VisitGrid = Ext.extend(Ext.grid.GridPanel, {
 		this.store = new Ext.data.RESTStore({
 			autoLoad : false,
 			apiUrl : get_api_url('visit'),
-			model: App.models.visitModel,
-			listeners:{
-				write:function(){
-					if (this.barcodeWindow){
-						this.barcodeWindow.close();
-					}
-				},
-				scope:this
-			}
+			model: App.models.visitModel
 		});
 		
 		this.columns =  [
@@ -270,9 +262,6 @@ App.patient.VisitGrid = Ext.extend(Ext.grid.GridPanel, {
 		},this);
 		
 		this.store.on('write',function(){
-			if(this.barcodeWindow){
-				this.barcodeWindow.close();
-			}
 		})
 		//this.ownerCt.ownerCt.on('patientselect', this.setActivePatient, this);
 		//App.eventManager.on('patientselect', this.onPatientSelect, this);
@@ -423,13 +412,14 @@ App.patient.VisitGrid = Ext.extend(Ext.grid.GridPanel, {
 	},
 	
 	onPtypeEdit: function(){
-//		var visitRecord = this.getSelected();
-//		if(!visitRecord) return false
-//		var win = new App.choices.PaymentTypeChoiceWindow({
-//			patientRecord:this.PatientRecord,
-//			patientId:this.patientId,
-//			record:visitRecord
-//		})
+		var visitRecord = this.getSelected();
+		if(!visitRecord) return false
+		var win = new App.choices.PaymentTypeChoiceWindow({
+			patientRecord:this.patientRecord,
+			patientId:this.patientId,
+			record:visitRecord
+		});
+		win.show();
 	}
 	
 });

@@ -330,7 +330,7 @@ App.visit.VisitForm = Ext.extend(Ext.FormPanel, {
 			value:'н',
 			listeners: {
 				select:function(combo,rec,i){
-					this.onPaymentTypeChoice(rec);
+					this.onPaymentTypeChoice(rec.data.id);
 				},
 				scope:this
 			}
@@ -546,7 +546,7 @@ App.visit.VisitForm = Ext.extend(Ext.FormPanel, {
 				if(pt && pt!='н'){
 					this.paymentTypeCB.setValue(pt);
 					var ptRec = this.paymentTypeCB.findRecord(this.paymentTypeCB.valueField,pt);
-					this.onPaymentTypeChoice(ptRec);
+					this.onPaymentTypeChoice(ptRec.data.id);
 				}
 				var discount = rec.data.promo_discount;
 				console.log('discount' + discount);
@@ -757,31 +757,31 @@ App.visit.VisitForm = Ext.extend(Ext.FormPanel, {
 		this.saveAction();
 	},
 	
-	onPaymentTypeChoice : function(rec){
+	onPaymentTypeChoice : function(id){
 		
-		switch(rec.data.id){
+		switch(id){
 			case 'д':
 				this.hidePaymentCmb('payer');
 				this.showPaymentCmb('policy');
-				this.reloadTree(rec.data.id);
-				this.rePrice(rec.data.id);
+				this.reloadTree(id);
+				this.rePrice(id);
 				break
 			case 'б':
-				this.servicePanel.getLoader().baseParams['payment_type'] = rec.data.id;
+				this.servicePanel.getLoader().baseParams['payment_type'] = id;
 				this.hidePaymentCmb('policy');
 				this.showPaymentCmb('payer');
 				break
 			case 'н':
 				this.hidePaymentCmb('policy');
 				this.hidePaymentCmb('payer');
-				this.reloadTree(rec.data.id);
-				this.rePrice(rec.data.id);
+				this.reloadTree(id);
+				this.rePrice(id);
 				break
 			default:
 				this.hidePaymentCmb('policy');
 				this.hidePaymentCmb('payer');
-				this.reloadTree(rec.data.id);
-				this.rePrice(rec.data.id);
+				this.reloadTree(id);
+				this.rePrice(id);
 				break
 		};
 		
@@ -885,6 +885,7 @@ App.visit.VisitForm = Ext.extend(Ext.FormPanel, {
 			this.getForm().findField('barcode').originalValue = record.data.barcode;
 			this.autoBarcode.disable();
 			this.paymentTypeCB.disable();
+			this.onPaymentTypeChoice(this.record.data.payment_type);
 			this.payerCmb.disable();
 			this.policyCmb.disable();
 		};

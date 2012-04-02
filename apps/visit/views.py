@@ -17,6 +17,7 @@ from direct.providers import remote_provider
 import simplejson
 from tastypie.http import HttpBadRequest
 from service.exceptions import TubeIsNoneException
+from state.models import State
 #autocomplete = AutocompleteView('visit')
 
 def all(request, visit_id):
@@ -146,3 +147,30 @@ def to_lab(request):
     for obj in object_list:
         obj.to_lab()
     return dict(success=True, data='some data')
+
+@remoting(remote_provider, len=1, action='visit', name='setPaymentType')
+def set_payment_type(request):
+    data = simplejson.loads(request.raw_post_data)
+    params = data['data'][0]
+    visit_id = params['id']
+    try:
+        visit = Visit.objects.get(id=visit_id)
+    except:
+        return dict(success=False, data="cannot find visit %s" % visit_id)
+    payer = params['payer'] or None
+    if payer:
+        try:
+            payer = State.objects.get(id=params['payer'])
+        except:
+            return dict(success=False, data="cannot find payer %s" % params['payer'])
+    try:
+        visit.payment_type = params['ptype']
+        visit.payer = payer 
+        visit.insurance_policy = params['insurance_policy'] or None
+        visit.save()
+    except:
+        return dict(success=False, data="cannot update visit %s: [payment_type: %s, payer: %s, policy: %s]" 
+                    % (visit_id,params['ptype'],params['payer'], params['insurance_policy']))
+    services = OrderedService.objects.filter(order=visit)
+    [service.save() for service in services]
+    return dict(success=True, data='visit saved')
