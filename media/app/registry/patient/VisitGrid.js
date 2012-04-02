@@ -413,11 +413,8 @@ App.patient.VisitGrid = Ext.extend(Ext.grid.GridPanel, {
 				if (record){
 					var barcode = record.data.resource_uri;
 					visitRecord.set('barcode',barcode);
-					this.barcodeWindow.close();
-				} else {
-					this.barcodeWindow.close();
 				};
-				
+				this.barcodeWindow.close();
 			},
 			scope:this
 		});

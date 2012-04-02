@@ -115,6 +115,7 @@ class Visit(make_operator_object('visit')):
                               null=True, blank=True,
                               help_text=u'Выбрать лабораторию, из которой поступил материал')
     barcode = models.ForeignKey(Barcode, null=True, blank=True)
+    specimen = models.CharField(u'Образец', max_length=30, blank=True)
     total_price = models.DecimalField(u'Сумма, руб.', max_digits=10, 
                                       decimal_places=2, default=0, 
                                       null=True, blank=True)
@@ -402,6 +403,8 @@ def BarcodeGenerator(sender, **kwargs):
         if not visit.barcode:
             new_barcode = Barcode.objects.create() 
             visit.barcode = new_barcode
+            if not visit.specimen:
+                visit.specimen = str(visit.barcode.id)
             visit.save()
             
 post_save.connect(BarcodeGenerator, sender=Visit)              

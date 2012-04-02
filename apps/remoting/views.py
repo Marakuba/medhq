@@ -10,10 +10,11 @@ from visit.models import OrderedService, Visit
 from collections import defaultdict
 from django.utils import simplejson
 from django.core.serializers.json import DjangoJSONEncoder
-from remoting.utils import get_ordered_service, get_visit_sync_id, get_result
+from remoting.utils import get_ordered_service, get_result
 from remoting.models import Transaction, TransactionItem, SyncObject
 from django.db.models.aggregates import Count
 import logging
+from urllib2 import HTTPError
 
 logger = logging.getLogger('remoting')
 
@@ -21,8 +22,8 @@ def post_orders_to_local(request, data_set, options):
     result = []
     for data in data_set:
         success = True
-        order_id = data['order']['id']
-        msg = u'Заказ №%s успешно размещен' % order_id
+        specimen_id = data['order']['specimen']
+        msg = u'Заказ №%s успешно размещен' % specimen_id
         
         try:
             get_ordered_service(request, data)
@@ -31,7 +32,7 @@ def post_orders_to_local(request, data_set, options):
             success = False
             
         result.append({
-            'order':order_id,
+            'order':specimen_id,
             'success': success,
             'message':msg
         })
@@ -46,19 +47,9 @@ def post_results_to_local(request, data_set, options):
     _visit_cache = {}
     for data in data_set:
         success = True
-        visit_id = data['visit']['id']
+        specimen_id = data['visit']['specimen_id']
         name = data['result']['name']
-        msg = u'Результат %s (%s) принят' % (data['result']['name'], visit_id)
-        
-#        if not _visit_cache.has_key(visit_id):
-#            visit = Visit.objects.get(id=visit_id)
-#            _visit_cache[visit_id] = visit
-#        else:
-#            visit = _visit_cache[visit_id]
-#        for lab_order in visit.laborder_set.all():
-#            if not lab_orders.has_key(lab_order.id):
-#                lab_orders[lab_order.id] = lab_order
-#                lab_order.revert_results()
+        msg = u'Результат %s (%s) принят' % (data['result']['name'], specimen_id)
         
         try:
             res = get_result(request, data)
@@ -69,19 +60,19 @@ def post_results_to_local(request, data_set, options):
         if success:
             if not lab_orders.has_key(res.order.id):
                 lab_orders[res.order.id] = res.order
-#                res.order.revert_results()
 
             
         result.append({
             'result':name,
-            'visit':visit_id,
+            'specimen':specimen_id,
             'success': success,
             'message':msg
         })
 
-    if 'confirm' in options and options['confirm']:
-        for k,lab_order in lab_orders.iteritems(): 
-            lab_order.confirm_results()
+    if 'confirm' in options:
+        if options['confirm']:
+            for lab_order in lab_orders.values(): 
+                lab_order.confirm_results()
 
     return result
 
@@ -115,29 +106,38 @@ def post_data_to_remote(lab, action, data, options={}):
         'data':data,
         'options':options
     }, cls=DjangoJSONEncoder)
+
     try:
+        msg = u'Данные к отправке: %s' % unicode(json_data)
+        print msg
+        logger.debug(msg)
+
         req = urllib2.Request(path, json_data, {'Content-Type': 'application/json'})
-#        print 'data to send:',json_data
-        logger.debug(u'data to send: %s' % json_data)
         f = urllib2.urlopen(req)
         response = f.read()
         f.close()
-        return simplejson.loads(response)    
-    except Exception, err:
-        logger.debug(u'Error during data send: %s' % err.__unicode__())
-#        print 'error:',err
+        return simplejson.loads(response)
+    except HTTPError, e:
+        msg = u'Ошибка отправки данных: %s' % e.__unicode__()
+        logger.exception(msg)
+        print msg
+        
+        msg = e.read()
+        logger.exception(msg)
+        print msg
+        
+        raise HTTPError(e)
 
 
 def post_results(lab_order, confirm):
     lab = lab_order.visit.office
     
     results = []
-    visit_sync_id = get_visit_sync_id(lab_order.visit)
     for result in lab_order.result_set.all():
         a = result.analysis
         data = {
             'visit': {
-                'id':visit_sync_id
+                'specimen_id':lab_order.visit.specimen
             },
             'order': {
 #                'id':1,
@@ -174,8 +174,8 @@ def post_orders(request):
     """
     """
     data = simplejson.loads(request.raw_post_data)
-    ids = data['data'][0]
-    object_list = OrderedService.objects.filter(id__in=ids)
+    id_list = data['data'][0]
+    object_list = OrderedService.objects.filter(id__in=id_list)
     _labs_cache = {}
     _object_list_cache = {}
     labs = defaultdict(list)
@@ -192,13 +192,15 @@ def post_orders(request):
                 'birth_day':p.birth_day,
                 'gender':p.gender,
                 'mobile_phone':p.mobile_phone,
+                'home_address_street':p.home_address_street
             },
             'order':{
                 'id':obj.id,
                 'code':obj.service.code
             },
             'visit':{
-                'id':obj.order.id
+                'id':obj.order.id,
+                'specimen':obj.order.specimen
             },
             'dest_lab':s.uuid,
             'source_lab':obj.order.office.uuid
@@ -207,27 +209,31 @@ def post_orders(request):
         _labs_cache[s.uuid] = s
     
     for lab,data in labs.iteritems():
-        transaction = Transaction.objects.create(type='state.out',
-                                                 sender=request.active_profile.department.state,
-                                                 reciever=_labs_cache[lab])
-        result = post_data_to_remote(_labs_cache[lab], 'post_orders', data)
+#        transaction = Transaction.objects.create(type='state.out',
+#                                                 sender=request.active_profile.department.state,
+#                                                 reciever=_labs_cache[lab])
+        try:
+            result = post_data_to_remote(_labs_cache[lab], 'post_orders', data)
+        except HTTPError, e:
+            return dict(success=False, data={'state':_labs_cache[lab].name,'reason':e.__unicode__()})
+            break
         
         success = []
         error = []
     
         for r in result:
-            ordered_service = _object_list_cache[r['order']]
+#            ordered_service = _object_list_cache[r['order']]
             if r['success']:
                 success.append(r['order'])
             else:
                 error.append(r['order'])
-            status = r['success'] and 'complete' or 'error'
-            TransactionItem.objects.create(transaction=transaction,
-                                           status=status,
-                                           content_object=ordered_service,
-                                           message=r['message'])
+#            status = r['success'] and 'complete' or 'error'
+#            TransactionItem.objects.create(transaction=transaction,
+#                                           status=status,
+#                                           content_object=ordered_service,
+#                                           message=r['message'])
             
-        OrderedService.objects.filter(id__in=success).update(status=u'>')
-        OrderedService.objects.filter(id__in=error).update(status=u'!')
+        OrderedService.objects.filter(order__specimen__in=success).update(status=u'>')
+        OrderedService.objects.filter(order__specimen__in=error).update(status=u'!')
         
     return dict(success=True, data=result)

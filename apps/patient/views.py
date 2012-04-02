@@ -16,7 +16,7 @@ def update_patient_info(request):
     d = patient.discount
     data = {
         'billed_account':patient.billed_account,
-        'balance':patient.balance,
+        'balance':"%.2f" % patient.balance,
         'discount_name':d and d.__unicode__() or u'0%',
         'discount':d and d.value or 0
     }

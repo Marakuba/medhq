@@ -27,6 +27,10 @@ def get_patient(request, data, state):
         data['operator'] = state.remotestate.user
         patient = Patient.objects.create(**data)
         msg = u'Пользователь %s создан' % patient.short_name()
+    except Exception, err:
+        msg = u"Ошибка определения пациента: '%s %s %s'" % (data['last_name'],data['first_name'],data['mid_name'])
+        logger.exception(msg)
+        raise Exception(msg)
         
     logger.info(msg)
     return patient
@@ -61,91 +65,94 @@ def get_ordered_service(request, data):
 
     except ObjectDoesNotExist:
         msg = u"Исследование с кодом '%s' не найдено" % data['order']['code']
-        logger.debug(msg)
+        logger.exception(msg)
         raise Exception(msg)
 
     except Exception, err:
         msg = u"Ошибка поиска исследования '%s': %s" % (data['order']['code'], err.__unicode__())
-        logger.debug(msg)
+        logger.exception(msg)
         raise Exception(msg)
     
     
-    if service:
-        """
-        необходимо учесть что лаборатории могут быть разными
-        последовательность:
-        запрашиваются extended service
-        если количество результатов == 1, то берем единственный элемент
-        если больше 1, то фильтруем запрос таким образом, чтобы осталось одно собственное учреждение
-        если таковых нет, то берем первый результат из запроса
-        """
-        ex_services = service.extendedservice_set.active()
-        c = ex_services.count()
-        if c==1:
-            ext_service = ex_services[0]
-        elif c>1:
-            own_ex_services = ex_services.filter(state__type=u'b')
-            if own_ex_services.count()>0:
-                ext_service = own_ex_services[0]
-            else:
-                ext_service = ex_services[0]
+    """
+    необходимо учесть что лаборатории могут быть разными
+    последовательность:
+    запрашиваются extended service
+    если количество результатов == 1, то берем единственный элемент
+    если больше 1, то фильтруем запрос таким образом, чтобы осталось одно собственное учреждение
+    если таковых нет, то берем первый результат из запроса
+    """
+    ex_services = service.extendedservice_set.active()
+    c = ex_services.count()
+    if c==1:
+        ext_service = ex_services[0]
+    elif c>1:
+        own_ex_services = ex_services.filter(state__type=u'b')
+        if own_ex_services.count()>0:
+            ext_service = own_ex_services[0]
         else:
-            raise Exception(u"Исследование с кодом '%s' имеет неверные настройки" % data['order']['code'])
-       
-        logger.debug( u'Для услуги %s найдено место выполнения: %s' % ( service, ext_service.state) )
-    
-    
-    if ext_service:
-        try:
-            ordered_service, created = OrderedService.objects.get_or_create(order=visit,
-                                                                            ext_service=ext_service.state,
-                                                                            service=service,
-                                                                            operator=visit.operator)
-        except Exception, err:
-            logger.exception(u'Ошибка при создании заказа %s: %s' % (service, err.__unicode__()) )
-        
-        if created:
-            logger.info( "Заказ %s (%s) для образца %s создан" % (service, ext_service.state, visit.specimen) )
-
-        try:
-            ordered_service.to_lab()
-        except Exception, err:
-            logger.exception(u'Ошибка проведения лабораторной услуги %s: %s' % (service, err.__unicode__()))
-
-        return ordered_service
-
+            ext_service = ex_services[0]
     else:
-        return None
+        msg = u"Исследование с кодом '%s' имеет неверные настройки" % data['order']['code']
+        logger.exception(msg)
+        raise Exception(msg)
+   
+    logger.debug( u'Для услуги %s найдено место выполнения: %s' % ( service, ext_service.state) )
 
 
-def get_visit_sync_id(visit):
-    state = visit.office
+
+    #### создаем услугу для образца
     try:
-        sync_obj = SyncObject.objects.get(state=state, 
-                                          content_type__model='visit',
-                                          object_id=visit.id)
-        return sync_obj.sync_id
-    except:
-        return None
+        ordered_service, created = OrderedService.objects.get_or_create(order=visit,
+                                                                        ext_service=ext_service.state,
+                                                                        service=service,
+                                                                        operator=visit.operator)
+    except Exception, err:
+        msg = u"Ошибка при добавлении услуги '%s' к образцу %s: %s" % (service, visit.specimen, err.__unicode__())
+        logger.exception(msg)
+        raise Exception(msg)
+    
+    if created:
+        logger.info( "Услуга %s (%s) для образца %s добавлена" % (service, ext_service.state, visit.specimen) )
+    else:
+        logger.info( "Услуга %s (%s) для образца %s уже существует" % (service, ext_service.state, visit.specimen) )
 
+    try:
+        ordered_service.to_lab()
+    except Exception, err:
+        msg = u'Ошибка проведения лабораторной услуги %s: %s' % (service, err.__unicode__())
+        logger.exception(msg)
+        raise Exception(msg)
 
+    return ordered_service
+
+    
 def get_result(request, data):
-    visit_id = data['visit']['id']
+    specimen_id = data['visit']['specimen_id']
     code = data['order']['code']
     r = data['result']
     try:
-        result = Result.objects.get(order__visit__id=visit_id, 
+        result = Result.objects.get(order__visit__specimen=specimen_id, 
                                     analysis__service__code=code,
                                     analysis__name=r['name'])
+        if result.value:
+            result.previous_value = result.value
         result.value = r['value']
         result.validation = 1
         result.save()
-        logger.debug(u'result %s for visit #%s saved' % (r['name'],visit_id))
+        
+        msg = u"Результат теста '%s' для образца %s сохранен" % (r['name'],specimen_id)
+        logger.info(msg)
         return result
-    except ObjectDoesNotExist:
-        raise Exception(u"Результат %s для заказа %s не найден" % (r['name'],visit_id) )
-        logger.debug(u'result %s for visit #%s not found' % (r['name'],visit_id))
-    except:
-        logger.debug(u'exception for result %s for visit #%s' % (r['name'],visit_id))
     
-    return None
+    except ObjectDoesNotExist:
+        msg = u"Результат теста '%s' для образца %s не найден" % (r['name'],specimen_id)
+        logger.exception(msg)
+        raise Exception(msg)
+    
+    except Exception, err:
+        msg = u"При сохранении теста '%s' для образца %s произошла ошибка: %s" % (r['name'],specimen_id, err.__unicode__())
+        logger.exception(msg)
+        raise Exception(msg)
+    
+

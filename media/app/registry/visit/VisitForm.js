@@ -906,22 +906,27 @@ App.visit.VisitForm = Ext.extend(Ext.FormPanel, {
 			this.barcodeField.setValue('');
 			this.barcodeBtn.setText('Автоматически');
 			this.barcodeBtn.disable();
+			this.barcodeValue = undefined;
 		} else {
 			var barcodeWindow = new App.choices.BarcodeChoiceWindow({
 				patientId:this.patientRecord.data.id,
 				fn:function(record){
 					if (record){
-						barcodeWindow['sended'] = true;
-						barcodeWindow.close();
-						this.barcodeField.setValue(record.data.resource_uri);
+						this.barcodeValue = record.data.resource_uri;
+						this.barcodeField.setValue(this.barcodeValue);
 						this.barcodeBtn.setText(record.data.id);
 						this.barcodeBtn.enable();
-					} else {
-						if (!this.barcodeField.getValue()){
+						barcodeWindow.close();
+					}
+				},
+				listeners:{
+					close:function(){
+						if(!this.barcodeValue){
 							this.autoBarcode.setValue(true);
 							this.barcodeBtn.setText('Автоматически');
 						}
-					}
+					},
+					scope:this
 				},
 				scope:this
 			});
