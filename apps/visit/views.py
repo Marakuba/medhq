@@ -18,6 +18,7 @@ import simplejson
 from tastypie.http import HttpBadRequest
 from service.exceptions import TubeIsNoneException
 from state.models import State
+from patient.models import InsurancePolicy
 #autocomplete = AutocompleteView('visit')
 
 def all(request, visit_id):
@@ -153,11 +154,19 @@ def set_payment_type(request):
     data = simplejson.loads(request.raw_post_data)
     params = data['data'][0]
     visit_id = params['id']
+    payer = params['payer'] or None
+    policy = params['insurance_policy'] or None
     try:
         visit = Visit.objects.get(id=visit_id)
     except:
         return dict(success=False, data="cannot find visit %s" % visit_id)
-    payer = params['payer'] or None
+    
+    if payer:
+        try:
+            policy = InsurancePolicy.objects.get(id=policy)
+        except:
+            return dict(success=False, data="cannot find payer %s" % policy)
+    
     if payer:
         try:
             payer = State.objects.get(id=params['payer'])
@@ -166,7 +175,7 @@ def set_payment_type(request):
     try:
         visit.payment_type = params['ptype']
         visit.payer = payer 
-        visit.insurance_policy = params['insurance_policy'] or None
+        visit.insurance_policy = policy
         visit.save()
     except:
         return dict(success=False, data="cannot update visit %s: [payment_type: %s, payer: %s, policy: %s]" 

@@ -5,7 +5,11 @@ App.insurance.PolicyWindow = Ext.extend(Ext.Window, {
 	initComponent:function(){
 		this.policyGrid = new App.insurance.PolicyGrid({
 				record:this.patientRecord,
-				showChoiceButton:true
+				showChoiceButton:true,
+				fn:function(uri){
+					Ext.callback(this.fn, this.scope || window, [uri]);
+				},
+				scope:this
 			});
 		config = {
 			title:'Полисы ДМС',

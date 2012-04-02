@@ -55,12 +55,13 @@ App.choices.PaymentTypeChoiceWindow = Ext.extend(Ext.Window, {
 						var win;
 						if(!win && this.patientRecord) {
 							win = new App.insurance.PolicyWindow({
-								patientRecord:this.patientRecord
-							});
-							win.on('policyselect', function(uri){
-								this.policyCmb.forceValue(uri);
+								patientRecord:this.patientRecord,
+								fn: function(uri){
+									this.policyCmb.forceValue(uri);
 								win.close();
-							},this);
+								},
+								scope:this
+							});
 							win.show(this);
 						}
 					},
@@ -172,6 +173,7 @@ App.choices.PaymentTypeChoiceWindow = Ext.extend(Ext.Window, {
 			this.paymentTypeCB.setValue(this.record.data.payment_type);
 			this.onPaymentTypeChoice(this.record.data.payment_type);
 			this.payerCmb.setValue(this.record.data.payer);
+			this.policyCmb.getStore().setBaseParam('patient',this.patientRecord.data.id);
 			this.policyCmb.setValue(this.record.data.insurance_policy)
 			
 		},this)
@@ -227,7 +229,7 @@ App.choices.PaymentTypeChoiceWindow = Ext.extend(Ext.Window, {
 		params['id'] = this.record.data.id;
 		params['ptype'] = this.paymentTypeCB.getValue();
 		params['payer'] = App.uriToId(this.payerCmb.getValue());
-		params['insurance_policy'] = this.policyCmb.getValue();
+		params['insurance_policy'] = App.uriToId(this.policyCmb.getValue());
 		App.direct.visit.setPaymentType(params,function(res){
 			//НЕ УДАЛЯТЬ console.log(res.data) !!!
 			console.log(res.data);

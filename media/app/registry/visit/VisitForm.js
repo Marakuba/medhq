@@ -114,7 +114,12 @@ App.visit.VisitForm = Ext.extend(Ext.FormPanel, {
 						var win;
 						if(!win && this.patientRecord) {
 							win = new App.insurance.PolicyWindow({
-								patientRecord:this.patientRecord
+								patientRecord:this.patientRecord,
+								fn:function(uri){
+									this.policyCmb.forceValue(uri);
+									win.close();
+								},
+								scope:this
 							});
 							win.on('policyselect', function(uri){
 								this.policyCmb.forceValue(uri);

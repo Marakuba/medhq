@@ -165,7 +165,7 @@ App.insurance.PolicyGrid = Ext.extend(Ext.grid.GridPanel, {
 				iconCls:'silk-accept',
 				text:'Выбрать',
 				hidden:!this.showChoiceButton,
-				handler:this.onChoice.createDelegate(this)
+				handler:this.onChoice.createDelegate(this,[])
 			},'-',{
 				xtype:'button',
 				iconCls:'silk-add',
@@ -202,7 +202,8 @@ App.insurance.PolicyGrid = Ext.extend(Ext.grid.GridPanel, {
 	
 	onChoice: function(rec){
 		rec = rec || this.getSelectionModel().getSelected();
-		this.fireEvent('policyselect', rec.data.resource_uri);
+		if (!rec) return false
+		Ext.callback(this.fn, this.scope || window, [rec.data.resource_uri]);
 	},
 	
 	onAddPolicy: function(){
