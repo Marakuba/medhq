@@ -161,11 +161,11 @@ def set_payment_type(request):
     except:
         return dict(success=False, data="cannot find visit %s" % visit_id)
     
-    if payer:
+    if policy:
         try:
             policy = InsurancePolicy.objects.get(id=policy)
         except:
-            return dict(success=False, data="cannot find payer %s" % policy)
+            return dict(success=False, data="cannot find policy %s" % policy)
     
     if payer:
         try:

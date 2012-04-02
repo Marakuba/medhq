@@ -285,7 +285,7 @@ class OrderedService(make_operator_object('ordered_service')):
         if self.assigment and self.assigment.price:
             price = self.assigment.price
         else:
-            price = self.service.price(self.execution_place, self.order.created, payment_type=pt)
+            price = self.service.price(self.execution_place, self.order.created, payment_type=pt,payer=self.order.payer)
         opr = OPERATIONS[self.order.cls]
         self.price = price*opr
         self.total_price = price*self.count
