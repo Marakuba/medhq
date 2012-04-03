@@ -147,6 +147,14 @@ class PatientResource(ExtResource):
             pass
         return bundle
     
+    def hydrate_billed_account(self, bundle):
+#TODO: only for Python 2.6 trick. Will be remove later.
+        try:
+            bundle.data['billed_account'] = str(bundle.data['billed_account'])
+        except KeyError:
+            pass
+        return bundle
+    
     def get_object_list(self, request):
         self.orig_request = request
         return super(PatientResource, self).get_object_list(request)

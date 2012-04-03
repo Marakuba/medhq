@@ -136,7 +136,7 @@ class BaseService(models.Model):
     execution_type_group = models.ForeignKey(ExecutionTypeGroup, null=True, blank=True)
     code = models.CharField(u'Код', max_length=25, null=True, blank=True)
     standard_service = models.ForeignKey(StandardService, null=True)
-    execution_time = models.PositiveIntegerField(u'Стандартное время выполнения', null=True, blank=True)
+    execution_time = models.PositiveIntegerField(u'Время выполнения', null=True, blank=True)
     #is_lab = models.BooleanField(u'В направление')
     partnership = models.BooleanField(u'В направление')
     version = models.PositiveIntegerField(u'Версия', default=0, null=True, blank=True)
@@ -257,6 +257,14 @@ class BaseService(models.Model):
         verbose_name = u"услуга клиники"
         verbose_name_plural = u"услуги клиники"
         ordering = ('name',)
+
+
+class PlainBaseService(BaseService):
+    
+    class Meta:
+        proxy = True
+        verbose_name = u'услуга (адм.)'
+        verbose_name_plural = u'услуги (адм.)'
         
 
 class ExtendedServiceManager(models.Manager):

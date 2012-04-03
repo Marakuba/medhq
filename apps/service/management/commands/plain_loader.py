@@ -4,7 +4,7 @@
 """
 from django.core.management.base import BaseCommand
 import csv
-from service.models import BaseService, ExtendedService
+from service.models import BaseService
 from state.models import State
 from pricelist.models import Price
 import datetime
@@ -31,9 +31,9 @@ class Command(BaseCommand):
         table = csv.reader(open(f,'r'), delimiter=",")
         
         for row in table:
-            id, name, price = [unicode(col.strip(),'utf-8') for col in row]
+            sid, name, price = [unicode(col.strip(),'utf-8') for col in row]
             try:
-                service = BaseService.objects.get(code="EM%s" % id)
+                service = BaseService.objects.get(code="EM%s" % sid)
                 ex = service.extendedservice_set.filter(state=state)
                 if not len(ex):
                     print u"Услуга %s не выполняется в %s" % (name, state_name)
@@ -43,6 +43,17 @@ class Command(BaseCommand):
                                      price_type=price_type, 
                                      value=price,
                                      on_date=on_date)
+                
+                try:
+                    analysis = service.analysis_set.get(name=service.name)
+                    analysis.name = name
+                    analysis.save()
+                except:
+                    pass
+                
+                service.name = name
+                service.save()
+                
                 print u"Для услуги %s установлена цена %s" % (name, price)
             except:
                 print u"Услуга %s не найдена" % name

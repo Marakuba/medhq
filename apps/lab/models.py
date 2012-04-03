@@ -78,7 +78,7 @@ class InputList(models.Model):
     """
     """
     
-    name = models.CharField(u'Наименование', max_length=50)
+    name = models.CharField(u'Наименование', max_length=200)
     
     def __unicode__(self):
         return self.name

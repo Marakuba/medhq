@@ -30,6 +30,9 @@ class PatientAdmin(OperatorAdmin, TabbedMedia):
         (u'Личные данные',{
             'fields':('last_name','first_name','mid_name','birth_day','gender'),
         }),
+        (u'Паспортные данные',{
+            'fields':('guardian','id_card_series','id_card_number','id_card_issue_date','id_card_org'),
+        }),
         (u'Маркетинговая информация',{
             'fields':('discount','doc','initial_account','hid_card','ad_source'),
         }),

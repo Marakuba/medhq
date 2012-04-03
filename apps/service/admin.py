@@ -2,33 +2,26 @@
 
 from django import forms
 from django.contrib import admin
-from django.conf import settings
-from django.core.cache import cache
 
 from feincms.admin.editor import TreeEditor
 from mptt.forms import TreeNodeChoiceField
 
-from models import BaseService, StandardService, ICD10
-from pricelist.models import Price
-from lab.models import Analysis, Tube
-from state.models import State
+from models import BaseService
+from lab.models import Analysis
 from service.models import ExecutionPlace, Material, BaseServiceGroup,\
     LabServiceGroup, ExecutionTypeGroup, ExtendedService, ICD10
-from django.http import HttpResponseBadRequest, HttpResponse
-from django.utils.safestring import mark_safe
+from django.http import HttpResponse
 from django.utils import simplejson
-from feincms.admin.tree_editor import _build_tree_structure
 from django.conf.urls.defaults import patterns
 import csv
 import datetime
-from django.views.generic.simple import direct_to_template
 from django.db.models.expressions import F
-from service.forms import PriceForm
 from lab.admin import LabServiceInline
 import StringIO
 
-import logging
-logger = logging.getLogger('general')
+from pricelist.models import Price
+from django.views.generic.simple import direct_to_template
+from service.forms import PriceForm
 
 
 class StandardServiceAdmin(TreeEditor):
@@ -47,15 +40,11 @@ class PriceInlineAdmin(admin.TabularInline):
 class AnalysisInlineAdmin(admin.TabularInline):
     model = Analysis
     extra = 0
-    exclude = ('input_mask',)
+    exclude = ('input_mask','equipment_assay')
 
 
 def is_leaf(obj):
     return obj.is_leaf_node()
-
-#def is_lab(obj):
-#    return obj.is_lab and u'Да' or u'Нет'
-#is_lab.short_description = u'Лаборатория'
 
 
 def make_inactive_action(modeladmin, request, queryset):
@@ -232,45 +221,17 @@ class BaseServiceAdmin(TreeEditor):
     
     form = BaseServiceForm
 
-#    class Media:
-#        css = {
-#            "all": (settings.STATIC_URL + "jquery/jquery-ui-1.8.custom.css",)
-#        }
-#        js = (settings.STATIC_URL + "jquery/jquery-1.4.2.min.js",
-#              settings.STATIC_URL + "jquery/jquery.cookie.js",
-#              settings.STATIC_URL + "jquery/jquery.ui.core.js",
-#              settings.STATIC_URL + "jquery/jquery.ui.widget.js",
-#              settings.STATIC_URL + "jquery/jquery.ui.tabs.js",
-#              "resources/js/csv_button.js")
     
     list_per_page = 2000
-    #change_form_template = "admin/tabbed/change_form.html"
-    list_display = ('name','short_name',
-                    #make_place_column(u'Ек'),make_place_column(u'Ел'),make_place_column(u'К'),make_place_column(u'Д'),
-                    'execution_time',
-                    'execution_form')
-    list_editable = ('execution_time',)
+    list_display = ('name','short_name','code','execution_time','lab_group')
+    list_editable = ('code','execution_time','lab_group')
+    
     inlines = [ExtendedServiceInlineAdmin,AnalysisInlineAdmin,LabServiceInline]
-    #filter_horizontal = ('staff',)
     save_as = True
     exclude = ('standard_service','normal_tubes','transport_tubes','staff','individual_tube')
     search_fields = ['name','short_name']
     actions = [make_inactive_action,dump_for_load]
-    
-    def export_csv(self, request):
-        response =  HttpResponse(mimetype='text/csv')
-        writer = csv.writer(response)
-        qs = self.queryset(request).order_by(self.model._meta.tree_id_attr, self.model._meta.left_attr)
-        for object in qs:
-            row = [object.id, 
-                   object.parent_id, 
-                   object.name.encode("utf-8"), 
-                   object.short_name.encode("utf-8")
-                   ]
-            writer.writerow(row)
-        response['Content-Disposition'] = 'attachment; filename=services_%s.csv' % datetime.datetime.today()
-        return response
-    
+
     def pricelist(self, request):
         state = PriceForm()
         extra_context = {'today':datetime.date.today().strftime("%d.%m.%Y"),'form' : state}
@@ -282,7 +243,7 @@ class BaseServiceAdmin(TreeEditor):
             date = datetime.datetime.today()
         if not isinstance(date, datetime.datetime):
             date = datetime.datetime.strptime(date, "%d.%m.%Y")
-        logger.debug(u"PRICELIST_PRINT: %s" % date)
+        print date
         services = BaseService.objects.actual().order_by(BaseService._meta.tree_id_attr, #@UndefinedVariable
                                                       'level', 
                                                       "-"+BaseService._meta.left_attr) #@UndefinedVariable
@@ -293,27 +254,32 @@ class BaseServiceAdmin(TreeEditor):
                         }
         return direct_to_template(request, "print/service/pricelist.html", extra_context=extra_context)
         
-    def tests(self, request):
-        services = BaseService.objects.actual().order_by(BaseService._meta.tree_id_attr, #@UndefinedVariable
-                                                      'level', 
-                                                      "-"+BaseService._meta.left_attr) #@UndefinedVariable
-        
-        extra_context = {'services':services}
-        return direct_to_template(request, "print/service/tests.html", extra_context=extra_context)
-        
+    def export_csv(self, request):
+        response =  HttpResponse(mimetype='text/csv')
+        writer = csv.writer(response)
+        qs = self.queryset(request).order_by(self.model._meta.tree_id_attr, self.model._meta.left_attr)
+        for obj in qs:
+            row = [obj.id, 
+                   obj.parent_id, 
+                   obj.name.encode("utf-8"), 
+                   obj.short_name.encode("utf-8")
+                   ]
+            writer.writerow(row)
+        response['Content-Disposition'] = 'attachment; filename=services_%s.csv' % datetime.datetime.today()
+        return response
+    
     def get_urls(self):
         urls = super(BaseServiceAdmin, self).get_urls()
         my_urls = patterns('',
             (r'^export/csv/$', self.export_csv),
             (r'^pricelist/$', self.pricelist),
             (r'^pricelist/print/$', self.pricelist_print),
-            (r'^tests/$', self.tests),
         )
         return my_urls + urls
 
+
     
 
-#admin.site.register(StandardService, StandardServiceAdmin)
 admin.site.register(BaseService, BaseServiceAdmin)
 admin.site.register(ExtendedService, ExtendedServiceAdmin)
 admin.site.register(Material)
@@ -322,5 +288,3 @@ admin.site.register(LabServiceGroup)
 admin.site.register(ExecutionTypeGroup)
 admin.site.register(ICD10)
 
-
-#admin.site.register(ICD10)

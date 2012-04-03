@@ -18,7 +18,7 @@ def update_patient_info(request):
         'billed_account':patient.billed_account,
         'balance':"%.2f" % patient.balance,
         'discount_name':d and d.__unicode__() or u'0%',
-        'discount':d and d.value or 0
+        'discount':d and d.id or None
     }
     return dict(success=True, data=data)
 
