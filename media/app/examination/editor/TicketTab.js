@@ -5,8 +5,8 @@ App.examination.TicketPanel = Ext.extend(Ext.ux.Portal,{
 //	title:'Новый раздел',
 	autoScroll:true,
 	cls: 'placeholder',
-	bubbleEvents:['beforeticketremove','ticketremove','ticketdataupdate','ticketeditstart','drop','ticketheadeeditrstart'],
-	closable: true
+	bubbleEvents:['beforeticketremove','ticketremove','ticketdataupdate','ticketeditstart','drop','beforedrop','ticketheadeeditrstart'],
+	closable: false
 });
 
 App.examination.TicketTab = Ext.extend(Ext.Panel, {
@@ -42,7 +42,6 @@ App.examination.TicketTab = Ext.extend(Ext.Panel, {
 			autoDestroy:true,
             baseParams:{
         		format:'json',
-        		section:this.section,
 				staff:App.uriToId(this.staff)
         	},
 		    paramNames: {
@@ -146,12 +145,12 @@ App.examination.TicketTab = Ext.extend(Ext.Panel, {
 					};
 					data[item.section].tickets.push(itemData)
 				},this);
-				//по старой структуре data содержит массив списков секций. так было потому, что были разные вкладки на каждую секцию
+				//по старой структуре data содержит массив списков секций. так было потому, 
+				//что были разные вкладки на каждую секцию
 				var dataArray = []
 				for (sec in data){
 					dataArray.push(data[sec])
 				}
-				console.log(dataArray)
 				return dataArray
 			},
 			
@@ -176,6 +175,9 @@ App.examination.TicketTab = Ext.extend(Ext.Panel, {
 						}
 					},this);
 				},
+				'beforedrop':function(res){
+					return false
+				},
 				scope:this
 			}
 		});
@@ -185,7 +187,7 @@ App.examination.TicketTab = Ext.extend(Ext.Panel, {
 			layout:'border',
 		    labelAlign: 'top',
 		    autoSctoll:true,
-		    closable:true,
+		    closable:false,
 		    bubbleEvents:['beforeticketremove','ticketremove','ticketdataupdate','ticketeditstart','editorclose','drop','ticketheadeeditrstart'],
 		    items: [
 		       this.ticketPanel, this.glossPanel
@@ -260,42 +262,44 @@ App.examination.TicketTab = Ext.extend(Ext.Panel, {
 		},this);
 		
 		this.glossPanel.on('nodeclick',function(attrs){
-			if (this.ticket){
-				this.ticket.doNotClose = true;
-				var pos = this.ticket.getPos() || -1;
-				var oldText;
-				if (this.ctxEditor){
-					oldText = this.ctxEditor.field.getValue();
-				} else {
-					oldText = this.ticket.getText();
-				};
-				var pastedText = attrs.text;
+			if (!this.ticket) return false;
+			this.ticket.doNotClose = true;
+			var pos = this.ticket.getPos() || -1;
+			var oldText;
+			if (this.ctxEditor){
+				oldText = this.ctxEditor.field.getValue();
+			} else {
+				oldText = this.ticket.getText();
+			};
+			var pastedText = attrs.text;
+			if (oldText[pos] && oldText[pos] != ' '){
+				pastedText += ' ';
+			}; 
+			var beforePasted = oldText.substring(0,pos);
+			var afterPasted = oldText.substr(pos);
 //				console.log('pos = ' + pos);
 //				console.log('text[' + pos+'] = ' + oldText[pos]);
 //				console.log('length = ' + oldText.length);
-				if (oldText[pos] && oldText[pos] != ' '){
-					pastedText += ' ';
-				} 
-				if (pos>0 && oldText[pos-1] && oldText[pos-1] != ' '){
-					var newText = oldText.splice(pos, 0, ' '+ pastedText);
-				} else {
-					var newText = oldText.splice(pos, 0, pastedText);
-				}
-				this.ticket.setText(newText);
-				pos = pos + pastedText.length + 1;
-				var el = this.ticket.getEl()
-				if (this.ctxEditor){
-					this.ctxEditor.field.setValue(newText);
-					var textarea = this.ctxEditor.field.getEl().dom;
+			
+			if (pos>0 && oldText[pos-1] && oldText[pos-1] != ' '){
+//					var newText = oldText.slice(pos, 0, ' '+ pastedText);
+				pastedText = ' ' + pastedText;
+			}
+			var newText = beforePasted + pastedText + afterPasted;
+			this.ticket.setText(newText);
+			pos = pos + pastedText.length;
+			var el = this.ticket.getEl()
+			if (this.ctxEditor){
+				this.ctxEditor.field.setValue(newText);
+				var textarea = this.ctxEditor.field.getEl().dom;
 //					this.ticket.setCaretTo(textarea,pos);
 //					this.ctxEditor.field.focus(false,100);
-					textarea.setSelectionRange(pos, pos); 
-					this.ticket.setCaretTo.defer(300,this.ticket,[textarea,pos]);
-				} else {
-					this.ticket.setPos(pos);
-				};
-				this.fireEvent('ticketdataupdate');
-			}
+				textarea.setSelectionRange(pos, pos); 
+				this.ticket.setCaretTo.defer(300,this.ticket,[textarea,pos]);
+			} else {
+				this.ticket.setPos(pos);
+			};
+			this.fireEvent('ticketdataupdate');
 		},this);
 		
 		this.glossPanel.on('afterrender',function(){
@@ -336,10 +340,12 @@ App.examination.TicketTab = Ext.extend(Ext.Panel, {
 			if (this.ticket) {
 				this.ticket.body.removeClass('selected');
 			};
+			this.reloadGlossary(panel.section);
 			this.ticket = panel;
 		},this);
 		
 		this.on('ticketheadeeditstart',function(panel){
+			this.reloadGlossary(panel.section);
 			if (this.ticket){
 				this.ticket.body.removeClass('selected')
 			};
@@ -368,7 +374,6 @@ App.examination.TicketTab = Ext.extend(Ext.Panel, {
 	},
 	
 	loadData: function(data,sectionPlan){
-		console.log(data);
 		this.sectionPlan = sectionPlan;
 		if(!data) return false;
 		
@@ -415,7 +420,12 @@ App.examination.TicketTab = Ext.extend(Ext.Panel, {
 					}
 				});
 				//вставляем тикет на свое место согласно позиции pos
-				this.insertTicketInPos(new_ticket,'pos')
+				if(new_ticket.pos){
+					this.insertTicketInPos(new_ticket,'pos')
+				} else {
+					this.insertTicketInPos(new_ticket,'order')
+				}
+				
 			},this);
 			this.doLayout();
 		},this);
@@ -525,8 +535,6 @@ App.examination.TicketTab = Ext.extend(Ext.Panel, {
 			beforeAddresses = val.substring(0, beforeEnd + 1);
 		};
 		
-		console.log('beforeAddresses ', beforeAddresses);
-
 		var afterBegin = this.indexOfAny(afterAddresses,[',','.',' ']);
 //		var afterBegin = -1;
 		if (afterBegin == -1) {
@@ -575,6 +583,16 @@ App.examination.TicketTab = Ext.extend(Ext.Panel, {
 	closeEditor: function(){
 		if(this.ctxEditor){
 			this.ctxEditor.completeEdit();
+		}
+	},
+	
+	reloadGlossary: function(section){
+		if (!(section == this.glossStore.baseParams['section'])){
+			this.glossStore.setBaseParam('section',section)
+			this.glossPanel.loader.baseParams['section'] = section;
+			this.glossStore.load();
+			var rootNode = this.glossPanel.getRootNode();
+			this.glossPanel.loader.load(rootNode);
 		}
 	}
 	

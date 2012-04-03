@@ -138,7 +138,19 @@ App.examination.TemplateBody = Ext.extend(Ext.TabPanel, {
 			base_service:this.base_service,
 			record:this.record,
 			closable:false,
-			autoScroll:true
+			autoScroll:true,
+			listeners:{
+				scope:this,
+				'ticketdataupdate':function(){
+					this.updateRecord();
+				},
+				'drop': function(){
+					this.updateRecord();
+				},
+				'ticketremove':function(){
+					this.updateRecord();
+				}
+			}
 		})
 		
 		config = {
@@ -552,6 +564,7 @@ App.examination.TemplateBody = Ext.extend(Ext.TabPanel, {
 		this.subSecBtns = {}
 		
 		this.sectionPlan = {};
+		this.additionalMenu = [];
 		this.fieldSetStore.load({callback:function(records){
 			//формируем структуру разделов
 			Ext.each(records,function(record){
@@ -561,7 +574,13 @@ App.examination.TemplateBody = Ext.extend(Ext.TabPanel, {
 					'title': rec.title,
 					'order': rec.order
 				};
-				this.subSecBtns[rec.name] = []
+				this.subSecBtns[rec.name] = [];
+				
+				this.additionalMenu.push({
+					text:rec.title,
+					handler:this.onAddSubSection.createDelegate(this,['Заголовок',rec.name,rec.order]),
+					scope:this
+				});
 			},this);
 			this.subSectionStore.load({callback:function(records){
 				//сортируем подразделы по разделам
@@ -579,18 +598,24 @@ App.examination.TemplateBody = Ext.extend(Ext.TabPanel, {
 				for (rec in this.sectionPlan){
 					var section = this.sectionPlan[rec]
 					//вставляем заголовки разделов в главное меню
-					this.sectionItems.add(String.format('<b class="menu-title">{0}</b>',section.title));
-					Ext.each(this.subSecBtns[section.name],function(subSec){
-						this.sectionItems.add(subSec);
-					},this)
-					//добавляем ко всем разделам 'произвольный' подраздел
-					var emptySubSec = {
-						text:'Произвольный',
-						handler:this.onAddSubSection.createDelegate(this,['Заголовок',section.name,section.order]),
-						scope:this
-					};
-					this.sectionItems.add(emptySubSec);
-				}
+					if (this.subSecBtns[section.name].length){
+						this.sectionItems.add(String.format('<b class="menu-title">{0}</b>',section.title));
+						Ext.each(this.subSecBtns[section.name],function(subSec){
+							this.sectionItems.add(subSec);
+						},this)
+					}
+				};
+				this.sectionItems.add('-');
+				//добавляем ко всем разделам 'произвольный' подраздел
+				var emptySubSec = {
+					text:'Произвольный',
+					menu:{
+						items:this.additionalMenu
+					}
+//						handler:this.onAddSubSection.createDelegate(this,['Заголовок',section.name,section.order]),
+//						scope:this
+				};
+				this.sectionItems.add(emptySubSec);
 				
 				this.addSubSecBtn = new Ext.Button({
 					iconCls:'silk-page-white-add',
