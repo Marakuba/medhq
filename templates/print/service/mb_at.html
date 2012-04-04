@@ -1,0 +1,670 @@
+<TABLE WIDTH="100%" CELLPADDING=4 CELLSPACING=0 FRAME=VOID>
+    <COL WIDTH="65%">
+    <COL WIDTH="35%">
+    <TR VALIGN=TOP>
+        <TD WIDTH=350 STYLE="text-align:center; border: none; padding: 0cm">
+            <P CLASS="western" ALIGN=CENTER><FONT FACE="Arial, sans-serif"><FONT SIZE=1 STYLE="font-size: 8pt"><B>МБУЗ
+            Городская больница №2 «КМЛДО»</B></FONT></FONT></P>
+            <P CLASS="western" ALIGN=CENTER><FONT FACE="Arial, sans-serif"><FONT SIZE=1 STYLE="font-size: 8pt"><B>КРАЕВОЙ
+            КОНСУЛЬТАТИВНО-ДИАГНОСТИЧЕСКИЙ ЦЕНТР</B></FONT></FONT></P>
+            <P CLASS="western" ALIGN=CENTER><FONT FACE="Arial, sans-serif"><FONT SIZE=1>350012,
+            г. Краснодар, ул. Красных Партизан, 6,
+            корпус 2</FONT></FONT></P>
+            
+        </TD>
+        <TD WIDTH=276 STYLE="border-top: none; border-bottom: none; border-left: 1px solid #000000; border-right: none; padding-top: 0cm; padding-bottom: 0cm; padding-left: 0.1cm; padding-right: 0cm">
+            <P CLASS="western" ALIGN=CENTER><FONT FACE="Arial, sans-serif"><FONT SIZE=1 STYLE="font-size: 8pt"><B>Лаборатория</B></FONT></FONT></P>
+            <P CLASS="western" ALIGN=CENTER><FONT FACE="Arial, sans-serif"><FONT SIZE=1 STYLE="font-size: 8pt"><B>микробиологических
+            исследований</B></FONT></FONT></P>
+            <P CLASS="western" ALIGN=CENTER><FONT FACE="Arial, sans-serif"><FONT SIZE=1>тел.
+            222-01-70</FONT></FONT></P>
+            <P CLASS="western" ALIGN=CENTER><BR>
+            </P>
+            <P CLASS="western" ALIGN=CENTER><FONT FACE="Arial, sans-serif"><FONT SIZE=1 STYLE="font-size: 8pt">{{ order.order.created|date:'d.m.Y'}} г.</FONT></FONT></P>
+        </TD>
+    </TR>
+</TABLE>
+<P CLASS="western" ALIGN=CENTER STYLE="margin-top: 0.2cm; margin-bottom: 0.2cm">
+<FONT FACE="Arial, sans-serif"><FONT SIZE=3 STYLE="font-size: 13pt"><B>Направление
+на микробиологическое исследование №
+_________</B></FONT></FONT></P>
+<TABLE WIDTH=643 CELLPADDING=4 CELLSPACING=0 FRAME=VSIDES RULES=COLS>
+    <COL WIDTH=437>
+    <COL WIDTH=24>
+    <COL WIDTH=156>
+    <TR VALIGN=TOP>
+        <TD ROWSPAN=3 WIDTH=437 STYLE="border-top: 1px solid #000000; border-bottom: 1px solid #000000; border-left: 1px solid #000000; border-right: none; padding-top: 0.1cm; padding-bottom: 0.1cm; padding-left: 0.1cm; padding-right: 0cm">
+            <P CLASS="western"><FONT FACE="Arial, sans-serif"><FONT SIZE=1 STYLE="font-size: 8pt">Ф.И.О.:
+                <b>{{ order.order.patient.full_name }}</b></FONT></FONT></P>
+            <P CLASS="western"><FONT FACE="Arial, sans-serif"><FONT SIZE=1 STYLE="font-size: 8pt">Пол:
+            <b>{{ order.order.patient.gender }}</b> Дата рождения: <b>{{ order.order.patient.birth_day|date:'d.m.Y' }}</b> Паспорт:
+            серия {{ order.order.patient.id_card_series|default:'______' }} №{{ order.order.patient.id_card_number|default:'________________' }}</FONT></FONT></P>
+            <P CLASS="western"><FONT FACE="Arial, sans-serif"><FONT SIZE=1 STYLE="font-size: 8pt">Домашний
+            адрес:
+            {{ order.order.patient.home_address_street|default:'_________________________________' }}</FONT></FONT></P>
+            <P CLASS="western"><FONT FACE="Arial, sans-serif"><FONT SIZE=1 STYLE="font-size: 8pt">Место
+            работы: _____________________________  Должность:
+            ____________________</FONT></FONT></P>
+            <P CLASS="western"><FONT FACE="Arial, sans-serif"><FONT SIZE=1 STYLE="font-size: 8pt">Направляющее
+            учреждение:
+            {{ order.order.office.official_title }}</FONT></FONT></P>
+            <P CLASS="western"><FONT FACE="Arial, sans-serif"><FONT SIZE=1 STYLE="font-size: 8pt">Страховой
+            полис:  серия ___________________
+            №______________________________</FONT></FONT></P>
+            <P CLASS="western"><FONT FACE="Arial, sans-serif"><FONT SIZE=1 STYLE="font-size: 8pt">Медицинская
+            страховая компания:
+            ___________________________________________</FONT></FONT></P>
+            <P CLASS="western"><FONT FACE="Arial, sans-serif"><FONT SIZE=1 STYLE="font-size: 8pt">Предварительный
+            диагноз:
+            _________________________________________________<BR>Ф.И.О.
+            врача, выдавшего направление
+            _______________________________________</FONT></FONT></P>
+        </TD>
+        <TD ROWSPAN=3 WIDTH=24 STYLE="; border-top: none; border-bottom: none; border-left: 1px solid #000000; border-right: none; padding-top: 0cm; padding-bottom: 0cm; padding-left: 0.1cm; padding-right: 0cm">
+            <P CLASS="western" ALIGN=CENTER><BR>
+            </P>
+        </TD>
+        <TD WIDTH=156 STYLE="border: 1px solid #000000; padding: 0.1cm">
+            <P CLASS="western" ALIGN=CENTER>№ <FONT FACE="Arial, sans-serif"><FONT SIZE=1 STYLE="font-size: 8pt">ист.
+            Болезни / амб. Карты</FONT></FONT></P>
+            <P CLASS="western" ALIGN=CENTER><FONT FACE="Arial, sans-serif"><FONT SIZE=1 STYLE="font-size: 8pt">_____________</FONT></FONT></P>
+        </TD>
+    </TR>
+    <TR VALIGN=TOP>
+        <TD WIDTH=156 STYLE="; border-top: none; border-bottom: 1px solid #000000; border-left: 1px solid #000000; border-right: 1px solid #000000; padding-top: 0cm; padding-bottom: 0.1cm; padding-left: 0.1cm; padding-right: 0.1cm">
+            <P CLASS="western" ALIGN=CENTER STYLE="margin-top: 0.1cm; margin-bottom: 0.1cm">
+            <FONT FACE="Arial, sans-serif"><FONT SIZE=2 STYLE="font-size: 9pt"><B>Вид
+            обращения:</B></FONT></FONT></P>
+            <P CLASS="western" ALIGN=CENTER><FONT FACE="Arial, sans-serif"><FONT SIZE=1 STYLE="font-size: 8pt">направление
+            ЛПУ</FONT></FONT></P>
+            <P CLASS="western" ALIGN=CENTER><FONT FACE="Arial, sans-serif"><FONT SIZE=1 STYLE="font-size: 8pt">платное</FONT></FONT></P>
+            <P CLASS="western" ALIGN=CENTER><FONT FACE="Arial, sans-serif"><FONT SIZE=1 STYLE="font-size: 8pt">хоздоговор</FONT></FONT></P>
+            <P CLASS="western" ALIGN=CENTER><FONT FACE="Arial, sans-serif"><FONT SIZE=1 STYLE="font-size: 8pt">самообращение</FONT></FONT></P>
+        </TD>
+    </TR>
+    <TR VALIGN=TOP>
+        <TD WIDTH=156 STYLE="; border-top: none; border-bottom: 1px solid #000000; border-left: 1px solid #000000; border-right: 1px solid #000000; padding-top: 0cm; padding-bottom: 0.1cm; padding-left: 0.1cm; padding-right: 0.1cm">
+            <P CLASS="western" ALIGN=CENTER><FONT FACE="Arial, sans-serif"><FONT SIZE=1 STYLE="font-size: 8pt">экстренное</FONT></FONT></P>
+            <P CLASS="western" ALIGN=CENTER><FONT FACE="Arial, sans-serif"><FONT SIZE=1 STYLE="font-size: 8pt">плановое</FONT></FONT></P>
+        </TD>
+    </TR>
+</TABLE>
+<P CLASS="western" ALIGN=CENTER STYLE="margin-bottom: 0cm; border-top: none; border-bottom: 1.00pt solid #000000; border-left: none; border-right: none; padding-top: 0cm; padding-bottom: 0.07cm; padding-left: 0cm; padding-right: 0cm">
+<BR>
+</P>
+<TABLE WIDTH="100%" CELLPADDING=0 CELLSPACING=0>
+    <TR VALIGN="middle">
+        <TD WIDTH="18%" STYLE="border: none; padding-top: 0.2cm; vertical-align: middle;">
+            <img src="{{ STATIC_URL }}{{ order.order.office.logo }}">
+        </TD>
+        <TD WIDTH="47%" STYLE="border: none; padding: 0cm;vertical-align: middle;">
+            <P CLASS="western" ALIGN=CENTER STYLE="margin-bottom: 0cm"><FONT FACE="Arial, sans-serif"><FONT SIZE=4><B>{{ order.order.office.print_name }}</B></FONT></FONT></P>
+        </TD>
+        <TD WIDTH="35%" STYLE="border: none; padding: 0cm;vertical-align: middle;">
+            <P CLASS="western" ALIGN=RIGHT STYLE="margin-bottom: 0cm"><FONT FACE="Arial, sans-serif"><FONT SIZE=1 STYLE="font-size: 8pt">
+            <B>{{ order.order.office.print_name }}<br>{{ order.order.office.post_address }}</B></FONT></FONT></P>
+        </TD>
+    </TR>
+</TABLE>
+<P CLASS="western" ALIGN=CENTER STYLE="margin-bottom: 0cm"><BR>
+</P>
+<P CLASS="western" STYLE="margin-bottom: 0cm"><BR>
+</P>
+<P CLASS="western" ALIGN=CENTER STYLE="margin-bottom: 0cm"><FONT FACE="Arial, sans-serif"><FONT SIZE=2>Направление
+на микробиологическое исследование №
+____ от «___» _____________ г.</FONT></FONT></P>
+<P CLASS="western" STYLE="margin-bottom: 0cm"><BR>
+</P>
+<P CLASS="western" STYLE="margin-bottom: 0cm"><BR>
+</P>
+<P CLASS="western" STYLE="margin-bottom: 0cm; line-height: 150%"><FONT FACE="Arial, sans-serif"><FONT SIZE=2>ФИО
+пациента
+<b>{{ order.order.patient.full_name }}</b></FONT></FONT></P>
+<P CLASS="western" STYLE="margin-bottom: 0cm; line-height: 150%"><FONT FACE="Arial, sans-serif"><FONT SIZE=2>Направляющее
+учреждение
+<b>{{ order.order.office.official_title }}</b></FONT></FONT></P>
+<P CLASS="western" STYLE="margin-bottom: 0cm; line-height: 150%"><FONT FACE="Arial, sans-serif"><FONT SIZE=2>ФИО
+врача, выдавшего направление  
+_____________________________________________________</FONT></FONT></P>
+<P CLASS="western" STYLE="margin-bottom: 0cm; line-height: 150%"><FONT FACE="Arial, sans-serif"><FONT SIZE=2>Исследуемый
+материал
+_________________________________________________________________</FONT></FONT></P>
+<P CLASS="western" STYLE="margin-bottom: 0cm; line-height: 150%"><FONT FACE="Arial, sans-serif"><FONT SIZE=2>Диагноз
+
+______________________________________________________________________________</FONT></FONT></P>
+<P CLASS="western" STYLE="margin-bottom: 0cm"><BR>
+</P>
+<P CLASS="western" ALIGN=CENTER STYLE="margin-bottom: 0cm"><FONT FACE="Arial, sans-serif"><FONT SIZE=2><B>Результат
+исследования:</B></FONT></FONT></P>
+<P CLASS="western" STYLE="margin-bottom: 0cm"><BR>
+</P>
+<P CLASS="western" STYLE="margin-bottom: 0cm"><FONT FACE="Arial, sans-serif"><FONT SIZE=2>Выделенные
+микроорганизмы:</FONT></FONT></P>
+<P CLASS="western" STYLE="margin-bottom: 0cm"><BR>
+</P>
+<P CLASS="western" STYLE="margin-bottom: 0cm; line-height: 150%"><FONT FACE="Arial, sans-serif"><FONT SIZE=2>1.
+___________________________________________________________________________________</FONT></FONT></P>
+<P CLASS="western" STYLE="margin-bottom: 0cm; line-height: 150%"><FONT FACE="Arial, sans-serif"><FONT SIZE=2>2.
+___________________________________________________________________________________</FONT></FONT></P>
+<P CLASS="western" STYLE="margin-bottom: 0cm; line-height: 150%"><FONT FACE="Arial, sans-serif"><FONT SIZE=2>3.
+___________________________________________________________________________________</FONT></FONT></P>
+<P CLASS="western" STYLE="margin-bottom: 0cm"><FONT FACE="Arial, sans-serif"><FONT SIZE=2>Чувствительность
+к антибиотикам:</FONT></FONT></P>
+<TABLE WIDTH=671 CELLPADDING=4 CELLSPACING=0>
+    <COL WIDTH=38>
+    <COL WIDTH=134>
+    <COL WIDTH=39>
+    <COL WIDTH=39>
+    <COL WIDTH=39>
+    <COL WIDTH=30>
+    <COL WIDTH=153>
+    <COL WIDTH=39>
+    <COL WIDTH=39>
+    <COL WIDTH=38>
+    <TR VALIGN=TOP>
+        <TD WIDTH=38 STYLE="border-top: 1px solid #000000; border-bottom: 1px solid #000000; border-left: 1px solid #000000; border-right: none; padding-top: 0.1cm; padding-bottom: 0.1cm; padding-left: 0.1cm; padding-right: 0cm">
+            <P CLASS="western"><BR>
+            </P>
+        </TD>
+        <TD WIDTH=134 STYLE="border-top: 1px solid #000000; border-bottom: 1px solid #000000; border-left: 1px solid #000000; border-right: none; padding-top: 0.1cm; padding-bottom: 0.1cm; padding-left: 0.1cm; padding-right: 0cm">
+            <P CLASS="western"><FONT FACE="Arial, sans-serif"><FONT SIZE=1 STYLE="font-size: 8pt"><I>Название
+            а\б</I></FONT></FONT></P>
+        </TD>
+        <TD WIDTH=39 STYLE="; border-top: 1px solid #000000; border-bottom: 1px solid #000000; border-left: 1px solid #000000; border-right: none; padding-top: 0.1cm; padding-bottom: 0.1cm; padding-left: 0.1cm; padding-right: 0cm">
+            <P CLASS="western"><FONT FACE="Arial, sans-serif"><FONT SIZE=1 STYLE="font-size: 8pt"><I>1</I></FONT></FONT></P>
+        </TD>
+        <TD WIDTH=39 STYLE="; border-top: 1px solid #000000; border-bottom: 1px solid #000000; border-left: 1px solid #000000; border-right: none; padding-top: 0.1cm; padding-bottom: 0.1cm; padding-left: 0.1cm; padding-right: 0cm">
+            <P CLASS="western"><FONT FACE="Arial, sans-serif"><FONT SIZE=1 STYLE="font-size: 8pt"><I>2</I></FONT></FONT></P>
+        </TD>
+        <TD WIDTH=39 STYLE="; border-top: 1px solid #000000; border-bottom: 1px solid #000000; border-left: 1px solid #000000; border-right: none; padding-top: 0.1cm; padding-bottom: 0.1cm; padding-left: 0.1cm; padding-right: 0cm">
+            <P CLASS="western"><FONT FACE="Arial, sans-serif"><FONT SIZE=1 STYLE="font-size: 8pt"><I>3</I></FONT></FONT></P>
+        </TD>
+        <TD WIDTH=30 STYLE="; border-top: 1px solid #000000; border-bottom: 1px solid #000000; border-left: 1px solid #000000; border-right: none; padding-top: 0.1cm; padding-bottom: 0.1cm; padding-left: 0.1cm; padding-right: 0cm">
+            <P CLASS="western"><BR>
+            </P>
+        </TD>
+        <TD WIDTH=153 STYLE="border-top: 1px solid #000000; border-bottom: 1px solid #000000; border-left: 1px solid #000000; border-right: none; padding-top: 0.1cm; padding-bottom: 0.1cm; padding-left: 0.1cm; padding-right: 0cm">
+            <P CLASS="western"><FONT FACE="Arial, sans-serif"><FONT SIZE=1 STYLE="font-size: 8pt"><I>Название
+            а\б</I></FONT></FONT></P>
+        </TD>
+        <TD WIDTH=39 STYLE="; border-top: 1px solid #000000; border-bottom: 1px solid #000000; border-left: 1px solid #000000; border-right: none; padding-top: 0.1cm; padding-bottom: 0.1cm; padding-left: 0.1cm; padding-right: 0cm">
+            <P CLASS="western"><FONT FACE="Arial, sans-serif"><FONT SIZE=1 STYLE="font-size: 8pt"><I>1</I></FONT></FONT></P>
+        </TD>
+        <TD WIDTH=39 STYLE="; border-top: 1px solid #000000; border-bottom: 1px solid #000000; border-left: 1px solid #000000; border-right: none; padding-top: 0.1cm; padding-bottom: 0.1cm; padding-left: 0.1cm; padding-right: 0cm">
+            <P CLASS="western"><FONT FACE="Arial, sans-serif"><FONT SIZE=1 STYLE="font-size: 8pt"><I>2</I></FONT></FONT></P>
+        </TD>
+        <TD WIDTH=38 STYLE="; border: 1px solid #000000; padding: 0.1cm">
+            <P CLASS="western"><FONT FACE="Arial, sans-serif"><FONT SIZE=1 STYLE="font-size: 8pt"><I>3</I></FONT></FONT></P>
+        </TD>
+    </TR>
+    <TR VALIGN=TOP>
+        <TD WIDTH=38 STYLE="; border-top: none; border-bottom: 1px solid #000000; border-left: 1px solid #000000; border-right: none; padding-top: 0cm; padding-bottom: 0.1cm; padding-left: 0.1cm; padding-right: 0cm">
+            <P CLASS="western"><FONT FACE="Arial, sans-serif"><FONT SIZE=1 STYLE="font-size: 8pt">1.</FONT></FONT></P>
+        </TD>
+        <TD WIDTH=134 STYLE="border-top: none; border-bottom: 1px solid #000000; border-left: 1px solid #000000; border-right: none; padding-top: 0cm; padding-bottom: 0.1cm; padding-left: 0.1cm; padding-right: 0cm">
+            <P CLASS="western"><FONT FACE="Arial, sans-serif"><FONT SIZE=1 STYLE="font-size: 8pt">Азитромицин</FONT></FONT></P>
+        </TD>
+        <TD WIDTH=39 STYLE="; border-top: none; border-bottom: 1px solid #000000; border-left: 1px solid #000000; border-right: none; padding-top: 0cm; padding-bottom: 0.1cm; padding-left: 0.1cm; padding-right: 0cm">
+            <P CLASS="western"><BR>
+            </P>
+        </TD>
+        <TD WIDTH=39 STYLE="border-top: none; border-bottom: 1px solid #000000; border-left: 1px solid #000000; border-right: none; padding-top: 0cm; padding-bottom: 0.1cm; padding-left: 0.1cm; padding-right: 0cm">
+            <P CLASS="western"><BR>
+            </P>
+        </TD>
+        <TD WIDTH=39 STYLE="border-top: none; border-bottom: 1px solid #000000; border-left: 1px solid #000000; border-right: none; padding-top: 0cm; padding-bottom: 0.1cm; padding-left: 0.1cm; padding-right: 0cm">
+            <P CLASS="western"><BR>
+            </P>
+        </TD>
+        <TD WIDTH=30 STYLE="border-top: none; border-bottom: 1px solid #000000; border-left: 1px solid #000000; border-right: none; padding-top: 0cm; padding-bottom: 0.1cm; padding-left: 0.1cm; padding-right: 0cm">
+            <P CLASS="western"><FONT FACE="Arial, sans-serif"><FONT SIZE=1 STYLE="font-size: 8pt">13.</FONT></FONT></P>
+        </TD>
+        <TD WIDTH=153 STYLE="; border-top: none; border-bottom: 1px solid #000000; border-left: 1px solid #000000; border-right: none; padding-top: 0cm; padding-bottom: 0.1cm; padding-left: 0.1cm; padding-right: 0cm">
+            <P CLASS="western"><FONT FACE="Arial, sans-serif"><FONT SIZE=1 STYLE="font-size: 8pt">Норфлоксацин</FONT></FONT></P>
+        </TD>
+        <TD WIDTH=39 STYLE="; border-top: none; border-bottom: 1px solid #000000; border-left: 1px solid #000000; border-right: none; padding-top: 0cm; padding-bottom: 0.1cm; padding-left: 0.1cm; padding-right: 0cm">
+            <P CLASS="western"><BR>
+            </P>
+        </TD>
+        <TD WIDTH=39 STYLE="border-top: none; border-bottom: 1px solid #000000; border-left: 1px solid #000000; border-right: none; padding-top: 0cm; padding-bottom: 0.1cm; padding-left: 0.1cm; padding-right: 0cm">
+            <P CLASS="western"><BR>
+            </P>
+        </TD>
+        <TD WIDTH=38 STYLE="border-top: none; border-bottom: 1px solid #000000; border-left: 1px solid #000000; border-right: 1px solid #000000; padding-top: 0cm; padding-bottom: 0.1cm; padding-left: 0.1cm; padding-right: 0.1cm">
+            <P CLASS="western"><BR>
+            </P>
+        </TD>
+    </TR>
+    <TR VALIGN=TOP>
+        <TD WIDTH=38 STYLE="border-top: none; border-bottom: 1px solid #000000; border-left: 1px solid #000000; border-right: none; padding-top: 0cm; padding-bottom: 0.1cm; padding-left: 0.1cm; padding-right: 0cm">
+            <P CLASS="western"><FONT FACE="Arial, sans-serif"><FONT SIZE=1 STYLE="font-size: 8pt">2.</FONT></FONT></P>
+        </TD>
+        <TD WIDTH=134 STYLE="border-top: none; border-bottom: 1px solid #000000; border-left: 1px solid #000000; border-right: none; padding-top: 0cm; padding-bottom: 0.1cm; padding-left: 0.1cm; padding-right: 0cm">
+            <P CLASS="western"><FONT FACE="Arial, sans-serif"><FONT SIZE=1 STYLE="font-size: 8pt">Амикацин</FONT></FONT></P>
+        </TD>
+        <TD WIDTH=39 STYLE="; border-top: none; border-bottom: 1px solid #000000; border-left: 1px solid #000000; border-right: none; padding-top: 0cm; padding-bottom: 0.1cm; padding-left: 0.1cm; padding-right: 0cm">
+            <P CLASS="western"><BR>
+            </P>
+        </TD>
+        <TD WIDTH=39 STYLE="border-top: none; border-bottom: 1px solid #000000; border-left: 1px solid #000000; border-right: none; padding-top: 0cm; padding-bottom: 0.1cm; padding-left: 0.1cm; padding-right: 0cm">
+            <P CLASS="western"><BR>
+            </P>
+        </TD>
+        <TD WIDTH=39 STYLE="border-top: none; border-bottom: 1px solid #000000; border-left: 1px solid #000000; border-right: none; padding-top: 0cm; padding-bottom: 0.1cm; padding-left: 0.1cm; padding-right: 0cm">
+            <P CLASS="western"><BR>
+            </P>
+        </TD>
+        <TD WIDTH=30 STYLE="border-top: none; border-bottom: 1px solid #000000; border-left: 1px solid #000000; border-right: none; padding-top: 0cm; padding-bottom: 0.1cm; padding-left: 0.1cm; padding-right: 0cm">
+            <P CLASS="western"><FONT FACE="Arial, sans-serif"><FONT SIZE=1 STYLE="font-size: 8pt">14.</FONT></FONT></P>
+        </TD>
+        <TD WIDTH=153 STYLE="; border-top: none; border-bottom: 1px solid #000000; border-left: 1px solid #000000; border-right: none; padding-top: 0cm; padding-bottom: 0.1cm; padding-left: 0.1cm; padding-right: 0cm">
+            <P CLASS="western"><FONT FACE="Arial, sans-serif"><FONT SIZE=1 STYLE="font-size: 8pt">Оксациллин</FONT></FONT></P>
+        </TD>
+        <TD WIDTH=39 STYLE="; border-top: none; border-bottom: 1px solid #000000; border-left: 1px solid #000000; border-right: none; padding-top: 0cm; padding-bottom: 0.1cm; padding-left: 0.1cm; padding-right: 0cm">
+            <P CLASS="western"><BR>
+            </P>
+        </TD>
+        <TD WIDTH=39 STYLE="border-top: none; border-bottom: 1px solid #000000; border-left: 1px solid #000000; border-right: none; padding-top: 0cm; padding-bottom: 0.1cm; padding-left: 0.1cm; padding-right: 0cm">
+            <P CLASS="western"><BR>
+            </P>
+        </TD>
+        <TD WIDTH=38 STYLE="border-top: none; border-bottom: 1px solid #000000; border-left: 1px solid #000000; border-right: 1px solid #000000; padding-top: 0cm; padding-bottom: 0.1cm; padding-left: 0.1cm; padding-right: 0.1cm">
+            <P CLASS="western"><BR>
+            </P>
+        </TD>
+    </TR>
+    <TR VALIGN=TOP>
+        <TD WIDTH=38 STYLE="border-top: none; border-bottom: 1px solid #000000; border-left: 1px solid #000000; border-right: none; padding-top: 0cm; padding-bottom: 0.1cm; padding-left: 0.1cm; padding-right: 0cm">
+            <P CLASS="western"><FONT FACE="Arial, sans-serif"><FONT SIZE=1 STYLE="font-size: 8pt">3.</FONT></FONT></P>
+        </TD>
+        <TD WIDTH=134 STYLE="border-top: none; border-bottom: 1px solid #000000; border-left: 1px solid #000000; border-right: none; padding-top: 0cm; padding-bottom: 0.1cm; padding-left: 0.1cm; padding-right: 0cm">
+            <P CLASS="western"><FONT FACE="Arial, sans-serif"><FONT SIZE=1 STYLE="font-size: 8pt">Амоксициллин\клавуланат</FONT></FONT></P>
+        </TD>
+        <TD WIDTH=39 STYLE="; border-top: none; border-bottom: 1px solid #000000; border-left: 1px solid #000000; border-right: none; padding-top: 0cm; padding-bottom: 0.1cm; padding-left: 0.1cm; padding-right: 0cm">
+            <P CLASS="western"><BR>
+            </P>
+        </TD>
+        <TD WIDTH=39 STYLE="border-top: none; border-bottom: 1px solid #000000; border-left: 1px solid #000000; border-right: none; padding-top: 0cm; padding-bottom: 0.1cm; padding-left: 0.1cm; padding-right: 0cm">
+            <P CLASS="western"><BR>
+            </P>
+        </TD>
+        <TD WIDTH=39 STYLE="border-top: none; border-bottom: 1px solid #000000; border-left: 1px solid #000000; border-right: none; padding-top: 0cm; padding-bottom: 0.1cm; padding-left: 0.1cm; padding-right: 0cm">
+            <P CLASS="western"><BR>
+            </P>
+        </TD>
+        <TD WIDTH=30 STYLE="border-top: none; border-bottom: 1px solid #000000; border-left: 1px solid #000000; border-right: none; padding-top: 0cm; padding-bottom: 0.1cm; padding-left: 0.1cm; padding-right: 0cm">
+            <P CLASS="western"><FONT FACE="Arial, sans-serif"><FONT SIZE=1 STYLE="font-size: 8pt">15.</FONT></FONT></P>
+        </TD>
+        <TD WIDTH=153 STYLE="; border-top: none; border-bottom: 1px solid #000000; border-left: 1px solid #000000; border-right: none; padding-top: 0cm; padding-bottom: 0.1cm; padding-left: 0.1cm; padding-right: 0cm">
+            <P CLASS="western"><FONT FACE="Arial, sans-serif"><FONT SIZE=1 STYLE="font-size: 8pt">Офлоксацин</FONT></FONT></P>
+        </TD>
+        <TD WIDTH=39 STYLE="; border-top: none; border-bottom: 1px solid #000000; border-left: 1px solid #000000; border-right: none; padding-top: 0cm; padding-bottom: 0.1cm; padding-left: 0.1cm; padding-right: 0cm">
+            <P CLASS="western"><BR>
+            </P>
+        </TD>
+        <TD WIDTH=39 STYLE="border-top: none; border-bottom: 1px solid #000000; border-left: 1px solid #000000; border-right: none; padding-top: 0cm; padding-bottom: 0.1cm; padding-left: 0.1cm; padding-right: 0cm">
+            <P CLASS="western"><BR>
+            </P>
+        </TD>
+        <TD WIDTH=38 STYLE="border-top: none; border-bottom: 1px solid #000000; border-left: 1px solid #000000; border-right: 1px solid #000000; padding-top: 0cm; padding-bottom: 0.1cm; padding-left: 0.1cm; padding-right: 0.1cm">
+            <P CLASS="western"><BR>
+            </P>
+        </TD>
+    </TR>
+    <TR VALIGN=TOP>
+        <TD WIDTH=38 STYLE="border-top: none; border-bottom: 1px solid #000000; border-left: 1px solid #000000; border-right: none; padding-top: 0cm; padding-bottom: 0.1cm; padding-left: 0.1cm; padding-right: 0cm">
+            <P CLASS="western"><FONT FACE="Arial, sans-serif"><FONT SIZE=1 STYLE="font-size: 8pt">4.</FONT></FONT></P>
+        </TD>
+        <TD WIDTH=134 STYLE="border-top: none; border-bottom: 1px solid #000000; border-left: 1px solid #000000; border-right: none; padding-top: 0cm; padding-bottom: 0.1cm; padding-left: 0.1cm; padding-right: 0cm">
+            <P CLASS="western"><FONT FACE="Arial, sans-serif"><FONT SIZE=1 STYLE="font-size: 8pt">Ампициллин</FONT></FONT></P>
+        </TD>
+        <TD WIDTH=39 STYLE="; border-top: none; border-bottom: 1px solid #000000; border-left: 1px solid #000000; border-right: none; padding-top: 0cm; padding-bottom: 0.1cm; padding-left: 0.1cm; padding-right: 0cm">
+            <P CLASS="western"><BR>
+            </P>
+        </TD>
+        <TD WIDTH=39 STYLE="border-top: none; border-bottom: 1px solid #000000; border-left: 1px solid #000000; border-right: none; padding-top: 0cm; padding-bottom: 0.1cm; padding-left: 0.1cm; padding-right: 0cm">
+            <P CLASS="western"><BR>
+            </P>
+        </TD>
+        <TD WIDTH=39 STYLE="border-top: none; border-bottom: 1px solid #000000; border-left: 1px solid #000000; border-right: none; padding-top: 0cm; padding-bottom: 0.1cm; padding-left: 0.1cm; padding-right: 0cm">
+            <P CLASS="western"><BR>
+            </P>
+        </TD>
+        <TD WIDTH=30 STYLE="border-top: none; border-bottom: 1px solid #000000; border-left: 1px solid #000000; border-right: none; padding-top: 0cm; padding-bottom: 0.1cm; padding-left: 0.1cm; padding-right: 0cm">
+            <P CLASS="western"><FONT FACE="Arial, sans-serif"><FONT SIZE=1 STYLE="font-size: 8pt">16.</FONT></FONT></P>
+        </TD>
+        <TD WIDTH=153 STYLE="; border-top: none; border-bottom: 1px solid #000000; border-left: 1px solid #000000; border-right: none; padding-top: 0cm; padding-bottom: 0.1cm; padding-left: 0.1cm; padding-right: 0cm">
+            <P CLASS="western"><FONT FACE="Arial, sans-serif"><FONT SIZE=1 STYLE="font-size: 8pt">Пефлоксацин</FONT></FONT></P>
+        </TD>
+        <TD WIDTH=39 STYLE="; border-top: none; border-bottom: 1px solid #000000; border-left: 1px solid #000000; border-right: none; padding-top: 0cm; padding-bottom: 0.1cm; padding-left: 0.1cm; padding-right: 0cm">
+            <P CLASS="western"><BR>
+            </P>
+        </TD>
+        <TD WIDTH=39 STYLE="border-top: none; border-bottom: 1px solid #000000; border-left: 1px solid #000000; border-right: none; padding-top: 0cm; padding-bottom: 0.1cm; padding-left: 0.1cm; padding-right: 0cm">
+            <P CLASS="western"><BR>
+            </P>
+        </TD>
+        <TD WIDTH=38 STYLE="border-top: none; border-bottom: 1px solid #000000; border-left: 1px solid #000000; border-right: 1px solid #000000; padding-top: 0cm; padding-bottom: 0.1cm; padding-left: 0.1cm; padding-right: 0.1cm">
+            <P CLASS="western"><BR>
+            </P>
+        </TD>
+    </TR>
+    <TR VALIGN=TOP>
+        <TD WIDTH=38 STYLE="border-top: none; border-bottom: 1px solid #000000; border-left: 1px solid #000000; border-right: none; padding-top: 0cm; padding-bottom: 0.1cm; padding-left: 0.1cm; padding-right: 0cm">
+            <P CLASS="western"><FONT FACE="Arial, sans-serif"><FONT SIZE=1 STYLE="font-size: 8pt">5.</FONT></FONT></P>
+        </TD>
+        <TD WIDTH=134 STYLE="border-top: none; border-bottom: 1px solid #000000; border-left: 1px solid #000000; border-right: none; padding-top: 0cm; padding-bottom: 0.1cm; padding-left: 0.1cm; padding-right: 0cm">
+            <P CLASS="western"><FONT FACE="Arial, sans-serif"><FONT SIZE=1 STYLE="font-size: 8pt">Ванкомицин</FONT></FONT></P>
+        </TD>
+        <TD WIDTH=39 STYLE="; border-top: none; border-bottom: 1px solid #000000; border-left: 1px solid #000000; border-right: none; padding-top: 0cm; padding-bottom: 0.1cm; padding-left: 0.1cm; padding-right: 0cm">
+            <P CLASS="western"><BR>
+            </P>
+        </TD>
+        <TD WIDTH=39 STYLE="border-top: none; border-bottom: 1px solid #000000; border-left: 1px solid #000000; border-right: none; padding-top: 0cm; padding-bottom: 0.1cm; padding-left: 0.1cm; padding-right: 0cm">
+            <P CLASS="western"><BR>
+            </P>
+        </TD>
+        <TD WIDTH=39 STYLE="border-top: none; border-bottom: 1px solid #000000; border-left: 1px solid #000000; border-right: none; padding-top: 0cm; padding-bottom: 0.1cm; padding-left: 0.1cm; padding-right: 0cm">
+            <P CLASS="western"><BR>
+            </P>
+        </TD>
+        <TD WIDTH=30 STYLE="border-top: none; border-bottom: 1px solid #000000; border-left: 1px solid #000000; border-right: none; padding-top: 0cm; padding-bottom: 0.1cm; padding-left: 0.1cm; padding-right: 0cm">
+            <P CLASS="western"><FONT FACE="Arial, sans-serif"><FONT SIZE=1 STYLE="font-size: 8pt">17.</FONT></FONT></P>
+        </TD>
+        <TD WIDTH=153 STYLE="; border-top: none; border-bottom: 1px solid #000000; border-left: 1px solid #000000; border-right: none; padding-top: 0cm; padding-bottom: 0.1cm; padding-left: 0.1cm; padding-right: 0cm">
+            <P CLASS="western"><FONT FACE="Arial, sans-serif"><FONT SIZE=1 STYLE="font-size: 8pt">Цефоперазон</FONT></FONT></P>
+        </TD>
+        <TD WIDTH=39 STYLE="; border-top: none; border-bottom: 1px solid #000000; border-left: 1px solid #000000; border-right: none; padding-top: 0cm; padding-bottom: 0.1cm; padding-left: 0.1cm; padding-right: 0cm">
+            <P CLASS="western"><BR>
+            </P>
+        </TD>
+        <TD WIDTH=39 STYLE="border-top: none; border-bottom: 1px solid #000000; border-left: 1px solid #000000; border-right: none; padding-top: 0cm; padding-bottom: 0.1cm; padding-left: 0.1cm; padding-right: 0cm">
+            <P CLASS="western"><BR>
+            </P>
+        </TD>
+        <TD WIDTH=38 STYLE="border-top: none; border-bottom: 1px solid #000000; border-left: 1px solid #000000; border-right: 1px solid #000000; padding-top: 0cm; padding-bottom: 0.1cm; padding-left: 0.1cm; padding-right: 0.1cm">
+            <P CLASS="western"><BR>
+            </P>
+        </TD>
+    </TR>
+    <TR VALIGN=TOP>
+        <TD WIDTH=38 STYLE="border-top: none; border-bottom: 1px solid #000000; border-left: 1px solid #000000; border-right: none; padding-top: 0cm; padding-bottom: 0.1cm; padding-left: 0.1cm; padding-right: 0cm">
+            <P CLASS="western"><FONT FACE="Arial, sans-serif"><FONT SIZE=1 STYLE="font-size: 8pt">6.</FONT></FONT></P>
+        </TD>
+        <TD WIDTH=134 STYLE="border-top: none; border-bottom: 1px solid #000000; border-left: 1px solid #000000; border-right: none; padding-top: 0cm; padding-bottom: 0.1cm; padding-left: 0.1cm; padding-right: 0cm">
+            <P CLASS="western"><FONT FACE="Arial, sans-serif"><FONT SIZE=1 STYLE="font-size: 8pt">Вильпрофен</FONT></FONT></P>
+        </TD>
+        <TD WIDTH=39 STYLE="; border-top: none; border-bottom: 1px solid #000000; border-left: 1px solid #000000; border-right: none; padding-top: 0cm; padding-bottom: 0.1cm; padding-left: 0.1cm; padding-right: 0cm">
+            <P CLASS="western"><BR>
+            </P>
+        </TD>
+        <TD WIDTH=39 STYLE="border-top: none; border-bottom: 1px solid #000000; border-left: 1px solid #000000; border-right: none; padding-top: 0cm; padding-bottom: 0.1cm; padding-left: 0.1cm; padding-right: 0cm">
+            <P CLASS="western"><BR>
+            </P>
+        </TD>
+        <TD WIDTH=39 STYLE="border-top: none; border-bottom: 1px solid #000000; border-left: 1px solid #000000; border-right: none; padding-top: 0cm; padding-bottom: 0.1cm; padding-left: 0.1cm; padding-right: 0cm">
+            <P CLASS="western"><BR>
+            </P>
+        </TD>
+        <TD WIDTH=30 STYLE="border-top: none; border-bottom: 1px solid #000000; border-left: 1px solid #000000; border-right: none; padding-top: 0cm; padding-bottom: 0.1cm; padding-left: 0.1cm; padding-right: 0cm">
+            <P CLASS="western"><FONT FACE="Arial, sans-serif"><FONT SIZE=1 STYLE="font-size: 8pt">18.</FONT></FONT></P>
+        </TD>
+        <TD WIDTH=153 STYLE="; border-top: none; border-bottom: 1px solid #000000; border-left: 1px solid #000000; border-right: none; padding-top: 0cm; padding-bottom: 0.1cm; padding-left: 0.1cm; padding-right: 0cm">
+            <P CLASS="western"><FONT FACE="Arial, sans-serif"><FONT SIZE=1 STYLE="font-size: 8pt">Цефотаксим</FONT></FONT></P>
+        </TD>
+        <TD WIDTH=39 STYLE="; border-top: none; border-bottom: 1px solid #000000; border-left: 1px solid #000000; border-right: none; padding-top: 0cm; padding-bottom: 0.1cm; padding-left: 0.1cm; padding-right: 0cm">
+            <P CLASS="western"><BR>
+            </P>
+        </TD>
+        <TD WIDTH=39 STYLE="border-top: none; border-bottom: 1px solid #000000; border-left: 1px solid #000000; border-right: none; padding-top: 0cm; padding-bottom: 0.1cm; padding-left: 0.1cm; padding-right: 0cm">
+            <P CLASS="western"><BR>
+            </P>
+        </TD>
+        <TD WIDTH=38 STYLE="border-top: none; border-bottom: 1px solid #000000; border-left: 1px solid #000000; border-right: 1px solid #000000; padding-top: 0cm; padding-bottom: 0.1cm; padding-left: 0.1cm; padding-right: 0.1cm">
+            <P CLASS="western"><BR>
+            </P>
+        </TD>
+    </TR>
+    <TR VALIGN=TOP>
+        <TD WIDTH=38 STYLE="border-top: none; border-bottom: 1px solid #000000; border-left: 1px solid #000000; border-right: none; padding-top: 0cm; padding-bottom: 0.1cm; padding-left: 0.1cm; padding-right: 0cm">
+            <P CLASS="western"><FONT FACE="Arial, sans-serif"><FONT SIZE=1 STYLE="font-size: 8pt">7.</FONT></FONT></P>
+        </TD>
+        <TD WIDTH=134 STYLE="border-top: none; border-bottom: 1px solid #000000; border-left: 1px solid #000000; border-right: none; padding-top: 0cm; padding-bottom: 0.1cm; padding-left: 0.1cm; padding-right: 0cm">
+            <P CLASS="western"><FONT FACE="Arial, sans-serif"><FONT SIZE=1 STYLE="font-size: 8pt">Доксициклин</FONT></FONT></P>
+        </TD>
+        <TD WIDTH=39 STYLE="; border-top: none; border-bottom: 1px solid #000000; border-left: 1px solid #000000; border-right: none; padding-top: 0cm; padding-bottom: 0.1cm; padding-left: 0.1cm; padding-right: 0cm">
+            <P CLASS="western"><BR>
+            </P>
+        </TD>
+        <TD WIDTH=39 STYLE="border-top: none; border-bottom: 1px solid #000000; border-left: 1px solid #000000; border-right: none; padding-top: 0cm; padding-bottom: 0.1cm; padding-left: 0.1cm; padding-right: 0cm">
+            <P CLASS="western"><BR>
+            </P>
+        </TD>
+        <TD WIDTH=39 STYLE="border-top: none; border-bottom: 1px solid #000000; border-left: 1px solid #000000; border-right: none; padding-top: 0cm; padding-bottom: 0.1cm; padding-left: 0.1cm; padding-right: 0cm">
+            <P CLASS="western"><BR>
+            </P>
+        </TD>
+        <TD WIDTH=30 STYLE="border-top: none; border-bottom: 1px solid #000000; border-left: 1px solid #000000; border-right: none; padding-top: 0cm; padding-bottom: 0.1cm; padding-left: 0.1cm; padding-right: 0cm">
+            <P CLASS="western"><FONT FACE="Arial, sans-serif"><FONT SIZE=1 STYLE="font-size: 8pt">19.</FONT></FONT></P>
+        </TD>
+        <TD WIDTH=153 STYLE="; border-top: none; border-bottom: 1px solid #000000; border-left: 1px solid #000000; border-right: none; padding-top: 0cm; padding-bottom: 0.1cm; padding-left: 0.1cm; padding-right: 0cm">
+            <P CLASS="western"><FONT FACE="Arial, sans-serif"><FONT SIZE=1 STYLE="font-size: 8pt">Цефепим</FONT></FONT></P>
+        </TD>
+        <TD WIDTH=39 STYLE="; border-top: none; border-bottom: 1px solid #000000; border-left: 1px solid #000000; border-right: none; padding-top: 0cm; padding-bottom: 0.1cm; padding-left: 0.1cm; padding-right: 0cm">
+            <P CLASS="western"><BR>
+            </P>
+        </TD>
+        <TD WIDTH=39 STYLE="border-top: none; border-bottom: 1px solid #000000; border-left: 1px solid #000000; border-right: none; padding-top: 0cm; padding-bottom: 0.1cm; padding-left: 0.1cm; padding-right: 0cm">
+            <P CLASS="western"><BR>
+            </P>
+        </TD>
+        <TD WIDTH=38 STYLE="border-top: none; border-bottom: 1px solid #000000; border-left: 1px solid #000000; border-right: 1px solid #000000; padding-top: 0cm; padding-bottom: 0.1cm; padding-left: 0.1cm; padding-right: 0.1cm">
+            <P CLASS="western"><BR>
+            </P>
+        </TD>
+    </TR>
+    <TR VALIGN=TOP>
+        <TD WIDTH=38 STYLE="border-top: none; border-bottom: 1px solid #000000; border-left: 1px solid #000000; border-right: none; padding-top: 0cm; padding-bottom: 0.1cm; padding-left: 0.1cm; padding-right: 0cm">
+            <P CLASS="western"><FONT FACE="Arial, sans-serif"><FONT SIZE=1 STYLE="font-size: 8pt">8.</FONT></FONT></P>
+        </TD>
+        <TD WIDTH=134 STYLE="border-top: none; border-bottom: 1px solid #000000; border-left: 1px solid #000000; border-right: none; padding-top: 0cm; padding-bottom: 0.1cm; padding-left: 0.1cm; padding-right: 0cm">
+            <P CLASS="western"><FONT FACE="Arial, sans-serif"><FONT SIZE=1 STYLE="font-size: 8pt">Имипенем</FONT></FONT></P>
+        </TD>
+        <TD WIDTH=39 STYLE="; border-top: none; border-bottom: 1px solid #000000; border-left: 1px solid #000000; border-right: none; padding-top: 0cm; padding-bottom: 0.1cm; padding-left: 0.1cm; padding-right: 0cm">
+            <P CLASS="western"><BR>
+            </P>
+        </TD>
+        <TD WIDTH=39 STYLE="border-top: none; border-bottom: 1px solid #000000; border-left: 1px solid #000000; border-right: none; padding-top: 0cm; padding-bottom: 0.1cm; padding-left: 0.1cm; padding-right: 0cm">
+            <P CLASS="western"><BR>
+            </P>
+        </TD>
+        <TD WIDTH=39 STYLE="border-top: none; border-bottom: 1px solid #000000; border-left: 1px solid #000000; border-right: none; padding-top: 0cm; padding-bottom: 0.1cm; padding-left: 0.1cm; padding-right: 0cm">
+            <P CLASS="western"><BR>
+            </P>
+        </TD>
+        <TD WIDTH=30 STYLE="border-top: none; border-bottom: 1px solid #000000; border-left: 1px solid #000000; border-right: none; padding-top: 0cm; padding-bottom: 0.1cm; padding-left: 0.1cm; padding-right: 0cm">
+            <P CLASS="western"><FONT FACE="Arial, sans-serif"><FONT SIZE=1 STYLE="font-size: 8pt">20.</FONT></FONT></P>
+        </TD>
+        <TD WIDTH=153 STYLE="; border-top: none; border-bottom: 1px solid #000000; border-left: 1px solid #000000; border-right: none; padding-top: 0cm; padding-bottom: 0.1cm; padding-left: 0.1cm; padding-right: 0cm">
+            <P CLASS="western"><FONT FACE="Arial, sans-serif"><FONT SIZE=1 STYLE="font-size: 8pt">Цефтазидим</FONT></FONT></P>
+        </TD>
+        <TD WIDTH=39 STYLE="; border-top: none; border-bottom: 1px solid #000000; border-left: 1px solid #000000; border-right: none; padding-top: 0cm; padding-bottom: 0.1cm; padding-left: 0.1cm; padding-right: 0cm">
+            <P CLASS="western"><BR>
+            </P>
+        </TD>
+        <TD WIDTH=39 STYLE="border-top: none; border-bottom: 1px solid #000000; border-left: 1px solid #000000; border-right: none; padding-top: 0cm; padding-bottom: 0.1cm; padding-left: 0.1cm; padding-right: 0cm">
+            <P CLASS="western"><BR>
+            </P>
+        </TD>
+        <TD WIDTH=38 STYLE="border-top: none; border-bottom: 1px solid #000000; border-left: 1px solid #000000; border-right: 1px solid #000000; padding-top: 0cm; padding-bottom: 0.1cm; padding-left: 0.1cm; padding-right: 0.1cm">
+            <P CLASS="western"><BR>
+            </P>
+        </TD>
+    </TR>
+    <TR VALIGN=TOP>
+        <TD WIDTH=38 STYLE="border-top: none; border-bottom: 1px solid #000000; border-left: 1px solid #000000; border-right: none; padding-top: 0cm; padding-bottom: 0.1cm; padding-left: 0.1cm; padding-right: 0cm">
+            <P CLASS="western"><FONT FACE="Arial, sans-serif"><FONT SIZE=1 STYLE="font-size: 8pt">9.</FONT></FONT></P>
+        </TD>
+        <TD WIDTH=134 STYLE="border-top: none; border-bottom: 1px solid #000000; border-left: 1px solid #000000; border-right: none; padding-top: 0cm; padding-bottom: 0.1cm; padding-left: 0.1cm; padding-right: 0cm">
+            <P CLASS="western"><FONT FACE="Arial, sans-serif"><FONT SIZE=1 STYLE="font-size: 8pt">Клиндамицин</FONT></FONT></P>
+        </TD>
+        <TD WIDTH=39 STYLE="; border-top: none; border-bottom: 1px solid #000000; border-left: 1px solid #000000; border-right: none; padding-top: 0cm; padding-bottom: 0.1cm; padding-left: 0.1cm; padding-right: 0cm">
+            <P CLASS="western"><BR>
+            </P>
+        </TD>
+        <TD WIDTH=39 STYLE="border-top: none; border-bottom: 1px solid #000000; border-left: 1px solid #000000; border-right: none; padding-top: 0cm; padding-bottom: 0.1cm; padding-left: 0.1cm; padding-right: 0cm">
+            <P CLASS="western"><BR>
+            </P>
+        </TD>
+        <TD WIDTH=39 STYLE="border-top: none; border-bottom: 1px solid #000000; border-left: 1px solid #000000; border-right: none; padding-top: 0cm; padding-bottom: 0.1cm; padding-left: 0.1cm; padding-right: 0cm">
+            <P CLASS="western"><BR>
+            </P>
+        </TD>
+        <TD WIDTH=30 STYLE="border-top: none; border-bottom: 1px solid #000000; border-left: 1px solid #000000; border-right: none; padding-top: 0cm; padding-bottom: 0.1cm; padding-left: 0.1cm; padding-right: 0cm">
+            <P CLASS="western"><FONT FACE="Arial, sans-serif"><FONT SIZE=1 STYLE="font-size: 8pt">21.</FONT></FONT></P>
+        </TD>
+        <TD WIDTH=153 STYLE="; border-top: none; border-bottom: 1px solid #000000; border-left: 1px solid #000000; border-right: none; padding-top: 0cm; padding-bottom: 0.1cm; padding-left: 0.1cm; padding-right: 0cm">
+            <P CLASS="western"><FONT FACE="Arial, sans-serif"><FONT SIZE=1 STYLE="font-size: 8pt">Цефтриаксон</FONT></FONT></P>
+        </TD>
+        <TD WIDTH=39 STYLE="; border-top: none; border-bottom: 1px solid #000000; border-left: 1px solid #000000; border-right: none; padding-top: 0cm; padding-bottom: 0.1cm; padding-left: 0.1cm; padding-right: 0cm">
+            <P CLASS="western"><BR>
+            </P>
+        </TD>
+        <TD WIDTH=39 STYLE="border-top: none; border-bottom: 1px solid #000000; border-left: 1px solid #000000; border-right: none; padding-top: 0cm; padding-bottom: 0.1cm; padding-left: 0.1cm; padding-right: 0cm">
+            <P CLASS="western"><BR>
+            </P>
+        </TD>
+        <TD WIDTH=38 STYLE="border-top: none; border-bottom: 1px solid #000000; border-left: 1px solid #000000; border-right: 1px solid #000000; padding-top: 0cm; padding-bottom: 0.1cm; padding-left: 0.1cm; padding-right: 0.1cm">
+            <P CLASS="western"><BR>
+            </P>
+        </TD>
+    </TR>
+    <TR VALIGN=TOP>
+        <TD WIDTH=38 STYLE="border-top: none; border-bottom: 1px solid #000000; border-left: 1px solid #000000; border-right: none; padding-top: 0cm; padding-bottom: 0.1cm; padding-left: 0.1cm; padding-right: 0cm">
+            <P CLASS="western"><FONT FACE="Arial, sans-serif"><FONT SIZE=1 STYLE="font-size: 8pt">10.</FONT></FONT></P>
+        </TD>
+        <TD WIDTH=134 STYLE="border-top: none; border-bottom: 1px solid #000000; border-left: 1px solid #000000; border-right: none; padding-top: 0cm; padding-bottom: 0.1cm; padding-left: 0.1cm; padding-right: 0cm">
+            <P CLASS="western"><FONT FACE="Arial, sans-serif"><FONT SIZE=1 STYLE="font-size: 8pt">Линкомицин</FONT></FONT></P>
+        </TD>
+        <TD WIDTH=39 STYLE="; border-top: none; border-bottom: 1px solid #000000; border-left: 1px solid #000000; border-right: none; padding-top: 0cm; padding-bottom: 0.1cm; padding-left: 0.1cm; padding-right: 0cm">
+            <P CLASS="western"><BR>
+            </P>
+        </TD>
+        <TD WIDTH=39 STYLE="border-top: none; border-bottom: 1px solid #000000; border-left: 1px solid #000000; border-right: none; padding-top: 0cm; padding-bottom: 0.1cm; padding-left: 0.1cm; padding-right: 0cm">
+            <P CLASS="western"><BR>
+            </P>
+        </TD>
+        <TD WIDTH=39 STYLE="border-top: none; border-bottom: 1px solid #000000; border-left: 1px solid #000000; border-right: none; padding-top: 0cm; padding-bottom: 0.1cm; padding-left: 0.1cm; padding-right: 0cm">
+            <P CLASS="western"><BR>
+            </P>
+        </TD>
+        <TD WIDTH=30 STYLE="border-top: none; border-bottom: 1px solid #000000; border-left: 1px solid #000000; border-right: none; padding-top: 0cm; padding-bottom: 0.1cm; padding-left: 0.1cm; padding-right: 0cm">
+            <P CLASS="western"><FONT FACE="Arial, sans-serif"><FONT SIZE=1 STYLE="font-size: 8pt">22.</FONT></FONT></P>
+        </TD>
+        <TD WIDTH=153 STYLE="; border-top: none; border-bottom: 1px solid #000000; border-left: 1px solid #000000; border-right: none; padding-top: 0cm; padding-bottom: 0.1cm; padding-left: 0.1cm; padding-right: 0cm">
+            <P CLASS="western"><FONT FACE="Arial, sans-serif"><FONT SIZE=1 STYLE="font-size: 8pt">Ципрофлоксацин</FONT></FONT></P>
+        </TD>
+        <TD WIDTH=39 STYLE="; border-top: none; border-bottom: 1px solid #000000; border-left: 1px solid #000000; border-right: none; padding-top: 0cm; padding-bottom: 0.1cm; padding-left: 0.1cm; padding-right: 0cm">
+            <P CLASS="western"><BR>
+            </P>
+        </TD>
+        <TD WIDTH=39 STYLE="border-top: none; border-bottom: 1px solid #000000; border-left: 1px solid #000000; border-right: none; padding-top: 0cm; padding-bottom: 0.1cm; padding-left: 0.1cm; padding-right: 0cm">
+            <P CLASS="western"><BR>
+            </P>
+        </TD>
+        <TD WIDTH=38 STYLE="border-top: none; border-bottom: 1px solid #000000; border-left: 1px solid #000000; border-right: 1px solid #000000; padding-top: 0cm; padding-bottom: 0.1cm; padding-left: 0.1cm; padding-right: 0.1cm">
+            <P CLASS="western"><BR>
+            </P>
+        </TD>
+    </TR>
+    <TR VALIGN=TOP>
+        <TD WIDTH=38 STYLE="border-top: none; border-bottom: 1px solid #000000; border-left: 1px solid #000000; border-right: none; padding-top: 0cm; padding-bottom: 0.1cm; padding-left: 0.1cm; padding-right: 0cm">
+            <P CLASS="western"><FONT FACE="Arial, sans-serif"><FONT SIZE=1 STYLE="font-size: 8pt">11.</FONT></FONT></P>
+        </TD>
+        <TD WIDTH=134 STYLE="border-top: none; border-bottom: 1px solid #000000; border-left: 1px solid #000000; border-right: none; padding-top: 0cm; padding-bottom: 0.1cm; padding-left: 0.1cm; padding-right: 0cm">
+            <P CLASS="western"><FONT FACE="Arial, sans-serif"><FONT SIZE=1 STYLE="font-size: 8pt">Меронем</FONT></FONT></P>
+        </TD>
+        <TD WIDTH=39 STYLE="; border-top: none; border-bottom: 1px solid #000000; border-left: 1px solid #000000; border-right: none; padding-top: 0cm; padding-bottom: 0.1cm; padding-left: 0.1cm; padding-right: 0cm">
+            <P CLASS="western"><BR>
+            </P>
+        </TD>
+        <TD WIDTH=39 STYLE="border-top: none; border-bottom: 1px solid #000000; border-left: 1px solid #000000; border-right: none; padding-top: 0cm; padding-bottom: 0.1cm; padding-left: 0.1cm; padding-right: 0cm">
+            <P CLASS="western"><BR>
+            </P>
+        </TD>
+        <TD WIDTH=39 STYLE="border-top: none; border-bottom: 1px solid #000000; border-left: 1px solid #000000; border-right: none; padding-top: 0cm; padding-bottom: 0.1cm; padding-left: 0.1cm; padding-right: 0cm">
+            <P CLASS="western"><BR>
+            </P>
+        </TD>
+        <TD WIDTH=30 STYLE="border-top: none; border-bottom: 1px solid #000000; border-left: 1px solid #000000; border-right: none; padding-top: 0cm; padding-bottom: 0.1cm; padding-left: 0.1cm; padding-right: 0cm">
+            <P CLASS="western"><FONT FACE="Arial, sans-serif"><FONT SIZE=1 STYLE="font-size: 8pt">23.</FONT></FONT></P>
+        </TD>
+        <TD WIDTH=153 STYLE="; border-top: none; border-bottom: 1px solid #000000; border-left: 1px solid #000000; border-right: none; padding-top: 0cm; padding-bottom: 0.1cm; padding-left: 0.1cm; padding-right: 0cm">
+            <P CLASS="western"><FONT FACE="Arial, sans-serif"><FONT SIZE=1 STYLE="font-size: 8pt">Эритромицин</FONT></FONT></P>
+        </TD>
+        <TD WIDTH=39 STYLE="; border-top: none; border-bottom: 1px solid #000000; border-left: 1px solid #000000; border-right: none; padding-top: 0cm; padding-bottom: 0.1cm; padding-left: 0.1cm; padding-right: 0cm">
+            <P CLASS="western"><BR>
+            </P>
+        </TD>
+        <TD WIDTH=39 STYLE="border-top: none; border-bottom: 1px solid #000000; border-left: 1px solid #000000; border-right: none; padding-top: 0cm; padding-bottom: 0.1cm; padding-left: 0.1cm; padding-right: 0cm">
+            <P CLASS="western"><BR>
+            </P>
+        </TD>
+        <TD WIDTH=38 STYLE="border-top: none; border-bottom: 1px solid #000000; border-left: 1px solid #000000; border-right: 1px solid #000000; padding-top: 0cm; padding-bottom: 0.1cm; padding-left: 0.1cm; padding-right: 0.1cm">
+            <P CLASS="western"><BR>
+            </P>
+        </TD>
+    </TR>
+    <TR VALIGN=TOP>
+        <TD WIDTH=38 STYLE="border-top: none; border-bottom: 1px solid #000000; border-left: 1px solid #000000; border-right: none; padding-top: 0cm; padding-bottom: 0.1cm; padding-left: 0.1cm; padding-right: 0cm">
+            <P CLASS="western"><FONT FACE="Arial, sans-serif"><FONT SIZE=1 STYLE="font-size: 8pt">12.</FONT></FONT></P>
+        </TD>
+        <TD WIDTH=134 STYLE="border-top: none; border-bottom: 1px solid #000000; border-left: 1px solid #000000; border-right: none; padding-top: 0cm; padding-bottom: 0.1cm; padding-left: 0.1cm; padding-right: 0cm">
+            <P CLASS="western"><FONT FACE="Arial, sans-serif"><FONT SIZE=1 STYLE="font-size: 8pt">Моксифлоксацин</FONT></FONT></P>
+        </TD>
+        <TD WIDTH=39 STYLE="; border-top: none; border-bottom: 1px solid #000000; border-left: 1px solid #000000; border-right: none; padding-top: 0cm; padding-bottom: 0.1cm; padding-left: 0.1cm; padding-right: 0cm">
+            <P CLASS="western"><BR>
+            </P>
+        </TD>
+        <TD WIDTH=39 STYLE="border-top: none; border-bottom: 1px solid #000000; border-left: 1px solid #000000; border-right: none; padding-top: 0cm; padding-bottom: 0.1cm; padding-left: 0.1cm; padding-right: 0cm">
+            <P CLASS="western"><BR>
+            </P>
+        </TD>
+        <TD WIDTH=39 STYLE="border-top: none; border-bottom: 1px solid #000000; border-left: 1px solid #000000; border-right: none; padding-top: 0cm; padding-bottom: 0.1cm; padding-left: 0.1cm; padding-right: 0cm">
+            <P CLASS="western"><BR>
+            </P>
+        </TD>
+        <TD WIDTH=30 STYLE="border-top: none; border-bottom: 1px solid #000000; border-left: 1px solid #000000; border-right: none; padding-top: 0cm; padding-bottom: 0.1cm; padding-left: 0.1cm; padding-right: 0cm">
+            <P CLASS="western"><BR>
+            </P>
+        </TD>
+        <TD WIDTH=153 STYLE="border-top: none; border-bottom: 1px solid #000000; border-left: 1px solid #000000; border-right: none; padding-top: 0cm; padding-bottom: 0.1cm; padding-left: 0.1cm; padding-right: 0cm">
+            <P CLASS="western"><BR>
+            </P>
+        </TD>
+        <TD WIDTH=39 STYLE="border-top: none; border-bottom: 1px solid #000000; border-left: 1px solid #000000; border-right: none; padding-top: 0cm; padding-bottom: 0.1cm; padding-left: 0.1cm; padding-right: 0cm">
+            <P CLASS="western"><BR>
+            </P>
+        </TD>
+        <TD WIDTH=39 STYLE="border-top: none; border-bottom: 1px solid #000000; border-left: 1px solid #000000; border-right: none; padding-top: 0cm; padding-bottom: 0.1cm; padding-left: 0.1cm; padding-right: 0cm">
+            <P CLASS="western"><BR>
+            </P>
+        </TD>
+        <TD WIDTH=38 STYLE="border-top: none; border-bottom: 1px solid #000000; border-left: 1px solid #000000; border-right: 1px solid #000000; padding-top: 0cm; padding-bottom: 0.1cm; padding-left: 0.1cm; padding-right: 0.1cm">
+            <P CLASS="western"><BR>
+            </P>
+        </TD>
+    </TR>
+</TABLE>
+<P CLASS="western" STYLE="margin-bottom: 0cm;font-style: italic;"><FONT FACE="Arial, sans-serif"><FONT SIZE=2>Прим.:
+</FONT></FONT><FONT FACE="Arial, sans-serif"><FONT SIZE=2><SPAN LANG="en-US">S</SPAN></FONT></FONT><FONT FACE="Arial, sans-serif"><FONT SIZE=2>
+– чувствительный, </FONT></FONT><FONT FACE="Arial, sans-serif"><FONT SIZE=2><SPAN LANG="en-US">R</SPAN></FONT></FONT><FONT FACE="Arial, sans-serif"><FONT SIZE=2>
+– устойчивый, </FONT></FONT><FONT FACE="Arial, sans-serif"><FONT SIZE=2><SPAN LANG="en-US">I</SPAN></FONT></FONT><FONT FACE="Arial, sans-serif"><FONT SIZE=2>
+- промежуточный</FONT></FONT></P>
+<P CLASS="western" STYLE="margin-bottom: 0cm"><BR>
+</P>
+<P CLASS="western" STYLE="margin-bottom: 0cm"><FONT FACE="Arial, sans-serif"><FONT SIZE=2>Дата
+выдачи «____» ________________  2012г.     &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; Подпись
+врача-бактериолога ________________</FONT></FONT></P>
+
+<br STYLE="page-break-after: always">

@@ -19,6 +19,7 @@ from tastypie.http import HttpBadRequest
 from service.exceptions import TubeIsNoneException
 from state.models import State
 from patient.models import InsurancePolicy
+from annoying.decorators import render_to
 #autocomplete = AutocompleteView('visit')
 
 def all(request, visit_id):
@@ -71,6 +72,8 @@ def visit(request, visit_id):
     patient = visit.patient
     contract = patient.get_contract()
     
+    custom_blanks = visit.orderedservice_set.exclude(service__inner_template='')
+    
     extra_context = {
         'patient':patient,
         'contract':contract,
@@ -78,12 +81,27 @@ def visit(request, visit_id):
         'ff':patient.is_f() and u"на" or u"ен",
         'visit':visit,
         'services':visit.orderedservice_set.all(),
-        'state':request.active_profile.department.state
+        'state':request.active_profile.department.state,
+        'custom_blanks':",".join([str(blank.id) for blank in custom_blanks])
     }
     
     return render_to_response(["print/visit/visit_state_%s.html" % request.active_profile.state,"print/visit/visit.html"],
                               extra_context,
                               context_instance=RequestContext(request))
+    
+@render_to("print/visit/custom_blank.html")
+def custom_blank(request):
+    id_list = request.META['QUERY_STRING'].split(',')
+    orders = OrderedService.objects.filter(id__in=id_list)
+    renders = []
+    for order in orders:
+        c = RequestContext(request, {'order':order})
+        t = loader.get_template(order.service.inner_template)
+        renders.append([t.render(c),order])
+    ctx = {
+        'renders':renders
+    }
+    return ctx
 
 def sampling(request, visit_id):
     visit = get_object_or_404(Visit, pk=visit_id)
