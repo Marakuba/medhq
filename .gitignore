@@ -9,5 +9,6 @@ medhq_main
 media/cache
 media/dicom
 media/libs
+media/uploads
 *.orig
 custom/

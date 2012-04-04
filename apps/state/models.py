@@ -43,6 +43,8 @@ class State(models.Model):
     ogrn = models.DecimalField(u'ОГРН', max_digits=15, decimal_places=0, blank=True, null=True)
     bank_details = models.TextField(u'Банковские реквизиты', blank=True, null=True)
     
+    logo = models.ImageField(u'Логотип', blank=True, null=True, upload_to='uploads/states')
+    
     
 
     def __unicode__(self):
