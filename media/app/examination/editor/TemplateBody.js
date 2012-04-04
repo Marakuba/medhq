@@ -149,7 +149,9 @@ App.examination.TemplateBody = Ext.extend(Ext.TabPanel, {
 				},
 				'ticketremove':function(){
 					this.updateRecord();
-				}
+				},
+				'ticketeditstart':this.openTicketEditPanel,
+				'ticketbodyclick':this.openTicketEditPanel
 			}
 		})
 		
@@ -639,6 +641,31 @@ App.examination.TemplateBody = Ext.extend(Ext.TabPanel, {
 			this.loadData(this.sectionPlan);
 		},scope:this});
 		
+	},
+	
+	openTicketEditPanel:function(ticket){
+		this.ticket = ticket;
+		var ticketEditor = new App.examination.TicketEditPanel({
+			title:'Editor',
+			closable:true,
+			staff:this.staff,
+			listeners:{
+				scope:this,
+				editcomplete:function(data){
+					if(this.ticket){
+						var ticketData = this.ticket.getData();
+						Ext.apply(ticketData,data);
+						this.ticket.setData(ticketData);
+					};
+					ticketEditor.destroy();
+					this.updateRecord()
+				}
+			}
+		});
+		this.add(ticketEditor);
+		ticketEditor.loadTicket(ticket);
+		this.doLayout();
+		this.setActiveTab(ticketEditor)
 	}
 	
 

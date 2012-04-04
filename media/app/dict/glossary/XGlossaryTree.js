@@ -105,7 +105,7 @@ App.dict.XGlossaryTree = Ext.extend(Ext.ux.tree.RemoteTreePanel, {
 					 nodeType:'async'
 					,id:'root'
 					,text:'Глоссарий'
-					,expanded:false
+					,expanded:true
 					,uiProvider:false
 				},
 				tbar:['Добавить в',this.appendBtn,'\\',this.insertBtn,'-',this.editBtn],
