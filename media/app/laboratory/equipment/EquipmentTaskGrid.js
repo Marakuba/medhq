@@ -16,6 +16,7 @@ App.equipment.EquipmentTaskGrid = Ext.extend(Ext.grid.EditorGridPanel, {
 			{name: 'result'},
 			{name: 'status'},
 			{name: 'status_name'},
+			{name: 'repeats'},
 			{name: 'completed', type:'date', format:'c'},
 			{name: 'created', type:'date', format:'c'}
 		]);
@@ -47,7 +48,6 @@ App.equipment.EquipmentTaskGrid = Ext.extend(Ext.grid.EditorGridPanel, {
 		    },{
 		    	header: "Оборудование", 
 		    	width: 20, 
-		    	sortable: true, 
 		    	dataIndex: 'equipment_name'
 		    },{
 		    	header: "Исследование", 
@@ -57,22 +57,14 @@ App.equipment.EquipmentTaskGrid = Ext.extend(Ext.grid.EditorGridPanel, {
 		    },{
 		    	header: "Результат", 
 		    	width: 20, 
-		    	sortable: false, 
 		    	dataIndex: 'result'
-		    },/*{
-		    	header: "Выполнено", 
-		    	width: 10, 
-		    	sortable: true, 
-		    	dataIndex: 'completed',
-		    	renderer: function(val) {
-		    		flag = val ? 'yes' : 'no';
-		    		return "<img src='"+MEDIA_URL+"admin/img/admin/icon-"+flag+".gif'>" 
-		    			+ (val ? Ext.util.Format.date(val,'d.m.Y') : '');
-		    	}
-		    },*/{
+		    },{
+		    	header: "Кол-во", 
+		    	width: 8, 
+		    	dataIndex: 'repeats'
+		    },{
 		    	header: "Статус", 
 		    	width: 8, 
-		    	sortable: true, 
 		    	dataIndex: 'status_name'
 		    }
 		];		
@@ -112,7 +104,7 @@ App.equipment.EquipmentTaskGrid = Ext.extend(Ext.grid.EditorGridPanel, {
             }],
             changeHandler:function(btn, item){
             	this.storeFilter('status',item.filterValue);
-            	this.restoreBtn.setVisible(item.filterValue=='proc');
+            	this.restoreBtn.setVisible(item.filterValue=='proc' || item.filterValue=='done');
             },
             scope:this
         });

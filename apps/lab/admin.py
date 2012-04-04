@@ -233,8 +233,16 @@ class EquipmentAnalysisAdmin(admin.ModelAdmin):
     """
     form = EquipmentAnalysisAdminForm
     
+class SamplingAdmin(admin.ModelAdmin):
+    """
+    """
+    list_display = ('barcode','tube','laboratory','is_barcode')
+    
+    def barcode(self, obj):
+        return obj.visit.barcode.id
+    
 admin.site.register(Analysis, AnalysisAdmin)
-admin.site.register(Sampling)
+admin.site.register(Sampling, SamplingAdmin)
 admin.site.register(InputList)
 admin.site.register(Measurement)
 admin.site.register(Tube)

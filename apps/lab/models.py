@@ -407,6 +407,7 @@ class EquipmentTask(models.Model):
     result = models.ForeignKey(Result, blank=True, null=True)
     completed = models.DateTimeField(u'Выполнено', null=True, blank=True)
     is_locked = models.BooleanField(u'Заблокировано', default=False)
+    repeats = models.IntegerField(u'Количество', default=0)
     status = models.CharField(u'Статус', max_length=5, choices=ET_STATUS, default=u'wait')
     
     def __unicode__(self):
@@ -441,9 +442,9 @@ class EquipmentResult(models.Model):
     created = models.DateTimeField(u'Получено', auto_now_add=True)
     eq_serial_number = models.CharField(u'SN анализатора', max_length=30)
     specimen = models.CharField(u'Заказ', max_length=20)
-    assay_name = models.CharField(u'Исследование', max_length=20)
-    assay_code = models.CharField(u'Исследование', max_length=20)
-    assay_protocol = models.CharField(u'Исследование', max_length=20)
+    assay_name = models.CharField(u'Наименование', max_length=20)
+    assay_code = models.CharField(u'Код', max_length=20)
+    assay_protocol = models.CharField(u'Протокол', max_length=20)
     result_type = models.CharField(u'Тип результата', max_length=1, choices=RESULT_TYPE)
     result_status = models.CharField(u'Статус результата', max_length=1, choices=RESULT_STATUS)
     abnormal_flags = models.CharField(u'Флаги', max_length=50)
@@ -471,6 +472,7 @@ class EquipmentResult(models.Model):
                             result_obj.save()
                             self.equipment_task.result = result_obj
                             self.equipment_task.status = u'done'
+                            self.equipment_task.repeats += 1
                             self.equipment_task.save()
                         except MultipleObjectsReturned:
                             logger.exception(u"LAB: MultipleObjectsReturned")
