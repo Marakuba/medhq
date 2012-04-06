@@ -72,7 +72,19 @@ def visit(request, visit_id):
     patient = visit.patient
     contract = patient.get_contract()
     
-    custom_blanks = visit.orderedservice_set.exclude(service__inner_template='')
+    custom_orders = visit.orderedservice_set.exclude(service__inner_template='')
+    
+    service_blanks = ",".join([str(blank.id) for blank in custom_orders])
+    
+    custom_blanks = []
+    
+    if service_blanks:
+        custom_blanks.append("/visit/print/custom_blank/?%s" % service_blanks)
+        
+    lab_orders = visit.orderedservice_set.filter(service__labservice__isnull=False)
+    
+    if lab_orders.count():
+        custom_blanks.append("/visit/print/lab_agreement/%s/" % visit_id)
     
     extra_context = {
         'patient':patient,
@@ -82,13 +94,36 @@ def visit(request, visit_id):
         'visit':visit,
         'services':visit.orderedservice_set.all(),
         'state':request.active_profile.department.state,
-        'custom_blanks':",".join([str(blank.id) for blank in custom_blanks])
+        'custom_blanks':",".join(['"%s"' % b for b in custom_blanks])
     }
     
     return render_to_response(["print/visit/visit_state_%s.html" % request.active_profile.state,"print/visit/visit.html"],
                               extra_context,
                               context_instance=RequestContext(request))
+
+
+@render_to('print/visit/lab_agreement.html')
+def lab_agreement(request, visit_id):
+
+    visit = get_object_or_404(Visit, pk=visit_id)
+    visit.update_total_price()
+
+    patient = visit.patient
+    contract = patient.get_contract()
     
+    extra_context = {
+        'patient':patient,
+        'contract':contract,
+        'f':patient.is_f() and u"а" or u"",
+        'ff':patient.is_f() and u"на" or u"ен",
+        'visit':visit,
+        'services':visit.orderedservice_set.all(),
+        'state':request.active_profile.department.state,
+    }
+
+
+    return extra_context
+
 @render_to("print/visit/custom_blank.html")
 def custom_blank(request):
     id_list = request.META['QUERY_STRING'].split(',')
