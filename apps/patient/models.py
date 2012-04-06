@@ -166,17 +166,18 @@ class ContractManager(models.Manager):
     
     def actual(self):
         try:
-            actual = self.get(active=True)
+            TODAY = datetime.date.today()
+            actual = self.filter(expire__gt=TODAY, active=True).latest('expire')
             return actual
-        except:
+        except Exception, err:
             return None
 
 class Contract(models.Model):
     """
     """
     patient = models.ForeignKey(Patient, verbose_name=Patient._meta.verbose_name)
-    created = models.DateField(u'Дата заключения', auto_now_add=True)
-    expire = models.DateField(u'Заключен до', default=datetime.datetime.today()+datetime.timedelta(days=365))
+    created = models.DateField(u'Дата заключения')
+    expire = models.DateField(u'Заключен до')
     active = models.BooleanField(u'Действующий', default=True)
     
     objects = ContractManager()

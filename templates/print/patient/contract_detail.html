@@ -24,6 +24,7 @@
 <h1>Создание договора</h1>
 <p>Договор с данным пациентом еще не заключен</p>
 <form method="post" action="">
+	{{ form.as_p }}
 	<div>
 		<input type="hidden" name="post" value="yes">
 		<input type="submit" value="Создать">

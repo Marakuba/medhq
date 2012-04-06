@@ -43,9 +43,17 @@ App.patient.PatientGrid = Ext.extend(Ext.grid.GridPanel, {
 		
 		this.editButton = new Ext.Button({
 			iconCls:'silk-pencil',
-			text:'Изменить',
+//			text:'Изменить',
 			disabled:true,
 			handler:this.onPatientEdit.createDelegate(this),
+			scope:this
+		});
+		
+		this.ctrButton = new Ext.Button({
+			text:'Договор',
+			iconCls:'silk-error',
+			hidden:true,
+			handler:this.goToSlug.createDelegate(this, ['contract']),
 			scope:this
 		});
 		
@@ -82,12 +90,12 @@ App.patient.PatientGrid = Ext.extend(Ext.grid.GridPanel, {
                     rowselect: function(sm, row, rec) {
                     	this.fireEvent('patientselect', rec);
 //                        Ext.getCmp("patient-quick-form").getForm().loadRecord(rec);
-                    	this.btnSetDisabled(false);
+                    	this.btnSetDisabled(false, rec);
                     },
                     rowdeselect: function(sm, row, rec) {
                     	this.fireEvent('patientdeselect', rec);
 //                        Ext.getCmp("patient-quick-form").getForm().reset();
-                    	this.btnSetDisabled(true);
+                    	this.btnSetDisabled(true, rec);
                     },
                     scope:this
                 }
@@ -97,7 +105,7 @@ App.patient.PatientGrid = Ext.extend(Ext.grid.GridPanel, {
 				iconCls:'silk-add',
 				text:'Новый пациент',
 				handler:this.onPatientAdd.createDelegate(this, [])
-			},this.editButton,this.agreementButton,'->',{
+			},this.editButton,'-',this.ctrButton,this.agreementButton,'->',{
 				iconCls:'silk-bullet-wrench',
 				menu:[this.cardButton,this.contractButton]
 			}],
@@ -131,11 +139,12 @@ App.patient.PatientGrid = Ext.extend(Ext.grid.GridPanel, {
 		},this);
 	},
 	
-	btnSetDisabled: function(status) {
+	btnSetDisabled: function(status, rec) {
         this.editButton.setDisabled(status);
         this.agreementButton.setDisabled(status);
         this.cardButton.setDisabled(status);
         this.contractButton.setDisabled(status);
+        this.ctrButton.setVisible(!rec.data.contract);
 	},
 	
 	onPatientSelect: function(record){

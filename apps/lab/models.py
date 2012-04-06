@@ -230,8 +230,8 @@ class Result(models.Model):
     
     order = models.ForeignKey(LabOrder)
     analysis = models.ForeignKey(Analysis, verbose_name=Analysis._meta.verbose_name)
-    previous_value = models.CharField(u"Предыдущий результат", max_length=50, blank=True, null=True)
-    value = models.CharField(u"Результат", max_length=50, blank=True, null=True)
+    previous_value = models.CharField(u"Предыдущий результат", max_length=200, blank=True, null=True)
+    value = models.CharField(u"Результат", max_length=200, blank=True, null=True)
     presence = models.CharField(u"Наличие", max_length=1, blank=True, null=True, choices=RESULTS)
     test_form = models.CharField(u"Форма", max_length=6, blank=True, null=True, choices=TEST_FORM)
     to_print = models.BooleanField(u'Печатать', default=True)

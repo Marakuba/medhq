@@ -168,6 +168,7 @@ class PatientResource(ExtResource):
         bundle.data['short_name'] = bundle.obj.short_name()
         bundle.data['ad_source_name'] = bundle.obj.ad_source and bundle.obj.ad_source or u''
         bundle.data['lat'] = bundle.obj.translify()
+        bundle.data['contract'] = bundle.obj.get_contract()
         return bundle
 
     def obj_create(self, bundle, request=None, **kwargs):

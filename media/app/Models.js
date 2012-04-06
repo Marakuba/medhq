@@ -156,6 +156,7 @@ App.models.patientModel = new Ext.data.Record.create([
 	{name: 'id_card_number'},
 	{name: 'id_card_issue_date', type:'date'},
 	{name: 'id_card_org'},
+	{name: 'contract'},
 	{name: 'accepted', type:'date'}
 	 
 ]);

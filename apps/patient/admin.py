@@ -11,6 +11,7 @@ from django.core.urlresolvers import reverse
 from django.contrib.admin.util import unquote
 from lab.models import LabOrder
 from django.http import HttpResponse
+from patient.forms import ContractForm
 
 class InsurancePolicyInlineAdmin(admin.TabularInline):
     model = InsurancePolicy
@@ -23,6 +24,12 @@ RESPONSE_TPL = """
     parent.$.fancybox.close();
 </script>
 """
+
+class ContractInlineAdmin(admin.TabularInline):
+    
+    model = Contract
+    extra = 0
+    
 
 class PatientAdmin(OperatorAdmin, TabbedMedia):
 
@@ -46,7 +53,7 @@ class PatientAdmin(OperatorAdmin, TabbedMedia):
     readonly_fields = ('state',)
     list_display = ('zid','full_name','birth_day','billed_account','operator',)
     search_fields = ['last_name','first_name','mid_name']
-    inlines = [InsurancePolicyInlineAdmin]
+    inlines = [ContractInlineAdmin, InsurancePolicyInlineAdmin]
 
     def response_add(self, request, obj, post_url_continue='../%s/'):
         if request.POST.has_key("_popup"):
@@ -72,11 +79,18 @@ class PatientAdmin(OperatorAdmin, TabbedMedia):
         """
         patient = get_object_or_404(Patient, pk=object_id)
         if request.method=='POST':
-            if not patient.get_contract():
-                new_contract = Contract.objects.create(patient=patient)
-            return redirect(reverse('admin:contract', args=(patient.id,)))
+            form = ContractForm(request.POST)
+            if form.is_valid():
+                Contract.objects.filter(patient=patient).update(active=False)
+                Contract.objects.create(patient=patient,
+                                        created=form.cleaned_data['created'],
+                                        expire=form.cleaned_data['expire'])
+                return redirect(reverse('admin:contract', args=(patient.id,)))
+        else:
+            form = ContractForm()
         extra_context = {
             'patient':patient,
+            'form':form
         }
         return direct_to_template(request, "print/patient/contract_detail.html", extra_context=extra_context)
     
@@ -146,7 +160,7 @@ class PatientAdmin(OperatorAdmin, TabbedMedia):
         )
         return my_urls + urls
 
-    
+
 admin.site.register(Patient, PatientAdmin)
 admin.site.register(Contract)
 admin.site.register(InsurancePolicy)
