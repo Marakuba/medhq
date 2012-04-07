@@ -73,7 +73,7 @@ def getPrinterBySlug(request):
     data = simplejson.loads(request.raw_post_data)
     slug = data['data'][0]
     try:
-        printer = BarcodePrinter.objects.get(slug=slug)
+        printer = BarcodePrinter.objects.get(state=request.active_profile.department.state, slug=slug)
         data = {
             'address':printer.address,
             'port':printer.port
