@@ -1,4 +1,5 @@
 Ext.ns('App.examination');
+Ext.ns('App.patient');
 Ext.ns('Ext.ux');
 
 App.examination.TicketPanel = Ext.extend(Ext.ux.Portal,{
@@ -11,6 +12,14 @@ App.examination.TicketPanel = Ext.extend(Ext.ux.Portal,{
 
 App.examination.TicketTab = Ext.extend(Ext.Panel, {
 	initComponent : function() {
+		
+		//Для создания направлений нужна запись текущего пациента
+		this.patientStore = new Ext.data.RESTStore({
+			autoSave: false,
+			autoLoad : false,
+			apiUrl : get_api_url('patient'),
+			model: App.models.Patient
+		});
 		
 		this.portalColumn = new Ext.ux.PortalColumn({
 			columnWidth:1,
@@ -92,8 +101,12 @@ App.examination.TicketTab = Ext.extend(Ext.Panel, {
 					});
 					this.portalColumn.add(new_ticket);
 				},this);
-				this.doLayout();
+				
 			};
+			if (this.isCard){
+				this.openAsgmtPanel();
+			};
+			this.doLayout();
 			
 		},this);
 		
@@ -209,6 +222,31 @@ App.examination.TicketTab = Ext.extend(Ext.Panel, {
 	getData: function(){
 		var data = this.ticketPanel.getData();
 		return data
-	}
+	},
 	
+	newAsgmtPanel: function(){
+		var asgmt_panel = new App.patient.AsgmtGrid({
+			title:'Услуги',
+			card_id:this.record.data.id,
+			order:10000,
+			height:500,
+			autoScroll:true,
+			hasPatient:true
+		});
+		return asgmt_panel
+	},
+	
+	openAsgmtPanel: function(){
+		this.patientStore.setBaseParam('id',this.patient);
+		this.patientStore.load({callback:function(records){
+			if (!records.length){
+				return
+			}
+			this.patientRecord = records[0]
+			this.asgmtPanel = this.newAsgmtPanel();
+			this.asgmtPanel.store.setBaseParam('card',this.record.data.id);
+			this.asgmtPanel.setActivePatient(this.patientRecord);
+			this.insertTicketInPos(this.asgmtPanel,'order');
+		},scope:this});
+	}
 });

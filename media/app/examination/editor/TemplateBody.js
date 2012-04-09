@@ -16,58 +16,6 @@ App.examination.TemplateBody = Ext.extend(Ext.TabPanel, {
 			model: App.models.Template
 		});
 		
-		//Для создания направлений нужна запись текущего пациента
-		this.patientStore = new Ext.data.RESTStore({
-			autoSave: false,
-			autoLoad : false,
-			apiUrl : get_api_url('patient'),
-			model: App.models.Patient
-		});
-
-		this.menuBtns = {};
-		
-		
-		
-//		this.fieldSetStore.each(function(record){
-//			var rec = record.data; 
-//			this.menuBtns[rec.name] = {
-//				text:rec.title,
-//				id:rec.name,
-//				order:rec.order,
-//				handler:this.onAddSection.createDelegate(this,[rec.name,rec.title,rec.order]),
-//				scope:this
-//			};
-//			this.sectionMenu.insert(rec.order,this.menuBtns[rec.name])
-//			this.subSecBtns[rec.name] = [];
-//		},this);
-		
-		this.menuBtns['services'] = {
-			text:'Услуги',
-			id:'services',
-			order:99,
-			handler:this.openAsgmtTab.createDelegate(this,[]),
-			scope:this
-		};
-		
-		this.menuBtns['equipment'] = {
-			text:'Оборудование',
-			id:'equipment',
-			order:98,
-			handler:this.openEquipTab.createDelegate(this,[]),
-			scope:this
-		};
-		
-		this.addSecBtn = new Ext.Button({
-			iconCls:'silk-add',
-			text:'Добавить раздел',
-			menu:this.sectionMenu,
-			scope:this
-		});
-		
-//		if (!this.fieldSetStore.data.length) {
-//			this.addSecBtn.disable();
-//		};
-		
 		this.previewBtn = new Ext.Button({
 			iconCls:'silk-zoom',
 			text: 'Просмотр',
@@ -111,33 +59,14 @@ App.examination.TemplateBody = Ext.extend(Ext.TabPanel, {
 			items: ['-',this.printBtn,this.previewBtn,'-', this.historyBtn,'-', this.closeBtn]
 		});
 		
-/*		this.equipTab = new App.examination.EquipmentTab({
-			id:'equip-tab',
-			listeners:{
-				setdata:function(field,value){
-					this.record.set(field,value);
-				},
-				beforeclose:function(){
-					this.record.beginEdit();
-					this.record.set('equipment','');
-					this.record.set('area','');
-					this.record.set('scan_mode','');
-					this.record.set('thickness','');
-					this.record.set('width','');
-					this.record.set('contrast_enhancement','');
-					this.record.endEdit();
-					return true
-				},
-				scope: this
-			}
-		});*/
-		
 		this.dataTab = new App.examination.TicketTab({
 			title:'Осмотр',
 			staff:this.staff,
 			base_service:this.base_service,
 			record:this.record,
 			closable:false,
+			isCard:this.isCard,
+			patient:this.patient,
 			autoScroll:true,
 			listeners:{
 				scope:this,
@@ -223,14 +152,6 @@ App.examination.TemplateBody = Ext.extend(Ext.TabPanel, {
 			this.fireEvent('movearhcivetmp');
 		},this);
 		
-		this.generalTab.on('openasgmt',function(){
-			this.openAsgmtTab();
-
-			this.fireEvent('openasgmt');
-			
-			
-		},this);
-		
 		this.generalTab.on('movearhcivecard',function(){
 			var archiveRecord = new this.tmpStore.model();
 			Ext.applyIf(archiveRecord.data,this.record.data);
@@ -283,76 +204,16 @@ App.examination.TemplateBody = Ext.extend(Ext.TabPanel, {
 			
 			this.generalTab.setPrintName(this.print_name);
 			
-//			if (this.record.data.data) {
-//				this.loadData(this.record.data.data);
-//			} else {
-//				this.generalTab.setPrintName(this.print_name);
-//			};
-			
-			
-			
 			this.insert(0,this.generalTab);
 			
-			if (this.record.data.equipment){
-				this.openEquipTab(this.record);				
-			} else {
-				this.sectionMenu.insert(98,this.menuBtns['equipment'])
-				this.subSecBtns['equipment']=[];
-				this.addSecBtn.enable();
-			};
-			
-			if (this.isCard){
-				if (!this.record.data.id){
-					this.sectionMenu.insert(99,this.menuBtns['services'])
-					this.subSecBtns['services']=[];
-					this.addSecBtn.enable();
-					return
-				} else {
-					var asgmt_tab = this.newAsgmtTab();
-					asgmt_tab.store.setBaseParam('patient',this.patient);
-					asgmt_tab.store.setBaseParam('card',this.record.data.id);
-					asgmt_tab.store.load({callback:function(records){
-						if (!records.length){
-							this.sectionMenu.insert(99,this.menuBtns['services'])
-							this.subSecBtns['services']=[];
-							this.addSecBtn.enable();
-							return
-						};
-						this.patientStore.setBaseParam('id',this.patient);
-						this.patientStore.load({callback:function(records){
-							if(records.length){
-								this.asgmtTab = asgmt_tab;
-								this.asgmtTab['patientRecord'] = records[0];
-								this.insert(this.asgmtTab.order,this.asgmtTab);
-							}
-						},scope:this})
-					},scope:this})
-				}
-			};
 			this.setActiveTab(0);
-			
-//			this.loadData();
 			
 		},this)
 	},
 	
-	onAddSection: function(section,title,order,data){
-		this.dataTab.addSection(section,title,order,data);
-		
-		this.sectionMenu.remove(section);
-		if (this.sectionMenu.items.length == 0) {
-			this.addSecBtn.disable();
-		};
-		this.addSubSecBtn.enable();
-		this.setActiveTab(this.dataTab);
-		this.doLayout();
-		if (!this.dataLoading){
-			this.updateRecord();
-		};
-	},
-	
 	onAddSubSection: function(title,section,order,data){
 		this.dataTab.addTicket(title,section,order,data);
+		this.setActiveTab(this.dataTab);
 		this.doLayout();
 		this.updateRecord();
 	},
@@ -375,13 +236,10 @@ App.examination.TemplateBody = Ext.extend(Ext.TabPanel, {
 		}
 		this.dataLoading = true;
 		var data = Ext.decode(recData);
-		this.dataTab.loadData(data,sectionPlan)
-//		Ext.each(data,function(section){
-//			var sec = this.sectionPlan[section.section];
-//			var tab = this.onAddSubSection(section.section,sec.name,sec.order,section);
-//			this.doLayout();
-//		},this);
-//		this.setActiveTab(0);
+		this.dataTab.loadData(data,sectionPlan);
+		if (this.record.data.equipment){
+			this.openEquipTab(this.record);				
+		}
 		this.dataLoading = false;
 		
 	},
@@ -456,53 +314,6 @@ App.examination.TemplateBody = Ext.extend(Ext.TabPanel, {
 		App.eventManager.fireEvent('launchapp', 'patienthistory',config);
 	},
 	
-	newAsgmtTab: function(){
-		var asgmt_tab = new App.patient.AsgmtGrid({
-			title:'Услуги',
-			closable:false,
-			card_id:this.record.data.id,
-			order:99,
-			hasPatient:true,
-			listeners:{
-				'close': function(p){
-					this.sectionMenu.insert(99,this.menuBtns['service']);
-					this.addSecBtn.enable();
-					if (this.items.length == 1) {
-						this.addSubSecBtn.disable();
-					};
-					this.asgmtTab = undefined;
-				},
-				scope:this
-			}
-		});
-		return asgmt_tab
-	},
-	
-	openAsgmtTab: function(){
-		if(this.asgmtTab){
-			this.setActiveTab(this.asgmtTab);
-		} else {
-			this.patientStore.setBaseParam('id',this.patient);
-			this.patientStore.load({callback:function(records){
-				if (!records.length){
-					return
-				}
-				this.patientRecord = records[0]
-				this.asgmtTab = this.newAsgmtTab();
-				this.asgmtTab.store.setBaseParam('card',this.record.data.id);
-				this.asgmtTab.setActivePatient(this.patientRecord);
-				this.insert(this.asgmtTab.order,this.asgmtTab)
-				this.setActiveTab(this.asgmtTab);
-				this.doLayout();	
-			},scope:this});
-		};
-		this.sectionMenu.remove('services');
-		if (this.sectionMenu.items.length == 0) {
-			this.addSecBtn.disable();
-		};
-		this.doLayout();
-	},
-	
 	newEquipTab : function(){
 		var equip_tab = new App.examination.EquipmentTab({
 			id:'equip-tab',
@@ -520,14 +331,6 @@ App.examination.TemplateBody = Ext.extend(Ext.TabPanel, {
 					this.record.set('contrast_enhancement','');
 					this.record.endEdit();
 					return true
-				},
-				close: function(p){
-					this.sectionMenu.insert(98,this.menuBtns['equipment']);
-					this.addSecBtn.enable();
-					if (this.items.length == 1) {
-						this.addSubSecBtn.disable();
-					};
-					this.equipTab = undefined;
 				},
 				scope: this
 			}
@@ -547,10 +350,7 @@ App.examination.TemplateBody = Ext.extend(Ext.TabPanel, {
 		} else {
 			this.setActiveTab(this.equipTab);
 		};
-		this.sectionMenu.remove('equipment');
-		if (this.sectionMenu.items.length == 0) {
-			this.addSecBtn.disable();
-		};
+		
 		this.doLayout();
 	},
 	
@@ -609,15 +409,26 @@ App.examination.TemplateBody = Ext.extend(Ext.TabPanel, {
 				};
 				this.sectionItems.add('-');
 				//добавляем ко всем разделам 'произвольный' подраздел
-				var emptySubSec = {
-					text:'Произвольный',
-					menu:{
-						items:this.additionalMenu
-					}
-//						handler:this.onAddSubSection.createDelegate(this,['Заголовок',section.name,section.order]),
-//						scope:this
+				if (this.additionalMenu.length)
+				{
+					var emptySubSec = {
+						text:'Произвольный',
+						menu:{
+							items:this.additionalMenu
+						}
+	//						handler:this.onAddSubSection.createDelegate(this,['Заголовок',section.name,section.order]),
+	//						scope:this
+					};
+					this.sectionItems.add(emptySubSec);
 				};
-				this.sectionItems.add(emptySubSec);
+				
+				this.equipBtn = {
+					text:'Оборудование',
+					handler:this.openEquipTab.createDelegate(this,[]),
+					scope:this
+				}
+				
+				this.sectionItems.add(this.equipBtn);
 				
 				this.addSubSecBtn = new Ext.Button({
 					iconCls:'silk-page-white-add',
