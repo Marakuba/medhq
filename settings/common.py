@@ -259,4 +259,5 @@ CONSTANCE_CONFIG = {
     'END_HOUR':(20,u'Окончание работы'),
     'CUMULATIVE_DISCOUNTS':(True,u'Использование накопительных скидок (temporary)'),
     'SERVICETREE_ONLY_OWN':(True,u'Показывать услуги только текущей организации'),
+    'SERVICE_CACHE_AUTO_CLEAR':(False,u'Автоматически сбрасывать кэш услуг после изменений'),
 }

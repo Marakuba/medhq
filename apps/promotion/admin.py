@@ -8,10 +8,13 @@ from django import forms
 from service.fields import ServiceModelChoiceField
 from service.models import BaseService
 from django.db.models.expressions import F
+from django.http import HttpResponseRedirect
+from django.shortcuts import render_to_response
+from django.template.context import RequestContext
 
 lookups = {}
 lookups[BaseService._meta.right_attr] = F(BaseService._meta.left_attr)+1
-qs = BaseService.objects.filter(**lookups).order_by(BaseService._meta.tree_id_attr, BaseService._meta.left_attr, 'level')
+qs = BaseService.objects.filter(**lookups)#.order_by(BaseService._meta.tree_id_attr, BaseService._meta.left_attr, 'level')
 
 class PromotionItemForm(forms.ModelForm):
     """
@@ -34,15 +37,38 @@ class PromotionItemAdmin(admin.TabularInline):
 
 
 def update_total_price(modeladmin, request, queryset):
+    promotions = []
     for p in queryset:
+        items = []
         total_price = 0.0
+        cfg = {'instance':p}
         for item in p.promotionitem_set.all():
-            price = item.base_service.price(state=item.execution_place)*item.count
+            service_price = item.base_service.price(state=item.execution_place)
+            price = service_price*item.count
+            
+            items.append({ 'service':item.base_service, 'price':service_price, 'count':item.count})
+            
             total_price+=price
+        cfg['items']=items
+        cfg['raw_price'] = total_price
         if p.discount:
+            cfg['discount'] = p.discount
             total_price = total_price*float((100-p.discount.value)/100)
+        cfg['total_price'] = total_price
         p.total_price = str(total_price)
         p.save()
+        
+        promotions.append(cfg)
+    
+    if 'apply' in request.POST:
+        return HttpResponseRedirect(request.get_full_path())
+    
+    ctx = {
+        'promotions':promotions
+    }
+    
+    return render_to_response('admin/promotion/promotion/pricelist.html',ctx,context_instance=RequestContext(request))
+    
 update_total_price.short_description = u'Обновить стоимость комплексной услуги/акции'
 
 class PromotionAdmin(admin.ModelAdmin):

@@ -52,3 +52,11 @@ class CustomMenu(Menu):
             title=u'Отчеты',
             children=reports
         ))
+
+        self.children.append(items.MenuItem(
+            title=u'Сервис',
+            children=[items.MenuItem(
+                title=u'Обновить кэш услуг',
+                url="/admin/service/baseservice/clear_cache/"
+            )]
+        ))

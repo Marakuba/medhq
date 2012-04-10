@@ -17,7 +17,7 @@ class ExaminationCardAdmin(admin.ModelAdmin):
     """
     exclude = ('ordered_service',)
     list_display = ('created','service','patient','assistant')
-    list_editable = ('assistant',)
+#    list_editable = ('assistant',)
     search_fields = ('ordered_service__order__patient',)
     date_hierarchy = 'created'
     inlines = [DICOMAdmin]

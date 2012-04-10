@@ -30,6 +30,22 @@ import logging
 logger = logging.getLogger('general')
 
 
+def get_apps(request):
+    apps = []
+    if request.user.has_perm('visit.add_visit') or request.user.is_superuser:
+        apps.append([u'Регистратура',u'/webapp/registry/'])
+    if request.user.has_perm('lab.change_laborder') or request.user.is_superuser:
+        apps.append([u'Лаборатория',u'/webapp/laboratory/'])
+    if request.user.has_perm('examination.add_examinationcard') or request.user.is_superuser:
+        apps.append([u'Обследования',u'/webapp/oldexam/'])
+        apps.append([u'Обследования (новая версия)',u'/webapp/examination/'])
+    if request.user.is_staff or request.user.is_superuser:
+        apps.append([u'Администрирование',u'/admin/'])
+
+    return apps
+    
+
+
 def auth(request, authentication_form=AuthenticationForm):
     
 #    if request.user.is_authenticated():
@@ -109,7 +125,9 @@ def cpanel(request):
 @login_required
 @render_to('webapp/registry/index.html')
 def registry(request):
-    return {}
+    return {
+        'apps':simplejson.dumps(get_apps(request))
+    }
     
 
 @login_required

@@ -3,6 +3,7 @@
 {% block title %}Регистратура | {{ BRAND }}{% endblock %}
 
 {% block head %}
+	{% autoescape off %}
 	<script type="text/javascript">
 		var state = '{{ request.active_profile.state }}';
 		var MEDIA_URL = '{{ STATIC_URL }}';
@@ -10,7 +11,9 @@
 		function get_api_url(resource){
 			return [API_URL,'dashboard',resource].join("/");
 		}
+		var apps = {{ apps }};
 	</script>
+	{% endautoescape %}
 	
 	{% include "webapp/includes/active_profile.html" %}
 
@@ -158,6 +161,7 @@
     <script type="text/javascript" src="{{ STATIC_URL }}app/calendar/app/DoctorScheduler.js"></script>
     
 	<!-- registry -->
+    <script type="text/javascript" src="{{ STATIC_URL }}app/remoting/ResultWindow.js"></script>
     <script type="text/javascript" src="{{ STATIC_URL }}app/remoting/RemoteOrderGrid.js"></script>
 
     <script type="text/javascript" src="{{ STATIC_URL }}app/invoice/InvoiceItemGrid.js"></script>

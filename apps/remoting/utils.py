@@ -104,7 +104,7 @@ def get_ordered_service(request, data):
     #### создаем услугу для образца
     try:
         ordered_service, created = OrderedService.objects.get_or_create(order=visit,
-                                                                        ext_service=ext_service.state,
+                                                                        execution_place=ext_service.state,
                                                                         service=service,
                                                                         operator=visit.operator)
     except Exception, err:
@@ -113,9 +113,9 @@ def get_ordered_service(request, data):
         raise Exception(msg)
     
     if created:
-        logger.info( "Услуга %s (%s) для образца %s добавлена" % (service, ext_service.state, visit.specimen) )
+        logger.info( u"Услуга %s (%s) для образца %s добавлена" % (service, ext_service.state, visit.specimen) )
     else:
-        logger.info( "Услуга %s (%s) для образца %s уже существует" % (service, ext_service.state, visit.specimen) )
+        logger.info( u"Услуга %s (%s) для образца %s уже существует" % (service, ext_service.state, visit.specimen) )
 
     try:
         ordered_service.to_lab()
@@ -124,7 +124,7 @@ def get_ordered_service(request, data):
         logger.exception(msg)
         raise Exception(msg)
 
-    return ordered_service
+    return ordered_service, created
 
     
 def get_result(request, data):

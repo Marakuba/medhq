@@ -568,24 +568,24 @@ class LabOrderResource(ExtResource):
     def dehydrate(self, bundle):
         laborder = bundle.obj
         bundle.data['laboratory_name'] = laborder.laboratory
-        if laborder.visit:
-            v = laborder.visit
+        v = laborder.visit
+        if v:
             info = []
             if v.pregnancy_week:
                 info.append(u"Б: <font color='red'>%s</font>" % v.pregnancy_week)
             if v.menses_day:
                 info.append(u"Д/ц: <font color='red'>%s</font>" % v.menses_day)
             bundle.data['info'] = "; ".join(info)
-            bundle.data['visit_created'] = laborder.visit.created # -100
-            bundle.data['visit_is_cito'] = laborder.visit.is_cito # -100
-            bundle.data['visit_id'] = laborder.visit.id
-            bundle.data['barcode'] = laborder.visit.barcode.id # -100
-            bundle.data['is_male'] = laborder.visit.patient.gender==u'М'
-            bundle.data['patient_name'] = laborder.visit.patient.full_name()
-            bundle.data['patient_age'] = laborder.visit.patient.full_age()
-            bundle.data['lat'] = laborder.visit.patient.translify()
-            bundle.data['operator_name'] = laborder.visit.operator # -100
-            bundle.data['office_name'] = laborder.visit.office # -100
+            bundle.data['visit_created'] = v.created # -100
+            bundle.data['visit_is_cito'] = v.is_cito # -100
+            bundle.data['visit_id'] = v.id
+            bundle.data['barcode'] = v.barcode.id # -100
+            bundle.data['is_male'] = v.patient.gender==u'М'
+            bundle.data['patient_name'] = v.patient.full_name()
+            bundle.data['patient_age'] = v.patient.full_age()
+            bundle.data['lat'] = v.patient.translify()
+            bundle.data['operator_name'] = v.operator # -100
+            bundle.data['office_name'] = v.office # -100
         bundle.data['staff_name'] = laborder.staff and laborder.staff.staff.short_name() or '' # -34
         return bundle
     
@@ -615,6 +615,7 @@ class LabOrderResource(ExtResource):
         queryset = LabOrder.objects.select_related().all()
         resource_name = 'laborder'
         authorization = DjangoAuthorization()
+        caching = SimpleCache()
         limit = 100
         filtering = {
             'id':ALL,
@@ -1007,11 +1008,11 @@ class LabOrderedServiceResource(OrderedServiceResource):
         bundle.data['operator_name'] = bundle.obj.operator
         bundle.data['laboratory'] = bundle.obj.execution_place
         bundle.data['sampling'] = bundle.obj.sampling and bundle.obj.sampling.short_title()
-        bundle.data['message'] = o.latest_transaction()
+#        bundle.data['message'] = o.latest_transaction()
         return bundle    
     
     class Meta:
-        queryset = OrderedService.objects.all()
+        queryset = OrderedService.objects.select_related().all()
         resource_name = 'laborderedservice'
         authorization = DjangoAuthorization()
         limit = 100

@@ -1,0 +1,24 @@
+{% extends "admin/base_site.html" %}
+
+{% block content %}
+{% for promotion in promotions %}
+<h1>{{ promotion.instance }}</h1>
+<table>
+	{% for item in promotion.items %}
+	<tr>
+		<td>{{ item.service }}</td>
+		<td>{{ item.count }}</td>
+		<td>{{ item.price }}</td>
+	</tr>
+	{% endfor %}
+</table>
+<div><strong>Итого: {{ promotion.raw_price }}</strong></div>
+<div><strong>Скидка: {{ promotion.discount|default:'нет' }}</strong></div>
+<div><strong>Общая стоимость: {{ promotion.total_price }}</strong></div>
+<br><br>
+{% endfor %}
+<form action="" method="post">
+	{% csrf_token %}
+    <input type="submit" name="apply" value="Продолжить" />
+</form>
+{% endblock %}

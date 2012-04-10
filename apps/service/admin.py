@@ -1,7 +1,7 @@
 # -*- coding: utf-8 -*-
 
 from django import forms
-from django.contrib import admin
+from django.contrib import admin, messages
 
 from feincms.admin.editor import TreeEditor
 from mptt.forms import TreeNodeChoiceField
@@ -9,8 +9,8 @@ from mptt.forms import TreeNodeChoiceField
 from models import BaseService
 from lab.models import Analysis
 from service.models import ExecutionPlace, Material, BaseServiceGroup,\
-    LabServiceGroup, ExecutionTypeGroup, ExtendedService, ICD10
-from django.http import HttpResponse
+    LabServiceGroup, ExecutionTypeGroup, ExtendedService, ICD10, _clear_cache
+from django.http import HttpResponse, HttpResponseRedirect
 from django.utils import simplejson
 from django.conf.urls.defaults import patterns
 import csv
@@ -268,12 +268,21 @@ class BaseServiceAdmin(TreeEditor):
         response['Content-Disposition'] = 'attachment; filename=services_%s.csv' % datetime.datetime.today()
         return response
     
+    def clear_cache(self, request):
+        
+        _clear_cache()
+        messages.info(request, u'Кэш услуг был успешно очищен!')
+        back_url = request.META['HTTP_REFERER'] or '/admin/'
+        
+        return HttpResponseRedirect(back_url)
+    
     def get_urls(self):
         urls = super(BaseServiceAdmin, self).get_urls()
         my_urls = patterns('',
             (r'^export/csv/$', self.export_csv),
             (r'^pricelist/$', self.pricelist),
             (r'^pricelist/print/$', self.pricelist_print),
+            (r'^clear_cache/$', self.clear_cache),
         )
         return my_urls + urls
 

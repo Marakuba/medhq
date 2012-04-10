@@ -216,6 +216,8 @@ App.remoting.RemoteOrderGrid = Ext.extend(Ext.grid.GridPanel, {
 				this.getTopToolbar().doLayout();
 				break;
 			case '>' : 
+				this.sendBtn.show();
+				this.getTopToolbar().doLayout();
 				break;
 			case '!' : 
 				this.sendBtn.show();
@@ -255,7 +257,27 @@ App.remoting.RemoteOrderGrid = Ext.extend(Ext.grid.GridPanel, {
 		var ids = this.getSelectedId();
 		this.sendBtn.disable();
 		App.direct.remoting.postOrders(ids,function(result,e){
-			this.modeBtn.setActiveItem(0);
+			if(e.type=='rpc'){
+				if(result.success){
+					this.modeBtn.setActiveItem(0);
+				} else {
+					Ext.MessageBox.alert('Ошибка',String.format('При отправке данных в лабораторию "{0}" произошла ошибка.'+
+							'<br>Возможно отсутствует соединение с удаленным сервером. '+
+							'Попробуйте еще раз.'+
+							'<br><br>Ответ: {1}',result.data.state, Ext.util.Format.htmlEncode(result.data.reason)));
+				}
+				var win = new App.remoting.ResultWindow({
+					data:result.data
+				});
+				win.show();
+				
+			} else if(e.type='exception') {
+				Ext.MessageBox.alert('Ошибка',String.format('При отправке данных на сервер произошла ошибка.'+
+						'Попробуйте еще раз.'+
+						'<br><br>Ответ: {0}',Ext.util.Format.htmlEncode(e.message)));
+			} else {
+				
+			}
 			this.sendBtn.enable();
 		},this);
 	},

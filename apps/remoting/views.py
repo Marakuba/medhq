@@ -14,7 +14,7 @@ from remoting.utils import get_ordered_service, get_result
 from remoting.models import Transaction, TransactionItem, SyncObject
 from django.db.models.aggregates import Count
 import logging
-from urllib2 import HTTPError
+from urllib2 import HTTPError, URLError
 
 logger = logging.getLogger('remoting')
 
@@ -22,17 +22,19 @@ def post_orders_to_local(request, data_set, options):
     result = []
     for data in data_set:
         success = True
-        specimen_id = data['order']['specimen']
-        msg = u'Заказ №%s успешно размещен' % specimen_id
+        specimen_id = data['visit']['specimen']
         
         try:
-            get_ordered_service(request, data)
+            ord_service, created = get_ordered_service(request, data)
+            status = created and u'успешно размещен' or u'уже был добавлен ранее'
+            msg = u'Заказ "%s" для образца №%s %s' % (ord_service.service,specimen_id,status)
         except Exception, err:
             msg = err.__unicode__()
             success = False
             
         result.append({
             'order':specimen_id,
+            'service':data['order']['code'],
             'success': success,
             'message':msg
         })
@@ -214,7 +216,7 @@ def post_orders(request):
 #                                                 reciever=_labs_cache[lab])
         try:
             result = post_data_to_remote(_labs_cache[lab], 'post_orders', data)
-        except HTTPError, e:
+        except URLError, e:
             return dict(success=False, data={'state':_labs_cache[lab].name,'reason':e.__unicode__()})
             break
         
@@ -223,17 +225,23 @@ def post_orders(request):
     
         for r in result:
 #            ordered_service = _object_list_cache[r['order']]
-            if r['success']:
-                success.append(r['order'])
-            else:
-                error.append(r['order'])
+            status = r['success'] and u'>' or u'!'
+            OrderedService.objects.filter(order__specimen=r['order'], service__code=r['service']).update(status=status)
+#            if r['success']:
+#                success.append(r['order'])
+#            else:
+#                error.append(r['order'])
 #            status = r['success'] and 'complete' or 'error'
 #            TransactionItem.objects.create(transaction=transaction,
 #                                           status=status,
 #                                           content_object=ordered_service,
 #                                           message=r['message'])
-            
-        OrderedService.objects.filter(order__specimen__in=success).update(status=u'>')
-        OrderedService.objects.filter(order__specimen__in=error).update(status=u'!')
+
+#        print result
+#        print success
+#        print error
+#            
+#        OrderedService.objects.filter(order__specimen__in=success).update(status=u'>')
+#        OrderedService.objects.filter(order__specimen__in=error).update(status=u'!')
         
     return dict(success=True, data=result)

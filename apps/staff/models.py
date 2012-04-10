@@ -47,10 +47,12 @@ class Staff(make_person_object('staff')):
     objects = models.Manager()
     
     def get_position(self):
-        if not hasattr(self,'_position'):
+        if not hasattr(Staff,'_position'):
+            Staff._position = {}
+        if self.id not in Staff._position:
             p = self.position_set.all()
-            self._position = len(p) and p[0] or None
-        return self._position and self._position.title or u''
+            Staff._position[self.id] = len(p) and p[0] or u''
+        return Staff._position[self.id]
         
     def full_name(self):
         return u"%s %s %s%s" % (self.last_name, self.first_name, self.mid_name, self.get_position() and u', %s' % self.get_position() or u'')

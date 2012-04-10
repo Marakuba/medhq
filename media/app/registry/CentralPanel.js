@@ -10,11 +10,7 @@ App.StatusBar = new Ext.ux.StatusBar({
 	items:[String.format('{0}, {1}', active_user, active_state)]
 }); 
 
-function onProfileCheck() {
-	console.info(arguments);
-}
-
-profileItems = ['<b class="menu-title">Выберите профиль</b>'];
+var profileItems = ['<b class="menu-title">Выберите профиль</b>'];
 Ext.each(profiles, function(profile){
 	config = {
 		profileId:profile[0],
@@ -28,6 +24,19 @@ Ext.each(profiles, function(profile){
 		}
 	}
 	profileItems.push(config);
+});
+
+var appsItems = [];
+Ext.each(apps, function(app){
+	config = {
+		text:app[0],
+		appUrl:app[1],
+		group:'apps',
+		handler:function(menuitem,e){
+			window.location.href = menuitem.appUrl;
+		}
+	}
+	appsItems.push(config);
 });
 
 App.CentralPanel = Ext.extend(Ext.Panel, {
@@ -230,6 +239,11 @@ App.CentralPanel = Ext.extend(Ext.Panel, {
 					text:String.format('{0}, {1}', active_user, active_state),
 					menu:new Ext.menu.Menu({
 						items:[{
+							text:'Приложения',
+							menu:{
+								items:appsItems
+							}
+						},{
 							text:'Профиль',
 							menu:{
 								items:profileItems

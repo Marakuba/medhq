@@ -138,7 +138,8 @@ class RefRange(models.Model):
 class LabOrder(models.Model):
     """
     """
-
+    _visit = None
+    
     created = models.DateTimeField(u'Дата', auto_now_add=True)
     visit = models.ForeignKey('visit.Visit', verbose_name=u'Визит', 
                               blank=True, null=True) 

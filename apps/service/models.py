@@ -174,6 +174,8 @@ class BaseService(models.Model):
 
     staff = models.ManyToManyField(Position, verbose_name=u'Кем выполняется', null=True, blank=True)
     
+    _top = {}
+    
     def __unicode__(self):
         #return "%s %s" % (self.code, self.name)
         return self.name 
@@ -242,8 +244,10 @@ class BaseService(models.Model):
     def top_level_named(self):
         if self.is_leaf_node():
             try:
-                top = self.get_ancestors()[0]
-                return u"%s / %s" % ( self.__unicode__(), top.__unicode__() )
+                if self.id not in BaseService._top:
+                    BaseService._top[self.id] = self.get_ancestors()[0]
+                _top = BaseService._top[self.id]
+                return u"%s / %s" % ( self.__unicode__(), _top.__unicode__() )
             except:
                 pass
         return self.__unicode__()
@@ -345,28 +349,19 @@ except mptt.AlreadyRegistered:
     pass
 
 
-def clear_service_cache(sender, **kwargs):
+
+def _clear_cache():
     try:
         cache = get_cache('service')
         cache.clear()
+        BaseService._top = {}
     except:
         pass
+
+def clear_service_cache(sender, **kwargs):
+    if config.SERVICE_CACHE_AUTO_CLEAR:
+        _clear_cache()
         #raise "Service cache must be defined!"
 
-#    if settings.SERVICETREE_ONLY_OWN:
-#        own_states = State.objects.filter(type=u'b')
-#        for state in own_states:
-#            _state_key = u'service_list_%s' % state.id
-#            cache.delete(u'%s' % (_state_key,) )
-#            cache.delete(u'%s_%s' % (_state_key,u'н') )
-#            cache.delete(u'%s_%s' % (_state_key,u'б') )
-#            cache.delete(u'%s_%s' % (_state_key,u'д') )
-#    else:
-#        cache.delete(u'service_list_н')
-#        cache.delete(u'service_list_д')
-#        cache.delete(u'service_list_б')
-#        cache.delete(u'service_list')
-    
-    
 post_save.connect(clear_service_cache, sender=BaseService)
 post_save.connect(clear_service_cache, sender=ExtendedService)
