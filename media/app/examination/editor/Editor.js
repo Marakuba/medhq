@@ -19,20 +19,6 @@ App.examination.Editor = Ext.extend(Ext.Panel, {
 			}
 		});
 		
-		this.fieldSetStore = new Ext.data.RESTStore({
-			autoSave: false,
-			autoLoad : false,
-			apiUrl : get_api_url('examfieldset'),
-			model: App.models.FieldSet
-		});
-		
-		this.subSectionStore = new Ext.data.RESTStore({
-			autoSave: false,
-			autoLoad : false,
-			apiUrl : get_api_url('examsubsection'),
-			model: App.models.SubSection
-		});
-		
 		this.serviceTree = new App.ServiceTreeGrid ({
 //			layout: 'fit',
 			region:'west',
@@ -81,18 +67,11 @@ App.examination.Editor = Ext.extend(Ext.Panel, {
 		App.examination.Editor.superclass.initComponent.apply(this, arguments);
 		
 		this.on('afterrender',function(form){
-			this.fieldSetStore.load({callback:function(records){
-				if(!records.length){
-					return
+			if (this.editMode){
+				if (this.record){
+					this.onEditTmp(this.record)
 				}
-				this.subSectionStore.load({callback:function(records){
-					if (this.editMode){
-						if (this.record){
-							this.onEditTmp(this.record)
-						}
-					}
-				},scope:this})
-			},scope:this})
+			}
 		});
 		
 		this.serviceTree.on('serviceclick',function(attrs){

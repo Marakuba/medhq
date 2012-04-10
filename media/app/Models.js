@@ -166,7 +166,8 @@ App.models.FieldSet = new Ext.data.Record.create([
 	{name: 'resource_uri'},
 	{name: 'name'},
 	{name: 'order'},
-	{name: 'title'}
+	{name: 'title'},
+	{name: 'active'}
 ]);
 
 App.models.SubSection = new Ext.data.Record.create([

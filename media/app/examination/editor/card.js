@@ -17,8 +17,8 @@ Ext.ux.form.Ticket = Ext.extend(Ext.Panel,{
 		this.defaultText = 'Щелкните здесь чтобы ввести описание...';
 		this.defaultTitle = 'Щелкните здесь чтобы установить заголовок...';
 		
-		this.addEvents('beforeticketremove','ticketremove','ticketdataupdate','ticketeditstart','editorclose','ticketheadeeditstart');
-		this.enableBubble('beforeticketremove','ticketremove','ticketdataupdate','ticketeditstart','editorclose','ticketheadeeditstart');
+		this.addEvents('beforeticketremove','ticketremove','ticketdataupdate','ticketeditstart','editorclose','ticketheadeeditstart','ticketbodyclick');
+		this.enableBubble('beforeticketremove','ticketremove','ticketdataupdate','ticketeditstart','editorclose','ticketheadeeditstart','ticketbodyclick');
 		
 		this.pntMenuItem = new Ext.menu.CheckItem({
 			text:'Выводить на печать',
@@ -170,8 +170,9 @@ Ext.ux.form.Ticket = Ext.extend(Ext.Panel,{
 	                        scope:this
 	                    }
 	                }, cfg));
-	                panel.body.on('click', function(e, t){
-	                	sectionEditor.startEdit(panel.body);
+	                panel.body.on('dblclick', function(e, t){
+//	                	sectionEditor.startEdit(panel.body);
+	                	panel.fireEvent('ticketbodyclick',panel);
 	                }, null, {
 //	                	delegate:'div.content'
 	                });
