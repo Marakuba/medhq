@@ -47,6 +47,12 @@ class CustomMenu(Menu):
                 title=u'Панель отчетов',
                 url="/old/reporting/"
             ))
+            
+        if user.has_perm('pricelist.add_price'):
+            reports.append(items.MenuItem(
+                title=u'Загрузка промо-акций',
+                url="/promotion/"
+            ))
 
         self.children.append(items.MenuItem(
             title=u'Отчеты',

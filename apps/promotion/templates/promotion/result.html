@@ -1,0 +1,56 @@
+{% extends "admin/base_site.html" %}
+
+{% load i18n lab_tags %} 
+
+{%block header%} {% include "print/header.html"%} {%endblock%}
+
+{% block title %}{{ text }}{% endblock %}
+
+{% block extrastyle %}
+{{ block.super }}
+<style>
+	.title-0 {
+		font-weight:bolder;
+		font-size:1.1em;
+		background: #e9f4fa;
+	}
+	.title-1 {
+		font-weight:bold;
+		background: #fbf9bb;
+	}
+	.total-row {
+		font-weight:bolder;
+		font-size:1.2em;
+		background: #ffc0cb;
+	}
+	h7 {
+	    font-weight:bold;
+		font-size:1.1em;
+	}
+</style>
+
+<script type="text/javascript" src="{{ STATIC_URL }}resources/js/jquery-1.4.4.js"></script>
+<script type="text/javascript" src="{{ STATIC_URL }}resources/js/jui/ui/jquery.ui.core.js"></script>
+<script type="text/javascript" src="{{ STATIC_URL }}resources/js/jui/ui/jquery.ui.widget.js"></script>
+<script type="text/javascript" src="{{ STATIC_URL }}resources/js/jui/ui/jquery.ui.datepicker.js"></script>
+
+{% endblock %}
+
+{% block breadcrumbs %}
+{% endblock %}
+
+{% block content %}
+
+<form name=f1>
+{%for text in error_text%}
+	<br><h7>{{text}} </h7></br>
+ {% endfor %}
+<br> 
+{%for text in complete_text%}
+	<br><h7>{{text}} </h7></br>
+{% endfor %} 
+
+</form >
+
+
+{% endblock %}

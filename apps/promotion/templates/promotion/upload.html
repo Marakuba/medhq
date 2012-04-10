@@ -1,0 +1,81 @@
+{% extends "admin/base_site.html" %}
+
+{% load i18n lab_tags %} 
+
+{%block header%} {% include "print/header.html"%} {%endblock%}
+
+{% block title %}{{ title }}{% endblock %}
+
+{% block extrastyle %}
+{{ block.super }}
+<style>
+	.title-0 {
+		font-weight:bolder;
+		font-size:1.1em;
+		background: #e9f4fa;
+	}
+	.title-1 {
+		font-weight:bold;
+		background: #fbf9bb;
+	}
+	.total-row {
+		font-weight:bolder;
+		font-size:1.2em;
+		background: #ffc0cb;
+	}
+	h7 {
+	    font-weight:bold;
+		font-size:1.1em;
+	}
+</style>
+
+<script type="text/javascript" src="{{ STATIC_URL }}resources/js/jquery-1.4.4.js"></script>
+<script type="text/javascript" src="{{ STATIC_URL }}resources/js/jui/ui/jquery.ui.core.js"></script>
+<script type="text/javascript" src="{{ STATIC_URL }}resources/js/jui/ui/jquery.ui.widget.js"></script>
+<script type="text/javascript" src="{{ STATIC_URL }}resources/js/jui/ui/jquery.ui.datepicker.js"></script>
+
+<script> 
+function go(){ 
+
+    var promotion;
+    var state;
+    var file;
+
+    promotion = document.f1.promotion.value;
+    state = document.f1.state.value;
+    file = document.f1.file.path;
+
+    window.open('/promotion/upload/?'
+    	+'enctype=multipart/form-data'
+        +'promotion='+promotion
+        +'&state='+state
+        +'&file='+file
+        +'&method=POST'
+    );
+
+
+} 
+</script>
+
+<link href="{{ STATIC_URL }}resources/js/jui/themes/base/jquery.ui.all.css" type="text/css" media="all" rel="stylesheet" />
+
+{% endblock %}
+
+{% block breadcrumbs %}
+{% endblock %}
+
+{% block content %}
+
+<form name=f1 action = '/promotion/upload/' method="post" enctype="multipart/form-data">
+<table>
+{{form}}
+</table>
+
+<input type="submit" 
+value="Загрузить"> 
+ </br>
+
+</form >
+
+
+{% endblock %}
