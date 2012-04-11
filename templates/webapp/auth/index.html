@@ -1,18 +1,14 @@
 {% extends "box.html" %}
+{% load assets %}
 
 {% block title %}Авторизация{% endblock %}
 
 {% block head %}
 	<link rel="icon" type="image/ico" href="{{ STATIC_URL }}resources/favicon.ico" />
 
-    <!-- ExtJS -->
-    <link rel="stylesheet" type="text/css" href="{{ STATIC_URL }}extjs/resources/css/ext-all.css"/>
-
-    <!-- APP -->
-    <link rel="stylesheet" type="text/css" href="{{ STATIC_URL }}resources/css/app.css"/>
-
-    <!-- FAM -->
-    <link rel="stylesheet" type="text/css" href="{{ STATIC_URL }}resources/css/silk.css"/>
+    {% assets "css_auth" %}
+	 <link rel="stylesheet" type="text/css" href="{{ ASSET_URL }}"></>
+	{% endassets %}
 
     <!-- LIBS -->
     <script type="text/javascript" src="{{ STATIC_URL }}extjs/adapter/ext/ext-base.js"></script>

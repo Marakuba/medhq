@@ -1,26 +1,12 @@
 {% extends "box.html" %}
+{% load assets %}
 
 {% block title %}Панель управления{% endblock %}
 
 {% block head %}
-	<link rel="icon" type="image/ico" href="{{ STATIC_URL }}resources/favicon.ico" />
-
-    <!-- ExtJS -->
-    <link rel="stylesheet" type="text/css" href="{{ STATIC_URL }}extjs/resources/css/ext-all.css"/>
-
-    <!-- APP -->
-    <link rel="stylesheet" type="text/css" href="{{ STATIC_URL }}resources/css/app.css"/>
-
-    <!-- FAM -->
-    <link rel="stylesheet" type="text/css" href="{{ STATIC_URL }}resources/css/silk.css"/>
-	<link rel="stylesheet" type="text/css" href="{{ STATIC_URL }}extjs/ux/css/Spinner.css" rel="stylesheet" />
-	<link rel="stylesheet" type="text/css" href="{{ STATIC_URL }}extjs/ux/css/RowEditor.css" rel="stylesheet" />
-	
-    <!-- Growl -->
-    <link rel="stylesheet" type="text/css" href="{{ STATIC_URL }}libs/growl/css/ext/ux/Growl.css"/>
-
-	<style>
-	</style>
+	{% assets "css_laboratory" %}
+	 <link rel="stylesheet" type="text/css" href="{{ ASSET_URL }}"></>
+	{% endassets %}
 
 	<script type="text/javascript">
 		var state = '{{ request.active_profile.state }}';
@@ -31,71 +17,15 @@
 		}
 	</script>
 
-    <!-- LIBS -->
-    <script type="text/javascript" src="{{ STATIC_URL }}extjs/adapter/ext/ext-base.js"></script>
-    <!-- ENDLIBS -->
-
-    <script type="text/javascript" src="{{ STATIC_URL }}extjs/ext-all-debug.js"></script>
-    <script type="text/javascript" src="{{ STATIC_URL }}extjs/src/locale/ext-lang-ru.js"></script>
-
-    <!-- Direct -->
-    <script src="/direct/provider.js/"></script>
-
-    <!-- Growl -->
-    <script type="text/javascript" src="{{ STATIC_URL }}libs/growl/js/ext/ux/Growl.js"></script>
-
-    <script type="text/javascript" src="{{ STATIC_URL }}extjs/ux/RowEditor.js"></script>
-    <script type="text/javascript" src="{{ STATIC_URL }}extjs/ux/CheckColumn.js"></script> 
-
-    <script type="text/javascript" src="{{ STATIC_URL }}app/ux/InputTextMask.js"></script> 
-    
-    <script type="text/javascript" src="{{ STATIC_URL }}app/data/RestStore.js"></script>
-
-    <script type="text/javascript" src="{{ STATIC_URL }}app/ux/GSearchField.js"></script>
-    <script type="text/javascript" src="{{ STATIC_URL }}app/App.js"></script>
-    <script type="text/javascript" src="{{ STATIC_URL }}app/Backend.js"></script>
-    <script type="text/javascript" src="{{ STATIC_URL }}app/form/ClearableComboBox.js"></script>
-    <script type="text/javascript" src="{{ STATIC_URL }}app/form/LazyComboBox.js"></script>
-
-    <script type="text/javascript" src="{{ STATIC_URL }}app/laboratory/backends.js"></script>
-    <script type="text/javascript" src="{{ STATIC_URL }}app/Models.js"></script>
-
-    <script type="text/javascript" src="{{ STATIC_URL }}app/laboratory/scanner/ScannerWindow.js"></script>
-
-    <script type="text/javascript" src="{{ STATIC_URL }}app/laboratory/search/SearchWindow.js"></script>
-
-    <script type="text/javascript" src="{{ STATIC_URL }}app/laboratory/register/RegisterWindow.js"></script>
-
-    <script type="text/javascript" src="{{ STATIC_URL }}app/laboratory/fields/InputList.js"></script>
-
-    <script type="text/javascript" src="{{ STATIC_URL }}app/laboratory/manual/cards/BaseCard.js"></script>
-    <script type="text/javascript" src="{{ STATIC_URL }}app/laboratory/manual/cards/sperm.js"></script>
-    <script type="text/javascript" src="{{ STATIC_URL }}app/laboratory/manual/cards/ugsmear.js"></script>
-
-    <script type="text/javascript" src="{{ STATIC_URL }}app/laboratory/manual/ManualGrid.js"></script>
-
-    <script type="text/javascript" src="{{ STATIC_URL }}app/laboratory/laborder/LabBoard.js"></script>
-    <script type="text/javascript" src="{{ STATIC_URL }}app/laboratory/laborder/LabOrderGrid.js"></script>
-    <script type="text/javascript" src="{{ STATIC_URL }}app/laboratory/laborder/LabServiceGrid.js"></script>
-    <script type="text/javascript" src="{{ STATIC_URL }}app/laboratory/laborder/LabTestGrid.js"></script>
-
-    <script type="text/javascript" src="{{ STATIC_URL }}app/laboratory/equipment/EquipmentGrid.js"></script>
-    <script type="text/javascript" src="{{ STATIC_URL }}app/laboratory/equipment/EquipmentTaskGrid.js"></script>
-    <script type="text/javascript" src="{{ STATIC_URL }}app/laboratory/equipment/EquipmentResultGrid.js"></script>
-    <script type="text/javascript" src="{{ STATIC_URL }}app/laboratory/equipment/EquipmentAssayGrid.js"></script>
-
-    <script type="text/javascript" src="{{ STATIC_URL }}app/laboratory/result/ResultGrid.js"></script>
-    <script type="text/javascript" src="{{ STATIC_URL }}app/laboratory/result/ResultCard.js"></script>
-
-    <script type="text/javascript" src="{{ STATIC_URL }}app/laboratory/EventManager.js"></script>
-    <script type="text/javascript" src="{{ STATIC_URL }}app/laboratory/CentralPanel.js"></script>
-    <script type="text/javascript" src="{{ STATIC_URL }}app/laboratory/MainPanel.js"></script>
-    <script type="text/javascript" src="{{ STATIC_URL }}app/laboratory/app.js"></script>
-    
-    <script type="text/javascript" src="{{ STATIC_URL }}app/registry/barcodepackage/DuplicateWindow.js"></script>
-
-    <script type="text/javascript" src="{{ STATIC_URL }}resources/js/web-socket-js/swfobject.js"></script>
-  	<script type="text/javascript" src="{{ STATIC_URL }}resources/js/web-socket-js/web_socket.js"></script>
+    {% assets "js_ext" %}
+	 <script type="text/javascript" src="{{ ASSET_URL }}"></script>
+	{% endassets %}
+	
+	<script src="/direct/provider.js/"></script>
+	
+	{% assets "js_laboratory" %}
+	    <script type="text/javascript" src="{{ ASSET_URL }}"></script>
+	{% endassets %}
 
 	<script type="text/javascript">
 	    

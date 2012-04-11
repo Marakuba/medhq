@@ -1,32 +1,14 @@
 {% extends "box.html" %}
+{% load assets %}
 
 {% block title %}Панель управления{% endblock %}
 
 {% block head %}
 	<link rel="icon" type="image/ico" href="{{ STATIC_URL }}resources/favicon.ico" />
 
-    <!-- ExtJS -->
-    <link rel="stylesheet" type="text/css" href="{{ STATIC_URL }}extjs/resources/css/ext-all.css"/>
-
-    <!-- APP -->
-    <link rel="stylesheet" type="text/css" href="{{ STATIC_URL }}resources/css/app.css"/>
-    <link rel="stylesheet" type="text/css" href="{{ STATIC_URL }}app/calendar/resources/css/calendar.css"/>
-    <link rel="stylesheet" type="text/css" href="{{ STATIC_URL }}app/calendar/resources/css/examples.css"/>
-
-    <!-- FAM -->
-    <link rel="stylesheet" type="text/css" href="{{ STATIC_URL }}resources/css/silk.css"/>
-
-	<!-- UX -->
-	<link rel="stylesheet" type="text/css" href="{{ STATIC_URL }}extjs/ux/css/Spinner.css" rel="stylesheet" />
-	<link rel="stylesheet" type="text/css" href="{{ STATIC_URL }}extjs/ux/css/RowEditor.css" rel="stylesheet" />
-	<link rel="stylesheet" type="text/css" href="{{ STATIC_URL }}extjs/ux/treegrid/treegrid.css" rel="stylesheet" />
-	<link rel="stylesheet" type="text/css" href="{{ STATIC_URL }}extjs/ux/progresscolumn/ProgressColumn.css"/>
-	
-	<!-- RemoteTree -->
-    <link rel="stylesheet" type="text/css" href="{{ STATIC_URL }}app/ux/remotetree/css/empty.css"/>
-    <link rel="stylesheet" type="text/css" href="{{ STATIC_URL }}app/ux/remotetree/css/icons.css"/>
-    <link rel="stylesheet" type="text/css" href="{{ STATIC_URL }}app/ux/remotetree/css/remotetree.css"/>
-    <link rel="stylesheet" type="text/css" href="{{ STATIC_URL }}app/ux/remotetree/css/webpage.css"/>
+    {% assets "css_examination" %}
+	 <link rel="stylesheet" type="text/css" href="{{ ASSET_URL }}"></>
+	{% endassets %}
 
 	<style>
     	body, button, input, select, textarea { 
@@ -139,199 +121,15 @@
 		}
 	</script>
 	
-    <!-- LIBS -->
-    <script type="text/javascript" src="{{ STATIC_URL }}extjs/adapter/ext/ext-base.js"></script>
-    <script type="text/javascript" src="{{ STATIC_URL }}libs/markdown.js"></script>
-    <!-- ENDLIBS -->
-
-    <script type="text/javascript" src="{{ STATIC_URL }}extjs/ext-all-debug.js"></script>
-    <script type="text/javascript" src="{{ STATIC_URL }}extjs/src/locale/ext-lang-ru.js"></script>
-    <!--<script type="text/javascript" src="{{ STATIC_URL }}extjs/src/debug.js"></script>-->
-    
-    <!-- OWN CMP -->
-
-    <script type="text/javascript" src="/webapp/settings/"></script>
-
-    <!-- UX -->
-    <script type="text/javascript" src="{{ STATIC_URL }}extjs/ux/progresscolumn/ProgressColumn.js"></script>
-    <script type="text/javascript" src="{{ STATIC_URL }}extjs/ux/RowEditor.js"></script>
-    <script type="text/javascript" src="{{ STATIC_URL }}extjs/ux/CheckColumn.js"></script>
-    <script type="text/javascript" src="{{ STATIC_URL }}extjs/ux/Spinner.js"></script>
-    <script type="text/javascript" src="{{ STATIC_URL }}extjs/ux/SpinnerField.js"></script> 
-
-    <script type="text/javascript" src="{{ STATIC_URL }}extjs/ux/PortalColumn.js"></script> 
-    <script type="text/javascript" src="{{ STATIC_URL }}extjs/ux/Portal.js"></script> 
-
-    <script type="text/javascript" src="{{ STATIC_URL }}app/ux/InputTextMask.js"></script> 
-    
-    <script type="text/javascript" src="{{ STATIC_URL }}app/ux/InputTextMask.js"></script>
-    <script type="text/javascript" src="{{ STATIC_URL }}extjs/ux/progresscolumn/ProgressColumn.js"></script>
-    
-    <script type="text/javascript" src="{{ STATIC_URL }}app/ux/GSearchField.js"></script>
-    <script type="text/javascript" src="{{ STATIC_URL }}app/ux/StatusBar.js"></script>
-    <script type="text/javascript" src="{{ STATIC_URL }}app/App.js"></script>
-    <script type="text/javascript" src="{{ STATIC_URL }}app/Backend.js"></script>
-    <script type="text/javascript" src="{{ STATIC_URL }}app/form/ClearableComboBox.js"></script>
-    <script type="text/javascript" src="{{ STATIC_URL }}app/form/LazyComboBox.js"></script>
-
-    <script type="text/javascript" src="{{ STATIC_URL }}app/data/RestStore.js"></script>
-
-    <script type="text/javascript" src="{{ STATIC_URL }}app/examination/backends.js"></script>
-    <script type="text/javascript" src="{{ STATIC_URL }}app/Models.js"></script>
-    
-    <script type="text/javascript" src="{{ STATIC_URL }}app/examination/examorder/Grid.js"></script>
-    <script type="text/javascript" src="{{ STATIC_URL }}app/examination/examorder/OldGrid.js"></script>
-
-	<script type="text/javascript" src="{{ STATIC_URL }}app/dict/mkb/MKBTree.js"></script>
-    <script type="text/javascript" src="{{ STATIC_URL }}app/dict/mkb/MKBWindow.js"></script>
-    
-    <script type="text/javascript" src="{{ STATIC_URL }}app/examination/EventManager.js"></script>
-    <script type="text/javascript" src="{{ STATIC_URL }}app/examination/CentralPanel.js"></script>
-    <script type="text/javascript" src="{{ STATIC_URL }}app/examination/MainPanel.js"></script>
-    <script type="text/javascript" src="{{ STATIC_URL }}app/examination/app.js"></script>
-    
-    <!-- RemoteTree app -->
-    <script type="text/javascript" src="{{ STATIC_URL }}app/ux/remotetree/js/Ext.ux.form.ThemeCombo.js"></script>
-    <script type="text/javascript" src="{{ STATIC_URL }}app/ux/remotetree/js/Ext.ux.HttpProvider.js"></script>
-    <script type="text/javascript" src="{{ STATIC_URL }}app/ux/remotetree/js/Ext.ux.IconMenu.js"></script>
-    <script type="text/javascript" src="{{ STATIC_URL }}app/ux/remotetree/js/Ext.ux.menu.IconMenu.js"></script>
-    <script type="text/javascript" src="{{ STATIC_URL }}app/ux/remotetree/js/Ext.ux.ThemeCombo.js"></script>
-    <script type="text/javascript" src="{{ STATIC_URL }}app/ux/remotetree/js/Ext.ux.Toast.js"></script>
-    <script type="text/javascript" src="{{ STATIC_URL }}app/ux/remotetree/js/Ext.ux.tree.RemoteTreePanel.js"></script>
-    <script type="text/javascript" src="{{ STATIC_URL }}app/ux/remotetree/js/Ext.ux.tree.TreeFilterX.js"></script>
-    <script type="text/javascript" src="{{ STATIC_URL }}app/ux/remotetree/js/WebPage.js"></script>
-    
-    <!-- Editor app -->
-	<script type="text/javascript" src="{{ STATIC_URL }}app/ux/DropDownList.js"></script>
+    {% assets "js_ext" %}
+	 <script type="text/javascript" src="{{ ASSET_URL }}"></script>
+	{% endassets %}
 	
-    <script type="text/javascript" src="{{ STATIC_URL }}extjs/ux/treegrid/TreeGridSorter.js"></script>
-    <script type="text/javascript" src="{{ STATIC_URL }}extjs/ux/treegrid/TreeGridColumnResizer.js"></script>
-    <script type="text/javascript" src="{{ STATIC_URL }}extjs/ux/treegrid/TreeGridNodeUI.js"></script>
-    <script type="text/javascript" src="{{ STATIC_URL }}extjs/ux/treegrid/TreeGridLoader.js"></script>
-    <script type="text/javascript" src="{{ STATIC_URL }}extjs/ux/treegrid/TreeGridColumns.js"></script>
-    <script type="text/javascript" src="{{ STATIC_URL }}extjs/ux/treegrid/TreeGrid.js"></script>
-    
-    <script type="text/javascript" src="{{ STATIC_URL }}app/examination/editor/TmpGrid.js"></script>
-    <script type="text/javascript" src="{{ STATIC_URL }}app/examination/neocard/CardGrid.js"></script>
-    
-    <script type="text/javascript" src="{{ STATIC_URL }}app/registry/ServicePanel.js"></script>
-    <script type="text/javascript" src="{{ STATIC_URL }}app/service/ServiceTreeGrid.js"></script>
-    <script type="text/javascript" src="{{ STATIC_URL }}app/dict/glossary/EditNodeWindow.js"></script>
-    <script type="text/javascript" src="{{ STATIC_URL }}app/dict/glossary/XGlossaryTree.js"></script>
-    <script type="text/javascript" src="{{ STATIC_URL }}app/dict/glossary/GlossaryTree.js"></script>
-    <script type="text/javascript" src="{{ STATIC_URL }}app/dict/glossary/GlossaryPanel.js"></script>
-    <script type="text/javascript" src="{{ STATIC_URL }}app/examination/editor/GlossaryTree.js"></script>
-    <script type="text/javascript" src="{{ STATIC_URL }}app/examination/editor/TicketEditPanel.js"></script>
-    <script type="text/javascript" src="{{ STATIC_URL }}app/examination/editor/EquipmentTab.js"></script>
-    <script type="text/javascript" src="{{ STATIC_URL }}app/examination/editor/GeneralTab.js"></script>
-    <script type="text/javascript" src="{{ STATIC_URL }}app/examination/editor/TicketTab.js"></script>
-    <script type="text/javascript" src="{{ STATIC_URL }}app/examination/editor/SectionPanel.js"></script>
-    <script type="text/javascript" src="{{ STATIC_URL }}app/examination/editor/DataTab.js"></script>
-    <script type="text/javascript" src="{{ STATIC_URL }}app/examination/editor/TemplateBody.js"></script>
-    <script type="text/javascript" src="{{ STATIC_URL }}app/examination/editor/StartPanel.js"></script>
-    <script type="text/javascript" src="{{ STATIC_URL }}app/examination/editor/Editor.js"></script>
-    <script type="text/javascript" src="{{ STATIC_URL }}app/examination/editor/card.js"></script>
-    
-    <!-- Glossary Editor -->
-    <script type="text/javascript" src="{{ STATIC_URL }}app/dict/glossary/GlossaryEditor.js"></script>
-    
-    <!-- Patient History -->
-    <script type="text/javascript" src="{{ STATIC_URL }}app/examination/patient/PatientHistoryTreeGrid.js"></script>
-    <script type="text/javascript" src="{{ STATIC_URL }}app/examination/patient/PatientHistoryPanel.js"></script>
-    <script type="text/javascript" src="{{ STATIC_URL }}app/examination/patient/PatientHistory.js"></script>
-    
-    <!-- AsgmtGrid -->
-    <script type="text/javascript" src="{{ STATIC_URL }}app/registry/asgmt/AsgmtListWindow.js"></script>
-    <script type="text/javascript" src="{{ STATIC_URL }}app/registry/asgmt/PreorderInlineGrid.js"></script>
-    <script type="text/javascript" src="{{ STATIC_URL }}app/registry/asgmt/AsgmtForm.js"></script>
-    <script type="text/javascript" src="{{ STATIC_URL }}app/registry/asgmt/AsgmtTab.js"></script>
-    <script type="text/javascript" src="{{ STATIC_URL }}app/registry/patient/AsgmtGrid.js"></script>
-    
-    <!-- NeoCard app -->
-    <script type="text/javascript" src="{{ STATIC_URL }}app/examination/neocard/CardStartPanel.js"></script>
-    <script type="text/javascript" src="{{ STATIC_URL }}app/examination/neocard/CardGeneralTab.js"></script>
-    <script type="text/javascript" src="{{ STATIC_URL }}app/examination/neocard/CardApp.js"></script>
-    
-    <!-- conclusion app -->
-    <script type="text/javascript" src="{{ STATIC_URL }}app/examination/conclusion/ConclApp.js"></script>
-    
-    <!-- archive app -->
-    <script type="text/javascript" src="{{ STATIC_URL }}app/examination/archive/ArchiveApp.js"></script>
-    
-    <!-- trash app -->
-    <script type="text/javascript" src="{{ STATIC_URL }}app/examination/trash/TrashApp.js"></script>
-    
-    <script type="text/javascript" src="{{ STATIC_URL }}app/examination/templates/CardTemplateWindow.js"></script>
-    <script type="text/javascript" src="{{ STATIC_URL }}app/examination/templates/CardTemplateForm.js"></script>
-    <script type="text/javascript" src="{{ STATIC_URL }}app/examination/templates/TemplateGrid.js"></script>
-    <script type="text/javascript" src="{{ STATIC_URL }}app/examination/templates/TemplateGlobalGrid.js"></script>
-    <script type="text/javascript" src="{{ STATIC_URL }}app/examination/templates/TemplateBackend.js"></script>
-    <script type="text/javascript" src="{{ STATIC_URL }}app/examination/templates/TemplatesWindow.js"></script>
-    <script type="text/javascript" src="{{ STATIC_URL }}app/examination/templates/GroupGrid.js"></script>
-    
-    <script type="text/javascript" src="{{ STATIC_URL }}app/examination/cards/Viewer.js"></script>
-    <script type="text/javascript" src="{{ STATIC_URL }}app/examination/cards/EpicrisisWindow.js"></script>
-    <script type="text/javascript" src="{{ STATIC_URL }}app/examination/cards/PromptWindow.js"></script>
-    <script type="text/javascript" src="{{ STATIC_URL }}app/examination/cards/ExamCardWindow.js"></script>
-    <script type="text/javascript" src="{{ STATIC_URL }}app/examination/cards/CardsWindow.js"></script>
-    <script type="text/javascript" src="{{ STATIC_URL }}app/examination/cards/ExamCardForm.js"></script>
-    <script type="text/javascript" src="{{ STATIC_URL }}app/examination/cards/ExamCardGrid.js"></script>
-    <script type="text/javascript" src="{{ STATIC_URL }}app/examination/cards/ExamBackend.js"></script>
-    <script type="text/javascript" src="{{ STATIC_URL }}app/examination/cards/AllExamGrid.js"></script>
-    
-    <script type="text/javascript" src="{{ STATIC_URL }}app/examination/patient/PatientGrid.js"></script>
-    <script type="text/javascript" src="{{ STATIC_URL }}app/examination/patient/PatientGridPanel.js"></script>
-
-    <!-- calendar -->
-	<script type="text/javascript" src="{{ STATIC_URL }}app/calendar/EventManager.js"></script>
-	<script type="text/javascript" src="{{ STATIC_URL }}app/calendar/src/Ext.calendar.js"></script>
-
-    
-	<script type="text/javascript" src="{{ STATIC_URL }}app/calendar/src/templates/DayHeaderTemplate.js"></script>
-	<script type="text/javascript" src="{{ STATIC_URL }}app/calendar/src/templates/DayBodyTemplate.js"></script>
-	<script type="text/javascript" src="{{ STATIC_URL }}app/calendar/src/templates/DayViewTemplate.js"></script>
-    <script type="text/javascript" src="{{ STATIC_URL }}app/calendar/src/templates/BoxLayoutTemplate.js"></script>
-    <script type="text/javascript" src="{{ STATIC_URL }}app/calendar/src/templates/MonthViewTemplate.js"></script>
-    
-    <script type="text/javascript" src="{{ STATIC_URL }}app/calendar/src/dd/CalendarScrollManager.js"></script>
-
-    <script type="text/javascript" src="{{ STATIC_URL }}app/calendar/src/dd/StatusProxy.js"></script>
-    <script type="text/javascript" src="{{ STATIC_URL }}app/calendar/src/dd/CalendarDD.js"></script>
-    <script type="text/javascript" src="{{ STATIC_URL }}app/calendar/src/dd/DayViewDD.js"></script>
-    
-    <script type="text/javascript" src="{{ STATIC_URL }}app/calendar/src/EventRecord.js"></script>
-    <script type="text/javascript" src="{{ STATIC_URL }}app/calendar/src/views/MonthDayDetailView.js"></script>
-    <script type="text/javascript" src="{{ STATIC_URL }}app/calendar/src/WeekEventRenderer.js"></script>
-
-    <script type="text/javascript" src="{{ STATIC_URL }}app/calendar/src/widgets/CalendarPicker.js"></script>
-    <script type="text/javascript" src="{{ STATIC_URL }}app/calendar/src/widgets/StaffPicker.js"></script>
-    <script type="text/javascript" src="{{ STATIC_URL }}app/calendar/src/widgets/StaffGrid.js"></script>
-    <script type="text/javascript" src="{{ STATIC_URL }}app/calendar/src/views/CalendarView.js"></script>
-    <script type="text/javascript" src="{{ STATIC_URL }}app/calendar/src/views/DayView.js"></script>
-    <script type="text/javascript" src="{{ STATIC_URL }}app/calendar/src/views/DayBodyView.js"></script>
-
-    <script type="text/javascript" src="{{ STATIC_URL }}app/calendar/src/views/MonthView.js"></script>
-    <script type="text/javascript" src="{{ STATIC_URL }}app/calendar/src/views/DayHeaderView.js"></script>
-    <script type="text/javascript" src="{{ STATIC_URL }}app/calendar/src/views/WeekView.js"></script>
-    
-    <script type="text/javascript" src="{{ STATIC_URL }}app/calendar/src/widgets/DateRangeField.js"></script>
-    <script type="text/javascript" src="{{ STATIC_URL }}app/calendar/src/widgets/ReminderField.js"></script>
-    
-    <script type="text/javascript" src="{{ STATIC_URL }}app/calendar/app/timeslot/ServiceGrid.js"></script>
-
-    <script type="text/javascript" src="{{ STATIC_URL }}app/choices/patient/PatientChoiceGrid.js"></script>
-    <script type="text/javascript" src="{{ STATIC_URL }}app/choices/patient/PatientChoiceWindow.js"></script>
-    <script type="text/javascript" src="{{ STATIC_URL }}app/calendar/app/timeslot/VacantTimeslotGrid.js"></script>
-    <script type="text/javascript" src="{{ STATIC_URL }}app/calendar/app/timeslot/PreorderedServiceInlineGrid.js"></script>
-    
-	<script type="text/javascript" src="{{ STATIC_URL }}app/calendar/src/EventEditForm.js"></script>
-    <script type="text/javascript" src="{{ STATIC_URL }}app/calendar/src/EventEditWindow.js"></script>
-    <script type="text/javascript" src="{{ STATIC_URL }}app/calendar/app/timeslot/TimeslotInfoWindow.js"></script>
-
-    <script type="text/javascript" src="{{ STATIC_URL }}app/calendar/app/timeslot/TimeslotEditForm.js"></script>
-    <script type="text/javascript" src="{{ STATIC_URL }}app/calendar/app/timeslot/TimeslotEditWindow.js"></script>
-    <script type="text/javascript" src="{{ STATIC_URL }}app/calendar/src/CalendarPanel.js"></script>
-    <script type="text/javascript" src="{{ STATIC_URL }}app/calendar/app/DoctorScheduler.js"></script>
+	<script type="text/javascript" src="/webapp/settings/"></script>
+	
+	{% assets "js_examination" %}
+	    <script type="text/javascript" src="{{ ASSET_URL }}"></script>
+	{% endassets %}
     
     
         

@@ -8,7 +8,8 @@ manage.py
 medhq_main
 media/cache
 media/dicom
-media/libs
 media/uploads
+media/assets
+libs/
 *.orig
 custom/

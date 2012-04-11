@@ -121,6 +121,7 @@ INSTALLED_APPS = [
     'scheduler',
     'interlayer',
     'billing',
+    'django_assets',
     
         
     'django.contrib.admin',

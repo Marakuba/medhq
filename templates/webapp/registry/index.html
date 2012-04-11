@@ -1,4 +1,5 @@
 {% extends "box.html" %}
+{% load assets %}
 
 {% block title %}Регистратура | {{ BRAND }}{% endblock %}
 
@@ -18,20 +19,15 @@
 	{% include "webapp/includes/active_profile.html" %}
 
 	<link rel="icon" type="image/ico" href="{{ STATIC_URL }}resources/favicon.ico" />
-
-    <!-- ExtJS -->
-    <link rel="stylesheet" type="text/css" href="{{ STATIC_URL }}extjs/resources/css/ext-all.css"/>
-	<link rel="stylesheet" type="text/css" href="{{ STATIC_URL }}extjs/ux/css/RowEditor.css" rel="stylesheet" />
-	<link rel="stylesheet" type="text/css" href="{{ STATIC_URL }}extjs/ux/css/Spinner.css" rel="stylesheet" />
-	<link rel="stylesheet" type="text/css" href="{{ STATIC_URL }}extjs/ux/treegrid/treegrid.css" rel="stylesheet" />
-	<link rel="stylesheet" type="text/css" href="{{ STATIC_URL }}extjs/ux/statusbar/css/statusbar.css" rel="stylesheet" />
-    <link rel="stylesheet" type="text/css" href="{{ STATIC_URL }}extjs/ux/progresscolumn/ProgressColumn.css"/>
 	
+	{% assets "css_ext" %}
+	 <link rel="stylesheet" type="text/css" href="{{ ASSET_URL }}"></>
+	{% endassets %}
+	
+	{% assets "css_registry" %}
+	 <link rel="stylesheet" type="text/css" href="{{ ASSET_URL }}"></>
+	{% endassets %}
 
-    <!-- APP -->
-    <link rel="stylesheet" type="text/css" href="{{ STATIC_URL }}resources/css/app.css"/>
-    <link rel="stylesheet" type="text/css" href="{{ STATIC_URL }}app/calendar/resources/css/calendar.css"/>
-    <link rel="stylesheet" type="text/css" href="{{ STATIC_URL }}app/calendar/resources/css/examples.css"/>
     <style type="text/css" media="all">
 	    .ext-cal-dayview .ext-cal-body-ct .ext-cal-bg-tbl {
 		    height: 504px;
@@ -50,223 +46,24 @@
 		}
     </style>
 
-    <!-- FAM -->
-    <link rel="stylesheet" type="text/css" href="{{ STATIC_URL }}resources/css/silk.css"/>
-    <link rel="stylesheet" type="text/css" href="{{ STATIC_URL }}extjs/ux/css/Spinner.css" rel="stylesheet" />
-	<link rel="stylesheet" type="text/css" href="{{ STATIC_URL }}extjs/ux/css/RowEditor.css" rel="stylesheet" />
-    
      <!-- GIF -->
 <!--     <link rel="stylesheet" type="text/css" href="{{ STATIC_URL }}app/calendar/resources/images/default/bg.gif"/>
     <link rel="stylesheet" type="text/css" href="{{ STATIC_URL }}app/calendar/resources/images/default/page-prev.gif"/>
     <link rel="stylesheet" type="text/css" href="{{ STATIC_URL }}app/calendar/resources/images/default/arrow.gif"/>
     <link rel="stylesheet" type="text/css" href="{{ STATIC_URL }}app/calendar/resources/images/default/page-next.gif"/>
  -->
-    <!-- LIBS -->
-    <script type="text/javascript" src="{{ STATIC_URL }}extjs/adapter/ext/ext-base.js"></script>
-    
-    <!-- ENDLIBS -->
 
-    <script type="text/javascript" src="{{ STATIC_URL }}extjs/ext-all{% if debug %}-debug{% endif %}.js"></script>
-
-    <script type="text/javascript" src="{{ STATIC_URL }}extjs/src/locale/ext-lang-ru.js"></script>
-    
-    <!-- Direct -->
-    <script src="/direct/provider.js/"></script>
-
-    <!-- UX -->
-    <script type="text/javascript" src="{{ STATIC_URL }}extjs/ux/progresscolumn/ProgressColumn.js"></script>
-
-    <script type="text/javascript" src="{{ STATIC_URL }}extjs/ux/printer/Printer-all.js"></script>
-
-    <script type="text/javascript" src="{{ STATIC_URL }}extjs/ux/RowEditor.js"></script>
-    <script type="text/javascript" src="{{ STATIC_URL }}extjs/ux/Spinner.js"></script>
-    <script type="text/javascript" src="{{ STATIC_URL }}extjs/ux/SpinnerField.js"></script>
-    <script type="text/javascript" src="{{ STATIC_URL }}extjs/ux/statusbar/StatusBar.js"></script>
-    <script type="text/javascript" src="{{ STATIC_URL }}extjs/ux/SearchField.js"></script>
-    <script type="text/javascript" src="{{ STATIC_URL }}extjs/ux/CheckColumn.js"></script> 
-    <script type="text/javascript" src="{{ STATIC_URL }}app/ux/InputTextMask.js"></script> 
 	
-    <!-- TreeGrid -->
-    <script type="text/javascript" src="{{ STATIC_URL }}extjs/ux/treegrid/TreeGridSorter.js"></script>
-    <script type="text/javascript" src="{{ STATIC_URL }}extjs/ux/treegrid/TreeGridColumnResizer.js"></script>
-    <script type="text/javascript" src="{{ STATIC_URL }}extjs/ux/treegrid/TreeGridNodeUI.js"></script>
-    <script type="text/javascript" src="{{ STATIC_URL }}extjs/ux/treegrid/TreeGridLoader.js"></script>
-    <script type="text/javascript" src="{{ STATIC_URL }}extjs/ux/treegrid/TreeGridColumns.js"></script>
-    <script type="text/javascript" src="{{ STATIC_URL }}extjs/ux/treegrid/TreeGrid.js"></script>
-
-	<!-- OWN CMP -->
-
-    <script type="text/javascript" src="/webapp/settings/"></script>
-
-    <script type="text/javascript" src="{{ STATIC_URL }}app/data/RestStore.js"></script>
-
-    <script type="text/javascript" src="{{ STATIC_URL }}app/App.js"></script>
-    <script type="text/javascript" src="{{ STATIC_URL }}app/Backend.js"></script>
-    <script type="text/javascript" src="{{ STATIC_URL }}app/form/ClearableComboBox.js"></script>
-    <script type="text/javascript" src="{{ STATIC_URL }}app/form/LazyComboBox.js"></script>
-
-    <script type="text/javascript" src="{{ STATIC_URL }}app/Models.js"></script>
-
-    <script type="text/javascript" src="{{ STATIC_URL }}app/registry/EventManager.js"></script>
-    
-    <script type="text/javascript" src="{{ STATIC_URL }}app/ux/GSearchField.js"></script>
-    
-    
-
-	<!-- APP -->
+	{% assets "js_ext" %}
+	 <script type="text/javascript" src="{{ ASSET_URL }}"></script>
+	{% endassets %}
+	<script type="text/javascript" src="/webapp/settings/"></script>
+	<script src="/direct/provider.js/"></script>
 	
-	<!-- calendar -->
-	<script type="text/javascript" src="{{ STATIC_URL }}app/calendar/EventManager.js"></script>
-	<script type="text/javascript" src="{{ STATIC_URL }}app/calendar/src/Ext.calendar.js"></script>
+	{% assets "js_registry" %}
+	    <script type="text/javascript" src="{{ ASSET_URL }}"></script>
+	{% endassets %}
     
-	<script type="text/javascript" src="{{ STATIC_URL }}app/calendar/src/templates/DayHeaderTemplate.js"></script>
-	<script type="text/javascript" src="{{ STATIC_URL }}app/calendar/src/templates/DayBodyTemplate.js"></script>
-	<script type="text/javascript" src="{{ STATIC_URL }}app/calendar/src/templates/DayViewTemplate.js"></script>
-    <script type="text/javascript" src="{{ STATIC_URL }}app/calendar/src/templates/BoxLayoutTemplate.js"></script>
-    <script type="text/javascript" src="{{ STATIC_URL }}app/calendar/src/templates/MonthViewTemplate.js"></script>
-    
-    <script type="text/javascript" src="{{ STATIC_URL }}app/calendar/src/dd/CalendarScrollManager.js"></script>
-    <script type="text/javascript" src="{{ STATIC_URL }}app/calendar/src/dd/StatusProxy.js"></script>
-    <script type="text/javascript" src="{{ STATIC_URL }}app/calendar/src/dd/CalendarDD.js"></script>
-    <script type="text/javascript" src="{{ STATIC_URL }}app/calendar/src/dd/DayViewDD.js"></script>
-    
-    <script type="text/javascript" src="{{ STATIC_URL }}app/calendar/src/EventRecord.js"></script>
-    <script type="text/javascript" src="{{ STATIC_URL }}app/calendar/src/views/MonthDayDetailView.js"></script>
-    <script type="text/javascript" src="{{ STATIC_URL }}app/calendar/src/WeekEventRenderer.js"></script>
-    <script type="text/javascript" src="{{ STATIC_URL }}app/calendar/src/widgets/CalendarPicker.js"></script>
-    <script type="text/javascript" src="{{ STATIC_URL }}app/calendar/src/widgets/StaffPicker.js"></script>
-    <script type="text/javascript" src="{{ STATIC_URL }}app/calendar/src/widgets/StaffGrid.js"></script>
-    <script type="text/javascript" src="{{ STATIC_URL }}app/calendar/src/views/CalendarView.js"></script>
-    <script type="text/javascript" src="{{ STATIC_URL }}app/calendar/src/views/DayView.js"></script>
-    <script type="text/javascript" src="{{ STATIC_URL }}app/calendar/src/views/DayBodyView.js"></script>
-    <script type="text/javascript" src="{{ STATIC_URL }}app/calendar/src/views/MonthView.js"></script>
-    <script type="text/javascript" src="{{ STATIC_URL }}app/calendar/src/views/DayHeaderView.js"></script>
-    <script type="text/javascript" src="{{ STATIC_URL }}app/calendar/src/views/WeekView.js"></script>
-    
-    <script type="text/javascript" src="{{ STATIC_URL }}app/calendar/src/widgets/DateRangeField.js"></script>
-    <script type="text/javascript" src="{{ STATIC_URL }}app/calendar/src/widgets/ReminderField.js"></script>
-    
-    <script type="text/javascript" src="{{ STATIC_URL }}app/calendar/app/timeslot/ServiceGrid.js"></script>
-    <script type="text/javascript" src="{{ STATIC_URL }}app/choices/patient/PatientChoiceGrid.js"></script>
-    <script type="text/javascript" src="{{ STATIC_URL }}app/choices/patient/PatientChoiceWindow.js"></script>
-    <script type="text/javascript" src="{{ STATIC_URL }}app/calendar/app/timeslot/VacantTimeslotGrid.js"></script>
-    <script type="text/javascript" src="{{ STATIC_URL }}app/calendar/app/timeslot/PreorderedServiceInlineGrid.js"></script>
-    
-	<script type="text/javascript" src="{{ STATIC_URL }}app/calendar/src/EventEditForm.js"></script>
-    <script type="text/javascript" src="{{ STATIC_URL }}app/calendar/src/EventEditWindow.js"></script>
-    <script type="text/javascript" src="{{ STATIC_URL }}app/calendar/app/timeslot/TimeslotInfoWindow.js"></script>
-    <script type="text/javascript" src="{{ STATIC_URL }}app/calendar/app/timeslot/TimeslotEditForm.js"></script>
-    <script type="text/javascript" src="{{ STATIC_URL }}app/calendar/app/timeslot/TimeslotEditWindow.js"></script>
-    <script type="text/javascript" src="{{ STATIC_URL }}app/calendar/src/CalendarPanel.js"></script>
-    <script type="text/javascript" src="{{ STATIC_URL }}app/calendar/app/DoctorScheduler.js"></script>
-    
-	<!-- registry -->
-    <script type="text/javascript" src="{{ STATIC_URL }}app/remoting/ResultWindow.js"></script>
-    <script type="text/javascript" src="{{ STATIC_URL }}app/remoting/RemoteOrderGrid.js"></script>
-
-    <script type="text/javascript" src="{{ STATIC_URL }}app/invoice/InvoiceItemGrid.js"></script>
-    <script type="text/javascript" src="{{ STATIC_URL }}app/invoice/InvoiceForm.js"></script>
-    <script type="text/javascript" src="{{ STATIC_URL }}app/invoice/InvoiceTab.js"></script>
-    <script type="text/javascript" src="{{ STATIC_URL }}app/invoice/InvoiceGrid.js"></script>
-
-    <script type="text/javascript" src="{{ STATIC_URL }}app/registry/ReferralGrid.js"></script>
-    <script type="text/javascript" src="{{ STATIC_URL }}app/registry/ReferralWindow.js"></script>
-
-
-	<script type="text/javascript" src="{{ STATIC_URL }}app/choices/barcode/BarcodeChoiceGrid.js"></script>
-	<script type="text/javascript" src="{{ STATIC_URL }}app/choices/barcode/BarcodeChoiceWindow.js"></script>
-	<script type="text/javascript" src="{{ STATIC_URL }}app/choices/paymenttype/PaymentTypeChoiceWindow.js"></script>
-	
-	
-    <script type="text/javascript" src="{{ STATIC_URL }}app/registry/patient/ManualGrid.js"></script>
-    <script type="text/javascript" src="{{ STATIC_URL }}app/registry/patient/LabGrid.js"></script>
-    <script type="text/javascript" src="{{ STATIC_URL }}app/registry/patient/ExamCardGrid.js"></script>
-    <script type="text/javascript" src="{{ STATIC_URL }}app/registry/patient/AsgmtGrid.js"></script>
-    <script type="text/javascript" src="{{ STATIC_URL }}app/registry/patient/VisitGrid.js"></script>
-    <script type="text/javascript" src="{{ STATIC_URL }}app/registry/patient/ServiceGrid.js"></script>
-    <script type="text/javascript" src="{{ STATIC_URL }}app/registry/patient/RefundGrid.js"></script>
-    <script type="text/javascript" src="{{ STATIC_URL }}app/registry/patient/IDCardForm.js"></script>
-	<script type="text/javascript" src="{{ STATIC_URL }}app/registry/patient/PatientForm.js"></script>
-    <script type="text/javascript" src="{{ STATIC_URL }}app/registry/patient/PatientWindow.js"></script>
-    <script type="text/javascript" src="{{ STATIC_URL }}app/registry/patient/PatientGrid.js"></script>
-    <script type="text/javascript" src="{{ STATIC_URL }}app/registry/patient/Info.js"></script>
-    <script type="text/javascript" src="{{ STATIC_URL }}app/registry/patient/PatientCard.js"></script>
-    <script type="text/javascript" src="{{ STATIC_URL }}app/registry/patient/QuickForm.js"></script>
-    <script type="text/javascript" src="{{ STATIC_URL }}app/registry/Patients.js"></script>
-
-	<script type="text/javascript" src="{{ STATIC_URL }}app/helpdesk/issue/IssueForm.js"></script>
-    <script type="text/javascript" src="{{ STATIC_URL }}app/helpdesk/issue/IssueWindow.js"></script>
-    <script type="text/javascript" src="{{ STATIC_URL }}app/helpdesk/issue/IssueGrid.js"></script>
-
-    <script type="text/javascript" src="{{ STATIC_URL }}app/registry/insurance/PolicyGrid.js"></script>
-    <script type="text/javascript" src="{{ STATIC_URL }}app/registry/insurance/PolicyWindow.js"></script>
-    <script type="text/javascript" src="{{ STATIC_URL }}app/registry/insurance/StateGrid.js"></script>
-    <script type="text/javascript" src="{{ STATIC_URL }}app/registry/insurance/StateWindow.js"></script>
-    
-    <script type="text/javascript" src="{{ STATIC_URL }}app/registry/preorder/PatientPreorderGrid.js"></script>
-    <script type="text/javascript" src="{{ STATIC_URL }}app/registry/preorder/PreorderGrid.js"></script>
-    <script type="text/javascript" src="{{ STATIC_URL }}app/registry/preorder/PreorderManager.js"></script>
-    
-    <script type="text/javascript" src="{{ STATIC_URL }}app/registry/visit/VisitServicePanel.js"></script>
-    <script type="text/javascript" src="{{ STATIC_URL }}app/service/ServiceTreeGrid.js"></script>
-    <script type="text/javascript" src="{{ STATIC_URL }}app/registry/visit/StaffWindow.js"></script>
-	<script type="text/javascript" src="{{ STATIC_URL }}app/registry/visit/VisitForm.js"></script>
-    <script type="text/javascript" src="{{ STATIC_URL }}app/registry/visit/OrderedServiceInlineGrid.js"></script>
-    <script type="text/javascript" src="{{ STATIC_URL }}app/registry/visit/VisitTab.js"></script>
-    
-    <script type="text/javascript" src="{{ STATIC_URL }}app/registry/asgmt/PreorderInlineGrid.js"></script>
-    <script type="text/javascript" src="{{ STATIC_URL }}app/registry/asgmt/AsgmtListWindow.js"></script>
-    <script type="text/javascript" src="{{ STATIC_URL }}app/registry/asgmt/AsgmtForm.js"></script>
-    <script type="text/javascript" src="{{ STATIC_URL }}app/registry/asgmt/AsgmtTab.js"></script>
-    
-    <script type="text/javascript" src="{{ STATIC_URL }}app/registry/visit/VisitGrid.js"></script>
-    
-    <script type="text/javascript" src="{{ STATIC_URL }}app/registry/Visits.js"></script>
-    
-
-<!--     <script type="text/javascript" src="{{ STATIC_URL }}app/registry/refund/Form.js"></script>
-    <script type="text/javascript" src="{{ STATIC_URL }}app/registry/refund/ServiceBasket.js"></script>
-    <script type="text/javascript" src="{{ STATIC_URL }}app/registry/refund/AddTab.js"></script> -->
-
-    <script type="text/javascript" src="{{ STATIC_URL }}app/registry/barcodepackage/Grid.js"></script>
-    <script type="text/javascript" src="{{ STATIC_URL }}app/registry/barcodepackage/Form.js"></script>
-    <script type="text/javascript" src="{{ STATIC_URL }}app/registry/barcodepackage/DuplicateWindow.js"></script>
-    <script type="text/javascript" src="{{ STATIC_URL }}app/registry/barcodepackage/Window.js"></script>
-    
-    <script type="text/javascript" src="{{ STATIC_URL }}app/registry/barcode/Grid.js"></script>
-    <script type="text/javascript" src="{{ STATIC_URL }}app/registry/barcode/Window.js"></script>
-    <script type="text/javascript" src="{{ STATIC_URL }}app/registry/Barcodes.js"></script>
-
-    <script type="text/javascript" src="{{ STATIC_URL }}app/registry/sampling/TubeWindow.js"></script>
-    <script type="text/javascript" src="{{ STATIC_URL }}app/registry/sampling/TubeTree.js"></script>
-    <script type="text/javascript" src="{{ STATIC_URL }}app/registry/sampling/ServiceGrid.js"></script>
-    <script type="text/javascript" src="{{ STATIC_URL }}app/registry/sampling/FreeGrid.js"></script>
-    <script type="text/javascript" src="{{ STATIC_URL }}app/registry/sampling/Editor.js"></script>
-
-    <script type="text/javascript" src="{{ STATIC_URL }}app/registry/results/Grid.js"></script>
-    <script type="text/javascript" src="{{ STATIC_URL }}app/registry/Results.js"></script>
-
-    <script type="text/javascript" src="{{ STATIC_URL }}app/registry/Reports.js"></script>
-    
-    <script type="text/javascript" src="{{ STATIC_URL }}app/registry/patient/clientaccount/backends.js"></script>
-    <script type="text/javascript" src="{{ STATIC_URL }}app/registry/patient/clientaccount/ClientAccountGrid.js"></script>
-    
-    <script type="text/javascript" src="{{ STATIC_URL }}app/registry/patient/billing/payment/PaymentForm.js"></script>
-    <script type="text/javascript" src="{{ STATIC_URL }}app/registry/patient/billing/payment/PaymentGrid.js"></script>
-    <script type="text/javascript" src="{{ STATIC_URL }}app/registry/patient/billing/payment/PaymentWindow.js"></script>
-    
-    <script type="text/javascript" src="{{ STATIC_URL }}app/cashier/CashierTab.js"></script>
-    <script type="text/javascript" src="{{ STATIC_URL }}app/cashier/DebtorGrid.js"></script>
-    <script type="text/javascript" src="{{ STATIC_URL }}app/cashier/DepositorGrid.js"></script>
-
-    <script type="text/javascript" src="{{ STATIC_URL }}app/registry/MainPanel.js"></script>
-    <script type="text/javascript" src="{{ STATIC_URL }}app/registry/CentralPanel.js"></script>
-    <script type="text/javascript" src="{{ STATIC_URL }}app/registry/app.js"></script>
-
-
-    <script type="text/javascript" src="{{ STATIC_URL }}resources/js/web-socket-js/swfobject.js"></script>
-  	<script type="text/javascript" src="{{ STATIC_URL }}resources/js/web-socket-js/web_socket.js"></script>
-
 <script type="text/javascript">
     
     // Set URL of your WebSocketMain.swf here:
