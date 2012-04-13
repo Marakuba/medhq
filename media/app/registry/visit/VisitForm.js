@@ -814,8 +814,10 @@ App.visit.VisitForm = Ext.extend(Ext.FormPanel, {
 		var bs_ids = {} // список услуг, который был до обновления цен
 		var id_list = [] // передается на сервер для выборки цен
 		Ext.each(base_services,function(rec){
-			var id = App.uriToId(rec.data.service)
-			bs_ids[id] = {
+			var id = []
+			id[0] = App.uriToId(rec.data.service);
+			id[1] = App.uriToId(rec.data.execution_place);
+			bs_ids[id[0]] = {
 				'price': rec.data.price,
 				'name': rec.data.service_name
 			};
@@ -831,7 +833,8 @@ App.visit.VisitForm = Ext.extend(Ext.FormPanel, {
 			var missing_list = [];
 			var store = this.orderedService.store;
 			var ind;
-			Ext.each(id_list,function(id){
+			Ext.each(id_list,function(serv){
+				var id = serv[0]
 				var service = App.getApiUrl('baseservice',id)
 				ind = store.find("service",service);
 				if (new_prices[id]==undefined || new_prices[id] == 0){
@@ -846,9 +849,10 @@ App.visit.VisitForm = Ext.extend(Ext.FormPanel, {
 						rec.beginEdit();
 						rec.set('price',new_prices[id])
 						rec.endEdit();
-					}
+					};
+					this.orderedService.onSumChange()
 				}
-			});
+			},this);
 			this.saveAction();
 //			console.log(missing_list);
 		},this)

@@ -11,7 +11,7 @@ try:
     GROUP_SERVICE_LAB = settings.GROUP_SERVICE_LAB
     GROUP_SERVICE_RADIO = settings.GROUP_SERVICE_RADIO
 except:
-    raise u"Нет настроек групп услуг"
+    raise Exception, u"Нет настроек групп услуг"
 
 class Report():
     """

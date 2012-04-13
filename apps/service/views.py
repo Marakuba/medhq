@@ -20,12 +20,13 @@ def get_actual_price(request):
             payer = None
     else:
         payer = None
-    for id in services:
+    new_data = {}
+    for serv in services:
         try:
-            ext_serv = ExtendedService.objects.get(base_service=id,state=state)
+            ext_serv = ExtendedService.objects.get(base_service=serv[0],state=serv[1])
         except:
             ext_serv = None
         if ext_serv:
             price = ext_serv.get_actual_price(payment_type=ptype,payer = payer)
-            data[id] = price
-    return dict(success=True, data=data)
+            new_data[serv[0]] = price
+    return dict(success=True, data=new_data)
