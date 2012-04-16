@@ -28,5 +28,6 @@ def get_actual_price(request):
             ext_serv = None
         if ext_serv:
             price = ext_serv.get_actual_price(payment_type=ptype,payer = payer)
-            new_data[serv[0]] = price
+            id = '%s_%s' % (serv[0],ext_serv.state and ext_serv.state.id or '')
+            new_data[id] = price
     return dict(success=True, data=new_data)
