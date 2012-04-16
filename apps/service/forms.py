@@ -4,6 +4,7 @@ from django.forms.formsets import formset_factory
 from staff.models import Staff, Position
 from service.models import BaseService, ExtendedService
 from state.models import State
+from visit.settings import PAYMENT_TYPES
 
 from django.contrib.admin import widgets
 
@@ -28,9 +29,18 @@ class StaffForm(forms.Form):
     
     
 state_qs = State.objects.filter(type='b')
+payer_qs = State.objects.all()
+payment_types = PAYMENT_TYPES
+payment_types.append((u'-',u'---'))
 class PriceForm(forms.Form):
     """
     """
     state = forms.ModelChoiceField(label=u'Организация',
                                             queryset=state_qs,
+                                            required=False)
+    payer = forms.ModelChoiceField(label=u'Плательщик',
+                                            queryset=payer_qs,
+                                            required=False)
+    payment_type = forms.ChoiceField(label=u'Форма оплаты',
+                                            choices=payment_types,
                                             required=False)

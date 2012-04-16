@@ -7,7 +7,7 @@ from django.db import models, transaction
 from service.models import BaseService
 from staff.models import Position
 from core.models import make_operator_object
-from settings import PAYMENT_TYPES, VISIT_STATUSES, ORDER_STATUSES, PAYMENT_STATUSES
+from visit.settings import PAYMENT_TYPES, VISIT_STATUSES, ORDER_STATUSES, PAYMENT_STATUSES
 from state.models import State
 from core.fields import SeparatedValuesField
 from lab.vars import TEST_FORM

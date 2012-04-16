@@ -43,7 +43,7 @@ def revert_tree_objects(obj):
         child.move_to(obj, position='first-child')
         revert_tree_objects(child)
 
-def get_service_tree(state=None):
+def get_service_tree(state=None,payer=None,payment_type=None):
     """
     Генерирует дерево в json-формате.
     """
@@ -75,6 +75,13 @@ def get_service_tree(state=None):
     if state:
         ignored = State.objects.filter(type='b').exclude(id=state.id)
         args['extended_service__state']=state.id
+    
+    if payment_type:
+        args['payment_type'] = payment_type
+        if payer and payment_type == u'б':
+            args['payer'] = payer.id
+        else:
+            args.pop('payment_type')
 
     nodes = []
     values = Price.objects.filter(extended_service__is_active=True, price_type='r',**args).\
