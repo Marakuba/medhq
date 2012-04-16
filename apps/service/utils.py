@@ -78,7 +78,7 @@ def get_service_tree(state=None,payer=None,payment_type=None):
     
     if payment_type:
         args['payment_type'] = payment_type
-        if payer and payment_type == u'б':
+        if payer and payment_type in [u'б',u'к']:
             args['payer'] = payer.id
         else:
             args.pop('payment_type')
