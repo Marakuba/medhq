@@ -111,15 +111,22 @@
     		margin-bottom:9px;
     	}
     </style>
-
+    
+    {% include "webapp/includes/active_profile.html" %}
+    
+    {% autoescape off %}
 	<script type="text/javascript">
 		var state = '{{ request.active_profile.state }}';
 		var MEDIA_URL = '{{ STATIC_URL }}';
 		var API_URL = '/api/v1';
 		function get_api_url(resource){
 			return [API_URL,'dashboard',resource].join("/");
-		}
+		};
+		
+		var apps = {{ apps }};
 	</script>
+	
+	{% endautoescape %}
 	
     {% assets "js_ext" %}
 	 <script type="text/javascript" src="{{ ASSET_URL }}"></script>
@@ -131,9 +138,6 @@
 	    <script type="text/javascript" src="{{ ASSET_URL }}"></script>
 	{% endassets %}
     
-    
-        
-{% include "webapp/includes/active_profile.html" %}
 
 {% endblock %}
 

@@ -52,22 +52,7 @@ App.examination.GeneralTab = Ext.extend(Ext.form.FormPanel, {
 			},
 			scope:this
 		});
-		this.moveArchiveBtn = new Ext.Button({
-			text: 'Переместить в архив',
-			hidden:this.fromArchive,
-			handler:function(){
-				this.fireEvent('movearhcivetmp')
-			},
-			scope:this
-		});
 		
-		this.equipBtn = new Ext.Button({
-			text: 'Оборудование',
-			handler:function(){
-				this.fireEvent('equiptab');
-			},
-			scope:this
-		});
 		
 		this.headerElt = new Ext.BoxComponent({
 			html:this.print_name? this.print_name:'Нет заголовка',
@@ -108,38 +93,13 @@ App.examination.GeneralTab = Ext.extend(Ext.form.FormPanel, {
 			items:[this.titlePanel]
 		});
 		
-		this.menuPanel = new Ext.Panel({
-			region: 'east',
-			baseCls: 'x-plain',
-			margins: '5 5 5 5',
-			border: false,
-//			frame:true,
-			height:500,
-			width:200,
-	 		layout: {
-	            type:'vbox',
-	            align:'stretch'
-	        },
-	        defaults:{
-	        	scale: 'large',
-	        	margins:'5 5 5 0'
-	        },
-			items:[
-				this.equipBtn,
-				this.moveArchiveBtn,
-				this.dltBtn
-			]
-		});
-		
-    	
 		var config = {
 			title: 'Общая',
 			layout: 'border',
 //			labelWidth: 70,
 			border:false,
      		items: [
-				this.centralPanel,
-				this.menuPanel
+				this.centralPanel
      		]
 		}
 								

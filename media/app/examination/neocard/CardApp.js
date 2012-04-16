@@ -128,7 +128,8 @@ App.examination.CardApp = Ext.extend(Ext.Panel, {
 				listeners:{
 					movearhcivetmp:function(){
 					},
-					deletetmp:function(){
+					deleterecord:function(){
+						this.destroy();
 					},
 					changetitle: function(text){
 						this.contentPanel.setTitle(text);

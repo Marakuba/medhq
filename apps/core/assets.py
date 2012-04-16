@@ -430,7 +430,6 @@ js_calendar = Bundle(
 
 js_examination = Bundle(
     'libs/markdown.js',
-
     'extjs/ux/progresscolumn/ProgressColumn.js',
     'extjs/ux/RowEditor.js',
     'extjs/ux/CheckColumn.js',

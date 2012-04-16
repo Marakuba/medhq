@@ -178,7 +178,7 @@ App.examination.CardStartPanel = Ext.extend(Ext.Panel, {
         });
         
         this.fromPresetRadio = new Ext.form.Radio({
-            boxLabel: 'Из заготовки',
+            boxLabel: 'Шаблоны клиники',
             name: 'input-choice', 
             inputValue: 'preset',
             listeners:{
@@ -206,7 +206,7 @@ App.examination.CardStartPanel = Ext.extend(Ext.Panel, {
         });
         
         this.fromArchiveRadio = new Ext.form.Radio({
-            boxLabel: 'Из архива',
+            boxLabel: 'Мои шаблоны',
             name: 'input-choice', 
             inputValue: 'archive',
             listeners:{

@@ -136,7 +136,7 @@ App.examination.Editor = Ext.extend(Ext.Panel, {
 					movearhcivetmp:function(){
 						this.onServiceClick(this.attrs)
 					},
-					deletetmp:function(){
+					deleterecord:function(){
 						if(this.editMode){
 							this.fireEvent('close',this);
 						}

@@ -156,7 +156,9 @@ def laboratory(request):
 @login_required
 @render_to('webapp/examination/index.html')
 def examination(request):
-    return {}
+    return {
+        'apps':simplejson.dumps(get_apps(request))
+    }
 
 @login_required
 @render_to('webapp/oldexam/index.html')
