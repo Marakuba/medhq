@@ -9,7 +9,7 @@ js_ext = Bundle('extjs/adapter/ext/ext-base.js',
     'extjs/ext-all'+debug+'.js',
     'extjs/src/locale/ext-lang-ru.js',
     
-    filters='jsmin', output='assets/ext.js',)
+    filters='rjsmin', output='assets/ext.js',)
 
 js_registry = Bundle(
     'extjs/ux/progresscolumn/ProgressColumn.js',
@@ -187,7 +187,7 @@ js_registry = Bundle(
 
     'resources/js/web-socket-js/swfobject.js',
     'resources/js/web-socket-js/web_socket.js',
-    filters='jsmin', output='assets/registry.js',)
+    filters='rjsmin', output='assets/registry.js',)
 
 js_oldexam = Bundle(
     'libs/markdown.js',
@@ -353,7 +353,7 @@ js_oldexam = Bundle(
     'app/calendar/app/timeslot/TimeslotEditWindow.js',
     'app/calendar/src/CalendarPanel.js',
     'app/calendar/app/DoctorScheduler.js',
-    filters='jsmin', output='assets/old_exam.js',)
+    filters='rjsmin', output='assets/old_exam.js',)
     
 js_calendar = Bundle(
     'extjs/ux/Spinner.js',
@@ -426,7 +426,7 @@ js_calendar = Bundle(
     'app/calendar/CentralPanel.js',
     'app/calendar/MainPanel.js',
     'app/calendar/app.js',
-    filters='jsmin', output='assets/calendar.js',)
+    filters='rjsmin', output='assets/calendar.js',)
 
 js_examination = Bundle(
     'extjs/ux/progresscolumn/ProgressColumn.js',
@@ -597,7 +597,7 @@ js_examination = Bundle(
     'app/calendar/app/timeslot/TimeslotEditWindow.js',
     'app/calendar/src/CalendarPanel.js',
     'app/calendar/app/DoctorScheduler.js',
-    filters='jsmin', output='assets/examination.js',)
+    filters='rjsmin', output='assets/examination.js',)
 
 js_helpdesk = Bundle(
     'extjs/ux/RowEditor.js',
@@ -620,7 +620,7 @@ js_helpdesk = Bundle(
     'app/helpdesk/issue/IssueGrid.js',
     'app/helpdesk/issue/IssueForm.js',
     'app/helpdesk/issue/IssueWindow.js',
-    filters='jsmin', output='assets/helpdesk.js',)
+    filters='rjsmin', output='assets/helpdesk.js',)
 
 js_laboratory = Bundle(
     'libs/growl/js/ext/ux/Growl.js',
@@ -677,7 +677,7 @@ js_laboratory = Bundle(
 
     'resources/js/web-socket-js/swfobject.js',
     'resources/js/web-socket-js/web_socket.js',
-    filters='jsmin', output='assets/laboratory.js',)
+    filters='rjsmin', output='assets/laboratory.js',)
 
 js_reporting = Bundle(
     'extjs/ux/RowEditor.js',
@@ -690,14 +690,14 @@ js_reporting = Bundle(
     'app/reporting/Designer.js',
     'app/reporting/Grid.js',
     'app/reporting/Viewport.js',
-    filters='jsmin', output='assets/reporting.js',)
+    filters='rjsmin', output='assets/reporting.js',)
 
 js_service = Bundle(
     'app/service/ServicePanel.js',
     'app/service/MainPanel.js',
     'app/service/app.js',
 
-    filters='jsmin', output='assets/service.js',)
+    filters='rjsmin', output='assets/service.js',)
 
 js_treatmentroom = Bundle(
     'libs/growl/js/ext/ux/Growl.js',
@@ -714,7 +714,7 @@ js_treatmentroom = Bundle(
     'app/treatmentroom/CentralPanel.js',
     'app/treatmentroom/MainPanel.js',
     'app/treatmentroom/app.js',
-    filters='jsmin', output='assets/treatmentroom.js',)
+    filters='rjsmin', output='assets/treatmentroom.js',)
                      
 register('js_registry', js_registry)
 register('js_ext', js_ext)

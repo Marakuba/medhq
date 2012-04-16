@@ -12,6 +12,7 @@
 		function get_api_url(resource){
 			return [API_URL,'dashboard',resource].join("/");
 		}
+		var MEDIA_URL = '{{ STATIC_URL }}';
 	</script>
 	
 	<link rel="icon" type="image/ico" href="{{ STATIC_URL }}resources/favicon.ico" />
@@ -19,10 +20,12 @@
     {% assets "css_calendar" %}
 	 <link rel="stylesheet" type="text/css" href="{{ ASSET_URL }}"></>
 	{% endassets %}
-
+	
     {% assets "js_ext" %}
 	 <script type="text/javascript" src="{{ ASSET_URL }}"></script>
 	{% endassets %}
+	
+	<script type="text/javascript" src="/webapp/settings/"></script>
 	
 	{% assets "js_calendar" %}
 	    <script type="text/javascript" src="{{ ASSET_URL }}"></script>
