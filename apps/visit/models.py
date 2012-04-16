@@ -281,7 +281,8 @@ class OrderedService(make_operator_object('ordered_service')):
         return u"%s - %s" % (self.order.patient, self.service)
     
     def save(self, *args, **kwargs):
-        pt = config.PRICE_BY_PAYMENT_TYPE and self.order.payment_type or u'н'
+        pt = self.order.payment_type or u'н'
+        print pt
         if self.assigment and self.assigment.price:
             price = self.assigment.price
         else:
@@ -291,6 +292,8 @@ class OrderedService(make_operator_object('ordered_service')):
         self.total_price = price*self.count
         super(OrderedService, self).save(*args, **kwargs)
         self.order.update_total_price()
+        
+        return self.price
         
     def latest_transaction(self):
         all = self.transactions.all()
@@ -314,7 +317,12 @@ class OrderedService(make_operator_object('ordered_service')):
         """
         visit = self.order
         s = self.service
-        ext_service = self.service.extendedservice_set.get(state=self.execution_place)
+        
+        try:
+            ext_service = self.service.extendedservice_set.get(state=self.execution_place)
+        except ObjectDoesNotExist:
+            raise Exception(u'Для услуги <strong>%s</strong> не найдено место выполнения <strong>%s</strong>' % (s, self.execution_place))
+
         if s.is_lab():
             
             if ext_service.tube is None:

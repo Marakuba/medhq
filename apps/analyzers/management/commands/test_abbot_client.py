@@ -2,7 +2,7 @@
 
 from django.core.management.base import NoArgsCommand
 from lab.models import LabOrder
-from analyzers.adapters import AbbotAdapter
+from analyzers.adapters import ASTMAdapter
 
 class Command(NoArgsCommand):
     

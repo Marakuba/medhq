@@ -97,12 +97,13 @@ def visit(request, visit_id):
         'custom_blanks':",".join(['"%s"' % b for b in custom_blanks])
     }
     
-    return render_to_response(["print/visit/visit_state_%s.html" % request.active_profile.state,"print/visit/visit.html"],
+    print "print/visit/visit_state_%s.html" % visit.office.id
+    
+    return render_to_response(["print/visit/visit_state_%s.html" % visit.office.id,"print/visit/visit.html"],
                               extra_context,
                               context_instance=RequestContext(request))
 
 
-@render_to('print/visit/lab_agreement.html')
 def lab_agreement(request, visit_id):
 
     visit = get_object_or_404(Visit, pk=visit_id)
@@ -121,8 +122,10 @@ def lab_agreement(request, visit_id):
         'state':request.active_profile.department.state,
     }
 
+    return render_to_response(["print/visit/lab_agreement_state_%s.html" % visit.office.id,"print/visit/lab_agreement.html"],
+                              extra_context,
+                              context_instance=RequestContext(request))
 
-    return extra_context
 
 @render_to("print/visit/custom_blank.html")
 def custom_blank(request):
@@ -138,11 +141,12 @@ def custom_blank(request):
     }
     return ctx
 
+
 def sampling(request, visit_id):
     visit = get_object_or_404(Visit, pk=visit_id)
     try:
         visit.generate_laborder()
-    except TubeIsNoneException, err:
+    except Exception, err:
         return HttpBadRequest(err.__unicode__())
 
     patient = visit.patient

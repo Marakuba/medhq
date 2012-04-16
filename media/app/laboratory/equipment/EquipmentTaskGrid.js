@@ -58,11 +58,11 @@ App.equipment.EquipmentTaskGrid = Ext.extend(Ext.grid.EditorGridPanel, {
 		    	header: "Результат", 
 		    	width: 20, 
 		    	dataIndex: 'result'
-		    },{
+		    },/*{
 		    	header: "Кол-во", 
 		    	width: 8, 
 		    	dataIndex: 'repeats'
-		    },{
+		    },*/{
 		    	header: "Статус", 
 		    	width: 8, 
 		    	dataIndex: 'status_name'

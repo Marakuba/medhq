@@ -48,6 +48,17 @@ class CustomMenu(Menu):
                 url="/old/reporting/"
             ))
             
+        self.children.append(items.MenuItem(
+            title=u'Отчеты',
+            children=reports
+        ))
+        
+        
+        reports = [items.MenuItem(
+                title=u'Обновить кэш услуг',
+                url="/admin/service/baseservice/clear_cache/"
+            )]
+
         if user.has_perm('pricelist.add_price'):
             reports.append(items.MenuItem(
                 title=u'Загрузка промо-акций',
@@ -55,14 +66,6 @@ class CustomMenu(Menu):
             ))
 
         self.children.append(items.MenuItem(
-            title=u'Отчеты',
-            children=reports
-        ))
-
-        self.children.append(items.MenuItem(
             title=u'Сервис',
-            children=[items.MenuItem(
-                title=u'Обновить кэш услуг',
-                url="/admin/service/baseservice/clear_cache/"
-            )]
+            children=reports
         ))

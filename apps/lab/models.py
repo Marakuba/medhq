@@ -107,7 +107,13 @@ class Analysis(models.Model):
     
     def __unicode__(self):
         return self.name
-    
+
+    def save(self, *args, **kwargs):
+        super(Analysis, self).save(*args, **kwargs)
+        if not self.code:
+            self.code = u'ASSAY%s' % self.pk
+        super(Analysis, self).save(*args, **kwargs)
+            
     class Meta:
         verbose_name = u'тест'
         verbose_name_plural = u'тесты'
@@ -376,9 +382,9 @@ class EquipmentAssay(models.Model):
     equipment = models.ForeignKey(Equipment)
     service = models.ForeignKey('service.BaseService', blank=True, null=True)
     equipment_analysis = models.ForeignKey(EquipmentAnalysis, blank=True, null=True)
-    name = models.CharField(u'Название', max_length=20)
+    name = models.CharField(u'Название', max_length=20, blank=True)
     code = models.CharField(u'Код', max_length=20)
-    def_protocol = models.CharField(u'Протокол исследования', max_length=20, default="UNDILUTED")
+    def_protocol = models.CharField(u'Протокол исследования', max_length=20, default="")
     is_active = models.BooleanField(u'Активно', default=True)
 
     def __unicode__(self):
@@ -443,9 +449,9 @@ class EquipmentResult(models.Model):
     created = models.DateTimeField(u'Получено', auto_now_add=True)
     eq_serial_number = models.CharField(u'SN анализатора', max_length=30)
     specimen = models.CharField(u'Заказ', max_length=20)
-    assay_name = models.CharField(u'Наименование', max_length=20)
+    assay_name = models.CharField(u'Наименование', max_length=20, blank=True)
     assay_code = models.CharField(u'Код', max_length=20)
-    assay_protocol = models.CharField(u'Протокол', max_length=20)
+    assay_protocol = models.CharField(u'Протокол', max_length=20, blank=True)
     result_type = models.CharField(u'Тип результата', max_length=1, choices=RESULT_TYPE)
     result_status = models.CharField(u'Статус результата', max_length=1, choices=RESULT_STATUS)
     abnormal_flags = models.CharField(u'Флаги', max_length=50)
@@ -456,7 +462,7 @@ class EquipmentResult(models.Model):
         if not self.pk:
             try:
                 equipment_task = EquipmentTask.objects.get(equipment_assay__equipment__serial_number=self.eq_serial_number,
-                                                           equipment_assay__name=self.assay_name,
+#                                                           equipment_assay__name=self.assay_name,
                                                            equipment_assay__code=self.assay_code,
                                                            ordered_service__order__barcode__id=int(self.specimen))
                 if equipment_task:

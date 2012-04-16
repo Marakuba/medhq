@@ -477,14 +477,14 @@ from StringIO import StringIO
 def barcodeimg(request):
     codetype = 'code39'
     codestring = str(request.GET.get('codestring'))
-    '''bc = barcode(codetype, 
-             codestring=codestring, 
-             options={
-                'height':0.5,
-                'includetext':True,
-                'textfont':'Verdana',
-                'textyoffset':-9
-            })'''
+#    bc = barcode(codetype, 
+#             codestring=codestring, 
+#             options={
+#                'height':0.5,
+#                'includetext':True,
+#                'textfont':'Verdana',
+#                'textyoffset':-9
+#            })
     tmp_file = StringIO()
 #    bc.save(tmp_file,'PNG')
     

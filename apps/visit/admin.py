@@ -281,6 +281,8 @@ class ReferralAgentAdmin(admin.ModelAdmin):
 class OrderedServicePlainAdmin(admin.ModelAdmin):
     search_fields = ('order__patient__last_name','order__barcode__id')
     list_display = ('order','service')
+    readonly_fields = ('order','service','sampling')
+    exclude = ('assigment',)
 
 admin.site.register(PlainVisit, PlainVisitAdmin)
 admin.site.register(ReferralVisit, ReferralVisitAdmin)

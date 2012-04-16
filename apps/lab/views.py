@@ -376,3 +376,31 @@ def get_specimen_status(request):
         'next':next_place
     }
     return dict(success=True, data=data)
+
+
+@remoting(remote_provider, len=1, action='lab', name='confirmManualService')
+def confirm_manual_service(request):
+    data = simplejson.loads(request.raw_post_data)
+    orderedservice_id = data['data'][0]
+    success = True
+    try:
+        obj = OrderedService.objects.get(id=orderedservice_id)
+    except:
+        return dict(success=False, message="Ordered Service not found")
+    
+    results = Result.objects.filter(order__visit=obj.order, analysis__service=obj.service)
+    print results
+    if len(results):
+        lab_order = results[0].order
+        all_lab_orders = lab_order.visit.laborder_set.all()
+        confirm = True
+        for l in all_lab_orders:
+            if not l.is_completed:
+                confirm = False
+                break
+        resp = post_results(lab_order, confirm)
+    else:
+        return dict(success=False, message="Results not found")
+
+    
+    return dict(success=True, data={})

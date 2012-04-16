@@ -339,6 +339,7 @@ App.models.LabService = new Ext.data.Record.create([
     {name: 'modified'},
     {name: 'order'},
     {name: 'operator_name'},
+    {name: 'office_name'},
     {name: 'patient'},
     {name: 'patient_name'},
     {name: 'patient_age'},

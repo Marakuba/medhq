@@ -1,7 +1,7 @@
 # -*- coding: utf-8 -*-
 
 from django.core.management.base import NoArgsCommand
-from LIS.adapters import AbbotAdapter
+from LIS.adapters import ASTMAdapter
 
 class Command(NoArgsCommand):
     
@@ -41,6 +41,6 @@ class Command(NoArgsCommand):
                 '3L|1|3C'
         ]
         
-        adapter = AbbotAdapter(messages)
+        adapter = ASTMAdapter(messages)
         
         print adapter.is_query

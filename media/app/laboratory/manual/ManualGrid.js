@@ -84,6 +84,7 @@ App.manual.ManualGrid = Ext.extend(Ext.grid.GridPanel, {
 						var rec = this.getSelectionModel().getSelected();
 						if(rec) {
 							this.saveSDT(rec);
+							App.direct.lab.confirmManualService(rec.id);
 						}
 					},
 					scope:this
@@ -116,6 +117,10 @@ App.manual.ManualGrid = Ext.extend(Ext.grid.GridPanel, {
 	    	header: "Наименование исследования", 
 	    	width: 50,
 	    	dataIndex: 'service_name',
+	    },{
+	    	header: "Офис", 
+	    	width: 15,
+	    	dataIndex: 'office_name',
 	    },{
 	    	header: "Лаборатория", 
 	    	width: 15,

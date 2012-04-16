@@ -1038,6 +1038,7 @@ class LabServiceResource(ExtResource):
         bundle.data['service_code'] = service.labservice and service.labservice.code or ''
         bundle.data['patient_name'] = bundle.obj.order.patient.full_name()
         bundle.data['operator_name'] = bundle.obj.order.operator
+        bundle.data['office_name'] = bundle.obj.order.office
         bundle.data['laboratory'] = bundle.obj.execution_place
         bundle.data['barcode'] = bundle.obj.order.barcode.id
         return bundle
