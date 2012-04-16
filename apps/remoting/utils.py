@@ -133,8 +133,7 @@ def get_result(request, data):
     r = data['result']
     try:
         result = Result.objects.get(order__visit__specimen=specimen_id, 
-                                    analysis__service__code=code,
-                                    analysis__name=r['name'])
+                                    analysis__service__code=code)
         if result.value:
             result.previous_value = result.value
         result.value = r['value']

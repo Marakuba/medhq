@@ -429,6 +429,8 @@ js_calendar = Bundle(
     filters='rjsmin', output='assets/calendar.js',)
 
 js_examination = Bundle(
+    'libs/markdown.js',
+
     'extjs/ux/progresscolumn/ProgressColumn.js',
     'extjs/ux/RowEditor.js',
     'extjs/ux/CheckColumn.js',
