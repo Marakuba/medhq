@@ -129,7 +129,7 @@ App.examination.PatientGrid = Ext.extend(Ext.grid.GridPanel, {
 			return false
 		};
 		var name = patient.data.first_name + ' ' + patient.data.mid_name + ' ' + patient.data.last_name; 
-		var short_name = patient.data.first_name + ': История ';
+		var short_name = patient.data.short_name + ': История ';
 		config = {
 			closable:true,
     		patient:patient.data.id,

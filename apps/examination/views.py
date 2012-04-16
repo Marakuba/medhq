@@ -129,9 +129,12 @@ def get_history_tree(request):
     visits = Visit.objects.filter(patient = patient).order_by('created')
     os_list = OrderedService.objects.filter(order__patient = patient)
     cards = Card.objects.filter(ordered_service__order__patient = patient).order_by('ordered_service__order__id')
-    min_date = visits[0].created
-    max_date = visits.reverse()[0].created  
-    today = datetime.date.today()  
+    if visits:
+        min_date = visits[0].created
+        max_date = visits.reverse()[0].created  
+        today = datetime.date.today()  
+    else: 
+        return []
 #    laborder_list = LabOrder.objects.filter(visit__patient = patient)    
 #    results = Result.objects.filter(order__visit__patient = patient).order_by('order__visit__id','analysis__service__id')
     

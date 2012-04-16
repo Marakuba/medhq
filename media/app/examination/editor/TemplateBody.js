@@ -5,6 +5,8 @@ App.examination.TemplateBody = Ext.extend(Ext.TabPanel, {
 	
 	initComponent: function(){
 		
+		this.essenceText = this.isCard ? 'карту осмотра' : 'шаблон';
+		
 		this.tmpStore = new Ext.data.RESTStore({
 			autoSave: true,
 			autoLoad : false,
@@ -30,7 +32,7 @@ App.examination.TemplateBody = Ext.extend(Ext.TabPanel, {
 		});
 		this.closeBtn = new Ext.Button({
 			iconCls:'silk-door-out',
-			text: this.isCard ? 'Закрыть карту осмотра' : 'Закрыть шаблон',
+			text: 'Закрыть '+this.essenceText,
 			handler:this.onClose.createDelegate(this),
 			scope:this
 		});
@@ -49,14 +51,39 @@ App.examination.TemplateBody = Ext.extend(Ext.TabPanel, {
 			scope:this
 		});
 		
-		this.tmpBtn = new Ext.Button({
-			text: 'text',
-			handler:this.onAddSubSection.createDelegate(this,['text']),
+		this.moveArchiveBtn = new Ext.Button({
+			text: 'Переместить в архив',
+			hidden:this.fromArchive,
+			handler:function(){
+				console.log('isCard:',this.isCard);
+				if (!this.isCard){
+					this.record.set('base_service','');
+					this.fireEvent('movearhcivetmp');
+				} else {
+					var archiveRecord = new this.tmpStore.model();
+					Ext.applyIf(archiveRecord.data,this.record.data);
+					archiveRecord.set('staff',this.staff);
+					delete archiveRecord.data['base_service']
+					delete archiveRecord.data['id'];
+					this.tmpStore.add(archiveRecord);
+					
+					this.fireEvent('movearhcivecard');
+				}
+			},
+			scope:this
+		});
+		
+		this.dltBtn = new Ext.Button({
+			text: 'Удалить '+this.essenceText,
+			handler:function(){
+				this.record.set('deleted',true);
+				this.fireEvent('deleterecord')
+			},
 			scope:this
 		});
 		
 		this.ttb = new Ext.Toolbar({
-			items: ['-',this.printBtn,this.previewBtn,'-', this.historyBtn,'-', this.closeBtn]
+			items: ['-',this.printBtn,this.previewBtn,'-', this.historyBtn,'-', this.closeBtn, this.moveArchiveBtn, this.dltBtn]
 		});
 		
 		this.dataTab = new App.examination.TicketTab({
@@ -147,37 +174,11 @@ App.examination.TemplateBody = Ext.extend(Ext.TabPanel, {
 			}
 		},this);
 		
-		this.generalTab.on('movearhcivetmp',function(){
-			this.record.set('base_service','');
-			this.fireEvent('movearhcivetmp');
-		},this);
-		
-		this.generalTab.on('movearhcivecard',function(){
-			var archiveRecord = new this.tmpStore.model();
-			Ext.applyIf(archiveRecord.data,this.record.data);
-			archiveRecord.set('staff',this.staff);
-			delete archiveRecord.data['base_service']
-			delete archiveRecord.data['id'];
-			this.tmpStore.add(archiveRecord);
-			
-			this.fireEvent('movearhcivecard');
-		},this);
-				
-		this.generalTab.on('deletetmp',function(){
-			this.record.set('deleted',true);
-			this.fireEvent('deletetmp');
-		},this);
-				
 		this.generalTab.on('changetitle',function(text){
 			this.record.set('print_name',text);
 			this.fireEvent('changetitle',text);
 		},this);
 				
-		this.generalTab.on('equiptab',function(){
-			this.openEquipTab();
-		},this);
-		
-		
 
 		Ext.apply(this, Ext.apply(this.initialConfig, config));
 		App.examination.TemplateBody.superclass.initComponent.apply(this, arguments);
@@ -212,8 +213,8 @@ App.examination.TemplateBody = Ext.extend(Ext.TabPanel, {
 	},
 	
 	onAddSubSection: function(title,section,order,data){
-		this.dataTab.addTicket(title,section,order,data);
 		this.setActiveTab(this.dataTab);
+		this.dataTab.addTicket(title,section,order,data);
 		this.doLayout();
 		this.updateRecord();
 	},

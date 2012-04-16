@@ -2,6 +2,35 @@ Ext.ns('App');
 Ext.ns('App.services');
 Ext.ns('App.examination');
 
+var profileItems = ['<b class="menu-title">Выберите профиль</b>'];
+Ext.each(profiles, function(profile){
+	config = {
+		profileId:profile[0],
+		text:profile[1],
+		checked:profile[0]==active_profile,
+		group:'profile',
+		checkHandler:function(menuitem,checked){
+			if(checked){
+				window.location.href = String.format('/webapp/setactiveprofile/{0}/?redirect_to=/webapp/registry/',menuitem.profileId);
+			}
+		}
+	}
+	profileItems.push(config);
+});
+
+var appsItems = [];
+Ext.each(apps, function(app){
+	config = {
+		text:app[0],
+		appUrl:app[1],
+		group:'apps',
+		handler:function(menuitem,e){
+			window.location.href = menuitem.appUrl;
+		}
+	}
+	appsItems.push(config);
+});
+
 App.ExamCentralPanel = Ext.extend(Ext.Panel, {
 	
 	initComponent: function(){
@@ -172,12 +201,38 @@ App.ExamCentralPanel = Ext.extend(Ext.Panel, {
                 	},
                     scope:this
                 }]
-	        },'->',this.cmb,{
-            	text:'Выход',
-            	handler:function(){
-            		window.location.href = '/webapp/logout/';
-            	}
-            }]
+	        },'->',
+	        {
+				xtype:'buttongroup',
+				defaults:{
+					xtype:'button',
+					scale:'medium'
+				},
+				items:[{
+					iconCls:'silk-cog',
+					iconAlign:'right',
+					text:String.format('{0}, {1}', active_user, active_state),
+					menu:new Ext.menu.Menu({
+						items:[{
+							text:'Приложения',
+							menu:{
+								items:appsItems
+							}
+						},{
+							text:'Профиль',
+							menu:{
+								items:profileItems
+							}
+						},{
+			            	text:'Выход',
+			            	iconCls:'silk-door-out',
+			            	handler:function(){
+			            		window.location.href = '/webapp/logout/';
+			            	}
+			            }]
+					})
+				}]
+			}]
 		}
 		Ext.apply(this, Ext.apply(this.initialConfig, config));
 		App.ExamCentralPanel.superclass.initComponent.apply(this, arguments);
