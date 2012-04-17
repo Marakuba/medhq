@@ -14,7 +14,18 @@ App.assignment.AsgmtForm = Ext.extend(Ext.FormPanel, {
 					    writeAllFields: false
 					}),
 			apiUrl : get_api_url('extpreorder'),
-			model: App.models.preorderModel
+			model: App.models.preorderModel,
+		    doTransaction : function(action, rs, batch) {
+		        function transaction(records) {
+		            try{
+		                this.execute(action, records, undefined, batch);
+		            }catch (e){
+		                this.handleException(e);
+		            }
+		        }
+		        this.batch=true;
+		        transaction.call(this, rs);
+		    }
 		});
 		
 		this.preorderGrid = new App.assignment.PreorderInlineGrid({
@@ -22,7 +33,13 @@ App.assignment.AsgmtForm = Ext.extend(Ext.FormPanel, {
 			type:this.type,
 //			patientRecord:this.patientRecord,
 			card_id:this.card_id,
-			region:'center'
+			region:'center',
+			listeners:{
+				scope:this,
+				basketexception:function(){
+					this.fireEvent('basketexception')
+				}
+			}
 		});
 		
 		this.preorderGrid.store.on('write', function(){

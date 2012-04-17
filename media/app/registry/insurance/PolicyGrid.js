@@ -60,6 +60,9 @@ App.insurance.PolicyGrid = Ext.extend(Ext.grid.GridPanel, {
 		    			this.onChoice(rs);
 		    		}
 		    	},
+		    	exception:function(){
+					this.fireEvent('exception')
+				},
 		    	scope:this
 		    }
 		});

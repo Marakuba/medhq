@@ -63,7 +63,21 @@ App.visit.OrderedServiceInlineGrid = Ext.extend(Ext.grid.EditorGridPanel, {
 		    	add:this.onSumChange.createDelegate(this),
 		    	remove:this.onSumChange.createDelegate(this),
 //		    	load:this.onSumChange.createDelegate(this),
+		    	exception: function(){
+		    		this.fireEvent('basketexception')
+		    	},
 		    	scope:this
+		    },
+		    doTransaction : function(action, rs, batch) {
+		        function transaction(records) {
+		            try{
+		                this.execute(action, records, undefined, batch);
+		            }catch (e){
+		                this.handleException(e);
+		            }
+		        }
+		        this.batch=true;
+		        transaction.call(this, rs);
 		    }
 		});
 		
@@ -406,6 +420,9 @@ App.visit.OrderedServiceInlineGrid = Ext.extend(Ext.grid.EditorGridPanel, {
 		var d = this.deletedRecords ? this.deletedRecords.length : 0;
 		steps+=m;
 		steps+=d;
+		if (steps > 0) {
+			steps = 1;
+		}
 		return steps;
 	},
 	
