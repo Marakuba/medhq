@@ -8,7 +8,12 @@ App.visit.VisitTab = Ext.extend(Ext.Panel, {
 		this.store = this.store || new Ext.data.RESTStore({
 			autoLoad : false,
 			apiUrl : get_api_url('visit'),
-			model: App.models.visitModel
+			model: App.models.visitModel,
+			listeners:{
+				scope:this,
+				exception:this.onException
+			}
+			
 		});
 		
 		this.preorderStore = new Ext.data.RESTStore({
@@ -46,6 +51,10 @@ App.visit.VisitTab = Ext.extend(Ext.Panel, {
 				this.record = record;
 				this.store.insertRecord(record);
 				Ext.callback(this.fn, this.scope || window, [this.record]);
+			},
+			listeners:{
+				scope:this,
+				basketexception:this.onException
 			},
 			scope:this	
 	    });
@@ -295,6 +304,13 @@ App.visit.VisitTab = Ext.extend(Ext.Panel, {
 		});
 		
 		this.pWin.show();
+	},
+	
+	onException: function(){
+		if(this.msgBox) {
+			this.msgBox.hide();
+		};
+		Ext.Msg.alert('Ошибка!','Документ не сохранен. Попробуйте позже.')
 	}
 });
 

@@ -97,23 +97,6 @@ App.examination.CardGeneralTab = Ext.extend(Ext.form.FormPanel, {
             }
         }, cfg));
 		
-		this.equipBtn = new Ext.Button({
-			text: 'Оборудование',
-			handler:function(){
-				this.fireEvent('equiptab');
-			},
-			scope:this
-		});
-		
-		this.moveArchiveBtn = new Ext.Button({
-			text: 'Переместить в архив',
-			hidden:this.fromArchive,
-			handler:function(){
-				this.fireEvent('movearhcivecard')
-			},
-			scope:this
-		});
-		
 		this.asgmtBtn = new Ext.Button({
 			text: 'Направления',
 			handler:function(){
@@ -201,37 +184,13 @@ App.examination.CardGeneralTab = Ext.extend(Ext.form.FormPanel, {
 				this.assistantPanel]
 		});
 		
-		this.menuPanel = new Ext.Panel({
-			region: 'east',
-			baseCls: 'x-plain',
-			margins: '5 5 5 5',
-			border: false,
-//			frame:true,
-			height:500,
-			width:200,
-	 		layout: {
-	            type:'vbox',
-	            align:'stretch'
-	        },
-	        defaults:{
-	        	scale: 'large',
-	        	margins:'5 5 5 0'
-	        },
-			items:[
-				this.equipBtn,
-				this.moveArchiveBtn
-			]
-		});
-		
-    	
 		var config = {
 			title: 'Общая',
 			layout: 'border',
 //			labelWidth: 70,
 			border:false,
      		items: [
-				this.centralPanel,
-				this.menuPanel
+				this.centralPanel
      		]
 		}
 								

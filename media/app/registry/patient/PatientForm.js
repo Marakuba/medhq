@@ -7,7 +7,13 @@ App.patient.PatientForm = Ext.extend(Ext.form.FormPanel, {
 		this.inlines = new Ext.util.MixedCollection({});
 		
 		this.insPolicy = new App.insurance.PolicyGrid({
-			record:this.record
+			record:this.record,
+			listeners:{
+				scope:this,
+				exception:function(){
+					this.fireEvent('exception')
+				}
+			}
 		});
 		
 		this.idCard = new App.patient.IDCardForm({
@@ -67,6 +73,7 @@ App.patient.PatientForm = Ext.extend(Ext.form.FormPanel, {
 		    		console.log(options);
 		    		console.log(response);
 		    		console.log(arg);
+		    		this.fireEvent('exception')
 		    	},
 		    	write:function(store, action, result, res, rs){
 		    		console.log('Account created!');

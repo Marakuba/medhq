@@ -52,7 +52,7 @@ App.examination.TemplateBody = Ext.extend(Ext.TabPanel, {
 		});
 		
 		this.moveArchiveBtn = new Ext.Button({
-			text: 'Переместить в архив',
+			text: this.isCard? 'Переместить в Мои шаблоны': 'Сохранить как шаблон',
 			hidden:this.fromArchive,
 			handler:function(){
 				console.log('isCard:',this.isCard);

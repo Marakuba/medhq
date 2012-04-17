@@ -22,13 +22,30 @@ App.visit.VisitForm = Ext.extend(Ext.FormPanel, {
 					    writeAllFields: false
 					}),
 			apiUrl : get_api_url('extpreorder'),
-			model: App.models.preorderModel
+			model: App.models.preorderModel,
+		    doTransaction : function(action, rs, batch) {
+		        function transaction(records) {
+		            try{
+		                this.execute(action, records, undefined, batch);
+		            }catch (e){
+		                this.handleException(e);
+		            }
+		        }
+		        this.batch=true;
+		        transaction.call(this, rs);
+		    }
 		});
 		
 		this.orderedService = new App.visit.OrderedServiceInlineGrid({
 //			record:this.record,
 			type:this.type,
-			region:'center'
+			region:'center',
+			listeners:{
+				scope:this,
+				basketexception:function(){
+					this.fireEvent('basketexception')
+				}
+			}
 		});
 		
 		this.orderedService.store.on('write', function(){

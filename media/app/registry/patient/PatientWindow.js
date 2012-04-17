@@ -11,7 +11,11 @@ App.patient.PatientWindow = Ext.extend(Ext.Window, {
 		this.store = this.store || new Ext.data.RESTStore({
 			autoLoad : true,
 			apiUrl : get_api_url('patient'),
-			model: App.models.Patient
+			model: App.models.Patient,
+			listeners:{
+				scope:this,
+				exception:this.onException
+			}
 		});
 		
 		this.model = this.store.recordType;
@@ -23,6 +27,10 @@ App.patient.PatientWindow = Ext.extend(Ext.Window, {
 				this.record = record;
 				this.store.insertRecord(this.record);
 //				if(!this.record.phantom) this.popStep()
+			},
+			listeners:{
+				scope:this,
+				exception:this.onException
 			},
 			scope:this			
 		});
@@ -73,8 +81,10 @@ App.patient.PatientWindow = Ext.extend(Ext.Window, {
 		this.store.on('write', this.onStoreWrite, this);
 		this.on('destroy', function(){
 			this.store.un('write', this.onStoreWrite, this);
+			this.record.store.un('exception',this.onException,this);
 		},this);
-		this.form.on('accepted',this.onFormSave.createDelegate(this,[false]),this)
+		this.form.on('accepted',this.onFormSave.createDelegate(this,[false]),this);
+		this.record.store.on('exception',this.onException,this);
 	},
 	
 	onFormSave: function(post_visit) {
@@ -164,6 +174,13 @@ App.patient.PatientWindow = Ext.extend(Ext.Window, {
 			this.record.data['accepted']
 			this.popStep();
 		},this)
+	},
+	
+	onException: function(){
+		if(this.msgBox) {
+			this.msgBox.hide();
+		};
+		Ext.Msg.alert('Ошибка!','Нет связи с сервером. Попробуйте позже.')
 	}
 });
 
