@@ -293,7 +293,8 @@ class ReferralResource(ExtResource):
         limit = 200
         authorization = DjangoAuthorization()
         filtering = {
-            'name':('istartswith',)
+            'name':('istartswith',),
+            'id': ALL
         }
         
 

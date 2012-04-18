@@ -9,7 +9,11 @@ App.ReferralWindow = Ext.extend(Ext.Window, {
 			height:500,
 			layout:'fit',
 			items:{
-				xtype:'referralgrid'
+				xtype:'referralgrid',
+				fn: function(record){
+					Ext.callback(this.fn, this.scope || window, [record]);
+				},
+				scope:this
 			},
 			modal:true,
 			border:false
