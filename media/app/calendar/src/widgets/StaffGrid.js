@@ -24,7 +24,9 @@ Ext.calendar.StaffGrid = Ext.extend(Ext.grid.GridPanel, {
 			autoLoad:false,
 		    baseParams: {
 		    	format:'json',
-		    	'doctor__isnull':false		    	
+		    	'doctor__isnull':false,
+		    	'is_active': true,
+		    	'staff__status':'д'
 		    },
 		    paramNames: {
 			    start : 'offset',

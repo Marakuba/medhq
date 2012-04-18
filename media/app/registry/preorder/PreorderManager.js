@@ -4,7 +4,7 @@ App.registry.PreorderManager = Ext.extend(Ext.TabPanel, {
 
 	initComponent : function() {
 		
-		this.medstateStore = new Ext.data.RESTStore({
+		this.medstateStore = this.medstateStore || new Ext.data.RESTStore({
 			autoSave: true,
 			autoLoad : true,
 			apiUrl : get_api_url('medstate'),

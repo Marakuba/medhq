@@ -18,10 +18,10 @@ class PositionInlineAdmin(admin.TabularInline):
 
 class StaffAdmin(TabbedAdmin):
     inlines = [PositionInlineAdmin, DoctorInlineAdmin]
-    list_display = ('__unicode__','mobile_phone','user')
+    list_display = ('__unicode__','mobile_phone','user','status')
     fieldsets = (
         ('Личные данные',{
-            'fields':('last_name','first_name','mid_name','birth_day','gender'),
+            'fields':('last_name','first_name','mid_name','birth_day','gender','status'),
         }),
         ('Контакты и адрес',{
             'fields':('work_phone','home_phone','mobile_phone','work_address_street','home_address_street'),

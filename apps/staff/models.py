@@ -30,6 +30,11 @@ ROUTINES = (
             ('22',u'нечетные, 2-я смена')
             )
 
+STAFF_STATUSES = (
+            (u'д',u'Действующий'),
+            (u'у',u'Уволен'),
+            ) 
+
 
 class Staff(make_person_object('staff')):
     """
@@ -42,6 +47,7 @@ class Staff(make_person_object('staff')):
     high_school_end_date = models.PositiveIntegerField(u"Год окончания", null=True, blank=True)
     medical_experience = models.CharField(u"Общемедицинский стаж", max_length=2, blank=True)
     spec_experience = models.CharField(u"Стаж работы по специальности", max_length=2, blank=True)
+    status = models.CharField(u'Статус работника', default = 'д', choices = STAFF_STATUSES, max_length=1)
     #position = models.CharField(u'Должность', max_length=50)
     
     objects = models.Manager()
@@ -78,6 +84,7 @@ class Position(models.Model):
     department = models.ForeignKey(Department, verbose_name=u'Отделение')
     staff = models.ForeignKey(Staff)
     title = models.CharField(u'Должность', max_length=50)
+    is_active = models.BooleanField(u'Активно', default = True)
 
     class Meta:
         verbose_name = u'должность'

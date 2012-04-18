@@ -28,6 +28,7 @@ App.patient.PatientCard = Ext.extend(Ext.TabPanel, {
 		},{
 			title:'Результаты',
 			layout:'fit',
+			medstateStore:this.medstateStore,
 			xtype:'patientlabgrid'
 		},{
 			title:'Исследования',
@@ -37,6 +38,7 @@ App.patient.PatientCard = Ext.extend(Ext.TabPanel, {
 			title:'Назначения',
 //			layout:'fit',
 			hasPatient:true,
+			medstateStore:this.medstateStore,
 			xtype:'preordermanager'
 		},{
 			title:'Оказанные услуги',

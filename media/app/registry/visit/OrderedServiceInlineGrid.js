@@ -180,7 +180,27 @@ App.visit.OrderedServiceInlineGrid = Ext.extend(Ext.grid.EditorGridPanel, {
 			handler:function(){
 				this.fireEvent('redo');
 			}
-		})
+		});
+		
+		this.delBtn = new Ext.Button({
+			iconCls:'silk-delete',
+			text:'Удалить',
+			disabled:true,
+			handler:this.delRow.createDelegate(this)
+		});
+		
+		this.delAllBtn = new Ext.Button({
+			iconCls:'silk-delete',
+			text:'Удалить все',
+			disabled:true,
+			handler:this.delAllRow.createDelegate(this)
+		});
+		
+		this.changeStaffBtn = new Ext.Button({
+			text:'Изменить врача',
+			disabled:true,
+			handler:this.changeStaff.createDelegate(this)
+		});
 		
 		var config = {
 			id:'ordered-service-inline-grid',
@@ -193,31 +213,26 @@ App.visit.OrderedServiceInlineGrid = Ext.extend(Ext.grid.EditorGridPanel, {
 			store:this.store,
 			columns:this.columns,
 			sm : new Ext.grid.RowSelectionModel({
-				singleSelect : true,
+				singleSelect : false,
 				listeners: {
 					rowselect: function(sm,i,rec) {
-						this.getTopToolbar().items.itemAt(0).setDisabled(!rec.phantom);
-						this.getTopToolbar().items.itemAt(1).setDisabled(false);
+						this.delBtn.setDisabled(!rec.phantom);
+						this.delAllBtn.setDisabled(this.record);
+						if (sm.selections.items.length == 1){
+							this.changeStaffBtn.setDisabled(false);
+						} else {
+							this.changeStaffBtn.setDisabled(true);
+						}
 					},
 					rowdeselect: function(sm,i,rec) {
-						this.getTopToolbar().items.itemAt(0).setDisabled(true);
-						this.getTopToolbar().items.itemAt(1).setDisabled(true);
+						this.delBtn.setDisabled(true);
+						this.delAllBtn.setDisabled(true);
+						this.changeStaffBtn.setDisabled(true);
 					},
 					scope:this
 				}
 			}),
-			tbar:[{
-				xtype:'button',
-				iconCls:'silk-delete',
-				text:'Удалить',
-				disabled:true,
-				handler:this.delRow.createDelegate(this)
-			},{
-				xtype:'button',
-				text:'Изменить врача',
-				disabled:true,
-				handler:this.changeStaff.createDelegate(this)
-			},this.undoBtn,this.redoBtn],
+			tbar:[this.delBtn,this.delAllBtn,this.changeStaffBtn,this.undoBtn,this.redoBtn],
 			viewConfig : {
 				forceFit : true
 				//getRowClass : this.applyRowClass
@@ -344,6 +359,15 @@ App.visit.OrderedServiceInlineGrid = Ext.extend(Ext.grid.EditorGridPanel, {
 		if(rec.phantom) {
 			this.store.remove(rec);
 		}
+	},
+	
+	delAllRow: function() {
+		records = this.getSelectionModel().getSelections();
+		Ext.each(records,function(rec){
+			if(rec.phantom) {
+				this.store.remove(rec);
+			}
+		})
 	},
 	
 	changeStaff: function() {

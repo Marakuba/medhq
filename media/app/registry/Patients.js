@@ -28,6 +28,7 @@ App.Patients = Ext.extend(Ext.Panel, {
 				handler:function(){
 					this.cardPanel.remove(this.patientCard);
 					this.patientCard = new App.patient.PatientCard({
+						medstateStore:this.medstateStore,
 						region:'center'
 					});
 					this.initEvents();

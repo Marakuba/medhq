@@ -304,7 +304,8 @@ App.CentralPanel = Ext.extend(Ext.Panel, {
 	
 	launchApp: function(appId,config, setActive) {
         var app_config = {
-            xtype:appId
+            xtype:appId,
+            medstateStore:this.medstateStore
         };
         config = config || {};
 		Ext.apply(app_config, config);

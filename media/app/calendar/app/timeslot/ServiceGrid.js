@@ -153,9 +153,6 @@ App.calendar.ServiceChoiceGrid = Ext.extend(Ext.grid.GridPanel, {
 						handler:this.storeFilter.createDelegate(this,['state',item.id])
 					});
 				}, this);
-				//this.ttb.addSeparator();
-				//this.ttb.add();
-				//this.ttb.add()
 				this.ttb.doLayout();
 			},
 			scope:this

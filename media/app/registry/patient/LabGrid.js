@@ -189,7 +189,7 @@ App.patient.LabGrid = Ext.extend(Ext.grid.GridPanel, {
 		var s = this.getSelected().data.id;
 		var url = this.getAbsoluteUrl(s)+slug+"/";
 		window.open(url);
-	},
+	}
 
 	
 });

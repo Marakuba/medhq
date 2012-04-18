@@ -669,7 +669,8 @@ class StaffResource(ModelResource):
         limit = 100
         filtering = {
             'last_name':('istartswith',),
-            'id':ALL
+            'id':ALL,
+            'status':ALL
         }
 
 class PositionResource(ModelResource):
@@ -842,6 +843,7 @@ class PosSchedResource(ModelResource):
     """
     #doctor = fields.ToOneField(DoctorResource, 'doctor', null=True)
     department = fields.ForeignKey(DepartmentResource, 'department', null=True)
+    staff = fields.ForeignKey(StaffResource, 'staff', null=True)
     
     def dehydrate(self, bundle):
         bundle.data['name'] = bundle.obj.staff.short_name()
@@ -862,7 +864,9 @@ class PosSchedResource(ModelResource):
         limit = 100
         filtering = {
             'last_name':('istartswith',),
-            'id':ALL
+            'id':ALL,
+            'is_active':ALL,
+            'staff': ALL_WITH_RELATIONS
         }
 
 class TubeResource(ModelResource):
