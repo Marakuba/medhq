@@ -29,7 +29,18 @@ Ext.onReady(function(){
 	
 //	App.settings.reloadPriceByPaymentType = false;
 	
+	
+	//Список организаций. Передаётся во все компоненты, где это необходимо. 
+	// Вынесен в app для исключения множественной загрузки идентичных данных
+	var medstateStore = new Ext.data.RESTStore({
+		autoSave: true,
+		autoLoad : true,
+		apiUrl : get_api_url('medstate'),
+		model: App.models.MedState
+	});
+	
 	var centralPanel = new App.CentralPanel({
+		medstateStore:medstateStore
 	});
 	
 	var viewport = new Ext.Viewport({

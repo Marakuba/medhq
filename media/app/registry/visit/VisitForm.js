@@ -213,20 +213,22 @@ App.visit.VisitForm = Ext.extend(Ext.FormPanel, {
 		};
 		if(this.patientRecord) {
 			this.discountCmb.setValue(this.patientRecord.data.discount);
-		}
-
+		};
+		
+		this.referralCB = new Ext.form.LazyComboBox({
+			anchor:'98%',
+        	fieldLabel:'Кто направил',
+        	emptyText:'Выберите направившего врача...',
+        	name:'referral',
+        	proxyUrl:get_api_url('referral'),
+        	tooltip:'Врач, который направил пациента'
+		});
+		
 		this.referral = {
 			layout:'form',
 			columnWidth:1.0,
 //			hideLabels:true,
-			items:new Ext.form.LazyComboBox({
-				anchor:'98%',
-	        	fieldLabel:'Кто направил',
-	        	emptyText:'Выберите направившего врача...',
-	        	name:'referral',
-	        	proxyUrl:get_api_url('referral'),
-	        	tooltip:'Врач, который направил пациента'
-			})
+			items:this.referralCB
 		};
 		
 		//this.referral.items.setValue('б/н');
@@ -245,10 +247,19 @@ App.visit.VisitForm = Ext.extend(Ext.FormPanel, {
 					handler:function(){
 						var refWin;
 						if(!refWin) {
-							refWin = new App.ReferralWindow({});
+							refWin = new App.ReferralWindow({
+								fn: function(record){
+									if (record){
+										this.referralCB.forceValue(record.data.resource_uri);
+									};
+									refWin.close();
+								},
+								scope:this
+							});
 							refWin.show(this);
 						}
-					}
+					},
+					scope:this
 				}
 			}]			
 		};

@@ -28,6 +28,12 @@ from remoting.models import TransactionItem
 from service.exceptions import TubeIsNoneException
 #from scheduler.models import Preorder
 
+REFERRAL_TYPES = (
+    (u'ф',u'Физическое лицо'),
+    (u'в',u'Врач/Организация'),
+    (u'с',u'Страховая компания')
+)
+
 class ReferralAgent(make_operator_object('referralagent')):
     """
     """
@@ -54,6 +60,7 @@ class Referral(make_operator_object('referral')):
                             help_text=u'Образец заполнения: Иванова И.И., гор.больница №1.')
     
     agent = models.ForeignKey(ReferralAgent, null=True, blank = True, verbose_name=u'Агент')
+    referral_type = models.CharField(u'Тип посредника', max_length=1, choices=REFERRAL_TYPES, default = u'в')
 
     objects = models.Manager()
     

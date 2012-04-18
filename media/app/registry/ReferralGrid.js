@@ -16,7 +16,9 @@ App.ReferralGrid = Ext.extend(Ext.grid.GridPanel, {
 		    messageProperty: 'message'
 		}, [
 		    {name: 'id'},
-		    {name: 'name', allowBlank: false}
+		    {name: 'resource_uri'},
+		    {name: 'name', allowBlank: false},
+		    {name: 'referral_type', allowBlank: false}
 		]);
 		
 		this.writer = new Ext.data.JsonWriter({
@@ -46,12 +48,51 @@ App.ReferralGrid = Ext.extend(Ext.grid.GridPanel, {
 		    }
 		});
 		
+		Ext.util.Format.comboRenderer = function(combo,field){
+            return function(value, meta, rec){
+                var record = combo.findRecord(combo.valueField, value);
+                return record ? record.get(combo.displayField) : (rec ? rec.get(field) : combo.valueNotFoundText);
+            }
+        };
+		
+		this.referralTypeCB = new Ext.form.ComboBox({
+			store:new Ext.data.ArrayStore({
+				fields:['id','title'],
+				data: [
+					['ф','Физическое лицо'],
+					['в','Организация/Врач'],
+					['с','Страховая компания']]
+			}),
+			typeAhead: true,
+			triggerAction: 'all',
+			valueField:'id',
+			displayField:'title',
+			mode: 'local',
+			forceSelection:true,
+			selectOnFocus:true,
+			editable:false,
+			anchor:'98%',
+			value:'в',
+			listeners: {
+				select:function(combo,rec,i){
+
+				},
+				scope:this
+			}
+		});
+		
 		this.columns =  [
 		    {
-		    	header: "Организация, врач", 
+		    	header: "Наименование/Имя", 
 		    	sortable: true, 
 		    	dataIndex: 'name', 
 		    	editor: new Ext.form.TextField({})
+		    },{
+		    	header: "Тип", 
+		    	sortable: true, 
+		    	dataIndex: 'referral_type', 
+		    	editor: this.referralTypeCB,
+                renderer: Ext.util.Format.comboRenderer(this.referralTypeCB,'title')
 		    }
 		];		
 		this.editor = new Ext.ux.grid.RowEditor({
@@ -74,6 +115,11 @@ App.ReferralGrid = Ext.extend(Ext.grid.GridPanel, {
 				iconCls:'silk-add',
 				text:'Добавить',
 				handler:this.onAdd.createDelegate(this, [])
+			},{
+				xtype:'button',
+				iconCls:'silk-accept',
+				text:'Выбрать',
+				handler:this.onChoice.createDelegate(this, [])
 			}],
 			viewConfig : {
 				forceFit : true
@@ -92,6 +138,13 @@ App.ReferralGrid = Ext.extend(Ext.grid.GridPanel, {
         this.store.insert(0, r);
         this.editor.startEditing(0);
 	},
+	
+	onChoice: function(btn,ev){
+		var record = this.getSelectionModel().getSelected();
+        if (record) {
+        	Ext.callback(this.fn, this.scope || window, [record]);
+        };
+	}
     
     /*onDelete: function() {
         var rec = this.getSelectionModel().getSelected();
