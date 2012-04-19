@@ -160,7 +160,7 @@ class PatientResource(ExtResource):
         return super(PatientResource, self).get_object_list(request)
 
     def dehydrate(self, bundle):
-        if self.orig_request:
+        if hasattr(self,'orig_request'):
             active_state = self.orig_request.active_profile.department.state
             bundle.data['accepted'] = bundle.obj.get_accepted_date(active_state)
         bundle.data['discount_name'] = bundle.obj.discount and bundle.obj.discount or u'0%'
@@ -1016,6 +1016,25 @@ class LabOrderedServiceResource(OrderedServiceResource):
 #        bundle.data['message'] = o.latest_transaction()
         return bundle    
     
+    def build_filters(self, filters=None):
+        if filters is None:
+            filters = {}
+
+        orm_filters = super(LabOrderedServiceResource, self).build_filters(filters)
+
+        if "search" in filters:
+            smart_filters = smartFilter(filters['search'], 'order__patient')
+            if len(smart_filters.keys())==1:
+                try:
+                    orm_filters = ComplexQuery( Q(order__barcode__id=int(filters['search'])) | Q(**smart_filters), \
+                                      **orm_filters)
+                except:
+                    orm_filters.update(**smart_filters)
+            else:
+                orm_filters.update(**smart_filters)
+            
+        return orm_filters
+
     class Meta:
         queryset = OrderedService.objects.select_related().all()
         resource_name = 'laborderedservice'

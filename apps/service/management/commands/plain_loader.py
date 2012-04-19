@@ -67,7 +67,8 @@ class Command(BaseCommand):
             try:
                 service = BaseService.objects.get(code=code)
             except ObjectDoesNotExist:
-                self.err( u"Услуга %s (%s) не найдена" % (name,code) )
+#                self.err( u"Услуга %s (%s) не найдена" % (name,code) )
+                print u"Услуга %s (%s) не найдена" % (name,code)
                 continue
             except Exception, err:
                 self.err( u"При поиске услуги %s произошла ошибка: %s" (name, err.__unicode__()) )

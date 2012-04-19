@@ -12,6 +12,7 @@ from django.contrib.admin.util import unquote
 from lab.models import LabOrder
 from django.http import HttpResponse
 from patient.forms import ContractForm
+import datetime
 
 class InsurancePolicyInlineAdmin(admin.TabularInline):
     model = InsurancePolicy
@@ -87,7 +88,9 @@ class PatientAdmin(OperatorAdmin, TabbedMedia):
                                         expire=form.cleaned_data['expire'])
                 return redirect(reverse('admin:contract', args=(patient.id,)))
         else:
-            form = ContractForm()
+            today = datetime.date.today()
+            expire = datetime.date(year=today.year, month=12, day=31)
+            form = ContractForm({'created':today,'expire':expire})
         extra_context = {
             'patient':patient,
             'form':form

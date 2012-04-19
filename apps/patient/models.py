@@ -17,6 +17,7 @@ from constance import config
 import pytils
 
 import logging
+from decimal import Decimal
 logger = logging.getLogger('general')
 
 
@@ -30,8 +31,8 @@ class Patient(make_person_object('patient')):
     discount = models.ForeignKey(Discount, 
                                  verbose_name=u'Скидка', 
                                  null=True, blank=True)
-    initial_account = models.DecimalField(u'Первоначальная сумма', max_digits=10, decimal_places=2, default='0.0')
-    billed_account = models.DecimalField(u'Счет накопления', max_digits=10, decimal_places=2, default='0.0')
+    initial_account = models.DecimalField(u'Первоначальная сумма', max_digits=10, decimal_places=2, default=Decimal('0.0'))
+    billed_account = models.DecimalField(u'Счет накопления', max_digits=10, decimal_places=2, default=Decimal('0.0'))
     doc = models.CharField(u'Документ', max_length=30, blank=True, help_text=u'Пенсионное удостоверение, студенческий билет и т.д.')
     client_item = models.OneToOneField(ClientItem, null=True, blank= True, related_name = 'client')
     balance = models.FloatField(u'Баланс', blank=True, null=True)

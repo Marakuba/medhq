@@ -1,7 +1,7 @@
 # -*- coding: utf-8 -*-
 from django.utils import simplejson
 from django.http import HttpResponse, HttpResponseRedirect
-from service.models import BaseService
+from service.models import BaseService, ExtendedService
 from django.db import connection
 from django.core.cache import get_cache
 from patient.models import Patient
@@ -17,7 +17,7 @@ from django.views.generic.simple import direct_to_template
 from django.contrib.auth.decorators import login_required
 from lab.models import Sampling
 from django.views.decorators.gzip import gzip_page
-from promotion.models import Promotion
+from promotion.models import Promotion, PromotionItem
 from state.models import State
 from pricelist.models import Price
 from django.db.models import Max
@@ -205,30 +205,32 @@ def get_service_tree(request):
         
         def node_dict(obj):
             try:
-                bs = obj.base_service
-                es = bs.extendedservice_set.get(state=obj.execution_place)
-                price = es.get_actual_price(payment_type=payment_type,payer=payer)
+                bs = promotions_bs[obj.base_service_id]
+                for k,v in result[obj.base_service_id].iteritems():
+                    if v['extended_service__state__id']==obj.execution_place_id:
+                        es = v['extended_service__id']
+                        price = v['value']
+                        break
+#                es = bs.extendedservice_set.get(state=obj.execution_place)
                 node = {
-                    "id":ext and es.id or '%s-%s' % (obj.base_service.id,obj.execution_place.id),
-                    "text":"%s [%s]" % (obj.base_service.short_name or obj.base_service.name, price),
+                    "id":ext and es or '%s-%s' % (obj.base_service_id,obj.execution_place_id),
+                    "text":"%s" % (bs['base_service__short_name'] or bs['base_service__name'],),
                     "price":price,
                     "c":obj.count or 1
                 }
-                staff_all = es.staff.all()
-                if staff_all.count():
-                    node['staff'] = [(pos.id,pos.__unicode__()) for pos in staff_all]
+                node['staff'] = obj.base_service_id in staff_all and sorted(staff_all[obj.base_service_id], key=lambda staff: staff[1])
                 return node
             except Exception, err:
                 logger.error(u"WEBAPP: %s" % err)
                 return None
             
         return {
-            'id':obj.id,#u'%s_%s' % (obj.base_service.id, obj.execution_place.id),
-            'text':obj.name,#obj.base_service.short_name or obj.base_service.name,
+            'id':obj['id'],#u'%s_%s' % (obj.base_service.id, obj.execution_place.id),
+            'text':obj['name'],#obj.base_service.short_name or obj.base_service.name,
             'leaf':True,
-            'nodes':[node_dict(node) for node in obj.promotionitem_set.all()],
-            'discount':obj.discount and obj.discount.id or None,
-            'price':obj.total_price,
+            'nodes':[node_dict(node) for node in obj['items']],
+            'discount':obj['discount_id'],
+            'price':obj['total_price'],
             'isComplex':True
         }
                 
@@ -244,13 +246,14 @@ def get_service_tree(request):
             return (child_list and child_list[0]) or []
         else:
             node = tree[-1]
+            parent = node.get_parent()
             
             bro = []
             childs = []
             
             for item in child_list:
                 #Если список детей <> [] и либо item[0] и текущий node - корни дерева, либо относятся к одному родителю
-                if item and ((not item[0]['parent'] and not node.parent) or (node.parent and item[0]['parent'] == node.parent.id)):
+                if item and ((not item[0]['parent'] and not parent) or (parent and item[0]['parent'] == parent)):
                     # то это братья
                     bro = item
                 if item and not node.is_leaf_node() and item[0]['parent']==node.id:
@@ -262,6 +265,7 @@ def get_service_tree(request):
                 #удаляем текущий элемент
                 node = None
             else:
+                
                 if node.is_leaf_node():
                     for service in result[node.id]:
                         tree_node = {
@@ -271,12 +275,10 @@ def get_service_tree(request):
                                 "price":str(result[node.id][service]['value']),
                                 "exec_time":"%s" % (node.execution_time and u"%s мин" % node.execution_time or u''),
                                 "iconCls":"ex-place-%s" % result[node.id][service]['extended_service__state__id'],
-                                "parent":node.parent and node.parent.id,
+                                "parent":parent,
                                 "leaf":True}
                         if not ext:
-                            staff_all = Position.objects.filter(extendedservice=service)
-                            if staff_all.count():
-                                tree_node['staff'] = [(pos.id,pos.__unicode__()) for pos in staff_all]
+                            tree_node['staff'] = node.id in staff_all and sorted(staff_all[node.id], key=lambda staff: staff[1])
                         tree_nodes.append(tree_node)    
                         #nodes.append(tree_node)
                 else: 
@@ -285,7 +287,7 @@ def get_service_tree(request):
                             "leaf":False,
                             'text': "%s" % (node.short_name or node.name,),
                             'singleClickExpand':True,
-                            "parent":node.parent and node.parent.id,
+                            "parent":parent,
                             'children':childs
                             }
                 #Если есть братья, добавляем текущий элемент к списку братьев
@@ -380,14 +382,15 @@ def get_service_tree(request):
             annotate(Max('on_date'))
         result = {}
         for val in values:
-            if result.has_key(val['extended_service__base_service__id']):
-                result[val['extended_service__base_service__id']][val['extended_service__id']] = val
-            else:
+            if not result.has_key(val['extended_service__base_service__id']):
                 result[val['extended_service__base_service__id']] = {}
-                result[val['extended_service__base_service__id']][val['extended_service__id']] = val
+            result[val['extended_service__base_service__id']][val['extended_service__id']] = val
         
-            
-        for base_service in BaseService.objects.all().order_by(BaseService._meta.tree_id_attr, BaseService._meta.left_attr, 'level'): #@UndefinedVariable
+        BaseService.cache_parents()
+        
+        staff_all = ExtendedService.get_all_staff()
+        
+        for base_service in BaseService.objects.select_related().all().order_by(BaseService._meta.tree_id_attr, BaseService._meta.left_attr, 'level'): #@UndefinedVariable
             if base_service.is_leaf_node():
                 if result.has_key(base_service.id):
                     nodes.append(base_service)
@@ -400,11 +403,25 @@ def get_service_tree(request):
         # если передан параметр promotions, добавляем их в дерево услуг
         if not nocache or promotion:
             promotions = Promotion.objects.actual()
+            promotions_items = PromotionItem.objects.filter(promotion__in=promotions)
+            promotions_dict = defaultdict(list)
+            promotions_bs = {}
+            for item in promotions_items.values('base_service__id','base_service__name','base_service__short_name'):
+                promotions_bs[item['base_service__id']] = item
+            
+            for p in promotions_items:
+                promotions_dict[p.promotion_id].append(p)
+            
             if promotions.count():
                 tree_node = {
                     'id':'promotions',
                     'text':u'Акции / Комплексные обследования',
-                    'children':[promo_dict(promo) for promo in promotions],
+                    'children':[promo_dict({'items':promotions_dict[promo.id],
+                                            'id':promo.id,
+                                            'name':promo.name,
+                                            'discount_id':promo.discount_id,
+                                            'total_price':promo.total_price}) \
+                                 for promo in promotions],
                     'leaf':False,
                     'singleClickExpand':True
                 }

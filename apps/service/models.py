@@ -13,6 +13,7 @@ from mptt.models import MPTTModel
 import datetime
 from state.models import State
 from constance import config
+from collections import defaultdict
 
 
 class ICD10(MPTTModel):
@@ -175,6 +176,7 @@ class BaseService(models.Model):
     staff = models.ManyToManyField(Position, verbose_name=u'Кем выполняется', null=True, blank=True)
     
     _top = {}
+    _parents = {}
     
     def __unicode__(self):
         #return "%s %s" % (self.code, self.name)
@@ -251,8 +253,16 @@ class BaseService(models.Model):
             except:
                 pass
         return self.__unicode__()
-            
-        
+    
+    def get_parent(self):
+        if self.id not in BaseService._parents:
+            return None
+        return BaseService._parents[self.id]
+    
+    @classmethod
+    def cache_parents(self):
+        services = BaseService.objects.all().order_by(BaseService._meta.tree_id_attr, BaseService._meta.left_attr, 'level')
+        BaseService._parents = dict([(s['id'],s['parent__id']) for s in services.values('parent__id','id')])
     
     def get_absolute_url(self):
         return "/service/baseservice/%s/" % self.id
@@ -300,6 +310,18 @@ class ExtendedService(models.Model):
     staff = models.ManyToManyField(Position, verbose_name=u'Кем выполняется', null=True, blank=True)
     
     objects = ExtendedServiceManager()
+    
+    @classmethod
+    def get_all_staff(cls):
+        services = ExtendedService.objects.all().values('base_service__id','staff__id','staff__staff__last_name','staff__staff__first_name','staff__staff__mid_name','staff__title')
+        
+        r = defaultdict(list)
+        
+        for s in services:
+            if s['staff__id']:
+                r[s['base_service__id']].append([s['staff__id'], u'%s %s. %s., %s' % ( s['staff__staff__last_name'], s['staff__staff__first_name'] and s['staff__staff__first_name'][0] or u'', s['staff__staff__mid_name'] and s['staff__staff__mid_name'][0] or u'', s['staff__title'] )])
+        
+        return r
     
     def get_actual_price(self, date=None, payment_type=u'н', payer=None):
         args = {}

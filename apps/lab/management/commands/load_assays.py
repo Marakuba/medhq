@@ -25,6 +25,6 @@ class Command(BaseCommand):
                 assay.code = assay_code
                 assay.save()
             except ObjectDoesNotExist:
-                print u"Service %s (%s) not found" % (service_name, service_code)
+                print u"Service '%s' (%s) with assay '%s' not found" % (service_name, service_code, assay_name)
             except Exception, err:
                 print "Error:", err.__unicode__()

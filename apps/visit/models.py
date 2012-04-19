@@ -289,7 +289,6 @@ class OrderedService(make_operator_object('ordered_service')):
     
     def save(self, *args, **kwargs):
         pt = self.order.payment_type or u'н'
-        print pt
         if self.assigment and self.assigment.price:
             price = self.assigment.price
         else:

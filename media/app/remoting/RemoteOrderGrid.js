@@ -4,6 +4,8 @@ App.remoting.RemoteOrderGrid = Ext.extend(Ext.grid.GridPanel, {
 
 	initComponent : function() {
 		
+		this.origTitle = 'Лабораторные заказы';
+		
 		this.store = new Ext.data.RESTStore({
 			autoLoad : false,
 			apiUrl : get_api_url('laborderedservice'),
@@ -152,7 +154,7 @@ App.remoting.RemoteOrderGrid = Ext.extend(Ext.grid.GridPanel, {
 		
 		var config = {
 			closable:true,
-			title:'Лабораторные заказы',
+			title:this.origTitle,
 			loadMask : {
 				msg : 'Подождите, идет загрузка...'
 			},
@@ -200,7 +202,7 @@ App.remoting.RemoteOrderGrid = Ext.extend(Ext.grid.GridPanel, {
 
 		Ext.apply(this, Ext.apply(this.initialConfig, config));
 		App.remoting.RemoteOrderGrid.superclass.initComponent.apply(this, arguments);
-//		App.eventManager.on('globalsearch', this.onGlobalSearch, this);
+		App.eventManager.on('globalsearch', this.onGlobalSearch, this);
 	},
 	
 	manageBtn : function(s) {
@@ -227,7 +229,11 @@ App.remoting.RemoteOrderGrid = Ext.extend(Ext.grid.GridPanel, {
 	},
 	
 	onGlobalSearch : function(v) {
+		this.changeTitle = v!==undefined;
 		this.storeFilter('search', v);
+		if(!v){
+			this.setTitle(this.origTitle);
+		}
 	},
 	
 	storeFilter : function(field, value){
@@ -236,7 +242,14 @@ App.remoting.RemoteOrderGrid = Ext.extend(Ext.grid.GridPanel, {
 		} else {
 			this.store.setBaseParam(field, value);
 		}
-		this.store.load();
+		this.store.load({
+			callback:function(r){
+				if(this.changeTitle){
+					this.setTitle(String.format('{0} ({1})', this.origTitle, r.length));
+				}
+			},
+			scope:this
+		});
 	},
 	
 	getSelected : function() {
