@@ -13,3 +13,4 @@ media/assets
 libs/
 *.orig
 custom/
+dump.rdb

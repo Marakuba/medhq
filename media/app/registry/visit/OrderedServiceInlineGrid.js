@@ -62,6 +62,7 @@ App.visit.OrderedServiceInlineGrid = Ext.extend(Ext.grid.EditorGridPanel, {
 		    listeners:{
 		    	add:this.onSumChange.createDelegate(this),
 		    	remove:this.onSumChange.createDelegate(this),
+		    	clear:this.onSumChange.createDelegate(this),
 //		    	load:this.onSumChange.createDelegate(this),
 		    	exception: function(){
 		    		this.fireEvent('basketexception')
@@ -192,7 +193,7 @@ App.visit.OrderedServiceInlineGrid = Ext.extend(Ext.grid.EditorGridPanel, {
 		this.delAllBtn = new Ext.Button({
 			iconCls:'silk-delete',
 			text:'Удалить все',
-			disabled:true,
+			disabled:this.record,
 			handler:this.delAllRow.createDelegate(this)
 		});
 		
@@ -217,7 +218,6 @@ App.visit.OrderedServiceInlineGrid = Ext.extend(Ext.grid.EditorGridPanel, {
 				listeners: {
 					rowselect: function(sm,i,rec) {
 						this.delBtn.setDisabled(!rec.phantom);
-						this.delAllBtn.setDisabled(this.record);
 						if (sm.selections.items.length == 1){
 							this.changeStaffBtn.setDisabled(false);
 						} else {
@@ -308,6 +308,7 @@ App.visit.OrderedServiceInlineGrid = Ext.extend(Ext.grid.EditorGridPanel, {
 		});
 		this.store.add(s);
 		this.getView().focusRow(this.store.getCount()-1);
+		this.fireEvent('editstore');
 	},
 	
 	addRow: function(attrs, can_duplicate, callback, scope) {
@@ -326,7 +327,10 @@ App.visit.OrderedServiceInlineGrid = Ext.extend(Ext.grid.EditorGridPanel, {
                 }
             });
             if (has_record) {
-            	return false;
+            	if(callback) {
+					Ext.callback(callback,scope, [false]);
+				};
+        		return false;
             };
 		}
 		if(attrs.staff){
@@ -341,7 +345,7 @@ App.visit.OrderedServiceInlineGrid = Ext.extend(Ext.grid.EditorGridPanel, {
 						this.addRecord(attrs);
 					}
 					if(callback) {
-						Ext.callback(callback, scope);
+						Ext.callback(callback,scope, [true]);
 					}
 				},
 				scope:this
@@ -349,25 +353,24 @@ App.visit.OrderedServiceInlineGrid = Ext.extend(Ext.grid.EditorGridPanel, {
 		} else {
 			this.addRecord(attrs);
 			if(callback) {
-				Ext.callback(callback, scope);
+				Ext.callback(callback,scope, [true]);
 			}
 		}
 	},
 	
 	delRow: function() {
-		rec = this.getSelectionModel().getSelected();
-		if(rec.phantom) {
-			this.store.remove(rec);
-		}
-	},
-	
-	delAllRow: function() {
 		records = this.getSelectionModel().getSelections();
 		Ext.each(records,function(rec){
 			if(rec.phantom) {
 				this.store.remove(rec);
 			}
-		})
+		});
+		this.fireEvent('action');
+	},
+	
+	delAllRow: function() {
+		this.store.removeAll();
+		this.fireEvent('action');
 	},
 	
 	changeStaff: function() {

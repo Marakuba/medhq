@@ -44,7 +44,8 @@ App.visit.VisitForm = Ext.extend(Ext.FormPanel, {
 				scope:this,
 				basketexception:function(){
 					this.fireEvent('basketexception')
-				}
+				},
+				action:this.saveAction
 			}
 		});
 		
@@ -679,14 +680,22 @@ App.visit.VisitForm = Ext.extend(Ext.FormPanel, {
 	onServiceClick : function(node) {
 		var a = node.attributes;
 		if (a.isComplex) {
-			this.cNodes = a.nodes;
+			this.cNodes = new Array();
+			this.cNodes = this.cNodes.concat(a.nodes);
+			this.rowAdded = false;
 			complexAdd = function() {
 				var item = this.cNodes.pop();
-				this.addRow(item, function(){
+				this.addRow(item, function(added){
+					if (added){
+						this.rowAdded = added;
+					};
 					if(this.cNodes.length) {
 						complexAdd.createDelegate(this,[])();
-					};
-					this.saveAction();
+					} else {
+						if (this.rowAdded){
+							this.saveAction();
+						}
+					}
 				}, this);
 			}
 			complexAdd.createDelegate(this,[])();
