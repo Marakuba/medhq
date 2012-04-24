@@ -173,6 +173,27 @@ class ContractManager(models.Manager):
         except Exception, err:
             return None
 
+
+CONTRACT_TYPES = (
+    (u'р',u'Разовый'),
+    (u'с',u'Срочный'),
+    (u'г',u'До конца года'),
+    (u'б',u'Бессрочный'),
+)
+
+class ContractType(models.Model):
+    title = models.CharField(u'Наименование',max_length=100)
+    validity = models.IntegerField(u'Срок действия')
+    type = models.CharField(u'Тип контракта', choices=CONTRACT_TYPES,default=u'г', max_length=1)
+    
+    def __unicode__(self):
+        return u"%s, %s" % (self.title, self.get_type_display())
+    
+    class Meta:
+        verbose_name = u'тип договора'
+        verbose_name_plural = u'типы договора'
+        
+        
 class Contract(models.Model):
     """
     """
@@ -180,6 +201,8 @@ class Contract(models.Model):
     created = models.DateField(u'Дата заключения')
     expire = models.DateField(u'Заключен до')
     active = models.BooleanField(u'Действующий', default=True)
+    state = models.ForeignKey(State, null=True, blank=True)
+    contract_type = models.ForeignKey(ContractType, null=True, blank=True)
     
     objects = ContractManager()
         
@@ -193,7 +216,7 @@ class Contract(models.Model):
         verbose_name = u'договор'
         verbose_name_plural = u'договоры'
         
-
+        
 class CardType(models.Model):
     title = models.CharField(max_length=100)
     

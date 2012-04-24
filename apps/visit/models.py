@@ -151,6 +151,7 @@ class Visit(make_operator_object('visit')):
     is_cito = models.BooleanField(u'Cito', default=False)
     comment = models.TextField(u'Дополнительная информация, комментарии',
                                null=True, blank=True)
+    contract = models.ForeignKey('patient.Contract', null=True, blank=True)
     
     objects = models.Manager()
     

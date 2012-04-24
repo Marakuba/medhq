@@ -13,6 +13,7 @@ from lab.models import LabOrder
 from django.http import HttpResponse
 from patient.forms import ContractForm
 import datetime
+from medhq.apps.patient.models import ContractType
 
 class InsurancePolicyInlineAdmin(admin.TabularInline):
     model = InsurancePolicy
@@ -162,8 +163,9 @@ class PatientAdmin(OperatorAdmin, TabbedMedia):
             url(r'^(?P<object_id>\d+)/print_card_face/$', self.print_card_face, name="print_card_face"),
         )
         return my_urls + urls
-
+    
 
 admin.site.register(Patient, PatientAdmin)
 admin.site.register(Contract)
 admin.site.register(InsurancePolicy)
+admin.site.register(ContractType)

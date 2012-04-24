@@ -111,6 +111,7 @@ js_registry = Bundle(
     'app/registry/patient/VisitGrid.js',
     'app/registry/patient/ServiceGrid.js',
     'app/registry/patient/RefundGrid.js',
+    'app/registry/patient/ContractGrid.js',
     'app/registry/patient/IDCardForm.js',
     'app/registry/patient/PatientForm.js',
     'app/registry/patient/PatientWindow.js',

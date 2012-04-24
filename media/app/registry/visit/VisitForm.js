@@ -151,6 +151,77 @@ App.visit.VisitForm = Ext.extend(Ext.FormPanel, {
 			}]			
 		});
 		
+		this.contractCmb = new Ext.form.LazyClearableComboBox({
+//			id:'visit-policy-cmb',
+        	fieldLabel:'Договор',
+			anchor:'98%',
+        	name:'contract',
+        	store:new Ext.data.JsonStore({
+        		autoSave:true,
+    			proxy: new Ext.data.HttpProxy({
+    				url:get_api_url('contract'),
+    				method:'GET'
+    			}),
+    			root:'objects',
+    			idProperty:'resource_uri',
+    			fields:['resource_uri','patient','created','expire','active','state','id','name','state_name']
+    		}),
+		    displayField: 'name',
+		    listeners:{
+		    	select: function(combo,record){
+		    	},
+		    	scope:this
+		    }
+		});
+
+		
+		this.contractBar = new Ext.Panel({
+			layout:'hbox',
+			defaults:{
+				baseCls:'x-border-layout-ct',
+				border:false
+			},
+			items:[{
+				flex:1,
+				layout:'form',
+				items:this.contractCmb
+			},{
+				//columnWidth:0.20,
+				width:30,
+				items:{
+					xtype:'button',
+					//text:'Добавить',
+					iconCls:'silk-add',
+					handler:function(){
+						var win;
+						var contractGrid = new App.patient.ContractGrid({
+							showChoiceButton: true,
+							layout:'fit',
+							store:this.contractCmb.store,
+							record:this.patientRecord,
+							fn: function(record){
+								if (record){
+									this.contractCmb.forceValue(record.data.resource_uri);
+								};
+								win.close();
+							},
+							scope:this
+						})
+						win = new Ext.Window({
+							items:[contractGrid],
+							modal:true,
+							layout:'fit',
+							width:500,
+							height:400
+						});
+						win.show(this);
+						
+					},
+					scope:this
+				}
+			}]			
+		});
+		
 		
 		this.payerCmb = new Ext.form.LazyComboBox({
 	        	fieldLabel:'Плательщик',
@@ -465,7 +536,8 @@ App.visit.VisitForm = Ext.extend(Ext.FormPanel, {
 	        			this.menstruation, 
 	        			this.diagnosis,
 	        			this.comment,
-	        			this.barcode
+	        			this.barcode,
+	        			this.contractBar
 	        		]
         		},{
         			flex:60,
@@ -491,8 +563,8 @@ App.visit.VisitForm = Ext.extend(Ext.FormPanel, {
 						border:false
 					},
         			items:[
+        				this.referralBar,
         				this.payerCmb,
-        				this.referralBar,  
 	        			this.sample,
 	        			{
 	        				layout:'column',
@@ -924,6 +996,17 @@ App.visit.VisitForm = Ext.extend(Ext.FormPanel, {
 		this.getForm().findField('patient').setValue(this.patientRecord.data.resource_uri);
 	},
 	
+	setContractRecord: function(patientId){
+		this.contractCmb.store.setBaseParam('patient',patientId);
+		this.contractCmb.store.setBaseParam('active',true);
+		this.contractCmb.store.setBaseParam('state',state);
+		this.contractCmb.store.load({callback:function(records){
+			if (!records.length) return false;
+			this.contractCmb.setValue(records[0].data.resource_uri)
+			
+		},scope:this})
+	},
+	
 	setVisitRecord: function(record,patientRecord){
 		if(record) {
 			this.record = record;
@@ -939,6 +1022,7 @@ App.visit.VisitForm = Ext.extend(Ext.FormPanel, {
 			this.onPaymentTypeChoice(this.record.data.payment_type);
 			this.payerCmb.disable();
 			this.policyCmb.disable();
+			this.contractCmb.disable();
 		};
 	},
 	

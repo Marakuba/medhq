@@ -8,6 +8,18 @@ App.models.barcodeModel = new Ext.data.Record.create([
 	{name: 'duplicates'}
 ]);
 
+App.models.contractModel = new Ext.data.Record.create([
+    {name: 'id'},
+	{name: 'state'},
+	{name: 'state_name'},
+	{name: 'patient'},
+	{name: 'contract_type'},
+	{name: 'contract_type_name'},
+	{name: 'created'},
+	{name: 'expire'},
+	{name: 'active'}
+]);
+
 App.models.paymentModel = new Ext.data.Record.create([
     {name: 'id'},
     {name: 'doc_date', allowBlank: true, type:'date', format: 'd.m.Y'}, 

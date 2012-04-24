@@ -16,12 +16,23 @@ App.patient.PatientForm = Ext.extend(Ext.form.FormPanel, {
 			}
 		});
 		
+		this.contractGrid = new App.patient.ContractGrid({
+			record:this.record,
+			listeners:{
+				scope:this,
+				exception:function(){
+					this.fireEvent('exception')
+				}
+			}
+		});
+		
 		this.idCard = new App.patient.IDCardForm({
 			record:this.record
 		})
 		
 		this.inlines.add('inspolicy', this.insPolicy);
 		this.inlines.add('idcard', this.idCard);
+		this.inlines.add('inspolicy', this.contractGrid);
 		
 		this.cl_acc_grid = new App.patient.ClientAccountGrid({
 			clientHidden : true	,
@@ -107,7 +118,9 @@ App.patient.PatientForm = Ext.extend(Ext.form.FormPanel, {
 				title:'ДМС',
 				layout:'fit',
 				items:[this.insPolicy]
-			},this.cl_acc_grid
+			},
+			this.cl_acc_grid,
+			this.contractGrid
 			
 			]
 		});
@@ -223,15 +236,21 @@ App.patient.PatientForm = Ext.extend(Ext.form.FormPanel, {
 		Ext.apply(this, Ext.apply(this.initialConfig, config));
 		App.patient.PatientForm.superclass.initComponent.apply(this, arguments);
 		
-		this.insPolicy.store.on('write', this.policyStoreWrite, this);
+		this.contractGrid.store.on('write', this.popStep, this);
+		this.insPolicy.store.on('write', this.popStep, this);
 		this.on('afterrender', function(){
 			if(this.record) {
 				this.getForm().loadRecord(this.record);
+				this.inlines.each(function(inline,i,l){
+					if (inline.setPatientRecord){
+						inline.setPatientRecord(this.record)
+					}
+				});
 			};
 		},this);
 	},
 	
-	policyStoreWrite: function(){
+	popStep: function(){
 		this.fireEvent('popstep');
 	},
 	

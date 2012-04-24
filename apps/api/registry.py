@@ -42,6 +42,7 @@ from constance import config
 from promotion.models import Promotion
 from remoting.models import RemoteState
 from api.authorization import LocalAuthorization
+from medhq.apps.patient.models import ContractType, Contract
 
 class UserResource(ModelResource):
 
@@ -157,8 +158,8 @@ class PatientResource(ExtResource):
         return bundle
     
     def dehydrate(self, bundle):
-        if hasattr(bundle.request,'active_profile'):
-            active_state = bundle.request.active_profile.department.state
+        if hasattr(self,'orig_request') and self.orig_request:
+            active_state = self.orig_request.active_profile.department.state
             bundle.data['accepted'] = bundle.obj.get_accepted_date(active_state)
         bundle.data['discount_name'] = bundle.obj.discount and bundle.obj.discount or u'0%'
         bundle.data['full_name'] = bundle.obj.full_name()
@@ -208,6 +209,44 @@ class PatientResource(ExtResource):
             'full_name':('istartswith',),
             'discount':ALL_WITH_RELATIONS,
             'state':ALL_WITH_RELATIONS
+        }
+
+class ContractTypeResource(ExtResource):
+    class Meta:
+        queryset = ContractType.objects.all() #@UndefinedVariable
+        resource_name = 'contracttype'
+        default_format = 'application/json'
+        authorization = DjangoAuthorization()
+        filtering = {
+            'type':('istartswith',),
+            'title':ALL,
+            'validity':ALL,
+            'id':ALL
+        }
+    
+        
+class ContractResource(ExtResource):
+    patient = fields.ForeignKey(PatientResource, 'patient')
+    state = fields.ForeignKey('api.registry.OwnStateResource', 'state', null = True)
+    contact_type = fields.ForeignKey(ContractTypeResource, 'contract_type', null = True)
+    
+    def dehydrate(self, bundle):
+        bundle.data['name'] = bundle.obj.__unicode__()
+        bundle.data['state_name'] = bundle.obj.state and bundle.obj.state.name
+        bundle.data['contract_type_name'] = bundle.obj.contract_type and bundle.obj.contract_type.title
+        return bundle
+    
+    class Meta:
+        queryset = Contract.objects.select_related().all().order_by('created')
+        resource_name = 'contract'
+        default_format = 'application/json'
+        authorization = DjangoAuthorization()
+        filtering = {
+            'patient':ALL_WITH_RELATIONS,
+            'state':ALL_WITH_RELATIONS,
+            'contract_type':ALL_WITH_RELATIONS,
+            'active':ALL,
+            'id':ALL
         }
         
 class DebtorResource(ExtResource):
@@ -460,6 +499,7 @@ class VisitResource(ExtResource):
     discount = fields.ToOneField(DiscountResource,'discount', null=True)
     barcode = fields.ForeignKey(BarcodeResource,'barcode', null=True)
     insurance_policy = fields.ToOneField(InsurancePolicyResource,'insurance_policy', null=True)
+    contract = fields.ForeignKey(ContractResource, 'contract', null=True)
 
     def obj_create(self, bundle, request=None, **kwargs):
         kwargs['operator']=request.user
@@ -2182,6 +2222,8 @@ api.register(UserResource())
 #patient
 api.register(PatientResource())
 api.register(InsurancePolicyResource())
+api.register(ContractResource())
+api.register(ContractTypeResource())
 
 #visit
 api.register(VisitResource())
