@@ -3,6 +3,8 @@ Ext.ns('App');
 App.Patients = Ext.extend(Ext.Panel, {
 	initComponent:function(){
 		
+		this.patientFields = new Array("last_name","first_name","mid_name","second_name","mobile_phone","email","birth_day");
+		
 		this.patientGrid = new App.patient.PatientGrid({
 			region:'center'
 		});
@@ -43,8 +45,40 @@ App.Patients = Ext.extend(Ext.Panel, {
 				scope:this,
 				qtip:'Закрыть карту'
 			}],
-			items:[this.patientCard]
+			items:[this.patientCard],
+			listeners: {
+		        render: function(p) {
+		            p.getEl().on('click', this.onCardPanelClick.createDelegate(this, [p], true));
+		        },
+		        scope:this
+		    }
 		});
+		
+		this.editorCfg = {
+                    shadow: false,
+                    completeOnEnter: true,
+                    cancelOnEsc: true,
+                    updateEl: true,
+                    ignoreNoChange: true
+                };
+		
+		this.patientEditor = new Ext.Editor(Ext.apply({
+                alignment: 'l-l',
+                field: {
+                    allowBlank: true,
+                    xtype: 'textfield',
+                    width: 90,
+                    selectOnFocus: true
+                },
+                listeners: {
+                        complete: function(ed, value){
+                        	var fieldName = ed.boundEl.id
+                            this.patient.set(fieldName,value);
+                            return true;
+                        },
+                        scope:this
+                }
+            }, this.editorCfg));
 
 		this.quickForm = new App.patient.QuickForm({
 			region:'south'
@@ -94,10 +128,14 @@ App.Patients = Ext.extend(Ext.Panel, {
 				'{ad_source_name:this.isEmpty}',
 			'</ul>',
 			'<h1>',
-				'<span>{last_name}<span> <span>{first_name}</span> <span>{mid_name}</span>',
+				'<span id="last_name" class = "last_name">{last_name}</span>',
+				' ','<span id="first_name" class="first_name">{first_name}</span>',
+				' ', '<span id="mid_name" class="mid_name">{mid_name}</span>',
 			'</h1> ',
 			'<div>',
-				'Дата рождения: <span>{birth_day:this.parseDate}</span> Телефон: <span>{mobile_phone}</span>',
+				'Дата рождения: ','<span id="birth_day" class="birth_day">{birth_day:this.parseDate}</span>',
+				' Телефон: <span id="mobile_phone" class="mobile_phone">{mobile_phone}</span>',
+				' email: <span id="email" class="email">{email:this.nullFormatter}</span>',
 			'</div> ',
 			'<div>',
 				'Скидка: <span>{discount_name}</span> ',
@@ -113,7 +151,10 @@ App.Patients = Ext.extend(Ext.Panel, {
 			},
 			parseDate : function(v){
 				return Ext.util.Format.date(v,'d.m.Y')
-			}
+			},
+			
+			nullFormatter: function(v) 
+	    		{ return v ? v : 'не указано'; }
 		}
 	),
 	
@@ -137,6 +178,7 @@ App.Patients = Ext.extend(Ext.Panel, {
 	
 	patientSelect: function(rec){
 		var d = {};
+		this.patient = rec;
 		Ext.apply(d, rec.data);
 		if(rec.data.balance>0) {
 			d.color='green';
@@ -148,6 +190,18 @@ App.Patients = Ext.extend(Ext.Panel, {
 		this.cardPanel.setTitle(this.titleTpl.apply(d));
 		this.quickForm.setActiveRecord(rec);
 		this.patientCard.setActivePatient.createDelegate(this.patientCard,[rec])();
+	},
+	
+	onCardPanelClick : function(a,p,c) {
+		if (!p.classList.length){
+			return false;
+		};
+		var g = p.classList[0];
+		for(var i = 0; i < this.patientFields.length; i++) { 
+			if (g == this.patientFields[i]){
+				this.patientEditor.startEdit(p)
+			}
+		}
 	}
 });
 
