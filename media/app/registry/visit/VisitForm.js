@@ -179,6 +179,20 @@ App.visit.VisitForm = Ext.extend(Ext.FormPanel, {
 		    }
 		});
 
+		this.contractAddBtn = new Ext.Button({
+			iconCls:'silk-add',
+			handler:this.contractChoice,
+			scope:this
+		});
+		
+		this.contractSplitBtn = new Ext.SplitButton({
+			iconCls:'silk-printer',
+			handler:this.contractPrint,
+			menu: new Ext.menu.Menu({
+				items:[{iconCls:'silk-add', handler:this.contractChoice}]
+			}),
+			scope:this
+		});
 		
 		this.contractBar = new Ext.Panel({
 			layout:'hbox',
@@ -190,40 +204,6 @@ App.visit.VisitForm = Ext.extend(Ext.FormPanel, {
 				flex:0.99,
 				layout:'form',
 				items:this.contractCmb
-			},{
-				//columnWidth:0.20,
-				width:30,
-				items:{
-					xtype:'button',
-					//text:'Добавить',
-					iconCls:'silk-add',
-					handler:function(){
-						var win;
-						var contractGrid = new App.patient.ContractGrid({
-							showChoiceButton: true,
-							layout:'fit',
-							store:this.contractCmb.store,
-							record:this.patientRecord,
-							fn: function(record){
-								if (record){
-									this.contractCmb.forceValue(record.data.resource_uri);
-								};
-								win.close();
-							},
-							scope:this
-						})
-						win = new Ext.Window({
-							items:[contractGrid],
-							modal:true,
-							layout:'fit',
-							width:500,
-							height:400
-						});
-						win.show(this);
-						
-					},
-					scope:this
-				}
 			}]			
 		});
 		
@@ -1098,10 +1078,19 @@ App.visit.VisitForm = Ext.extend(Ext.FormPanel, {
 		this.contractCmb.store.setBaseParam('patient',patientId);
 		this.contractCmb.store.setBaseParam('active',true);
 		this.contractCmb.store.setBaseParam('state',state);
+		var item = {
+			width:30,
+			items:[]
+		}; 
 		this.contractCmb.store.load({callback:function(records){
-			if (!records.length) return false;
-			this.contractCmb.setValue(records[0].data.resource_uri)
-			
+			if (records.length){
+				this.contractCmb.setValue(records[0].data.resource_uri)
+				item.items.push(this.contractSplitBtn)
+			} else {
+				item.items.push(this.contractAddBtn)
+			}
+			this.contractBar.add(item);
+			this.doLayout();
 		},scope:this})
 	},
 	
@@ -1323,7 +1312,35 @@ App.visit.VisitForm = Ext.extend(Ext.FormPanel, {
 			}
 		})
 		return ptype
-	}
+	},
+	
+	contractChoice: function(){
+		var win;
+		var contractGrid = new App.patient.ContractGrid({
+			showChoiceButton: true,
+			layout:'fit',
+			store:this.contractCmb.store,
+			record:this.patientRecord,
+			fn: function(record){
+				if (record){
+					this.contractCmb.forceValue(record.data.resource_uri);
+				};
+				win.close();
+			},
+			scope:this
+		})
+		win = new Ext.Window({
+			items:[contractGrid],
+			modal:true,
+			layout:'fit',
+			width:500,
+			height:400
+		});
+		win.show(this);
+		
+	},
+	
+	contractPrint: function(){}
 });
 
 Ext.reg('visitform', App.visit.VisitForm);
