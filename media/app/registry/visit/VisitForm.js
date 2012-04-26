@@ -412,20 +412,12 @@ App.visit.VisitForm = Ext.extend(Ext.FormPanel, {
 			}
 		};
 		
-		this.paymentTypeGroup = new Ext.Panel({
-			labelWidth:100,
-			baseCls:'x-border-layout-ct',
-			bodyStyle: 'padding:5px',
-			margins:'0 0 5 0',
-	        border:false,
-			layout:'hbox',
-			items: [
+		this.paymentTypeItems = [
 			{
 				xtype:'box',
 				html:'Форма оплаты: ',
 				baseCls:'x-border-layout-ct'
-			},{
-				xtype:'button',
+			},new Ext.Button({
 				enableToggle:true,
 				toggleGroup:'ex-ptype-cls',
 				text:'Касса',
@@ -433,23 +425,32 @@ App.visit.VisitForm = Ext.extend(Ext.FormPanel, {
 				pressed: true,
 				handler:this.onPaymentTypeChoice.createDelegate(this,['н']),
 				scope:this
-			},{
-				xtype:'button',
+			}),
+			new Ext.Button({
 				enableToggle:true,
 				toggleGroup:'ex-ptype-cls',
 				text:'Юридическое лицо',
 				ptype:'б',
 				handler:this.onPaymentTypeChoice.createDelegate(this,['б']),
 				scope:this
-			},{
-				xtype:'button',
+			}),
+			new Ext.Button({
 				enableToggle:true,
 				toggleGroup:'ex-ptype-cls',
 				text:'ДМС',
 				ptype:'д',
 				handler:this.onPaymentTypeChoice.createDelegate(this,['д']),
 				scope:this
-			}]
+			})]
+		
+		this.paymentTypeGroup = new Ext.Panel({
+			labelWidth:100,
+			baseCls:'x-border-layout-ct',
+			bodyStyle: 'padding:5px',
+			margins:'0 0 5 0',
+	        border:false,
+			layout:'hbox',
+			items: this.paymentTypeItems
 		}),
 		
 		this.paymentTypeCB = new Ext.form.ComboBox({
@@ -571,10 +572,17 @@ App.visit.VisitForm = Ext.extend(Ext.FormPanel, {
 			text:'Дополнительно. Свернуть',
 			handler:this.hideAdPanel.createDelegate(this,[]),
 			scope:this
+		});
+		
+		this.paymentTypeField = new Ext.form.Hidden({
+			name:'payment_type',
+			value:'н'
 		})
 		
 		this.types = {
-			visit:[{
+			visit:[
+				this.paymentTypeField,
+				{
         			xtype:'hidden',
         			name:'cls',
         			value:'п'
@@ -668,7 +676,7 @@ App.visit.VisitForm = Ext.extend(Ext.FormPanel, {
 
 		this.generalPanel = new Ext.Panel({
 			region:'north',
-    		height:250,
+    		height:260,
     		layout:'hbox',
     		border:false,
     		baseCls:'x-border-layout-ct',
@@ -945,6 +953,8 @@ App.visit.VisitForm = Ext.extend(Ext.FormPanel, {
 	
 	onPaymentTypeChoice : function(id){
 		
+		this.paymentTypeField.setValue(id);
+		
 		switch(id){
 			case 'д':
 				this.hidePaymentCmb('payer');
@@ -991,7 +1001,10 @@ App.visit.VisitForm = Ext.extend(Ext.FormPanel, {
 		};
 		var base_services = this.orderedService.store.data.items;
 		//если услуг нет, ничего выполнять не надо
-		if (!base_services.length) return false
+		if (!base_services.length) {
+			this.saveAction();
+			return false
+		};
 		var bs_ids = {} // список услуг, который был до обновления цен
 		var id_list = [] // передается на сервер для выборки цен
 		//сервер возвращает услуги с id формата 'idУслуги_idМестаВыполнения' - содержимое переменной comp_id
@@ -1223,16 +1236,17 @@ App.visit.VisitForm = Ext.extend(Ext.FormPanel, {
 		} else {
 			this.reloadTree(ptype,payer_id)
 		}
-		this.paymentTypeGroup.setValue(ptype);
+		this.setPTypeValue(ptype);
+		this.paymentTypeField.setValue(ptype);
 		switch(ptype){
 			case 'д':
 				if (policy){
-					this.polisyCmb.setValue(policy);
+					this.policyCmb.setValue(policy);
 				} else {
-					this.polisyCmb.setRawValue('');
-			    	this.polisyCmb.originalValue = '';
-			    	this.polisyCmb.value = '';
-					this.polisyCmb.reset();
+					this.policyCmb.setRawValue('');
+			    	this.policyCmb.originalValue = '';
+			    	this.policyCmb.value = '';
+					this.policyCmb.reset();
 				};
 				this.policyCmb.setValue(actionItem['policy']);
 				this.hidePaymentCmb('payer');
@@ -1282,23 +1296,20 @@ App.visit.VisitForm = Ext.extend(Ext.FormPanel, {
 	},
 	
 	setPTypeValue: function(ptype){
-		console.log(this.paymentTypeGroup.items)
-//		for (item in this.paymentTypeGroup.items){
-//			console.log(item);
-//			if(this.items[item].ptype == ptype){
-//				this.items[item].toggle();
-//			}
-//		}
+		Ext.each(this.paymentTypeItems,function(item){
+			if(item.ptype == ptype && !item.pressed){
+				item.toggle();
+			}
+		})
 	},
 	getPTypeValue: function(ptype){
-//		return Ext.each(this.paymentTypeGroup.items,function(item){
-//			console.log(item);
-//			if(this.items[item].toggled){
-//				return this.items[item].ptype
-//			} else {
-//				return ''
-//			}
-//		})
+		var ptype = ''
+		Ext.each(this.paymentTypeItems,function(item){
+			if(item.pressed){
+				ptype = item.ptype
+			}
+		})
+		return ptype
 	}
 });
 
