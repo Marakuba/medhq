@@ -199,7 +199,7 @@ App.registry.PreorderGrid = Ext.extend(Ext.grid.GridPanel, {
 			listeners: {
 				select: function(df, date){
 					this.start_date = date;
-					this.storeFilter('timeslot__start__range',String.format('{0},{1}',this.start_date.format('Y-m-d 00:00'),this.start_date.format('Y-m-d 23:59')));
+					this.storeDateFilter('timeslot__start',this.start_date);
 				},
 				scope:this
 			}
@@ -300,7 +300,12 @@ App.registry.PreorderGrid = Ext.extend(Ext.grid.GridPanel, {
 		this.on('serviceselect', this.onServiceSelect, this);
 		this.on('afterrender', function(){
 			if (!this.hasPatient){
-				this.store.setBaseParam('timeslot__start__range',String.format('{0},{1}',this.start_date.format('Y-m-d 00:00'),this.start_date.format('Y-m-d 23:59')))
+				var day = this.start_date.getDate();
+				var month = this.start_date.getMonth()+1;
+				var year = this.start_date.getFullYear();
+				this.store.setBaseParam('timeslot__start__year', year);
+				this.store.setBaseParam('timeslot__start__month', month);
+				this.store.setBaseParam('timeslot__start__day', day);
 				this.store.setBaseParam('timeslot__isnull',false);
 				this.store.load();
 			}
@@ -418,14 +423,14 @@ App.registry.PreorderGrid = Ext.extend(Ext.grid.GridPanel, {
 	onPrevClick: function(){
 		this.start_date = this.start_date.add(Date.DAY,-1);
 		this.startDateField.setValue(this.start_date);
-		this.storeFilter('timeslot__start__range',String.format('{0},{1}',this.start_date.format('Y-m-d 00:00'),this.start_date.format('Y-m-d 23:59')));
+		this.storeDateFilter('timeslot__start',this.start_date);
 		this.btnSetDisabled(true);
 	},
 	
 	onNextClick: function(){
 		this.start_date = this.start_date.add(Date.DAY,1);
 		this.startDateField.setValue(this.start_date);
-		this.storeFilter('timeslot__start__range',String.format('{0},{1}',this.start_date.format('Y-m-d 00:00'),this.start_date.format('Y-m-d 23:59')));
+		this.storeDateFilter('timeslot__start',this.start_date);
 		this.btnSetDisabled(true);
 	},
 	

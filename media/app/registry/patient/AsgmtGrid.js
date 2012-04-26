@@ -18,7 +18,7 @@ App.patient.AsgmtGrid = Ext.extend(Ext.grid.EditorGridPanel, {
 			listeners: {
 				select: function(df, date){
 					this.start_date = date;
-					this.storeFilter('expiration__range',String.format('{0},{1}',this.start_date.format('Y-m-d 00:00'),this.start_date.format('Y-m-d 23:59')));
+					this.storeDateFilter('expiration',this.start_date);
 				},
 				scope:this
 			}
@@ -321,7 +321,12 @@ App.patient.AsgmtGrid = Ext.extend(Ext.grid.EditorGridPanel, {
 		
 		this.on('afterrender', function(){
 			if (!this.hasPatient){
-				this.store.setBaseParam('expiration__range',String.format('{0},{1}',this.start_date.format('Y-m-d 00:00'),this.start_date.format('Y-m-d 23:59')))
+				var day = this.start_date.getDate();
+				var month = this.start_date.getMonth()+1;
+				var year = this.start_date.getFullYear();
+				this.store.setBaseParam('expiration__year', year);
+				this.store.setBaseParam('expiration__month', month);
+				this.store.setBaseParam('expiration__day', day);
 				this.store.load();
 			}
 		},this);
@@ -568,17 +573,41 @@ App.patient.AsgmtGrid = Ext.extend(Ext.grid.EditorGridPanel, {
 		this.btnSetDisabled(true);
 	},
 	
+	storeDateFilter: function(field, value){
+		if(!value) {
+			delete this.store.baseParams[field+'__year'];
+			delete this.store.baseParams[field+'__month'];
+			delete this.store.baseParams[field+'__day'];
+		} else {
+			var day = value.getDate();
+			var month = value.getMonth()+1;
+			var year = value.getFullYear();
+			this.store.setBaseParam(field+'__year', year);
+			this.store.setBaseParam(field+'__month', month);
+			this.store.setBaseParam(field+'__day', day);
+		}
+		this.store.load({callback:function(){
+			var record = this.getSelected();
+			if (record){
+				this.onServiceSelect(record);
+			} else {
+				this.btnSetDisabled(true);
+			};
+		},scope:this});
+		this.btnSetDisabled(true);
+	},
+	
 	onPrevClick: function(){
 		this.start_date = this.start_date.add(Date.DAY,-1);
 		this.startDateField.setValue(this.start_date);
-		this.storeFilter('expiration__range',String.format('{0},{1}',this.start_date.format('Y-m-d 00:00'),this.start_date.format('Y-m-d 23:59')));
+		this.storeDateFilter('expiration',this.start_date);
 		this.btnSetDisabled(true);
 	},
 	
 	onNextClick: function(){
 		this.start_date = this.start_date.add(Date.DAY,1);
 		this.startDateField.setValue(this.start_date);
-		this.storeFilter('expiration__range',String.format('{0},{1}',this.start_date.format('Y-m-d 00:00'),this.start_date.format('Y-m-d 23:59')));
+		this.storeDateFilter('expiration',this.start_date);
 		this.btnSetDisabled(true);
 	},
 	

@@ -6,6 +6,8 @@ App.visit.VisitForm = Ext.extend(Ext.FormPanel, {
 	
 	initComponent:function(){
 		
+		this.serviceClicked = false;
+		
 		// устанавливается при изменении типа цены;используется для занесения 
 		// в лист истории при изменении плательщика и полиса.
 		this.ptype_id = '';
@@ -837,7 +839,10 @@ App.visit.VisitForm = Ext.extend(Ext.FormPanel, {
 	},
 	
 	onServiceClick : function(node) {
-		this.hideAdPanel(true);
+		if(!this.serviceClicked){
+			this.hideAdPanel(true);
+			this.serviceClicked = true;
+		};
 		var a = node.attributes;
 		if (a.isComplex) {
 			this.cNodes = new Array();
