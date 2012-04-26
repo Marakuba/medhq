@@ -837,6 +837,7 @@ App.visit.VisitForm = Ext.extend(Ext.FormPanel, {
 	},
 	
 	onServiceClick : function(node) {
+		this.hideAdPanel(true);
 		var a = node.attributes;
 		if (a.isComplex) {
 			this.cNodes = new Array();
@@ -1284,9 +1285,9 @@ App.visit.VisitForm = Ext.extend(Ext.FormPanel, {
 		this.orderedService.onSumChange();
 	},
 	
-	hideAdPanel: function(){
+	hideAdPanel: function(hide){
 		var genHeight = this.generalPanel.getHeight();
-		if(this.additionalPanel.hidden){
+		if(this.additionalPanel.hidden && !hide){
 			this.generalPanel.setHeight(genHeight+this.adHeight);
 			this.additionalPanel.show();
 			this.toHideBtn.setText('Дополнительно. Скрыть');
