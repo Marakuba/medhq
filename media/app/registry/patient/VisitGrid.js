@@ -11,16 +11,7 @@ App.patient.VisitGrid = Ext.extend(Ext.grid.GridPanel, {
 		});
 		
 		this.columns =  [
-		    /*{
-		    	width: 1, 
-		    	sortable: true, 
-		    	dataIndex: 'is_billed', 
-		    	renderer: function(val) {
-		    		flag = val ? 'yes' : 'no';
-		    		return "<img src='"+MEDIA_URL+"admin/img/admin/icon-"+flag+".gif'>"
-		    	}
-		    	//editor: new Ext.form.TextField({})
-		    },*/{
+		    {
 		    	width: 30, 
 		    	sortable: true, 
 		    	dataIndex: 'cls', 
@@ -38,22 +29,7 @@ App.patient.VisitGrid = Ext.extend(Ext.grid.GridPanel, {
 		    		}
 		    		return "<img src='"+MEDIA_URL+"resources/css/icons/"+icon+"' title='"+alt+"'>"
 		    	}
-		    },/*{
-		    	header: "№ заказа", 
-		    	width: 15, 
-		    	sortable: true, 
-		    	dataIndex: 'id',
-		    	renderer:function (val){
-		    		if(val){
-			    		width = val.length;
-			    		if (width)
-			    		{
-			    			return new Array(6-width).join("0")+val;
-			    		}
-		    		}
-		    		return '?'
-		    	}
-		    },*/{
+		    },{
 		    	header: "№ заказа", 
 		    	width: 65, 
 		    	sortable: true, 
@@ -75,18 +51,7 @@ App.patient.VisitGrid = Ext.extend(Ext.grid.GridPanel, {
 		    		} 
 		    		return v-(rec.data.discount_value*v/100)
 		    	}
-		    }/*,{
-		    	header: "Оплачено, руб.", 
-		    	width: 20, 
-		    	sortable: true, 
-		    	dataIndex: 'total_paid', 
-		    	renderer: function(v,params,rec){
-		    		if(rec.data.cls=='б'){
-		    			return "---"
-		    		}
-		    		return v
-		    	}
-		    }*/,{
+		    },{
 		    	header: "Скидка, %", 
 		    	width: 70, 
 		    	sortable: true, 
@@ -128,8 +93,7 @@ App.patient.VisitGrid = Ext.extend(Ext.grid.GridPanel, {
 		    	header: "Оператор", 
 		    	width: 100, 
 		    	sortable: true, 
-		    	dataIndex: 'operator_name', 
-		    	//editor: new Ext.form.TextField({})
+		    	dataIndex: 'operator_name'
 		    }
 		];		
 		
@@ -197,35 +161,22 @@ App.patient.VisitGrid = Ext.extend(Ext.grid.GridPanel, {
 				rowdblclick:this.onPrint.createDelegate(this, [])
 			},
 			tbar:{
-//				id:'patient-visit-tbl',
 				xtype:'toolbar',
-				//disabled:true,
 				items:[App.settings.strictMode ? this.materialBtn : this.completeBtn, 
 				this.editBtn,'-',{
 					xtype:'button',
 					text:'Пробирки',
 					handler:this.onSamplingEdit.createDelegate(this, [])
 				},'-',{
-//					id:'barcode-print-btn',
 					text:'Печать штрих-кодов',
 					handler:this.printBarcode.createDelegate(this,[])
 	        	},{
-//					id:'sampling-print-btn',
 					text:'Печать заказа',
 					handler:this.toPrint.createDelegate(this,['sampling'])
 	        	},{
-//					id:'visit-print-btn',
 					text:'Печать счета',
 					handler:this.toPrint.createDelegate(this,['visit'])
-	        	},'->',{
-//	        		id:'office-toggle',
-	        		xtype:'checkbox',
-	        		boxLabel:'Документы своего офиса',
-	        		handler:function(){
-	        			this.storeFilter('office',Ext.getCmp('office-toggle').getValue() ? active_state_id : undefined);
-	        		},
-	        		scope:this
-	        	}]
+	        	},'->']
 			},
 	        bbar: new Ext.PagingToolbar({
 	            pageSize: 20,
@@ -233,21 +184,8 @@ App.patient.VisitGrid = Ext.extend(Ext.grid.GridPanel, {
 	            displayInfo: true,
 	            displayMsg: 'Показана запись {0} - {1} из {2}',
 	            emptyMsg: "Нет записей"
-/*	            items:[
-	                '-', {
-	                pressed: true,
-	                enableToggle:true,
-	                text: 'Show Preview',
-	                cls: 'x-btn-text-icon details',
-	                toggleHandler: function(btn, pressed){
-	                    var view = grid.getView();
-	                    view.showPreview = pressed;
-	                    view.refresh();
-	                }
-	            }]*/
 	        }),
 			viewConfig : {
-//				forceFit : true,
 				emptyText: 'Нет записей'
 				//getRowClass : this.applyRowClass
 			}
@@ -263,8 +201,6 @@ App.patient.VisitGrid = Ext.extend(Ext.grid.GridPanel, {
 		
 		this.store.on('write',function(){
 		})
-		//this.ownerCt.ownerCt.on('patientselect', this.setActivePatient, this);
-		//App.eventManager.on('patientselect', this.onPatientSelect, this);
 	},
 	
 	onSamplingEdit: function(){

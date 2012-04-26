@@ -81,10 +81,10 @@ App.patient.PatientWindow = Ext.extend(Ext.Window, {
 		this.store.on('write', this.onStoreWrite, this);
 		this.on('destroy', function(){
 			this.store.un('write', this.onStoreWrite, this);
-			this.record.store.un('exception',this.onException,this);
+			this.store.un('exception',this.onException,this);
 		},this);
 		this.form.on('accepted',this.onFormSave.createDelegate(this,[false]),this);
-		this.record.store.on('exception',this.onException,this);
+		this.store.on('exception',this.onException,this);
 	},
 	
 	onFormSave: function(post_visit) {
@@ -176,11 +176,16 @@ App.patient.PatientWindow = Ext.extend(Ext.Window, {
 		},this)
 	},
 	
-	onException: function(){
+	onException: function(proxy,type,action,options,response,other){
+		status_text = {
+				0:'Нет связи с сервером.',	
+				404:'Путь сохранения не найден.',	
+				500:'Во время сохранения записи произошла ошибка на сервере.',	
+		};
 		if(this.msgBox) {
 			this.msgBox.hide();
 		};
-		Ext.Msg.alert('Ошибка!','Нет связи с сервером. Попробуйте позже.')
+		Ext.Msg.alert('Ошибка!',String.format('{0} Попробуйте позже.',status_text[response.status]));
 	}
 });
 

@@ -71,6 +71,12 @@ App.CentralPanel = Ext.extend(Ext.Panel, {
 			scope:this
 		});
 		
+		this.gsf = new App.SearchField({
+			id:'global-search-field',
+			emptyText:'Ф.И.О. д/р или № заказа',
+			stripCharsRe:new RegExp('[\;\?]')
+		});
+		
 		this.ttb = new Ext.Toolbar({
 			items:[/*{
 				xtype:'button',
@@ -82,12 +88,7 @@ App.CentralPanel = Ext.extend(Ext.Panel, {
 			},*/{
 				xtype: 'buttongroup',
 				padding:5,
-				items:[{
-					id:'global-search-field',
-					xtype:'gsearchfield',
-					emptyText:'Ф.И.О. д/р или № заказа',
-					stripCharsRe:new RegExp('[\;\?]')
-				}]
+				items:[this.gsf]
 			},{
 				xtype:'buttongroup',
 				defaults:{
@@ -290,6 +291,14 @@ App.CentralPanel = Ext.extend(Ext.Panel, {
 			App.eventManager.un('closeapp', this.closeApp, this);
 			App.eventManager.un('visitcreate', this.onVisitCreate, this);
 		},this);
+	},
+	
+	onSearch: function(){
+		this.gsf.focus(true,100);
+	},
+	
+	onClearSearch : function(){
+		this.gsf.onTrigger1Click();
 	},
 	
 	closeApp: function(appId) {

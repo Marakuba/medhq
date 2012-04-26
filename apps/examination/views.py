@@ -17,7 +17,7 @@ from patient.models import Patient
 from scheduler.models import Preorder
 #from lab.models import LabOrder, Result
 
-def cardPrint(request,card_id):
+def examcard(request,card_id):
     card = get_object_or_404(ExaminationCard, pk=card_id)
     to_print = card.comment.split(',')
     ec = {
@@ -30,7 +30,7 @@ def cardPrint(request,card_id):
 
 
 @render_to('print/examination/card.html')
-def examination_card(request, object_id):
+def card(request, object_id):
     card = get_object_or_404(Card, pk=object_id)
     general_data = []
     if card.equipment:

@@ -86,14 +86,26 @@ App.examination.CardGrid = Ext.extend(Ext.grid.EditorGridPanel, {
 				},
 				scope:this
 			});
+			this.tbar.push({
+				text:'Печать',
+				iconCls:'silk-printer',
+				handler:function(){
+					var rec = this.getSelectionModel().getSelected();
+					if(rec){
+						var url = String.format('/exam/card/{0}/', rec.id);
+						window.open(url);
+					}
+				},
+				scope:this
+			})
 		} else {
-			this.tbar = []
+			this.tbar = undefined
 		};
 
         this.columns =  [
         	{
-                header: "Выполнено",
-                width: 30, 
+                header: "",
+                width: 25, 
                 sortable: true, 
                 dataIndex: 'executed',
                 renderer:function(val, meta, record) {
@@ -105,18 +117,18 @@ App.examination.CardGrid = Ext.extend(Ext.grid.EditorGridPanel, {
             },
             {
                 header: "Дата создания",
-                width: 40, 
+                width: 100, 
                 sortable: true, 
                 dataIndex: 'created',
-                renderer:Ext.util.Format.dateRenderer('d.m.Y H:i')
+                renderer:Ext.util.Format.dateRenderer('d.m.y / H:i')
             },{
                 header: "Услуга", 
-                width: 100, 
+                width: 280, 
                 sortable: true, 
                 dataIndex: 'print_name'
             },{
                 header: "Пациент", 
-                width: 100, 
+                width: 120, 
                 sortable: true, 
                 dataIndex: 'patient_name'
             },{
@@ -132,11 +144,11 @@ App.examination.CardGrid = Ext.extend(Ext.grid.EditorGridPanel, {
                 hidden:true,
                 dataIndex: 'assistant_name' 
             },{
-                header: "Дата изменения", 
-                width: 40, 
+                header: "Изменено", 
+                width: 100, 
                 sortable: true, 
                 dataIndex: 'modified',
-                renderer:Ext.util.Format.dateRenderer('d.m.Y H:i')
+                renderer:Ext.util.Format.dateRenderer('d.m.y / H:i')
             }
         ];
     
@@ -146,8 +158,7 @@ App.examination.CardGrid = Ext.extend(Ext.grid.EditorGridPanel, {
 			loadMask : {
 				msg : 'Подождите, идет загрузка...'
 			},
-            height: 300,
-            clicksToEdit: 1,
+            clicksToEdit : 2,
             border:false,
             store: this.store,
             columns : this.columns,
@@ -162,7 +173,7 @@ App.examination.CardGrid = Ext.extend(Ext.grid.EditorGridPanel, {
 					}),
             viewConfig: {
             	emptyText:'нет карт осмотра',
-                forceFit: true
+//                forceFit: true
             },
 			tbar:this.tbar
         };

@@ -16,7 +16,7 @@ def sup(result):
 register.filter("sup", sup)
 
 def zid(value, num):
-    return str(value).zfill(int(num)) 
+    return value and str(value).zfill(int(num)) or None 
 
 register.filter("zid", zid)
 

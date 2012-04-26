@@ -127,6 +127,7 @@ class AdSourceResource(ExtResource):
         queryset = AdSource.objects.all()
         resource_name = 'adsource'
         authorization = DjangoAuthorization()
+        always_return_data = True
         filtering = {
             'id' : ALL,
             'name' : ALL,
@@ -155,13 +156,9 @@ class PatientResource(ExtResource):
             pass
         return bundle
     
-    def get_object_list(self, request):
-        self.orig_request = request
-        return super(PatientResource, self).get_object_list(request)
-
     def dehydrate(self, bundle):
-        if hasattr(self,'orig_request'):
-            active_state = self.orig_request.active_profile.department.state
+        if hasattr(bundle.request,'active_profile'):
+            active_state = bundle.request.active_profile.department.state
             bundle.data['accepted'] = bundle.obj.get_accepted_date(active_state)
         bundle.data['discount_name'] = bundle.obj.discount and bundle.obj.discount or u'0%'
         bundle.data['full_name'] = bundle.obj.full_name()
@@ -202,6 +199,7 @@ class PatientResource(ExtResource):
         default_format = 'application/json'
         authorization = DjangoAuthorization()
         caching = SimpleCache()
+        always_return_data = True
         filtering = {
             'last_name':('istartswith',),
             'first_name':('istartswith',),
@@ -290,6 +288,7 @@ class ReferralResource(ExtResource):
     class Meta:
         queryset = Referral.objects.all() #@UndefinedVariable
         resource_name = 'referral'
+        always_return_data = True
         limit = 200
         authorization = DjangoAuthorization()
         filtering = {
@@ -315,6 +314,7 @@ class MedStateResource(ModelResource):
 
     class Meta:
         queryset = State.objects.select_related().filter(type__in=('m','b','p')).order_by('type','id',)
+        caching = SimpleCache()
         resource_name = 'medstate'
         limit = 20
         filtering = {
@@ -327,6 +327,7 @@ class OwnStateResource(ModelResource):
 
     class Meta:
         queryset = State.objects.select_related().filter(type__in=('b','p')).order_by('id',)
+        caching = SimpleCache()
         resource_name = 'ownstate'
         limit = 20
         filtering = {
@@ -364,20 +365,6 @@ class StateResource(ModelResource):
         
 class LabServiceGroupResource(ModelResource):
     
-    def build_filters(self, filters=None):
-        if filters is None:
-            filters = {}
-
-        orm_filters = super(LabServiceGroupResource, self).build_filters(filters)
-
-            
-        if "search" in filters:
-
-            orm_filters.update(smartFilter(filters['search'],'order__patient'))
-
-
-        return orm_filters
-
     class Meta:
         queryset = LabServiceGroup.objects.all() 
         resource_name = 'labgroup'
@@ -400,6 +387,7 @@ class InsuranceStateResource(ExtResource):
         queryset = State.objects.filter(type='i') 
         resource_name = 'insurance_state'
         authorization = DjangoAuthorization()
+        always_return_data = True
         limit = 50
         filtering = {
             'name':('istartswith',)
@@ -424,6 +412,7 @@ class InsurancePolicyResource(ExtResource):
         queryset = InsurancePolicy.objects.all() 
         resource_name = 'insurance_policy'
         authorization = DjangoAuthorization()
+        always_return_data = True
         limit = 50
         filtering = {
             'id':ALL,
@@ -455,6 +444,7 @@ class BarcodeResource(ModelResource):
     class Meta:
         queryset = Barcode.objects.all()
         resource_name = 'barcode'
+        always_return_data = True
         filtering = {
             'visit':ALL_WITH_RELATIONS,
             'id':ALL
@@ -514,6 +504,8 @@ class VisitResource(ExtResource):
         queryset = Visit.objects.select_related().filter(cls__in=(u'п',u'б'))
         resource_name = 'visit'
         authorization = DjangoAuthorization()
+        caching = SimpleCache()
+        always_return_data = True
         filtering = {
             'patient': ALL_WITH_RELATIONS,
             'barcode': ALL_WITH_RELATIONS,
@@ -551,6 +543,7 @@ class RefundResource(ExtResource):
         queryset = Visit.objects.filter(cls__in=(u'в',))
         resource_name = 'refund'
         authorization = DjangoAuthorization()
+        always_return_data = True
         filtering = {
             'patient': ALL_WITH_RELATIONS,
             'id':ALL,
@@ -616,6 +609,7 @@ class LabOrderResource(ExtResource):
         queryset = LabOrder.objects.select_related().all()
         resource_name = 'laborder'
         authorization = DjangoAuthorization()
+        always_return_data = True
         caching = SimpleCache()
         limit = 100
         filtering = {
@@ -648,6 +642,7 @@ class BaseServiceResource(ExtResource):
     class Meta:
         queryset = BaseService.objects.all()
         authorization = DjangoAuthorization()
+        always_return_data = True
         resource_name = 'baseservice'
         filtering = {
             'id':ALL,
@@ -667,6 +662,7 @@ class StaffResource(ModelResource):
     class Meta:
         queryset = Staff.objects.all()
         resource_name = 'staff'
+        always_return_data = True
         limit = 100
         filtering = {
             'last_name':('istartswith',),
@@ -686,6 +682,8 @@ class PositionResource(ModelResource):
     class Meta:
         queryset = Position.objects.select_related().all()
         resource_name = 'position'
+        always_return_data = True
+        caching = SimpleCache()
         limit = 200
         filtering = {
             'id':ALL,
@@ -710,6 +708,7 @@ class ExtendedServiceResource(ModelResource):
     class Meta:
         queryset = ExtendedService.objects.all()
         resource_name = 'extendedservice'
+        always_return_data = True
         filtering = {
             'id':ALL,
             'base_service':ALL_WITH_RELATIONS,
@@ -728,6 +727,7 @@ class AnalysisResource(ModelResource):
     class Meta:
         queryset = Analysis.objects.select_related().all()
         resource_name = 'analysis'
+        always_return_data = True
         filtering = {
             'service':ALL_WITH_RELATIONS
         }
@@ -762,6 +762,7 @@ class ResultResource(ExtResource):
         queryset = Result.objects.select_related().filter() #analysis__service__labservice__is_manual=False
         authorization = DjangoAuthorization()
         resource_name = 'result'
+        always_return_data = True
         limit = 100
         filtering = {
             'order':ALL_WITH_RELATIONS,
@@ -815,6 +816,7 @@ class StaffSchedResource(ModelResource):
     class Meta:
         queryset = Staff.objects.filter(doctor__isnull = False)
         resource_name = 'staffsched'
+        always_return_data = True
         limit = 100
         filtering = {
             'last_name':('istartswith',),
@@ -862,6 +864,7 @@ class PosSchedResource(ModelResource):
     class Meta:
         queryset = Position.objects.filter(staff__doctor__isnull = False)
         resource_name = 'possched'
+        always_return_data = True
         limit = 100
         filtering = {
             'last_name':('istartswith',),
@@ -924,6 +927,7 @@ class SamplingResource(ExtResource):
         queryset = Sampling.objects.all()
         authorization = DjangoAuthorization()
         resource_name = 'sampling'
+        always_return_data = True
         limit = 100
         filtering = {
             'visit':ALL_WITH_RELATIONS,
@@ -948,6 +952,7 @@ class BarcodedSamplingResource(ModelResource):
     class Meta:
         queryset = Sampling.objects.filter(number__isnull=True)
         resource_name = 'bc_sampling'
+        always_return_data = True
         limit = 100
         filtering = {
             'visit':ALL_WITH_RELATIONS,
@@ -991,6 +996,7 @@ class OrderedServiceResource(ExtBatchResource):
         queryset = OrderedService.objects.all()
         resource_name = 'orderedservice'
         authorization = DjangoAuthorization()
+        always_return_data = True
         limit = 100
         filtering = {
             'order': ALL_WITH_RELATIONS,
@@ -1039,6 +1045,7 @@ class LabOrderedServiceResource(OrderedServiceResource):
         queryset = OrderedService.objects.select_related().all()
         resource_name = 'laborderedservice'
         authorization = DjangoAuthorization()
+        always_return_data = True
         limit = 100
         filtering = {
             'order': ALL_WITH_RELATIONS,
@@ -1089,6 +1096,7 @@ class LabServiceResource(ExtResource):
     class Meta:
         queryset = OrderedService.objects.filter(service__labservice__is_manual=True) #all lab services
         resource_name = 'labservice'
+        always_return_data = True
         authorization = DjangoAuthorization()
         limit = 50
         filtering = {
@@ -1140,6 +1148,7 @@ class LabTestResource(ExtResource):
         queryset = OrderedService.objects.select_related().filter(service__lab_group__isnull=False).order_by('service','-created') #all lab services
         resource_name = 'labtest'
         authorization = DjangoAuthorization()
+        always_return_data = True
         limit = 10000
         filtering = {
             'order': ALL_WITH_RELATIONS,
@@ -1194,6 +1203,7 @@ class ExamServiceResource(ExtResource):
         queryset = OrderedService.objects.filter(service__lab_group__isnull=True)
         resource_name = 'examservice'
         authorization = DjangoAuthorization()
+        always_return_data = True
         filtering = {
             'order': ALL_WITH_RELATIONS,
             'sampling': ALL_WITH_RELATIONS,
@@ -1240,6 +1250,7 @@ class SamplingServiceResource(ExtResource):
         queryset = OrderedService.objects.all()
         limit = 100
         resource_name = 'samplingservice'
+        always_return_data = True
         authorization = DjangoAuthorization()
         filtering = {
             'order': ALL_WITH_RELATIONS,
@@ -1275,6 +1286,7 @@ class ServiceBasketResource(ExtBatchResource):
     class Meta:
         queryset = OrderedService.objects.select_related().all()
         resource_name = 'servicebasket'
+        always_return_data = True
         filtering = {
             'order': ALL_WITH_RELATIONS
         }
@@ -1307,6 +1319,7 @@ class RefundBasketResource(ExtResource):
     class Meta:
         queryset = OrderedService.objects.select_related().all() 
         resource_name = 'refundbasket'
+        always_return_data = True
         filtering = {
             'order': ALL_WITH_RELATIONS
         }
@@ -1334,6 +1347,7 @@ class BCPackageResource(ExtResource):
     
     class Meta:
         queryset = BarcodePackage.objects.all()
+        always_return_data = True
         authorization = DjangoAuthorization()
         resource_name = 'barcodepackage'
         filtering = {
@@ -1380,6 +1394,7 @@ class CardTemplateResource(ExtResource):
     
     class Meta:
         queryset = CardTemplate.objects.all()
+        always_return_data = True
         resource_name = 'cardtemplate'
         default_format = 'application/json'
         authorization = DjangoAuthorization()
@@ -1408,6 +1423,7 @@ class ExaminationCardResource(ExtResource):
     class Meta:
         queryset = ExaminationCard.objects.all()
         resource_name = 'examcard'
+        always_return_data = True
         default_format = 'application/json'
         authorization = DjangoAuthorization()
         filtering = {
@@ -1438,6 +1454,7 @@ class CardResource(ExtResource):
         queryset = Card.objects.all()
         resource_name = 'card'
         default_format = 'application/json'
+        always_return_data = True
         authorization = DjangoAuthorization()
         filtering = {
             'ordered_service':ALL_WITH_RELATIONS,
@@ -1461,6 +1478,7 @@ class TemplateResource(ExtResource):
         queryset = Template.objects.all()
         resource_name = 'examtemplate'
         default_format = 'application/json'
+        always_return_data = True
         authorization = DjangoAuthorization()
         filtering = {
             'base_service':ALL_WITH_RELATIONS,
@@ -1531,6 +1549,7 @@ class GlossaryResource(ExtResource):
         resource_name = 'glossary'
         default_format = 'application/json'
         authorization = DjangoAuthorization()
+        always_return_data = True
         filtering = {
             'base_service':ALL_WITH_RELATIONS,
             'staff':ALL_WITH_RELATIONS,
@@ -1540,6 +1559,7 @@ class GlossaryResource(ExtResource):
             'section':ALL
         }
         limit = 1000
+        
         
 class RegExamCardResource(ExtResource):
     ordered_service = fields.ForeignKey(OrderedServiceResource, 'ordered_service', null=True)
@@ -1554,6 +1574,7 @@ class RegExamCardResource(ExtResource):
         queryset = ExaminationCard.objects.all()
         resource_name = 'regexamcard'
         default_format = 'application/json'
+        always_return_data = True
         authorization = DjangoAuthorization()
         filtering = {
             'ordered_service':ALL_WITH_RELATIONS,
@@ -1608,6 +1629,7 @@ class EquipmentAssayResource(ExtResource):
         resource_name = 'equipmentassay'
         limit = 50
         authorization = DjangoAuthorization()
+        always_return_data = True
         filtering = {
             'equipment':ALL_WITH_RELATIONS,
             'service':ALL_WITH_RELATIONS,
@@ -1655,6 +1677,7 @@ class EquipmentTaskReadOnlyResource(ExtBatchResource):
         resource_name = 'equipmenttaskro'
         authorization = DjangoAuthorization()
         limit = 50
+        always_return_data = True
         filtering = {
             'ordered_service':ALL_WITH_RELATIONS,
             'equipment_assay':ALL_WITH_RELATIONS,
@@ -1694,6 +1717,7 @@ class EquipmentTaskResource(ExtBatchResource):
         queryset = EquipmentTask.objects.all()
         resource_name = 'equipmenttask'
         authorization = LocalAuthorization()
+        always_return_data = True
         limit = 1000
         filtering = {
             'ordered_service':ALL_WITH_RELATIONS,
@@ -1784,6 +1808,7 @@ class PreorderResource(ExtResource):
         queryset = Preorder.objects.all()
         resource_name = 'preorder'
         authorization = DjangoAuthorization()
+        always_return_data = True
         filtering = {
             'patient':ALL_WITH_RELATIONS,
             'timeslot':ALL,
@@ -1846,6 +1871,7 @@ class ExtPreorderResource(ExtBatchResource):
         queryset = Preorder.objects.all().order_by('-timeslot__start')
         resource_name = 'extpreorder'
         authorization = DjangoAuthorization()
+        always_return_data = True
         filtering = {
             'patient':ALL,
             'start':ALL,
@@ -1886,6 +1912,7 @@ class VisitPreorderResource(ExtPreorderResource):
         queryset = Preorder.objects.filter(timeslot__isnull=True).order_by('-expiration')
         resource_name = 'visitpreorder'
         authorization = DjangoAuthorization()
+        always_return_data = True
         filtering = {
             'patient':ALL,
             'start':ALL,
@@ -1912,6 +1939,7 @@ class EventResource(ExtResource):
         queryset = Event.objects.all().order_by('start')
         resource_name = 'event'
         authorization = DjangoAuthorization()
+        always_return_data = True
         filtering = {
             'title':ALL,
             'id':ALL,
@@ -1959,6 +1987,7 @@ class IssueResource(ExtResource):
         resource_name = 'issue'
         limit = 100
         authorization = DjangoAuthorization()
+        always_return_data = True
         filtering = {
             'type':ALL_WITH_RELATIONS,
             'level':ALL,
@@ -1996,6 +2025,7 @@ class ClientAccountResource(ExtResource):
         queryset = ClientAccount.objects.all().select_related()
         resource_name = 'clientaccount'
         authorization = DjangoAuthorization()
+        always_return_data = True
         filtering = {
             'id':ALL,
             'client_item' : ALL_WITH_RELATIONS,
@@ -2040,6 +2070,7 @@ class PaymentResource(ExtResource):
         queryset = Payment.objects.all()
         resource_name = 'payment'
         authorization = DjangoAuthorization()
+        always_return_data = True
         limit = 1000
         filtering = {
             'id' : ALL,
@@ -2070,6 +2101,7 @@ class InvoiceResource(ExtResource):
         queryset = Invoice.objects.all()
         resource_name = 'invoice'
         authorization = DjangoAuthorization()
+        always_return_data = True
         limit = 100
         filtering = {
             'id' : ALL,
@@ -2102,6 +2134,7 @@ class InvoiceItemResource(ExtResource):
         queryset = InvoiceItem.objects.all()
         resource_name = 'invoiceitem'
         authorization = DjangoAuthorization()
+        always_return_data = True
         limit = 1000
         filtering = {
             'id' : ALL,
@@ -2134,6 +2167,7 @@ class ServiceToSend(ExtResource):
         queryset = OrderedService.objects.filter(service__lab_group__isnull=False)
         resource_name = 'servicetosend'
         authorization = DjangoAuthorization()
+        always_return_data = True
         limit = 200
         filtering = {
             'id' : ALL,

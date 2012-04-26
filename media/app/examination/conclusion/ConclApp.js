@@ -22,7 +22,7 @@ App.examination.ConclApp = Ext.extend(Ext.Panel, {
  			border:true,
  			margins:'5 5 5 0',
  			layout: 'fit',
- 			title:'Предпросмотр',
+// 			title:'Предпросмотр',
  			defaults:{
  				border:false
  			},
@@ -33,7 +33,7 @@ App.examination.ConclApp = Ext.extend(Ext.Panel, {
 		this.examGrid = new App.examination.CardGrid({
 			staff:this.staff,
 			border: false,
-			split:true,
+//			split:true,
 			bbar: new Ext.PagingToolbar({
 	            pageSize: 30,
 	            store: this.store,
@@ -62,11 +62,12 @@ App.examination.ConclApp = Ext.extend(Ext.Panel, {
 		
 		this.conclPanel = new Ext.Panel({
 			region:'west',
- 			border:true,
+ 			border:false,
+ 			header:false,
  			collapsible:true,
 			collapseMode:'mini',
  			width:550,
- 			margins:'5 5 5 0',
+ 			margins:'0 5 0 0',
  			layout: 'fit',
  			defaults:{
  				border:false

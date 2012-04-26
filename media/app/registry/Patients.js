@@ -18,6 +18,10 @@ App.Patients = Ext.extend(Ext.Panel, {
 			border:false,
 			title:this.defaultTitle,
 			layout:'fit',
+			headerCfg:{
+				tag:'div',
+				cls:'patient-card-header'
+			},
 			tools:[{
 				id:'refresh',
 				handler:this.updatePatientInfo.createDelegate(this),
@@ -58,7 +62,7 @@ App.Patients = Ext.extend(Ext.Panel, {
 				width:'30%',
 				split:true,
 				layout:'border',
-				items:[this.patientGrid, this.quickForm]
+				items:[this.patientGrid]
 			}]
 		}
 		
@@ -85,19 +89,30 @@ App.Patients = Ext.extend(Ext.Panel, {
 			'{last_name} {first_name} {mid_name}',
 			{}
 		) : new Ext.XTemplate(
-		'Пациент: ',
-		'{last_name} {first_name} {mid_name}. ',
-		'Скидка: {discount_name}. ',
-		'Общая сумма: {billed_account}. ',
-		'Баланс: <span style="color:{color}">{balance}</span>. ',
-		'{accepted:this.notAccepted}',
-		'{ad_source_name:this.isEmpty}',
+			'<ul>',
+				'{accepted:this.notAccepted}',
+				'{ad_source_name:this.isEmpty}',
+			'</ul>',
+			'<h1>',
+				'<span>{last_name}<span> <span>{first_name}</span> <span>{mid_name}</span>',
+			'</h1> ',
+			'<div>',
+				'Дата рождения: <span>{birth_day:this.parseDate}</span> Телефон: <span>{mobile_phone}</span>',
+			'</div> ',
+			'<div>',
+				'Скидка: <span>{discount_name}</span> ',
+				'Общая сумма: <span>{billed_account}</span> ',
+				'Баланс: <span style="color:{color}">{balance}</span>',
+			'</div>',
 		{
 			isEmpty:function(v){
-				return v ? '' : '<span class="warn">Спросить источник рекламы!</span>'
+				return v ? '' : '<li><span class="warn">Спросить источник рекламы!</span></li>'
 			},
 			notAccepted:function(v){
-				return v ? '' : '<span class="warn">НЕТ СОГЛАСИЯ!   </span>'
+				return v ? '' : '<li><span class="warn">Согласие не подписано!</span></li>'
+			},
+			parseDate : function(v){
+				return Ext.util.Format.date(v,'d.m.Y')
 			}
 		}
 	),

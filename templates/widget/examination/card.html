@@ -6,9 +6,9 @@
 	}
 	
 	.patient {
-		border: 1px solid;
 		padding:6px;
 		margin-bottom:30px;
+		background:#F0F0F0;
 	}
 	
 	.patient td {
@@ -17,10 +17,12 @@
 	
 	.patient .name {
 		width:5cm;
+		background-color:#DDD;
 	}
 	
 	.patient .bold {
 		font-weight:bold;
+		background-color:white;
 	}
 	.template-preview {
 		font-famlily:"Arial";
@@ -73,25 +75,19 @@
 
 	<table class="patient">
 		<tr>
-			<td>
-				<table>
-					<tr>
-						<td class="name">Ф.И.О.:</td><td class="bold">{{ card.ordered_service.order.patient.full_name }}</td>
-					</tr>
-					<tr>
-						<td class="name">Дата рождения:</td><td class="bold">{{ card.ordered_service.order.patient.birth_day|date:"d.m.Y" }}</td>
-					</tr>
-					<tr>
-						<td class="name">Дата обследования:</td><td class="bold">{{ card.ordered_service.order.created|date:"d.m.Y H:i" }}</td>
-					</tr>
-				</table>
-			</td>
-			<td align="right">
-				Заказ: <strong>{{ card.ordered_service.order.id|zid:"5" }}</strong><br>
-				Врач: <strong>{{ card.ordered_service.staff.id|zid:"5" }}</strong><br>
-				Направившее учреждение: <strong>{{ card.ordered_service.order.referral.id|zid:"5" }}</strong><br>
-				
-			</td>
+			<td class="name">Ф.И.О.:</td><td class="bold">{{ card.ordered_service.order.patient.full_name }}</td>
+		</tr>
+		<tr>
+			<td class="name">Дата рождения:</td><td class="bold">{{ card.ordered_service.order.patient.birth_day|date:"d.m.Y" }}</td>
+		</tr>
+		<tr>
+			<td class="name">Заказ:</td><td class="bold">{{ card.ordered_service.order.id }}</td>
+		</tr>
+		<tr>
+			<td class="name">Дата обследования:</td><td class="bold">{{ card.ordered_service.order.created|date:"d.m.Y H:i" }}</td>
+		</tr>
+		<tr>
+			<td class="name">Направившее учреждение:</td><td class="bold">{{ card.ordered_service.order.referral.id|zid:5|default:'б/н' }}</td>
 		</tr>
 	</table>
 	<br>

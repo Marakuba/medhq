@@ -24,9 +24,10 @@ def smartFilter(request,prefix=''):
             for f in formats:
                 try: 
                     date_arg = time.strptime(d, f)
-                    date_arg = datetime.datetime.fromtimestamp(time.mktime(date_arg))
+                    date_arg = datetime.date(year=date_arg.tm_year,month=date_arg.tm_mon,day=date_arg.tm_mday)
                     break
-                except:
+                except Exception, err:
+                    print err
                     pass
     #если последний элемент строки - дата
     if date_arg:
