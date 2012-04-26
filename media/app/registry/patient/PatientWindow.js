@@ -84,7 +84,9 @@ App.patient.PatientWindow = Ext.extend(Ext.Window, {
 			this.store.un('exception',this.onException,this);
 		},this);
 		this.form.on('accepted',this.onFormSave.createDelegate(this,[false]),this);
-		this.store.on('exception',this.onException,this);
+		if (this.record){
+			this.record.store.on('exception',this.onException,this);
+		}
 	},
 	
 	onFormSave: function(post_visit) {

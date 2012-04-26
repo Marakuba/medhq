@@ -40,7 +40,7 @@ App.insurance.PolicyGrid = Ext.extend(Ext.grid.GridPanel, {
 		    //id: 'laborder-store',
 			//autoLoad:true,
 		    autoDestroy:true,
-			autoSave:this.showChoiceButton,
+			autoSave:this.showChoiceButton || this.record,
 		    baseParams: {
 		    	format:'json'
 		    },
@@ -251,12 +251,19 @@ App.insurance.PolicyGrid = Ext.extend(Ext.grid.GridPanel, {
 		var d = this.deletedRecords ? this.deletedRecords.length : 0;
 		steps+=m;
 		steps+=d;
+		console.log('steps ',steps)
 		return steps;
 	},
 	
 	onPatientCreate: function(record) {
 		this.record = record;
 		this.onSave();
+	},
+	
+	setPatientRecord: function(patient){
+		this.record = patient;
+		this.store.setBaseParam('patient',patient.data.id);
+		this.store.load();
 	}
 	
 });

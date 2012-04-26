@@ -139,6 +139,8 @@ App.visit.VisitTab = Ext.extend(Ext.Panel, {
 						this.record = records[0];
 						this.form.setVisitRecord(this.record,this.patientRecord);
 					},scope:this});
+				} else {
+					this.form.setContractRecord(this.patientId,this.visitId);
 				};
 			},scope:this});
 			

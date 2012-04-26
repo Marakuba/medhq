@@ -226,7 +226,6 @@ App.visit.OrderedServiceInlineGrid = Ext.extend(Ext.grid.EditorGridPanel, {
 					},
 					rowdeselect: function(sm,i,rec) {
 						this.delBtn.setDisabled(true);
-						this.delAllBtn.setDisabled(true);
 						this.changeStaffBtn.setDisabled(true);
 					},
 					scope:this
