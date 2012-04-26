@@ -156,6 +156,7 @@ App.visit.VisitForm = Ext.extend(Ext.FormPanel, {
 		this.contractCmb = new Ext.form.LazyClearableComboBox({
 //			id:'visit-policy-cmb',
         	fieldLabel:'Договор',
+        	allowBlank: false,
 			anchor:'98%',
         	name:'contract',
         	store:new Ext.data.JsonStore({
@@ -227,6 +228,9 @@ App.visit.VisitForm = Ext.extend(Ext.FormPanel, {
 		
 		this.payerCmb = new Ext.form.LazyComboBox({
 	        	fieldLabel:'Плательщик',
+	        	layout: 'form',
+	        	baseCls:'x-border-layout-ct',
+				border:false,
 	        	anchor:'98%',
 	        	name:'payer',
 			    minChars:3,
@@ -644,7 +648,10 @@ App.visit.VisitForm = Ext.extend(Ext.FormPanel, {
 					},
         			items:[
         				this.referralBar,
-        				this.payerCmb,
+        				{
+        					layout:'form',
+        					items:[this.payerCmb]
+        				},
 	        			this.sample,
 	        			{
 	        				layout:'column',

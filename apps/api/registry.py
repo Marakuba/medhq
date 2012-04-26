@@ -228,7 +228,7 @@ class ContractTypeResource(ExtResource):
 class ContractResource(ExtResource):
     patient = fields.ForeignKey(PatientResource, 'patient')
     state = fields.ForeignKey('api.registry.OwnStateResource', 'state', null = True)
-    contact_type = fields.ForeignKey(ContractTypeResource, 'contract_type', null = True)
+    contract_type = fields.ForeignKey(ContractTypeResource, 'contract_type', null = True)
     
     def dehydrate(self, bundle):
         bundle.data['name'] = bundle.obj.__unicode__()
