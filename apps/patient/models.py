@@ -185,6 +185,7 @@ class ContractType(models.Model):
     title = models.CharField(u'Наименование',max_length=100)
     validity = models.IntegerField(u'Срок действия')
     type = models.CharField(u'Тип контракта', choices=CONTRACT_TYPES,default=u'г', max_length=1)
+    template = models.CharField(u'Шаблон',max_length=100, null=True, blank=True)
     
     def __unicode__(self):
         return u"%s, %s" % (self.title, self.get_type_display())

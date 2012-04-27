@@ -18,6 +18,12 @@ App.visit.VisitForm = Ext.extend(Ext.FormPanel, {
 
 		this.inlines = new Ext.util.MixedCollection({});
 		
+		this.contractTypeStore = new Ext.data.RESTStore({
+			autoLoad : false,
+			apiUrl : get_api_url('contracttype'),
+			model: App.models.contractTypeModel
+		}),
+		
 		this.preorderStore = new Ext.data.RESTStore({
 			autoLoad : false,
 			autoSave : true,
@@ -179,21 +185,6 @@ App.visit.VisitForm = Ext.extend(Ext.FormPanel, {
 		    }
 		});
 
-		this.contractAddBtn = new Ext.Button({
-			iconCls:'silk-add',
-			handler:this.contractChoice,
-			scope:this
-		});
-		
-		this.contractSplitBtn = new Ext.SplitButton({
-			iconCls:'silk-printer',
-			handler:this.contractPrint.createDelegate(this,[]),
-			menu: new Ext.menu.Menu({
-				items:[{iconCls:'silk-add', handler:this.contractChoice.createDelegate(this,[])}]
-			}),
-			scope:this
-		});
-		
 		this.contractBar = new Ext.Panel({
 			layout:'hbox',
 			defaults:{
@@ -1082,18 +1073,36 @@ App.visit.VisitForm = Ext.extend(Ext.FormPanel, {
 			width:30,
 			items:[]
 		}; 
-		this.contractCmb.store.load({callback:function(records){
-			if (records.length){
-				this.contractCmb.setValue(records[0].data.resource_uri)
-				item.items.push(this.contractSplitBtn);
-				this.contractBtnType = 'split';
-			} else {
-				item.items.push(this.contractAddBtn)
-				this.contractBtnType = 'add'
-			}
-			this.contractBar.add(item);
-			this.doLayout();
-		},scope:this})
+		this.additionalMenu = [];
+		this.contractTypeStore.load({callback:function(records){
+			this.contractCmb.store.load({callback:function(records){
+				this.contractAddBtn = new Ext.Button({
+					iconCls:'silk-add',
+					handler:this.contractChoice.createDelegate(this,[]),
+					scope:this
+				});
+				
+				this.contractSplitBtn = new Ext.SplitButton({
+					iconCls:'silk-printer',
+					handler:this.contractPrint.createDelegate(this,[]),
+					menu: new Ext.menu.Menu({
+						items:[{iconCls:'silk-add', text:'Выбрать',handler:this.contractChoice.createDelegate(this,[])}]
+					}),
+					scope:this
+				});
+				if (records.length){
+					this.contractCmb.setValue(records[0].data.resource_uri)
+					item.items.push(this.contractSplitBtn);
+					this.contractBtnType = 'split';
+				} else {
+					item.items.push(this.contractAddBtn)
+					this.contractBtnType = 'add'
+				}
+				this.contractBar.add(item);
+				this.doLayout();
+			},scope:this})
+		},scope:this});
+		
 	},
 	
 	setVisitRecord: function(record,patientRecord){
@@ -1334,7 +1343,7 @@ App.visit.VisitForm = Ext.extend(Ext.FormPanel, {
 					grid.store.setBaseParam('patient',grid.record.data.id);
 					grid.store.setBaseParam('active',true);
 					grid.store.setBaseParam('state',state);
-					grid.store.load();
+					grid.fillAddMenu();
 				},
 				contractcreate: function(record){
 					if (this.contractBtnType=='add'){
@@ -1346,6 +1355,8 @@ App.visit.VisitForm = Ext.extend(Ext.FormPanel, {
 						this.contractBtnType = 'split';
 						this.contractBar.add(item);
 						this.doLayout();
+						this.contractCmb.forceValue(record.data.resource_uri);
+						win.close();
 					}
 				},
 				scope:this

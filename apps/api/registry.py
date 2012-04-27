@@ -235,6 +235,7 @@ class ContractResource(ExtResource):
         bundle.data['name'] = bundle.obj.__unicode__()
         bundle.data['state_name'] = bundle.obj.state and bundle.obj.state.name
         bundle.data['contract_type_name'] = bundle.obj.contract_type and bundle.obj.contract_type.title
+        bundle.data['template'] = bundle.obj.contract_type and bundle.obj.contract_type.template
         return bundle
     
     class Meta:

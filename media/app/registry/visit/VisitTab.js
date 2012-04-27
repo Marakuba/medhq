@@ -140,7 +140,9 @@ App.visit.VisitTab = Ext.extend(Ext.Panel, {
 						this.form.setVisitRecord(this.record,this.patientRecord);
 					},scope:this});
 				} else {
-					this.form.setContractRecord(this.patientId,this.visitId);
+					if (this.TypeError != 'material') {
+						this.form.setContractRecord(this.patientId,this.visitId);
+					};
 				};
 			},scope:this});
 			

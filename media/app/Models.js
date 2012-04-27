@@ -18,7 +18,16 @@ App.models.contractModel = new Ext.data.Record.create([
 	{name: 'contract_type_name'},
 	{name: 'created', type:'date', format: 'd.m.Y'},
 	{name: 'expire', type:'date', format: 'd.m.Y'},
-	{name: 'active'}
+	{name: 'active'},
+	{name: 'template'}
+]);
+
+App.models.contractTypeModel = new Ext.data.Record.create([
+    {name: 'id'},
+    {name: 'resource_uri'},
+    {name: 'title'},
+    {name: 'template'},
+    {name: 'validity'}
 ]);
 
 App.models.paymentModel = new Ext.data.Record.create([

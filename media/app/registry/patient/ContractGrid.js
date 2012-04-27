@@ -8,14 +8,6 @@ App.patient.ContractGrid = Ext.extend(Ext.grid.EditorGridPanel, {
 		
 		var today = new Date();
 		
-		this.addButton = new Ext.Button({
-			iconCls:'silk-add',
-			text:'Добавить',
-	        handler:this.onCreate.createDelegate(this),
-	        disabled: false,
-	        scope:this
-		});
-		
 		this.store = this.store || new Ext.data.Store({
 			//autoLoad:true,
 			
@@ -71,17 +63,20 @@ App.patient.ContractGrid = Ext.extend(Ext.grid.EditorGridPanel, {
 		    scope:this
 		});
 		
+		this.contractTypeStore = new Ext.data.RESTStore({
+			autoLoad : false,
+			apiUrl : get_api_url('contracttype'),
+			model: App.models.contractTypeModel
+		})
+		
 		this.contractTypeCB = new Ext.form.LazyClearableComboBox({
 			anchor:'50%',
 			valueField:'resource_uri',
 			queryParam : 'title__istartswith',
-			store:new Ext.data.RESTStore({
-				autoLoad : false,
-				apiUrl : get_api_url('contracttype'),
-				model: ['id','title','resource_uri']
-			}),
+			store:this.contractTypeStore,
 			displayField:'title',
-		    minChars:2
+		    minChars:2,
+		    scope:this
 		});
 		
 		Ext.util.Format.comboRenderer = function(combo,field){
@@ -133,7 +128,7 @@ App.patient.ContractGrid = Ext.extend(Ext.grid.EditorGridPanel, {
 				text:'Выбрать',
 				hidden:!this.showChoiceButton,
 				handler:this.onChoice.createDelegate(this,[])
-			},this.addButton,'->']
+			}]
 		}); 
 		
 		var config = {
@@ -194,13 +189,19 @@ App.patient.ContractGrid = Ext.extend(Ext.grid.EditorGridPanel, {
 //		window.open(url);
 	},
 	
-	onCreate: function() {
+	onCreate: function(contractTypeRecord) {
 		var today  = new Date();
 		var data = this.record ? { patient:this.record.data.resource_uri } : {};
+		data['created'] = today;
 		data['state'] = App.getApiUrl('ownstate',state);
 		data['state_name'] = active_state;
-		data['created'] = today;
-		data['expire'] = today;
+		if (contractTypeRecord){
+			data['contract_type'] = contractTypeRecord.data.resource_uri;
+			data['expire'] = today.add(Date.DAY, contractTypeRecord.data.validity);
+		} else {
+			data['expire'] = today
+		};
+		
         var r = new this.store.recordType(data);
         this.store.add(r);
 	},
@@ -269,8 +270,29 @@ App.patient.ContractGrid = Ext.extend(Ext.grid.EditorGridPanel, {
 	setPatientRecord: function(patient){
 		this.record = patient;
 		this.store.setBaseParam('patient',patient.data.id);
-		this.contractTypeCB.store.load({callback:function(records){
+		this.fillAddMenu();
+	},
+	
+	fillAddMenu: function(){
+		this.additionalMenu = [];
+		this.contractTypeStore.load({callback:function(records){
 			this.store.load();
+			Ext.each(records,function(record){
+				var rec = record.data;
+				this.additionalMenu.push({
+					text:rec.title,
+					handler:this.onCreate.createDelegate(this,[record]),
+					scope:this
+				});
+			},this);
+			this.addButton = new Ext.Button({
+				iconCls:'silk-add',
+				text:'Добавить',
+				menu:this.additionalMenu,
+				scope:this
+			});
+			this.ttb.add(this.addButton)
+			this.doLayout();
 		},scope:this});
 	}
 	
