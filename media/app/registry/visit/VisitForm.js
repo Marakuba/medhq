@@ -1085,9 +1085,11 @@ App.visit.VisitForm = Ext.extend(Ext.FormPanel, {
 		this.contractCmb.store.load({callback:function(records){
 			if (records.length){
 				this.contractCmb.setValue(records[0].data.resource_uri)
-				item.items.push(this.contractSplitBtn)
+				item.items.push(this.contractSplitBtn);
+				this.contractBtnType = 'split';
 			} else {
 				item.items.push(this.contractAddBtn)
+				this.contractBtnType = 'add'
 			}
 			this.contractBar.add(item);
 			this.doLayout();
@@ -1333,7 +1335,20 @@ App.visit.VisitForm = Ext.extend(Ext.FormPanel, {
 					grid.store.setBaseParam('active',true);
 					grid.store.setBaseParam('state',state);
 					grid.store.load();
-				}
+				},
+				contractcreate: function(record){
+					if (this.contractBtnType=='add'){
+						this.contractBar.remove(this.contractBar.items.items[1]);
+						var item = {
+							width:30,
+							items:[this.contractSplitBtn]
+						}; 
+						this.contractBtnType = 'split';
+						this.contractBar.add(item);
+						this.doLayout();
+					}
+				},
+				scope:this
 			},
 			scope:this
 		})

@@ -57,6 +57,9 @@ App.patient.ContractGrid = Ext.extend(Ext.grid.EditorGridPanel, {
 		    	},
 		    	write:function(store, action, result, res, rs){
 		    		console.log('Contract created!');
+		    		if(action=='create') {
+						this.fireEvent('contractcreate',rs);
+					}
 		    		console.log(store);
 		    		console.log(action);
 		    		console.log(result);
