@@ -11,12 +11,13 @@ App.models.barcodeModel = new Ext.data.Record.create([
 App.models.contractModel = new Ext.data.Record.create([
     {name: 'id'},
 	{name: 'state'},
+	{name: 'resource_uri'},
 	{name: 'state_name'},
 	{name: 'patient'},
 	{name: 'contract_type'},
 	{name: 'contract_type_name'},
-	{name: 'created'},
-	{name: 'expire'},
+	{name: 'created', type:'date', format: 'd.m.Y'},
+	{name: 'expire', type:'date', format: 'd.m.Y'},
 	{name: 'active'}
 ]);
 

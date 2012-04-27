@@ -217,6 +217,7 @@ class ContractTypeResource(ExtResource):
         resource_name = 'contracttype'
         default_format = 'application/json'
         authorization = DjangoAuthorization()
+        always_return_data = True
         filtering = {
             'type':('istartswith',),
             'title':ALL,
@@ -241,6 +242,7 @@ class ContractResource(ExtResource):
         resource_name = 'contract'
         default_format = 'application/json'
         authorization = DjangoAuthorization()
+        always_return_data = True
         filtering = {
             'patient':ALL_WITH_RELATIONS,
             'state':ALL_WITH_RELATIONS,

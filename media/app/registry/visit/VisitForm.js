@@ -187,9 +187,9 @@ App.visit.VisitForm = Ext.extend(Ext.FormPanel, {
 		
 		this.contractSplitBtn = new Ext.SplitButton({
 			iconCls:'silk-printer',
-			handler:this.contractPrint,
+			handler:this.contractPrint.createDelegate(this,[]),
 			menu: new Ext.menu.Menu({
-				items:[{iconCls:'silk-add', handler:this.contractChoice}]
+				items:[{iconCls:'silk-add', handler:this.contractChoice.createDelegate(this,[])}]
 			}),
 			scope:this
 		});
@@ -1319,13 +1319,21 @@ App.visit.VisitForm = Ext.extend(Ext.FormPanel, {
 		var contractGrid = new App.patient.ContractGrid({
 			showChoiceButton: true,
 			layout:'fit',
-			store:this.contractCmb.store,
+//			store:this.contractCmb.store,
 			record:this.patientRecord,
 			fn: function(record){
 				if (record){
 					this.contractCmb.forceValue(record.data.resource_uri);
 				};
 				win.close();
+			},
+			listeners:{
+				afterrender: function(grid){
+					grid.store.setBaseParam('patient',grid.record.data.id);
+					grid.store.setBaseParam('active',true);
+					grid.store.setBaseParam('state',state);
+					grid.store.load();
+				}
 			},
 			scope:this
 		})

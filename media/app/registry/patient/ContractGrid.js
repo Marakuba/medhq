@@ -19,7 +19,7 @@ App.patient.ContractGrid = Ext.extend(Ext.grid.EditorGridPanel, {
 		this.store = this.store || new Ext.data.Store({
 			//autoLoad:true,
 			
-			autoSave:this.showChoiceButton || this.record,
+			autoSave:this.showChoiceButton || this.record ? true : false,
 		    baseParams: {
 		    	format:'json'
 		    },
@@ -46,7 +46,7 @@ App.patient.ContractGrid = Ext.extend(Ext.grid.EditorGridPanel, {
 			}),
 		    listeners:{
 		    	exception:function(proxy, type, action, options, response, arg){
-		    		console.log('ClientAccount Grid Exception!');
+		    		console.log('Contract Grid Exception!');
 		    		console.log(proxy);
 		    		console.log(type);
 		    		console.log(action);
@@ -56,7 +56,7 @@ App.patient.ContractGrid = Ext.extend(Ext.grid.EditorGridPanel, {
 		    		this.fireEvent('exception');
 		    	},
 		    	write:function(store, action, result, res, rs){
-		    		console.log('ClietnAccount created!');
+		    		console.log('Contract created!');
 		    		console.log(store);
 		    		console.log(action);
 		    		console.log(result);

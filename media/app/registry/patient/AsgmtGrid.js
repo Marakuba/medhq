@@ -49,6 +49,7 @@ App.patient.AsgmtGrid = Ext.extend(Ext.grid.EditorGridPanel, {
 		this.visitButton = new Ext.Button({
 			iconCls:'silk-add',
 			disabled:true,
+			hidden:this.card_id,
 			text:'Оформить заказ',
 			handler:this.onVisitButtonClick.createDelegate(this, []),
 			scope:this
@@ -65,6 +66,7 @@ App.patient.AsgmtGrid = Ext.extend(Ext.grid.EditorGridPanel, {
 		this.setTimeButton = new Ext.Button({
 			xtype:'button',
 			text:'Назначить время',
+			hidden:this.card_id,
 			disabled:true,
 			handler:this.staffWindow.createDelegate(this, []),
 			scope:this
@@ -205,6 +207,7 @@ App.patient.AsgmtGrid = Ext.extend(Ext.grid.EditorGridPanel, {
             }),{
 		    	header: "Цена", 
 		    	width: 20, 
+		    	hidden:this.card_id,
 		    	sortable: true, 
 		    	dataIndex: 'price'
 		    },{
@@ -238,16 +241,19 @@ App.patient.AsgmtGrid = Ext.extend(Ext.grid.EditorGridPanel, {
 		    },{
 		    	header: "Телефон", 
 		    	width: 35, 
+		    	hidden:this.card_id,
 		    	sortable: false, 
 		    	dataIndex: 'patient_phone'
 		    },{
 		    	header: "Акция", 
 		    	width: 35, 
+		    	hidden:this.card_id,
 		    	sortable: false, 
 		    	dataIndex: 'promotion_name'
 		    },{
 		    	header: "Оператор", 
 		    	width: 35, 
+		    	hidden:this.card_id,
 		    	sortable: true, 
 		    	dataIndex: 'operator_name'
 		    }
