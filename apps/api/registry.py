@@ -42,7 +42,7 @@ from constance import config
 from promotion.models import Promotion
 from remoting.models import RemoteState
 from api.authorization import LocalAuthorization
-from medhq.apps.patient.models import ContractType, Contract
+from patient.models import ContractType, Contract
 
 class UserResource(ModelResource):
 
