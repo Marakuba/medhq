@@ -798,7 +798,81 @@ td.ext-cal-dtitle-today div {
     border-color: #B1844F;
 }
 
+.ext-color-ordered,
+.ext-ie .ext-color-ordered-ad,
+.ext-opera .ext-color-ordered-ad {
+    color: #ece885;
+}
+.ext-cal-day-col .ext-color-ordered,
+.ext-dd-drag-proxy .ext-color-ordered,
+.ext-color-ordered-ad,
+.ext-color-ordered-ad .ext-cal-evm,
+.ext-color-ordered .ext-cal-picker-icon,
+.ext-color-ordered-x dl,
+.ext-color-ordered-x .ext-cal-evb {
+    background: #ece885;
+}
+.ext-color-ordered-x .ext-cal-evb,
+.ext-color-ordered-x dl {
+    border-color: #ece885;
+}
 
+.ext-color-locked,
+.ext-ie .ext-color-locked-ad,
+.ext-opera .ext-color-locked-ad {
+    color: #85baec;
+}
+.ext-cal-day-col .ext-color-locked,
+.ext-dd-drag-proxy .ext-color-locked,
+.ext-color-locked-ad,
+.ext-color-locked-ad .ext-cal-evm,
+.ext-color-locked .ext-cal-picker-icon,
+.ext-color-locked-x dl,
+.ext-color-locked-x .ext-cal-evb {
+    background: #85baec;
+}
+.ext-color-locked-x .ext-cal-evb,
+.ext-color-locked-x dl {
+    border-color: #85baec;
+}
+
+.ext-color-overdue,
+.ext-ie .ext-color-overdue-ad,
+.ext-opera .ext-color-overdue-ad {
+    color: #dee0e3;
+}
+.ext-cal-day-col .ext-color-overdue,
+.ext-dd-drag-proxy .ext-color-overdue,
+.ext-color-overdue-ad,
+.ext-color-overdue-ad .ext-cal-evm,
+.ext-color-overdue .ext-cal-picker-icon,
+.ext-color-overdue-x dl,
+.ext-color-overdue-x .ext-cal-evb {
+    background: #dee0e3;
+}
+.ext-color-overdue-x .ext-cal-evb,
+.ext-color-overdue-x dl {
+    border-color: #dee0e3;
+}
+
+.ext-color-missing,
+.ext-ie .ext-color-missing-ad,
+.ext-opera .ext-color-missing-ad {
+    color: #989696;
+}
+.ext-cal-day-col .ext-color-missing,
+.ext-dd-drag-proxy .ext-color-missing,
+.ext-color-missing-ad,
+.ext-color-missing-ad .ext-cal-evm,
+.ext-color-missing .ext-cal-picker-icon,
+.ext-color-missing-x dl,
+.ext-color-missing-x .ext-cal-evb {
+    background: #989696;
+}
+.ext-color-missing-x .ext-cal-evb,
+.ext-color-missing-x dl {
+    border-color: #989696;
+}
 
 .ext-cal-day-col .ext-cal-evt {
     position: absolute;

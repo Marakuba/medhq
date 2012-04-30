@@ -28,6 +28,14 @@ from django.core.exceptions import ObjectDoesNotExist
 
 add_introspection_rules([], ["^scheduler\.models\.CustomDateTimeField"])
 
+STATUSES = (
+    (u'з',u'Занято'),
+    (u'с',u'Свободно'),
+    (u'б',u'Блокировано'),
+    (u'п',u'Просрочено'),
+    (u'о',u'Оформлено'),
+)
+
 def datetimeIterator(from_date=None, to_date=None, delta=timedelta(minutes=30)):
     from_date = from_date or datetime.datetime.now()
     while to_date is None or from_date <= to_date:
@@ -112,6 +120,7 @@ class Event(models.Model):
     rem = models.CharField(u'Напоминание', max_length = 60, blank = True, null = True)
     n = models.BooleanField(u'Новое событие', default = True)
     parent = models.ForeignKey('self', null=True, blank=True, related_name='children')
+    status = models.CharField(u'Статус', choices=STATUSES, default=u'с', max_length=1)
     
     @transaction.commit_on_success
     def save(self, *args, **kwargs):
@@ -191,7 +200,10 @@ class Preorder(models.Model):
     @transaction.commit_on_success
     def save(self, *args, **kwargs):
         if self.timeslot:
-            self.timeslot.vacant = False
+            if self.visit:
+                self.timeslot.status = u'о'
+            else: 
+                self.timeslot.status = u'з'
             self.timeslot.save()
         if self.visit:
             self.completed_count += 1

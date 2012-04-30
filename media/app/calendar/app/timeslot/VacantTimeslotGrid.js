@@ -12,7 +12,7 @@ App.calendar.VacantTimeslotGrid = Ext.extend(Ext.grid.GridPanel, {
 				    {name: 'resource_uri'},
 				    {name: 'start',type:'date',format:'c'},
 				    {name: 'end',type:'date',format:'c'},
-				    {name: 'vacancy'},
+				    {name: 'status'},
 				    {name: 'timeslot'},
 				    {name: 'cid'},
 				    {name: 'staff'}
@@ -140,7 +140,7 @@ App.calendar.VacantTimeslotGrid = Ext.extend(Ext.grid.GridPanel, {
 			if (this.staff_id){
 				this.store.setBaseParam('cid',this.staff_id);
 			}
-			this.store.setBaseParam('vacant',true);
+			this.store.setBaseParam('status','c');
 			this.store.setBaseParam('timeslot',true);
 			var day = this.start_date.getDate();
 			var month = this.start_date.getMonth()+1;

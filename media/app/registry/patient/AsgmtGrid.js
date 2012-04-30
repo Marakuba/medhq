@@ -138,7 +138,7 @@ App.patient.AsgmtGrid = Ext.extend(Ext.grid.EditorGridPanel, {
 		this.eventModel = new Ext.data.Record.create([
 			{name: 'id'},
 		    {name: 'resource_uri'},
-		    {name: 'vacancy', allowBlank: false}
+		    {name: 'status', allowBlank: false}
 		]);
 
 		this.eventStore = new Ext.data.RESTStore({
@@ -156,7 +156,7 @@ App.patient.AsgmtGrid = Ext.extend(Ext.grid.EditorGridPanel, {
 				    {name: 'resource_uri'},
 				    {name: 'start',type:'date',format:'c'},
 				    {name: 'end',type:'date',format:'c'},
-				    {name: 'vacancy'},
+				    {name: 'status'},
 				    {name: 'timeslot'},
 				    {name: 'cid'},
 				    {name: 'staff'}
@@ -544,7 +544,7 @@ App.patient.AsgmtGrid = Ext.extend(Ext.grid.EditorGridPanel, {
        				return false;
        			};
        			preorder.set('timeslot',record.data.resource_uri);
-       			record.set('vacant',false);
+       			record.set('status','з');
        			this.store.load();
 				freeTimeslotWindow.close();
 			}

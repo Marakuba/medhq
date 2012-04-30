@@ -1990,7 +1990,7 @@ class EventResource(ExtResource):
             'start':ALL,
             'end':ALL,
             'timeslot':ALL,
-            'vacant':ALL
+            'status':ALL
             
         }       
         limit = 1000

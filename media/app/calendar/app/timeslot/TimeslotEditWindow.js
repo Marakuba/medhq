@@ -120,7 +120,7 @@ Ext.calendar.TimeslotEditWindow = Ext.extend(Ext.Window, {
 		    listeners:{
 		    	'select':function(combo,record,index){
 		    		this.formPanel.form.findField('Title').setValue(' ');
-		    		this.formPanel.form.findField('vacant').setValue(false);
+		    		this.formPanel.form.findField('Status').setValue('з');
 		    		this.setPatient(record.data.resource_uri);
 		    		this.serviceCombo.enable();
 		    		this.serviceButton.setDisabled(false);
@@ -158,12 +158,25 @@ Ext.calendar.TimeslotEditWindow = Ext.extend(Ext.Window, {
 		    App.calendar.eventManager.fireEvent('preorderwrite',rs);
 		}, this);
 		
+		this.lockButton = new Ext.Button({
+			text:'Заблокировать',
+			disabled:false,
+			handler:this.onLock.createDelegate(this, [])
+		});
+		
 		this.clearButton = new Ext.Button({
 			iconCls:'silk-cancel',
 			text:'Отменить предзаказ',
 			disabled:true,
 			handler:this.onClear.createDelegate(this, [])
 		});
+		
+		this.saveButton = new Ext.Button({
+    	    text: 'Сохранить',
+        	disabled: false,
+            handler: this.onSave.createDelegate(this,[]),
+	        scope: this
+    	});
 		
 		this.moveButton = new Ext.Button({
 //			iconCls:'silk-cancel',
@@ -282,7 +295,7 @@ Ext.calendar.TimeslotEditWindow = Ext.extend(Ext.Window, {
         	name: 'CalendarId'
 	    },{
     		xtype: 'hidden',
-        	name: 'vacant'
+        	name: 'Status'
 	    },{
     		xtype: 'hidden',
         	name: 'Preorder'
@@ -380,18 +393,21 @@ Ext.calendar.TimeslotEditWindow = Ext.extend(Ext.Window, {
         	this.fieldSet.add(this.calendarPicker);
     	};
     	
-    	this.ttb = [{
-    		xtype:'button',
-			iconCls:'silk-accept',
-			text:'Выбрать пациента',
-			handler:this.onPatientChoice.createDelegate(this, [])
-		},{
-    		xtype:'button',
-			iconCls:'silk-add',
-			text:'Добавить пациента',
-			handler:this.onAddPatient.createDelegate(this, [])
-		},this.serviceButton,'->'
-		];
+    	this.ttb = new Ext.Toolbar({
+    		items:[{
+		    		xtype:'button',
+					iconCls:'silk-accept',
+					text:'Выбрать пациента',
+					handler:this.onPatientChoice.createDelegate(this, [])
+				},{
+		    		xtype:'button',
+					iconCls:'silk-add',
+					text:'Добавить пациента',
+					handler:this.onAddPatient.createDelegate(this, [])
+				},this.serviceButton,'->'
+			]
+    	})
+		
     	
 	    config = {
     	    titleTextAdd: 'Добавить событие',
@@ -408,13 +424,8 @@ Ext.calendar.TimeslotEditWindow = Ext.extend(Ext.Window, {
         	
         	tbar: this.ttb,
 
-	        fbar: [
-    	    '->',this.moveButton, this.clearButton,'-',{
-        	    text: 'Сохранить',
-            	disabled: false,
-	            handler: this.onSave,
-    	        scope: this
-        	},
+	        fbar: [this.lockButton,
+    	    '->',this.moveButton, this.clearButton,'-',this.saveButton,
         /*{
             id: 'delete-btn',
             text: 'Удалить',
@@ -571,6 +582,11 @@ Ext.calendar.TimeslotEditWindow = Ext.extend(Ext.Window, {
            	this.preorderStore.load({callback:this.setPreorder,scope:this});
 
             f.loadRecord(rec);
+            if(rec.data.Status == 'б'){
+            	this.lockForm();
+            } else if (rec.data.Status != 'с'){
+            		this.lockButton.setDisabled(true);
+            }
             //this.getForm().findField('start').originalValue = o.data['start']
         }
         else {
@@ -646,8 +662,8 @@ Ext.calendar.TimeslotEditWindow = Ext.extend(Ext.Window, {
 //        	this.activeRecord.set(M.StaffId.name, this.formPanel.form.findField('staff').getValue());
 //        };
 ////        this.activeRecord.set(M.vacant.name, this.formPanel.form.findField('Title')=='');
-        var vacant = this.formPanel.form.findField('vacant').getValue();
-        this.activeRecord.set('Vacant',vacant=='true'?true:false)
+        var status = this.formPanel.form.findField('Status').getValue();
+        this.activeRecord.set('Status',status)
 //        this.activeRecord.set(M.Timeslot.name, true);
         
         var uri = this.activeRecord.data[M.ResourceURI.name];
@@ -764,7 +780,7 @@ Ext.calendar.TimeslotEditWindow = Ext.extend(Ext.Window, {
        			this.setPatient(record.data.resource_uri);
        			this.patientCombo.forceValue(record.data.resource_uri);
 //        		this.formPanel.form.findField('Title').setValue(' ');
-        		this.formPanel.form.findField('vacant').setValue(false);
+        		this.formPanel.form.findField('Status').setValue('з');
         		this.serviceButton.setDisabled(false);
         		this.serviceCombo.enable();
         		this.paymentTypeCB.enable();
@@ -787,7 +803,7 @@ Ext.calendar.TimeslotEditWindow = Ext.extend(Ext.Window, {
        			}
        			this.patientCombo.forceValue(record.data.resource_uri);
        			this.formPanel.form.findField('Title').setValue(' ');
-       			this.formPanel.form.findField('vacant').setValue(false);
+       			this.formPanel.form.findField('Status').setValue('з');
        			this.setPatient(record.data.resource_uri);
        			this.serviceCombo.enable();
        			this.paymentTypeCB.enable();
@@ -807,7 +823,7 @@ Ext.calendar.TimeslotEditWindow = Ext.extend(Ext.Window, {
     					this.moveButton.setDisabled(true);
    						this.setRemovePreorder = true;
    						this.formPanel.form.findField('Title').setValue('');
-   						this.formPanel.form.findField('vacant').setValue(true);
+   						this.formPanel.form.findField('Status').setValue('с');
    						this.onSave();
    					}
     			}
@@ -827,9 +843,9 @@ Ext.calendar.TimeslotEditWindow = Ext.extend(Ext.Window, {
        			if (!record){
        				return false;
        			};
-       			this.activeRecord.set('Vacant',true);
+       			this.activeRecord.set('Status','с');
        			this.preorder.set('timeslot',record.data.resource_uri);
-       			record.set('vacant',false);
+       			record.set('Status','з');
        			this.activeRecord.store.load();
 				freeTimeslotWindow.close();
 				this.fireEvent(this.isAdd ? 'eventadd': 'eventupdate', this, this.activeRecord);
@@ -924,5 +940,23 @@ Ext.calendar.TimeslotEditWindow = Ext.extend(Ext.Window, {
 				this.patientEditor.startEdit(p)
 			}
 		}
+	},
+	
+	onLock: function(){
+		var status = this.formPanel.form.findField('Status').getValue(); 
+		if (status == 'с'){
+			this.activeRecord.set('Status','б');
+		} else if (status == 'б'){
+			this.activeRecord.set('Status','с');
+		};
+		this.activeRecord.store.load();
+		this.fireEvent('eventupdate', this, this.activeRecord);
+	},
+	
+	lockForm: function(){
+		this.formPanel.disable();
+		this.ttb.disable();
+		this.saveButton.setDisabled(true);
+		this.lockButton.setText('Разблокировать')
 	}
 });

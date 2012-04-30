@@ -428,6 +428,7 @@ App.visit.OrderedServiceInlineGrid = Ext.extend(Ext.grid.EditorGridPanel, {
 						ps.autoSave = false;
 					}
 					preorder.set('visit',this.record.data.resource_uri)
+					
 				}
 			}, this);
 			if(ps){

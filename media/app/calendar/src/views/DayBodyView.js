@@ -22,7 +22,7 @@ Ext.calendar.DayBodyView = Ext.extend(Ext.calendar.CalendarView, {
     //private
     initComponent: function() {
         Ext.calendar.DayBodyView.superclass.initComponent.call(this);
-
+        
         this.addEvents({
             /**
              * @event eventresize
@@ -241,6 +241,8 @@ Ext.calendar.DayBodyView = Ext.extend(Ext.calendar.CalendarView, {
         }
         return this.eventAllDayTpl;
     },
+    
+    today: new Date(),
 
     // private
     getTemplateEventData: function(evt) {
@@ -251,7 +253,32 @@ Ext.calendar.DayBodyView = Ext.extend(Ext.calendar.CalendarView, {
         this.getTemplateEventBox(evt);
 
         data._selectorCls = selector;
-        data._colorCls = 'ext-color-' + (evt[M.Vacant.name]?'vac':'occupy') + (evt._renderAsAllDay ? '-ad': '');
+        switch (evt[M.Status.name]){
+        	case 'с':
+        		data._colorCls = 'ext-color-' + 'vac' + (evt._renderAsAllDay ? '-ad': '');
+        		break
+        	case 'з':
+        		data._colorCls = 'ext-color-' + 'occupy' + (evt._renderAsAllDay ? '-ad': '');
+        		break
+        	case 'б':
+        		data._colorCls = 'ext-color-' + 'locked' + (evt._renderAsAllDay ? '-ad': '');
+        		break
+        	case 'п':
+        		data._colorCls = 'ext-color-' + 'occupy' + (evt._renderAsAllDay ? '-ad': '');
+        		break
+        }
+        
+        if (evt[M.StartDate.name] < this.today){
+        	if (evt[M.Status.name] == 'з'){
+        		data._colorCls = 'ext-color-' + 'missing' + (evt._renderAsAllDay ? '-ad': '');
+        	} else {
+        		data._colorCls = 'ext-color-' + 'overdue' + (evt._renderAsAllDay ? '-ad': '');
+        	}
+        };
+        
+        if (evt[M.Status.name] == 'о'){
+        	data._colorCls = 'ext-color-' + 'ordered' + (evt._renderAsAllDay ? '-ad': '');
+        };
         //data._colorCls = 'ext-color-' + Ext.idToColor(evt[M.CalendarId.name]) + (evt._renderAsAllDay ? '-ad': '');
         data._elId = selector + (evt._weekIndex ? '-' + evt._weekIndex: '');
         data._isRecurring = evt.Recurrence && evt.Recurrence != '';

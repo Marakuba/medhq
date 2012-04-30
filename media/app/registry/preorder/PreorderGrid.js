@@ -420,6 +420,30 @@ App.registry.PreorderGrid = Ext.extend(Ext.grid.GridPanel, {
 		this.btnSetDisabled(true);
 	},
 	
+	storeDateFilter: function(field, value){
+		if(!value) {
+			delete this.store.baseParams[field+'__year'];
+			delete this.store.baseParams[field+'__month'];
+			delete this.store.baseParams[field+'__day'];
+		} else {
+			var day = value.getDate();
+			var month = value.getMonth()+1;
+			var year = value.getFullYear();
+			this.store.setBaseParam(field+'__year', year);
+			this.store.setBaseParam(field+'__month', month);
+			this.store.setBaseParam(field+'__day', day);
+		}
+		this.store.load({callback:function(){
+			var record = this.getSelected();
+			if (record){
+				this.onServiceSelect(record);
+			} else {
+				this.btnSetDisabled(true);
+			};
+		},scope:this});
+		this.btnSetDisabled(true);
+	},
+	
 	onPrevClick: function(){
 		this.start_date = this.start_date.add(Date.DAY,-1);
 		this.startDateField.setValue(this.start_date);

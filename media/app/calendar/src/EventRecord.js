@@ -85,6 +85,11 @@ Ext.calendar.EventMappings = {
         name: 'Vacant',
         mapping: 'vacant',
         type: 'boolean'
+    },
+    Status: {
+        name: 'Status',
+        mapping: 'status',
+        type: 'string'
     }
 };
 
@@ -144,7 +149,8 @@ rec.data[M.Notes.name] = 'Some notes';
     M.IsNew,
     M.StaffId,
     M.Timeslot,
-    M.Vacant
+    M.Vacant,
+    M.Status
     ]);
 
     /**
@@ -166,7 +172,8 @@ rec.data[M.Notes.name] = 'Some notes';
         M.IsNew,
         M.StaffId,
         M.Timeslot,
-        M.Vacant
+        M.Vacant,
+        M.Status
         ]);
     };
 })();
