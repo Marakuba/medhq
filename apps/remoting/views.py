@@ -202,7 +202,12 @@ def post_orders(request):
             },
             'visit':{
                 'id':obj.order.id,
-                'specimen':obj.order.specimen
+                'specimen':obj.order.specimen,
+                'pregnancy_week':obj.order.pregnancy_week,
+                'menses_day':obj.order.menses_day,
+                'menopause':obj.order.menopause,
+                'diagnosis':obj.order.diagnosis,
+                'sampled':obj.order.sampled
             },
             'dest_lab':s.uuid,
             'source_lab':obj.order.office.uuid

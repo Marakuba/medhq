@@ -76,8 +76,7 @@ class ExtResource(ModelResource):
             return self.get_object_list(request).filter(**applicable_filters)
 
     def create_response(self, request, data, response_class=HttpResponse, **response_kwargs):
-        
-        response = super(ExtResource, self).create_response(request, data, response_class=HttpResponse, **response_kwargs)
+        response = super(ExtResource, self).create_response(request, data, response_class=response_class, **response_kwargs)
         response['Access-Control-Allow-Origin'] = "*"
         response['Access-Control-Allow-Methods'] = "*"
         response['Access-Control-Allow-Headers'] = "content-type,x-requested-with"
