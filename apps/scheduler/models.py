@@ -218,7 +218,7 @@ class Preorder(models.Model):
         
     def delete(self, *args, **kwargs):
         if self.timeslot:
-            self.timeslot.vacant = True 
+            self.timeslot.status = u'с' 
             self.timeslot.save()
         super(Preorder, self).delete(*args, **kwargs) 
     

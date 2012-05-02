@@ -559,6 +559,8 @@ Ext.calendar.TimeslotEditWindow = Ext.extend(Ext.Window, {
         
         this.serviceStore.setBaseParam('staff',this.staff_id);
 //        this.serviceStore.load();
+        
+        var today = new Date();
 
         if (o.data) {
             rec = o;
@@ -582,9 +584,10 @@ Ext.calendar.TimeslotEditWindow = Ext.extend(Ext.Window, {
            	this.preorderStore.load({callback:this.setPreorder,scope:this});
 
             f.loadRecord(rec);
-            if(rec.data.Status == 'б'){
+            if(rec.data.Status == 'б' || rec.data.Status == 'о' || (rec.data.StartDate < today && rec.data.Status != 'з')){
             	this.lockForm();
-            } else if (rec.data.Status != 'с'){
+            };
+            if (rec.data.Status != 'с' || rec.data.StartDate < today){
             		this.lockButton.setDisabled(true);
             }
             //this.getForm().findField('start').originalValue = o.data['start']
@@ -707,8 +710,8 @@ Ext.calendar.TimeslotEditWindow = Ext.extend(Ext.Window, {
     setPreorder: function(records,opt,success){
 		if (records[0]) {
 			this.preorder = records[0];
-			this.clearButton.setDisabled(false);
-			this.moveButton.setDisabled(false);
+			this.clearButton.setDisabled(this.locked);
+			this.moveButton.setDisabled(this.locked);
 			this.serviceButton.setDisabled(false);
 			if (this.preorder.data.service) {
 				this.serviceCombo.forceValue(this.preorder.data.service);
@@ -957,6 +960,7 @@ Ext.calendar.TimeslotEditWindow = Ext.extend(Ext.Window, {
 		this.formPanel.disable();
 		this.ttb.disable();
 		this.saveButton.setDisabled(true);
-		this.lockButton.setText('Разблокировать')
+		this.lockButton.setText('Разблокировать');
+		this.locked = true
 	}
 });
