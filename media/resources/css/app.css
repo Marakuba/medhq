@@ -225,6 +225,7 @@ button.icon-main-button {
 }
 .patient-card-header {
 	padding:2px;
+	height:53px;
 	font-size:12px;
 	font-family:'Verdana';
 }

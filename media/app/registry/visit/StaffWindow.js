@@ -7,38 +7,46 @@ App.visit.StaffWindow = Ext.extend(Ext.Window, {
 		    fields: ['id', 'staff_name'],
 		    data : this.staffList
 		});
-		this.staff = new Ext.form.ComboBox({
-			fieldLabel:'Врач',
-			name:'staff',
-			allowBlank:false,
-    		store:new Ext.data.ArrayStore({
-    		    fields: ['id', 'staff_name'],
-    		    data : this.staffList
-    		}),
-    		mode:'local',
-	    	selectOnFocus:true,
-		    typeAhead: true,
-		    triggerAction: 'all',
-		    valueField: 'id',
-		    displayField:'staff_name',
-		    editable:false
+		this.staffGrid = new App.visit.StaffGrid({
+			state:this.state,
+			service:this.service,
+			scope:this,
+			listeners: {
+				rowdblclick:this.onSubmit.createDelegate(this,[])
+			}
 		});
-		this.staff.setValue(this.staffList[0][0]);
-		this.form = new Ext.form.FormPanel({
-			layout:'form',
-			items: this.staff
-		});
+//		this.staff = new Ext.form.ComboBox({
+//			fieldLabel:'Врач',
+//			name:'staff',
+//			allowBlank:false,
+//    		store:new Ext.data.ArrayStore({
+//    		    fields: ['id', 'staff_name'],
+//    		    data : this.staffList
+//    		}),
+//    		mode:'local',
+//	    	selectOnFocus:true,
+//		    typeAhead: true,
+//		    triggerAction: 'all',
+//		    valueField: 'id',
+//		    displayField:'staff_name',
+//		    editable:false
+//		});
+//		this.staff.setValue(this.staffList[0][0]);
+//		this.form = new Ext.form.FormPanel({
+//			layout:'form',
+//			items: this.staff
+//		});
 		
 		config = {
-			title:'Выберите врача',
-			width:380,
-			height:120,
+			title:'Выберите врача: ' + this.service_name,
+			width:700,
+			height:400,
 			layout:'fit',
 			defaults:{
 				baseCls:'x-border-layout-ct',
 				border:false
 			},
-			items: this.form,
+			items: this.staffGrid,
 			modal:true,
 			border:false,
 			buttons:[{
@@ -64,12 +72,9 @@ App.visit.StaffWindow = Ext.extend(Ext.Window, {
 	
 	onSubmit:function()
 	{
-		var staff = this.staff;
-		if(id=staff.getValue()){
-			var idx = staff.getStore().find('id',id);
-			var name = staff.getStore().getAt(idx).data.staff_name;
-			this.fireEvent('validstaff', this.index, id, name);
-			this.close();
+		var staff = this.staffGrid.getSelected();
+		if (staff){
+			Ext.callback(this.fn, this.scope||window, [staff]);
 		}
 		
 	}

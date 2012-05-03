@@ -20,3 +20,4 @@ import patient.views
 import lab.views
 import numeration.views
 import service.views
+import staff.views

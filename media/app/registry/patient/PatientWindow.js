@@ -79,14 +79,12 @@ App.patient.PatientWindow = Ext.extend(Ext.Window, {
 		Ext.apply(this, Ext.apply(this.initialConfig, config));
 		App.patient.PatientWindow.superclass.initComponent.apply(this, arguments);
 		this.store.on('write', this.onStoreWrite, this);
+		this.store.on('exception', this.onException, this);
 		this.on('destroy', function(){
 			this.store.un('write', this.onStoreWrite, this);
 			this.store.un('exception',this.onException,this);
 		},this);
 		this.form.on('accepted',this.onFormSave.createDelegate(this,[false]),this);
-		if (this.record){
-			this.record.store.on('exception',this.onException,this);
-		}
 	},
 	
 	onFormSave: function(post_visit) {

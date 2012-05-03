@@ -136,6 +136,7 @@ js_registry = Bundle(
     
     'app/registry/visit/VisitServicePanel.js',
     'app/service/ServiceTreeGrid.js',
+    'app/registry/visit/StaffGrid.js',
     'app/registry/visit/StaffWindow.js',
     'app/registry/visit/VisitForm.js',
     'app/registry/visit/OrderedServiceInlineGrid.js',

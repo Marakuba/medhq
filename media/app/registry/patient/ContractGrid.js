@@ -128,6 +128,11 @@ App.patient.ContractGrid = Ext.extend(Ext.grid.EditorGridPanel, {
 				text:'Выбрать',
 				hidden:!this.showChoiceButton,
 				handler:this.onChoice.createDelegate(this,[])
+			},{
+				xtype:'button',
+				iconCls:'silk-printer',
+				text:'Печать',
+				handler:this.onPrint.createDelegate(this,[])
 			}]
 		}); 
 		
@@ -294,6 +299,9 @@ App.patient.ContractGrid = Ext.extend(Ext.grid.EditorGridPanel, {
 			this.ttb.add(this.addButton)
 			this.doLayout();
 		},scope:this});
+	},
+	
+	onPrint: function(){
 	}
 	
 });

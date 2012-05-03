@@ -333,22 +333,26 @@ App.visit.OrderedServiceInlineGrid = Ext.extend(Ext.grid.EditorGridPanel, {
             };
 		}
 		if(attrs.staff){
-			var box = App.visit.StaffBox;
-			box.show({
-				text:attrs.text,
-				staffList:attrs.staff,
-				fn:function(button,rec,opts){
-					if(button=='ok' && rec) {
+			var box = new App.visit.StaffWindow({
+				state:state,
+				service:ids[0],
+				height:300,
+				width:400,
+				service_name:attrs.text,
+				fn:function(rec,opts){
+					if(rec) {
 						attrs.staff_id = rec.data.id;
 						attrs.staff_name = rec.data.staff_name;
 						this.addRecord(attrs);
 					}
 					if(callback) {
 						Ext.callback(callback,scope, [true]);
-					}
+					};
+					box.close();
 				},
 				scope:this
 			});
+			box.show();
 		} else {
 			this.addRecord(attrs);
 			if(callback) {
@@ -374,41 +378,24 @@ App.visit.OrderedServiceInlineGrid = Ext.extend(Ext.grid.EditorGridPanel, {
 	
 	changeStaff: function() {
 		var rec = this.getSelectionModel().getSelected();
-		Ext.Ajax.request({
-			url:get_api_url('extendedservice'),
-			method:'GET',
-			success:function(response, opts){
-				var obj = Ext.decode(response.responseText);
-				var staff = obj.objects[0].staff;
-				if(staff) {
-					App.visit.StaffBox.show({
-						staffList:staff,
-						fn:function(button,r,opts){
-							if(button=='ok' && r) {
-								rec.beginEdit();
-								rec.set('staff',get_api_url('staff')+'/'+r.data.id);
-								rec.set('staff_name',r.data.staff_name);
-								rec.endEdit();
-							}
-						},
-						scope:this
-					});
-				} else {
-					App.StatusBar.setStatus({
-                        text: 'Для данной услуги врачи не назначены!',
-                        iconCls: 'x-status-error',
-                        clear: true // auto-clear after a set interval
-                    });
+		var box = new App.visit.StaffWindow({
+			service:App.uriToId(rec.data.service),
+			state:App.uriToId(rec.data.execution_place),
+			height:300,
+			width:400,
+			service_name:rec.data.service_name,
+			fn:function(r){
+				if(r) {
+					rec.beginEdit();
+					rec.set('staff',get_api_url('staff')+'/'+r.data.id);
+					rec.set('staff_name',r.data.staff_name);
+					rec.endEdit();
 				}
+				box.close();
 			},
-			failure:function(response, opts){
-				Ext.MessageBox.alert('Ошибка','Во время получения данных о врачах произошла ошибка на сервере!');
-			},
-			params:{
-				base_service__id:App.uriToId(rec.data.service),
-				state__id:App.uriToId(rec.data.execution_place)
-			}
+			scope:this
 		});
+		box.show();
 	},
 	
 	onSave: function() {

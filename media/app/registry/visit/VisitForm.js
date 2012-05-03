@@ -73,7 +73,7 @@ App.visit.VisitForm = Ext.extend(Ext.FormPanel, {
 				payment_type:'н',
 				promotion:true
 			},
-	        width: 300,
+	        width: 400,
 		    collapsible: true,
 		    collapseMode: 'mini',
 	        split: true,
@@ -121,6 +121,8 @@ App.visit.VisitForm = Ext.extend(Ext.FormPanel, {
 		
 		this.policyBar = new Ext.Panel({
 //			id:'policy-bar',
+			flex:1,
+			border:false,
 			layout:'hbox',
 			hidden:this.record ? this.record.data.payment_type!='д' : true,
 			defaults:{
@@ -224,6 +226,8 @@ App.visit.VisitForm = Ext.extend(Ext.FormPanel, {
 		
 		
 		this.payerBar = new Ext.Panel({
+			flex:1,
+			border:false,
 //			id:'policy-bar',
 			layout:'hbox',
 			hidden:this.record ? this.record.data.payment_type!='б' : true,
@@ -344,18 +348,20 @@ App.visit.VisitForm = Ext.extend(Ext.FormPanel, {
             items:[{
 				fieldLabel:'Беременность',
 				name:'pregnancy_week',
-				xtype:'textfield',
-//    			anchor:'98%',
+				xtype:'numberfield',
+    			anchor:'98%',
 				emptyText:'кол-во недель'
 			}]
 		};
 		this.menstruation = {
             layout: 'form',
+            labelWidth:70,
             border:false,
             items:[{
 				fieldLabel:'День цикла',
+				anchor:'98%',
 				name:'menses_day',
-				xtype:'textfield',
+				xtype:'numberfield',
 				emptyText:'кол-во дней'
 			}]
 		};
@@ -364,8 +370,21 @@ App.visit.VisitForm = Ext.extend(Ext.FormPanel, {
             border:false,
             items:[{
 				boxLabel:'Менопауза',
+				hideLabel:true,
 				xtype:'checkbox',
 				name:'menopause'
+			}]
+		};
+		this.cito = {
+            layout: 'form',
+            border:false,
+            baseCls:'x-border-layout-ct',
+            margins: '0 0 0 5',
+            items:[{
+				boxLabel:'Cito',
+				hideLabel:true,
+				xtype:'checkbox',
+				name:'cito'
 			}]
 		};
 		this.diagnosis = { 
@@ -391,10 +410,15 @@ App.visit.VisitForm = Ext.extend(Ext.FormPanel, {
 		
 		this.paymentTypeItems = [
 			{
-				xtype:'box',
-				html:'Форма оплаты: ',
-				baseCls:'x-border-layout-ct'
-			},new Ext.Button({
+				cls:'x-form-item',
+				baseCls:'x-border-layout-ct',
+                border:false,
+			items:[{
+				xtype:'label',
+				text:'Форма оплаты: ',
+				cls:'x-form-item-label'
+			}]}
+			,new Ext.Button({
 				enableToggle:true,
 				toggleGroup:'ex-ptype-cls',
 				text:'Касса',
@@ -418,55 +442,32 @@ App.visit.VisitForm = Ext.extend(Ext.FormPanel, {
 				ptype:'д',
 				handler:this.onPaymentTypeChoice.createDelegate(this,['д']),
 				scope:this
-			})]
+			}),this.policyBar,
+				this.payerBar]
 		
 		this.paymentTypeGroup = new Ext.Panel({
-			labelWidth:100,
-			baseCls:'x-border-layout-ct',
+			labelWidth:90,
+//			baseCls:'x-border-layout-ct',
 			bodyStyle: 'padding:5px',
+			defaults:{
+				labelWidth:70
+			},
 			margins:'0 0 5 0',
 	        border:false,
 			layout:'hbox',
 			items: this.paymentTypeItems
 		}),
 		
-		this.paymentTypeCB = new Ext.form.ComboBox({
-			fieldLabel:'Форма оплаты',
-			name:'payment_type',
-			store:new Ext.data.ArrayStore({
-				fields:['id','title'],
-				data: [
-					['н','Касса'],
-					['б','Юридическое лицо'],
-					['д','ДМС']]
-			}),
-			typeAhead: true,
-			triggerAction: 'all',
-			valueField:'id',
-			displayField:'title',
-			mode: 'local',
-			forceSelection:true,
-			selectOnFocus:true,
-			editable:false,
-			anchor:'98%',
-			value:'н',
-			listeners: {
-				select:function(combo,rec,i){
-					this.onPaymentTypeChoice(rec.data.id);
-				},
-				scope:this
-			}
-		});
-		
 		this.totalSum = new Ext.form.NumberField({
 			name:'total_sum_field',
-			fieldLabel:'К оплате с учетом скидки',
+			margins:'0 0 0 5',
+			hideLabel:true,
 			readOnly:true,
 			value:0,
 			style:{
 				fontSize:'2.5em',
-				height:'1.8em',
-				width:'180px'
+				height:'1.6em',
+				width:'160px'
 			}
 		});
 
@@ -478,9 +479,7 @@ App.visit.VisitForm = Ext.extend(Ext.FormPanel, {
             	border:false
             },
 			items:[
-				this.paymentTypeGroup,
-				this.policyBar,
-				this.payerBar
+				this.paymentTypeGroup
 			]
 		};		
 		
@@ -502,9 +501,10 @@ App.visit.VisitForm = Ext.extend(Ext.FormPanel, {
             layout: 'hbox',
             baseCls:'x-border-layout-ct',
             border:false,
-            fieldLabel:'Штрих-код: ',
+            labelWidth:100,
+            fieldLabel:'Штрих-код',
             items:[
-            	this.autoBarcode,this.barcodeBtn
+            	this.autoBarcode,this.barcodeBtn, this.cito
 			]
 		});
 		this.barcodeField = new Ext.form.Hidden({
@@ -546,7 +546,7 @@ App.visit.VisitForm = Ext.extend(Ext.FormPanel, {
 		});
 		
 		this.toHideBtn = new Ext.Button({
-			text:'Дополнительно. Свернуть',
+			text:'Дополнительно. &uarr;',
 			handler:this.hideAdPanel.createDelegate(this,[]),
 			scope:this
 		});
@@ -577,10 +577,10 @@ App.visit.VisitForm = Ext.extend(Ext.FormPanel, {
 								baseCls:'x-border-layout-ct',
 								border:false
 							},
-							height: 120,
+							height: 90,
 	        				items:[{
 	        					layout:'form',
-	        					columnWidth:'0.75',
+	        					columnWidth:'0.8',
 	        					defaults:{
 									baseCls:'x-border-layout-ct',
 									border:false
@@ -591,11 +591,20 @@ App.visit.VisitForm = Ext.extend(Ext.FormPanel, {
 	        						this.paymentFs	
 	        					]
 	        				},{
-	        					columnWidth:'0.25',
+	        					columnWidth:'0.2',
 	        					layout:'form',
+	        					defaults:{
+	        						border:false,
+	        						baseCls:'x-border-layout-ct',
+	        						layout:'form'
+	        					},
 	        					items:[
-	        						this.totalSum,
-	        						this.toHideBtn
+	        					{
+	        						items:[this.totalSum]
+	        					},
+	        					{
+	        						items:[this.toHideBtn]
+	        					}
 	        					]
 	        				}]
 	        			},
@@ -622,19 +631,33 @@ App.visit.VisitForm = Ext.extend(Ext.FormPanel, {
         			items:[
         				this.referralBar,
         				{
-        					layout:'form',
-        					items:[this.payerCmb]
+        					layout:'hbox',
+        					labelWidth:100,
+        					defaults:{
+								baseCls:'x-border-layout-ct',
+								border:false,
+								layout:'form'
+							},
+        					items:[{
+        						flex:1,
+        						items:[this.payerCmb]
+        					},{
+        						baseCls:'x-border-layout-ct',
+        						defaults:{
+									baseCls:'x-border-layout-ct'
+								},
+        						width:300,
+        						items:[this.sample]
+        					}]
         				},
-	        			this.sample,
 	        			{
-	        				layout:'column',
+		    				layout:'hbox',
 							defaults:{
 								baseCls:'x-border-layout-ct',
 								border:false
 							},
-	        				items:[this.pregnancy, this.mp]
-	        			},
-	        			this.menstruation, 
+		    				items:[this.pregnancy, this.menstruation, this.mp]
+		    			},
 	        			this.diagnosis,
 	        			this.comment,
 	        			this.barcode
@@ -656,7 +679,7 @@ App.visit.VisitForm = Ext.extend(Ext.FormPanel, {
 
 		this.generalPanel = new Ext.Panel({
 			region:'north',
-    		height:260,
+    		height:this.type == 'visit' ? 230: 160,
     		layout:'hbox',
     		border:false,
     		baseCls:'x-border-layout-ct',
@@ -676,6 +699,7 @@ App.visit.VisitForm = Ext.extend(Ext.FormPanel, {
 			//title:this.getPatientTitle(this.patientId),
 			border:false,
 			layout:'border',
+			labelWidth:90,
 			items:[{
 				layout:'border',
 				region:'center',
@@ -810,7 +834,7 @@ App.visit.VisitForm = Ext.extend(Ext.FormPanel, {
 	},
 	
 	onServiceClick : function(node) {
-		if(!this.serviceClicked){
+		if(!this.serviceClicked && this.type == 'visit'){
 			this.hideAdPanel(true);
 			this.serviceClicked = true;
 		};
@@ -1050,12 +1074,14 @@ App.visit.VisitForm = Ext.extend(Ext.FormPanel, {
     	this[type+'Cmb'].value = '';
 		this[type+'Cmb'].reset();
 		this[type+'Bar'].hide();
+		this.paymentTypeGroup.doLayout();
 	},
 	
 	showPaymentCmb: function(type){
 		if (!type) return false
 		this[type+'Cmb'].allowBlank = false;
 		this[type+'Bar'].show();
+		this.paymentTypeGroup.doLayout();
 	},
 	
 	setPatientRecord: function(record){
@@ -1070,7 +1096,7 @@ App.visit.VisitForm = Ext.extend(Ext.FormPanel, {
 		this.contractCmb.store.setBaseParam('active',true);
 		this.contractCmb.store.setBaseParam('state',state);
 		var item = {
-			width:30,
+			width:40,
 			items:[]
 		}; 
 		this.additionalMenu = [];
@@ -1295,14 +1321,14 @@ App.visit.VisitForm = Ext.extend(Ext.FormPanel, {
 		if(this.additionalPanel.hidden && !hide){
 			this.generalPanel.setHeight(genHeight+this.adHeight);
 			this.additionalPanel.show();
-			this.toHideBtn.setText('Дополнительно. Скрыть');
+			this.toHideBtn.setText('Дополнительно &uarr;');
 			this.doLayout();
 		}
 		else {
 			var adHeight = this.additionalPanel.getHeight();
 			this.generalPanel.setHeight(genHeight-adHeight);
 			this.additionalPanel.hide();
-			this.toHideBtn.setText('Дополнительно. Развернуть');
+			this.toHideBtn.setText('Дополнительно &darr;');
 			this.doLayout();
 		}
 		
@@ -1349,7 +1375,7 @@ App.visit.VisitForm = Ext.extend(Ext.FormPanel, {
 					if (this.contractBtnType=='add'){
 						this.contractBar.remove(this.contractBar.items.items[1]);
 						var item = {
-							width:30,
+							width:40,
 							items:[this.contractSplitBtn]
 						}; 
 						this.contractBtnType = 'split';
