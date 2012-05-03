@@ -189,6 +189,9 @@ App.visit.VisitGrid = Ext.extend(Ext.grid.GridPanel, {
 			},'-',{
 				text:'Печать заказа',
 				handler:this.toPrint.createDelegate(this,['sampling'])
+        	},{
+				text:'Печать штрих-кодов',
+				handler:this.printBarcode.createDelegate(this,[])
         	},'->','Период',{
 				id:'visits-start-date-filter',
 				xtype:'datefield',
@@ -363,6 +366,19 @@ App.visit.VisitGrid = Ext.extend(Ext.grid.GridPanel, {
 //				this.getSelectionModel().selectFirstRow();
 			},scope:this})
 		}
+	},
+	
+	printBarcode: function()
+	{
+		var bc_win;
+		var record = this.getSelected(); 
+		var visitId = record.id;
+		bc_win = new App.barcode.PrintWindow({
+			visitId:visitId,
+			record:record,
+//			patient:this.patientRecord
+		});
+		bc_win.show();
 	}
 	
 });

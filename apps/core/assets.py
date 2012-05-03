@@ -147,14 +147,14 @@ js_registry = Bundle(
     'app/registry/asgmt/AsgmtForm.js',
     'app/registry/asgmt/AsgmtTab.js',
     
-    'app/registry/visit/VisitGrid.js',
-    
-    'app/registry/Visits.js',
-    
     'app/registry/barcodepackage/Grid.js',
     'app/registry/barcodepackage/Form.js',
     'app/registry/barcodepackage/DuplicateWindow.js',
     'app/registry/barcodepackage/Window.js',
+    
+    'app/registry/visit/VisitGrid.js',
+    
+    'app/registry/Visits.js',
     
     'app/registry/barcode/Grid.js',
     'app/registry/barcode/Window.js',

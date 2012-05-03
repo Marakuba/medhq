@@ -85,7 +85,7 @@ Ext.calendar.TimeslotEditWindow = Ext.extend(Ext.Window, {
 				    {name: 'resource_uri'},
 				    {name: 'start',type:'date',format:'c'},
 				    {name: 'end',type:'date',format:'c'},
-				    {name: 'vacancy'},
+				    {name: 'status'},
 				    {name: 'timeslot'},
 				    {name: 'cid'},
 				    {name: 'staff'}

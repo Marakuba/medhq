@@ -123,21 +123,21 @@ App.CentralPanel = Ext.extend(Ext.Panel, {
 					},
 					scope:this
 				}]
-			},{
+			},/*{
 				xtype:'buttongroup',
 				defaults:{
 					xtype:'button',
 					scale:'medium'
 				},
 				hidden:App.settings.strictMode,
-				items:[/*{
+				items:[{
 					text:'Серии',
 					tooltip:'Создание и печать серий штрих-кодов',
 					handler:function(){
 						this.launchApp('barcodepackagegrid');
 					},
 					scope:this
-				},*/{
+				},{
 					text:'Дубликат',
 					tooltip:'Печать дубликата',
 					handler:function(btn){
@@ -146,7 +146,7 @@ App.CentralPanel = Ext.extend(Ext.Panel, {
 						win.show(btn);
 					}
 				}]
-			},{
+			}*/{
 				xtype:'buttongroup',
 				defaults:{
 					xtype:'button',
