@@ -13,5 +13,6 @@ urlpatterns = patterns('widget.views',
     (r'^examination/card/(?P<object_id>\d+)/$', 'examination_card'),
     (r'^lab/(?P<object_id>\d+)/$', 'lab_results'),
     (r'^lab/manual/(?P<object_id>\d+)/$', 'lab_manuals'),
+    (r'^visit/(?P<object_id>\d+)/$', 'visit_preview'),
     
 )

@@ -41,5 +41,5 @@ def get_actual_price(request):
     staff_list.sort(key=lambda k: (k[6],k[5],k[1])) 
 
     new_data = {}
-    new_data['staffs'] = staff_list
+    new_data['staffs'] = staff_list or []
     return dict(success=True, data=new_data)

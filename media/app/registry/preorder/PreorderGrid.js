@@ -265,7 +265,7 @@ App.registry.PreorderGrid = Ext.extend(Ext.grid.GridPanel, {
                 		return 'preorder-visited-row-body';
             		};
             		if (!actual) {
-                		return 'preorder-missing-row-body';
+                		return 'preorder-deactive-row-body';
             		};
             		if (!(state == record.data.execution_place) && record.data.service) {
             			return 'preorder-other-place-row-body';

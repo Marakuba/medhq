@@ -237,7 +237,7 @@ App.visit.VisitGrid = Ext.extend(Ext.grid.GridPanel, {
 						singleSelect : true
 					}),
 			listeners: {
-				rowdblclick:this.toPrint.createDelegate(this,['visit'])
+				rowdblclick:this.onPreview.createDelegate(this,[])
 			},
 			tbar:this.ttb,
 	        bbar: new Ext.PagingToolbar({
@@ -375,10 +375,38 @@ App.visit.VisitGrid = Ext.extend(Ext.grid.GridPanel, {
 		var visitId = record.id;
 		bc_win = new App.barcode.PrintWindow({
 			visitId:visitId,
-			record:record,
-//			patient:this.patientRecord
+			record:record
 		});
 		bc_win.show();
+	},
+	
+	onPreview: function(){
+		var visit = this.getSelected();
+		var previewWindow = new Ext.Window({
+			modal:true,
+			closable:true,
+			title:'Предпросмотр',
+			height:600,
+			layout:'fit',
+			width:800,
+			tbar:[{
+				xtype:'button',
+				iconCls:'silk-printer',
+				text:'Печать счета',
+				handler:this.toPrint.createDelegate(this,['visit'])
+			},'-',{
+				text:'Печать заказа',
+				handler:this.toPrint.createDelegate(this,['sampling'])
+        	}],
+			items:[{
+				autoScroll:true,
+				xtype:'panel',
+				layout:'fit',
+				autoLoad:String.format('/widget/visit/{0}/',visit.data.id)
+			}]
+		});
+		
+		previewWindow.show();
 	}
 	
 });

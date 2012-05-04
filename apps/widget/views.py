@@ -6,7 +6,7 @@ from annoying.decorators import render_to
 from django.shortcuts import get_object_or_404
 from examination.models import Template, FieldSet, Card
 import simplejson
-from visit.models import OrderedService
+from visit.models import OrderedService, Visit
 from lab.models import Result
 from django.views.generic.simple import direct_to_template
 from service.models import BaseService
@@ -165,4 +165,18 @@ def lab_manuals(request, object_id):
     return direct_to_template(request=request, 
                               template=cfg['template'],
                               extra_context=mc)
+    
+def visit_preview(request, object_id):
+    visit = get_object_or_404(Visit, pk=object_id)
+    services = OrderedService.objects.filter(order=visit.id)
+    
+    ec = {
+            'visit':visit,
+            'services':services,
+    }
+    
+    return direct_to_template(request=request, 
+                              template="widget/visit/visit_preview.html",
+                              extra_context=ec)
+    
     

@@ -1,0 +1,198 @@
+{% load markup lab_tags %}
+{% block extra_head %}
+
+<style>
+	table.page-frame {
+		width:100%;
+		page-break-after:always;
+	}
+	table.service-list td {
+		border:1px solid;
+		padding:2px;
+		font-size:10pt;
+	}
+	.details {
+		font-size:12pt;
+		margin:5px 0 10px 0;
+	}
+	td.agreement {
+		border-top:dashed 1px gray;
+		font-size:8pt;
+		line-height:120%;
+	}
+	td.agreement h3 {
+		text-align:center;
+		font-size:10pt;
+		margin-top:6pt;
+		line-height:150%;
+	}
+	td.agreement .indent {
+		margin-bottom:3pt;
+	}
+	td.agreement ol {
+		list-style:decimal inside none;
+	}
+	table.service-list td.total {
+		text-align: right;
+		font-size:12pt;
+	}
+	.underwrites {
+		margin-top:10pt;
+	}
+	.title {
+		font-size:1.5em;
+		text-align:center;
+	}
+	th.service {
+		font-size:10pt;
+	}
+	
+	.patient, .results, .underwrite {
+		width: 100%;
+	}
+	
+	.patient {
+		padding:6px;
+		margin-bottom:30px;
+		background:#F0F0F0;
+	}
+	
+	.patient td {
+		padding:4px;
+	}
+	
+	.patient .name {
+		width:5cm;
+		background-color:#DDD;
+	}
+	
+	.patient .bold {
+		font-weight:bold;
+		background-color:white;
+	}
+	.patient .td {
+		background-color:white;
+	}
+	
+	.patient th {
+		background-color:white;
+		font-weight:bold;
+		font-size:9pt;
+	}
+	
+	.patient .service  {
+		background-color:white;
+		font-size:10pt;
+	}
+	
+	.patient .result  {
+		font-size:10pt;
+		font-weight:bold;
+	}
+	
+	.template-preview {
+		font-famlily:"Arial";
+		padding:4pt;
+		font-size:10pt;
+	}
+
+	.template-preview h1 {
+		font-size:15pt;
+		margin:4pt 0;
+		color: black;
+		text-align:center;
+	}
+	
+	.template-preview h2 {
+		font-size:12pt;
+		margin:8pt 0 4pt 0;
+	}
+	
+	.template-preview p {
+	}
+	
+	.template-preview .footer {
+		margin-top:1cm;
+	}
+	
+	.template-preview .footer span {
+		float:right;
+	}
+	
+    .template-preview em {
+   		font-style: italic;
+   	}
+   	
+   	.template-preview strong {
+   		font-weight: bold;
+   	}
+   	
+   	.template-preview ol {
+   		list-style-type: decimal;
+   		list-style-position: inside;
+   	}
+   	
+   	.template-preview ul {
+   		list-style-type: disc;
+   		list-style-position: inside;
+   	}
+	
+</style>
+{% endblock %}
+{% block body %}
+
+
+<div class="page_wrapper">
+<table class="patient">
+	<tr>
+		<td class="name">Ф.И.О.:</td><td class="bold">{{ visit.patient.full_name}}</td>
+	</tr>
+	<tr>
+		<td class="name">Дата рождения:</td><td class="bold">{{ visit.patient.birth_day|date:"d.m.Y" }}</td>
+	</tr>
+	<tr>
+		<td class="name">Дата оформления:</td><td class="bold">{{ visit.created|date:"d.m.Y" }}</td>
+	</tr>
+	<tr>
+		<td class="name">Номер визита:</td><td class="bold">{{ visit.barcode.id}}</td>
+	</tr>
+	<tr>
+		<td class="name">Номер договора:</td><td class="bold">{{ visit.contract.id }}</td>
+	</tr>
+	<tr>
+		<td class="name">Направившее учреждение:</td><td class="bold">{{ visit.referral.id|zid:5|default:'б/н' }}</td>
+	</tr>
+</table>
+
+
+<table class="patient" width="100%">
+	<tr>
+		<th width="2%">№</th>
+		<th>Наименование услуги</th>
+		<th width="10%" nowrap>Стоимость,<br> руб.</th>
+		<th width="7%" nowrap>Кол-во</th>
+		<th width="10%" nowrap>Сумма, руб.</th>
+		<th width="10%" nowrap>Скидка, руб.</th>
+		<th width="10%" nowrap>К оплате, руб.</th>
+	</tr>
+{% for service in services %}
+<tr style="border:1px solid">
+	<td class="td">{{ forloop.counter }}.</td>
+	<td class="service">{{ service.service }}</td>
+	<td class="td">{{ service.price }}</td>
+	<td class="td">{{ service.count }}</td>
+	<td class="td">{{ service.total_price }}</td>
+	<td class="td">{{ service.total_discount|floatformat:2 }}</td>
+	<td class="td">{{ service.discount_price|floatformat:2 }}</td>
+</tr>
+{% endfor %}
+<tr>
+	<td class="result" colspan="3" style="border:none">Всего</td>
+	<td class="result">{{ services.count }}</td>
+	<td class="result">{{ visit.total_price }}</td>
+	<td class="result">{{ visit.total_discount|floatformat:2 }}</td>
+	<td style="font-size:14pt;font-weght:bolt;"><strong>{{ visit.discount_price|floatformat:2 }}</strong></td>
+</tr>
+</table>
+
+{% endblock %}

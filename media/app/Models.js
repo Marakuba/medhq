@@ -91,6 +91,7 @@ App.models.visitModel = new Ext.data.Record.create([
 	{name: 'created', type:'date'},
 	{name: 'cls', allowBlank: false},
 	{name: 'comment'},
+	{name: 'contract'},
 	{name: 'total_price'},
 	{name: 'total_paid'},
 	{name: 'total_sum'},

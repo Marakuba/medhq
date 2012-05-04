@@ -158,7 +158,7 @@ App.patient.VisitGrid = Ext.extend(Ext.grid.GridPanel, {
 						}
 					}),
 			listeners: {
-				rowdblclick:this.onPrint.createDelegate(this, [])
+				rowdblclick:this.onPreview.createDelegate(this, [])
 			},
 			tbar:{
 				xtype:'toolbar',
@@ -356,6 +356,35 @@ App.patient.VisitGrid = Ext.extend(Ext.grid.GridPanel, {
 			record:visitRecord
 		});
 		win.show();
+	},
+	
+	onPreview: function(){
+		var visit = this.getSelected();
+		var previewWindow = new Ext.Window({
+			modal:true,
+			closable:true,
+			title:'Предпросмотр',
+			height:600,
+			layout:'fit',
+			width:800,
+			tbar:[{
+				xtype:'button',
+				iconCls:'silk-printer',
+				text:'Печать счета',
+				handler:this.toPrint.createDelegate(this,['visit'])
+			},'-',{
+				text:'Печать заказа',
+				handler:this.toPrint.createDelegate(this,['sampling'])
+        	}],
+			items:[{
+				xtype:'panel',
+				autoScroll:true,
+				layout:'fit',
+				autoLoad:String.format('/widget/visit/{0}/',visit.data.id)
+			}]
+		});
+		
+		previewWindow.show();
 	}
 	
 });

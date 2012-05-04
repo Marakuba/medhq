@@ -334,7 +334,7 @@ App.visit.OrderedServiceInlineGrid = Ext.extend(Ext.grid.EditorGridPanel, {
 		}
 		if(attrs.staff){
 			var box = new App.visit.StaffWindow({
-				state:state,
+				state:ids[1],
 				service:ids[0],
 				height:300,
 				width:400,
