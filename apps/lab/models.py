@@ -17,6 +17,7 @@ from django.contrib.contenttypes.models import ContentType
 from django.core.exceptions import ObjectDoesNotExist, MultipleObjectsReturned
 
 import logging
+from django.template import Template, Context
 logger = logging.getLogger(__name__)
 
 
@@ -117,6 +118,7 @@ class Analysis(models.Model):
     class Meta:
         verbose_name = u'тест'
         verbose_name_plural = u'тесты'
+        ordering = ('order',)
         
 
 class RefRange(models.Model):
@@ -175,12 +177,13 @@ class LabOrder(models.Model):
     def get_absolute_url(self):
         return "/lab/laborder/%s/" % self.id
     
-    def confirm_results(self):
-        Result.objects.filter(analysis__service__labservice__is_manual=False, 
-                              order=self, 
-                              validation=0).delete()
-        Result.objects.filter(order=self, 
-                              validation=-1).update(validation=1)
+    def confirm_results(self, autoclean=True):
+        if autoclean:
+            Result.objects.filter(analysis__service__labservice__is_manual=False, 
+                                  order=self, 
+                                  validation=0).delete()
+            Result.objects.filter(order=self, 
+                                  validation=-1).update(validation=1)
         self.is_completed = True
         for result in self.result_set.all():
             if not result.is_completed():
@@ -384,7 +387,7 @@ class EquipmentAssay(models.Model):
     equipment_analysis = models.ForeignKey(EquipmentAnalysis, blank=True, null=True)
     name = models.CharField(u'Название', max_length=20, blank=True)
     code = models.CharField(u'Код', max_length=20)
-    def_protocol = models.CharField(u'Протокол исследования', max_length=20, default="")
+    def_protocol = models.TextField(u'Протокол исследования', default="")
     is_active = models.BooleanField(u'Активно', default=True)
 
     def __unicode__(self):
@@ -422,7 +425,9 @@ class EquipmentTask(models.Model):
 #        return smart_unicode( u"%s - %s" % (self.ordered_service, self.equipment_assay) )
     def save(self, *args, **kwargs):
         if not self.pk and not self.assay_protocol:
-            self.assay_protocol = self.equipment_assay.def_protocol
+            t = Template(self.equipment_assay.def_protocol)
+            c = Context({'order':self.ordered_service})
+            self.assay_protocol = t.render(c)
         super(EquipmentTask, self).save(*args, **kwargs)
     class Meta:
         verbose_name = u'задание для анализаторов'

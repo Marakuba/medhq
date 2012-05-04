@@ -10,7 +10,7 @@ from visit.models import OrderedService, Visit
 from collections import defaultdict
 from django.utils import simplejson
 from django.core.serializers.json import DjangoJSONEncoder
-from remoting.utils import get_ordered_service, get_result
+from remoting.utils import get_ordered_service, get_result, try_confirm
 from remoting.models import Transaction, TransactionItem, SyncObject
 from django.db.models.aggregates import Count
 import logging
@@ -44,9 +44,11 @@ def post_orders_to_local(request, data_set, options):
 def post_results_to_local(request, data_set, options):
 
     result = []
+    success_results = []
 #    print "results:",data_set
     lab_orders = {}
     _visit_cache = {}
+    ts = True
     for data in data_set:
         success = True
         specimen_id = data['visit']['specimen_id']
@@ -55,9 +57,13 @@ def post_results_to_local(request, data_set, options):
         
         try:
             res = get_result(request, data)
+            success_results.append(res.id)
+            print "success:", name
         except Exception, err:
             msg = err.__unicode__()
+            print "failed:", name, " - ", msg
             success = False
+            ts = False
         
         if success:
             if not lab_orders.has_key(res.order.id):
@@ -70,11 +76,16 @@ def post_results_to_local(request, data_set, options):
             'success': success,
             'message':msg
         })
+        
+    print ts
 
-    if 'confirm' in options:
-        if options['confirm']:
-            for lab_order in lab_orders.values(): 
-                lab_order.confirm_results()
+    if 'services' in options and options['services'] and ts:
+        try_confirm(specimen_id, options['services'])
+    
+#    if 'confirm' in options:
+#        if options['confirm']:
+#            for lab_order in lab_orders.values(): 
+#                lab_order.confirm_results()
 
     return result
 
@@ -134,9 +145,11 @@ def post_data_to_remote(lab, action, data, options={}):
 def post_results(lab_order, confirm):
     lab = lab_order.visit.office
     
+    services = {}
     results = []
     for result in lab_order.result_set.all():
         a = result.analysis
+        services[a.service.code] = True
         data = {
             'visit': {
                 'specimen_id':lab_order.visit.specimen
@@ -156,7 +169,8 @@ def post_results(lab_order, confirm):
         results.append(data)
     
     options = {
-        'confirm':confirm
+        'confirm':confirm,
+        'services':services.keys()
     }
     
 #    data_set = simplejson.dumps(results)

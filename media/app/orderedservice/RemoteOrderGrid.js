@@ -1,10 +1,10 @@
-Ext.ns('App.remoting');
+Ext.ns('App.orderedservice');
 
-App.remoting.RemoteOrderGrid = Ext.extend(Ext.grid.GridPanel, {
+App.orderedservice.RemoteOrderGrid = Ext.extend(Ext.grid.GridPanel, {
 
 	initComponent : function() {
 		
-		this.origTitle = 'Лабораторные заказы';
+		this.origTitle = 'Внешние заказы';
 		
 		this.store = new Ext.data.RESTStore({
 			autoLoad : false,
@@ -26,7 +26,6 @@ App.remoting.RemoteOrderGrid = Ext.extend(Ext.grid.GridPanel, {
 		});
 		
 		this.store.setBaseParam('execution_place__remotestate__isnull',false);
-		this.store.load();
 		
 		this.sm = new Ext.grid.CheckboxSelectionModel({
 			singleSelect : false,
@@ -153,7 +152,7 @@ App.remoting.RemoteOrderGrid = Ext.extend(Ext.grid.GridPanel, {
 		})
 		
 		var config = {
-			closable:true,
+			closable:false,
 			title:this.origTitle,
 			loadMask : {
 				msg : 'Подождите, идет загрузка...'
@@ -200,8 +199,16 @@ App.remoting.RemoteOrderGrid = Ext.extend(Ext.grid.GridPanel, {
 			
 		}
 
+		this.on('afterrender',function(){
+			this.store.load();
+		},this);
+
+		this.on('destroy', function(){
+			App.eventManager.un('globalsearch', this.onGlobalSearch, this);
+		},this);
+
 		Ext.apply(this, Ext.apply(this.initialConfig, config));
-		App.remoting.RemoteOrderGrid.superclass.initComponent.apply(this, arguments);
+		App.orderedservice.RemoteOrderGrid.superclass.initComponent.apply(this, arguments);
 		App.eventManager.on('globalsearch', this.onGlobalSearch, this);
 	},
 	
@@ -308,4 +315,4 @@ App.remoting.RemoteOrderGrid = Ext.extend(Ext.grid.GridPanel, {
 
 
 
-Ext.reg('remoteordergrid', App.remoting.RemoteOrderGrid);
+Ext.reg('remoteordergrid', App.orderedservice.RemoteOrderGrid);

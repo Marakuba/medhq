@@ -2,38 +2,52 @@ Ext.ns('App');
 
 App.Visits = Ext.extend(Ext.Panel, {
 	initComponent:function(){
+		
+		this.visitGrid = new App.visit.VisitGrid({
+			region:'center',
+			loadInstant:true,
+			xtype:'visitgrid'
+		});
 
+		this.origTitle = 'Приемы';
+		
 		config = {
 			id:'visits-grid',
-			title:'Приемы',
+			title:this.origTitle,
 			closable:true,
 			layout:'border',
             defaults: {
 				border:false
 			},
-			items:[/*{
-				region:'center',
-				layout:'card',
-				activeItem: 0,
-		        items:[new Ext.Panel({
-					html:'&laquo; Выберите прием'
-		        })]
-			},*/{
-				region:'center',
-				width:'100%',
-				split:true,
-				layout:'fit',
-				items:{
-					loadInstant:true,
-					xtype:'visitgrid'
-				}
-			}]
+			items:[this.visitGrid]
 		}
 
 		Ext.apply(this, Ext.apply(this.initialConfig, config));
 		App.Visits.superclass.initComponent.apply(this, arguments);
-		
+
+		App.eventManager.on('globalsearch', this.onGlobalSearch, this);
+		this.visitGrid.getStore().on('load',this.onVisitLoad,this);
+		this.on('destroy', function(){
+			App.eventManager.un('globalsearch', this.onGlobalSearch, this);
+			this.visitGrid.getStore().un('load',this.onVisitLoad,this);
+		},this);
+
+	},
+
+	onGlobalSearch : function(v) {
+		this.changeTitle = v!==undefined;
+		if(!v){
+			this.setTitle(this.origTitle);
+		}
+	},
+	
+	onVisitLoad : function(store,r,options){
+		if(this.changeTitle){
+			this.setTitle(String.format('{0} ({1})', this.origTitle, r.length));
+		}
 	}
+	
+
 });
 
 Ext.reg('visits', App.Visits);

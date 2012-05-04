@@ -15,9 +15,9 @@ class PromotionManager(models.Manager):
     """
     """
     
-    def actual(self):
+    def actual(self, state=None):
         TODAY = datetime.date.today()
-        return self.filter(start_date__lte=TODAY, end_date__gte=TODAY)
+        return self.filter(start_date__lte=TODAY, end_date__gte=TODAY, state=state)
 
 class Promotion(models.Model):
     """
@@ -27,6 +27,9 @@ class Promotion(models.Model):
     end_date = models.DateField(u'Окончание')
     discount = models.ForeignKey(Discount, verbose_name=u'Скидка по акции', blank=True, null=True)
     total_price = models.DecimalField(u'Полная стоимость', max_digits=10, decimal_places=2, default="0.0")
+    state = models.ManyToManyField(State, blank=True, null=True, verbose_name=u'Организация', 
+                                   limit_choices_to={'type__in':['b','p']},
+                                   help_text=u'Устанавливается только в том случае, когда необходимо ограничить список офисов в которых может оформляться акция/комплексная услуга')
     comment = models.TextField(u'Комментарий', blank=True, help_text=u'Условия акции')
     
     objects = PromotionManager()

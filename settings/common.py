@@ -115,7 +115,7 @@ INSTALLED_APPS = [
     'state',
     'pricelist',
     'visit',
-#    'taskmanager',
+    'taskmanager',
     'lab',
 #    'workflow',
     'examination',
@@ -139,7 +139,7 @@ INSTALLED_APPS = [
     'debug_toolbar',
     'django_extensions',
     'django_memcached',
-    #'djcelery',
+    'djcelery',
     'feincms',
     'flatblocks',
     'sorl.thumbnail',
@@ -240,16 +240,8 @@ DBTEMPLATES_USE_CODEMIRROR = True
 
 ### celery config
 
-#import djcelery
-#djcelery.setup_loader()
-#
-#BROKER_HOST = "localhost"
-#BROKER_PORT = 5672
-#BROKER_USER = "django"
-#BROKER_PASSWORD = "django"
-#BROKER_VHOST = "medhq"
-#CELERY_RESULT_BACKEND = "amqp"
-#CELERY_IMPORTS = ("tasks", )
+import djcelery
+djcelery.setup_loader()
 
 ### constance config
 

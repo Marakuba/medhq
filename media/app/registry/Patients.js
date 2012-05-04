@@ -13,13 +13,14 @@ App.Patients = Ext.extend(Ext.Panel, {
 			region:'center'
 		});
 		
-		this.defaultTitle = 'Выберите пациента';
+		this.defaultTitle = '<div style="padding:17px;font-size:19px;font-weight:bold">&lsaquo; Выберите пациента</div>';
 
 		this.cardPanel = new Ext.Panel({
 			region:'center',
 			border:false,
 			title:this.defaultTitle,
 			layout:'fit',
+			disabled:true,
 			headerCfg:{
 				tag:'div',
 				cls:'patient-card-header'
@@ -40,6 +41,7 @@ App.Patients = Ext.extend(Ext.Panel, {
 					this.initEvents();
 					this.cardPanel.setTitle(this.defaultTitle);
 					this.cardPanel.add(this.patientCard);
+					this.cardPanel.disable();
 					this.cardPanel.doLayout();
 				},
 				scope:this,
@@ -84,9 +86,11 @@ App.Patients = Ext.extend(Ext.Panel, {
 			region:'south'
 		});
 		
+		this.origTitle = 'Пациенты';
+		
 		config = {
 			id:'patients',
-			title:'Пациенты',
+			title:this.origTitle,
 			layout:'border',
             defaults: {
 				border:false
@@ -107,11 +111,30 @@ App.Patients = Ext.extend(Ext.Panel, {
 		
 		App.eventManager.on('balanceupdate', this.updatePatientInfo, this); //
 		App.eventManager.on('refundclose', this.updatePatientInfo, this); //
+		App.eventManager.on('globalsearch', this.onGlobalSearch, this);
+		this.patientGrid.getStore().on('load',this.onPatientLoad,this);
 		this.on('destroy', function(){
 			App.eventManager.un('balanceupdate', this.updatePatientInfo, this); //
 			App.eventManager.un('refundclose', this.updatePatientInfo, this); //
+			App.eventManager.un('globalsearch', this.onGlobalSearch, this);
+			this.patientGrid.getStore().un('load',this.onPatientLoad,this);
 		},this);
 
+	},
+	
+	onGlobalSearch : function(v) {
+		this.cardPanel.disable();
+		this.changeTitle = v!==undefined;
+		if(!v){
+			this.setTitle(this.origTitle);
+		}
+	},
+	
+	onPatientLoad : function(store,r,options){
+		this.cardPanel.disable();
+		if(this.changeTitle){
+			this.setTitle(String.format('{0} ({1})', this.origTitle, r.length));
+		}
 	},
 	
 	initEvents : function() {
@@ -187,6 +210,7 @@ App.Patients = Ext.extend(Ext.Panel, {
 		} else {
 			d.color='red';
 		}
+		this.cardPanel.enable();
 		this.cardPanel.setTitle(this.titleTpl.apply(d));
 		this.quickForm.setActiveRecord(rec);
 		this.patientCard.setActivePatient.createDelegate(this.patientCard,[rec])();

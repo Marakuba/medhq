@@ -32,7 +32,7 @@ App.patient.PatientForm = Ext.extend(Ext.form.FormPanel, {
 		
 		this.inlines.add('inspolicy', this.insPolicy);
 		this.inlines.add('idcard', this.idCard);
-		this.inlines.add('inspolicy', this.contractGrid);
+		this.inlines.add('contracts', this.contractGrid);
 		
 		this.cl_acc_grid = new App.patient.ClientAccountGrid({
 			clientHidden : true	,

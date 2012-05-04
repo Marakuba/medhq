@@ -194,7 +194,10 @@ class EquipmentAssayAdmin(admin.ModelAdmin):
     list_filter = ('equipment','is_active')
     list_editable = ('def_protocol',)
     exclude = ('service',)
-    
+    formfield_overrides = {
+        models.TextField: {'widget': forms.TextInput()},
+    }
+        
 def set_to_wait(modeladmin, request, queryset):
     queryset.update(status=u'wait')
     

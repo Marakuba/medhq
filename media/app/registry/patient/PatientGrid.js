@@ -88,6 +88,8 @@ App.patient.PatientGrid = Ext.extend(Ext.grid.GridPanel, {
 				singleSelect : true,
 				listeners: {
                     rowselect: function(sm, row, rec) {
+                    	console.info('selected',rec);
+                    	this.stopSelection = true;
                     	this.fireEvent('patientselect', rec);
 //                        Ext.getCmp("patient-quick-form").getForm().loadRecord(rec);
                     	this.btnSetDisabled(false, rec);
@@ -122,6 +124,15 @@ App.patient.PatientGrid = Ext.extend(Ext.grid.GridPanel, {
 			},	
 			listeners: {
 				rowdblclick:this.onPatientEdit.createDelegate(this),
+				rowclick:function(grid,rowIndex,e){
+					var rec = grid.getStore().getAt(rowIndex);
+					var sel_rec = this.getSelectionModel().getSelected();
+					if(!this.stopSelection){
+	                	this.fireEvent('patientselect', rec);
+					} else {
+						this.stopSelection = false;
+					}
+				},
 				scope:this
 			}
 		}

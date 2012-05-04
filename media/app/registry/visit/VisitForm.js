@@ -415,10 +415,12 @@ App.visit.VisitForm = Ext.extend(Ext.FormPanel, {
                 border:false,
 			items:[{
 				xtype:'label',
+				width:95,
 				text:'Форма оплаты: ',
 				cls:'x-form-item-label'
 			}]}
 			,new Ext.Button({
+				allowDepress:false,
 				enableToggle:true,
 				toggleGroup:'ex-ptype-cls',
 				text:'Касса',
@@ -448,11 +450,11 @@ App.visit.VisitForm = Ext.extend(Ext.FormPanel, {
 		this.paymentTypeGroup = new Ext.Panel({
 			labelWidth:90,
 //			baseCls:'x-border-layout-ct',
-			bodyStyle: 'padding:5px',
+//			bodyStyle: 'padding:5px',
 			defaults:{
 				labelWidth:70
 			},
-			margins:'0 0 5 0',
+//			margins:'0 0 5 0',
 	        border:false,
 			layout:'hbox',
 			items: this.paymentTypeItems
@@ -460,13 +462,13 @@ App.visit.VisitForm = Ext.extend(Ext.FormPanel, {
 		
 		this.totalSum = new Ext.form.NumberField({
 			name:'total_sum_field',
-			margins:'0 0 0 5',
+//			margins:'0 0 0 5',
 			hideLabel:true,
 			readOnly:true,
 			value:0,
 			style:{
 				fontSize:'2.5em',
-				height:'1.6em',
+				height:'45px',
 				width:'160px'
 			}
 		});
@@ -546,7 +548,7 @@ App.visit.VisitForm = Ext.extend(Ext.FormPanel, {
 		});
 		
 		this.toHideBtn = new Ext.Button({
-			text:'Дополнительно. &uarr;',
+			text:'Свернуть &uarr;',
 			handler:this.hideAdPanel.createDelegate(this,[]),
 			scope:this
 		});
@@ -592,20 +594,27 @@ App.visit.VisitForm = Ext.extend(Ext.FormPanel, {
 	        					]
 	        				},{
 	        					columnWidth:'0.2',
-	        					layout:'form',
-	        					defaults:{
+	        					layout:{
+	        						type:'vbox',
+	        					},
+	        					height:90,
+//	        					defaults:{
+//	        						border:false,
+//	        						baseCls:'x-border-layout-ct',
+//	        						layout:'form'
+//	        					},
+	        					items:[this.totalSum,{
+	        						layout:{
+	        							type:'hbox',
+	        							pack:'end'
+	        						},
 	        						border:false,
 	        						baseCls:'x-border-layout-ct',
-	        						layout:'form'
-	        					},
-	        					items:[
-	        					{
-	        						items:[this.totalSum]
-	        					},
-	        					{
-	        						items:[this.toHideBtn]
-	        					}
-	        					]
+	        						margins:'5 0 0 0',
+	        						width:168,
+	        						height:30,
+	        						items:this.toHideBtn
+	        					}]
 	        				}]
 	        			},
 	        			this.additionalPanel
@@ -689,6 +698,7 @@ App.visit.VisitForm = Ext.extend(Ext.FormPanel, {
 			},
 		    bodyStyle: 'padding:5px',
     		items:items,
+    		header:false,
 		    collapsible: true,
 		    collapseMode: 'mini',
 	        split: true
@@ -1321,7 +1331,7 @@ App.visit.VisitForm = Ext.extend(Ext.FormPanel, {
 		if(this.additionalPanel.hidden && !hide){
 			this.generalPanel.setHeight(genHeight+this.adHeight);
 			this.additionalPanel.show();
-			this.toHideBtn.setText('Дополнительно &uarr;');
+			this.toHideBtn.setText('Свернуть &uarr;');
 			this.doLayout();
 		}
 		else {
@@ -1400,7 +1410,12 @@ App.visit.VisitForm = Ext.extend(Ext.FormPanel, {
 		
 	},
 	
-	contractPrint: function(){}
+	contractPrint: function(){
+		var id = this.contractCmb.getValue();
+		id = App.uriToId(id);
+		var url = String.format('/patient/contract/{0}/', id);
+		window.open(url);
+	}
 });
 
 Ext.reg('visitform', App.visit.VisitForm);

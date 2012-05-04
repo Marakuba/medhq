@@ -189,9 +189,9 @@ App.patient.ContractGrid = Ext.extend(Ext.grid.EditorGridPanel, {
 	},
 	
 	onPrint: function() {
-//		var id = this.getSelected().data.id;
-//		var url = ['/lab/print/results',id,''].join('/');
-//		window.open(url);
+		var id = this.getSelected().id;
+		var url = String.format('/patient/contract/{0}/', id);
+		window.open(url);
 	},
 	
 	onCreate: function(contractTypeRecord) {
@@ -299,10 +299,8 @@ App.patient.ContractGrid = Ext.extend(Ext.grid.EditorGridPanel, {
 			this.ttb.add(this.addButton)
 			this.doLayout();
 		},scope:this});
-	},
-	
-	onPrint: function(){
 	}
+	
 	
 });
 

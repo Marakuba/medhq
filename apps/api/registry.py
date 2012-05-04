@@ -1093,6 +1093,7 @@ class LabOrderedServiceResource(OrderedServiceResource):
         filtering = {
             'order': ALL_WITH_RELATIONS,
             'sampling': ALL_WITH_RELATIONS,
+            'service' : ALL_WITH_RELATIONS,
             'status' : ALL,
             'execution_place' : ALL_WITH_RELATIONS
         }

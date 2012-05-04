@@ -60,8 +60,6 @@ App.visit.VisitGrid = Ext.extend(Ext.grid.GridPanel, {
 			this.store.setBaseParam('office',active_state_id);
 		}
 		
-		this.store.load();		
-
 		this.columns =  [
 		    /*{
 		    	width: 1, 
@@ -275,6 +273,10 @@ App.visit.VisitGrid = Ext.extend(Ext.grid.GridPanel, {
 		    App.eventManager.un('globalsearch', this.onGlobalSearch, this); 
 		    App.eventManager.un('visitcreate', this.onVisitCreate, this);
 		},this);
+		
+		this.on('render',function(){
+			this.store.load();
+		}, this);
 		
 		if(!App.settings.strictMode) {
 			this.initToolbar();

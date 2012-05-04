@@ -42,6 +42,11 @@ Ext.each(apps, function(app){
 App.CentralPanel = Ext.extend(Ext.Panel, {
 	
 	initComponent: function(){
+		
+		this.connStatus = new Ext.Button({
+			iconCls:'silk-stop'
+		});
+		
 		this.mainPanel = new App.MainPanel({});
 		
 		this.preorderBtn = new Ext.SplitButton({
@@ -110,10 +115,18 @@ App.CentralPanel = Ext.extend(Ext.Panel, {
 					scale:'medium'
 				},
 				items:[{
+					xtype:'splitbutton',
 					text:'Заказы',
 					handler:function(){
-						this.launchApp('remoteordergrid');
+						this.launchApp('orders',{activeItem:0});
 					},
+					menu:[{
+						text:'Внешние заказы',
+						handler:function(){
+							this.launchApp('orders',{activeItem:1});
+						},
+						scope:this
+					}],
 					scope:this
 				},{
 					text:'Результаты',
@@ -258,7 +271,7 @@ App.CentralPanel = Ext.extend(Ext.Panel, {
 			            }]
 					})
 				}]
-			}]
+			},this.connStatus]
 		});
 
 		config = {
@@ -291,6 +304,19 @@ App.CentralPanel = Ext.extend(Ext.Panel, {
 			App.eventManager.un('closeapp', this.closeApp, this);
 			App.eventManager.un('visitcreate', this.onVisitCreate, this);
 		},this);
+		
+		var prv = Ext.Direct.getProvider('netstatus');
+		prv.interval=10000;
+		
+		Ext.Direct.on('netstatus',function(){
+			this.connStatus.setIconClass('silk-tick');
+		}, this);
+
+		Ext.Direct.on('exception',function(){
+			this.connStatus.setIconClass('silk-stop');
+		}, this);
+
+		
 	},
 	
 	onSearch: function(){

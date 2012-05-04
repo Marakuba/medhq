@@ -10,7 +10,7 @@ from service.models import BaseService
 from django.db import transaction
 from remoting.exceptions import ServiceDoesNotExist
 from django.core.exceptions import ObjectDoesNotExist, MultipleObjectsReturned
-from lab.models import Result
+from lab.models import Result, LabOrder
 import logging
 
 logger = logging.getLogger('remoting')
@@ -23,6 +23,7 @@ def get_patient(request, data, state):
         patient = Patient.objects.get(**lookups)
         msg = u'Пользователь %s найден' % patient.short_name()
     except ObjectDoesNotExist:
+        del data['id']
         data['state'] = state
         data['operator'] = state.remotestate.user
         patient = Patient.objects.create(**data)
@@ -138,7 +139,7 @@ def get_result(request, data):
     r = data['result']
     try:
         result = Result.objects.get(order__visit__specimen=specimen_id, 
-                                    analysis__service__code=code)
+                                    analysis__code=r['code'])
         if result.value:
             result.previous_value = result.value
         result.value = r['value']
@@ -160,3 +161,17 @@ def get_result(request, data):
         raise Exception(msg)
     
 
+def try_confirm(specimen_id, services):
+    
+    results = Result.objects.filter(order__visit__specimen=specimen_id, 
+                                    analysis__service__code__in=services)
+    results.filter(analysis__service__labservice__is_manual=False, 
+                   validation=0).delete()
+    results.filter(validation=-1).update(validation=1)
+    
+    laborder_list = results.values_list('order',flat=True)
+    
+    laborders = LabOrder.objects.filter(id__in=laborder_list)
+    
+    for lo in laborders:
+        lo.confirm_results(autoclean=False)

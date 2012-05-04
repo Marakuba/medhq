@@ -2,9 +2,12 @@
 from direct.providers import remote_provider
 from extdirect.django.decorators import remoting
 import simplejson
-from patient.models import Patient, Agreement
+from patient.models import Patient, Agreement, Contract
 from django.views.generic.simple import direct_to_template
 from state.models import State
+from django.shortcuts import get_object_or_404, render_to_response
+from annoying.decorators import render_to
+from django.template.context import RequestContext
 
 @remoting(remote_provider, len=1, action='patient', name='updatePatientInfo')
 def update_patient_info(request):
@@ -21,6 +24,20 @@ def update_patient_info(request):
         'discount':d and d.id or None
     }
     return dict(success=True, data=data)
+
+
+def contractPrint(request, contract_id):
+
+    contract = get_object_or_404(Contract, id=contract_id)
+    
+    ec = {
+        'contract':contract
+    }
+    
+    template = contract.contract_type.template or 'print/patient/contract.html'
+
+    return render_to_response(template, ec,
+                              context_instance=RequestContext(request))
 
 
 def acceptancePrint(request,patient_id):

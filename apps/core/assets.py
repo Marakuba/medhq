@@ -88,8 +88,10 @@ js_registry = Bundle(
     'app/calendar/src/CalendarPanel.js',
     'app/calendar/app/DoctorScheduler.js',
     
-    'app/remoting/ResultWindow.js',
-    'app/remoting/RemoteOrderGrid.js',
+    'app/orderedservice/ResultWindow.js',
+    'app/orderedservice/RemoteOrderGrid.js',
+    'app/orderedservice/LocalOrderGrid.js',
+    'app/orderedservice/Orders.js',
 
     'app/invoice/InvoiceItemGrid.js',
     'app/invoice/InvoiceForm.js',

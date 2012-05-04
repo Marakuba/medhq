@@ -16,8 +16,6 @@ Ext.onReady(function() {
 
 	Ext.Ajax.defaultHeaders = {Accept:'application/json'};
 	
-	
-	
 	var mainPanel = new Ext.TabPanel({
     	id:'main-tab-panel',
         region: 'center',

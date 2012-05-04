@@ -56,14 +56,14 @@ App.patient.PatientCard = Ext.extend(Ext.TabPanel, {
 		}];
 		
 		config = {
-			closable:true,
+//			closable:true,
 			border:false,
         	defaults: {
 				border:false
 			},
 			enableTabScroll:true,
 			header:true,
-	        disabled:true,
+//	        disabled:true,
     		activeTab:0,
 			items:this.cards
 		}
@@ -85,7 +85,7 @@ App.patient.PatientCard = Ext.extend(Ext.TabPanel, {
 	},
 	
 	onGlobalSearch: function() {
-		this.disable();
+//		this.disable();
 	},
 	
 	titleTpl : new Ext.Template(
@@ -95,7 +95,7 @@ App.patient.PatientCard = Ext.extend(Ext.TabPanel, {
 	setActivePatient: function(rec) {
 		this.record = rec;
 		this.setTitle(this.titleTpl.apply(this.record.data));
-		this.enable();
+//		this.enable();
 		this.items.each(function(item,i){
 			if(item.setActivePatient) {
 				item.setActivePatient(rec);

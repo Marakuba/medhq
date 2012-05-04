@@ -21,7 +21,7 @@ App.auth.Form = Ext.extend(Ext.form.FormPanel, {
 				listeners: {
 	                specialkey: function(field, e){
 	                    if (e.getKey() == e.ENTER) {
-	                        this.onSubmit();
+	                        this.getForm().findField('password').focus(true,100);
 	                    }
 	                },
 	                scope:this
@@ -48,6 +48,10 @@ App.auth.Form = Ext.extend(Ext.form.FormPanel, {
 		
 		Ext.apply(this, Ext.apply(this.initialConfig, config));
 		App.auth.Form.superclass.initComponent.apply(this, arguments);
+		
+		this.on('afterrender',function(){
+			this.getForm().findField('username').focus(false,150);
+		},this);
 		
 		this.on('actioncomplete', function(form, action){
             if(action.type == 'submit'){

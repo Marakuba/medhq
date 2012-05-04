@@ -4,4 +4,4 @@ BROKER_USER = "django"
 BROKER_PASSWORD = "django"
 BROKER_VHOST = "medhq"
 CELERY_RESULT_BACKEND = "amqp"
-#CELERY_IMPORTS = ("tasks", )
+CELERY_IMPORTS = ("tasks", )
