@@ -8,7 +8,7 @@ App.Results = Ext.extend(Ext.Panel, {
 			xtype:'resultsgrid'
 		});
 
-		this.origTitle = 'Приемы';
+		this.origTitle = 'Результаты';
 
 		config = {
 			id:'results-grid',
