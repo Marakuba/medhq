@@ -65,22 +65,43 @@ App.Patients = Ext.extend(Ext.Panel, {
                 };
 		
 		this.patientEditor = new Ext.Editor(Ext.apply({
-                alignment: 'l-l',
-                field: {
-                    allowBlank: true,
-                    xtype: 'textfield',
-                    width: 90,
-                    selectOnFocus: true
-                },
-                listeners: {
-                        complete: function(ed, value){
-                        	var fieldName = ed.boundEl.id
-                            this.patient.set(fieldName,value);
-                            return true;
-                        },
-                        scope:this
-                }
-            }, this.editorCfg));
+            alignment: 'l-l',
+            field: {
+                allowBlank: true,
+                xtype: 'textfield',
+                width: 90,
+                selectOnFocus: true
+            },
+            listeners: {
+                    complete: function(ed, value){
+                    	var fieldName = ed.boundEl.id
+                        this.patient.set(fieldName,value);
+                        return true;
+                    },
+                    scope:this
+            }
+        }, this.editorCfg));
+        
+        this.dateEditor = new Ext.Editor(Ext.apply({
+            alignment: 'l-l',
+            field: {
+                allowBlank: true,
+                xtype: 'datefield',
+                width: 90,
+                format:'d.m.Y',
+                plugins:[new Ext.ux.netbox.InputTextMask('99.99.9999')],
+				minValue:new Date(1901,1,1),
+                selectOnFocus: true
+            },
+            listeners: {
+                    complete: function(ed, value){
+                    	var fieldName = ed.boundEl.id
+                        this.patient.set(fieldName,Ext.util.Format.date(value,'d.m.Y'));
+                        return true;
+                    },
+                    scope:this
+            }
+        }, this.editorCfg));
 
 		this.quickForm = new App.patient.QuickForm({
 			region:'south'
@@ -223,7 +244,11 @@ App.Patients = Ext.extend(Ext.Panel, {
 		var g = p.classList[0];
 		for(var i = 0; i < this.patientFields.length; i++) { 
 			if (g == this.patientFields[i]){
-				this.patientEditor.startEdit(p)
+				if (g != 'birth_day'){
+					this.patientEditor.startEdit(p)
+				} else {
+					this.dateEditor.startEdit(p)
+				}
 			}
 		}
 	}

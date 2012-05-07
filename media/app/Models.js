@@ -162,7 +162,7 @@ App.models.patientModel = new Ext.data.Record.create([
 	{name: 'mobile_phone'},
 	{name: 'home_address_street'},
 	{name: 'email'},
-	{name: 'birth_day', allowBlank: false, type:'date'},
+	{name: 'birth_day', allowBlank: false, type:'date', format: 'd.m.Y'},
 	{name: 'discount'},
 	{name: 'discount_name'},
 	{name: 'ad_source'},
