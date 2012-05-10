@@ -38,25 +38,12 @@ App.patient.ContractGrid = Ext.extend(Ext.grid.EditorGridPanel, {
 			}),
 		    listeners:{
 		    	exception:function(proxy, type, action, options, response, arg){
-		    		console.log('Contract Grid Exception!');
-		    		console.log(proxy);
-		    		console.log(type);
-		    		console.log(action);
-		    		console.log(options);
-		    		console.log(response);
-		    		console.log(arg);
 		    		this.fireEvent('exception');
 		    	},
 		    	write:function(store, action, result, res, rs){
-		    		console.log('Contract created!');
 		    		if(action=='create') {
 						this.fireEvent('contractcreate',rs);
 					}
-		    		console.log(store);
-		    		console.log(action);
-		    		console.log(result);
-		    		console.log(res);
-		    		console.log(rs);
 		    	},
 		    	scope:this
 		    },
@@ -169,6 +156,12 @@ App.patient.ContractGrid = Ext.extend(Ext.grid.EditorGridPanel, {
 		Ext.apply(this, Ext.apply(this.initialConfig, config));
 		App.patient.ContractGrid.superclass.initComponent.apply(this, arguments);
 		App.eventManager.on('patientcreate', this.onPatientCreate, this);
+		
+		this.on('afterrender',function(){
+			if (!this.record) {
+				this.fillAddMenu()	
+			}
+		},this)
 		this.on('destroy', function(){
 			App.eventManager.un('patientcreate', this.onPatientCreate, this);
 		},this);
@@ -201,10 +194,23 @@ App.patient.ContractGrid = Ext.extend(Ext.grid.EditorGridPanel, {
 		data['state'] = App.getApiUrl('ownstate',state);
 		data['state_name'] = active_state;
 		if (contractTypeRecord){
+			switch(contractTypeRecord.data.type){
+				case 'б':
+					data['expire'] = today.add(Date.YEAR, 25);
+					break
+				case 'г':
+					var year = today.getFullYear();
+					var date = new Date(year,11,31);
+					data['expire'] = date;
+					break
+				case 'с':
+					data['expire'] = today.add(Date.DAY, contractTypeRecord.data.validity);
+					break
+				default:
+					data['expire'] = today
+					break
+			}
 			data['contract_type'] = contractTypeRecord.data.resource_uri;
-			data['expire'] = today.add(Date.DAY, contractTypeRecord.data.validity);
-		} else {
-			data['expire'] = today
 		};
 		
         var r = new this.store.recordType(data);
@@ -281,7 +287,7 @@ App.patient.ContractGrid = Ext.extend(Ext.grid.EditorGridPanel, {
 	fillAddMenu: function(){
 		this.additionalMenu = [];
 		this.contractTypeStore.load({callback:function(records){
-			this.store.load();
+			if (this.record) this.store.load();
 			Ext.each(records,function(record){
 				var rec = record.data;
 				this.additionalMenu.push({
