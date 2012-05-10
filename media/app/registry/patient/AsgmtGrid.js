@@ -618,7 +618,9 @@ App.patient.AsgmtGrid = Ext.extend(Ext.grid.EditorGridPanel, {
 	},
 	
 	storeReload: function(){
-		this.store.load()
+		if (!(this.hasPatient && !this.patientId)){
+			this.store.load()
+		}
 	},
 	
 	onGlobalSearch: function(v){

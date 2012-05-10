@@ -27,6 +27,7 @@ App.models.contractTypeModel = new Ext.data.Record.create([
     {name: 'resource_uri'},
     {name: 'title'},
     {name: 'template'},
+    {name: 'type'},
     {name: 'validity'}
 ]);
 
