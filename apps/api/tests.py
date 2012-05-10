@@ -23,10 +23,25 @@ class ApiTest(unittest.TestCase):
         client = Client()
         response = client.get('/api/v1/dashboard/clientitem')
         self.assertEqual(response.status_code, 200)
+        
+    def test_adsource(self):
+        client = Client()
+        response = client.get('/api/v1/dashboard/adsource')
+        self.assertEqual(response.status_code, 200)
     
     def test_patient_read(self):
         client = Client()
         response = client.get('/api/v1/dashboard/patient')
+        self.assertEqual(response.status_code, 200)
+    
+    def test_contracttype(self):
+        client = Client()
+        response = client.get('/api/v1/dashboard/contracttype')
+        self.assertEqual(response.status_code, 200)
+        
+    def test_contract(self):
+        client = Client()
+        response = client.get('/api/v1/dashboard/contract')
         self.assertEqual(response.status_code, 200)
     
 #    def test_patient_create(self):
@@ -61,6 +76,11 @@ class ApiTest(unittest.TestCase):
     
     def test_debtor(self):
         client = Client()
+        response = client.get('/api/v1/dashboard/depositor')
+        self.assertEqual(response.status_code, 200)
+        
+    def test_depositor(self):
+        client = Client()
         response = client.get('/api/v1/dashboard/debtor')
         self.assertEqual(response.status_code, 200)
     
@@ -77,6 +97,16 @@ class ApiTest(unittest.TestCase):
     def test_medstate(self):
         client = Client()
         response = client.get('/api/v1/dashboard/medstate')
+        self.assertEqual(response.status_code, 200)
+        
+    def test_remotestate(self):
+        client = Client()
+        response = client.get('/api/v1/dashboard/remotestate')
+        self.assertEqual(response.status_code, 200)
+        
+    def test_ownstate(self):
+        client = Client()
+        response = client.get('/api/v1/dashboard/ownstate')
         self.assertEqual(response.status_code, 200)
     
     def test_state(self):
@@ -123,6 +153,16 @@ class ApiTest(unittest.TestCase):
         client = Client()
         response = client.get('/api/v1/dashboard/baseservice')
         self.assertEqual(response.status_code, 200)
+        
+    def test_staff(self):
+        client = Client()
+        response = client.get('/api/v1/dashboard/staff')
+        self.assertEqual(response.status_code, 200)
+        
+    def test_position(self):
+        client = Client()
+        response = client.get('/api/v1/dashboard/position')
+        self.assertEqual(response.status_code, 200)
     
     def test_extendedservice(self):
         client = Client()
@@ -144,16 +184,6 @@ class ApiTest(unittest.TestCase):
         response = client.get('/api/v1/dashboard/inputlist')
         self.assertEqual(response.status_code, 200)
     
-    def test_position(self):
-        client = Client()
-        response = client.get('/api/v1/dashboard/position')
-        self.assertEqual(response.status_code, 200)
-    
-    def test_staff(self):
-        client = Client()
-        response = client.get('/api/v1/dashboard/staff')
-        self.assertEqual(response.status_code, 200)
-    
     def test_doctor(self):
         client = Client()
         response = client.get('/api/v1/dashboard/doctor')
@@ -162,6 +192,11 @@ class ApiTest(unittest.TestCase):
     def test_staffsched(self):
         client = Client()
         response = client.get('/api/v1/dashboard/staffsched')
+        self.assertEqual(response.status_code, 200)
+        
+    def test_department(self):
+        client = Client()
+        response = client.get('/api/v1/dashboard/department')
         self.assertEqual(response.status_code, 200)
     
     def test_possched(self):
@@ -192,6 +227,11 @@ class ApiTest(unittest.TestCase):
     def test_orderedservice(self):
         client = Client()
         response = client.get('/api/v1/dashboard/orderedservice')
+        self.assertEqual(response.status_code, 200)
+        
+    def test_laborderedservice(self):
+        client = Client()
+        response = client.get('/api/v1/dashboard/laborderedservice')
         self.assertEqual(response.status_code, 200)
     
     def test_labservice(self):
@@ -248,6 +288,31 @@ class ApiTest(unittest.TestCase):
         client = Client()
         response = client.get('/api/v1/dashboard/examcard')
         self.assertEqual(response.status_code, 200)
+        
+    def test_card(self):
+        client = Client()
+        response = client.get('/api/v1/dashboard/card')
+        self.assertEqual(response.status_code, 200)
+        
+    def test_examtemplate(self):
+        client = Client()
+        response = client.get('/api/v1/dashboard/examtemplate')
+        self.assertEqual(response.status_code, 200)
+        
+    def test_examfieldset(self):
+        client = Client()
+        response = client.get('/api/v1/dashboard/examfieldset')
+        self.assertEqual(response.status_code, 200)
+        
+    def test_examsubsection(self):
+        client = Client()
+        response = client.get('/api/v1/dashboard/examsubsection')
+        self.assertEqual(response.status_code, 200)
+        
+    def test_glossary(self):
+        client = Client()
+        response = client.get('/api/v1/dashboard/glossary')
+        self.assertEqual(response.status_code, 200)
     
     def test_regexamcard(self):
         client = Client()
@@ -268,6 +333,11 @@ class ApiTest(unittest.TestCase):
         client = Client()
         response = client.get('/api/v1/dashboard/equipmentassay')
         self.assertEqual(response.status_code, 200)
+        
+    def test_equipmenttaskro(self):
+        client = Client()
+        response = client.get('/api/v1/dashboard/equipmenttaskro')
+        self.assertEqual(response.status_code, 200)
     
     def test_equipmenttask(self):
         client = Client()
@@ -278,6 +348,16 @@ class ApiTest(unittest.TestCase):
         client = Client()
         response = client.get('/api/v1/dashboard/equipmentresult')
         self.assertEqual(response.status_code, 200)
+        
+    def test_equipmentresultro(self):
+        client = Client()
+        response = client.get('/api/v1/dashboard/equipmentresultro')
+        self.assertEqual(response.status_code, 200)
+        
+    def test_promotion(self):
+        client = Client()
+        response = client.get('/api/v1/dashboard/promotion')
+        self.assertEqual(response.status_code, 200)
     
     def test_calendar(self):
         client = Client()
@@ -287,6 +367,16 @@ class ApiTest(unittest.TestCase):
     def test_preorder(self):
         client = Client()
         response = client.get('/api/v1/dashboard/preorder')
+        self.assertEqual(response.status_code, 200)
+        
+    def test_extpreorder(self):
+        client = Client()
+        response = client.get('/api/v1/dashboard/extpreorder')
+        self.assertEqual(response.status_code, 200)
+        
+    def test_visitpreorder(self):
+        client = Client()
+        response = client.get('/api/v1/dashboard/visitpreorder')
         self.assertEqual(response.status_code, 200)
     
     def test_event(self):
@@ -332,5 +422,10 @@ class ApiTest(unittest.TestCase):
     def test_invoiceitem(self):
         client = Client()
         response = client.get('/api/v1/dashboard/invoiceitem')
+        self.assertEqual(response.status_code, 200)
+        
+    def test_servicetosend(self):
+        client = Client()
+        response = client.get('/api/v1/dashboard/servicetosend')
         self.assertEqual(response.status_code, 200)
     
