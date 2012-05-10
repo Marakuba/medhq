@@ -15,9 +15,11 @@ from core.models import GENDER_TYPES, make_operator_object
 from django.db.models.aggregates import Count
 from django.contrib.contenttypes.models import ContentType
 from django.core.exceptions import ObjectDoesNotExist, MultipleObjectsReturned
+from constance import config
 
 import logging
 from django.template import Template, Context
+from django.db.models.signals import post_save
 logger = logging.getLogger(__name__)
 
 
@@ -498,3 +500,24 @@ class EquipmentResult(models.Model):
         super(EquipmentResult, self).save(*args, **kwargs)
 
         
+def generate_analysis_code(sender, **kwargs):
+    obj = kwargs['instance']
+    if not obj.code and config.ANALYSIS_CODE_TEMPLATE:
+        t = Template(config.ANALYSIS_CODE_TEMPLATE)
+        c = Context({'analysis':obj})
+        result = t.render(c)
+        obj.code = result
+        obj.save()
+        
+def generate_lab_code(sender, **kwargs):
+    obj = kwargs['instance']
+    if not obj.code and config.LAB_SERVICE_CODE_TEMPLATE:
+        t = Template(config.LAB_SERVICE_CODE_TEMPLATE)
+        c = Context({'labservice':obj})
+        result = t.render(c)
+        obj.code = result
+        obj.save()
+        
+
+post_save.connect(generate_analysis_code, sender=Analysis)
+post_save.connect(generate_analysis_code, sender=LabService)
