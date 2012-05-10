@@ -14,6 +14,7 @@ import datetime
 from state.models import State
 from constance import config
 from collections import defaultdict
+from django.template import Context, Template
 
 
 class ICD10(MPTTModel):
@@ -384,6 +385,17 @@ def clear_service_cache(sender, **kwargs):
     if config.SERVICE_CACHE_AUTO_CLEAR:
         _clear_cache()
         #raise "Service cache must be defined!"
+        
+def generate_service_code(sender, **kwargs):
+    obj = kwargs['instance']
+    if not obj.code and config.BASE_SERVICE_CODE_TEMPLATE:
+        t = Template(config.BASE_SERVICE_CODE_TEMPLATE)
+        c = Context({'service':obj})
+        result = t.render(c)
+        obj.code = result
+        obj.save()
+        
 
+post_save.connect(generate_service_code, sender=BaseService)
 post_save.connect(clear_service_cache, sender=BaseService)
 post_save.connect(clear_service_cache, sender=ExtendedService)

@@ -254,4 +254,7 @@ CONSTANCE_CONFIG = {
     'CUMULATIVE_DISCOUNTS':(True,u'Использование накопительных скидок (temporary)'),
     'SERVICETREE_ONLY_OWN':(True,u'Показывать услуги только текущей организации'),
     'SERVICE_CACHE_AUTO_CLEAR':(False,u'Автоматически сбрасывать кэш услуг после изменений'),
+    'BASE_SERVICE_CODE_TEMPLATE':('MEDHQ.{{service.id}}',u'Шаблон кода базовой услуги'),
+    'ANALYSIS_CODE_TEMPLATE':('MEDHQ.{{analysis.id}}',u'Шаблон кода анализа'),
+    'LAB_SERVICE_CODE_TEMPLATE':('MEDHQ.{{labservice.id}}',u'Шаблон кода ручного исследования'),
 }
