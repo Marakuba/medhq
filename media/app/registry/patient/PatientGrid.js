@@ -124,14 +124,10 @@ App.patient.PatientGrid = Ext.extend(Ext.grid.GridPanel, {
 			},	
 			listeners: {
 				rowdblclick:this.onPatientEdit.createDelegate(this),
-				rowclick:function(grid,rowIndex,e){
-					var rec = grid.getStore().getAt(rowIndex);
-					var sel_rec = this.getSelectionModel().getSelected();
-					if(!this.stopSelection){
-	                	this.fireEvent('patientselect', rec);
-					} else {
-						this.stopSelection = false;
-					}
+				rowclick:{
+					fn:this.onPatientClick.createDelegate(this),
+					buffer:300,
+					scope:this
 				},
 				scope:this
 			}
@@ -148,6 +144,16 @@ App.patient.PatientGrid = Ext.extend(Ext.grid.GridPanel, {
 		    App.eventManager.un('globalsearch', this.onGlobalSearch, this); 
 		    App.eventManager.un('visitcreate', this.onVisitCreate, this);
 		},this);
+	},
+	
+	onPatientClick : function(grid,rowIndex,e){
+		var rec = grid.getStore().getAt(rowIndex);
+		var sel_rec = this.getSelectionModel().getSelected();
+		if(!this.stopSelection){
+        	this.fireEvent('patientselect', rec);
+		} else {
+			this.stopSelection = false;
+		}
 	},
 	
 	btnSetDisabled: function(status, rec) {
@@ -209,6 +215,7 @@ App.patient.PatientGrid = Ext.extend(Ext.grid.GridPanel, {
 	},
 	
 	onPatientEdit: function() {
+		this.stopSelection = true;
 		var record = this.getSelected();
 		if(record) {
     		this.win = new App.patient.PatientWindow({

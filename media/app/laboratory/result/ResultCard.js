@@ -53,11 +53,7 @@ App.result.ResultCard = Ext.extend(Ext.Panel, {
 //					text:'Сейчас',
 					iconCls:'silk-date-go',
 					tooltip:'Устанавливает текущую дату и время',
-					handler:function(){
-						var now = new Date();
-						this.dateField.setValue(now);
-						this.timeField.setValue(now);
-					},
+					handler:this.setDateTime.createDelegate(this),
 					scope:this
 				},
 			
@@ -65,9 +61,7 @@ App.result.ResultCard = Ext.extend(Ext.Panel, {
 //					text:'Текущий',
 					iconCls:'silk-user-go',
 					tooltip:'Текущий пользователь',
-					handler:function(){
-						this.staffField.setValue(String.format('/api/v1/dashboard/position/{0}', active_profile));
-					},
+					handler:this.setStaff.createDelegate(this),
 					scope:this
 				},
 				
@@ -96,39 +90,19 @@ App.result.ResultCard = Ext.extend(Ext.Panel, {
 							un.push(rec.data);
 							records.push(rec);
 						},this);		
-						Ext.MessageBox.confirm('Предупреждение!',
-							new Ext.XTemplate('Внимание, данная операция приведет к удалению всех тестов, которые не были помечены как отвалидированные: ',
-							'<tpl for="."><br>{#}. {analysis_name}</tpl><br><br>',
-							'Продолжить?').apply(un),
-							function(btn){
-								if(btn=='yes') {
-									params = {
-										order:this.labOrderRecord.id
+						if(un.length){
+							Ext.MessageBox.confirm('Предупреждение!',
+								new Ext.XTemplate('Внимание, данная операция приведет к удалению всех тестов, которые не были помечены как отвалидированные: ',
+								'<tpl for="."><br>{#}. {analysis_name}</tpl><br><br>',
+								'Продолжить?').apply(un),
+								function(btn){
+									if(btn=='yes') {
+										this.confirm();
 									}
-									Ext.Ajax.request({
-										url:'/lab/confirm_results/',
-										params:params,
-										method:'POST',
-										success:function(response, opts) {
-											var r = Ext.decode(response.responseText);
-											this.ResultGrid.store.reload();
-											if(r.success) {
-												this.labOrderRecord.set('is_completed',true);
-												Ext.ux.Growl.notify({
-											        title: "Успешная операция!", 
-											        message: r.message,
-											        iconCls: "x-growl-accept",
-											        alignment: "tr-tr",
-											        offset: [-10, 10]
-											    })
-											}
-										},
-										failure: function(response, opts) {
-										},
-										scope:this
-									});
-								}
-						}, this);
+							}, this);
+						} else {
+							this.confirm();
+						}
 					},
 					scope:this
 				},'->',{
@@ -207,9 +181,9 @@ App.result.ResultCard = Ext.extend(Ext.Panel, {
 		if(d.staff) {
 			this.staffField.setValue(d.staff);
 		} else {
-//			this.staffField.setValue(App.getApiUrl('position',active_profile));
 			this.staffField.setRawValue('');
 			this.staffField.originalValue='';
+			this.staffField.value='';
 			this.staffField.reset();
 		}
 		this.dateField.setValue(d.executed);
@@ -221,20 +195,67 @@ App.result.ResultCard = Ext.extend(Ext.Panel, {
 		this.ResultComment.getForm().findField('comment').setValue(rec.data.comment);
 	},
 	
+	setDateTime : function() {
+		var now = new Date();
+		this.dateField.setValue(now);
+		this.timeField.setValue(now);
+		return now
+	},
+	
+	setStaff : function() {
+		var staff = App.getApiUrl('position',active_profile);
+		var sf = this.staffField;
+		sf.setValue(staff);
+		return staff
+	},
+	
 	saveSDT: function(rec) {
 		var d = this.dateField.getValue();
 		var t = this.timeField.getValue().split(':');
-		if (d) {
+		if (!d) {
+			d = this.setDateTime();
+		} else {
 			d = d.add(Date.HOUR, t[0]).add(Date.MINUTE,t[1]);
 		}
 		var staff = this.staffField.getValue();
+		if(!staff){
+			staff = this.setStaff();
+		}
 		if(rec) {
 			rec.beginEdit();
-			rec.set('executed', d ? d : '');
+			rec.set('executed', d);
 			rec.set('comment', this.ResultComment.getForm().findField('comment').getValue());
 			rec.set('staff', staff || null);
 			rec.endEdit();
 		}
+	},
+	
+	confirm : function() {
+		params = {
+			order:this.labOrderRecord.id
+		}
+		Ext.Ajax.request({
+			url:'/lab/confirm_results/',
+			params:params,
+			method:'POST',
+			success:function(response, opts) {
+				var r = Ext.decode(response.responseText);
+				this.ResultGrid.store.reload();
+				if(r.success) {
+					this.labOrderRecord.set('is_completed',true);
+					Ext.ux.Growl.notify({
+				        title: "Успешная операция!", 
+				        message: r.message,
+				        iconCls: "x-growl-accept",
+				        alignment: "tr-tr",
+				        offset: [-10, 10]
+				    })
+				}
+			},
+			failure: function(response, opts) {
+			},
+			scope:this
+		});
 	},
 	
 	onPrint: function() {

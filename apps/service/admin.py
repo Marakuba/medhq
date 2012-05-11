@@ -229,7 +229,7 @@ class BaseServiceAdmin(TreeEditor):
     inlines = [ExtendedServiceInlineAdmin,AnalysisInlineAdmin,LabServiceInline]
     save_as = True
     exclude = ('standard_service','normal_tubes','transport_tubes','staff','individual_tube')
-    search_fields = ['name','short_name']
+    search_fields = ['name','short_name','code']
     actions = [make_inactive_action,dump_for_load]
 
     def pricelist(self, request):

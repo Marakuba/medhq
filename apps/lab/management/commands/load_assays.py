@@ -19,8 +19,7 @@ class Command(BaseCommand):
         
         for service_name,service_code,assay_name,assay_code in writer:
             try:
-                assay = Analysis.objects.get(service__name=service_name,
-                                             service__code=service_code,
+                assay = Analysis.objects.get(service__code=service_code,
                                              name=assay_name)
                 assay.code = assay_code
                 assay.save()

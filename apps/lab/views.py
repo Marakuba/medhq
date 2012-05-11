@@ -16,6 +16,8 @@ import operator
 from remoting.views import post_results
 
 import logging
+from taskmanager.tasks import manageable_task, SendError
+from urllib2 import URLError
 logger = logging.getLogger('lab.models')
 
 @render_to('print/lab/register.html')
@@ -255,7 +257,16 @@ def revert_results(request):
                                                     'message':u'Исследования были восстановлены'
                                                 }), mimetype='application/json')
     return HttpResponseBadRequest()
+
+
+def router(object, task_type, **kwargs):
     
+    if task_type=='remote':
+        confirm = 'confirm' in kwargs and kwargs['confirm'] or False
+        try:
+            post_results(object, confirm)
+        except URLError, err:
+            raise SendError(err)
 
 def confirm_results(request):
     """
@@ -283,9 +294,19 @@ def confirm_results(request):
                             confirm = False
                             break
                     logger.debug(u"LAB: Подтверждение всех ордеров: %s" % confirm)
-                    resp = post_results(lab_order, confirm)
-                    for r in resp:
-                        logger.debug(u"LAB: %s %s" % (r['success'],r['message']))
+                    
+                    action_params = {
+                        'confirm':confirm
+                    }
+                    print "start delayed task"
+                    manageable_task.delay(operator=request.user, 
+                                          task_type='remote', 
+                                          action=router, 
+                                          object=lab_order, 
+                                          action_params=action_params,
+                                          task_params={'countdown':20})
+#                    for r in resp:
+#                        logger.debug(u"LAB: %s %s" % (r['success'],r['message']))
                 except Exception, err:
                     logger.error(u"LAB: %s " % err)
             return HttpResponse(simplejson.dumps({

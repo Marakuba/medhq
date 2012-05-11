@@ -363,7 +363,7 @@ App.patient.VisitGrid = Ext.extend(Ext.grid.GridPanel, {
 		var previewWindow = new Ext.Window({
 			modal:true,
 			closable:true,
-			title:'Предпросмотр',
+			title:String.format('{0}, прием №{1}',visit.data.patient_name, visit.data.barcode_id),
 			height:600,
 			layout:'fit',
 			width:800,
@@ -379,6 +379,7 @@ App.patient.VisitGrid = Ext.extend(Ext.grid.GridPanel, {
 			items:[{
 				xtype:'panel',
 				autoScroll:true,
+				border:false,
 				layout:'fit',
 				autoLoad:String.format('/widget/visit/{0}/',visit.data.id)
 			}]

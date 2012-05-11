@@ -26,9 +26,11 @@ App.Results = Ext.extend(Ext.Panel, {
 
 		App.eventManager.on('globalsearch', this.onGlobalSearch, this);
 		this.resultGrid.getStore().on('load',this.onResultLoad,this);
+		this.on('beforedestroy', function(){
+			this.resultGrid.getStore().un('load',this.onResultLoad,this);
+		},this);
 		this.on('destroy', function(){
 			App.eventManager.un('globalsearch', this.onGlobalSearch, this);
-			this.resultGrid.getStore().un('load',this.onResultLoad,this);
 		},this);
 
 	},

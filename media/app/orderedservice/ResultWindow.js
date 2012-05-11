@@ -27,13 +27,13 @@ App.remoting.ResultWindow = Ext.extend(Ext.Window, {
 			items: this.form,
 			layout:'fit',
 			modal:true,
-			buttons:[{
+			buttons:[/*{
 				text:'Печатать',
 				handler:function(){
 				},
 				scope:this
-			},{
-				text:'Отмена',
+			},*/{
+				text:'Закрыть',
 				handler:function(){
 					this.close();
 				},
