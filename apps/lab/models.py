@@ -170,6 +170,14 @@ class LabOrder(models.Model):
     def __unicode__(self):
         return u"Заказ №%s (%s) - %s - %s" % (str(self.id).zfill(8), self.visit.patient.short_name(), self.visit.office, self.laboratory) 
     
+    def get_info(self):
+        if not hasattr(self, '_info'):
+            self._info = u"Заказ %s, %s, %s, %s" % (self.visit.barcode.id, 
+                                          self.visit.created.strftime('%d.%m.%Y'), 
+                                          self.visit.office, 
+                                          self.visit.patient.short_name() ) 
+        return self._info
+    
     def print_date_display(self):
         if self.print_date:
             return self.print_date.strftime("%d.%m.%Y / %H:%M")
