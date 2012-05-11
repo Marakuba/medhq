@@ -974,7 +974,7 @@ App.examination.ExamCardForm = Ext.extend(Ext.form.FormPanel, {
 	},
 	
 	onPrint: function() {
-		window.open('/exam/card/'+this.record.data.id+'/');
+		window.open('/exam/examcard/'+this.record.data.id+'/');
 	},
 	
 	onFocus: function(name){

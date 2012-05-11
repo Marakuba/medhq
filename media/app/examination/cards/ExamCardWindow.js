@@ -67,7 +67,7 @@ App.examination.ExamCardWindow = Ext.extend(Ext.Window, {
 		this.close();
 	},
 	onPrint: function() {
-		window.open('/exam/card/'+this.record.data.id+'/');
+		window.open('/exam/examcard/'+this.record.data.id+'/');
 	},
 	
 	onExamCardCreate: function(record) {

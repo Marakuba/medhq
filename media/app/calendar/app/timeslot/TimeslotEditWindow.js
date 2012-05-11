@@ -587,7 +587,7 @@ Ext.calendar.TimeslotEditWindow = Ext.extend(Ext.Window, {
             if(rec.data.Status == 'б' || rec.data.Status == 'о' || (rec.data.StartDate < today && rec.data.Status != 'з')){
             	this.lockForm();
             };
-            if (rec.data.Status != 'с' || rec.data.StartDate < today){
+            if (rec.data.Status != 'б' && (rec.data.Status != 'с' || rec.data.StartDate < today)){
             		this.lockButton.setDisabled(true);
             }
             //this.getForm().findField('start').originalValue = o.data['start']
