@@ -30,10 +30,13 @@ def get_patient(request, data, state):
         msg = u'Пользователь %s создан' % patient.short_name()
     except Exception, err:
         msg = u"Ошибка определения пациента: '%s %s %s'" % (data['last_name'],data['first_name'],data['mid_name'])
-        logger.exception(msg)
+        if __debug__:
+            logger.exception(msg)
         raise Exception(msg)
         
-    logger.info(msg)
+    if __debug__:
+        logger.info(msg)
+        
     return patient
 
 
@@ -54,8 +57,9 @@ def get_visit(request, data, state, patient):
                                                  payment_type=u'к',
                                                  operator=state.remotestate.user)
     
-    msg = created and u'Визит для образца %s создан' % specimen or u'Визит для образца %s найден' % specimen
-    logger.info(msg)
+    if __debug__:
+        msg = created and u'Визит для образца %s создан' % specimen or u'Визит для образца %s найден' % specimen
+        logger.info(msg)
     
     return visit
 
@@ -71,12 +75,14 @@ def get_ordered_service(request, data):
 
     except ObjectDoesNotExist:
         msg = u"Исследование с кодом '%s' не найдено" % data['order']['code']
-        logger.exception(msg)
+        if __debug__:
+            logger.exception(msg)
         raise Exception(msg)
 
     except Exception, err:
         msg = u"Ошибка поиска исследования '%s': %s" % (data['order']['code'], err.__unicode__())
-        logger.exception(msg)
+        if __debug__:
+            logger.exception(msg)
         raise Exception(msg)
     
     
@@ -100,10 +106,12 @@ def get_ordered_service(request, data):
             ext_service = ex_services[0]
     else:
         msg = u"Исследование с кодом '%s' имеет неверные настройки" % data['order']['code']
-        logger.exception(msg)
+        if __debug__:
+            logger.exception(msg)
         raise Exception(msg)
    
-    logger.debug( u'Для услуги %s найдено место выполнения: %s' % ( service, ext_service.state) )
+    if __debug__:
+        logger.debug( u'Для услуги %s найдено место выполнения: %s' % ( service, ext_service.state) )
 
 
 
@@ -115,10 +123,11 @@ def get_ordered_service(request, data):
                                                                         operator=visit.operator)
     except Exception, err:
         msg = u"Ошибка при добавлении услуги '%s' к образцу %s: %s" % (service, visit.specimen, err.__unicode__())
-        logger.exception(msg)
+        if __debug__:
+            logger.exception(msg)
         raise Exception(msg)
     
-    if created:
+    if created and __debug__:
         logger.info( u"Услуга %s (%s) для образца %s добавлена" % (service, ext_service.state, visit.specimen) )
     else:
         logger.info( u"Услуга %s (%s) для образца %s уже существует" % (service, ext_service.state, visit.specimen) )
@@ -127,7 +136,8 @@ def get_ordered_service(request, data):
         ordered_service.to_lab()
     except Exception, err:
         msg = u'Ошибка проведения лабораторной услуги %s: %s' % (service, err.__unicode__())
-        logger.exception(msg)
+        if __debug__:
+            logger.exception(msg)
         raise Exception(msg)
 
     return ordered_service, created
@@ -137,6 +147,12 @@ def get_result(request, data):
     specimen_id = data['visit']['specimen_id']
     code = data['order']['code']
     r = data['result']
+    if not r['code']:
+        msg = u"Для исследования '%s' не указан код. Сохранение результата невозможно" % (r['name'],)
+        if __debug__:
+            logger.exception(msg)
+        raise Exception(msg)
+        
     try:
         result = Result.objects.get(order__visit__specimen=specimen_id, 
                                     analysis__code=r['code'])
@@ -147,7 +163,8 @@ def get_result(request, data):
         result.save()
         
         msg = u"Результат теста '%s' для образца %s сохранен" % (r['name'],specimen_id)
-        logger.info(msg)
+        if __debug__:
+            logger.info(msg)
         return result
     
     except ObjectDoesNotExist:
@@ -157,7 +174,8 @@ def get_result(request, data):
     
     except Exception, err:
         msg = u"При сохранении теста '%s' для образца %s произошла ошибка: %s" % (r['name'],specimen_id, err.__unicode__())
-        logger.exception(msg)
+        if __debug__:
+            logger.exception(msg)
         raise Exception(msg)
     
 

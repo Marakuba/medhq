@@ -51,30 +51,20 @@ App.patient.ClientAccountGrid = Ext.extend(Ext.grid.GridPanel, {
 			}),
 		    listeners:{
 		    	exception:function(proxy, type, action, options, response, arg){
-		    		console.log('ClientAccount Grid Exception!');
-		    		console.log(proxy);
-		    		console.log(type);
-		    		console.log(action);
-		    		console.log(options);
-		    		console.log(response);
-		    		console.log(arg);
 		    	},
 		    	write:function(store, action, result, res, rs){
-		    		console.log('ClietnAccount created!');
-		    		console.log(store);
-		    		console.log(action);
-		    		console.log(result);
-		    		console.log(res);
-		    		console.log(rs);
 		    	},
 		    	scope:this
 		    }
 		});
 		
-		if (this.record) {
-			var client_item_id = App.uriToId(this.record.data.client_item);
-			this.store.setBaseParam('client_item',client_item_id);
-			this.store.load();
+		if (this.record && this.record.data.client_item) {
+			try {
+				var client_item_id = App.uriToId(this.record.data.client_item);
+				this.store.setBaseParam('client_item',client_item_id);
+				this.store.load();
+			} catch(e) {
+			}
 		}
 		
 		this.columns =  [

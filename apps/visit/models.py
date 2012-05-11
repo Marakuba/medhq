@@ -24,7 +24,7 @@ from visit.settings import CANCEL_STATUSES
 from django.core.exceptions import ObjectDoesNotExist
 from constance import config
 from django.contrib.contenttypes import generic
-from remoting.models import TransactionItem
+from remoting.models import TransactionItem, SyncObject
 from service.exceptions import TubeIsNoneException
 #from scheduler.models import Preorder
 
@@ -152,6 +152,8 @@ class Visit(make_operator_object('visit')):
     comment = models.TextField(u'Дополнительная информация, комментарии',
                                null=True, blank=True)
     contract = models.ForeignKey('patient.Contract', null=True, blank=True)
+    
+    sync_obj = generic.GenericRelation(SyncObject)
     
     objects = models.Manager()
     
@@ -332,6 +334,8 @@ class OrderedService(make_operator_object('ordered_service')):
 
         if s.is_lab():
             
+            save_lab_order = False
+            
             if ext_service.tube is None:
                 raise TubeIsNoneException( u"В расширенной услуге <strong>'%s'</strong> для организации <strong>%s</strong> не указан тип пробирки" % 
                                            (ext_service.base_service.name, ext_service.state) )
@@ -349,6 +353,10 @@ class OrderedService(make_operator_object('ordered_service')):
                 result, created = Result.objects.get_or_create(order=lab_order,
                                                                analysis=analysis, 
                                                                sample=sampling)
+                if created:
+                    save_lab_order = True
+                    lab_order.is_completed = False
+                    
                 try:
                     eq_analysis = analysis.equipmentanalysis
                     ### Generating AssayTask
@@ -358,9 +366,13 @@ class OrderedService(make_operator_object('ordered_service')):
                         EquipmentTask.objects.get_or_create(equipment_assay=assay, ordered_service=self)
                 except:
                     pass
+                
+            if save_lab_order:
+                lab_order.save()
     
             if sampling:
                 self.sampling = sampling
+                
             self.status = u'л'    
             self.save()
             

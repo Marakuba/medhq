@@ -62,20 +62,14 @@ App.manual.ManualGrid = Ext.extend(Ext.grid.GridPanel, {
 			items:[this.dateField, this.timeField, {
 					iconCls:'silk-date-go',
 					tooltip:'Устанавливает текущую дату и время',
-					handler:function(){
-						var now = new Date();
-						this.dateField.setValue(now);
-						this.timeField.setValue(now);
-					},
+					handler:this.setDateTime.createDelegate(this),
 					scope:this
 				},
 			
 				this.staffField, {
 					iconCls:'silk-user-go',
 					tooltip:'Текущий пользователь',
-					handler:function(){
-						this.staffField.setValue(String.format('/api/v1/dashboard/position/{0}', active_profile));
-					},
+					handler:this.setStaff.createDelegate(this),
 					scope:this
 				},'-',{
 					iconCls:'silk-accept',
@@ -103,7 +97,7 @@ App.manual.ManualGrid = Ext.extend(Ext.grid.GridPanel, {
 	    	dataIndex: 'barcode'
 	    },{
 	    	header: "Дата", 
-	    	width: 12,
+	    	width: 15,
 	    	dataIndex: 'created',
 	    	renderer:Ext.util.Format.dateRenderer('d.m.Y H:i')
 	    },{
@@ -127,11 +121,11 @@ App.manual.ManualGrid = Ext.extend(Ext.grid.GridPanel, {
 	    	dataIndex: 'laboratory',
 	    },{
 	    	header: "Врач", 
-	    	width: 15,
+	    	width: 20,
 	    	dataIndex: 'staff_name',
 	    },{
 	    	header: "Оператор", 
-	    	width: 12,
+	    	width: 15,
 	    	dataIndex: 'operator_name',
 	    }];		
 		
@@ -146,7 +140,10 @@ App.manual.ManualGrid = Ext.extend(Ext.grid.GridPanel, {
 			store:this.store,
 			columns:this.columns,
 			sm : new Ext.grid.RowSelectionModel({
-				singleSelect : true
+				singleSelect : true,
+				listeners : {
+					rowselect : this.setActiveRecord.createDelegate(this)
+				}
 			}),
 			tbar:this.ttb,
 			bbar: new Ext.PagingToolbar({
@@ -191,16 +188,49 @@ App.manual.ManualGrid = Ext.extend(Ext.grid.GridPanel, {
 		
 	},
 	
+	setActiveRecord : function(sm, idx, rec) {
+		var d = rec.data;
+		if(d.staff) {
+			this.staffField.setValue(d.staff);
+		} else {
+			this.staffField.setRawValue('');
+			this.staffField.originalValue='';
+			this.staffField.value='';
+			this.staffField.reset();
+		}
+		this.dateField.setValue(d.executed);
+		this.timeField.setValue(d.executed);
+	},
+	
+	setDateTime : function() {
+		var now = new Date();
+		this.dateField.setValue(now);
+		this.timeField.setValue(now);
+		return now
+	},
+	
+	setStaff : function() {
+		var staff = App.getApiUrl('position',active_profile);
+		var sf = this.staffField;
+		sf.setValue(staff);
+		return staff
+	},
+	
 	saveSDT: function(rec) {
 		var d = this.dateField.getValue();
 		var t = this.timeField.getValue().split(':');
-		if (d) {
+		if (!d) {
+			d = this.setDateTime();
+		} else {
 			d = d.add(Date.HOUR, t[0]).add(Date.MINUTE,t[1]);
 		}
 		var staff = this.staffField.getValue();
+		if(!staff){
+			staff = this.setStaff();
+		}
 		if(rec) {
 			rec.beginEdit();
-			rec.set('executed', d ? d : '');
+			rec.set('executed', d);
 			if(staff) {
 				rec.set('staff', staff);
 			}
@@ -208,14 +238,14 @@ App.manual.ManualGrid = Ext.extend(Ext.grid.GridPanel, {
 		}
 	},
 	
-	setActiveRecord: function(rec) {
+/*	setActiveRecord: function(rec) {
 		this.labOrderRecord = rec;
 		
 		this.store.setBaseParam('order',App.uriToId(this.labOrderRecord.data.visit));
 		this.store.load();
 
 		this.enable();
-	},
+	},*/
 	
 	storeFilter: function(field, value){
 		if(!value) {

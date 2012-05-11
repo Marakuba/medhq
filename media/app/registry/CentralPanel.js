@@ -44,7 +44,8 @@ App.CentralPanel = Ext.extend(Ext.Panel, {
 	initComponent: function(){
 		
 		this.connStatus = new Ext.Button({
-			iconCls:'silk-stop'
+			iconCls:'silk-stop',
+			hidden:true
 		});
 		
 		this.mainPanel = new App.MainPanel({});
@@ -304,9 +305,6 @@ App.CentralPanel = Ext.extend(Ext.Panel, {
 			App.eventManager.un('closeapp', this.closeApp, this);
 			App.eventManager.un('visitcreate', this.onVisitCreate, this);
 		},this);
-		
-		var prv = Ext.Direct.getProvider('netstatus');
-		prv.interval=10000;
 		
 		Ext.Direct.on('netstatus',function(){
 			this.connStatus.setIconClass('silk-tick');

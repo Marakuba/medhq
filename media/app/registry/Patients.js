@@ -95,8 +95,10 @@ App.Patients = Ext.extend(Ext.Panel, {
             },
             listeners: {
                     complete: function(ed, value){
-                    	var fieldName = ed.boundEl.id
-                        this.patient.set(fieldName,Ext.util.Format.date(value,'d.m.Y'));
+                    	var fieldName = ed.boundEl.id;
+                    	var converted = Ext.util.Format.date(value,'d.m.Y');
+                        this.patient.set(fieldName, value);
+                        ed.boundEl.update(converted);
                         return true;
                     },
                     scope:this
@@ -134,11 +136,12 @@ App.Patients = Ext.extend(Ext.Panel, {
 		App.eventManager.on('refundclose', this.updatePatientInfo, this); //
 		App.eventManager.on('globalsearch', this.onGlobalSearch, this);
 		this.patientGrid.getStore().on('load',this.onPatientLoad,this);
+		this.patientGrid.getStore().on('beforeload',this.onPatientBeforeLoad,this);
 		this.on('destroy', function(){
 			App.eventManager.un('balanceupdate', this.updatePatientInfo, this); //
 			App.eventManager.un('refundclose', this.updatePatientInfo, this); //
 			App.eventManager.un('globalsearch', this.onGlobalSearch, this);
-			this.patientGrid.getStore().un('load',this.onPatientLoad,this);
+			this.patientGrid.getStore().un('beforeload',this.onPatientBeforeLoad,this);
 		},this);
 
 	},
@@ -151,8 +154,11 @@ App.Patients = Ext.extend(Ext.Panel, {
 		}
 	},
 	
-	onPatientLoad : function(store,r,options){
+	onPatientBeforeLoad : function(){
 		this.cardPanel.disable();
+	},
+	
+	onPatientLoad : function(store,r,options){
 		if(this.changeTitle){
 			this.setTitle(String.format('{0} ({1})', this.origTitle, r.length));
 		}

@@ -144,7 +144,7 @@ App.patient.ExamCardGrid = Ext.extend(Ext.grid.GridPanel, {
 	onPrint : function(){
 		var record = this.getSelected();
 		if(record) {
-			window.open('/exam/card/'+record.data.id+'/');
+			window.open('/exam/examcard/'+record.data.id+'/');
 		}
 	}
 	

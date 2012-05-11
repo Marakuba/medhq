@@ -58,10 +58,12 @@ def post_results_to_local(request, data_set, options):
         try:
             res = get_result(request, data)
             success_results.append(res.id)
-            print "success:", name
+            if __debug__:
+                print "success:", name
         except Exception, err:
-            msg = err.__unicode__()
-            print "failed:", name, " - ", msg
+            if __debug__:
+                msg = err.__unicode__()
+                print "failed:", name, " - ", msg
             success = False
             ts = False
         
@@ -77,16 +79,11 @@ def post_results_to_local(request, data_set, options):
             'message':msg
         })
         
-    print ts
+#    print ts
 
     if 'services' in options and options['services'] and ts:
         try_confirm(specimen_id, options['services'])
     
-#    if 'confirm' in options:
-#        if options['confirm']:
-#            for lab_order in lab_orders.values(): 
-#                lab_order.confirm_results()
-
     return result
 
 
@@ -121,9 +118,10 @@ def post_data_to_remote(lab, action, data, options={}):
     }, cls=DjangoJSONEncoder)
 
     try:
-        msg = u'Данные к отправке: %s' % unicode(json_data)
-        print msg
-        logger.debug(msg)
+        if __debug__:
+            msg = u'Данные к отправке: %s' % unicode(json_data)
+            print msg
+            logger.debug(msg)
 
         req = urllib2.Request(path, json_data, {'Content-Type': 'application/json'})
         f = urllib2.urlopen(req)
@@ -131,13 +129,14 @@ def post_data_to_remote(lab, action, data, options={}):
         f.close()
         return simplejson.loads(response)
     except HTTPError, e:
-        msg = u'Ошибка отправки данных: %s' % e.__unicode__()
-        logger.exception(msg)
-        print msg
-        
-        msg = e.read()
-        logger.exception(msg)
-        print msg
+        if __debug__:
+            msg = u'Ошибка отправки данных: %s' % e.__unicode__()
+            logger.exception(msg)
+            print msg
+            
+            msg = e.read()
+            logger.exception(msg)
+            print msg
         
         raise HTTPError(e)
 

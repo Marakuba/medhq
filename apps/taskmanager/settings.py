@@ -7,8 +7,8 @@ TASK_STATUSES = (
 )
 
 DELAYED_TASK_TYPES = (
-    (u'email',u'открыто'),
-    (u'remote',u'завершено'),
+    (u'email',u'email'),
+    (u'remote',u'remote'),
 )
 
 DELAYED_TASK_STATUSES = (

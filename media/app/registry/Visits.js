@@ -27,9 +27,11 @@ App.Visits = Ext.extend(Ext.Panel, {
 
 		App.eventManager.on('globalsearch', this.onGlobalSearch, this);
 		this.visitGrid.getStore().on('load',this.onVisitLoad,this);
+		this.on('beforedestroy', function(){
+			this.visitGrid.getStore().un('load',this.onVisitLoad,this);
+		},this);
 		this.on('destroy', function(){
 			App.eventManager.un('globalsearch', this.onGlobalSearch, this);
-			this.visitGrid.getStore().un('load',this.onVisitLoad,this);
 		},this);
 
 	},
