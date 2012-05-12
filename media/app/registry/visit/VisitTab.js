@@ -156,7 +156,7 @@ App.visit.VisitTab = Ext.extend(Ext.Panel, {
 				} else if (this.preorderRecord.data) {
 					preorderIDs = [this.preorderRecord.data.id];
 				};
-				this.preorderStore.baseParams['id__in']=preorderIDs.join(',');
+				this.preorderStore.baseParams['id__in']=preorderIDs;
 				this.preorderStore.load({callback:function(records){
 					if (!records.length) return false;
 					this.form.setPreorderRecord(records);

@@ -749,7 +749,6 @@ App.visit.VisitForm = Ext.extend(Ext.FormPanel, {
 					this.onPaymentTypeChoice(pt);
 				}
 				var discount = rec.data.promo_discount;
-				console.log('discount' + discount);
 				if (discount){
 					var dsc = this.discountCmb;
 					dsc.getStore().load({

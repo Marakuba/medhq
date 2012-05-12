@@ -215,7 +215,7 @@ App.registry.PreorderGrid = Ext.extend(Ext.grid.GridPanel, {
 			store:this.store,
 			columns:this.columns,
 			sm : new Ext.grid.RowSelectionModel({
-				singleSelect : true,
+				singleSelect : this.hasPatient ? false : true,
 				listeners: {
                     rowselect: function(sm, row, rec) {
                     	this.fireEvent('serviceselect', rec);
@@ -311,11 +311,9 @@ App.registry.PreorderGrid = Ext.extend(Ext.grid.GridPanel, {
 			}
 		},this);
 		App.calendar.eventManager.on('preorderwrite', this.storeReload,this);
-		App.eventManager.on('patientselect', this.onPatientSelect, this); //
 		this.on('destroy', function(){
 		    App.calendar.eventManager.un('preorderwrite', this.storeReload,this);
 		    App.eventManager.un('globalsearch', this.onGlobalSearch, this);
-			App.eventManager.un('patientselect', this.onPatientSelect, this); //
 		},this);
 		//this.store.on('write', this.onStoreWrite, this);
 	},
@@ -350,25 +348,71 @@ App.registry.PreorderGrid = Ext.extend(Ext.grid.GridPanel, {
 	},
 	
 	onVisitButtonClick: function() {
-        var record = this.getSelected();
-        if (record) {
-        	var today = new Date();
-        	var actual = record.data.start.clearTime() >= today.clearTime();
-        	if (record.data.visit){
-        		Ext.Msg.alert('Уведомление','Предзаказ уже был оформлен');
-        		return
-        	};
-        	if (!record.data.visit && actual) {
-    			this.visitAdd(record);
-    	    };
+		var records = this.getSelectionModel().getSelections();
+        
+        if (records.length) {
+        	var only_one = true;
+        	var patient = records[0].data.patient
+        	Ext.each(records,function(rec){
+	        	if (rec.data.patient != patient){
+	        		only_one = false
+	        		return
+	        	}
+	        });
+        	
+	        if (!only_one){
+	        	Ext.Msg.alert('Ошибка!','Выбрано несколько пациентов!');
+	        	return
+	        }
+	        
+        	var recs = new Array();
+        	Ext.each(records, function(record){
+    	    	if (!record.data.patient){
+    	    		Ext.Msg.alert('Ошибка!','Не указан пациент!');
+    	    		return
+    	    	};
+    	    	if ( state!=record.data.execution_place && record.data.service && this.serviceTreeOnlyOwn){
+    	    		console.dir(record.data);
+    	    		Ext.Msg.alert('Ошибка!','Вы не можете работать с этой организацией!');
+    	    		return
+    	    	};
+        		if(!record.data.visit) {
+        			recs.push(record);
+        		}
+        	}, this);
+        	if (recs.length){
+	    		App.eventManager.fireEvent('launchapp','visittab',{
+					preorderRecord:recs,
+					patientId:App.uriToId(recs[0].data.patient),
+					type:'visit'
+				});
+        	}
         } else {
-        	Ext.Msg.alert('Уведомление','Не выбран ни один предзаказ');
+        	Ext.Msg.alert('Уведомление','Не выбран ни один предзаказ')
         }
+		
+		
+		
+//		
+//        var record = this.getSelected();
+//        if (record) {
+//        	var today = new Date();
+//        	var actual = record.data.start.clearTime() >= today.clearTime();
+//        	if (record.data.visit){
+//        		Ext.Msg.alert('Уведомление','Предзаказ уже был оформлен');
+//        		return
+//        	};
+//        	if (!record.data.visit && actual) {
+//    			this.visitAdd(record);
+//    	    };
+//        } else {
+//        	Ext.Msg.alert('Уведомление','Не выбран ни один предзаказ');
+//        }
     },
     
     onDelPreorderClick : function() {
     	var record = this.getSelected();
-    	if (!record) {
+    	if (!record || record.data.visit) {
     		return false
     	};
     	this.eventStore.setBaseParam('preord',App.uriToId(record.data.id))
@@ -441,7 +485,7 @@ App.registry.PreorderGrid = Ext.extend(Ext.grid.GridPanel, {
 				this.btnSetDisabled(true);
 			};
 		},scope:this});
-		this.btnSetDisabled(true);
+//		this.btnSetDisabled(true);
 	},
 	
 	onPrevClick: function(){
