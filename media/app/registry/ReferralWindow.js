@@ -13,6 +13,12 @@ App.ReferralWindow = Ext.extend(Ext.Window, {
 				fn: function(record){
 					Ext.callback(this.fn, this.scope || window, [record]);
 				},
+				listeners:{
+					scope:this,
+					referralcreate:function(record){
+						this.fireEvent('referralcreate',record)
+					}
+				},
 				scope:this
 			},
 			modal:true,

@@ -77,22 +77,9 @@ App.patient.PatientForm = Ext.extend(Ext.form.FormPanel, {
 			}),
 		    listeners:{
 		    	exception:function(proxy, type, action, options, response, arg){
-		    		console.log('Account Grid Exception!');
-		    		console.log(proxy);
-		    		console.log(type);
-		    		console.log(action);
-		    		console.log(options);
-		    		console.log(response);
-		    		console.log(arg);
 		    		this.fireEvent('exception')
 		    	},
 		    	write:function(store, action, result, res, rs){
-		    		console.log('Account created!');
-		    		console.log(store);
-		    		console.log(action);
-		    		console.log(result);
-		    		console.log(res);
-		    		console.log(rs);
 		    		if(action=='create') {
 			    		//App.eventManager.fireEvent('accountcreate', rs);
 		    			this.onAccountCreate(rs);

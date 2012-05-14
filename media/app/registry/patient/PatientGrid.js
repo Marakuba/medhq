@@ -49,14 +49,6 @@ App.patient.PatientGrid = Ext.extend(Ext.grid.GridPanel, {
 			scope:this
 		});
 		
-		this.ctrButton = new Ext.Button({
-			text:'Договор',
-			iconCls:'silk-error',
-			hidden:true,
-			handler:this.goToSlug.createDelegate(this, ['contract']),
-			scope:this
-		});
-		
 		this.cardButton = new Ext.menu.Item({
 			text:'Амбулаторная карта',
 			disabled:true,
@@ -72,7 +64,15 @@ App.patient.PatientGrid = Ext.extend(Ext.grid.GridPanel, {
 		
 		this.agreementButton = new Ext.Button({
 			text:'Согласие',
-			disabled:true,
+			iconCls:'silk-error',
+			hidden:true,
+			handler: this.onAccepted.createDelegate(this),
+			scope:this
+		});
+		
+		this.agrmtButton = new Ext.menu.Item({
+			text:'Согласие',
+			hidden:true,
 			handler: this.onAccepted.createDelegate(this),
 			scope:this
 		});
@@ -107,9 +107,9 @@ App.patient.PatientGrid = Ext.extend(Ext.grid.GridPanel, {
 				iconCls:'silk-add',
 				text:'Новый пациент',
 				handler:this.onPatientAdd.createDelegate(this, [])
-			},this.editButton,'-',this.ctrButton,this.agreementButton,'->',{
+			},this.editButton,'-',this.agreementButton,'->',{
 				iconCls:'silk-bullet-wrench',
-				menu:[this.cardButton,this.contractButton]
+				menu:[this.cardButton,this.contractButton,this.agrmtButton]
 			}],
 	        bbar: new Ext.PagingToolbar({
 	            pageSize: 20,
@@ -160,20 +160,15 @@ App.patient.PatientGrid = Ext.extend(Ext.grid.GridPanel, {
         this.editButton.setDisabled(status);
         this.agreementButton.setDisabled(status);
         this.cardButton.setDisabled(status);
+        this.agrmtButton.setDisabled(status);
         this.contractButton.setDisabled(status);
-        this.ctrButton.setVisible(!rec.data.contract);
 	},
 	
 	onPatientSelect: function(record){
 		if(!record) return false;
-		if (record.data.accepted){
-			var text = 'Согласие от ' + record.data.accepted.format('d.m.y H:i');
-			this.agreementButton.setIconClass('silk-accept');
-		} else {
-			var text = 'Cогласие';
-			this.agreementButton.setIconClass('silk-error');
-		}
-		this.agreementButton.setText(text);
+		this.agrmtButton.setVisible(record.data.accepted);
+		this.agreementButton.setVisible(!record.data.accepted);
+		this.doLayout();
 	},
 	
 	getSelected: function() {

@@ -309,6 +309,13 @@ App.visit.VisitForm = Ext.extend(Ext.FormPanel, {
 									};
 									refWin.close();
 								},
+								listeners:{
+									scope:this,
+									referralcreate:function(record){
+										this.referralCB.forceValue(record.data.resource_uri);
+										refWin.close();
+									}
+								},
 								scope:this
 							});
 							refWin.show(this);
@@ -595,7 +602,7 @@ App.visit.VisitForm = Ext.extend(Ext.FormPanel, {
 	        				},{
 	        					columnWidth:'0.2',
 	        					layout:{
-	        						type:'vbox',
+	        						type:'vbox'
 	        					},
 	        					height:90,
 //	        					defaults:{

@@ -43,8 +43,11 @@ App.ReferralGrid = Ext.extend(Ext.grid.GridPanel, {
 		    writer: this.writer,    
 		    listeners: {
 		    	write: function(store, action, result, res, rs) {
-		    		//App.eventManager.fireEvent('patientwrite',rs);
-		    	}
+		    		if (action == 'create'){
+		    			this.fireEvent('referralcreate',rs)
+		    		}
+		    	},
+		    	scope:this
 		    }
 		});
 		

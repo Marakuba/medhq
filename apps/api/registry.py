@@ -158,9 +158,8 @@ class PatientResource(ExtResource):
         return bundle
     
     def dehydrate(self, bundle):
-        if hasattr(self,'orig_request') and self.orig_request:
-            active_state = self.orig_request.active_profile.department.state
-            bundle.data['accepted'] = bundle.obj.get_accepted_date(active_state)
+        active_state = bundle.request.active_profile.department.state
+        bundle.data['accepted'] = bundle.obj.get_accepted_date(active_state)
         bundle.data['discount_name'] = bundle.obj.discount and bundle.obj.discount or u'0%'
         bundle.data['full_name'] = bundle.obj.full_name()
         bundle.data['short_name'] = bundle.obj.short_name()
