@@ -265,7 +265,7 @@ def router(object, task_type, **kwargs):
         confirm = 'confirm' in kwargs and kwargs['confirm'] or False
         try:
             post_results(object, confirm)
-        except URLError, err:
+        except Exception, err:
             raise SendError(err)
 
 def confirm_results(request):
