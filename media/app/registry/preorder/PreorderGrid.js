@@ -307,7 +307,11 @@ App.registry.PreorderGrid = Ext.extend(Ext.grid.GridPanel, {
 				this.store.setBaseParam('timeslot__start__month', month);
 				this.store.setBaseParam('timeslot__start__day', day);
 				this.store.setBaseParam('timeslot__isnull',false);
-				this.store.load();
+				if (this.searchValue){
+					this.onGlobalSearch(this.searchValue)
+				} else {
+					this.store.load();
+				}
 			}
 		},this);
 		App.calendar.eventManager.on('preorderwrite', this.storeReload,this);

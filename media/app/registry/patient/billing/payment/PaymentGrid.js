@@ -176,7 +176,11 @@ App.billing.PaymentGrid = Ext.extend(Ext.grid.GridPanel, {
 				first_day.setDate(1);
 				this.gteDateField.setValue(first_day);
 				this.store.setBaseParam('doc_date__gte', first_day.format('Y-m-d'));
-				this.store.load();
+				if (this.searchValue){
+					this.onGlobalSearch(this.searchValue)
+				} else {
+					this.store.load();
+				}
 			}
 		}, this);
 		

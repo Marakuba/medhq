@@ -288,6 +288,7 @@ App.CentralPanel = Ext.extend(Ext.Panel, {
 		App.eventManager.on('launchapp', this.launchApp, this);
 		App.eventManager.on('closeapp', this.closeApp, this);
 		App.eventManager.on('visitcreate', this.onVisitCreate, this);
+		App.eventManager.on('globalsearch', this.onGlobalSearch, this);
 		this.on('afterrender', function(){
 /*			Ext.QuickTips.register({
 				autoHide:false,
@@ -300,10 +301,12 @@ App.CentralPanel = Ext.extend(Ext.Panel, {
 
 		});
 		
+		
 		this.on('destroy', function(){
 		    App.eventManager.un('launchapp', this.launchApp, this);
 			App.eventManager.un('closeapp', this.closeApp, this);
 			App.eventManager.un('visitcreate', this.onVisitCreate, this);
+			App.eventManager.un('globalsearch', this.onGlobalSearch, this);
 		},this);
 		
 		Ext.Direct.on('netstatus',function(){
@@ -338,7 +341,8 @@ App.CentralPanel = Ext.extend(Ext.Panel, {
 	launchApp: function(appId,config, setActive) {
         var app_config = {
             xtype:appId,
-            medstateStore:this.medstateStore
+            medstateStore:this.medstateStore,
+            searchValue: this.searchValue
         };
         config = config || {};
 		Ext.apply(app_config, config);
@@ -347,6 +351,10 @@ App.CentralPanel = Ext.extend(Ext.Panel, {
 		if(setActive) {
 			this.mainPanel.setActiveTab(new_app);
 		}
+	},
+	
+	onGlobalSearch: function(val){
+		this.searchValue = val;
 	}
 });
 

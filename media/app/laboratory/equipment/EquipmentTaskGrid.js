@@ -22,7 +22,7 @@ App.equipment.EquipmentTaskGrid = Ext.extend(Ext.grid.EditorGridPanel, {
 		]);
 		
 		this.store = new Ext.data.RESTStore({
-			autoLoad : true,
+			autoLoad : false,
 			autoSave : false,
 			apiUrl : App.getApiUrl('equipmenttaskro'),
 			model: this.model
@@ -183,6 +183,18 @@ App.equipment.EquipmentTaskGrid = Ext.extend(Ext.grid.EditorGridPanel, {
 		App.equipment.EquipmentTaskGrid.superclass.initComponent.apply(this, arguments);
 		
 		App.eventManager.on('globalsearch', this.onGlobalSearch, this);
+		
+		this.on('afterrender', function(){
+			if (this.searchValue){
+				this.onGlobalSearch(this.searchValue)
+			} else {
+				this.store.load();
+			}
+		},this);
+		
+		this.on('destroy', function(){
+			App.eventManager.un('globalsearch', this.onGlobalSearch, this);
+		},this);
 		
 	},
 	

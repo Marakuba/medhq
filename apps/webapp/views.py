@@ -151,7 +151,9 @@ def reporting(request):
 @login_required
 @render_to('webapp/laboratory/index.html')
 def laboratory(request):
-    return {}
+    return {
+        'apps':simplejson.dumps(get_apps(request))
+    }
 
 @login_required
 @render_to('webapp/examination/index.html')

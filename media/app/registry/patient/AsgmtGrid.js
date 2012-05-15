@@ -333,7 +333,11 @@ App.patient.AsgmtGrid = Ext.extend(Ext.grid.EditorGridPanel, {
 				this.store.setBaseParam('expiration__year', year);
 				this.store.setBaseParam('expiration__month', month);
 				this.store.setBaseParam('expiration__day', day);
-				this.store.load();
+				if (this.searchValue){
+					this.onGlobalSearch(this.searchValue)
+				} else {
+					this.store.load();
+				}
 			}
 		},this);
 		App.calendar.eventManager.on('preorderwrite', this.storeReload,this);

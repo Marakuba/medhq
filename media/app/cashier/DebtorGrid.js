@@ -5,7 +5,7 @@ App.cashier.DebtorGrid = Ext.extend(Ext.grid.GridPanel, {
 	initComponent : function() {
 		
 		this.store = new Ext.data.RESTStore({
-			autoLoad : true,
+			autoLoad : false,
 			apiUrl : get_api_url('debtor'),
 			model: App.models.debtorModel
 		});
@@ -102,6 +102,13 @@ App.cashier.DebtorGrid = Ext.extend(Ext.grid.GridPanel, {
 		App.eventManager.on('globalsearch', this.onGlobalSearch, this);
 		App.eventManager.on('paymentsave', this.reloadStore, this);
 		App.eventManager.on('visitcreate', this.reloadStore, this);
+		this.on('afterrender', function(){
+			if (this.searchValue){
+				this.onGlobalSearch(this.searchValue)
+			} else {
+				this.store.load();
+			}
+		},this);
 		this.on('destroy', function(){
 		    App.eventManager.un('paymentsave', this.reloadStore, this);
 		    App.eventManager.un('globalsearch', this.onGlobalSearch, this);

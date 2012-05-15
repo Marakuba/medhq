@@ -1,10 +1,45 @@
 Ext.ns('App');
 Ext.ns('App.services');
 
+var profileItems = ['<b class="menu-title">Выберите профиль</b>'];
+Ext.each(profiles, function(profile){
+	config = {
+		profileId:profile[0],
+		text:profile[1],
+		checked:profile[0]==active_profile,
+		group:'profile',
+		checkHandler:function(menuitem,checked){
+			if(checked){
+				window.location.href = String.format('/webapp/setactiveprofile/{0}/?redirect_to=/webapp/registry/',menuitem.profileId);
+			}
+		}
+	}
+	profileItems.push(config);
+});
+
+var appsItems = [];
+Ext.each(apps, function(app){
+	config = {
+		text:app[0],
+		appUrl:app[1],
+		group:'apps',
+		handler:function(menuitem,e){
+			window.location.href = menuitem.appUrl;
+		}
+	}
+	appsItems.push(config);
+});
+
 App.CentralPanel = Ext.extend(Ext.Panel, {
 	
 	initComponent: function(){
 		this.mainPanel = new App.MainPanel({});
+		
+		this.gsf = new App.SearchField({
+			id:'global-search-field',
+			emptyText:'Ф.И.О. д/р или № заказа',
+			stripCharsRe:new RegExp('[\;\?]')
+		});
 
 		config = {
 			region:'center',
@@ -13,14 +48,10 @@ App.CentralPanel = Ext.extend(Ext.Panel, {
 			items:[this.mainPanel],
 			tbar:[{
 				xtype: 'buttongroup',
-				title: '№ заказа или фамилия',
 				padding:5,
-				items:[{
-					xtype:'gsearchfield',
-				}]
+				items:[this.gsf]
 			},{
                 xtype: 'buttongroup',
-                title: 'Журналы',
 //                columns: 2,
                 defaults: {
                     scale: 'small'
@@ -55,7 +86,6 @@ App.CentralPanel = Ext.extend(Ext.Panel, {
                 }]
             },{
             	xtype:'buttongroup',
-            	title:'Заказы',
             	defaults:{
             		scale:'medium'
             	},
@@ -89,7 +119,6 @@ App.CentralPanel = Ext.extend(Ext.Panel, {
 				}]
             },{
             	xtype:'buttongroup',
-            	title:'Анализаторы',
             	defaults:{
             		scale:'medium'
             	},
@@ -108,21 +137,69 @@ App.CentralPanel = Ext.extend(Ext.Panel, {
                     scope:this            	
                 }]
             },'->',{
-            	text:'Выход',
-            	handler:function(){
-            		window.location.href = '/webapp/logout/';
-            	}
-            }]
+				xtype:'buttongroup',
+				defaults:{
+					xtype:'button',
+					scale:'medium'
+				},
+				items:[{
+					text:'Обращения',
+					handler:function(){
+						this.launchApp('issuegrid');
+					},
+					scope:this
+				}]
+			},{
+				xtype:'buttongroup',
+				defaults:{
+					xtype:'button',
+					scale:'medium'
+				},
+				items:[{
+					iconCls:'silk-cog',
+					iconAlign:'right',
+					text:String.format('{0}, {1}', active_user, active_state),
+					menu:new Ext.menu.Menu({
+						items:[{
+							text:'Приложения',
+							menu:{
+								items:appsItems
+							}
+						},{
+							text:'Профиль',
+							menu:{
+								items:profileItems
+							}
+						},{
+			            	text:'Выход',
+			            	iconCls:'silk-door-out',
+			            	handler:function(){
+			            		window.location.href = '/webapp/logout/';
+			            	}
+			            }]
+					})
+				}]
+			}]
 		}
 		Ext.apply(this, Ext.apply(this.initialConfig, config));
 		App.CentralPanel.superclass.initComponent.apply(this, arguments);
 		App.eventManager.on('launchapp', this.launchApp, this);
 		App.eventManager.on('closeapp', this.closeApp, this);
+		App.eventManager.on('globalsearch', this.onGlobalSearch, this);
 		
 		this.on('destroy', function(){
 		    App.eventManager.un('launchapp', this.launchApp, this);
 			App.eventManager.un('closeapp', this.closeApp, this); 
+			App.eventManager.un('globalsearch', this.onGlobalSearch, this);
 		},this);
+	},
+	
+	onSearch: function(){
+		this.gsf.focus(true,100);
+	},
+	
+	onClearSearch : function(){
+		this.gsf.onTrigger1Click();
 	},
 	
 	closeApp: function(appId) {
@@ -131,7 +208,8 @@ App.CentralPanel = Ext.extend(Ext.Panel, {
 	
 	launchApp: function(appId,config,active) {
         var app_config = {
-            xtype:appId
+            xtype:appId,
+            searchValue: this.searchValue
         };
         config = config || {};
 		Ext.apply(app_config, config);
@@ -140,6 +218,10 @@ App.CentralPanel = Ext.extend(Ext.Panel, {
 		if(active) {
 			this.mainPanel.setActiveTab(new_app);
 		}
+	},
+	
+	onGlobalSearch: function(val){
+		this.searchValue = val;
 	}
 });
 

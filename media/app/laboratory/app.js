@@ -39,6 +39,24 @@ Ext.onReady(function(){
 		items:[centralPanel]
 	});
 	
+	new Ext.KeyMap(document, {
+	    key: Ext.EventObject.F3,
+	    handler: function(){ 
+	    	centralPanel.onSearch();
+	    },
+	    scope: this,
+	    stopEvent: true
+	});
+	
+	new Ext.KeyMap(document, {
+	    key: Ext.EventObject.F8,
+	    handler: function(){ 
+	    	centralPanel.onClearSearch();
+	    },
+	    scope: this,
+	    stopEvent: true
+	});
+	
 	centralPanel.launchApp('labboard');
 	centralPanel.launchApp('manualgrid',{},false);
 

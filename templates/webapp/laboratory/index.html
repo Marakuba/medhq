@@ -4,10 +4,8 @@
 {% block title %}Панель управления{% endblock %}
 
 {% block head %}
-	{% assets "css_laboratory" %}
-	 <link rel="stylesheet" type="text/css" href="{{ ASSET_URL }}"></>
-	{% endassets %}
 
+	{% autoescape off %}
 	<script type="text/javascript">
 		var state = '{{ request.active_profile.state }}';
 		var MEDIA_URL = '{{ STATIC_URL }}';
@@ -15,8 +13,16 @@
 		function get_api_url(resource){
 			return [API_URL,'dashboard',resource].join("/");
 		}
+		var apps = {{ apps }};
 	</script>
-
+	{% endautoescape %}
+	
+	{% include "webapp/includes/active_profile.html" %}
+	
+	{% assets "css_laboratory" %}
+	 <link rel="stylesheet" type="text/css" href="{{ ASSET_URL }}"></>
+	{% endassets %}
+	
     {% assets "js_ext" %}
 	 <script type="text/javascript" src="{{ ASSET_URL }}"></script>
 	{% endassets %}
@@ -34,8 +40,6 @@
 	    WEB_SOCKET_DEBUG = true;
 	    
 	  </script>
-
-{% include "webapp/includes/active_profile.html" %}
 
 {% endblock %}
 
