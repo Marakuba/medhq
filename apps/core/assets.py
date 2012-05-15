@@ -659,6 +659,8 @@ js_laboratory = Bundle(
     'app/laboratory/manual/cards/ugsmear.js',
 
     'app/laboratory/manual/ManualGrid.js',
+    
+    'app/laboratory/investigation/InvestigationGrid.js',
 
     'app/laboratory/laborder/LabBoard.js',
     'app/laboratory/laborder/LabOrderGrid.js',

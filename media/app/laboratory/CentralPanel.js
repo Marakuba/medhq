@@ -75,6 +75,15 @@ App.CentralPanel = Ext.extend(Ext.Panel, {
                     },
                     scope:this
                 },{
+                	xtype:'button',
+                    text: 'Журнал',
+                    scale:'medium',
+                    iconAlign: 'top',
+                    handler: function(){
+                    	this.launchApp('investigationgrid');
+                    },
+                    scope:this
+                },{
                     text: 'Реестр тестов',
                     scale:'medium',
                     iconAlign: 'top',
