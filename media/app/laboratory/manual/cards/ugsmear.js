@@ -5,14 +5,14 @@ App.cards.UgSmear = Ext.extend(App.cards.BaseCard,{
 		
 		this.mode = 'column';
 		
-		this.mappings['Уретра'] = 'valU';
-		this.mappings['Шейка матки'] = 'valC';
-		this.mappings['Влагалище'] = 'valV';
+		this.mappings['Уретра'] = 'U';
+		this.mappings['Шейка матки'] = 'M';
+		this.mappings['Влагалище'] = 'V';
 		
 		this.editor = new App.fields.InputList();
 		
 		this.gs = new Ext.data.ArrayStore({
-			fields:['name','code','inputlistvalU','inputlistvalC','inputlistvalV','valU','valC','valV']
+			fields:['name','code','inputlistU','inputlistM','inputlistV','U','M','V']
 		});
 		
 		this.commentField = new Ext.form.TextArea({
@@ -35,18 +35,18 @@ App.cards.UgSmear = Ext.extend(App.cards.BaseCard,{
 					width:55
 				},{
 					header:'Уретра',
-					dataIndex:'valU',
+					dataIndex:'U',
 					width:15,
 					editor:this.editor
 				},{
 					header:'Шейка матки',
-					dataIndex:'valC',
+					dataIndex:'M',
 					width:15,
 					hidden:this.record.data.is_male,
 					editor:this.editor
 				},{
 					header:'Влагалище',
-					dataIndex:'valV',
+					dataIndex:'V',
 					width:15,
 					hidden:this.record.data.is_male,
 					editor:this.editor

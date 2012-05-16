@@ -22,6 +22,7 @@ import StringIO
 from pricelist.models import Price
 from django.views.generic.simple import direct_to_template
 from service.forms import PriceForm
+from core.admin import TabbedAdmin
 
 
 class StandardServiceAdmin(TreeEditor):
@@ -196,7 +197,8 @@ class ExtendedServiceInlineAdmin(admin.TabularInline):
     
     template = "admin/service/tabular.html"
     model = ExtendedService
-    extra = 1
+    extra = 0
+    exclude = ('staff',)
 
 
 lookups = {}
@@ -215,7 +217,7 @@ class BaseServiceForm(forms.ModelForm):
     class Meta:
         model = BaseService
 
-class BaseServiceAdmin(TreeEditor):
+class BaseServiceAdmin(TreeEditor, TabbedAdmin):
     """
     """
     
@@ -228,7 +230,7 @@ class BaseServiceAdmin(TreeEditor):
     
     inlines = [ExtendedServiceInlineAdmin,AnalysisInlineAdmin,LabServiceInline]
     save_as = True
-    exclude = ('standard_service','normal_tubes','transport_tubes','staff','individual_tube')
+    exclude = ('standard_service',)
     search_fields = ['name','short_name','code']
     actions = [make_inactive_action,dump_for_load]
 

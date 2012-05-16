@@ -139,19 +139,9 @@ class BaseService(models.Model):
     code = models.CharField(u'Код', max_length=25, null=True, blank=True)
     standard_service = models.ForeignKey(StandardService, null=True)
     execution_time = models.PositiveIntegerField(u'Время выполнения', null=True, blank=True)
-    #is_lab = models.BooleanField(u'В направление')
     partnership = models.BooleanField(u'В направление')
     version = models.PositiveIntegerField(u'Версия', default=0, null=True, blank=True)
-    is_group = models.BooleanField(u'Это группа',default=False)
-    
-    ### будет пересмотрено позже
-    execution_place = models.ManyToManyField('state.State', 
-                                             verbose_name=u'Место выполнения',
-                                             through='ExecutionPlace', 
-                                             null=True, blank=True)
-    ### к удалению
-    execution_form = models.CharField(u'Способ исполнения', max_length=1, choices=EXECUTION, default=u'п')
-    ##############
+    is_group = models.BooleanField(u'Группа',default=False)
     
     material = models.ForeignKey(Material, blank=True, null=True)
     gen_ref_interval = models.TextField(u"Общий референсный интервал", 
@@ -160,22 +150,11 @@ class BaseService(models.Model):
     lab_group = models.ForeignKey(LabServiceGroup, null=True, blank=True)
     
     
-    ### к удалению
-    normal_tubes = models.ManyToManyField('lab.Tube', null=True, blank=True, 
-                                         verbose_name=u'Местная тара', 
-                                         related_name='normal_tubes')
-    transport_tubes = models.ManyToManyField('lab.Tube', null=True, blank=True, 
-                                            verbose_name=u'Транспортная тара', 
-                                            related_name='transport_tubes')
-    individual_tube = models.BooleanField(u'Отдельная тара', default=False)
-    ##############
-    
-    
     inner_template = models.CharField(u'Рабочий бланк', max_length=100, blank=True)
     conditions = models.ManyToManyField(Condition, null=True, blank=True)
-
-    staff = models.ManyToManyField(Position, verbose_name=u'Кем выполняется', null=True, blank=True)
     
+    description = models.TextField(u'Дополнительное описание', blank=True)
+
     _top = {}
     _parents = {}
     

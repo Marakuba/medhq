@@ -13,8 +13,8 @@ class DelayedTask(make_operator_object('delayed_task')):
     """
     """
     id_task = models.CharField(u'ID задачи', max_length=36, blank=True)
-    attempts = models.PositiveIntegerField(u'Количество попыток', default=0)
-    next_attempt = models.DateTimeField(u'Следующая попытка', null=True, blank=True)
+    attempts = models.PositiveIntegerField(u'Повторы', default=0)
+    next_attempt = models.DateTimeField(u'След.повтор', null=True, blank=True)
     completed = models.DateTimeField(u'Выполнено', null=True, blank=True)
     type = models.CharField(u'Тип', max_length=10, choices=DELAYED_TASK_TYPES)
     content_type = models.ForeignKey(ContentType, 

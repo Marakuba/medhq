@@ -55,8 +55,8 @@ def manageable_task(operator, task_type, action, object, action_params={},
         if success:
             task_instance = subtask(success).delay(task_instance).get()
 #        print "delayed task id: %s. retries: %s" % (manageable_task.request.id, rtr)
-    except TypeError:
-        pass
+    except TypeError, err:
+        print err
     except SendError, exc:
         try:
             if retry:

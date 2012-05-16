@@ -9,6 +9,8 @@ from service.models import StandardService, BaseService
 from patient.models import Patient
 from django.http import HttpResponseRedirect
 
+handler500 = 'core.views.handler500'
+
 import reporting
 admin.autodiscover()
 reporting.autodiscover()

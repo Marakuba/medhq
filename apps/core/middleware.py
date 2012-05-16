@@ -1,6 +1,8 @@
 # -*- coding: utf-8 -*-
 
 from django.db import connection
+from django.http import HttpResponse
+import logging
 
 class SQLLogMiddleware:
 
@@ -17,3 +19,4 @@ class SQLLogMiddleware:
 #            print "--------------"
 
         return response
+    

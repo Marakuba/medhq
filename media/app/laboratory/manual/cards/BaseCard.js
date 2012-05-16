@@ -161,12 +161,14 @@ App.cards.BaseCard = Ext.extend(Ext.Window,{
 		if(this.mode=='column'){
 			
 			Ext.each(r, function(rec){
-				var result = gs.find('code',rec.get('analysis_code'));
+				var gCode = rec.get('analysis_code').split('_')[0];
+				console.info(gCode);
+				var result = gs.find('code',gCode);
 				var vals = rec.get('analysis_name').split(this.delimiter);
 				if(result==-1) {
 					var params = {
 						name:vals[0],
-						code:rec.get('analysis_code')
+						code:gCode
 					};
 					params[this.mappings[vals[1]]] = rec.get('value');
 					Ext.apply(params, this.processRow(rec, vals));

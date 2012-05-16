@@ -25,7 +25,7 @@
         <td class="original">
           {% if inline_admin_form.original or inline_admin_form.show_url %}<p>
           {% if inline_admin_form.original %} {{ inline_admin_form.original }}{% endif %}
-          {% if inline_admin_form.show_url %}<a href="{{ inline_admin_form.original.get_absolute_url }}" target=_blank>{% trans "View on site" %}</a>{% endif %}
+          {% if inline_admin_form.show_url %}<a href="{{ inline_admin_form.original.get_absolute_url }}" target=_blank>{% trans "Открыть для редактирования" %}</a>{% endif %}
             </p>{% endif %}
           {% if inline_admin_form.has_auto_field %}{{ inline_admin_form.pk_field.field }}{% endif %}
           {{ inline_admin_form.fk_field.field }}

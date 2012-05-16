@@ -79,12 +79,12 @@ App.patient.VisitGrid = Ext.extend(Ext.grid.GridPanel, {
 		    	sortable: true, 
 		    	dataIndex: 'referral_name', 
 		    	editor: new Ext.form.TextField({})
-		    },{
+		    }/*,{
 		    	header: "*", 
 		    	width: 25, 
 		    	sortable: true, 
 		    	dataIndex: 'payment_type'
-		    },{
+		    }*/,{
 		    	header: "Офис", 
 		    	width: 120, 
 		    	sortable: true, 

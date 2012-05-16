@@ -95,6 +95,7 @@ App.visit.VisitForm = Ext.extend(Ext.FormPanel, {
         	fieldLabel:'Полис ДМС',
 			anchor:'98%',
         	name:'insurance_policy',
+        	emptyText:'Выберите полис',
         	store:new Ext.data.JsonStore({
     			proxy: new Ext.data.HttpProxy({
     				url:get_api_url('insurance_policy'),
@@ -132,6 +133,7 @@ App.visit.VisitForm = Ext.extend(Ext.FormPanel, {
 			items:[{
 				flex:1,
 				layout:'form',
+				hideLabels:true,
 				items:this.policyCmb
 			},{
 				//columnWidth:0.20,
@@ -238,6 +240,7 @@ App.visit.VisitForm = Ext.extend(Ext.FormPanel, {
 			items:[{
 				flex:0.99,
 				layout:'form',
+				hideLabels:true,
 				items:this.payerCmb
 			}]			
 		});

@@ -26,7 +26,11 @@
 	{% for result in results %}
 	{% if result.class == 'group' or result.class == 'service' or result.class == 'blank'%}
 	<tr>
-		<td colspan="4" class="{{ result.class }}">{{ result.object|linebreaks }}</td>
+		<td colspan="4" class="{{ result.class }}">{{ result.object|linebreaks }}
+		{% if result.object.description %}
+			<div class="descr">{{ result.object.description|linebreaks }}</div>
+		{% endif %}
+		</td>
 	</tr>
 	{% endif %}
 	{% if result.class == 'result' %}

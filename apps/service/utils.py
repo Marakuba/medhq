@@ -69,7 +69,7 @@ def get_service_tree(state=None,payer=None,payment_type=None):
             if node:
                 tree.append(node)
             return tree 
-            
+    
     ignored = None
     args = {}
     if state:
@@ -80,8 +80,6 @@ def get_service_tree(state=None,payer=None,payment_type=None):
         args['payment_type'] = payment_type
         if payer and payment_type in [u'б',u'к']:
             args['payer'] = payer.id
-        else:
-            args.pop('payment_type')
 
     nodes = []
     values = Price.objects.filter(extended_service__is_active=True, price_type='r',**args).\

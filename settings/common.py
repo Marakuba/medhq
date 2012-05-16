@@ -20,11 +20,7 @@ LOCALE_PATHS = (PROJECT_ROOT / 'locale',)
 
 LOG_FILE = SITE_ROOT / 'logs' / 'medhq.log'
 
-DEBUG = True
-TEMPLATE_DEBUG = DEBUG
-
 ADMINS = (
-          ('TRX', '4015555@gmail.com'),
 )
 
 AUTH_PROFILE_MODULE = 'staff.Staff'
@@ -83,7 +79,8 @@ MIDDLEWARE_CLASSES = [
     'django.contrib.sessions.middleware.SessionMiddleware',
     'django.contrib.auth.middleware.AuthenticationMiddleware',
     'webapp.middleware.ActiveProfileMiddleware',
-    'reversion.middleware.RevisionMiddleware'
+    'reversion.middleware.RevisionMiddleware',
+    'raven.contrib.django.middleware.Sentry404CatchMiddleware',
 ]
 
 INSTALLED_APPS = [
@@ -146,7 +143,8 @@ INSTALLED_APPS = [
     'south',
     'reversion',
     'tastypie',
-    'tagging'
+    'tagging',
+    'raven.contrib.django',
 ]
 
 LOGGING = {
@@ -165,6 +163,10 @@ LOGGING = {
         'null': {
             'level':'DEBUG',
             'class':'django.utils.log.NullHandler',
+        },
+        'sentry': {
+            'level': 'ERROR',
+            'class': 'raven.contrib.django.handlers.SentryHandler',
         },
         'console':{
             'level':'DEBUG',
@@ -218,7 +220,12 @@ LOGGING = {
             'handlers': ['ris_file'],
             'level':'DEBUG',
             'propagate':False
-        }
+        },
+        'django.request.tastypie':{
+            'handlers': ['sentry'],
+            'level':'DEBUG',
+            'propagate':False
+        },
     }
 }
 
@@ -258,3 +265,4 @@ CONSTANCE_CONFIG = {
     'ANALYSIS_CODE_TEMPLATE':('MEDHQ.{{analysis.id}}',u'Шаблон кода анализа'),
     'LAB_SERVICE_CODE_TEMPLATE':('MEDHQ.{{labservice.id}}',u'Шаблон кода ручного исследования'),
 }
+

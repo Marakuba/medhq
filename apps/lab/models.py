@@ -155,9 +155,8 @@ class LabOrder(models.Model):
                               blank=True, null=True) 
     laboratory = models.ForeignKey(State, verbose_name=u'Лаборатория', related_name='laboratory')
     lab_group = models.ForeignKey(LabServiceGroup, blank=True, null=True)
-#    staff = models.ForeignKey(Staff, verbose_name=u'Врач', blank=True, null=True, related_name='old_staff')
     staff = models.ForeignKey(Position, verbose_name=u'Врач', blank=True, null=True, related_name='staff_pos')
-#    new_staff = models.ForeignKey(Position, verbose_name=u'Врач', blank=True, null=True, related_name='new_staff_pos')
+    staff_text = models.TextField(u'Врач (текст)', blank=True)
     executed = models.DateTimeField(u'Дата выполнения', blank=True, null=True)
     is_completed = models.BooleanField(u'Выполнен', default=False)
     is_printed = models.BooleanField(u'Печать', default=False)
@@ -397,7 +396,7 @@ class EquipmentAssay(models.Model):
     equipment_analysis = models.ForeignKey(EquipmentAnalysis, blank=True, null=True)
     name = models.CharField(u'Название', max_length=20, blank=True)
     code = models.CharField(u'Код', max_length=20)
-    def_protocol = models.TextField(u'Протокол исследования', default="")
+    def_protocol = models.TextField(u'Протокол исследования', default="", blank=True)
     is_active = models.BooleanField(u'Активно', default=True)
 
     def __unicode__(self):

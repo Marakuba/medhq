@@ -12,7 +12,8 @@ class DelayedTaskAdmin(admin.ModelAdmin):
             return o.get_info()
         else:
             return '?'
-    
-    list_display = ('id','get_info','type','id_task','attempts','next_attempt','status')
+        
+    list_filter = ('status',)    
+    list_display = ('id','get_info','created','completed','attempts','next_attempt','status')
 
 admin.site.register(DelayedTask, DelayedTaskAdmin)
