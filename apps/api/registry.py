@@ -619,7 +619,7 @@ class LabOrderResource(ExtResource):
             bundle.data['is_male'] = v.patient.gender==u'М'
             bundle.data['patient_name'] = v.patient.full_name()
             bundle.data['patient_age'] = v.patient.full_age()
-            bundle.data['lat'] = v.patient.translify_()
+            bundle.data['lat'] = v.patient.translify()
             bundle.data['operator_name'] = v.operator # -100
             bundle.data['office_name'] = v.office # -100
         bundle.data['staff_name'] = laborder.staff and laborder.staff.staff.short_name() or '' # -34
