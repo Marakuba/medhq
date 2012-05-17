@@ -18,6 +18,14 @@
 {% assets "js_ext" %}
  <script type="text/javascript" src="{{ ASSET_URL }}"></script>
 {% endassets %}
+	
+	{% assets "js_for_all" %}
+	 <script type="text/javascript" src="{{ ASSET_URL }}"></script>
+	{% endassets %}
+	
+	<script type="text/javascript">
+		Raven.config("{{sentry_dsn}}");
+	</script>
 
 {% assets "js_service" %}
     <script type="text/javascript" src="{{ ASSET_URL }}"></script>

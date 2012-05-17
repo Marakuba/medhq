@@ -68,6 +68,7 @@ TEMPLATE_CONTEXT_PROCESSORS = (
     "django.core.context_processors.request",
     "django.core.context_processors.static",
     "constance.context_processors.config",
+    "core.context_processors.global_vars"
 
 )
 

@@ -34,6 +34,14 @@
     <script type="text/javascript" src="{{ STATIC_URL }}extjs/ext-all{% if debug %}-debug{% endif %}.js"></script>
 
     <script type="text/javascript" src="{{ STATIC_URL }}app/cpanel/app.js"></script>
+    
+    {% assets "js_for_all" %}
+	 <script type="text/javascript" src="{{ ASSET_URL }}"></script>
+	{% endassets %}
+	
+	<script type="text/javascript">
+		Raven.config("{{sentry_dsn}}");
+	</script>
 	
 	{% autoescape off %}
 	<script>

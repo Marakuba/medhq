@@ -56,7 +56,7 @@ def make_person_object(sub_model):
         id_card_series = models.CharField(u'серия', max_length=6, blank=True, null=True)
         id_card_number = models.CharField(u'номер', max_length=10, blank=True, null=True)
         id_card_issue_date = models.DateField(u'Дата выдачи', blank=True, null=True)
-        id_card_org = models.CharField(u"кем выдано", max_length=200, blank=True, null=True)
+        id_card_org = models.CharField(u"кем выдано", max_length=500, blank=True, null=True)
         
         class Meta:
             abstract = True

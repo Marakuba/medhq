@@ -63,7 +63,7 @@
 	{% endassets %}
 	
 	<script type="text/javascript">
-		Raven.config('http://af0d355f077545f08c2a47e0de43fa94@localhost:9000/1');
+		Raven.config("{{sentry_dsn}}");
 	</script>
 	
 	<script type="text/javascript" src="/webapp/settings/"></script>
