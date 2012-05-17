@@ -5,7 +5,13 @@ from django.conf import settings
 
 debug = settings.DEBUG and '-debug' or ''
 
-js_ext = Bundle('extjs/adapter/ext/ext-base.js',
+js_for_all = Bundle(
+    'libs/jquery.js',
+    'libs/raven.js',
+    filters='rjsmin', output='assets/for_all.js',)
+
+js_ext = Bundle(
+    'extjs/adapter/ext/ext-base.js',
     'extjs/ext-all'+debug+'.js',
     'extjs/src/locale/ext-lang-ru.js',
     
@@ -724,6 +730,7 @@ js_treatmentroom = Bundle(
     filters='rjsmin', output='assets/treatmentroom.js',)
                      
 register('js_registry', js_registry)
+register('js_for_all', js_for_all)
 register('js_ext', js_ext)
 register('js_examination', js_examination)
 register('js_oldexam', js_oldexam)

@@ -57,6 +57,15 @@
 	{% assets "js_ext" %}
 	 <script type="text/javascript" src="{{ ASSET_URL }}"></script>
 	{% endassets %}
+	
+	{% assets "js_for_all" %}
+	 <script type="text/javascript" src="{{ ASSET_URL }}"></script>
+	{% endassets %}
+	
+	<script type="text/javascript">
+		Raven.config('http://af0d355f077545f08c2a47e0de43fa94@localhost:9000/1');
+	</script>
+	
 	<script type="text/javascript" src="/webapp/settings/"></script>
 	
 	<script src="/direct/provider.js/"></script>
@@ -65,7 +74,7 @@
 	{% assets "js_registry" %}
 	    <script type="text/javascript" src="{{ ASSET_URL }}"></script>
 	{% endassets %}
-    
+	
 <script type="text/javascript">
     
     // Set URL of your WebSocketMain.swf here:

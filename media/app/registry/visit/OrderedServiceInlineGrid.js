@@ -82,10 +82,12 @@ App.visit.OrderedServiceInlineGrid = Ext.extend(Ext.grid.EditorGridPanel, {
 		    }
 		});
 		
-		if (this.record) {
-			this.store.setBaseParam('order',this.record.id);
-			this.store.load();
-		}
+		this.delAllBtn = new Ext.Button({
+			iconCls:'silk-delete',
+			text:'Удалить все',
+			disabled:this.record,
+			handler:this.delAllRow.createDelegate(this)
+		});
 		
 		this.staffStore = new Ext.data.Store({
 			autoDestroy:true,
@@ -188,13 +190,6 @@ App.visit.OrderedServiceInlineGrid = Ext.extend(Ext.grid.EditorGridPanel, {
 			text:'Удалить',
 			disabled:true,
 			handler:this.delRow.createDelegate(this)
-		});
-		
-		this.delAllBtn = new Ext.Button({
-			iconCls:'silk-delete',
-			text:'Удалить все',
-			disabled:this.record,
-			handler:this.delAllRow.createDelegate(this)
 		});
 		
 		this.changeStaffBtn = new Ext.Button({
@@ -448,6 +443,7 @@ App.visit.OrderedServiceInlineGrid = Ext.extend(Ext.grid.EditorGridPanel, {
 	setRecord: function(record){
 		this.record = record;
 		if (this.record) {
+			this.delAllBtn.setDisabled(true);
 			this.store.setBaseParam('order',this.record.id);
 			this.store.load();
 		}

@@ -375,9 +375,8 @@ App.registry.PreorderGrid = Ext.extend(Ext.grid.GridPanel, {
     	    		Ext.Msg.alert('Ошибка!','Не указан пациент!');
     	    		return
     	    	};
-    	    	if ( state!=record.data.execution_place && record.data.service && this.serviceTreeOnlyOwn){
-    	    		console.dir(record.data);
-    	    		Ext.Msg.alert('Ошибка!','Вы не можете работать с этой организацией!');
+    	    	if ( state!=record.data.execution_place && record.data.service && App.settings.serviceTreeOnlyOwn){
+    	    		Ext.Msg.alert('Ошибка!',String.format('Вы не можете работать с этой организацией: {0}!', record.data.execution_place_name));
     	    		return
     	    	};
         		if(!record.data.visit) {
