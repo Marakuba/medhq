@@ -748,7 +748,7 @@ class ExtendedServiceResource(ModelResource):
         return bundle
     
     class Meta:
-        queryset = ExtendedService.objects.all()
+        queryset = ExtendedService.objects.all().select_related()
         resource_name = 'extendedservice'
         always_return_data = True
         filtering = {
@@ -1494,7 +1494,7 @@ class CardResource(ExtResource):
         return bundle
     
     class Meta:
-        queryset = Card.objects.all()
+        queryset = Card.objects.all().select_related()
         resource_name = 'card'
         default_format = 'application/json'
         always_return_data = True
@@ -1801,7 +1801,7 @@ class EquipmentResultReadOnlyResource(ExtBatchResource):
 class PromotionResource(ExtResource):
     discount = fields.ForeignKey(DiscountResource,'discount',null=True)
     class Meta:
-        queryset = Promotion.objects.all()
+        queryset = Promotion.objects.all().select_related()
         resource_name = 'promotion'
         authorization = DjangoAuthorization()
         filtering = {
@@ -1860,7 +1860,7 @@ class PreorderResource(ExtResource):
             'card':ALL_WITH_RELATIONS
         }
         
-class ExtPreorderResource(ExtBatchResource):
+class ExtPreorderResource(ExtResource):
     patient = fields.ForeignKey(PatientResource, 'patient', null=True)
     timeslot = fields.OneToOneField('apps.api.registry.EventResource','timeslot', null=True)
     visit = fields.OneToOneField(VisitResource,'visit',null=True)
@@ -1897,21 +1897,21 @@ class ExtPreorderResource(ExtBatchResource):
         bundle.data['patient_name'] = obj.patient and obj.patient.full_name() or u'Пациент не указан'
         bundle.data['patient_birthday'] = obj.patient and obj.patient.birth_day
         bundle.data['ptype_name'] = obj.get_payment_type_display()
-        bundle.data['execution_place'] = obj.service and obj.service.state.id
+        bundle.data['execution_place'] = obj.service and obj.service.state_id
         bundle.data['execution_place_name'] = obj.service and obj.service.state.name
         bundle.data['promotion_name'] = obj.promotion and obj.promotion.name or ''
-        bundle.data['promo_discount'] = obj.promotion and obj.promotion.discount and obj.promotion.discount.id or ''
+        bundle.data['promo_discount'] = obj.promotion and obj.promotion.discount and obj.promotion.discount_id or ''
         bundle.data['staff'] = obj.timeslot and obj.timeslot.cid
         bundle.data['staff_name'] = obj.timeslot and obj.timeslot.cid and obj.get_staff_name()
         bundle.data['price'] = obj.price or (obj.service and obj.service.get_actual_price())
         bundle.data['start'] = obj.timeslot and obj.timeslot.start
-        bundle.data['base_service'] = obj.service and obj.service.base_service.id
+        bundle.data['base_service'] = obj.service and obj.service.base_service_id
         bundle.data['patient_phone'] = obj.patient and obj.patient.mobile_phone
         bundle.data['operator_name'] = obj.operator or ''
         return bundle
     
     class Meta:
-        queryset = Preorder.objects.all().order_by('-timeslot__start')
+        queryset = Preorder.objects.all().select_related().order_by('-timeslot__start')
         resource_name = 'extpreorder'
         authorization = DjangoAuthorization()
         always_return_data = True
@@ -1979,7 +1979,7 @@ class EventResource(ExtResource):
         return bundle
     
     class Meta:
-        queryset = Event.objects.all().order_by('start')
+        queryset = Event.objects.all().select_related().order_by('start')
         resource_name = 'event'
         authorization = DjangoAuthorization()
         always_return_data = True

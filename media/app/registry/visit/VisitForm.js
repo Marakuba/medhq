@@ -33,17 +33,17 @@ App.visit.VisitForm = Ext.extend(Ext.FormPanel, {
 					}),
 			apiUrl : get_api_url('extpreorder'),
 			model: App.models.preorderModel,
-		    doTransaction : function(action, rs, batch) {
-		        function transaction(records) {
-		            try{
-		                this.execute(action, records, undefined, batch);
-		            }catch (e){
-		                this.handleException(e);
-		            }
-		        }
-		        this.batch=true;
-		        transaction.call(this, rs);
-		    }
+//		    doTransaction : function(action, rs, batch) {
+//		        function transaction(records) {
+//		            try{
+//		                this.execute(action, records, undefined, batch);
+//		            }catch (e){
+//		                this.handleException(e);
+//		            }
+//		        }
+//		        this.batch=true;
+//		        transaction.call(this, rs);
+//		    }
 		});
 		
 		this.orderedService = new App.visit.OrderedServiceInlineGrid({
@@ -55,6 +55,7 @@ App.visit.VisitForm = Ext.extend(Ext.FormPanel, {
 				basketexception:function(){
 					this.fireEvent('basketexception')
 				},
+				initcomplete:this.resetActionHistory,
 				action:this.saveAction
 			}
 		});
@@ -740,7 +741,7 @@ App.visit.VisitForm = Ext.extend(Ext.FormPanel, {
 			    width: 300,
 			    dismissDelay: 30000 // Hide after 10 seconds hover
 			});
-			this.saveAction();
+//			this.saveAction();
 		},this);
 		this.orderedService.on('sumchange', this.updateTotalSum, this);
 		this.orderedService.on('undo',this.undoAction, this);
@@ -1215,6 +1216,9 @@ App.visit.VisitForm = Ext.extend(Ext.FormPanel, {
 	},
 	
 	saveAction: function(){
+		if (this.record){
+			return false
+		}
 		this.historyTailPop();
 		var actionItem = {}
 		var services = [];
@@ -1237,7 +1241,7 @@ App.visit.VisitForm = Ext.extend(Ext.FormPanel, {
 	resetActionHistory: function(){
 		this.historyList = [];
 		this.curActionPos = -1;
-		
+		this.saveAction();
 	},
 	
 	historyTailPop: function(){

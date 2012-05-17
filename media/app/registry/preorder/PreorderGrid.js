@@ -215,7 +215,7 @@ App.registry.PreorderGrid = Ext.extend(Ext.grid.GridPanel, {
 			store:this.store,
 			columns:this.columns,
 			sm : new Ext.grid.RowSelectionModel({
-				singleSelect : this.hasPatient ? false : true,
+				singleSelect : false,
 				listeners: {
                     rowselect: function(sm, row, rec) {
                     	this.fireEvent('serviceselect', rec);
@@ -287,6 +287,7 @@ App.registry.PreorderGrid = Ext.extend(Ext.grid.GridPanel, {
 		Ext.apply(this, Ext.apply(this.initialConfig, config));
 		App.registry.PreorderGrid.superclass.initComponent.apply(this, arguments);
 		App.eventManager.on('globalsearch', this.onGlobalSearch, this);
+		App.eventManager.on('visitcreate', this.storeReload, this);
 		
 		this.store.on('write', function(){
 			var record = this.getSelected();
@@ -371,6 +372,9 @@ App.registry.PreorderGrid = Ext.extend(Ext.grid.GridPanel, {
 	        
         	var recs = new Array();
         	Ext.each(records, function(record){
+        		var today = new Date();
+        		var start_date = record.data.start.clone(); 
+        		var actual = start_date.clearTime() >= today.clearTime();
     	    	if (!record.data.patient){
     	    		Ext.Msg.alert('Ошибка!','Не указан пациент!');
     	    		return
@@ -379,7 +383,7 @@ App.registry.PreorderGrid = Ext.extend(Ext.grid.GridPanel, {
     	    		Ext.Msg.alert('Ошибка!',String.format('Вы не можете работать с этой организацией: {0}!', record.data.execution_place_name));
     	    		return
     	    	};
-        		if(!record.data.visit) {
+        		if(!record.data.visit && actual) {
         			recs.push(record);
         		}
         	}, this);
