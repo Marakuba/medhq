@@ -194,7 +194,6 @@ class ExtBatchResource(ExtResource):
             
         bundles = []
         for d in deserialized:
-    
             bundle = self.build_bundle(data=dict_strip_unicode_keys(d), request=request)
             self.is_valid(bundle, request)
     
@@ -213,5 +212,5 @@ class ExtBatchResource(ExtResource):
             return http.HttpNoContent()
         else:
             bundles = self.alter_detail_data_to_serialize(request, bundles)
-            return self.create_response(request, updated_bundle, response_class=http.HttpAccepted)
+            return self.create_response(request, bundles, response_class=http.HttpAccepted)
 
