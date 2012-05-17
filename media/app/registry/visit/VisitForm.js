@@ -33,17 +33,17 @@ App.visit.VisitForm = Ext.extend(Ext.FormPanel, {
 					}),
 			apiUrl : get_api_url('extpreorder'),
 			model: App.models.preorderModel,
-		    doTransaction : function(action, rs, batch) {
-		        function transaction(records) {
-		            try{
-		                this.execute(action, records, undefined, batch);
-		            }catch (e){
-		                this.handleException(e);
-		            }
-		        }
-		        this.batch=true;
-		        transaction.call(this, rs);
-		    }
+//		    doTransaction : function(action, rs, batch) {
+//		        function transaction(records) {
+//		            try{
+//		                this.execute(action, records, undefined, batch);
+//		            }catch (e){
+//		                this.handleException(e);
+//		            }
+//		        }
+//		        this.batch=true;
+//		        transaction.call(this, rs);
+//		    }
 		});
 		
 		this.orderedService = new App.visit.OrderedServiceInlineGrid({

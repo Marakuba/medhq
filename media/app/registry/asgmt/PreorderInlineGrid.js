@@ -51,17 +51,17 @@ App.assignment.PreorderInlineGrid = Ext.extend(Ext.grid.EditorGridPanel, {
 		    	},
 		    	scope:this
 		    },
-		    doTransaction : function(action, rs, batch) {
-		        function transaction(records) {
-		            try{
-		                this.execute(action, records, undefined, batch);
-		            }catch (e){
-		                this.handleException(e);
-		            }
-		        }
-		        this.batch=true;
-		        transaction.call(this, rs);
-		    }
+//		    doTransaction : function(action, rs, batch) {
+//		        function transaction(records) {
+//		            try{
+//		                this.execute(action, records, undefined, batch);
+//		            }catch (e){
+//		                this.handleException(e);
+//		            }
+//		        }
+//		        this.batch=true;
+//		        transaction.call(this, rs);
+//		    }
 		});
 		
 		this.serviceStore = new Ext.data.Store({
