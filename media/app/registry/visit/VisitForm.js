@@ -1216,6 +1216,9 @@ App.visit.VisitForm = Ext.extend(Ext.FormPanel, {
 	},
 	
 	saveAction: function(){
+		if (this.record){
+			return false
+		}
 		this.historyTailPop();
 		var actionItem = {}
 		var services = [];
