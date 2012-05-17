@@ -55,6 +55,7 @@ App.visit.VisitForm = Ext.extend(Ext.FormPanel, {
 				basketexception:function(){
 					this.fireEvent('basketexception')
 				},
+				initcomplete:this.resetActionHistory,
 				action:this.saveAction
 			}
 		});
@@ -740,7 +741,7 @@ App.visit.VisitForm = Ext.extend(Ext.FormPanel, {
 			    width: 300,
 			    dismissDelay: 30000 // Hide after 10 seconds hover
 			});
-			this.saveAction();
+//			this.saveAction();
 		},this);
 		this.orderedService.on('sumchange', this.updateTotalSum, this);
 		this.orderedService.on('undo',this.undoAction, this);
@@ -1237,7 +1238,7 @@ App.visit.VisitForm = Ext.extend(Ext.FormPanel, {
 	resetActionHistory: function(){
 		this.historyList = [];
 		this.curActionPos = -1;
-		
+		this.saveAction();
 	},
 	
 	historyTailPop: function(){

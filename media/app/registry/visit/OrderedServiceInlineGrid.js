@@ -445,7 +445,9 @@ App.visit.OrderedServiceInlineGrid = Ext.extend(Ext.grid.EditorGridPanel, {
 		if (this.record) {
 			this.delAllBtn.setDisabled(true);
 			this.store.setBaseParam('order',this.record.id);
-			this.store.load();
+			this.store.load({callback:function(records){
+				this.fireEvent('initcomplete');
+			},scope:this});
 		}
 	}
 	
