@@ -200,7 +200,11 @@ App.orderedservice.RemoteOrderGrid = Ext.extend(Ext.grid.GridPanel, {
 		}
 
 		this.on('afterrender',function(){
-			this.store.load();
+			if (this.searchValue){
+				this.onGlobalSearch(this.searchValue)
+			} else {
+				this.store.load();
+			}
 		},this);
 
 		this.on('destroy', function(){
