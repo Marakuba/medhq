@@ -14,6 +14,8 @@ from django.db.models.aggregates import Count
 from collections import defaultdict
 import operator
 from remoting.views import post_results
+from direct.providers import remote_provider
+from extdirect.django.decorators import remoting
 
 from direct.providers import remote_provider
 from extdirect.django.decorators import remoting
@@ -23,6 +25,21 @@ from taskmanager.tasks import manageable_task, SendError
 from urllib2 import URLError
 
 logger = logging.getLogger('lab.models')
+
+@remoting(remote_provider, len=1, action='lab', name='getPatientInfo')
+def get_patient_info(request):
+    data = simplejson.loads(request.raw_post_data)
+    order_id = data['data'][0]
+    laborder = LabOrder.objects.get(id=order_id)
+    patient = laborder.visit.patient
+    data = {
+        'last_name':patient.last_name,
+        'first_name':patient.first_name,
+        'mid_name':patient.mid_name,
+        'birth_day':patient.birth_day,
+        'gender':patient.gender,
+    }
+    return dict(success=True, data=data)
 
 @render_to('print/lab/register.html')
 def print_register(request):
