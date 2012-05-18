@@ -9,9 +9,11 @@ App.orderedservice.Orders = Ext.extend(Ext.TabPanel, {
 			tabPosition:'bottom',
 			activeItem:this.activeItem || 0,
 			items:[{
-				xtype:'localordergrid'
+				xtype:'localordergrid',
+				searchValue:this.searchValue
 			},{
-				xtype:'remoteordergrid'
+				xtype:'remoteordergrid',
+				searchValue:this.searchValue
 			}]
 		}
 		Ext.apply(this, Ext.apply(this.initialConfig, config));
