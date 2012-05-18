@@ -3,6 +3,9 @@ Ext.ns('App.orderedservice');
 App.orderedservice.Orders = Ext.extend(Ext.TabPanel, {
 
 	initComponent : function() {
+		
+		this.origTitle = 'Заказы';
+		
 		config = {
 			closable:true,
 			title:'Заказы',
@@ -18,6 +21,10 @@ App.orderedservice.Orders = Ext.extend(Ext.TabPanel, {
 		}
 		Ext.apply(this, Ext.apply(this.initialConfig, config));
 		App.orderedservice.Orders.superclass.initComponent.apply(this, arguments);
+		
+		this.on('afterrender',function(){
+			this.getItem(this.activeItem)
+		},this)
 	}
 });
 

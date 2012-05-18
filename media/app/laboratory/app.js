@@ -57,6 +57,15 @@ Ext.onReady(function(){
 	    stopEvent: true
 	});
 	
+	new Ext.KeyMap(document, {
+	    key: Ext.EventObject.F7,
+	    handler: function(){ 
+	    	centralPanel.openScannerWindow();
+	    },
+	    scope: this,
+	    stopEvent: true
+	});
+	
 	centralPanel.launchApp('labboard');
 	centralPanel.launchApp('manualgrid',{},false);
 

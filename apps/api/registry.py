@@ -1094,6 +1094,7 @@ class LabOrderedServiceResource(OrderedServiceResource):
             'sampling': ALL_WITH_RELATIONS,
             'service' : ALL_WITH_RELATIONS,
             'status' : ALL,
+            'created' : ALL,
             'execution_place' : ALL_WITH_RELATIONS
         }
         

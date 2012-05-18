@@ -4,6 +4,8 @@ App.equipment.EquipmentTaskGrid = Ext.extend(Ext.grid.EditorGridPanel, {
 
 	initComponent : function() {
 		
+		this.origTitle = 'Задания';
+		
 		this.model = new Ext.data.Record.create([
 			{name: 'id'},
 			{name: 'resource_uri'},
@@ -29,6 +31,8 @@ App.equipment.EquipmentTaskGrid = Ext.extend(Ext.grid.EditorGridPanel, {
 		});
 		
 		this.store.on('save',this.onStoreSave, this);
+		
+		this.store.on('load',this.onStoreLoad,this);
 		
 		this.columns =  [
 		    {
@@ -111,7 +115,7 @@ App.equipment.EquipmentTaskGrid = Ext.extend(Ext.grid.EditorGridPanel, {
 		
 		var config = {
 			id:'equipment-task-grid',
-			title:'Задания',
+			title:this.origTitle,
 			loadMask : {
 				msg : 'Подождите, идет загрузка...'
 			},
@@ -192,6 +196,11 @@ App.equipment.EquipmentTaskGrid = Ext.extend(Ext.grid.EditorGridPanel, {
 			}
 		},this);
 		
+		this.on('beforedestroy', function(){
+			this.store.un('load',this.onStoreLoad,this);
+			this.store.un('save',this.onStoreSave, this);
+		},this);
+		
 		this.on('destroy', function(){
 			App.eventManager.un('globalsearch', this.onGlobalSearch, this);
 		},this);
@@ -203,7 +212,12 @@ App.equipment.EquipmentTaskGrid = Ext.extend(Ext.grid.EditorGridPanel, {
 	},
 	
 	onGlobalSearch: function(v){
-		this.storeFilter('search', v)
+		this.changeTitle = v!==undefined;
+		if(!v){
+			this.setTitle(this.origTitle);
+		} else {
+			this.storeFilter('search', v);
+		}
 	},
 	
 	storeFilter: function(field, value){
@@ -219,6 +233,11 @@ App.equipment.EquipmentTaskGrid = Ext.extend(Ext.grid.EditorGridPanel, {
 		return this.getSelectionModel().getSelected()
 	},
 	
+	onStoreLoad : function(store,r,options){
+		if(this.changeTitle){
+			this.setTitle(String.format('{0} ({1})', this.origTitle, r.length));
+		}
+	}
 	
 });
 
