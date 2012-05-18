@@ -93,6 +93,7 @@ App.laboratory.LabOrderGrid = Ext.extend(Ext.grid.GridPanel, {
 				text:'Фильтр',
 				handler:function(){
 					this.searchWin = new App.laboratory.SearchWindow({
+						filterKey: 'lab-order-filters',
 						store:this.store,
 						fields:this.fields
 					});
@@ -136,7 +137,7 @@ App.laboratory.LabOrderGrid = Ext.extend(Ext.grid.GridPanel, {
 		}); 
 		
 		this.filterText = new Ext.Toolbar.TextItem({
-			text:'Фильтры не используются',
+			text:'Фильтры не используются'
 		});
 		
 		var config = {
@@ -276,7 +277,7 @@ App.laboratory.LabOrderGrid = Ext.extend(Ext.grid.GridPanel, {
 				Ext.each(jsonResponse.objects, function(item,i){
 					items.push({
 						filterValue:item.id,
-						text:item.name,
+						text:item.name
 					});
 				}, this);
 				this.ttb.add(new Ext.CycleButton({

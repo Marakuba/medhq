@@ -4,6 +4,8 @@ Ext.ns('App.laboratory');
 App.laboratory.SearchWindow = Ext.extend(Ext.Window, {
 	initComponent: function(){
 		
+		this.filterKey = this.filterKey || 'filters'
+		
 		this.form = new Ext.form.FormPanel({
 			border:false,
 			baseCls:'x-plain',
@@ -147,13 +149,13 @@ App.laboratory.SearchWindow = Ext.extend(Ext.Window, {
 					this.close();
 				},
 				scope:this
-			}],
+			}]
 		}
 		Ext.apply(this, Ext.apply(this.initialConfig, config));
 		App.laboratory.SearchWindow.superclass.initComponent.apply(this, arguments);
 		
 		this.on('afterrender', function(){
-			var v = Ext.state.Manager.getProvider().get('lab-order-filters');
+			var v = Ext.state.Manager.getProvider().get(this.filterKey);
 			this.filtersConfig = v || {};
 			var f = this.form.getForm();
 			for(k in this.filtersConfig) {
@@ -193,7 +195,7 @@ App.laboratory.SearchWindow = Ext.extend(Ext.Window, {
 				delete this.filtersConfig[field[0]];
 			}
 		}, this);
-		Ext.state.Manager.getProvider().set('lab-order-filters', this.filtersConfig);
+		Ext.state.Manager.getProvider().set(this.filterKey, this.filtersConfig);
 		this.fireEvent('updatefilters', this.filtersConfig);
 		this.store.load({
 			callback:function(r) {
@@ -211,7 +213,7 @@ App.laboratory.SearchWindow = Ext.extend(Ext.Window, {
 		}, this);
 		this.store.load();		
 		this.filtersConfig = {};
-		Ext.state.Manager.getProvider().set('lab-order-filters', this.filtersConfig);
+		Ext.state.Manager.getProvider().set(this.filterKey, this.filtersConfig);
 		this.fireEvent('updatefilters', this.filtersConfig);
 		this.close();
 	}

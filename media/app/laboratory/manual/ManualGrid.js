@@ -6,6 +6,19 @@ App.manual.ManualGrid = Ext.extend(Ext.grid.GridPanel, {
 		
 		this.origTitle = 'Ручные исследования';
 		
+		this.fields = [
+  		    ['start_date','order__created__gte','Дата с','Y-m-d 00:00'],
+  		    ['end_date','order__created__lte','по','Y-m-d 23:59'],
+ 		    ['office','order__office','Офис'],
+  		    ['laboratory','laboratory','Лаборатория'],
+  		    ['staff','staff','Врач'],
+  		    ['patient','order__patient','Пациент']
+  		];
+  		
+  		this.filterText = new Ext.Toolbar.TextItem({
+			text:'Фильтры не используются'
+		});
+		
 		this.store = new Ext.data.RESTStore({
 			autoSave : true,
 			autoLoad : true,
@@ -61,7 +74,27 @@ App.manual.ManualGrid = Ext.extend(Ext.grid.GridPanel, {
 		});
 		
 		this.ttb = new Ext.Toolbar({ 
-			items:[this.dateField, this.timeField, {
+			items:[{
+				text:'Фильтр',
+				handler:function(){
+					this.searchWin = new App.laboratory.SearchWindow({
+						store:this.store,
+						fields:this.fields,
+						filterKey: 'lab-service-filters'
+					});
+					this.searchWin.on('updatefilters', this.updateFilterStatus, this);
+					this.searchWin.show(this.getEl());
+				},
+				scope:this
+			},{
+				iconCls:'icon-clear-left',
+				handler:function(){
+					Ext.state.Manager.getProvider().set('lab-service-filters', {});
+					this.updateFilters({});
+				},
+				hidden:true,
+				scope:this
+			},'-',this.dateField, this.timeField, {
 					iconCls:'silk-date-go',
 					tooltip:'Устанавливает текущую дату и время',
 					handler:this.setDateTime.createDelegate(this),
@@ -159,11 +192,12 @@ App.manual.ManualGrid = Ext.extend(Ext.grid.GridPanel, {
 			}),
 			tbar:this.ttb,
 			bbar: new Ext.PagingToolbar({
-	            pageSize: 50,
+	            pageSize: 100,
 	            store: this.store,
 	            displayInfo: true,
 	            displayMsg: '{0} - {1} | {2}',
-	            emptyMsg: "Нет записей"
+	            emptyMsg: "Нет записей",
+	            items:['-',this.filterText]
 	        }),
 			listeners: {
 				rowdblclick:function(grid,i,e){
@@ -195,6 +229,11 @@ App.manual.ManualGrid = Ext.extend(Ext.grid.GridPanel, {
 		App.eventManager.on('globalsearch', this.onGlobalSearch, this);
 		
 		this.store.on('load',this.onStoreLoad,this);
+		
+		this.on('afterrender', function() {
+			var filters = Ext.state.Manager.getProvider().get('lab-service-filters');
+			this.updateFilters(filters);
+		}, this);
 		
 		this.on('beforedestroy', function(){
 			this.store.un('load',this.onStoreLoad,this);
@@ -294,6 +333,33 @@ App.manual.ManualGrid = Ext.extend(Ext.grid.GridPanel, {
 		if(this.changeTitle){
 			this.setTitle(String.format('{0} ({1})', this.origTitle, r.length));
 		}
+	},
+	
+	updateFilterStatus : function(filters) {
+		var filtersText = [];
+		Ext.each(this.fields, function(field){
+			if(filters[field[0]]) {
+				filtersText.push(String.format("{0}: {1}", field[2], filters[field[0]][1]));
+			}
+		}, this);
+		this.filterText[filtersText.length ? 'addClass' : 'removeClass']('x-filters-enabled');
+		this.filterText.setText(filtersText.length ? String.format('{0}',filtersText.join(' ')) : 'Фильтры не используются');
+		this.getTopToolbar().items.itemAt(1).setVisible(filtersText.length>0);
+	},
+	
+	updateFilters : function(filters) {
+		this.fireEvent('updatefilters');
+		if(filters) {
+			Ext.each(this.fields, function(field){
+				if(filters[field[0]]) {
+					this.storeFilter(field[1], filters[field[0]][0], false);
+				} else {
+					delete this.store.baseParams[field[1]];
+				}
+			}, this);
+			this.updateFilterStatus(filters);
+		}
+		this.store.load();
 	}
 	
 	

@@ -5,7 +5,7 @@ App.laboratory.LabBoard = Ext.extend(Ext.Panel, {
 	
 	initComponent: function() {
 		
-		this.origTitle = 'Задания';
+		this.origTitle = 'Заказы';
 		
 		this.LabOrderGrid = new App.laboratory.LabOrderGrid({
 			id:'lab-order-grid',
