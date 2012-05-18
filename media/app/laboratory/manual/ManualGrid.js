@@ -4,6 +4,8 @@ App.manual.ManualGrid = Ext.extend(Ext.grid.GridPanel, {
 
 	initComponent : function() {
 		
+		this.origTitle = 'Ручные исследования';
+		
 		this.store = new Ext.data.RESTStore({
 			autoSave : true,
 			autoLoad : true,
@@ -110,28 +112,28 @@ App.manual.ManualGrid = Ext.extend(Ext.grid.GridPanel, {
 	    },{
 	    	header: "Наименование исследования", 
 	    	width: 50,
-	    	dataIndex: 'service_name',
+	    	dataIndex: 'service_name'
 	    },{
 	    	header: "Офис", 
 	    	width: 15,
-	    	dataIndex: 'office_name',
+	    	dataIndex: 'office_name'
 	    },{
 	    	header: "Лаборатория", 
 	    	width: 15,
-	    	dataIndex: 'laboratory',
+	    	dataIndex: 'laboratory'
 	    },{
 	    	header: "Врач", 
 	    	width: 20,
-	    	dataIndex: 'staff_name',
+	    	dataIndex: 'staff_name'
 	    },{
 	    	header: "Оператор", 
 	    	width: 15,
-	    	dataIndex: 'operator_name',
+	    	dataIndex: 'operator_name'
 	    }];		
 		
 		var config = {
 			id:'manual-service-grid',
-			title:'Ручные исследования',
+			title:this.origTitle,
 			loadMask : {
 				msg : 'Подождите, идет загрузка...'
 			},
@@ -181,6 +183,12 @@ App.manual.ManualGrid = Ext.extend(Ext.grid.GridPanel, {
 		Ext.apply(this, Ext.apply(this.initialConfig, config));
 		App.manual.ManualGrid.superclass.initComponent.apply(this, arguments);
 		App.eventManager.on('globalsearch', this.onGlobalSearch, this);
+		
+		this.store.on('load',this.onStoreLoad,this);
+		
+		this.on('beforedestroy', function(){
+			this.store.un('load',this.onStoreLoad,this);
+		},this);
 		
 		this.on('destroy', function(){
 		    App.eventManager.un('globalsearch', this.onGlobalSearch, this); 
@@ -257,14 +265,26 @@ App.manual.ManualGrid = Ext.extend(Ext.grid.GridPanel, {
 	},
 	
 	onGlobalSearch: function(v){
-		var s = this.store;
-		s.setBaseParam('search', v);
-		s.load();
+		
+		this.changeTitle = v!==undefined;
+		if(!v){
+			this.setTitle(this.origTitle);
+		} else {
+			var s = this.store;
+			s.setBaseParam('search', v);
+			s.load();
+		}
 	},
 	
 	getSelected: function() {
 		return this.getSelectionModel().getSelected()
 	},
+	
+	onStoreLoad : function(store,r,options){
+		if(this.changeTitle){
+			this.setTitle(String.format('{0} ({1})', this.origTitle, r.length));
+		}
+	}
 	
 	
 });

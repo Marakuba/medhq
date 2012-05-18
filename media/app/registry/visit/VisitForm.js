@@ -1220,7 +1220,7 @@ App.visit.VisitForm = Ext.extend(Ext.FormPanel, {
 			return false
 		}
 		this.historyTailPop();
-		var actionItem = {}
+		var actionItem = {};
 		var services = [];
 		this.orderedService.store.each(function(record){
 			var p = new this.orderedService.store.recordType()

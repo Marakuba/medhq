@@ -100,10 +100,7 @@ App.CentralPanel = Ext.extend(Ext.Panel, {
             	},
             	items:[{
             		text:'Проверка образца',
-            		handler:function(btn){
-            			var win = new App.laboratory.ScannerWindow();
-            			win.show(btn);
-            		}
+            		handler:this.openScannerWindow
             	},{
             		text:'Задания',
             		scale:'medium',
@@ -231,6 +228,11 @@ App.CentralPanel = Ext.extend(Ext.Panel, {
 	
 	onGlobalSearch: function(val){
 		this.searchValue = val;
+	},
+	
+	openScannerWindow: function(){
+		var win = new App.laboratory.ScannerWindow();
+		win.show();
 	}
 });
 
