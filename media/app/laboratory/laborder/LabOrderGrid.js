@@ -151,11 +151,14 @@ App.laboratory.LabOrderGrid = Ext.extend(Ext.grid.GridPanel, {
 			sm : new Ext.grid.RowSelectionModel({
 				singleSelect : true,
 				listeners: {
-					rowselect: function(sm, i, rec) {
-//						this.printBtn.enable();
-//						this.openBtn.enable();
-					},
-					scope:this
+					rowselect: function(sm, row, rec) {
+                    	this.stopSelection = true;
+                    	this.fireEvent('orderselect', rec);
+                    },
+                    rowdeselect: function(sm, row, rec) {
+                    	this.fireEvent('orderdeselect', rec);
+                    },
+                    scope:this
 				}
 			}),
 	        tbar:this.ttb,
@@ -177,7 +180,15 @@ App.laboratory.LabOrderGrid = Ext.extend(Ext.grid.GridPanel, {
 		            var c = record.get('is_completed');
 		            return c ? 'x-lab-complete' : 'x-lab-incomplete';
 		        }
-			})			
+			}),
+			listeners:{
+				scope:this,
+				rowclick:{
+					fn:this.onServiceClick.createDelegate(this),
+					buffer:300,
+					scope:this
+				}
+			}
 		}
 
 		Ext.apply(this, Ext.apply(this.initialConfig, config));
@@ -188,6 +199,16 @@ App.laboratory.LabOrderGrid = Ext.extend(Ext.grid.GridPanel, {
 			var filters = Ext.state.Manager.getProvider().get('lab-order-filters');
 			this.updateFilters(filters);
 		}, this);
+	},
+	
+	onServiceClick : function(grid,rowIndex,e){
+		var rec = grid.getStore().getAt(rowIndex);
+		var sel_rec = this.getSelectionModel().getSelected();
+		if(!this.stopSelection){
+        	this.fireEvent('orderselect', rec);
+		} else {
+			this.stopSelection = false;
+		}
 	},
 	
 	printBarcode : function(){

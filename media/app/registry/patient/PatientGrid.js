@@ -88,7 +88,6 @@ App.patient.PatientGrid = Ext.extend(Ext.grid.GridPanel, {
 				singleSelect : true,
 				listeners: {
                     rowselect: function(sm, row, rec) {
-                    	console.info('selected',rec);
                     	this.stopSelection = true;
                     	this.fireEvent('patientselect', rec);
 //                        Ext.getCmp("patient-quick-form").getForm().loadRecord(rec);

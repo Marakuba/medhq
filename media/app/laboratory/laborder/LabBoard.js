@@ -11,7 +11,14 @@ App.laboratory.LabBoard = Ext.extend(Ext.Panel, {
 			id:'lab-order-grid',
 			region:'west',
 			split:true,
-			width:510
+			width:510,
+			listeners:{
+				scope:this,
+				orderselect: function(rec){
+					this.ResultCard.enable();
+					this.ResultCard.setActiveRecord(rec);
+				}
+			}
 		});
 
 		this.ResultCard = new App.result.ResultCard({
@@ -37,10 +44,10 @@ App.laboratory.LabBoard = Ext.extend(Ext.Panel, {
 		    App.eventManager.un('globalsearch', this.onGlobalSearch, this); 
 		},this);
 		
-		this.LabOrderGrid.getSelectionModel().on('rowselect', function(sm,i,rec){
-			this.ResultCard.enable();
-			this.ResultCard.setActiveRecord(rec);
-		}, this);
+//		this.LabOrderGrid.getSelectionModel().on('rowclick', function(sm,i,rec){
+//			this.ResultCard.enable();
+//			this.ResultCard.setActiveRecord(rec);
+//		}, this);
 		
 		this.LabOrderGrid.on('updatefilters', function(){
 			this.ResultCard.disable();
