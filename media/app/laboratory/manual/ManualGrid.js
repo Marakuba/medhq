@@ -21,7 +21,7 @@ App.manual.ManualGrid = Ext.extend(Ext.grid.GridPanel, {
 		
 		this.store = new Ext.data.RESTStore({
 			autoSave : true,
-			autoLoad : true,
+			autoLoad : false,
 			apiUrl : get_api_url('labservice'),
 			model: App.models.LabService
 		});
@@ -304,13 +304,16 @@ App.manual.ManualGrid = Ext.extend(Ext.grid.GridPanel, {
 		this.enable();
 	},*/
 	
-	storeFilter: function(field, value){
-		if(!value) {
+	storeFilter: function(field, value, autoLoad){
+		var autoLoad = autoLoad==undefined ? true : autoLoad;
+		if(value==undefined) {
 			delete this.store.baseParams[field]
 		} else {
 			this.store.setBaseParam(field, value);
 		}
-		this.store.load();
+		if (autoLoad) {
+			this.store.load();
+		}
 	},
 	
 	onGlobalSearch: function(v){
