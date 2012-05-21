@@ -412,7 +412,7 @@ class EquipmentAssay(models.Model):
     is_active = models.BooleanField(u'Активно', default=True)
 
     def __unicode__(self):
-        return smart_unicode( u"%s" % self.equipment_analysis )
+        return smart_unicode( u"%s [%s]" % (self.equipment_analysis,self.equipment) )
     
     class Meta:
         verbose_name = u'аппаратное исследование'

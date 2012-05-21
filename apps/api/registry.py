@@ -1146,6 +1146,7 @@ class LabServiceResource(ExtResource):
         filtering = {
             'created': ALL_WITH_RELATIONS,
             'order': ALL_WITH_RELATIONS,
+            'staff': ALL_WITH_RELATIONS,
         }
         
         

@@ -500,6 +500,7 @@ App.patient.AsgmtGrid = Ext.extend(Ext.grid.EditorGridPanel, {
 					s.each(function(rec){
 						idList.push(rec.id);
 					});
+					console.info(idList);
 					var win = new App.patient.AsgmtListWindow({
 						idList:idList.join(",")
 					});

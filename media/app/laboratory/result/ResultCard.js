@@ -5,6 +5,32 @@ App.result.ResultCard = Ext.extend(Ext.Panel, {
 	
 	initComponent: function(){
 		
+		this.infoTpl = new Ext.XTemplate(
+			'<h1>',
+				'<span id="last_name" class = "last_name">{last_name}</span>',
+				' ','<span id="first_name" class="first_name">{first_name}</span>',
+				' ', '<span id="mid_name" class="mid_name">{mid_name}</span>',
+			'</h1> ',
+			'<div>',
+				'Дата рождения: ','<span id="birth_day" class="birth_day">{birth_day:this.parseDate}</span>',
+				'<br>',
+				' Возраст: <span id="age" class="age">{age}</span>',
+				'<br>',
+				' Пол: <span id="gender" class="gender">{gender}</span>',
+			'</div> ',
+			'<div>',
+				'<span>{order_info}</span> ',
+			'</div>',
+			{
+				parseDate : function(v){
+					return Ext.util.Format.date(v,'d.m.Y')
+				},
+				
+				nullFormatter: function(v) 
+		    		{ return v ? v : 'не указано'; }
+			}
+		),
+		
 		this.dateField = new Ext.form.DateField({
 			emptyText:'дата',
 			plugins:[new Ext.ux.netbox.InputTextMask('99.99.9999')], // маска ввода __.__._____ - не надо точки ставить
@@ -155,13 +181,12 @@ App.result.ResultCard = Ext.extend(Ext.Panel, {
 			title:'Результаты',
 			layout:'fit',
 			tbar:this.ttb,
-/*			tools:[{
+			tools:[{
 				id:'help',
-				handler:function(){
-				},
+				handler:this.showPatientInfo.createDelegate(this,[]),
 				scope:this,
-				qtip:'Посмотреть информацию о работе с данным разделом'
-			}],*/
+				qtip:'Посмотреть информацию о пациенте'
+			}],
 			items:new Ext.TabPanel({
 				border:false,
 				tabPosition:'bottom',
@@ -276,6 +301,39 @@ App.result.ResultCard = Ext.extend(Ext.Panel, {
 		var id = this.getSelected().data.id;
 		var url = ['/lab/print/results',id,''].join('/');
 		window.open(url);
+	},
+	
+	showPatientInfo: function(){
+		var rec = this.labOrderRecord;
+		App.direct.lab.getPatientInfo(rec.id, function(res,e){
+			var data = res.data;
+			Ext.apply(data,{
+				'age':rec.data.patient_age,
+				'order_info': rec.data.info
+				});
+			this.infoTpl.apply(data);
+			var infoPanel = new Ext.Panel({
+				frame: false,
+				border:false,
+		    	html:'dsf',
+		    	bodyBorder: false,
+		    	bodyStyle: 'background:transparent'
+		    });
+			var patientInfoWin = new Ext.Window({
+				modal:true,
+				layout:'form',
+				height:300,
+				width:300,
+				closable:true,
+				items:[
+					infoPanel
+				]
+			});
+			patientInfoWin.show();
+			this.infoTpl.overwrite(infoPanel.body,data);
+		},this)
+		
+		
 	}
 
 

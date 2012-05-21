@@ -46,10 +46,11 @@ def card(request, object_id):
     field_sets = dict([(fs.name, fs.title) for fs in FieldSet.objects.all()]) 
     data = card.data and simplejson.loads(card.data) or []
     for d in data:
-        for t in d['tickets']:
-            if t['private'] == True:
-                d['tickets'].remove(t)
-        d['title'] = field_sets[d['section']]
+        if 'section' in d:
+            for t in d['tickets']:
+                if t['private'] == True:
+                    d['tickets'].remove(t)
+            d['title'] = field_sets[d['section']]
     
     ctx = {
         'card':card,
