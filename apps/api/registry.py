@@ -962,7 +962,7 @@ class SamplingResource(ExtResource):
 
     def dehydrate(self, bundle):
         bundle.data['tube_type'] = bundle.obj.tube
-        bundle.data['services'] = [item.service.__unicode__() for item in bundle.obj.get_services()]
+#        bundle.data['services'] = [item.service.__unicode__() for item in bundle.obj.get_services()]
         return bundle
     
     class Meta:

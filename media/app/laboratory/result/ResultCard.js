@@ -234,7 +234,21 @@ App.result.ResultCard = Ext.extend(Ext.Panel, {
 		params = {
 			order:this.labOrderRecord.id
 		}
-		Ext.Ajax.request({
+		App.direct.lab.confirmResults(this.labOrderRecord.id, function(r, e){
+			this.ResultGrid.store.reload();
+			if(r.success) {
+				this.labOrderRecord.set('is_completed',true);
+				Ext.ux.Growl.notify({
+			        title: "Успешная операция!", 
+			        message: r.message,
+			        iconCls: "x-growl-accept",
+			        alignment: "tr-tr",
+			        offset: [-10, 10]
+			    })
+			}
+		}, this);
+		
+/*		Ext.Ajax.request({
 			url:'/lab/confirm_results/',
 			params:params,
 			method:'POST',
@@ -255,7 +269,7 @@ App.result.ResultCard = Ext.extend(Ext.Panel, {
 			failure: function(response, opts) {
 			},
 			scope:this
-		});
+		});*/
 	},
 	
 	onPrint: function() {

@@ -15,9 +15,13 @@ from collections import defaultdict
 import operator
 from remoting.views import post_results
 
+from direct.providers import remote_provider
+from extdirect.django.decorators import remoting
+
 import logging
 from taskmanager.tasks import manageable_task, SendError
 from urllib2 import URLError
+
 logger = logging.getLogger('lab.models')
 
 @render_to('print/lab/register.html')
@@ -138,8 +142,8 @@ def print_results(request, order):
             'results':result_list,
             'preview':preview,
     }
-    
-    return render_to_response(["print/lab/results_state_%s.html" % request.active_profile.state,"print/lab/results.html"],
+    template = order.lab_group.template or "print/lab/results.html"
+    return render_to_response(["print/lab/results_state_%s.html" % request.active_profile.state,template],
                               ec,
                               context_instance=RequestContext(request))
 
@@ -264,56 +268,47 @@ def router(object, task_type, **kwargs):
     if task_type=='remote':
         confirm = 'confirm' in kwargs and kwargs['confirm'] or False
         try:
-            post_results(object, confirm)
+            post_results(object)
         except Exception, err:
             raise SendError(err)
 
+@remoting(remote_provider, len=1, action='lab', name='confirmResults')
 def confirm_results(request):
     """
     """
-    if request.method=='POST':
-        lab_order = request.POST.get('order', None)
-        if lab_order:
-            lab_order = get_object_or_404(LabOrder, id=lab_order)
-            Result.objects.filter(analysis__service__labservice__is_manual=False, order=lab_order, validation=0).delete()
-            Result.objects.filter(order=lab_order, validation=-1).update(validation=1)
-            lab_order.is_completed = True
-            for result in lab_order.result_set.all():
-                if not result.is_completed():
-                    lab_order.is_completed = False
-                    break
-            lab_order.save()
-            msg = lab_order.is_completed and u'Лабораторный ордер подтвержден' or u'Присутствуют пустые значения. Лабораторный ордер не подтвержден'
-            if lab_order.is_completed:
-                try:
-                    state = lab_order.visit.office.remotestate
-                    all_lab_orders = lab_order.visit.laborder_set.all()
-                    confirm = True
-                    for l in all_lab_orders:
-                        if not l.is_completed:
-                            confirm = False
-                            break
-                    logger.debug(u"LAB: Подтверждение всех ордеров: %s" % confirm)
-                    
-                    action_params = {
-                        'confirm':confirm
-                    }
-                    print "start delayed task"
-                    manageable_task.delay(operator=request.user, 
-                                          task_type='remote', 
-                                          action=router, 
-                                          object=lab_order, 
-                                          action_params=action_params,
-                                          task_params={'countdown':20})
+    data = simplejson.loads(request.raw_post_data)
+    laborder_id = data['data'][0]
+    success = True
+    try:
+        lab_order = LabOrder.objects.get(id=laborder_id)
+    except:
+        return dict(success=False, message="Laborder %s not found" % laborder_id)
+    
+    lab_order.confirm_results()
+    
+    msg = lab_order.is_completed and u'Лабораторный ордер подтвержден' or u'Присутствуют пустые значения. Лабораторный ордер не подтвержден'
+    
+    if lab_order.is_completed:
+        try:
+            state = lab_order.visit.office.remotestate
+            logger.info(u"LabOrder for specimen %s is remote" % lab_order.visit.specimen)
+            action_params = {
+            }
+            manageable_task.delay(operator=request.user, 
+                                  task_type='remote', 
+                                  action=router, 
+                                  object=lab_order, 
+                                  action_params=action_params,
+                                  task_params={'countdown':20})
 #                    for r in resp:
 #                        logger.debug(u"LAB: %s %s" % (r['success'],r['message']))
-                except Exception, err:
-                    logger.error(u"LAB: %s " % err)
-            return HttpResponse(simplejson.dumps({
-                                                    'success':lab_order.is_completed,
-                                                    'message':msg
-                                                }), mimetype='application/json')
-    return HttpResponseBadRequest()
+        except Exception, err:
+            pass
+        
+    return {
+        'success':lab_order.is_completed,
+        'message':msg
+    }
     
 
 def pull_invoice(request):
@@ -373,10 +368,6 @@ def print_invoice(request, invoice_id):
     }
 
 
-from direct.providers import remote_provider
-from extdirect.django.decorators import remoting
-
-
 @remoting(remote_provider, len=1, action='lab', name='getSpecimenStatus')
 def get_specimen_status(request):
     data = simplejson.loads(request.raw_post_data)
@@ -403,25 +394,34 @@ def get_specimen_status(request):
 def confirm_manual_service(request):
     data = simplejson.loads(request.raw_post_data)
     orderedservice_id = data['data'][0]
-    success = True
     try:
         obj = OrderedService.objects.get(id=orderedservice_id)
     except:
         return dict(success=False, message="Ordered Service not found")
     
     results = Result.objects.filter(order__visit=obj.order, analysis__service=obj.service)
-    print results
     if len(results):
         lab_order = results[0].order
-        all_lab_orders = lab_order.visit.laborder_set.all()
-        confirm = True
-        for l in all_lab_orders:
-            if not l.is_completed:
-                confirm = False
-                break
-        resp = post_results(lab_order, confirm)
+        try:
+            state = lab_order.visit.office.remotestate
+            logger.info(u"LabOrder for specimen %s is remote" % lab_order.visit.specimen)
+            action_params = {
+            }
+            manageable_task.delay(operator=request.user, 
+                                  task_type='remote', 
+                                  action=router, 
+                                  object=lab_order, 
+                                  action_params=action_params,
+                                  task_params={'countdown':20})
+#                    for r in resp:
+#                        logger.debug(u"LAB: %s %s" % (r['success'],r['message']))
+        except Exception, err:
+            pass
+        
+        obj.status = u'з'
+        obj.save()
     else:
         return dict(success=False, message="Results not found")
 
     
-    return dict(success=True, data={})
+    return dict(success=True, message=u"Исследование успешно подтверждено")

@@ -162,7 +162,6 @@ App.cards.BaseCard = Ext.extend(Ext.Window,{
 			
 			Ext.each(r, function(rec){
 				var gCode = rec.get('analysis_code').split('_')[0];
-				console.info(gCode);
 				var result = gs.find('code',gCode);
 				var vals = rec.get('analysis_name').split(this.delimiter);
 				if(result==-1) {

@@ -186,6 +186,16 @@ class LabOrder(models.Model):
     def get_absolute_url(self):
         return "/lab/laborder/%s/" % self.id
     
+    def append_staff(self, staff_text):
+        """
+        """
+        chunks = self.staff_text.split('\n')
+        print chunks
+        if not staff_text in chunks:
+            chunks.append(staff_text)
+        self.staff_text = "\n".join(chunks)
+        self.save()
+    
     def confirm_results(self, autoclean=True):
         if autoclean:
             Result.objects.filter(analysis__service__labservice__is_manual=False, 
@@ -231,6 +241,10 @@ class LabOrder(models.Model):
             return operator
     operator.short_description = u'Регистратор'
     
+    def save(self, *args, **kwargs):
+        self.staff_text = self.staff and self.staff.__unicode__().strip() or u''
+        super(LabOrder, self).save(*args, **kwargs)
+        
     class Meta:
         verbose_name = u'заказ'
         verbose_name_plural = u'заказы'
@@ -315,10 +329,8 @@ class Sampling(models.Model):
         return u"№%s, %s" % (self.id, self.tube)
     
     def get_services(self):
-        services = self.visit.orderedservice_set.all()
-        services = services.filter(execution_place=self.laboratory, service__normal_tubes=self.tube)
-        return services
-    
+#        services = self.visit.orderedservice_set.all()
+        pass    
     
     
     class Meta:
@@ -524,7 +536,6 @@ def generate_lab_code(sender, **kwargs):
         result = t.render(c)
         obj.code = result
         obj.save()
-        
 
 post_save.connect(generate_analysis_code, sender=Analysis)
 post_save.connect(generate_analysis_code, sender=LabService)

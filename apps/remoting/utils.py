@@ -15,6 +15,8 @@ import logging
 
 logger = logging.getLogger('remoting')
 
+
+@transaction.commit_on_success    
 def get_patient(request, data, state):
 
     lookups = dict([ (k,data[k]) for k in ('last_name','first_name','mid_name','birth_day','gender')])
@@ -64,6 +66,7 @@ def get_visit(request, data, state, patient):
     return visit
 
 
+@transaction.commit_on_success    
 def get_ordered_service(request, data):
     remote_state = State.objects.get(uuid=data['source_lab'])
     office = State.objects.get(uuid=data['dest_lab'])
@@ -142,7 +145,7 @@ def get_ordered_service(request, data):
 
     return ordered_service, created
 
-    
+
 def get_result(request, data):
     specimen_id = data['visit']['specimen_id']
     code = data['order']['code']
@@ -161,6 +164,7 @@ def get_result(request, data):
         result.value = r['value']
         result.validation = 1
         result.save()
+        result.order.append_staff(data['laborder']['staff'])
         
         msg = u"Результат теста '%s' для образца %s сохранен" % (r['name'],specimen_id)
         if __debug__:

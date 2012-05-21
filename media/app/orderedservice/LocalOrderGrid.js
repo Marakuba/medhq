@@ -104,6 +104,9 @@ App.orderedservice.LocalOrderGrid = Ext.extend(Ext.grid.GridPanel, {
                 text:'не проведенные',
                 filterValue:'т'
             },{
+                text:'в работе',
+                filterValue:'л'
+            },{
                 text:'выполненные',
                 filterValue:'з'
             }],

@@ -143,7 +143,7 @@ def post_data_to_remote(lab, action, data, options={}):
         raise HTTPError(e)
 
 
-def post_results(lab_order, confirm):
+def post_results(lab_order):
     lab = lab_order.visit.office
     
     services = {}
@@ -156,7 +156,6 @@ def post_results(lab_order, confirm):
                 'specimen_id':lab_order.visit.specimen
             },
             'order': {
-#                'id':1,
                 'code':a.service.code
             },
             'result': {
@@ -165,12 +164,14 @@ def post_results(lab_order, confirm):
                 'value':result.value,
                 'measurement':a.measurement and a.measurement.name,
                 'ref_interval':a.ref_range_text
+            },
+            'laborder': {
+                'staff':lab_order.staff_text
             }
         }
         results.append(data)
     
     options = {
-        'confirm':confirm,
         'services':services.keys()
     }
     

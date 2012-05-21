@@ -80,7 +80,17 @@ App.manual.ManualGrid = Ext.extend(Ext.grid.GridPanel, {
 						var rec = this.getSelectionModel().getSelected();
 						if(rec) {
 							this.saveSDT(rec);
-							App.direct.lab.confirmManualService(rec.id);
+							App.direct.lab.confirmManualService(rec.id, function(r,e){
+								if(r.success){
+									Ext.ux.Growl.notify({
+								        title: "Успешная операция!", 
+								        message: r.message,
+								        iconCls: "x-growl-accept",
+								        alignment: "tr-tr",
+								        offset: [-10, 10]
+								    })
+								}
+							},this);
 						}
 					},
 					scope:this
