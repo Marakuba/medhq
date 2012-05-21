@@ -353,7 +353,13 @@ App.patient.VisitGrid = Ext.extend(Ext.grid.GridPanel, {
 		var win = new App.choices.PaymentTypeChoiceWindow({
 			patientRecord:this.patientRecord,
 			patientId:this.patientId,
-			record:visitRecord
+			record:visitRecord,
+			listeners:{
+				scope:this,
+				ptypechoiced:function(){
+					App.eventManager.fireEvent('patientcardupdate',this.patientId)
+				}
+			}
 		});
 		win.show();
 	},

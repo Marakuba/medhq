@@ -27,7 +27,7 @@ App.Patients = Ext.extend(Ext.Panel, {
 			},
 			tools:[{
 				id:'refresh',
-				handler:this.updatePatientInfo.createDelegate(this),
+				handler:this.updatePatientInfo.createDelegate(this,[]),
 				scope:this,
 				qtip:'Обновить карточку пациента'
 			},{
@@ -132,13 +132,12 @@ App.Patients = Ext.extend(Ext.Panel, {
 		
 		this.initEvents();
 		
-		App.eventManager.on('balanceupdate', this.updatePatientInfo, this); //
+		App.eventManager.on('patientcardupdate', this.updatePatientInfo, this); //
 		App.eventManager.on('refundclose', this.updatePatientInfo, this); //
 		App.eventManager.on('globalsearch', this.onGlobalSearch, this);
 		this.patientGrid.getStore().on('load',this.onPatientLoad,this);
 		this.patientGrid.getStore().on('beforeload',this.onPatientBeforeLoad,this);
 		this.on('destroy', function(){
-			App.eventManager.un('balanceupdate', this.updatePatientInfo, this); //
 			App.eventManager.un('refundclose', this.updatePatientInfo, this); //
 			App.eventManager.un('globalsearch', this.onGlobalSearch, this);
 			this.patientGrid.getStore().un('beforeload',this.onPatientBeforeLoad,this);
@@ -208,19 +207,19 @@ App.Patients = Ext.extend(Ext.Panel, {
 		}
 	),
 	
-	updatePatientInfo : function(){
-		var rec = this.patientCard.record;
-		if(rec){
-			App.direct.patient.updatePatientInfo(rec.id, function(res,e){
+	updatePatientInfo : function(patientId){
+		patientRecord = this.patientGrid.getPatientRecord(patientId);
+		if(patientRecord){
+			App.direct.patient.updatePatientInfo(patientRecord.data.id, function(res,e){
 				var data = res.data;
-				rec.beginEdit();
+				patientRecord.beginEdit();
 				for(k in data){
-					rec.set(k,data[k]);
+					patientRecord.set(k,data[k]);
 //					console.info(k,data[k]);
 				}
 //				console.info(rec.data);
 //				rec.endEdit();
-				this.patientSelect(rec);
+				this.patientSelect(patientRecord);
 //				this.patientCard.doRefresh();
 			}, this);
 		}

@@ -234,7 +234,7 @@ App.choices.PaymentTypeChoiceWindow = Ext.extend(Ext.Window, {
 			//НЕ УДАЛЯТЬ console.log(res.data) !!!
 			console.log(res.data);
 			if(res.success){
-				App.eventManager.fireEvent('balanceupdate');
+				this.fireEvent('ptypechoiced');
 				this.close();				
 			}
 		},this)

@@ -187,7 +187,11 @@ App.assignment.AsgmtTab = Ext.extend(Ext.Panel, {
 	
 	onStoreWrite: function(store, action, result, res, rs) {
 		if(action=='create') {
-			App.eventManager.fireEvent('assigmentcreate',rs);
+			if (this.hasPatient){
+				App.eventManager.fireEvent('assigmentcreate',rs);
+			} else {
+				App.eventManager.fireEvent('assigmentcreate',rs,this.patientId);
+			}
 		}
 		this.record = rs;
 		this.popStep();

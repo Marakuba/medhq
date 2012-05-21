@@ -291,9 +291,9 @@ App.assignment.PreorderInlineGrid = Ext.extend(Ext.grid.EditorGridPanel, {
 		var d = this.deletedRecords ? this.deletedRecords.length : 0;
 		steps+=m;
 		steps+=d;
-		if (steps > 0) {
-			steps = 1;
-		}
+//		if (steps > 0) {
+//			steps = 1;
+//		}
 		return steps;
 	},
 	

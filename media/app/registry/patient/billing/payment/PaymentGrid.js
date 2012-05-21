@@ -255,7 +255,7 @@ App.billing.PaymentGrid = Ext.extend(Ext.grid.GridPanel, {
 	
 	onPaymentSave: function(record){
 		if (this.hasPatient){
-			App.eventManager.fireEvent('balanceupdate')
+			App.eventManager.fireEvent('patientcardupdate',this.patientId)
 		}
 		if (this.store) {
 			this.store.load();

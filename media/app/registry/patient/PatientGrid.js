@@ -136,13 +136,11 @@ App.patient.PatientGrid = Ext.extend(Ext.grid.GridPanel, {
 		Ext.apply(this, Ext.apply(this.initialConfig, config));
 		App.patient.PatientGrid.superclass.initComponent.apply(this, arguments);
 		App.eventManager.on('globalsearch', this.onGlobalSearch, this);
-		App.eventManager.on('visitcreate', this.onVisitCreate, this);
 //		App.eventManager.on('patientwrite', this.onPatientWrite, this);
 		this.on('patientselect', this.onPatientSelect, this);
 		this.store.on('write', this.onStoreWrite, this);
 		this.on('destroy', function(){
 		    App.eventManager.un('globalsearch', this.onGlobalSearch, this); 
-		    App.eventManager.un('visitcreate', this.onVisitCreate, this);
 		},this);
 	},
 	
@@ -241,14 +239,17 @@ App.patient.PatientGrid = Ext.extend(Ext.grid.GridPanel, {
 		
 	},
 	
-	onVisitCreate: function(rs,patientId){
+	getPatientRecord: function(patientId){ //and select him
 		delete this.store.baseParams['search'];
-		if (patientId){
-			this.store.load({params:{'id':App.uriToId(rs.data.patient)},callback:function(records){
+		var curPatient = this.getSelectionModel().getSelected();
+		if (patientId && (curPatient.data.id != patientId)){
+			this.store.load({params:{'id':patientId},callback:function(records){
 				if (!records.length) return
 				this.getSelectionModel().selectFirstRow();
-				this.fireEvent('patientselect',records[0])
+				return this.getSelectionModel().getSelected();
 			},scope:this})
+		} else {
+			return curPatient
 		}
 	},
 	

@@ -72,15 +72,11 @@ App.patient.PatientCard = Ext.extend(Ext.TabPanel, {
 		App.patient.PatientCard.superclass.initComponent.apply(this, arguments);
 		
 		App.eventManager.on('globalsearch', this.onGlobalSearch, this); //
-		App.eventManager.on('visitclose', this.onVisitClose, this); //
-		App.eventManager.on('refundclose', this.onVisitClose, this); //
 		this.on('afterrender',function(){
 			this.doRefresh();
 		},this);
 		this.on('destroy', function(){
 			App.eventManager.un('globalsearch', this.onGlobalSearch, this); //
-			App.eventManager.un('visitclose', this.onVisitClose, this); //
-			App.eventManager.un('refundclose', this.onVisitClose, this); //
 		},this);
 	},
 	
@@ -109,12 +105,6 @@ App.patient.PatientCard = Ext.extend(Ext.TabPanel, {
 		}
 	},
 	
-	onVisitClose: function() {
-		if (this.record) {
-//			this.setActivePatient(this.record);
-		} else {
-		}
-	}
 	
 });
 
