@@ -10,3 +10,5 @@ App.settings.reloadPriceByPaymentType = {{ config.PRICE_BY_PAYMENT_TYPE|yesno:'t
 App.settings.startHour = {{ config.START_HOUR }};
 
 App.settings.endHour = {{ config.END_HOUR }};
+
+App.settings.showAlerts = {{ config.REGISTRY_SHOW_ALERTS|yesno:'true,false' }};

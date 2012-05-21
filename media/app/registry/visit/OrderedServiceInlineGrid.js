@@ -328,6 +328,7 @@ App.visit.OrderedServiceInlineGrid = Ext.extend(Ext.grid.EditorGridPanel, {
             };
 		}
 		if(attrs.staff){
+			console.info(attrs.staff);
 			var box = new App.visit.StaffWindow({
 				state:ids[1],
 				service:ids[0],
@@ -382,7 +383,7 @@ App.visit.OrderedServiceInlineGrid = Ext.extend(Ext.grid.EditorGridPanel, {
 			fn:function(r){
 				if(r) {
 					rec.beginEdit();
-					rec.set('staff',get_api_url('staff')+'/'+r.data.id);
+					rec.set('staff',App.getApiUrl('position',r.data.id));
 					rec.set('staff_name',r.data.staff_name);
 					rec.endEdit();
 				}

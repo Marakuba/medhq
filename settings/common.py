@@ -265,5 +265,6 @@ CONSTANCE_CONFIG = {
     'BASE_SERVICE_CODE_TEMPLATE':('MEDHQ.{{service.id}}',u'Шаблон кода базовой услуги'),
     'ANALYSIS_CODE_TEMPLATE':('MEDHQ.{{analysis.id}}',u'Шаблон кода анализа'),
     'LAB_SERVICE_CODE_TEMPLATE':('MEDHQ.{{labservice.id}}',u'Шаблон кода ручного исследования'),
+    'REGISTRY_SHOW_ALERTS':(True,u'Показывать предупреждения в карте пациента')
 }
 

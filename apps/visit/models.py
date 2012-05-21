@@ -372,8 +372,9 @@ class OrderedService(make_operator_object('ordered_service')):
     
             if sampling:
                 self.sampling = sampling
-                
-            self.status = u'л'    
+            
+            if self.status==u'т':
+                self.status = u'л'    
             self.save()
             
                 

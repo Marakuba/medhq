@@ -194,8 +194,13 @@ class ExtBatchResource(ExtResource):
             
         bundles = []
         for d in deserialized:
+            
+            print d
+    
             bundle = self.build_bundle(data=dict_strip_unicode_keys(d), request=request)
             self.is_valid(bundle, request)
+            
+#            print bundle
     
             try:
                 updated_bundle = self.obj_update(bundle, request=request, **self.remove_api_resource_names(kwargs))
