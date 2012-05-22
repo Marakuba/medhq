@@ -6,7 +6,7 @@ from django.contrib import admin
 from promotion.models import PromotionItem, Promotion
 from django import forms
 from service.fields import ServiceModelChoiceField
-from service.models import BaseService
+from service.models import BaseService, ExtendedService
 from django.db.models.expressions import F
 from django.http import HttpResponseRedirect
 from django.shortcuts import render_to_response
@@ -45,10 +45,12 @@ def update_total_price(modeladmin, request, queryset):
         for item in p.promotionitem_set.all():
             service_price = item.base_service.price(state=item.execution_place)
             price = service_price*item.count
+            ext_service = ExtendedService.objects.get(base_service=item.base_service.id,state=item.execution_place)
+            is_active = ext_service.is_active
             
-            items.append({ 'service':item.base_service, 'price':service_price, 'count':item.count})
-            
-            total_price+=price
+            items.append({ 'service':item.base_service, 'price':service_price, 'count':item.count, 'is_active': is_active})
+            if is_active:
+                total_price+=price
         cfg['items']=items
         cfg['raw_price'] = total_price
         if p.discount:

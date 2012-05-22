@@ -328,7 +328,6 @@ App.visit.OrderedServiceInlineGrid = Ext.extend(Ext.grid.EditorGridPanel, {
             };
 		}
 		if(attrs.staff){
-			console.info(attrs.staff);
 			var box = new App.visit.StaffWindow({
 				state:ids[1],
 				service:ids[0],

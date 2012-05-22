@@ -214,6 +214,8 @@ def get_service_tree(request):
                         price = v['value']
                         break
 #                es = bs.extendedservice_set.get(state=obj.execution_place)
+                if not es:
+                    return None
                 node = {
                     "id":ext and es or '%s-%s' % (obj.base_service_id,obj.execution_place_id),
                     "text":"%s" % (bs['base_service__short_name'] or bs['base_service__name'],),
@@ -223,6 +225,7 @@ def get_service_tree(request):
                 node['staff'] = obj.base_service_id in staff_all and sorted(staff_all[obj.base_service_id], key=lambda staff: staff[1])
                 return node
             except Exception, err:
+                print err
                 logger.error(u"WEBAPP: %s" % err)
                 return None
             
@@ -230,7 +233,7 @@ def get_service_tree(request):
             'id':obj['id'],#u'%s_%s' % (obj.base_service.id, obj.execution_place.id),
             'text':obj['name'],#obj.base_service.short_name or obj.base_service.name,
             'leaf':True,
-            'nodes':[node_dict(node) for node in obj['items']],
+            'nodes':[node_dict(node) for node in obj['items'] if node],
             'discount':obj['discount_id'],
             'price':obj['total_price'],
             'isComplex':True

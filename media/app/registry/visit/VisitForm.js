@@ -865,18 +865,24 @@ App.visit.VisitForm = Ext.extend(Ext.FormPanel, {
 			this.rowAdded = false;
 			complexAdd = function() {
 				var item = this.cNodes.pop();
-				this.addRow(item, function(added){
-					if (added){
-						this.rowAdded = added;
-					};
+				if (item) {
+					this.addRow(item, function(added){
+						if (added){
+							this.rowAdded = added;
+						};
+						if(this.cNodes.length) {
+							complexAdd.createDelegate(this,[])();
+						} else {
+							if (this.rowAdded){
+								this.saveAction();
+							}
+						}
+					}, this);
+				} else {
 					if(this.cNodes.length) {
 						complexAdd.createDelegate(this,[])();
-					} else {
-						if (this.rowAdded){
-							this.saveAction();
-						}
 					}
-				}, this);
+				}
 			}
 			complexAdd.createDelegate(this,[])();
 //			Ext.each(a.nodes, function(item,i){

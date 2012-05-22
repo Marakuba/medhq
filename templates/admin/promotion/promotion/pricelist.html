@@ -5,7 +5,7 @@
 <h1>{{ promotion.instance }}</h1>
 <table>
 	{% for item in promotion.items %}
-	<tr>
+	<tr {% if not item.is_active%} bgcolor="red" {% endif %}>
 		<td>{{ item.service }}</td>
 		<td>{{ item.count }}</td>
 		<td>{{ item.price }}</td>
