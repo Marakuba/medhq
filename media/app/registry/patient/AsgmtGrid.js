@@ -168,7 +168,9 @@ App.patient.AsgmtGrid = Ext.extend(Ext.grid.EditorGridPanel, {
 				    {name: 'resource_uri'},
 				    {name: 'staff'},
 				    {name: 'id'},
-				    {name: 'state'}
+				    {name: 'state'},
+				    {name: 'service_name'},
+				    {name: 'base_service'}
 				]
 		}); 
 		
@@ -533,8 +535,9 @@ App.patient.AsgmtGrid = Ext.extend(Ext.grid.EditorGridPanel, {
 			var win = new App.visit.StaffWindow({
 				index:index, 
 				staffList:sl,
-				service:App.uriToId(preorder.data.service),
+				service:App.uriToId(records[0].data.base_service),
 				state:App.uriToId(records[0].data.state),
+				service_name:App.uriToId(records[0].data.service_name),
 				fn: function(staff){
 					win.close();
 					this.onMovePreorder(staff.data.id)
