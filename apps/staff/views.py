@@ -14,9 +14,8 @@ def get_actual_price(request):
     
     data = simplejson.loads(request.raw_post_data)
     service_id = data['data'][0]['service']
-    state_id = data['data'][0]['state']
     
-    service = ExtendedService.objects.get(base_service=service_id,state=state_id)
+    service = ExtendedService.objects.get(id=service_id)
     staff_list = []
     now = datetime.datetime.now()
     day_start = now.replace(hour=0,minute=0,second=0,microsecond=1)

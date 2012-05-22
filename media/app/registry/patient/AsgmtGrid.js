@@ -166,7 +166,9 @@ App.patient.AsgmtGrid = Ext.extend(Ext.grid.EditorGridPanel, {
 			apiUrl : get_api_url('extendedservice'),
 			model: [
 				    {name: 'resource_uri'},
-				    {name: 'staff'}
+				    {name: 'staff'},
+				    {name: 'id'},
+				    {name: 'state'}
 				]
 		}); 
 		
@@ -512,11 +514,12 @@ App.patient.AsgmtGrid = Ext.extend(Ext.grid.EditorGridPanel, {
 			console.log('не указан пациент')
 		}
 	},
-	staffWindow: function(index, service){
+	staffWindow: function(index){
 		var preorder = this.getSelected();
 		if (!preorder.data.service || preorder.data.visit){
 			return false
 		}
+		var service = preorder.data.service;
 		this.extServiceStore.setBaseParam('id',App.uriToId(preorder.data.service))
 		this.extServiceStore.load({callback:function(records){
 			var sl = undefined;
@@ -527,8 +530,17 @@ App.patient.AsgmtGrid = Ext.extend(Ext.grid.EditorGridPanel, {
 					return false
 				}
 			}
-			var win = new App.visit.StaffWindow({index:index, staffList:sl});
-			win.on('validstaff', this.onMovePreorder, this);
+			var win = new App.visit.StaffWindow({
+				index:index, 
+				staffList:sl,
+				service:App.uriToId(preorder.data.service),
+				state:App.uriToId(records[0].data.state),
+				fn: function(staff){
+					win.close();
+					this.onMovePreorder(staff.data.id)
+				},
+				scope:this
+			});
 			win.show();
 		},scope:this});
 	},
@@ -540,7 +552,7 @@ App.patient.AsgmtGrid = Ext.extend(Ext.grid.EditorGridPanel, {
 		rec.endEdit();
 	},
 	
-	onMovePreorder: function(service,staff_id){
+	onMovePreorder: function(staff_id){
 		var preorder = this.getSelected();
     	var freeTimeslotWindow;
         	
@@ -554,8 +566,13 @@ App.patient.AsgmtGrid = Ext.extend(Ext.grid.EditorGridPanel, {
        			};
        			preorder.set('timeslot',record.data.resource_uri);
        			record.set('status','з');
-       			this.store.load();
 				freeTimeslotWindow.close();
+				if(this.patientId){
+					App.eventManager.fireEvent('patientcardupdate',this.patientId);
+				} else {
+					this.store.load();
+				}
+				
 			}
        	 });
         	
