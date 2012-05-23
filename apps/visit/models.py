@@ -440,6 +440,6 @@ post_save.connect(BarcodeGenerator, sender=Visit)
 
 
 
-import reversion
+#import reversion
 
 #reversion.register(Referral)      

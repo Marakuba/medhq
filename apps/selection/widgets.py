@@ -11,7 +11,7 @@ from selection.views import selection
 
 TEMPLATE = u'''
 <div class="choiceHolder">{{ value }}</div>
-<a id="{{ name }}_handler" class="iframe awesome choicer" href="{{ url }}">{% if value %}Изменить{% else %}Выбрать{% endif %}</a>
+<a id="{{ name }}_handler" class="iframe awesome tiny blue choicer" href="{{ url }}">{% if value %}Изменить{% else %}Выбрать{% endif %}</a>
 {% if cleanable %}
 <a class="awesome red tiny {% if not value %}hid{% endif %}">Очистить</a>
 {% endif %}
@@ -44,4 +44,12 @@ class SelectionWidget(widgets.Widget):
         c = Context(locals())
         t = Template(self.TEMPLATE)
         return t.render(c)
+    
+    class Media:
+        
+        css = {
+            'all': ('resources/css/awesome.css','libs/fancybox/jquery.fancybox-1.3.4.css',)
+        }
+        
+        js = ('libs/jquery.js','resources/js/selection.js','libs/fancybox/jquery.fancybox-1.3.4.js')
 

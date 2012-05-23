@@ -4,6 +4,7 @@ from django.http import HttpResponse
 from django.views.generic.list_detail import object_list
 from django.db.models.query_utils import Q
 from django.shortcuts import get_object_or_404
+from mptt.models import MPTTModel
 
 
 def as_list(request, queryset, extra_context, extra=None):
@@ -18,7 +19,10 @@ def as_tree(request, queryset, extra_context, extra=None):
         filter |= Q(parent=node)
     else:
 #        if 'level' in extra:
-        filter = Q(level=extra['level'])
+        if hasattr(queryset.model, 'tree'):
+            filter |= Q(parent__isnull=True)
+        else:
+            filter = Q(level=extra['level'])
     queryset = queryset.filter(filter)
     return (queryset, extra_context)
 
@@ -58,7 +62,7 @@ class Selection(object):
     
     def reverse_label(self, ac_name, key_value):
         key = 'pk'
-        qs, type, verbose_name, paginate_by, extra = self.settings[ac_name]
+        qs, type, verbose_name, paginate_by, extra, template_name = self.settings[ac_name]
         try:
             result = qs.get(**{key:key_value})
         except qs.model.DoesNotExist:

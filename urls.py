@@ -6,10 +6,19 @@ from django.conf import settings
 from django.contrib import admin
 from selection.views import selection
 from service.models import StandardService, BaseService
+from visit.models import Referral
 from patient.models import Patient
 from django.http import HttpResponseRedirect
 
 handler500 = 'core.views.handler500'
+
+queryset = BaseService.objects.select_related().all().order_by(BaseService._meta.tree_id_attr, 
+                                                               BaseService._meta.left_attr, 
+                                                               'level')
+selection.register('service', queryset, 'tree', paginate_by=100, template_name="selection/bs_tree.html")
+
+queryset = Referral.objects.all()
+selection.register('referral', queryset, 'list', paginate_by=50)
 
 import reporting
 admin.autodiscover()
@@ -37,6 +46,7 @@ urlpatterns = patterns('',
     url(r'^autocomplete/', include(autocomplete.urls)),
     url(r'^patient/', include('patient.urls')),
     url(r'^timeslot/haspreorder/(?P<id>\d+)/$', 'scheduler.views.hasPreorder'),
+    url(r'^selection/(?P<slc_name>\w+)/$', selection, name='selection'),
 )
 
 try:

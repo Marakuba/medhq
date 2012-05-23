@@ -16,13 +16,13 @@ import StringIO
 import csv
 from django.conf import settings
 from reversion.admin import VersionAdmin
+from selection.fields import ModelChoiceField
+from patient.models import Contract, InsurancePolicy
 
 
 class OrderedServiceForm(forms.ModelForm):
     
-    staff = forms.ModelChoiceField(queryset=Staff.objects.all(),  #@UndefinedVariable
-                                   empty_label=u'--Лаборатория--', 
-                                   required=False, label=u'Направлено')
+    service = ModelChoiceField('service', label=u'Услуга')
     
     class Meta:
         model = OrderedService
@@ -38,7 +38,7 @@ class OrderedServiceFullAdmin(admin.StackedInline):
     model = OrderedService
     fields = ('service','execution_place','executed','print_date','staff','count','price','total_price','operator')
     extra = 0
-    #form = OrderedServiceForm
+    form = OrderedServiceForm
     
 state_qs = State.objects.filter(type=u'j')
 base_service_qs = BaseService.objects.all()
@@ -46,15 +46,14 @@ base_service_qs = BaseService.objects.all()
 class VisitForm(forms.ModelForm):
     """
     """
-    payer = forms.ModelChoiceField(queryset=state_qs, empty_label=u'--Клиент--', 
-                                   required=False, label=u'Плательщик', 
-                                   help_text=u'Выбрать если оплату за клиента производит сторонняя организация', )
-    services = forms.ModelMultipleChoiceField(queryset=base_service_qs, 
-                                              required=False,
-                                              widget=forms.MultipleHiddenInput)
+    referral = ModelChoiceField('referral', label=u'Кто направил', required=False)
     
-    pay_and_bill = forms.BooleanField(required=False)
-    
+    def __init__(self, *args, **kwargs):
+        super(VisitForm, self).__init__(*args, **kwargs)
+        if self.instance.id:
+            self.fields['contract'].queryset = Contract.objects.filter(patient=self.instance.patient)
+            self.fields['insurance_policy'].queryset = InsurancePolicy.objects.filter(patient=self.instance.patient)
+
     
     class Meta:
         model = Visit
@@ -77,111 +76,7 @@ def discount_value(obj):
     return "---"
 discount_value.short_description = u'Скидка'
 
-class VisitAdmin(admin.ModelAdmin):
-    """
-    """
-    exclude = ('operator',)
-    form = VisitForm
-    readonly_fields = ['total_price',]
-    search_fields = ('patient__last_name','barcode__id')
-    list_display = ('zid','full_name','created','is_billed','operator','total_price',discount_value,'total_discount','total_paid',actions)
-    list_display_links = ('zid','full_name')
-    #list_filter
-    inlines = [OrderedServiceAdmin]
-    date_hierarchy = 'created'
-    fieldsets = (
-        (None, {
-            'fields':('patient','referral','payer')
-        }),
-#        (u'Услуги', {
-#            'classes':('x-container',),
-#            'fields':('services','staff')
-#        }),
-        (u'Дополнительно', {
-            'fields':('pregnancy_week','menses_day','menopause','diagnosis','sampled')
-        }),
-        (u'Оплата', {
-            'fields':('payment_type','total_paid','bill_date','is_billed','discount','comment')
-        }),
-
-    )
-
-
-#    def save_formset(self, request, form, formset, change):
-#        super(VisitAdmin, self).save_formset(request, form, formset, change)
-#        instance = form.instance
-#        items = instance.orderedservice_set.all()
-#        total_price = 0
-#        for item in items:
-#            price = item.service.price()
-#            total_price += price
-#            item.price = price
-#            item.total_price = price*item.count
-#            item.save()
-#        instance.total_price = total_price
-#        instance.save()
-    
-    def save_model(self, request, obj, form, change):
-        if not change:
-            obj.operator=request.user
-        if form.cleaned_data.has_key('pay_and_bill') and form.cleaned_data['pay_and_bill']:
-            obj.is_billed=True
-        obj.save()
-
-    def to_print(self, request, object_id):
-        """
-        """
-        visit = get_object_or_404(Visit, pk=object_id)
-        visit.update_total_price()
-
-        patient = visit.patient
-        contract = patient.get_contract()
-        extra_context = {
-            'patient':patient,
-            'contract':contract,
-            'f':patient.is_f() and u"а" or u"",
-            'ff':patient.is_f() and u"на" or u"ен",
-            'visit':visit,
-            'services':visit.orderedservice_set.all()
-        }
-        return direct_to_template(request, "print/visit/visit.html", extra_context=extra_context)
         
-    def get_urls(self):
-        urls = super(VisitAdmin, self).get_urls()
-        my_urls = patterns('',
-            url(r'^(?P<object_id>\d+)/print/$', self.to_print, name="visit_visit_print"),
-        )
-        return my_urls + urls
-
-    def queryset(self, request):
-        qs = super(VisitAdmin, self).queryset(request)
-        return qs.filter(cls=u'п')
-    
-    class Media:
-        
-        css = {'all':(
-                      'jquery/fancybox/jquery.fancybox-1.3.1.css',
-                      'resources/css/xstyle.css'
-                      )
-        }
-        
-        js = ('resources/js/jquery-1.4.4.js',
-              'jquery/fancybox/jquery.fancybox-1.3.1.pack.js',
-              'jquery/jquery.nano.js',
-              'resources/js/services.js',
-              'resources/js/visit.js',
-              )
-        
-#from autocomplete.views import autocomplete, AutocompleteSettings
-#from autocomplete.admin import AutocompleteAdmin
-#
-#class PatientAutocomplete(AutocompleteSettings):
-#    search_fields = ('^last_name', '^first_name')
-#    limit = 20
-    
-#autocomplete.register(Visit.patient, PatientAutocomplete)
-
-
 def export_into_1c(modeladmin, request, queryset):
     #response =  HttpResponse(mimetype='text/csv')
     tmp_file = StringIO.StringIO()
@@ -214,7 +109,17 @@ def export_into_1c(modeladmin, request, queryset):
 export_into_1c.short_description = u"Экспорт документов в 1С (txt-формат)"
 
 #TODO: вернуть AutoComplete
-class PlainVisitAdmin(admin.ModelAdmin): 
+from autocomplete.views import autocomplete, AutocompleteSettings
+from autocomplete.admin import AutocompleteAdmin
+
+class PatientAutocomplete(AutocompleteSettings):
+    search_fields = ('^last_name', '^first_name')
+    limit = 20
+    
+autocomplete.register(PlainVisit.patient, PatientAutocomplete)
+
+
+class PlainVisitAdmin(AutocompleteAdmin, admin.ModelAdmin): 
     """
     """
     inlines = [OrderedServiceFullAdmin]
@@ -224,6 +129,7 @@ class PlainVisitAdmin(admin.ModelAdmin):
     date_hierarchy = 'created'
     search_fields = ('patient__last_name','barcode__id')
     readonly_fields = ('barcode',)
+    form = VisitForm
     
     def save_model(self, request, obj, form, change):
         obj.save()

@@ -1,5 +1,88 @@
 {% extends "box.html" %}
 
+{% block extra_head %}
+
+<link href="{{ STATIC_URL }}resources/css/reset.css" type="text/css" rel="stylesheet" media="all"/>
+<style>
+	body {
+		padding:5px;
+		font-family:Arial;
+	}
+	a, a:visited {
+	    color: #5B80B2;
+    	text-decoration: none;
+    }
+	.breadcrumbs {
+		padding:10px 0;
+		margin-right:200px;
+	}
+	
+	.list {
+		clear:both;
+	}
+	
+	.list table {
+		width:100%;
+		border-top:1px solid #DDD;
+		border-left:1px solid #DDD;
+	}
+	
+	.list tr {
+	}
+	
+	.list td, .list th{
+		padding:5px;
+		border-right:1px solid #EEE;
+		border-bottom:1px solid #DDD;
+		text-align:left;
+	}
+	
+	.leaf {
+		font-weight:normal;
+	}
+	
+	.folder {
+		padding-left:16px;
+		background:url({{ STATIC_URL}}resources/images/arrow_right.png) no-repeat -2px;
+	}
+	
+	.list .even {
+		background-color:#EDF3FE;
+	}
+	
+	.list li {
+		padding:1px;
+	}
+	
+	.search {
+		float:right;
+		padding:5px;
+	}
+	
+	.search input {
+		display:none;
+		border:1px solid #AAA;
+		font-size:1em;
+	}
+	
+	.nav {
+		margin:15px 0;
+	}
+	
+	.nav a {
+		padding:5px;
+	}
+	
+	.active {
+		padding:4px;
+		background:#EDF3FE;
+		border:1px solid #DDD;		
+	}
+	
+</style>
+
+{% endblock %}
+
 {% block body %}
 
 
@@ -18,25 +101,25 @@
 		{% endif %}
 		| {{ node.name }}
 	{% else %}
-		Выберите раздел
+		Выберите запись
 	{% endif %}
 	</div>
 	<div class="list">
-		<ul>
+		<table>
 			{% for object in object_list %}
-			<li class="{% cycle 'even' '' %}">
+			<tr>
+			<td class="{% cycle 'even' '' %}">
 				<a class="leaf" href="#" onCLick="top.selectionCallback({{ object.pk }},'{{ object }}');">{{ object.name|lower|capfirst }}</a>
-			</li>
+			</td>
+			</tr>
 			{% endfor %}
-		</ul>
+		</table>
 	</div>
 	{% if pages > 1 %}
-	<div class="simple-nav">
-		<ul>
-			{% for p in page_range %}
-			<li><a class="gallery-link {% if p == page %}active{% endif %}" href="?page={{ p }}" title="Страница {{ p }}"></a></li>
-			{% endfor %}
-		</ul>
+	<div class="nav">
+		{% for p in page_range %}
+			<a class="gallery-link {% if p == page %}active{% endif %}" href="?page={{ p }}" title="Страница {{ p }}">{{ p }}</a>
+		{% endfor %}
 	</div>
 	{% endif %}
 	

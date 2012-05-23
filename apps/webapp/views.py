@@ -227,6 +227,9 @@ def get_service_tree(request):
             except Exception, err:
                 print err
                 logger.error(u"WEBAPP: %s" % err)
+                print err
+                print obj.base_service_id, obj.execution_place_id
+                print result[obj.base_service_id]
                 return None
             
         return {
