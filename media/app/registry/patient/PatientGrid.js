@@ -241,6 +241,7 @@ App.patient.PatientGrid = Ext.extend(Ext.grid.GridPanel, {
 	getPatientRecord: function(patientId){ //and select him
 		delete this.store.baseParams['search'];
 		var curPatient = this.getSelectionModel().getSelected();
+		if (!curPatient) return false;
 		if (patientId && (curPatient.data.id != patientId)){
 			this.store.load({params:{'id':patientId},callback:function(records){
 				if (!records.length) return
