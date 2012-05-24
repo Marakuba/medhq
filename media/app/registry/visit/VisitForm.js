@@ -1299,9 +1299,10 @@ App.visit.VisitForm = Ext.extend(Ext.FormPanel, {
 	undoAction: function(){
 		var ptype = this.historyList[this.curActionPos]['ptype'];
 		var payer = this.historyList[this.curActionPos]['payer'];
+		var biopayer = this.historyList[this.curActionPos]['biopayer'];
 		if (this.curActionPos < 0) return false;
 		this.curActionPos -= 1;
-		this.restorePosition(this.curActionPos,ptype,payer);
+		this.restorePosition(this.curActionPos,ptype,payer,biopayer);
 //		console.log((this.curActionPos) + ' of ' + (this.historyList.length-1))
 		if (this.curActionPos <= 0) this.orderedService.undoBtn.disable();
 		this.orderedService.redoBtn.enable();
@@ -1378,6 +1379,9 @@ App.visit.VisitForm = Ext.extend(Ext.FormPanel, {
 				if (payer){
 					this.payerCmb.setValue(payer);
 				} else {
+					if (biopayer){
+						this.bioPayerCmb.setValue(biopayer);
+					}
 					this.payerCmb.setRawValue('');
 			    	this.payerCmb.originalValue = '';
 			    	this.payerCmb.value = '';
@@ -1387,9 +1391,27 @@ App.visit.VisitForm = Ext.extend(Ext.FormPanel, {
 				this.hidePaymentCmb('policy');
 				this.showPaymentCmb('payer');
 				break
+				
+			case 'к':
+				if (biopayer){
+					this.bioPayerCmb.setValue(biopayer);
+				} else {
+					this.bioPayerCmb.setRawValue('');
+			    	this.bioPayerCmb.originalValue = '';
+			    	this.bioPayerCmb.value = '';
+					this.bioPayerCmb.reset();
+				}
+				this.servicePanel.getLoader().baseParams['payment_type'] = ptype;
+				this.hidePaymentCmb('policy');
+				this.showPaymentCmb('payer');
+				break
 			case 'н':
 				this.hidePaymentCmb('policy');
 				this.hidePaymentCmb('payer');
+				this.bioPayerCmb.setRawValue('');
+		    	this.bioPayerCmb.originalValue = '';
+		    	this.bioPayerCmb.value = '';
+				this.bioPayerCmb.reset();
 				break
 			default:
 				this.hidePaymentCmb('policy');
