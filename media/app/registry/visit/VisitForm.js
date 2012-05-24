@@ -225,6 +225,37 @@ App.visit.VisitForm = Ext.extend(Ext.FormPanel, {
 			    	},
 			    	scope:this
 			    }
+		});
+		
+		this.bioPayerCmb = new Ext.form.LazyClearableComboBox({
+	        	fieldLabel:'Плательщик',
+	        	layout: 'form',
+	        	baseCls:'x-border-layout-ct',
+				border:false,
+	        	anchor:'98%',
+	        	name:'payer',
+			    minChars:3,
+			    hidden:(App.settings.strictMode && this.types==='material'),
+			    emptyText:'Выберите плательщика...',
+			    proxyUrl:get_api_url('state'),
+			    value:App.settings.strictMode ? App.getApiUrl('state',active_state_id) : '',
+			    listeners:{
+			    	select:function(combo,record){
+			    		var sp = this.servicePanel;
+						sp.getLoader().baseParams['payer'] = App.uriToId(record.data.resource_uri);
+						sp.getLoader().baseParams['payment_type'] = 'к'; // корпоративный
+						sp.getLoader().load(sp.getRootNode());
+						this.rePrice('к',App.uriToId(record.data.resource_uri));
+			    	},
+			    	clearclick:function(combo,record){
+			    		var sp = this.servicePanel;
+						delete sp.getLoader().baseParams['payer'];
+						sp.getLoader().baseParams['payment_type'] = 'н'; // наличный
+						sp.getLoader().load(sp.getRootNode());
+						this.rePrice('н');
+			    	},
+			    	scope:this
+			    }
 		})
 		
 		
@@ -660,7 +691,7 @@ App.visit.VisitForm = Ext.extend(Ext.FormPanel, {
 							},
         					items:[{
         						flex:1,
-        						items:[this.payerCmb]
+        						items:[this.bioPayerCmb]
         					},{
         						baseCls:'x-border-layout-ct',
         						defaults:{
@@ -1024,6 +1055,9 @@ App.visit.VisitForm = Ext.extend(Ext.FormPanel, {
 		} else {
 			delete sp.getLoader().baseParams['payer'];
 		};
+		if (this.type == 'material' && ptype_id == 'б'){
+			ptype_id = 'к'
+		}
 		sp.getLoader().baseParams['payment_type'] = ptype_id;
 		sp.getLoader().load(sp.getRootNode())
 	},
@@ -1172,6 +1206,7 @@ App.visit.VisitForm = Ext.extend(Ext.FormPanel, {
 			this.paymentTypeGroup.disable();
 			this.onPaymentTypeChoice(this.record.data.payment_type);
 			this.payerCmb.disable();
+			this.bioPayerCmb.disable();
 			this.policyCmb.disable();
 			this.contractCmb.disable();
 		};
@@ -1238,6 +1273,7 @@ App.visit.VisitForm = Ext.extend(Ext.FormPanel, {
 		actionItem['services'] = services;
 		actionItem['ptype'] = this.getPTypeValue();
 		actionItem['payer'] = this.payerCmb.getValue();
+		actionItem['biopayer'] = this.bioPayerCmb.getValue();
 		actionItem['policy'] = this.policyCmb.getValue();
 		this.historyList.push(actionItem);
 		this.curActionPos += 1;
@@ -1274,25 +1310,32 @@ App.visit.VisitForm = Ext.extend(Ext.FormPanel, {
 	redoAction: function(){
 		var ptype = this.getPTypeValue();
 		var payer = this.payerCmb.getValue();
+		var biopayer = this.bioPayerCmb.getValue();
 		if (this.curActionPos >= (this.historyList.length - 1)) return false;
 		this.curActionPos += 1;
 //		console.log((this.curActionPos) + ' of ' + (this.historyList.length-1));
-		this.restorePosition(this.curActionPos,ptype,payer);
+		this.restorePosition(this.curActionPos,ptype,payer,biopayer);
 		if (this.curActionPos >= this.historyList.length-1) this.orderedService.redoBtn.disable();
 		this.orderedService.undoBtn.enable();
 	},
 	
-	restorePosition: function(pos,cur_ptype,cur_payer){
+	restorePosition: function(pos,cur_ptype,cur_payer,cur_biopayer){
 		var actionItem = this.historyList[pos];
 		var services = actionItem['services'];
 		this.orderedService.store.removeAll();
 		this.orderedService.store.add(services);
 		this.orderedService.doLayout();
 		var payer = actionItem['payer'];
+		var biopayer = actionItem['biopayer'];
 		if (payer) {
 			var payer_id = App.uriToId(payer);
 		} else {
 			payer_id = undefined
+		}
+		if (biopayer) {
+			var biopayer_id = App.uriToId(biopayer);
+		} else {
+			biopayer_id = undefined
 		}
 		var ptype = actionItem['ptype'];
 		var policy = actionItem['policy'];
@@ -1301,8 +1344,19 @@ App.visit.VisitForm = Ext.extend(Ext.FormPanel, {
 			if (!(payer == cur_payer)){
 				this.reloadTree(ptype,payer_id)		
 			}
+			if (!(biopayer == cur_biopayer)){
+				this.reloadTree(ptype,biopayer_id);
+				this.bioPayerCmb.setValue(biopayer);
+			}
 		} else {
-			this.reloadTree(ptype,payer_id)
+			if (ptype && payer_id){
+				this.reloadTree(ptype,payer_id)
+			} else {
+				this.reloadTree(ptype,biopayer_id);
+				this.bioPayerCmb.setValue(biopayer);
+			}
+			
+			
 		}
 		this.setPTypeValue(ptype);
 		this.paymentTypeField.setValue(ptype);

@@ -225,8 +225,8 @@ class BaseServiceAdmin(TreeEditor, TabbedAdmin):
 
     
     list_per_page = 2000
-    list_display = ('name','short_name','code','execution_time','lab_group')
-    list_editable = ('code','execution_time','lab_group')
+    list_display = ('name','short_name','code','execution_time','type')
+    list_editable = ('code','execution_time','type')
     
     inlines = [ExtendedServiceInlineAdmin,AnalysisInlineAdmin,LabServiceInline]
     save_as = True

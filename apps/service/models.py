@@ -127,6 +127,17 @@ class ExecutionTypeGroup(ServiceGroup):
     
 
             
+BS_TYPES = (
+    (u'cons',u'консультативная услуга'),
+    (u'lab',u'лабораторная услуга'),
+    (u'man',u'манипуляция'),
+    (u'exam',u'обследование'),
+    (u'article',u'товар'),
+    (u'material',u'материал'),
+    (u'group',u'группа'),
+    (u'archive',u'архив'),
+)
+
 
 class BaseService(models.Model):
     
@@ -154,6 +165,7 @@ class BaseService(models.Model):
     conditions = models.ManyToManyField(Condition, null=True, blank=True)
     
     description = models.TextField(u'Дополнительное описание', blank=True)
+    type = models.CharField(u'Тип', choices=BS_TYPES, default=u'cons', max_length=10)
 
     _top = {}
     _parents = {}
