@@ -245,6 +245,7 @@ App.visit.VisitForm = Ext.extend(Ext.FormPanel, {
 						sp.getLoader().baseParams['payer'] = App.uriToId(record.data.resource_uri);
 						sp.getLoader().baseParams['payment_type'] = 'к'; // корпоративный
 						sp.getLoader().load(sp.getRootNode());
+						this.paymentTypeField.setValue('к');
 						this.rePrice('к',App.uriToId(record.data.resource_uri));
 			    	},
 			    	clearclick:function(combo,record){
@@ -252,6 +253,7 @@ App.visit.VisitForm = Ext.extend(Ext.FormPanel, {
 						delete sp.getLoader().baseParams['payer'];
 						sp.getLoader().baseParams['payment_type'] = 'н'; // наличный
 						sp.getLoader().load(sp.getRootNode());
+						this.paymentTypeField.setValue('н');
 						this.rePrice('н');
 			    	},
 			    	scope:this
@@ -1341,23 +1343,23 @@ App.visit.VisitForm = Ext.extend(Ext.FormPanel, {
 		var ptype = actionItem['ptype'];
 		var policy = actionItem['policy'];
 		//Перегружать дерево только если поменялись значения типа оплаты или плательщика
-		if (ptype==cur_ptype){
-			if (!(payer == cur_payer)){
-				this.reloadTree(ptype,payer_id)		
-			}
-			if (!(biopayer == cur_biopayer)){
-				this.reloadTree(ptype,biopayer_id);
-				this.bioPayerCmb.setValue(biopayer);
-			}
-		} else {
-			if (ptype && payer_id){
-				this.reloadTree(ptype,payer_id)
+		if (this.type == 'visit'){
+			if (ptype==cur_ptype){
+				if (!(payer == cur_payer)){
+					this.reloadTree(ptype,payer_id)		
+				}
 			} else {
-				this.reloadTree(ptype,biopayer_id);
-				this.bioPayerCmb.setValue(biopayer);
+				this.reloadTree(ptype,payer_id)
 			}
-			
-			
+		};
+		if (this.type == 'material'){
+			if (ptype==cur_ptype){
+				if (!(biopayer == cur_biopayer)){
+					this.reloadTree(ptype,biopayer_id)		
+				}
+			} else {
+				this.reloadTree(ptype,biopayer_id)
+			}
 		}
 		this.setPTypeValue(ptype);
 		this.paymentTypeField.setValue(ptype);
@@ -1379,9 +1381,6 @@ App.visit.VisitForm = Ext.extend(Ext.FormPanel, {
 				if (payer){
 					this.payerCmb.setValue(payer);
 				} else {
-					if (biopayer){
-						this.bioPayerCmb.setValue(biopayer);
-					}
 					this.payerCmb.setRawValue('');
 			    	this.payerCmb.originalValue = '';
 			    	this.payerCmb.value = '';
@@ -1395,11 +1394,6 @@ App.visit.VisitForm = Ext.extend(Ext.FormPanel, {
 			case 'к':
 				if (biopayer){
 					this.bioPayerCmb.setValue(biopayer);
-				} else {
-					this.bioPayerCmb.setRawValue('');
-			    	this.bioPayerCmb.originalValue = '';
-			    	this.bioPayerCmb.value = '';
-					this.bioPayerCmb.reset();
 				}
 				this.servicePanel.getLoader().baseParams['payment_type'] = ptype;
 				this.hidePaymentCmb('policy');
@@ -1440,19 +1434,32 @@ App.visit.VisitForm = Ext.extend(Ext.FormPanel, {
 	},
 	
 	setPTypeValue: function(ptype){
-		Ext.each(this.paymentTypeItems,function(item){
-			if(item.ptype == ptype && !item.pressed){
-				item.toggle();
+		if (this.type == 'visit'){
+			Ext.each(this.paymentTypeItems,function(item){
+				if(item.ptype == ptype && !item.pressed){
+					item.toggle();
+				}
+			})
+		}
+		if (this.type == 'material'){
+			this.paymentTypeField.setValue(ptype);
+			if (ptype == 'к' && this.record){
+				this.bioPayerCmb.forceValue(this.record.data.payer)
 			}
-		})
+		}
 	},
 	getPTypeValue: function(ptype){
 		var ptype = ''
-		Ext.each(this.paymentTypeItems,function(item){
-			if(item.pressed){
-				ptype = item.ptype
-			}
-		})
+		if (this.type == 'visit'){
+			Ext.each(this.paymentTypeItems,function(item){
+				if(item.pressed){
+					ptype = item.ptype
+				}
+			})
+		}
+		if (this.type == 'material'){
+			ptype = this.paymentTypeField.getValue() || 'н';
+		}
 		return ptype
 	},
 	
