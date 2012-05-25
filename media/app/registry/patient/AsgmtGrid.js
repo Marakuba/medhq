@@ -1,4 +1,4 @@
-Ext.ns('App.patient');
+Ext.ns('App.patient', 'App.preorder');
 
 App.patient.AsgmtGrid = Ext.extend(Ext.grid.EditorGridPanel, {
 
@@ -306,16 +306,22 @@ App.patient.AsgmtGrid = Ext.extend(Ext.grid.EditorGridPanel, {
 				enableRowBody:true,
 				getRowClass: function(record, index, p, store) {
             		var service = record.get('service');
-            		var visit = record.get('visit');
             		if (record.data.comment){
             			p.body = '<p class="helpdesk-row-body"> Комментарий: '+record.data.comment+'</p>';
             		};
             		if (record.data.start) {
                 		return 'preorder-visited-row-body';
             		};
-            		if (!(state == record.data.execution_place) && record.data.service && App.settings.serviceTreeOnlyOwn) {
-            			return 'preorder-other-place-row-body';
-            		};
+            		if (record.data.service){
+            			var branches = Ext.decode(record.data.branches);
+            			var in_array = false;
+	            		Ext.each(branches,function(br){
+		    				if (state == br) in_array = true;
+		    			});
+	            		if (!in_array) {
+	            			return 'preorder-other-place-row-body';
+	            		};
+            		}
             		return 'preorder-actual-row-body';
         		},
         		scope:this
@@ -419,49 +425,25 @@ App.patient.AsgmtGrid = Ext.extend(Ext.grid.EditorGridPanel, {
         var records = this.getSelectionModel().getSelections();
         
         if (records.length) {
-        	var only_one = true;
-        	var patient = records[0].data.patient
-        	Ext.each(records,function(rec){
-	        	if (rec.data.patient != patient){
-	        		only_one = false
-	        		return
-	        	}
-	        });
-        	
-	        if (!only_one){
-	        	Ext.Msg.alert('Ошибка!','Выбрано несколько пациентов!');
-	        	return
-	        }
-	        
-        	var recs = new Array();
-        	Ext.each(records, function(record){
-    	    	if (!record.data.patient){
-    	    		Ext.Msg.alert('Ошибка!','Не указан пациент!');
-    	    		return
-    	    	};
-    	    	if ( state!=record.data.execution_place && record.data.service && App.settings.serviceTreeOnlyOwn){
-    	    		Ext.Msg.alert('Ошибка!',String.format('Вы не можете работать с этой организацией: {0}!', record.data.execution_place_name));
-    	    		return
-    	    	};
-        		if(!record.data.visit) {
-        			recs.push(record);
-        		}
-        	}, this);
-			if (this.hasPatient){
-				App.eventManager.fireEvent('launchapp','visittab',{
-					preorderRecord:recs,
-					patientId:this.patientRecord.data.id,
-					type:'visit'
-				});
-	    	} else {
-	    		App.eventManager.fireEvent('launchapp','visittab',{
-					preorderRecord:recs,
-					patientId:App.uriToId(recs[0].data.patient),
-					type:'visit'
-				});
-	    	}
-        } else {
-        	Ext.Msg.alert('Уведомление','Не выбран ни один предзаказ')
+        	App.preorder.accessCheck(records,function(recs){
+        		if (recs.length){
+		    		if (this.hasPatient){
+						App.eventManager.fireEvent('launchapp','visittab',{
+							preorderRecord:recs,
+							patientId:this.patientRecord.data.id,
+							type:'visit'
+						});
+			    	} else {
+			    		App.eventManager.fireEvent('launchapp','visittab',{
+							preorderRecord:recs,
+							patientId:App.uriToId(recs[0].data.patient),
+							type:'visit'
+						});
+			    	}
+	        	} else {
+		        	Ext.Msg.alert('Уведомление','Не выбран ни один предзаказ')
+		        }
+        	},this);
         }
     },
     

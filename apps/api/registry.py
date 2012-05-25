@@ -1922,6 +1922,7 @@ class ExtPreorderResource(ExtBatchResource):
         bundle.data['base_service'] = obj.service and obj.service.base_service_id
         bundle.data['patient_phone'] = obj.patient and obj.patient.mobile_phone
         bundle.data['operator_name'] = obj.operator or ''
+        bundle.data['branches'] = obj.service and bundle.obj.service.branches.all().values_list('id', flat=True)
         return bundle
     
     class Meta:
