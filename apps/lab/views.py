@@ -159,7 +159,7 @@ def print_results(request, order):
             'results':result_list,
             'preview':preview,
     }
-    template = order.lab_group.template or "print/lab/results.html"
+    template = order.lab_group and order.lab_group.template or "print/lab/results.html"
     return render_to_response(["print/lab/results_state_%s.html" % request.active_profile.state,template],
                               ec,
                               context_instance=RequestContext(request))
