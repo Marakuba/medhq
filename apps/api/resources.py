@@ -195,16 +195,14 @@ class ExtBatchResource(ExtResource):
         bundles = []
         for d in deserialized:
             
-            print d
-    
             bundle = self.build_bundle(data=dict_strip_unicode_keys(d), request=request)
             self.is_valid(bundle, request)
             
-#            print bundle
+            if 'id' in d:
+                kwargs['pk'] = d['id']
     
             try:
                 updated_bundle = self.obj_update(bundle, request=request, **self.remove_api_resource_names(kwargs))
-                    
             except (NotFound, MultipleObjectsReturned):
                 updated_bundle = self.obj_create(bundle, request=request, **self.remove_api_resource_names(kwargs))
     

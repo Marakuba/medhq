@@ -36,7 +36,8 @@ App.visit.OrderedServiceInlineGrid = Ext.extend(Ext.grid.EditorGridPanel, {
 		    {name: 'execution_place', allowBlank: false},
 		    {name: 'total', allowBlank: true},
 		    {name: 'assigment', allowBlank: true},
-		    {name: 'preorder', allowBlank: true}
+		    {name: 'preorder', allowBlank: true},
+		    {name: 'resource_uri', allowBlank: true}
 		]);
 		
 		this.writer = new Ext.data.JsonWriter({
