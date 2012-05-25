@@ -5,7 +5,8 @@ App.calendar.ServiceChoiceGrid = Ext.extend(Ext.grid.GridPanel, {
 	initComponent : function() {
 		
 		this.serviceStore = new Ext.data.RESTStore({
-			autoLoad : true,
+			autoLoad : false,
+			autoSave: false,
 			apiUrl : get_api_url('extendedservice'),
 			model: [
 				    {name: 'id'},
@@ -20,7 +21,7 @@ App.calendar.ServiceChoiceGrid = Ext.extend(Ext.grid.GridPanel, {
 		this.columns =  [
 		    {
 		    	header: "Наименование", 
-		    	width: 45, 
+		    	width: 80, 
 		    	sortable: true, 
 		    	dataIndex: 'service_name'
 		    },{
@@ -32,7 +33,14 @@ App.calendar.ServiceChoiceGrid = Ext.extend(Ext.grid.GridPanel, {
 		    	header: "Цена", 
 		    	width: 45, 
 		    	sortable: true, 
-		    	dataIndex: 'price'
+		    	dataIndex: 'price',
+		    	renderer: function(val, meta, record) {
+		    		if (val == 0){
+		    			return 'услуга не оказывается'
+		    		} else {
+		    			return val
+		    		}
+		    	}
 		    }
 		];		
 		
@@ -77,13 +85,20 @@ App.calendar.ServiceChoiceGrid = Ext.extend(Ext.grid.GridPanel, {
 	        bbar: new Ext.PagingToolbar({
 	            pageSize: 20,
 	            store: this.store,
+	            items:['Услуги и цены показаны для типа оплаты: ',this.ptype_title],
 	            displayInfo: true,
 	            displayMsg: 'Записи {0} - {1} из {2}',
 	            emptyMsg: "Нет записей"
 	        }),
 			viewConfig : {
-				forceFit : true
-				//getRowClass : this.applyRowClass
+				forceFit : true,
+				getRowClass: function(record, index, p, store) {
+            		var price = record.get('price');
+            		if (price == 0) {
+                		return 'preorder-deactive-row-body';
+            		};
+            		return 'preorder-actual-row-body';
+        		}
 			},	
 			listeners: {
 				rowdblclick:this.onChoice.createDelegate(this, []),

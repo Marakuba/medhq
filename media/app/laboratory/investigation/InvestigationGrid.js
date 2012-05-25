@@ -269,14 +269,12 @@ App.investigation.InvestigationGrid = Ext.extend(Ext.grid.GridPanel, {
 		this.start_date = this.start_date.add(Date.DAY,-1);
 		this.startDateField.setValue(this.start_date);
 		this.storeDateFilter('created',this.start_date);
-		this.btnSetDisabled(true);
 	},
 	
 	onNextClick: function(){
 		this.start_date = this.start_date.add(Date.DAY,1);
 		this.startDateField.setValue(this.start_date);
 		this.storeDateFilter('created',this.start_date);
-		this.btnSetDisabled(true);
 	},
 	
 	storeDateFilter: function(field, value){
@@ -296,11 +294,8 @@ App.investigation.InvestigationGrid = Ext.extend(Ext.grid.GridPanel, {
 			var record = this.getSelected();
 			if (record){
 				this.onServiceSelect(record);
-			} else {
-				this.btnSetDisabled(true);
-			};
+			}
 		},scope:this});
-//		this.btnSetDisabled(true);
 	},
 	
 	onStoreLoad : function(store,r,options){

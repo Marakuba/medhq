@@ -87,8 +87,12 @@ App.registry.PatientPreorderGrid = Ext.extend(Ext.grid.GridPanel, {
             		var service = record.get('service');
             		var visit = record.get('visit');
             		var today = new Date();
-            		var start_date = record.data.start.clone(); 
-            		var actual = start_date.clearTime() >= today.clearTime();
+            		if (record.data.start){
+            			var start_date = record.data.start.clone(); 
+            			var actual = start_date.clearTime() >= today.clearTime();
+            		} else {
+            			var actual = true;
+            		}
             		if (record.data.comment){
             			p.body = '<p class="helpdesk-row-body"> Комментарий: '+record.data.comment+'</p>';
             		};

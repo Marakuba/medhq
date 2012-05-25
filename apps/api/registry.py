@@ -739,12 +739,24 @@ class ExtendedServiceResource(ModelResource):
     base_service = fields.ForeignKey(BaseServiceResource, 'base_service')
     staff = fields.ManyToManyField(PositionResource, 'staff',null=True)
     state = fields.ForeignKey(StateResource, 'state')
+    
+    def build_filters(self, filters=None):
+        if filters is None:
+            filters = {}
+
+        orm_filters = super(ExtendedServiceResource, self).build_filters(filters)
+
+        if "payment_type" in filters:
+            setattr(self,'ptype',filters['payment_type'])
+
+        return orm_filters
 
     def dehydrate(self, bundle):
+        ptype = getattr(self,'ptype',u'н')
         bundle.data['staff'] = bundle.obj.staff and [[staff.id,staff] for staff in bundle.obj.staff.all()] or None
         bundle.data['state_name'] = bundle.obj.state.name
         bundle.data['service_name'] = bundle.obj.base_service.name
-        bundle.data['price'] = bundle.obj.get_actual_price()
+        bundle.data['price'] = bundle.obj.get_actual_price(payment_type=ptype)
         return bundle
     
     class Meta:

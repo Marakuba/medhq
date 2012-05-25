@@ -38,6 +38,7 @@ Ext.calendar.TimeslotEditWindow = Ext.extend(Ext.Window, {
 		
 		this.serviceStore = new Ext.data.RESTStore({
 			autoLoad : false,
+			autoSave: false,
 			apiUrl : get_api_url('extendedservice'),
 			model: [
 				    {name: 'id'},
@@ -910,10 +911,14 @@ Ext.calendar.TimeslotEditWindow = Ext.extend(Ext.Window, {
 	
 	onServiceChoice : function() {
         var serviceWindow;
-    	
+        var ptype = this.paymentTypeCB.getValue();
+        ptype_ind = this.paymentTypeCB.store.find('id',ptype);
+        ptype_title = this.paymentTypeCB.store.getAt(ptype_ind).data.title;
+    	this.serviceStore.setBaseParam('payment_type',ptype);
         var serviceGrid = new App.calendar.ServiceChoiceGrid({
        		scope:this,
        		store:this.serviceStore,
+       		ptype_title: ptype_title,
        		fn:function(record){
        			this.serviceCombo.forceValue(record.data.resource_uri)
        			this.service = record.data.resource_uri;
@@ -922,7 +927,7 @@ Ext.calendar.TimeslotEditWindow = Ext.extend(Ext.Window, {
        	 });
         	
        	serviceWindow = new Ext.Window ({
-       		width:700,
+       		width:800,
 			height:500,
 			layout:'fit',
 			title:'Услуги клиники',
