@@ -446,7 +446,10 @@ App.registry.PreorderGrid = Ext.extend(Ext.grid.GridPanel, {
 	},
 	
 	storeReload: function(){
-		this.store.load()
+		//Не позволять грузить весь store без параметров
+		if (this.store.baseParams['patient'] || this.store.baseParams['timeslot__start__day']) {
+			this.store.load()
+		}
 	},
 	
 	onGlobalSearch: function(v){
