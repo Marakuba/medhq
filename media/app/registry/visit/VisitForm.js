@@ -599,7 +599,7 @@ App.visit.VisitForm = Ext.extend(Ext.FormPanel, {
 		
 		this.paymentTypeField = new Ext.form.Hidden({
 			name:'payment_type',
-			value:'н'
+			value:this.type == 'material' ? 'л' : 'н'
 		})
 		
 		this.types = {
@@ -667,11 +667,8 @@ App.visit.VisitForm = Ext.extend(Ext.FormPanel, {
 	        			
 	        		]
         		}],
-			material:[{
-        			xtype:'hidden',
-        			name:'payment_type',
-        			value:'л'
-        		},{
+			material:[this.paymentTypeField,
+				{
         			xtype:'hidden',
         			name:'cls',
         			value:'б'
@@ -1040,12 +1037,6 @@ App.visit.VisitForm = Ext.extend(Ext.FormPanel, {
 				this.reloadTree(id);
 				this.rePrice(id);
 				break
-			default:
-				this.hidePaymentCmb('policy');
-				this.hidePaymentCmb('payer');
-				this.reloadTree(id);
-				this.rePrice(id);
-				break
 		};
 		
 	},
@@ -1207,6 +1198,9 @@ App.visit.VisitForm = Ext.extend(Ext.FormPanel, {
 			this.setPTypeValue(record.data.payment_type);
 			this.paymentTypeGroup.disable();
 			this.onPaymentTypeChoice(this.record.data.payment_type);
+			if (this.record.data.payer){
+				this.reloadTree(this.record.data.payment_type,App.uriToId(this.record.data.payer));
+			}
 			this.payerCmb.disable();
 			this.bioPayerCmb.disable();
 			this.policyCmb.disable();
