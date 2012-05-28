@@ -445,9 +445,9 @@ App.registry.PreorderGrid = Ext.extend(Ext.grid.GridPanel, {
 		this.ttb.doLayout();
 	},
 	
-	storeReload: function(){
+	storeReload: function(preorder){
 		//Не позволять грузить весь store без параметров
-		if (this.store.baseParams['patient'] || this.store.baseParams['timeslot__start__day']) {
+		if ((this.store.baseParams['patient'] && (this.store.baseParams['patient'] == App.uriToId(preorder.data.patient))) || this.store.baseParams['timeslot__start__day']) {
 			this.store.load()
 		}
 	},

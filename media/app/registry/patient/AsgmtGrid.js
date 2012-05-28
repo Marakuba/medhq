@@ -628,9 +628,9 @@ App.patient.AsgmtGrid = Ext.extend(Ext.grid.EditorGridPanel, {
 		this.btnSetDisabled(true);
 	},
 	
-	storeReload: function(){
+	storeReload: function(preorder){
 		//Не позволять грузить весь store без параметров
-		if ((!(this.hasPatient && !this.patientId)) && (this.patientId || this.store.baseParams['expiration__day'])) {
+		if ((!(this.hasPatient && !this.patientId)) && ((this.patientId && (this.patientId == App.uriToId(preorder.data.patient))) || this.store.baseParams['expiration__day'])) {
 			this.store.load()
 		}
 	},

@@ -40,17 +40,17 @@ App.preorder.ErrorWindow = Ext.extend(Ext.Window, {
 		
 		this.tpl = new Ext.Template([
 			'<div name="error">',
-		        '<br><span class=error">{0} {1}</span></br>',
+		        '<br><span class=error"><font size=3 color="red">{0}</font> <font size=3 color="green">{1}</font></span></br>',
 		    '</div>'
 		]);
 		this.captionTpl = new Ext.Template([
 			'<div name="caption">',
-		        '<br><span class=error">{0}</span></br>',
+		        '<br><span class=error"><font size=2>{0}</font></span></br>',
 		    '</div>'
 		]);
 		this.accessedTpl = new Ext.Template([
 			'<div name="accessed">',
-		        '<br><span class=accessed">{0}</span></br>',
+		        '<br><span class=accessed"><font size=3 color="blue">{0}</font></span></br>',
 		    '</div>'
 		]);
 		this.form = new Ext.Panel({
