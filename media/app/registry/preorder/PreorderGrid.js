@@ -347,9 +347,7 @@ App.registry.PreorderGrid = Ext.extend(Ext.grid.GridPanel, {
 						patientId:App.uriToId(recs[0].data.patient),
 						type:'visit'
 					});
-	        	} else {
-		        	Ext.Msg.alert('Уведомление','Не выбран ни один предзаказ')
-		        }
+	        	}
         	},this)
         }
         	

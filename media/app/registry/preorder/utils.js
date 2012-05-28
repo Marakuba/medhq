@@ -44,8 +44,13 @@ App.preorder.ErrorWindow = Ext.extend(Ext.Window, {
 		    '</div>'
 		]);
 		this.captionTpl = new Ext.Template([
-			'<div name="error">',
+			'<div name="caption">',
 		        '<br><span class=error">{0}</span></br>',
+		    '</div>'
+		]);
+		this.accessedTpl = new Ext.Template([
+			'<div name="accessed">',
+		        '<br><span class=accessed">{0}</span></br>',
 		    '</div>'
 		]);
 		this.form = new Ext.Panel({
@@ -83,6 +88,11 @@ App.preorder.ErrorWindow = Ext.extend(Ext.Window, {
 				this.tpl.append(this.form.body,error);
 			},this);
 			this.captionTpl.append(this.form.body,[this.errorCaption]);
+			if(this.recs && this.recs.length){
+				Ext.each(this.recs,function(record){
+					this.accessedTpl.append(this.form.body,[record.data.service_name || record.data.staff_name + ' - без услуги']);
+				},this);
+			}
 			
 		})
 		
@@ -153,7 +163,7 @@ App.preorder.accessCheck = function(records,fn,scope){
     var errorType = 'alert';
     var errorCaption = '';
     if (!errors.length){
-		var recs = new Array();
+    	var recs = new Array();
 		Ext.each(records, function(record){
 			var today = new Date();
 			if (record.data.start) {
@@ -211,23 +221,25 @@ App.preorder.accessCheck = function(records,fn,scope){
 	    	
 	    	recs.push(record);
 		});
+		//Сформирован массив ошибок и массив допустимых строк
+	    if (!recs.length){
+	    	errorType = 'alert';
+	    	errorCaption = 'Нет ни одного предзаказа, удовлетворяющего условиям';
+	    } else {
+	    	errorCaption = 'Продолжить оформление оставшихся записей?'
+	    };
     };
-    //Сформирован массив ошибок и массив допустимых строк
-    if (!recs.length){
-    	errorType = 'alert';
-    	errorCaption = 'Нет ни одной услуги, удовлетворяющей условиям';
-    } else {
-    	errorCaption = 'Продолжить оформление оставшихся записей?'
-    };
+    
     if (errors.length){
     	var errorWin = new App.preorder.ErrorWindow({
     		errorCaption:errorCaption,
     		errorType:errorType,
     		errors:errors,
+    		recs:recs,
     		fn:function(){
     			errorWin.close();
     			//издержки параллелизации
-    			if (recs){
+    			if (recs && recs.length){
     				if (fn){
 						Ext.callback(fn, scope || window, [recs]);
 					} else {
