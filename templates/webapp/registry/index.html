@@ -13,6 +13,11 @@
 			return [API_URL,'dashboard',resource].join("/");
 		}
 		var apps = {{ apps }};
+	    // Set URL of your WebSocketMain.swf here:
+	    WEB_SOCKET_SWF_LOCATION = "{{ STATIC_URL }}resources/js/web-socket-js/WebSocketMain.swf";
+	    // Set this to dump debug message from Flash to console.log:
+	    WEB_SOCKET_DEBUG = false;
+
 	</script>
 	{% endautoescape %}
 	
@@ -75,42 +80,6 @@
 	    <script type="text/javascript" src="{{ ASSET_URL }}"></script>
 	{% endassets %}
 	
-<script type="text/javascript">
-    
-    // Set URL of your WebSocketMain.swf here:
-    WEB_SOCKET_SWF_LOCATION = "{{ STATIC_URL }}resources/js/web-socket-js/WebSocketMain.swf";
-    // Set this to dump debug message from Flash to console.log:
-    WEB_SOCKET_DEBUG = true;
-    
-    // Everything below is the same as using standard WebSocket.
-    
-    var ws;
-    
-    function websocket_init() {
-
-/*       // Connect to Web Socket.
-      // Change host/port here to your own Web Socket server.
-      ws = new WebSocket("ws://192.168.1.204:8888/");
-      //ws = new WebSocket("ws://127.0.0.1:8000/");
-
-      // Set event handlers.
-      ws.onopen = function() {
-        console.log("printserver connected");
-      };
-      ws.onmessage = function(e) {
-        // e.data contains received string.
-        console.log("printserver message: " + e.data);
-      };
-      ws.onclose = function() {
-        console.log("printserver disconnected");
-      };
-      ws.onerror = function() {
-        console.log("printserver error");
-      }; */
-    }
-    
-  </script>
-
 {% endblock %}
 
 {% block body %}

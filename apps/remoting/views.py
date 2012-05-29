@@ -165,9 +165,9 @@ def post_results(lab_order):
                 'measurement':a.measurement and a.measurement.name,
                 'ref_interval':a.ref_range_text
             },
-            'laborder': {
-                'staff':lab_order.staff_text
-            }
+#            'laborder': {
+#                'staff':lab_order.staff_text
+#            }
         }
         results.append(data)
     

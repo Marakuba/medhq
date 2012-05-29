@@ -37,8 +37,7 @@ App.CentralPanel = Ext.extend(Ext.Panel, {
 		
 		this.gsf = new App.SearchField({
 			id:'global-search-field',
-			emptyText:'Ф.И.О. д/р или № заказа',
-			stripCharsRe:new RegExp('[\;\?]')
+			emptyText:'Ф.И.О. д/р или № заказа'
 		});
 
 		config = {
@@ -108,14 +107,14 @@ App.CentralPanel = Ext.extend(Ext.Panel, {
                     	this.launchApp('equipmenttaskgrid');
                     },
                     scope:this            	
-                },{
+                }/*,{
             		text:'Результаты',
             		scale:'medium',
                     handler: function(){
                     	this.launchApp('equipmentresultgrid');
                     },
                     scope:this            	
-                },{
+                }*/,{
 					text:'Дубликат штрих-кода',
 					tooltip:'Печать дубликата',
 					handler:function(btn){
@@ -142,7 +141,7 @@ App.CentralPanel = Ext.extend(Ext.Panel, {
                     },
                     scope:this            	
                 }]
-            },'->',{
+            },'->',/*{
 				xtype:'buttongroup',
 				defaults:{
 					xtype:'button',
@@ -155,7 +154,7 @@ App.CentralPanel = Ext.extend(Ext.Panel, {
 					},
 					scope:this
 				}]
-			},{
+			},*/{
 				xtype:'buttongroup',
 				defaults:{
 					xtype:'button',

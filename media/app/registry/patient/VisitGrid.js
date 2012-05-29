@@ -186,7 +186,7 @@ App.patient.VisitGrid = Ext.extend(Ext.grid.GridPanel, {
 	            emptyMsg: "Нет записей"
 	        }),
 			viewConfig : {
-				emptyText: 'Нет записей'
+				emptyText: '<div class="start-help-text">Для начала работы нажмите кнопку "Новый прием"</div>'
 				//getRowClass : this.applyRowClass
 			}
 			

@@ -287,6 +287,7 @@ def router(object, task_type, **kwargs):
         try:
             post_results(object)
         except Exception, err:
+            logger.exception(err.__unicode__())
             raise SendError(err)
 
 @remoting(remote_provider, len=1, action='lab', name='confirmResults')

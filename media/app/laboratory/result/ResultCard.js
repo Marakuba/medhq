@@ -58,7 +58,7 @@ App.result.ResultCard = Ext.extend(Ext.Panel, {
 				fields:['resource_uri','name','title']
 			}),
 			displayField:'name',
-			width:120
+			width:200
 		});
 		
 		this.printBtn = new Ext.Button({

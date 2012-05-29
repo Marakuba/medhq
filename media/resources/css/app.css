@@ -240,3 +240,11 @@ button.icon-main-button {
 	padding:0;
 	margin:0;
 }
+
+.start-help-text {
+	padding:10px;
+	border-radius:8px;
+	border:2px dashed #CCC;
+	font-size:18pt;
+	color:#AAA;
+}

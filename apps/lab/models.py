@@ -329,8 +329,8 @@ class Sampling(models.Model):
         return u"№%s, %s" % (self.id, self.tube)
     
     def get_services(self):
-#        services = self.visit.orderedservice_set.all()
-        pass    
+        services = self.visit.orderedservice_set.all()
+        return services
     
     
     class Meta:
