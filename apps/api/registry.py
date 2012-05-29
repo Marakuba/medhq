@@ -1874,7 +1874,7 @@ class PreorderResource(ExtResource):
             'card':ALL_WITH_RELATIONS
         }
         
-class ExtPreorderResource(ExtResource):
+class ExtPreorderResource(ExtBatchResource):
     patient = fields.ForeignKey(PatientResource, 'patient', null=True)
     timeslot = fields.OneToOneField('apps.api.registry.EventResource','timeslot', null=True)
     visit = fields.OneToOneField(VisitResource,'visit',null=True)
@@ -1922,6 +1922,7 @@ class ExtPreorderResource(ExtResource):
         bundle.data['base_service'] = obj.service and obj.service.base_service_id
         bundle.data['patient_phone'] = obj.patient and obj.patient.mobile_phone
         bundle.data['operator_name'] = obj.operator or ''
+        bundle.data['branches'] = obj.service and bundle.obj.service.branches.all().values_list('id', flat=True)
         return bundle
     
     class Meta:

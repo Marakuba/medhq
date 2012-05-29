@@ -51,17 +51,17 @@ App.assignment.PreorderInlineGrid = Ext.extend(Ext.grid.EditorGridPanel, {
 		    	},
 		    	scope:this
 		    },
-//		    doTransaction : function(action, rs, batch) {
-//		        function transaction(records) {
-//		            try{
-//		                this.execute(action, records, undefined, batch);
-//		            }catch (e){
-//		                this.handleException(e);
-//		            }
-//		        }
-//		        this.batch=true;
-//		        transaction.call(this, rs);
-//		    }
+		    doTransaction : function(action, rs, batch) {
+		        function transaction(records) {
+		            try{
+		                this.execute(action, records, undefined, batch);
+		            }catch (e){
+		                this.handleException(e);
+		            }
+		        }
+		        this.batch=true;
+		        transaction.call(this, rs);
+		    }
 		});
 		
 		this.serviceStore = new Ext.data.Store({
@@ -291,9 +291,9 @@ App.assignment.PreorderInlineGrid = Ext.extend(Ext.grid.EditorGridPanel, {
 		var d = this.deletedRecords ? this.deletedRecords.length : 0;
 		steps+=m;
 		steps+=d;
-//		if (steps > 0) {
-//			steps = 1;
-//		}
+		if (steps > 0) {
+			steps = 1;
+		}
 		return steps;
 	},
 	

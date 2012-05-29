@@ -149,6 +149,7 @@ App.models.preorderModel = new Ext.data.Record.create([
 	{name: 'expiration', type: 'date',format:'c'},
 	{name: 'price'},
 	{name: 'card'},
+	{name: 'branches'},
 	{name: 'start', type: 'date',format:'c'}
 ]);
 
