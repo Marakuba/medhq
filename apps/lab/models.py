@@ -20,6 +20,7 @@ from constance import config
 import logging
 from django.template import Template, Context
 from django.db.models.signals import post_save
+from lab.managers import ResultManager
 logger = logging.getLogger(__name__)
 
 
@@ -107,6 +108,7 @@ class Analysis(models.Model):
     by_age = models.BooleanField(u'Оценивать по возрасту')
     by_gender = models.BooleanField(u'Оценивать по возрасту')
     by_pregnancy = models.BooleanField(u'Оценивать по возрасту')
+    hidden = models.BooleanField(u'Скрытый', default=False)
     
     def __unicode__(self):
         return self.name
@@ -275,6 +277,8 @@ class Result(models.Model):
     status = models.ForeignKey(Status, blank=True, null=True)
     modified = models.DateTimeField(auto_now=True)
     modified_by = models.ForeignKey(User, blank=True, null=True)
+    
+    objects = ResultManager()
     
     def __unicode__(self):
         a = self.analysis.__unicode__()

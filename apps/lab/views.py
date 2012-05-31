@@ -113,7 +113,7 @@ MANUAL_TEST_CONFIG = {
 from django.template import loader, RequestContext
 
 def print_results(request, order):
-    result_qs = Result.objects.filter(analysis__service__labservice__is_manual=False, order=order, to_print=True).order_by('analysis__service__%s' % BaseService._meta.tree_id_attr, 
+    result_qs = Result.objects.active().filter(analysis__service__labservice__is_manual=False, order=order, to_print=True).order_by('analysis__service__%s' % BaseService._meta.tree_id_attr, 
                 '-analysis__service__%s' % BaseService._meta.left_attr,
                 'analysis__order')
     

@@ -813,7 +813,7 @@ class ResultResource(ExtResource):
         return bundle
     
     class Meta:
-        queryset = Result.objects.select_related().filter() #analysis__service__labservice__is_manual=False
+        queryset = Result.objects.active().select_related()
         authorization = DjangoAuthorization()
         resource_name = 'result'
         always_return_data = True
@@ -1702,7 +1702,8 @@ class EquipmentTaskReadOnlyResource(ExtBatchResource):
         bundle.data['assay_name'] = bundle.obj.equipment_assay.name
         bundle.data['status_name'] = bundle.obj.get_status_display()
         bundle.data['equipment_name'] = bundle.obj.equipment_assay.equipment
-        bundle.data['service_name'] = bundle.obj.ordered_service.service
+        bundle.data['service_name'] = bundle.obj.ordered_service.service.short_name
+        bundle.data['analysis_name'] = bundle.obj.equipment_assay.equipment_analysis
         bundle.data['patient_name'] = bundle.obj.ordered_service.order.patient.short_name()
         bundle.data['order'] = bundle.obj.ordered_service.order.barcode.id
         bundle.data['result'] = bundle.obj.result and bundle.obj.result.get_full_result() or u''
