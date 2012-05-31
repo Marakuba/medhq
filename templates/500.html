@@ -1,3 +1,13 @@
-error page
+{% extends "box.html" %}
 
-{{ request }}
+{% block body %}
+
+<div style="text-align: center; font-family: Arial">
+
+<img src="{{ STATIC_URL }}resources/images/medhq_splash_.png">
+
+<h1 style="font-size: 14pt;">Сожалеем, произошла ошибка на сервере!</h1>
+
+</div>
+
+{% endblock %}

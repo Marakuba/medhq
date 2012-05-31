@@ -13,6 +13,7 @@ App.equipment.EquipmentTaskGrid = Ext.extend(Ext.grid.EditorGridPanel, {
 			{name: 'ordered_service'},
 			{name: 'equipment_name'},
 			{name: 'service_name'},
+			{name: 'analysis_name'},
 			{name: 'patient_name'},
 			{name: 'order'},
 			{name: 'result'},
@@ -37,30 +38,35 @@ App.equipment.EquipmentTaskGrid = Ext.extend(Ext.grid.EditorGridPanel, {
 		this.columns =  [
 		    {
 		    	header: "Добавлено", 
-		    	width: 10,
+		    	width: 18,
 		    	dataIndex: 'created',
-		    	renderer: Ext.util.Format.dateRenderer('d.m.Y')
+		    	renderer: Ext.util.Format.dateRenderer('d.m.Y H:i')
 		    },{
 		    	header: "Заказ", 
 		    	width: 10,
 		    	dataIndex: 'order'
 		    },{
 		    	header: "Пациент", 
-		    	width: 30, 
+		    	width: 25, 
 		    	sortable: true, 
 		    	dataIndex: 'patient_name'
 		    },{
 		    	header: "Оборудование", 
-		    	width: 20, 
+		    	width: 18, 
 		    	dataIndex: 'equipment_name'
 		    },{
 		    	header: "Исследование", 
-		    	width: 50, 
+		    	width: 35, 
 		    	sortable: true, 
 		    	dataIndex: 'service_name'
 		    },{
+		    	header: "Тест", 
+		    	width: 30, 
+		    	sortable: true, 
+		    	dataIndex: 'analysis_name'
+		    },{
 		    	header: "Результат", 
-		    	width: 20, 
+		    	width: 18, 
 		    	dataIndex: 'result'
 		    },/*{
 		    	header: "Кол-во", 
@@ -68,7 +74,7 @@ App.equipment.EquipmentTaskGrid = Ext.extend(Ext.grid.EditorGridPanel, {
 		    	dataIndex: 'repeats'
 		    },*/{
 		    	header: "Статус", 
-		    	width: 8, 
+		    	width: 10, 
 		    	dataIndex: 'status_name'
 		    }
 		];		
