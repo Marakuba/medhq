@@ -30,6 +30,7 @@ def post_orders_to_local(request, data_set, options):
             msg = u'Заказ "%s" для образца №%s %s' % (ord_service.service,specimen_id,status)
         except Exception, err:
             msg = err.__unicode__()
+            logger.exception(u"Ошибка при размещении заказа: %s/%s - %s" % (ord_service.service,specimen_id,msg) )
             success = False
             
         result.append({
@@ -59,13 +60,10 @@ def post_results_to_local(request, data_set, options):
             res = get_result(request, data)
             success_results.append(res.id)
             if __debug__:
-                logger.debug(u"success: %s" % name)
-#                print "success:", name
+                logger.debug(u"Результат анализов успешно сохранен: %s/%s" % (name,specimen_id) )
         except Exception, err:
-            if __debug__:
-                msg = err.__unicode__()
-                logger.exception(u"failed: %s - %s" % (name,msg) )
-#                print "failed:", name, " - ", msg
+            msg = err.__unicode__()
+            logger.exception(u"Ошибка при получении результата: %s/%s - %s" % (name,specimen_id,msg) )
             success = False
             ts = False
         
@@ -122,7 +120,6 @@ def post_data_to_remote(lab, action, data, options={}):
     try:
         if __debug__:
             msg = u'Данные к отправке: %s' % unicode(json_data)
-#            print msg
             logger.debug(msg)
 
         req = urllib2.Request(path, json_data, {'Content-Type': 'application/json'})
@@ -131,16 +128,13 @@ def post_data_to_remote(lab, action, data, options={}):
         f.close()
         return simplejson.loads(response)
     except HTTPError, e:
-        if __debug__:
-            msg = u'Ошибка отправки данных: %s' % e.__unicode__()
-            logger.exception(msg)
-#            print msg
-            
-            msg = e.read()
-            logger.exception(msg)
-#            print msg
+        msg = u'Ошибка отправки данных: %s' % e.__unicode__()
+        logger.exception(msg)
         
-        raise HTTPError(e)
+        msg = e.read()
+        logger.exception(msg)
+        
+        raise Exception(e)
 
 
 def post_results(lab_order):

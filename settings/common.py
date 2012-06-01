@@ -208,7 +208,7 @@ LOGGING = {
             'propagate':False
         },
         'remoting':{
-            'handlers': ['file'],
+            'handlers': ['sentry'],
             'level':'DEBUG',
             'propagate':False
         },

@@ -187,8 +187,7 @@ def try_confirm(specimen_id, services):
     
     results = Result.objects.filter(order__visit__specimen=specimen_id, 
                                     analysis__service__code__in=services)
-    results.filter(analysis__service__labservice__is_manual=False, 
-                   validation=0).delete()
+    results.filter(validation=0).delete()
     results.filter(validation=-1).update(validation=1)
     
     laborder_list = results.values_list('order',flat=True)

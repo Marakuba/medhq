@@ -6,6 +6,8 @@ App.barcodepackage.DuplicateWindow = Ext.extend(Ext.Window, {
 		
 		this.params = this.params || {};
 		
+		this.printer = Ext.state.Manager.getProvider().get('lab_printer');
+		
 		this.form = new Ext.form.FormPanel({
 			baseCls:'x-plain',
 			defaults:{
@@ -72,9 +74,37 @@ App.barcodepackage.DuplicateWindow = Ext.extend(Ext.Window, {
 	                },
 	                scope:this
 	            }
-			}]
+			}, new Ext.form.ComboBox({
+				fieldLabel:'Принтер',
+				anchor:'99%',
+				store:new Ext.data.JsonStore({
+					autoDestroy:true,
+					data:App.barcoding,
+					root:'printers',
+					fields:['id','name','address','port'],
+					idProperty:'id'
+				}),
+				listeners:{
+					select:function(cmb, rec, idx){
+						this.printer = rec.data;
+						Ext.state.Manager.getProvider().set('lab_printer', this.printer);
+						this.msgBox = Ext.MessageBox.progress('Подождите','Идет подключение к принтеру');
+						App.WebSocket = new WebSocket(String.format("ws://{0}:{1}/",this.printer.address,this.printer.port));
+						App.WebSocket.onopen = function(){
+							this.msgBox.hide();
+						}.createDelegate(this);
+						App.WebSocket.onerror = function(){
+							this.msgBox.hide();
+							Ext.MessageBox.alert('Ошибка','Невозможно подключиться к принтеру!');
+						}.createDelegate(this);
+					}
+				},
+				mode:'local',
+				valueField:'id',
+				displayField:'name',
+				value:this.printer.id
+			})]
 		});
-		
 		config = {
 			title:'Печать дубликатов штрих-кода',
 			width:350,

@@ -1,6 +1,6 @@
 # -*- coding: utf-8 -*-
 
-from django.contrib import admin
+from django.contrib import admin, messages
 
 from models import *
 from django.conf.urls.defaults import patterns
@@ -11,6 +11,7 @@ from django import forms
 from django.conf import settings
 from django.utils.encoding import smart_unicode
 from lab.fields import EqAnlModelChoiceField
+from django.http import HttpResponseRedirect
 
 class LabServiceInline(admin.TabularInline):
     """
@@ -175,16 +176,41 @@ class AnalysisAdmin(admin.ModelAdmin):
         models.ManyToManyField: {'widget': forms.CheckboxSelectMultiple()},
     }
     
+    
+def separate(modeladmin, request, queryset):
+    """
+    """
+    orders = list(set(queryset.values_list('order', flat=True)))
+    if len(orders)>1:
+        messages.warning(request, u'Исследования должны быть из одного лабораторного ордера!')
+        return HttpResponseRedirect(request.get_full_path())
+    
+    result = queryset[0]
+    o = result.order
+    laborder = LabOrder.objects.create(visit=o.visit,  
+                                        laboratory=o.laboratory,
+                                        lab_group=o.lab_group,
+                                        is_manual=o.is_manual)
+    queryset.update(order=laborder)
+    messages.info(request, u'Исследования были успешно перенесены в лабораторный ордер #%s' % laborder.id)
+        
+        
+    
+separate.short_description = u'Отделить в новый лабораторный ордер'
+    
+    
 class ResultAdmin(admin.ModelAdmin):
     """
     """
-    list_display = ('visit','analysis','modified','modified_by')
+    list_display = ('visit','order','analysis','modified','modified_by')
     readonly_fields = ('visit','analysis','sample')
+    search_fields = ('order__visit__barcode__id','order__visit__patient__last_name','analysis__service__short_name')
+    ordering = ('-order__visit__barcode__id',)
+    actions = [separate]
+    
     
     def visit(self, obj):
         return obj.order.visit.__unicode__()
-    search_fields = ('order__visit__id','order__visit__patient__last_name','analysis__service__short_name')
-#    ordering = ('-order',)
 
 class EquipmentAdmin(admin.ModelAdmin):
     list_display = ('name','serial_number','order','is_active')

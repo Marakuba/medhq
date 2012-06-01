@@ -73,12 +73,12 @@ def getPrinterBySlug(request):
     data = simplejson.loads(request.raw_post_data)
     slug = data['data'][0]
     try:
-        printer = BarcodePrinter.objects.get(state=request.active_profile.department.state, slug=slug)
+        printers = BarcodePrinter.objects.filter(state=request.active_profile.department.state, slug=slug)
         data = {
-            'address':printer.address,
-            'port':printer.port
+            'printers':[dict(id=p.id, name=p.name, address=p.address, port=p.port) for p in printers]
         }
         return dict(success=True, data=data)
     except Exception, err:
-        logger.error(u"NUMERATION: %s" % err)
+        if __debug__:
+            logger.error(u"NUMERATION: %s" % err)
         return dict(success=False, data={})

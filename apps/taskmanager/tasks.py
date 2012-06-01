@@ -12,21 +12,21 @@ class SendError(Exception):
 
 INITIAL_TASK_PARAMS = dict(max_retries=4, default_retry_delay=5*60)
 
-@task
+@task(ignore_result=True)
 def success(task_instance, request=None):
     NOW = datetime.datetime.now()
     task_instance.completed = NOW
     task_instance.status = u'sended'
     task_instance.save()
-    return task_instance
+#    return task_instance
 
-@task
+@task(ignore_result=True)
 def failure(task_instance, request=None):
     task_instance.status = u'failed'
     task_instance.save()
-    return task_instance
+#    return task_instance
 
-@task
+#@task
 def retry(task_instance, countdown=5*60):
     NOW = datetime.datetime.now()
     next_attempt = NOW + datetime.timedelta(seconds=countdown)
@@ -40,9 +40,6 @@ def retry(task_instance, countdown=5*60):
 def manageable_task(operator, task_type, action, object, action_params={}, 
                     success=subtask(success), failure=subtask(failure), retry=subtask(retry),  
                     task_instance=None, task_params=INITIAL_TASK_PARAMS):
-#    rtr = manageable_task.request.retries
-#    if rtr==2:
-#        revoke(task_id=manageable_task.request.id)
     if task_instance is None:
         task_instance = DelayedTask.objects.create(operator=operator,
                                                    id_task=manageable_task.request.id,
@@ -53,7 +50,7 @@ def manageable_task(operator, task_type, action, object, action_params={},
         action(object, task_type, **action_params)
         
         if success:
-            task_instance = subtask(success).delay(task_instance).get()
+            subtask(success).delay(task_instance)
 #        print "delayed task id: %s. retries: %s" % (manageable_task.request.id, rtr)
     except TypeError, err:
         print err
@@ -61,7 +58,8 @@ def manageable_task(operator, task_type, action, object, action_params={},
         try:
             if retry:
                 countdown = 'countdown' in task_params and task_params['countdown'] or manageable_task.default_retry_delay 
-                task_instance = subtask(retry).delay(task_instance, countdown).get()
+#                task_instance = subtask(retry).delay(task_instance, countdown).get()
+                task_instance = retry(task_instance, countdown)
             kwargs = dict(operator=operator, 
                           task_type=task_type, 
                           action=action, 
@@ -75,4 +73,4 @@ def manageable_task(operator, task_type, action, object, action_params={},
             manageable_task.retry(exc=exc, kwargs=kwargs, **task_params)
         except SendError:
             if failure:
-                task_instance = subtask(failure).delay(task_instance).get()
+                subtask(failure).delay(task_instance)

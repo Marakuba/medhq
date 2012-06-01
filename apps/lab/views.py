@@ -280,12 +280,11 @@ def revert_results(request):
     return HttpResponseBadRequest()
 
 
-def router(object, task_type, **kwargs):
+def router(obj, task_type, **kwargs):
     
     if task_type=='remote':
-        confirm = 'confirm' in kwargs and kwargs['confirm'] or False
         try:
-            post_results(object)
+            post_results(obj)
         except Exception, err:
             logger.exception(err.__unicode__())
             raise SendError(err)

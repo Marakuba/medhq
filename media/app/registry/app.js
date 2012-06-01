@@ -1,30 +1,41 @@
-Ext.ns('App.settings');
+Ext.ns('App.settings','App.barcoding');
 
 Ext.onReady(function(){
-
-	App.direct.numeration.getPrinterBySlug('registry',function websocket_init(res,e) {
-		if(res.success) {
-	    	d = res.data;
-    		App.WebSocket = new WebSocket(String.format("ws://{0}:{1}/",d.address,d.port));
-	    	App.WebSocket.onopen = function() {
-//	    		console.log("printserver connected");
-	    	};
-	    	App.WebSocket.onmessage = function(e) {
-//	    		console.log("printserver message: " + e.data);
-	    	};
-	    	App.WebSocket.onclose = function() {
-//	    		console.log("printserver disconnected");
-	    	};
-	    	App.WebSocket.onerror = function() {
-//	    		console.log("printserver error");
-	    	};
-		}
-    }, this);
 
 	Ext.QuickTips.init();
 	
 	Ext.Ajax.defaultHeaders = {Accept:'application/json'};
 	
+	Ext.state.Manager.setProvider(
+		    new Ext.state.CookieProvider({
+		        expires: new Date(new Date().getTime()+(1000*60*60*24*3)), //1 year from now
+		}));
+	
+	App.direct.numeration.getPrinterBySlug('registry',function(res,e) {
+		if(res && res.success) {
+			App.barcoding.printers = res.data.printers;
+			if(App.barcoding.printers.length) {
+				var printer = Ext.state.Manager.getProvider().get('registry_printer');
+				
+				if(!printer){
+					printer = App.barcoding.printers[0];
+					Ext.state.Manager.getProvider().set('registry_printer', printer);
+				}
+				App.WebSocket = new WebSocket(String.format("ws://{0}:{1}/",printer.address,printer.port));
+		    	App.WebSocket.onopen = function() {
+		    	};
+		    	App.WebSocket.onmessage = function(e) {
+		    	};
+		    	App.WebSocket.onclose = function() {
+		    	};
+		    	App.WebSocket.onerror = function() {
+		    	};
+			}
+		} else {
+			// printer not found handler
+		}
+	}, this);
+
 //	App.settings.reloadPriceByPaymentType = false;
 	
 	
