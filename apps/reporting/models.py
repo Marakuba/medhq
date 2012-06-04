@@ -4,6 +4,7 @@ from service.models import BaseService
 from state.models import State
 from django.conf import settings
 from django.contrib.auth.models import Group
+from mptt.models import MPTTModel
 
 #GROUP_SERVICE_UZI = 'uzi'
 #GROUP_SERVICE_LAB = 'lab'
@@ -72,16 +73,30 @@ class StateGroup(models.Model):
         return u'%s'  %(self.name)
 
 
-class Report(models.Model):
-    """
-    """
+class Query(models.Model):
+    sql = models.TextField(u'SQL-запрос')
     name = models.CharField(u'Название', max_length=300)
-    module = models.CharField(u'Модуль', max_length=100)
+    
+    class Meta:
+        verbose_name = u'sql-запрос'
+        verbose_name_plural = u'sql-запросы'
+        
+    def __unicode__(self):
+        return u'%s'  %(self.name)
+
+class Report(MPTTModel):
+    """
+    """
+    parent = models.ForeignKey('self', null=True, blank=True, related_name='children')
+    name = models.CharField(u'Название', max_length=300)
+    slug = models.CharField(u'Модуль', max_length=100) 
+    template = models.CharField(u'Шаблон', max_length=100) 
+    sql_query = models.ForeignKey(Query, null = True, blank = True)
     is_active = models.BooleanField(u'Активен', default=True)
     
-
-class ReportPermission(models.Model):
-    """
-    """
-    group = models.ForeignKey(Group)
-    reports = models.ManyToManyField(Report, blank=True, null=True)
+    class Meta:
+        verbose_name = u'отчет'
+        verbose_name_plural = u'отчеты'
+        
+    def __unicode__(self):
+        return u'%s'  %(self.name)

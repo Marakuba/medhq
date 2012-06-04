@@ -25,6 +25,16 @@ class StateGroupAdmin(admin.ModelAdmin):
 
     pass
 
+class ReportInline(admin.TabularInline):
+    model = Report
+    extra = 3
+    
+class QueryAdmin(admin.ModelAdmin):
+    inlines = [ReportInline
+    ]
+    pass
+
 admin.site.register(ServiceGroupPrice,ServiceGroupPriceAdmin)
 admin.site.register(ServiceGroup,ServiceGroupAdmin)
 admin.site.register(StateGroup,StateGroupAdmin)
+admin.site.register(Query,QueryAdmin)

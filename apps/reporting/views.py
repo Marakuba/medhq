@@ -14,6 +14,8 @@ import datetime
 from django.views.decorators.cache import cache_control
 from django import forms
 from django.contrib.auth.decorators import login_required, permission_required
+from operator import itemgetter
+from reporting.base import Node
 
 
 
@@ -39,11 +41,27 @@ def report_list(request):
                                                       'title':u'Панель отчетов',
                                                       'today':datetime.date.today()}, 
                               context_instance=RequestContext(request))
+    
+@login_required
+@permission_required('pricelist.add_price')
+@cache_control(no_cache=True)
+def test_report_list(request):
+    form = ReportForm()
+    return render_to_response('reporting/test_list.html', {'form': form,
+                                                      'title':u'Панель отчетов',
+                                                      'today':datetime.date.today()}, 
+                              context_instance=RequestContext(request))
 
+def test_print_report(request, slug):
+    from django.db import connection
+    report = reporting.get_report(slug)(request,slug)
+    root_node = report.make()
+    return render_to_response(report.config.template, {'root_node':root_node},context_instance=RequestContext(request))
+    
 def print_report(request, slug):
     from django.db import connection
     
-    report = reporting.get_report(slug)(request)
+    report = reporting.get_report(slug)(request,slug)
     results = report.prep_data()
     #
     form = ReportForm(report.trim_params)
