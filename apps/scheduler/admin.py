@@ -28,7 +28,8 @@ class PreorderAdmin(admin.ModelAdmin):
     """
     search_fields = ('patient__last_name','patient__first_name')
     list_display = ('patient','service','price','created','modified')
-    exclude = ('timeslot','visit','card')
+    exclude = ('timeslot','card')
+    readolny_fields = ('visit',)
 
 admin.site.register(Preorder, PreorderAdmin)
 admin.site.register(Event, EventAdmin)

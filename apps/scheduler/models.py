@@ -237,7 +237,7 @@ class Preorder(models.Model):
         ordering = ('id',)
         
     def __unicode__(self):
-        return self.id
+        return "<<%s>>" % self.id
     
     
 ### SIGNALS
