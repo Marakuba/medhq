@@ -1,0 +1,55 @@
+{% extends "reporting/base.html" %}
+
+{% block data %}
+		<tr class = "head">
+			{% for field in fields %}
+			    <th>{{field.verbose}}</th>
+			{% endfor %}
+		</tr>
+		
+<!--        <tr class="head">
+            <th></th>
+            <th>Дата</th>
+            <th>Организация</th>
+            <th>Тип цены</th>
+            <th>Цена 1</th>
+            <th>Цена 2</th>
+        </tr>
+
+        {% for gr1 in results.0.0 %}
+            <tr class="group1">
+                <td colspan=6>{{ gr1.0 }}</td>
+            </tr>
+            {% for gr2 in gr1.1 %}
+	            <tr class="group2">
+	                <td colspan=6>{{ gr2.0 }}</td>
+	            </tr>
+	            {% for gr3 in gr2.1 %}
+		            <tr class="group2">
+		                <td colspan=6>{{ gr3.0|default:'Физ.лицо' }}</td>
+		            </tr>
+		            {% for gr4 in gr3.1 %}
+			            <tr class="group2">
+			                <td colspan=6>{{ gr4.0 }}</td>
+			            </tr>
+			            {% for gr5 in gr4.1 %}
+				            <tr class="group2">
+				                <td colspan=6>{{ gr5.0 }}</td>
+				            </tr>
+            
+				            {% for row in gr5.1 %}            
+				            <tr>
+				                <td ></td>
+				                <td >{{ row.0 }}</td>
+				                <td >{{ row.1 }}</td>
+				                <td >{{ row.3|default:'0' }}</td>
+				                <td >{{ row.4 }}</td>
+				            </tr>
+				            {% endfor %}
+				        {% endfor %}
+				    {% endfor %}
+				{% endfor %}
+			{% endfor %}
+        {% endfor %}
+-->
+{% endblock %}

@@ -6,7 +6,6 @@ from django.conf import settings
 from django.db import connection
 from amqplib.client_0_8.method_framing import defaultdict
 from operator import itemgetter
-from reporting.models import Report as Config
 #from models import GROUP_SERVICE_UZI, GROUP_SERVICE_LAB
 
 try:
@@ -97,87 +96,34 @@ Where \
  Tsg.name = '%s'\
  and Tsg_Tbs.baseservice_id = TTvis.service_id)" % (GROUP_SERVICE_RADIO)
     
-    def __init__(self, request,slug):
+    def __init__(self,request, sql_query):
         """
         """
         self.request = request
-        self.params = dict(self.request.GET.items())
-        try:
-            self.config = Config.objects.get(slug = slug)
-            
-            self.query_str = self.config.sql_query.sql
-        except:
-            print 'Report not found'
-        self.trim_params = dict(filter(lambda x: x[1] is not u'',self.params.items()))
-        self.results = self.prep_data()
+        self.results = sql_query
+        
     
-    def prep_data(self):
-        cursor = connection.cursor()
-        cursor.execute(self.prep_query_str())
-        results = cursor.fetchall()
-        cursor.close ()
-        return results
-
-    def prep_query_str(self):    
-        order__cls = ''
-        if self.params['order__cls'] is not u'':
-            order__cls = u"and Tvis.cls = '%s'"% (self.params['order__cls'])
-
-        order__patient = ''
-        if self.params['order__patient'] is not u'':
-            order__patient = u"and Tvis.patient_id = '%s'"% (self.params['order__patient'])
-
-        staff__staff = ''
-        if self.params['staff__staff'] is not u'':
-            staff__staff = u"and Tstaff.id = '%s'"% (self.params['staff__staff'])
-
-        staff__department = ''
-        if self.params['staff__department'] is not u'':
-            staff__department = u"and Tdpr.id = '%s'"% (self.params['staff__department'])
-
-        order__referral = ''
-        if self.params['order__referral'] is not u'':
-            order__referral = u"and Tvis.referral_id = '%s'"% (self.params['order__referral'])
-
-        from_place_filial = ''
-        if self.params['from_place_filial'] is not u'':
-            from_place_filial = u"and Tvis.office_id = '%s'"% (self.params['from_place_filial'])
-
-        from_lab = ''
-        if self.params['from_lab'] is not u'':
-            from_lab = u"and Tvis.source_lab_id = '%s'"% (self.params['from_lab'])
-
-        execution_place_office = ''
-        if self.params['execution_place_office'] is not u'':
-            execution_place_office = u"and Tstgr.id = '%s'"% (self.params['execution_place_office'])
-                        
-        execution_place_filial = ''
-        if self.params['execution_place_filial'] is not u'':
-            execution_place_filial = u"and TTvis.execution_place_id = '%s'"% (self.params['execution_place_filial'])
-            
-        order__payment_type = ''
-        if self.params['order__payment_type'] is not u'':
-            order__payment_type = u"and Tvis.payment_type = '%s'"% (self.params['order__payment_type'])
-
-        return self.query_str % (self.params['start_date']
-                                ,self.params['end_date']
-                                ,order__cls
-                                ,order__patient
-                                ,staff__staff
-                                ,staff__department
-                                ,order__referral
-                                ,from_place_filial
-                                ,from_lab
-                                ,execution_place_office
-                                ,execution_place_filial
-                                ,order__payment_type
-                                )   
+    def convert_results(self,field_list):
+        """
+        field_list - массив словарей с настройками полей
+        обязательный ключ словаря - name
+        """
+        list_result = []
+        for record in self.results:
+            data_item = DataItem()
+            for ind, item in enumerate(record):
+                setattr(data_item,field_list[ind]['name'],item)
+            list_result.append(data_item)
+        return list_result
+    
+                
     def make(self):
-        field_list = map(lambda x:x['name'] if isinstance(x,dict) else x,self.fields)
-        dict_result = [dict(zip(field_list,record)) for record in self.results]
+        field_dict_list = map(lambda x:x if isinstance(x,dict) else {'name':x},self.fields)
+#        dict_result = [dict(zip(field_list,record)) for record in self.results]
+        list_result = self.convert_results(field_dict_list)
         group_list = map(lambda x:x['name'] if isinstance(x,dict) else x,self.groups)
-        sorted(dict_result, key=itemgetter(*group_list))
-        root_node = RootNode(dict_result)
+        list_result = sorted(list_result, key=itemgetter(*group_list))
+        root_node = RootNode(list_result)
         total_aggrs = isinstance(self.totals,dict) and self.totals['aggr'] or []
         totals_data = [aggr for aggr in total_aggrs if aggr['scope']=='data']
         totals_group = [aggr for aggr in total_aggrs if aggr['scope']=='group']
@@ -186,6 +132,7 @@ Where \
         root_node.groups = self.make_groups(root_node.data,self.groups,self.totals)
         for aggr in totals_group:
             root_node.do_aggr_func(aggr)
+#        pdb.set_trace()
         return root_node
     
     def make_groups(self,data,groups,totals=[]):
@@ -198,7 +145,7 @@ Where \
         gr = defaultdict(list)
         while len(data):
             rec = data.pop()
-            gr[rec[field_name]].append(rec)
+            gr[getattr(rec,field_name)].append(rec)
         for key in gr.keys():
             node = Node(key,gr[key])
             node.value = field_name
@@ -216,6 +163,15 @@ Where \
             group_items.append(node)
         return group_items
     
+    def as_list(self,node):
+        total_list = []
+        for record in node.data:
+            total_list.append(record)
+        for group in node.groups:
+            total_list.append(group)
+            total_list += self.as_list(group)
+        return total_list
+                
       
 import pdb  
 def sum_field(node,field,name,scope='group'):
@@ -226,7 +182,7 @@ def sum_field(node,field,name,scope='group'):
 #    if node.aggr_val.has_key(name):
 #        return node.aggr_val[name]
     if node.data:
-        s = sum(map(lambda v:v[field] if v.has_key(field) and  v[field] else 0,node.data))
+        s = sum(map(lambda v:getattr(v,field) if hasattr(v,field) and  getattr(v,field) else 0,node.data))
     else:
         s = sum([sum_field(gr,field,name,scope) for gr in node.groups])
     aggr_val = node.aggr_val.copy()
@@ -241,7 +197,7 @@ def min_field(node,field,name,scope='group'):
 #    if node.aggr_val.has_key(name):
 #        return node.aggr_val[name]
     if node.data:
-        s = min(map(lambda v:v[field] if v.has_key(field) and  v[field] else 0,node.data))
+        s = min(map(lambda v:v.getattr(field) if v.hasattr(field) and  v.getattr(field) else 0,node.data))
     else:
         s = min([min_field(gr,field,name,scope) for gr in node.groups])
     aggr_val = node.aggr_val.copy()
@@ -254,7 +210,7 @@ def max_field(node,field,name,scope='group'):
     """
     """
     if node.data:
-        s = max(map(lambda v:v[field] if v.has_key(field) and  v[field] else 0,node.data))
+        s = max(map(lambda v:v.getattr(field) if v.hasattr(field) and  v.getattr(field) else 0,node.data))
     else:
         s = max([max_field(gr,field,name,scope) for gr in node.groups])
     aggr_val = node.aggr_val.copy()
@@ -275,6 +231,26 @@ def count_field(node,field,name,scope='group'):
     node.aggr_val = aggr_val
     
     return s 
+
+def choices_renderer(choices):
+    """
+        CHOICES: ( (0, 'value'), (1, 'value') .... )
+    """
+    d = dict(choices)
+    
+    def renderer(value, ctx):
+        """
+            value:    значение поля
+            ctx:      целая строка данных
+            
+            из вышестоящей функции-декоратора передается словарь d.
+            value будет одним из ключей данного словаря  
+        """
+        
+        return d[value]
+    
+    return renderer
+
 class Node():
     data = []
     groups = []
@@ -298,7 +274,7 @@ class Node():
     def do_aggr_func(self,aggr):
         if self.aggr_fn.has_key(aggr['func']):
             return self.aggr_fn[aggr['func']](self,aggr['field'],aggr['name'])
-                
+        
 class RootNode(Node):
     
     totals = {
@@ -309,4 +285,10 @@ class RootNode(Node):
     def __init__(self,data):
         self.data = data
         self.name = 'rootNode'
-                
+        
+class DataItem():
+    def __init__(self):
+        pass
+#    def __get__(self,instanse,owner):
+#        pass
+#                
