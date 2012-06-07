@@ -16,6 +16,8 @@ from django import forms
 from django.contrib.auth.decorators import login_required, permission_required
 from operator import itemgetter
 from reporting.base import Node
+from reporting.models import Report as Config
+from django.db import connection
 
 
 
@@ -54,9 +56,22 @@ def test_report_list(request):
 
 def test_print_report(request, slug):
     from django.db import connection
-    report = reporting.get_report(slug)(request,slug)
+    try:
+        config = Config.objects.get(slug = slug)
+        
+        query_str = config.sql_query.sql
+    except:
+        print 'Report not found'
+    sql_query = prep_data(request,query_str)
+    report = reporting.get_report(slug)(request,sql_query)
     root_node = report.make()
-    return render_to_response(report.config.template, {'root_node':root_node},context_instance=RequestContext(request))
+    fields = map(lambda x:x if isinstance(x,dict) else {'name':x,'verbose':x},report.fields)
+    result_list = report.as_list(root_node)
+#    import pdb; pdb.set_trace()
+    result_list
+    return render_to_response(config.template, {'report':report,
+                                                       'root_node':root_node,
+                                                       'fields':fields},context_instance=RequestContext(request))
     
 def print_report(request, slug):
     from django.db import connection
@@ -82,8 +97,23 @@ def print_report(request, slug):
    
 #    print report.prep_query_str()
     #..
-    return render_to_response('reporting/%s.html'%slug ,{  'results': report.make(results)
+    return render_to_response('reporting/%s.html'%slug ,{ 'results': report.make(results)
                                                         ,'name':report.verbose_name
                                                         ,'trim_params':report.chkeys(dict(np),dict(dh)).items()
-                                                        }
-                                ,context_instance=RequestContext(request))
+                                                        }, context_instance=RequestContext(request))
+    
+def prep_data(request,query_str):
+    params = dict(request.GET.items())
+    trim_params = dict(filter(lambda x: x[1] is not u'',params.items()))
+    cursor = connection.cursor()
+    cursor.execute(prep_query_str(params,query_str))
+    results = cursor.fetchall()
+    cursor.close ()
+    return results
+
+def prep_query_str(params,query_str):    
+    s_price_type = ''
+    if str(params['price_type']) is not '':
+        s_price_type = "and Tpr.price_type = '%s'"% (params['price_type'])
+    result =  query_str % (params['start_date'],params['end_date'],s_price_type)
+    return result 
