@@ -116,14 +116,32 @@ Where \
             list_result.append(data_item)
         return list_result
     
-                
+    def fdict(self,fields):
+        """return {'dsf': {'name': 'dsf'},
+                'name': {'name': 'name'},
+                'pt': {'name': 'pt', 'renderer': <function __main__.renderer>}}
+        """        
+        field_dict_list = map(lambda x:x if isinstance(x,dict) else {'name':x},fields)
+        return dict([(field['name'],field) for field in field_dict_list])
+    
     def make(self):
-        field_dict_list = map(lambda x:x if isinstance(x,dict) else {'name':x},self.fields)
+        self.dgroups = self.fdict(self.groups)
+        self.dfields = self.fdict(self.fields)
+        field_list = map(lambda x:x['name'] if isinstance(x,dict) else x,self.fields)
+        dict_result = [dict(zip(field_list,record)) for record in self.results]
+#        pdb.set_trace()
+        list_results = map(lambda x: dict(map(lambda y: (y[0],self.dfields[y[0]]['renderer'](y[1],x) if self.dfields.has_key(y[0]) and self.dfields[y[0]].has_key('renderer') else y[1]),x.items())),dict_result)
+        """list_results = [{'dsf': 'fdsf', 'name': 'sdf', 'pt': 'ggg'},
+                          {'dsf': 'gfh', 'name': 'gfgd', 'pt': 'xxx'}]
+        """
+#        field_list = map(lambda x:x['name'] if isinstance(x,dict) else x,self.fields)
 #        dict_result = [dict(zip(field_list,record)) for record in self.results]
-        list_result = self.convert_results(field_dict_list)
+#        self.results = map(lambda x:map(lambda y:self.fields[y]['renderer'](x[y],x) if isinstance(self.fields[y],dict) else x[y],x),dict_result)
+
         group_list = map(lambda x:x['name'] if isinstance(x,dict) else x,self.groups)
-        list_result = sorted(list_result, key=itemgetter(*group_list))
-        root_node = RootNode(list_result)
+        self.results = sorted(list_results, key=itemgetter(*group_list))
+        root_node = RootNode(list_results)
+        
         total_aggrs = isinstance(self.totals,dict) and self.totals['aggr'] or []
         totals_data = [aggr for aggr in total_aggrs if aggr['scope']=='data']
         totals_group = [aggr for aggr in total_aggrs if aggr['scope']=='group']
@@ -145,10 +163,9 @@ Where \
         gr = defaultdict(list)
         while len(data):
             rec = data.pop()
-            gr[getattr(rec,field_name)].append(rec)
+            gr[rec[field_name]].append(rec)
         for key in gr.keys():
-            node = Node(key,gr[key])
-            node.value = field_name
+            node = Node(field_name,key,gr[key])
             aggrs = isinstance(curr_group,dict) and curr_group['aggr'] or []
             aggrs_data = [aggr for aggr in aggrs if aggr['scope']=='data']
             aggrs_group = [aggr for aggr in aggrs if aggr['scope']=='group']
@@ -164,12 +181,60 @@ Where \
         return group_items
     
     def as_list(self,node):
+        
+        def set_params(dest,config):
+            """
+            добавляет в словарь dest параметры с именами из param_names, присутствующие в config
+            """
+            param_names = ['colspan','cssCls']
+            dest.update(dict(map(lambda x:(x,config[x]) if x in config.keys() else (None,None),param_names)))
+            if dest.has_key(None):
+                dest.pop(None)
+            return dest
+                
+        def get_aggrs(aggr_val,group_config):
+            """
+            формирует массив со словарями значений группировок с указанными настройками, такими как colspan
+            """
+            data = []
+#            pdb.set_trace()
+            for key in aggr_val.keys():
+                item = {'value':aggr_val[key]}
+                data.append(set_params(item,group_config[key]))
+            return data
+                
         total_list = []
+        item_totals = {'type':'totals'}
+        if isinstance(node,RootNode) and self.totals.has_key('aggr') and node.aggr_val.items():
+            dtotals = self.fdict(self.totals['aggr'])
+            totals_data = [set_params({'value':self.totals['verbose']},self.totals)]
+            totals_data += get_aggrs(node.aggr_val,dtotals)
+#            pdb.set_trace()
+            item_totals['data'] = totals_data
+            
+            if not self.totals.has_key('position') or self.totals['position'] in  ('top','both'):
+                total_list.append(item_totals)
+        
         for record in node.data:
-            total_list.append(record)
+            rec = []
+            rec += get_aggrs(record,self.dfields)
+            item = {'type':'data',
+                    'data':rec}
+            total_list.append(item)
+        
         for group in node.groups:
-            total_list.append(group)
+            data = [set_params({'value':group.value},self.dgroups)]
+            if 'aggr' in self.dgroups.keys():
+                daggrs = self.fdict(self.dgroups['aggr'])
+                data += get_aggrs(group.aggr_val,daggrs)
+            item = {'type':'group',
+                    'name':group.name,
+                    'data':data}
+            total_list.append(item)
             total_list += self.as_list(group)
+            
+        if isinstance(node,RootNode) and self.totals.has_key('position') and self.totals['position'] in ('bottom','both'):
+            total_list.append(item_totals)
         return total_list
                 
       
@@ -182,7 +247,7 @@ def sum_field(node,field,name,scope='group'):
 #    if node.aggr_val.has_key(name):
 #        return node.aggr_val[name]
     if node.data:
-        s = sum(map(lambda v:getattr(v,field) if hasattr(v,field) and  getattr(v,field) else 0,node.data))
+        s = sum(map(lambda v:v[field] if field in v and  v[field] else 0,node.data))
     else:
         s = sum([sum_field(gr,field,name,scope) for gr in node.groups])
     aggr_val = node.aggr_val.copy()
@@ -197,7 +262,7 @@ def min_field(node,field,name,scope='group'):
 #    if node.aggr_val.has_key(name):
 #        return node.aggr_val[name]
     if node.data:
-        s = min(map(lambda v:v.getattr(field) if v.hasattr(field) and  v.getattr(field) else 0,node.data))
+        s = min(map(lambda v:v[field] if field in v and  v[field] else 0,node.data))
     else:
         s = min([min_field(gr,field,name,scope) for gr in node.groups])
     aggr_val = node.aggr_val.copy()
@@ -210,7 +275,7 @@ def max_field(node,field,name,scope='group'):
     """
     """
     if node.data:
-        s = max(map(lambda v:v.getattr(field) if v.hasattr(field) and  v.getattr(field) else 0,node.data))
+        s = max(map(lambda v:v[field] if field in v and  v[field] else 0,node.data))
     else:
         s = max([max_field(gr,field,name,scope) for gr in node.groups])
     aggr_val = node.aggr_val.copy()
@@ -265,9 +330,10 @@ class Node():
              }
     aggr_val = {}
     
-    def __init__(self,name, data):
+    def __init__(self,name, value, data):
         self.data = data
         self.name = name
+        self.value = value
         
         
                 
