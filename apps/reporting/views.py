@@ -68,9 +68,10 @@ def test_print_report(request, slug):
     fields = map(lambda x:x if isinstance(x,dict) else {'name':x,'verbose':x},report.fields)
     result_list = report.as_list(root_node)
 #    import pdb; pdb.set_trace()
-    result_list
+#    result_list
     return render_to_response(config.template, {'report':report,
                                                        'root_node':root_node,
+                                                       'result_list':result_list,
                                                        'fields':fields},context_instance=RequestContext(request))
     
 def print_report(request, slug):
@@ -109,6 +110,7 @@ def prep_data(request,query_str):
     cursor.execute(prep_query_str(params,query_str))
     results = cursor.fetchall()
     cursor.close ()
+#    import pdb; pdb.set_trace()
     return results
 
 def prep_query_str(params,query_str):    
