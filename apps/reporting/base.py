@@ -100,6 +100,8 @@ Where \
         """
         """
         self.request = request
+        self.params = dict(self.request.GET.items())
+        self.trim_params = dict(filter(lambda x: x[1] is not u'',self.params.items()))
         self.results = sql_query
         
     
@@ -116,6 +118,9 @@ Where \
             list_result.append(data_item)
         return list_result
     
+    def chkeys(self,d1,d2):
+        return dict((d2[key], value) for (key, value) in d1.items())
+    
     def fdict(self,fields):
         """return {'dsf': {'name': 'dsf'},
                 'name': {'name': 'name'},
@@ -127,8 +132,8 @@ Where \
     def make(self):
         self.dgroups = self.fdict(self.groups)
         self.dfields = self.fdict(self.fields)
-        field_list = map(lambda x:x['name'] if isinstance(x,dict) else x,self.fields)
-        dict_result = [dict(zip(field_list,record)) for record in self.results]
+        self.field_list = map(lambda x:x['name'] if isinstance(x,dict) else x,self.fields)
+        dict_result = [dict(zip(self.field_list,record)) for record in self.results]
 #        pdb.set_trace()
         list_results = map(lambda x: dict(map(lambda y: (y[0],self.dfields[y[0]]['renderer'](y[1],x) if self.dfields.has_key(y[0]) and self.dfields[y[0]].has_key('renderer') else y[1]),x.items())),dict_result)
         """list_results = [{'dsf': 'fdsf', 'name': 'sdf', 'pt': 'ggg'},
@@ -192,14 +197,19 @@ Where \
                 dest.pop(None)
             return dest
                 
-        def get_aggrs(aggr_val,group_config):
+        def get_aggrs(aggr_val,group_config,field_list=[]):
             """
             формирует массив со словарями значений группировок с указанными настройками, такими как colspan
             """
             data = []
 #            pdb.set_trace()
-            for key in aggr_val.keys():
-                item = {'value':aggr_val[key]}
+            #упорядочиваем поля данных в том порядке, как указано в настройках
+            if field_list:
+                iter_list = field_list
+            else: 
+                iter_list = aggr_val.keys()
+            for key in iter_list:
+                item = {'value':aggr_val[key] or '---'}
                 data.append(set_params(item,group_config[key]))
             return data
                 
@@ -217,7 +227,7 @@ Where \
         
         for record in node.data:
             rec = []
-            rec += get_aggrs(record,self.dfields)
+            rec += get_aggrs(record,self.dfields,self.field_list)
             item = {'type':'data',
                     'data':rec}
             total_list.append(item)

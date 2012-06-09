@@ -69,9 +69,27 @@ def test_print_report(request, slug):
     result_list = report.as_list(root_node)
 #    import pdb; pdb.set_trace()
 #    result_list
+
+    form = ReportForm(report.trim_params)
+    dh = []
+    for field_id,field in form.fields.items():
+        dh.append((field_id,field.label))
+
+    np = []
+    for key,values in report.trim_params.items():
+        if isinstance(form.fields[key],forms.ChoiceField):
+            d = dict(form.fields[key].choices)
+            params = report.trim_params[key]
+            if isinstance(form.fields[key],forms.ModelChoiceField):
+                params = int(params)
+            np.append((key,d.get(params)))
+        else:
+            np.append((key,report.trim_params[key]))
     return render_to_response(config.template, {'report':report,
                                                        'root_node':root_node,
                                                        'result_list':result_list,
+                                                       'name':report.verbose_name,
+                                                       'trim_params':report.chkeys(dict(np),dict(dh)).items(),
                                                        'fields':fields},context_instance=RequestContext(request))
     
 def print_report(request, slug):
