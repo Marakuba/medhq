@@ -164,7 +164,6 @@ def get_result(request, data):
         result.value = r['value']
         result.validation = 1
         result.save()
-        result.order.append_staff(data['laborder']['staff'])
         
         msg = u"Результат теста '%s' для образца %s сохранен" % (r['name'],specimen_id)
         if __debug__:
