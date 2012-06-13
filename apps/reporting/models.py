@@ -87,7 +87,7 @@ class Query(models.Model):
 class Report(MPTTModel):
     """
     """
-    parent = models.ForeignKey('self', null=True, blank=True, related_name='children')
+    parent = models.ForeignKey('self', null=True, blank=True, verbose_name=u'Родительский элемент', related_name='children')
     name = models.CharField(u'Название', max_length=300)
     slug = models.CharField(u'Модуль', max_length=100) 
     template = models.CharField(u'Шаблон', max_length=100) 
