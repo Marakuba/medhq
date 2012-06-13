@@ -70,7 +70,7 @@ class Report():
         for aggr in totals_group:
             root_node.do_aggr_func(aggr)
 #        pdb.set_trace()
-        return root_node
+        self.root_node = root_node
     
     def make_groups(self,data,groups,totals=[]):
         if not len(groups):
@@ -106,37 +106,37 @@ class Report():
             group_items.append(node)
         return group_items
     
-    def as_list(self,node):
+    def get_group_data(self,node):
+        data_list = []
+        for record in node.data:
+            rec = get_aggrs(record,self.dfields,self.field_list)
+            item = {'type':'data',
+                    'data':rec}
+            data_list.append(item)
+        for group in node.groups:
+            data = [set_params({'value':group.value},self.dgroups[group.name])]
+            if 'aggr' in self.dgroups.keys():
+                daggrs = self.fdict(self.dgroups['aggr'])
+                data += get_aggrs(group.aggr_val,daggrs)
+            item = {'type':'group',
+                    'name':group.name,
+                    'data':data}
+            data_list.append(item)
+            data_list += self.get_group_data(group)
+        return data_list
+    
+    def as_list(self,node=None):
         
-        def set_params(dest,config):
-            """
-            добавляет в словарь dest параметры с именами из param_names, присутствующие в config
-            """
-            param_names = ['colspan','cssCls']
-            dest.update(dict(map(lambda x:(x,config[x]) if x in config.keys() else (None,None),param_names)))
-            if dest.has_key(None):
-                dest.pop(None)
-            return dest
-                
-        def get_aggrs(aggr_val,group_config,field_list=[]):
-            """
-            формирует массив со словарями значений группировок с указанными настройками, такими как colspan
-            """
-            data = []
-#            pdb.set_trace()
-            #упорядочиваем поля данных в том порядке, как указано в настройках
-            if field_list:
-                iter_list = field_list
-            else: 
-                iter_list = aggr_val.keys()
-            for key in iter_list:
-                if 'hidden' in group_config[key] and group_config[key]['hidden']:
-                    continue
-                item = {'value':aggr_val[key]}
-                data.append(set_params(item,group_config[key]))
-            return data
-                
-        total_list = []
+        node = node or self.root_node
+        general_list = []
+        #Заголовки таблицы
+        headers_data = dict(map(lambda x:(x['name'], x['verbose']) if isinstance(x,dict) and x.has_key('verbose') else (x['name'],x['name']) if isinstance(x,dict) else (x,x),self.fields))
+        headers_data = get_aggrs(headers_data,self.dfields,self.field_list)
+        headers = {'type':'head',
+                    'data':headers_data}
+        general_list.append(headers)
+        
+        #Итоги
         item_totals = {'type':'totals'}
         if isinstance(node,RootNode) and self.totals.has_key('aggr') and node.aggr_val.items():
             dtotals = self.fdict(self.totals['aggr'])
@@ -146,32 +146,45 @@ class Report():
             item_totals['data'] = totals_data
             
             if not self.totals.has_key('position') or self.totals['position'] in  ('top','both'):
-                total_list.append(item_totals)
+                general_list.append(item_totals)
+        #Данные
+        general_list += self.get_group_data(node)
         
-        for record in node.data:
-            rec = []
-            rec += get_aggrs(record,self.dfields,self.field_list)
-            item = {'type':'data',
-                    'data':rec}
-            total_list.append(item)
-        
-        for group in node.groups:
-            data = [set_params({'value':group.value},self.dgroups[group.name])]
-            if 'aggr' in self.dgroups.keys():
-                daggrs = self.fdict(self.dgroups['aggr'])
-                data += get_aggrs(group.aggr_val,daggrs)
-            item = {'type':'group',
-                    'name':group.name,
-                    'data':data}
-            total_list.append(item)
-            total_list += self.as_list(group)
-            
         if isinstance(node,RootNode) and self.totals.has_key('position') and self.totals['position'] in ('bottom','both'):
-            total_list.append(item_totals)
-        return total_list
+            general_list.append(item_totals)
+            
+        pdb.set_trace()
+        return general_list
                 
-      
+def set_params(dest,config):
+    """
+    добавляет в словарь dest параметры с именами из param_names, присутствующие в config
+    """
+    param_names = ['colspan','cssCls','hidden']
+    dest.update(dict(map(lambda x:(x,config[x]) if x in config.keys() else (None,None),param_names)))
+    if dest.has_key(None):
+        dest.pop(None)
+    return dest
+        
+def get_aggrs(aggr_val,group_config,field_list=[]):
+    """
+    формирует массив со словарями значений группировок с указанными настройками, такими как colspan
+    """
+    data = []
+#            pdb.set_trace()
+    #упорядочиваем поля данных в том порядке, как указано в настройках
+    if field_list:
+        iter_list = field_list
+    else: 
+        iter_list = aggr_val.keys()
+    for key in iter_list:
+        if 'hidden' in group_config[key] and group_config[key]['hidden']:
+            continue
+        item = {'value':aggr_val[key]}
+        data.append(set_params(item,group_config[key]))
+    return data
 import pdb  
+
 def sum_field(node,field,name,scope='group'):
     """
     """
