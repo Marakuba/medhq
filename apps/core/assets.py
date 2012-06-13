@@ -696,16 +696,19 @@ js_laboratory = Bundle(
     filters='rjsmin', output='assets/laboratory.js',)
 
 js_reporting = Bundle(
-    'extjs/ux/RowEditor.js',
-
-    'app/reporting/FilterGrid.js',
-    'app/reporting/FieldGrid.js',
-    'app/reporting/GroupGrid.js',
-    'app/reporting/SummaryGrid.js',
+    'extjs/ux/statusbar/StatusBar.js',
+    'app/App.js',
+    'app/Backend.js',
+    'app/Models.js',
+    'app/data/RestStore.js',
     
-    'app/reporting/Designer.js',
-    'app/reporting/Grid.js',
-    'app/reporting/Viewport.js',
+    'app/dict/reports/ReportTree.js',
+    'app/reporting/reports/ReportApp.js',
+    
+    'app/reporting/EventManager.js',
+    'app/reporting/CentralPanel.js',
+    'app/reporting/MainPanel.js',
+    'app/reporting/app.js',
     filters='rjsmin', output='assets/reporting.js',)
 
 js_service = Bundle(
