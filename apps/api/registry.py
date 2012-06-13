@@ -46,6 +46,7 @@ from patient.models import ContractType, Contract
 from scheduler.models import RejectionCause
 from medstandart.models import Standart, StandartItem, Term,\
     Complications, Stage, Phase, NosologicalForm, AgeCategory
+from reporting.models import Report
 
 class UserResource(ModelResource):
 
@@ -2268,6 +2269,45 @@ class ServiceToSend(ExtResource):
             'state':ALL_WITH_RELATIONS
         }        
         
+        
+class ReportResource(ModelResource):
+    
+    parent = fields.ForeignKey('self','parent', null=True)
+    
+    def dehydrate(self, bundle):
+        bundle.data['text'] = bundle.obj.name
+        bundle.data['parent'] =  bundle.obj.parent and bundle.obj.parent.id
+        if bundle.obj.is_leaf_node():
+            bundle.data['leaf'] = bundle.obj.is_leaf_node()
+        return bundle
+    
+
+    def build_filters(self, filters=None):
+        if filters is None:
+            filters = {}
+
+        orm_filters = super(ReportResource, self).build_filters(filters)
+
+        if "parent" in filters:
+            if filters['parent']=='root':
+                del orm_filters['parent__exact']
+                orm_filters['parent__isnull'] = True
+
+        return orm_filters
+    
+    class Meta:
+        queryset = Report.objects.all() 
+        limit = 20000
+        fields = ('id',)
+        resource_name = 'report'
+        authorization = DjangoAuthorization()
+        filtering = {
+            'id':ALL,
+            'name':('istartswith',),
+            'code':('istartswith',),
+            'parent':ALL_WITH_RELATIONS
+        }
+        
 
 class NosologicalFormResource(ExtResource):
     
@@ -2523,7 +2563,8 @@ api.register(MedStandartResource())
 api.register(StandartItemResource())
 
 #reporting
-#api.register(ReportResource())
+api.register(ReportResource())
+
 #api.register(FilterItemResource())
 #api.register(FieldItemResource())
 #api.register(GroupItemResource())

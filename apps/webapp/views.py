@@ -40,6 +40,8 @@ def get_apps(request):
     if request.user.has_perm('examination.add_examinationcard') or request.user.is_superuser:
         apps.append([u'Обследования',u'/webapp/oldexam/'])
         apps.append([u'Обследования (новая версия)',u'/webapp/examination/'])
+    if request.user.is_superuser:
+        apps.append([u'Отчеты',u'/webapp/reporting/'])
     if request.user.is_staff or request.user.is_superuser:
         apps.append([u'Администрирование',u'/admin/'])
 
@@ -146,7 +148,9 @@ def testing(request):
 @login_required
 @render_to('webapp/reporting/index.html')
 def reporting(request):
-    return {}
+    return {
+        'apps':simplejson.dumps(get_apps(request))
+    }
     
 
 @login_required
