@@ -18,105 +18,17 @@ except:
 class Report():
     """
     """
-    query_str = u''
-    verbose_name = u''
-    base_wuery_from_where = u"\
-FROM \
-  public.visit_visit Tvis \
-  left outer join public.visit_orderedservice TTvis on TTvis.order_id = Tvis.id \
-  left outer join public.state_state Tstate on Tstate.id = TTvis.execution_place_id \
-  left outer join public.service_baseservice Tserv on Tserv.id = TTvis.service_id \
-  left outer join public.staff_position Tpstf on Tpstf.id = TTvis.staff_id \
-  left outer join public.staff_staff Tstaff on  Tstaff.id = Tpstf.staff_id \
-  left outer join public.state_department Tdpr on Tdpr.id = Tpstf.department_id \
-  left outer join public.patient_patient Tpnt on Tpnt.id = Tvis.patient_id \
-  left outer join public.visit_referral Trefrl on Trefrl.id = Tvis.referral_id  \
-  left outer join public.visit_referralagent Trefrlagent on Trefrlagent.id = Trefrl.agent_id  \
-  left outer join public.reporting_stategroup_state TTstgr on TTstgr.state_id = TTvis.execution_place_id \
-  left outer join public.reporting_stategroup Tstgr on Tstgr.id = TTstgr.stategroup_id \
-  left outer join public.patient_insurancepolicy Tpolis on Tpolis.id = Tvis.insurance_policy_id \
-  left outer join public.reporting_servicegroup_baseservice TTrepbsgp on TTrepbsgp.baseservice_id = Tserv.id \
-  left outer join public.reporting_servicegroup Trepbsgp on Trepbsgp.id = TTrepbsgp.servicegroup_id \
-WHERE \
-  TTvis.count is not null and TTvis.price is not null and \
-  to_char(Tvis.created,'YYYY-MM-DD') BETWEEN '%s' and '%s'  \
-  %s %s %s %s %s %s %s %s %s %s"
     
-    bq_exists_uzi = u"\
-  and exists (SELECT * \
-FROM \
-  public.reporting_servicegroup Tsg \
-  join public.reporting_servicegroup_baseservice Tsg_Tbs on  Tsg_Tbs.servicegroup_id = Tsg.id \
-Where \
- Tsg.name = '%s'\
- and Tsg_Tbs.baseservice_id = TTvis.service_id)" % (GROUP_SERVICE_UZI)
-
-    bq_notexists_uzi = u"\
-  and not exists (SELECT * \
-FROM \
-  public.reporting_servicegroup Tsg \
-  join public.reporting_servicegroup_baseservice Tsg_Tbs on  Tsg_Tbs.servicegroup_id = Tsg.id \
-Where \
- Tsg.name = '%s'\
- and Tsg_Tbs.baseservice_id = TTvis.service_id)"     % (GROUP_SERVICE_UZI)
-
-    bq_exists_lab = u"\
-  and exists (SELECT * \
-FROM \
-  public.reporting_servicegroup Tsg \
-  join public.reporting_servicegroup_baseservice Tsg_Tbs on  Tsg_Tbs.servicegroup_id = Tsg.id \
-Where \
- Tsg.name = '%s'\
- and Tsg_Tbs.baseservice_id = TTvis.service_id)" % (GROUP_SERVICE_LAB)
-
-    bq_notexists_lab = u"\
-  and not exists (SELECT * \
-FROM \
-  public.reporting_servicegroup Tsg \
-  join public.reporting_servicegroup_baseservice Tsg_Tbs on  Tsg_Tbs.servicegroup_id = Tsg.id \
-Where \
- Tsg.name = '%s'\
- and Tsg_Tbs.baseservice_id = TTvis.service_id)" % (GROUP_SERVICE_LAB)
+    groups = []
+    totals = {}
     
-    bq_exists_radio = u"\
-  and exists (SELECT * \
-FROM \
-  public.reporting_servicegroup Tsg \
-  join public.reporting_servicegroup_baseservice Tsg_Tbs on  Tsg_Tbs.servicegroup_id = Tsg.id \
-Where \
- Tsg.name = '%s'\
- and Tsg_Tbs.baseservice_id = TTvis.service_id)" % (GROUP_SERVICE_RADIO)
-
-    bq_notexists_radio = u"\
-  and not exists (SELECT * \
-FROM \
-  public.reporting_servicegroup Tsg \
-  join public.reporting_servicegroup_baseservice Tsg_Tbs on  Tsg_Tbs.servicegroup_id = Tsg.id \
-Where \
- Tsg.name = '%s'\
- and Tsg_Tbs.baseservice_id = TTvis.service_id)" % (GROUP_SERVICE_RADIO)
-    
-    def __init__(self,request, sql_query):
+    def __init__(self, request, results):
         """
         """
         self.request = request
         self.params = dict(self.request.GET.items())
         self.trim_params = dict(filter(lambda x: x[1] is not u'',self.params.items()))
-        self.results = sql_query
-        
-    
-    def convert_results(self,field_list):
-        """
-        field_list - массив словарей с настройками полей
-        обязательный ключ словаря - name
-        """
-        list_result = []
-        for record in self.results:
-            data_item = DataItem()
-            for ind, item in enumerate(record):
-                setattr(data_item,field_list[ind]['name'],item)
-            list_result.append(data_item)
-        return list_result
+        self.results = results
     
     def chkeys(self,d1,d2):
         return dict((d2[key], value) for (key, value) in d1.items())
@@ -145,9 +57,11 @@ Where \
 
         group_list = map(lambda x:x['name'] if isinstance(x,dict) else x,self.groups)
         self.results = sorted(list_results, key=itemgetter(*group_list))
-        root_node = RootNode(list_results)
+        root_node = RootNode(self.results)
         
-        total_aggrs = isinstance(self.totals,dict) and self.totals['aggr'] or []
+        if not 'aggr' in self.totals:
+            self.totals['aggr'] = []
+        total_aggrs = self.totals['aggr']
         totals_data = [aggr for aggr in total_aggrs if aggr['scope']=='data']
         totals_group = [aggr for aggr in total_aggrs if aggr['scope']=='group']
         for aggr in totals_data:
@@ -162,8 +76,15 @@ Where \
         if not len(groups):
             return []
         curr_group = groups[0]
-        field_name = isinstance(curr_group,dict) and curr_group['name'] or curr_group
-#        print field_name
+        if isinstance(curr_group, basestring):
+            curr_group = {
+                'name':curr_group,
+                'field':curr_group,
+                'aggr':[]
+            }
+        if 'aggr' not in curr_group:
+            curr_group['aggr'] = []
+        field_name = curr_group['name']
         group_items = []
         gr = defaultdict(list)
         while len(data):
@@ -171,7 +92,7 @@ Where \
             gr[rec[field_name]].append(rec)
         for key in gr.keys():
             node = Node(field_name,key,gr[key])
-            aggrs = isinstance(curr_group,dict) and curr_group['aggr'] or []
+            aggrs = curr_group['aggr']
             aggrs_data = [aggr for aggr in aggrs if aggr['scope']=='data']
             aggrs_group = [aggr for aggr in aggrs if aggr['scope']=='group']
             
@@ -209,7 +130,9 @@ Where \
             else: 
                 iter_list = aggr_val.keys()
             for key in iter_list:
-                item = {'value':aggr_val[key] or '---'}
+                if 'hidden' in group_config[key] and group_config[key]['hidden']:
+                    continue
+                item = {'value':aggr_val[key]}
                 data.append(set_params(item,group_config[key]))
             return data
                 
@@ -233,7 +156,7 @@ Where \
             total_list.append(item)
         
         for group in node.groups:
-            data = [set_params({'value':group.value},self.dgroups)]
+            data = [set_params({'value':group.value},self.dgroups[group.name])]
             if 'aggr' in self.dgroups.keys():
                 daggrs = self.fdict(self.dgroups['aggr'])
                 data += get_aggrs(group.aggr_val,daggrs)
