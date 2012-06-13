@@ -64,9 +64,9 @@ def test_print_report(request, slug):
         print 'Report not found'
     sql_query = prep_data(request,query_str)
     report = reporting.get_report(slug)(request,sql_query)
-    root_node = report.make()
+    report.make()
     fields = map(lambda x:x if isinstance(x,dict) else {'name':x,'verbose':x},report.fields)
-    result_list = report.as_list(root_node)
+#    result_list = report.as_list()
 #    import pdb; pdb.set_trace()
 #    result_list
 
@@ -86,8 +86,8 @@ def test_print_report(request, slug):
         else:
             np.append((key,report.trim_params[key]))
     return render_to_response(config.template, {'report':report,
-                                                       'root_node':root_node,
-                                                       'result_list':result_list,
+#                                                       'root_node':root_node,
+#                                                       'result_list':result_list,
                                                        'name':report.verbose_name,
                                                        'trim_params':report.chkeys(dict(np),dict(dh)).items(),
                                                        'fields':fields},context_instance=RequestContext(request))
@@ -132,8 +132,55 @@ def prep_data(request,query_str):
     return results
 
 def prep_query_str(params,query_str):    
+#    print params
     s_price_type = ''
     if str(params['price_type']) is not '':
         s_price_type = "and Tpr.price_type = '%s'"% (params['price_type'])
     result =  query_str % (params['start_date'],params['end_date'],s_price_type)
     return result 
+#    order__cls = ''
+#    s_price_type = ''
+#    if str(params['price_type']) is not '':
+#        s_price_type = "and Tpr.price_type = '%s'"% (params['price_type'])
+#    if params['order__cls'] is not u'':
+#        order__cls = u"and Tvis.cls = '%s'"% (params['order__cls'])
+#    order__patient = ''
+#    if params['order__patient'] is not u'':
+#        order__patient = u"and Tvis.patient_id = '%s'"% (params['order__patient'])
+#    staff__staff = ''
+#    if params['staff__staff'] is not u'':
+#        staff__staff = u"and Tstaff.id = '%s'"% (params['staff__staff'])
+#    staff__department = ''
+#    if params['staff__department'] is not u'':
+#        staff__department = u"and Tdpr.id = '%s'"% (params['staff__department'])
+#    order__referral = ''
+#    if params['order__referral'] is not u'':
+#        order__referral = u"and Tvis.referral_id = '%s'"% (params['order__referral'])
+#    from_place_filial = ''
+#    if params['from_place_filial'] is not u'':
+#        from_place_filial = u"and Tvis.office_id = '%s'"% (params['from_place_filial'])
+#    execution_place_office = ''
+#    if params['execution_place_office'] is not u'':
+#        execution_place_office = u"and Tstgr.id = '%s'"% (params['execution_place_office'])
+#    execution_place_filial = ''
+#    if params['execution_place_filial'] is not u'':
+#        execution_place_filial = u"and TTvis.execution_place_id = '%s'"% (params['execution_place_filial'])
+#    order__payment_type = ''
+#    if params['order__payment_type'] is not u'':
+#        order__payment_type = u"and Tvis.payment_type = '%s'"% (params['order__payment_type'])
+#    if str(params['price_type']) is not '':
+#        s_price_type = "and Tpr.price_type = '%s'"% (params['price_type'])
+#    print query_str
+#    return query_str % (params['start_date']
+#                            ,params['end_date']
+#                            ,order__cls
+#                            ,order__patient
+#                            ,staff__staff
+#                            ,staff__department
+#                            ,order__referral
+#                            ,from_place_filial
+#                            ,execution_place_office
+#                            ,execution_place_filial
+#                            ,order__payment_type
+#                            ,s_price_type
+#                            )   
