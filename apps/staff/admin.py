@@ -14,6 +14,7 @@ class PositionInlineAdmin(admin.TabularInline):
     """
     """
     model = Position
+    can_delete = False
     extra = 1
 
 class StaffAdmin(TabbedAdmin):

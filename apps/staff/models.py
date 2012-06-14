@@ -76,7 +76,14 @@ class Staff(make_person_object('staff')):
         verbose_name = u"Персонал"
         verbose_name_plural = u"Персонал"
         ordering = ('last_name','first_name',)
-        
+
+class PositionManager(models.Manager):
+    """
+    """
+    
+    def active(self):
+        return self.filter(is_active=True)
+            
 
 class Position(models.Model):
     """
@@ -85,6 +92,8 @@ class Position(models.Model):
     staff = models.ForeignKey(Staff)
     title = models.CharField(u'Должность', max_length=50)
     is_active = models.BooleanField(u'Активно', default = True)
+    
+    objects = PositionManager()
 
     class Meta:
         verbose_name = u'должность'
