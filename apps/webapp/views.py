@@ -225,7 +225,7 @@ def get_service_tree(request):
                 node['staff'] = obj.base_service_id in staff_all and sorted(staff_all[obj.base_service_id], key=lambda staff: staff[1])
                 return node
             except Exception, err:
-                logger.error(u"WEBAPP: %s" % err)
+                logger.error(u"NODE DICT: %s" % err.__unicode__())
                 return None
             
         return {
