@@ -6,14 +6,11 @@ from django.conf import settings
 from django.db import connection
 from amqplib.client_0_8.method_framing import defaultdict
 from operator import itemgetter
-#from models import GROUP_SERVICE_UZI, GROUP_SERVICE_LAB
+from django import forms
 
-try:
-    GROUP_SERVICE_UZI = settings.GROUP_SERVICE_UZI
-    GROUP_SERVICE_LAB = settings.GROUP_SERVICE_LAB
-    GROUP_SERVICE_RADIO = settings.GROUP_SERVICE_RADIO
-except:
-    raise Exception, u"Нет настроек групп услуг"
+
+def escape_param(value):
+    return value
 
 class Report():
     """
@@ -21,14 +18,67 @@ class Report():
     
     groups = []
     totals = {}
+    formclass = None
     
-    def __init__(self, request, results):
+    def __init__(self, *args, **kwargs):
         """
+        request
+        formclass
+        filters
+        results
+        request_filters
         """
-        self.request = request
-        self.params = dict(self.request.GET.items())
-        self.trim_params = dict(filter(lambda x: x[1] is not u'',self.params.items()))
-        self.results = results
+        self.request = 'request' in kwargs and kwargs['request'] or None
+        if 'formclass' in kwargs:
+            self.formclass = kwargs['formclass']
+        self.build_filters(*args, **kwargs)
+        self.results = self.prep_data(*args, **kwargs)
+        self.make()
+    
+    def prep_data(self, *args, **kwargs):
+        if 'results' in kwargs:
+            return kwargs['results']
+        return []
+    
+    def build_filters(self, *args, **kwargs):
+        if 'filters' in kwargs:
+            self.filters = kwargs['filters']
+        elif 'request_filters' in kwargs:
+            if not self.request:
+                raise Exception('Request instance must be specified!')
+            r = getattr(self.request, kwargs['request_filters'])
+            params = dict(r.items())
+            self.filters = dict( filter( lambda x: x[1] is not u'',params.items() ) )
+        else:
+            self.filters = {}
+
+        if self.formclass:
+            form = self.formclass(self.filters)
+            if not form.is_valid():
+                raise Exception('Filter data is not valid!')
+
+        
+    def filter_legend(self):
+        if not self.formclass:
+            return []
+
+        form = self.formclass(self.filters)
+        dh = []
+        for field_id,field in form.fields.items():
+            dh.append((field_id,field.label))
+    
+        np = []
+        for key,values in self.filters.items():
+            if isinstance(form.fields[key],forms.ChoiceField):
+                d = dict(form.fields[key].choices)
+                params = self.filters[key]
+                if isinstance(form.fields[key],forms.ModelChoiceField):
+                    params = int(params)
+                np.append((key,d.get(params)))
+            else:
+                np.append((key,self.filters[key]))
+        
+        return self.chkeys(dict(np),dict(dh)).items()
     
     def chkeys(self,d1,d2):
         return dict((d2[key], value) for (key, value) in d1.items())
@@ -41,11 +91,14 @@ class Report():
         field_dict_list = map(lambda x:x if isinstance(x,dict) else {'name':x},fields)
         return dict([(field['name'],field) for field in field_dict_list])
     
+    def dict_result(self):
+        return [dict(zip(self.field_list,record)) for record in self.results]
+    
     def make(self):
         self.dgroups = self.fdict(self.groups)
         self.dfields = self.fdict(self.fields)
         self.field_list = map(lambda x:x['name'] if isinstance(x,dict) else x,self.fields)
-        dict_result = [dict(zip(self.field_list,record)) for record in self.results]
+        dict_result = self.dict_result()
 #        pdb.set_trace()
         list_results = map(lambda x: dict(map(lambda y: (y[0],self.dfields[y[0]]['renderer'](y[1],x) if self.dfields.has_key(y[0]) and self.dfields[y[0]].has_key('renderer') else y[1]),x.items())),dict_result)
         """list_results = [{'dsf': 'fdsf', 'name': 'sdf', 'pt': 'ggg'},
@@ -153,8 +206,41 @@ class Report():
         if isinstance(node,RootNode) and self.totals.has_key('position') and self.totals['position'] in ('bottom','both'):
             general_list.append(item_totals)
             
-        pdb.set_trace()
+#        pdb.set_trace()
         return general_list
+    
+    
+class SqlReport(Report):
+    
+    def prep_data(self, *args, **kwargs):
+        if 'query' not in kwargs:
+            raise Exception('SQL query must be specified!')
+        cursor = connection.cursor()
+        q = self.prep_query_str( kwargs['query'] )
+        cursor.execute( q )
+        results = cursor.fetchall()
+        cursor.close ()
+        return results
+    
+    def prep_query_str(self, query):
+        
+        from django.template import Template, Context
+
+        t = Template(query)
+        c = Context(self.filters)
+        return t.render(c)
+    
+    
+class OrmReport(Report):
+    
+    def dict_result(self):
+        return [dict([field, getattr(record, field)] for field in self.field_list) for record in self.results]
+    
+    def prep_data(self, *args, **kwargs):
+        if 'queryset' not in kwargs:
+            raise Exception('QuerySet must be specified')
+        return list(kwargs['queryset'])
+    
                 
 def set_params(dest,config):
     """
@@ -298,9 +384,3 @@ class RootNode(Node):
         self.data = data
         self.name = 'rootNode'
         
-class DataItem():
-    def __init__(self):
-        pass
-#    def __get__(self,instanse,owner):
-#        pass
-#                

@@ -7,7 +7,7 @@ from base import Report
 from visit.settings import PAYMENT_TYPES
 import reporting
 from reporting.forms import ReportForm
-from django.shortcuts import render_to_response
+from django.shortcuts import render_to_response, get_object_or_404
 from django.template.context import RequestContext
 #from visit.forms import ReportForm
 import datetime
@@ -16,22 +16,9 @@ from django import forms
 from django.contrib.auth.decorators import login_required, permission_required
 from operator import itemgetter
 from reporting.base import Node
-from reporting.models import Report as Config
+from reporting.models import Report as ReportConfig
 from django.db import connection
 
-
-
-#def payments(request):
-#    form = PaymentForm()
-#    report = PatientReport(request)
-#    extra_context = {
-#                     'form':form,
-#                     }
-#    extra_context.update(report.get_results())
-#    return direct_to_template(request, 
-#                              template="reports/payments.html", 
-#                              extra_context=extra_context)
-    
 
 
 @login_required
@@ -55,42 +42,18 @@ def test_report_list(request):
                               context_instance=RequestContext(request))
 
 def test_print_report(request, slug):
-    from django.db import connection
-    try:
-        config = Config.objects.get(slug = slug)
-        
-        query_str = config.sql_query.sql
-    except:
-        print 'Report not found'
-    sql_query = prep_data(request,query_str)
-    report = reporting.get_report(slug)(request,sql_query)
-    report.make()
-    fields = map(lambda x:x if isinstance(x,dict) else {'name':x,'verbose':x},report.fields)
-#    result_list = report.as_list()
-#    import pdb; pdb.set_trace()
-#    result_list
+    
+    report_config = get_object_or_404(ReportConfig, slug=slug, is_active=True)
+    report = reporting.get_report(slug)(request=request,
+                                        query=report_config.get_sql(),
+                                        request_filters='GET')
 
-    form = ReportForm(report.trim_params)
-    dh = []
-    for field_id,field in form.fields.items():
-        dh.append((field_id,field.label))
-
-    np = []
-    for key,values in report.trim_params.items():
-        if isinstance(form.fields[key],forms.ChoiceField):
-            d = dict(form.fields[key].choices)
-            params = report.trim_params[key]
-            if isinstance(form.fields[key],forms.ModelChoiceField):
-                params = int(params)
-            np.append((key,d.get(params)))
-        else:
-            np.append((key,report.trim_params[key]))
-    return render_to_response(config.template, {'report':report,
-#                                                       'root_node':root_node,
-#                                                       'result_list':result_list,
-                                                       'name':report.verbose_name,
-                                                       'trim_params':report.chkeys(dict(np),dict(dh)).items(),
-                                                       'fields':fields},context_instance=RequestContext(request))
+    return render_to_response([report_config.template,'reporting/%s.html' % slug,'reporting/base.html'], 
+                              {
+                                'name':report_config.name,
+                                'report':report,
+                              },
+                              context_instance=RequestContext(request))
     
 def print_report(request, slug):
     from django.db import connection
