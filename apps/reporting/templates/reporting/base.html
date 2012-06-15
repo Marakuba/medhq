@@ -22,7 +22,7 @@
 	<h1>{{ name }}</h1>
 	
 	<table class="params" border="0" cellpadding="0" cellspacing="1">
-	{% for params in trim_params %}
+	{% for params in report.filter_legend %}
 	<tr>
 	<td>{{ params.0 }}</td><td class="data">{{ params.1 }}</td></tr>
 	{% endfor %}

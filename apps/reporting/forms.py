@@ -17,6 +17,14 @@ referrals = Referral.objects.all()
 places_filial = State.objects.all()
 places_office = StateGroup.objects.all()
 
+class BaseDateForm(forms.Form):
+
+    start_date = forms.DateField(label=u'Дата с',
+                                 required=False,
+                                 widget=forms.DateInput(attrs={'class':'date-field'}))
+    end_date = forms.DateField(label=u'Дата по',
+                               required=False,
+                               widget=forms.DateInput(attrs={'class':'date-field'}))
 
 class ReportForm(forms.Form):
     """
