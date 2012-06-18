@@ -38,7 +38,7 @@ def retry(task_instance, countdown=5*60):
 
 @task(**INITIAL_TASK_PARAMS)
 def manageable_task(operator, task_type, action, object, action_params={}, 
-                    success=subtask(success), failure=subtask(failure), retry=subtask(retry),  
+                    success=subtask(success), failure=subtask(failure), retry=retry,  
                     task_instance=None, task_params=INITIAL_TASK_PARAMS):
     if task_instance is None:
         task_instance = DelayedTask.objects.create(operator=operator,
@@ -46,15 +46,16 @@ def manageable_task(operator, task_type, action, object, action_params={},
                                                    type=task_type,
                                                    status=u'sending',
                                                    assigned_to=object)
+        "instance created"
     try:
         action(object, task_type, **action_params)
-        
+        print "action run"
         if success:
+            print "success subtask"
             subtask(success).delay(task_instance)
 #        print "delayed task id: %s. retries: %s" % (manageable_task.request.id, rtr)
-    except TypeError, err:
-        print err
     except SendError, exc:
+        print "retrying"
         try:
             if retry:
                 countdown = 'countdown' in task_params and task_params['countdown'] or manageable_task.default_retry_delay 
@@ -72,5 +73,6 @@ def manageable_task(operator, task_type, action, object, action_params={},
                           task_params=task_params)
             manageable_task.retry(exc=exc, kwargs=kwargs, **task_params)
         except SendError:
+            print "failure"
             if failure:
                 subtask(failure).delay(task_instance)

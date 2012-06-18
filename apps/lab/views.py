@@ -316,7 +316,7 @@ def confirm_results(request):
                                   action=router, 
                                   object=lab_order, 
                                   action_params=action_params,
-                                  task_params={'countdown':20})
+                                  task_params={'countdown':300})
 #                    for r in resp:
 #                        logger.debug(u"LAB: %s %s" % (r['success'],r['message']))
         except Exception, err:

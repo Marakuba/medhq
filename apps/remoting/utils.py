@@ -77,7 +77,7 @@ def get_ordered_service(request, data):
         service = BaseService.objects.get(code=data['order']['code'])
 
     except ObjectDoesNotExist:
-        msg = u"Исследование с кодом '%s' не найдено" % data['order']['code']
+        msg = u"<font color='red'>Образец %s: исследование с кодом '%s' не найдено</font>" % (data['visit']['specimen'], data['order']['code'])
         if __debug__:
             logger.exception(msg)
         raise Exception(msg)

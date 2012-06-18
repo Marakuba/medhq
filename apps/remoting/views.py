@@ -32,7 +32,7 @@ def post_orders_to_local(request, data_set, options):
             msg = u'Заказ "%s" для образца №%s %s' % (ord_service.service,specimen_id,status)
         except Exception, err:
             msg = err.__unicode__()
-            logger.exception(u"Ошибка при размещении заказа: %s/%s - %s" % (ord_service.service,specimen_id,msg) )
+            logger.exception(u"Ошибка при размещении заказа: %s - %s" % (specimen_id,msg) )
             success = False
             
         result.append({
