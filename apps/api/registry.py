@@ -2278,7 +2278,7 @@ class ReportResource(ModelResource):
         return orm_filters
     
     class Meta:
-        queryset = Report.objects.all() 
+        queryset = Report.objects.filter(is_active=True) 
         limit = 20000
         fields = ('id',)
         resource_name = 'report'
@@ -2286,7 +2286,7 @@ class ReportResource(ModelResource):
         filtering = {
             'id':ALL,
             'name':('istartswith',),
-            'code':('istartswith',),
+            'is_active':ALL,
             'parent':ALL_WITH_RELATIONS
         }
         

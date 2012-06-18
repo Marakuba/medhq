@@ -28,6 +28,6 @@ Ext.onReady(function(){
 	});
 
 	
-//	centralPanel.launchApp('reports');
+	centralPanel.launchApp('reports');
 	
 });
