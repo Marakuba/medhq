@@ -3,6 +3,12 @@ Ext.ns('App.reporting','App.dict');
 App.reporting.ReportApp = Ext.extend(Ext.Panel, {
 	initComponent : function() {
 		
+		this.printBtn = new Ext.Button({
+    		text:'Печать',
+    		iconCls:'silk-printer',
+    		handler:this.onPrint.createDelegate(this,[]),
+    		scope:this
+    	});
 		
 		this.contentPanel = new Ext.Panel({
 			region:'center',
@@ -14,7 +20,8 @@ App.reporting.ReportApp = Ext.extend(Ext.Panel, {
  				border:false
  			},
     		items: [
-    		]
+    		],
+    		tbar:[this.printBtn]
 		});
 		
 		this.tree = new App.dict.ReportTree({
@@ -25,35 +32,14 @@ App.reporting.ReportApp = Ext.extend(Ext.Panel, {
 			scope:this
 		});
 		
-		/*this.examGrid = new App.examination.CardGrid({
-			staff:this.staff,
-			border: false,
-//			split:true,
-			bbar: new Ext.PagingToolbar({
-	            pageSize: 30,
-	            store: this.store,
-	            displayInfo: true,
-	            displayMsg: 'Показана запись {0} - {1} из {2}',
-	            emptyMsg: "Нет записей"
-	        }),
-
-			listeners:{
-				rowselect:function(record){
-					if (record){
-						this.onPreview(record.data.id);
-					}
-				},
-				rowdblclick:function(grid,rowIndex,e){
-					var record = grid.getSelectionModel().getSelected();
-					if (!record || record.data.executed){
-						return false
-					}
-					this.print_name = record.data.name;
-					this.editCard(record);
-				},
-				scope:this
-			}
-		});*/
+		this.refreshBtn = new Ext.Button({
+			text:'Обновить',
+			iconCls:'silk-printer',
+			handler:function(){
+        		this.tree.loader.load();
+        	},
+        	scope:this
+		})
 		
 		this.conclPanel = new Ext.Panel({
 			region:'west',
@@ -74,12 +60,15 @@ App.reporting.ReportApp = Ext.extend(Ext.Panel, {
 		
 		var config = {
 			id:'concl-app',
-			closable:true,
+			closable:false,
 			title: 'Панель отчетов',
 			layout: 'border',	
      		items: [
 				this.conclPanel,
 				this.contentPanel
+			],
+			tbar:[
+				this.refreshBtn
 			]
 		};
 		
@@ -91,7 +80,7 @@ App.reporting.ReportApp = Ext.extend(Ext.Panel, {
 		},this)
 	},
 	
-	onPreview: function(card_id){
+	onPreview: function(report_id){
 		var list = new Ext.Panel({
 			autoLoad:String.format('/widget/examination/card/{0}/',card_id)
 		});
@@ -117,7 +106,9 @@ App.reporting.ReportApp = Ext.extend(Ext.Panel, {
 		
 		App.eventManager.fireEvent('launchapp', 'neocard',config);
 		
-	}
+	},
+	
+	onPrint:function(){}
 });
 
 Ext.reg('reports', App.reporting.ReportApp);
