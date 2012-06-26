@@ -701,6 +701,31 @@ js_reporting = Bundle(
     'app/Backend.js',
     'app/Models.js',
     'app/data/RestStore.js',
+    'app/form/ClearableComboBox.js',
+    'app/form/LazyComboBox.js',
+    'app/ux/GSearchField.js',
+    'app/ux/InputTextMask.js',
+    
+    'app/registry/patient/clientaccount/backends.js',
+    'app/registry/patient/clientaccount/ClientAccountGrid.js',
+    'app/registry/patient/IDCardForm.js',
+    'app/registry/patient/ContractGrid.js',
+    'app/registry/insurance/PolicyGrid.js',
+    'app/registry/patient/PatientForm.js',
+    'app/registry/patient/PatientWindow.js',
+    'app/choices/staff/StaffChoiceGrid.js',
+    'app/choices/staff/StaffChoiceWindow.js',
+    
+    'app/choices/referral/ReferralChoiceGrid.js',
+    'app/choices/referral/ReferralChoiceWindow.js',
+    
+    'app/choices/state/StateChoiceGrid.js',
+    'app/choices/state/StateChoiceWindow.js',
+    
+    'app/choices/patient/PatientChoiceGrid.js',
+    'app/choices/patient/PatientChoiceWindow.js',
+    
+    'app/reporting/reports/FilterPanel.js',
     
     'app/dict/reports/ReportTree.js',
     'app/reporting/reports/ReportApp.js',

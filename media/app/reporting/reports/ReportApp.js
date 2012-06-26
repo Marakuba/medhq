@@ -9,6 +9,12 @@ App.reporting.ReportApp = Ext.extend(Ext.Panel, {
     		handler:this.onPrint.createDelegate(this,[]),
     		scope:this
     	});
+    	
+    	this.filtersPanel = new App.reporting.FilterPanel({
+    		region:'center',
+    		border:true,
+ 			margins:'5 5 5 0'
+    	})
 		
 		this.contentPanel = new Ext.Panel({
 			region:'center',
@@ -25,6 +31,12 @@ App.reporting.ReportApp = Ext.extend(Ext.Panel, {
 		});
 		
 		this.tree = new App.dict.ReportTree({
+			collapsible:true,
+			collapseMode:'mini',
+ 			width:550,
+ 			region:'west',
+ 			margins:'0 5 0 0',
+ 			border:false,
 			fn:function(node){
 				this.node = node;
 				Ext.callback(this.fn, this.scope || window, [node]);
@@ -41,7 +53,7 @@ App.reporting.ReportApp = Ext.extend(Ext.Panel, {
         	scope:this
 		})
 		
-		this.conclPanel = new Ext.Panel({
+		this.treePanel = new Ext.Panel({
 			region:'west',
  			border:false,
  			header:false,
@@ -64,8 +76,8 @@ App.reporting.ReportApp = Ext.extend(Ext.Panel, {
 			title: 'Панель отчетов',
 			layout: 'border',	
      		items: [
-				this.conclPanel,
-				this.contentPanel
+				this.tree,
+				this.filtersPanel
 			],
 			tbar:[
 				this.refreshBtn

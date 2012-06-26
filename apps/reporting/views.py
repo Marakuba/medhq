@@ -47,8 +47,7 @@ def test_print_report(request, slug):
     report = reporting.get_report(slug)(request=request,
                                         query=report_config.get_sql(),
                                         request_filters='GET')
-
-    return render_to_response([report_config.template,'reporting/%s.html' % slug,'reporting/base.html'], 
+    return render_to_response([report_config.template,'reporting/price-dynamic-test.html','reporting/base.html'], 
                               {
                                 'name':report_config.name,
                                 'report':report,
