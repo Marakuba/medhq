@@ -329,6 +329,9 @@ class ReferralResource(ExtResource):
         kwargs['operator']=request.user
         result = super(ReferralResource, self).obj_create(bundle=bundle, request=request, **kwargs)
         return result
+    def dehydrate(self, bundle):
+        bundle.data['referral_type_name'] = bundle.obj.get_referral_type_display()
+        return bundle
 
     class Meta:
         queryset = Referral.objects.all() #@UndefinedVariable
@@ -402,7 +405,7 @@ class StateResource(ModelResource):
         filtering = {
             'id':ALL,
             'type':ALL,
-            'name':('istartswith',),
+            'name':ALL,
             'uuid':ALL,
             'remotestate':ALL_WITH_RELATIONS
         }

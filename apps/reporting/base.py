@@ -28,10 +28,12 @@ class Report():
         results
         request_filters
         """
+        
         self.request = 'request' in kwargs and kwargs['request'] or None
         if 'formclass' in kwargs:
             self.formclass = kwargs['formclass']
         self.build_filters(*args, **kwargs)
+#        pdb.set_trace()
         self.results = self.prep_data(*args, **kwargs)
         self.make()
     
@@ -97,6 +99,9 @@ class Report():
     def make(self):
         self.dgroups = self.fdict(self.groups)
         self.dfields = self.fdict(self.fields)
+        for field in self.dfields.keys():
+            if field in self.dgroups.keys():
+                self.dfields[field]['hidden'] = True
         self.field_list = map(lambda x:x['name'] if isinstance(x,dict) else x,self.fields)
         dict_result = self.dict_result()
 #        pdb.set_trace()
@@ -122,7 +127,6 @@ class Report():
         root_node.groups = self.make_groups(root_node.data,self.groups,self.totals)
         for aggr in totals_group:
             root_node.do_aggr_func(aggr)
-#        pdb.set_trace()
         self.root_node = root_node
     
     def make_groups(self,data,groups,totals=[]):
@@ -185,7 +189,7 @@ class Report():
         #Заголовки таблицы
         headers_data = dict(map(lambda x:(x['name'], x['verbose']) if isinstance(x,dict) and x.has_key('verbose') else (x['name'],x['name']) if isinstance(x,dict) else (x,x),self.fields))
         headers_data = get_aggrs(headers_data,self.dfields,self.field_list)
-        headers = {'type':'head',
+        headers = {'type':'header',
                     'data':headers_data}
         general_list.append(headers)
         
@@ -209,7 +213,6 @@ class Report():
 #        pdb.set_trace()
         return general_list
     
-    
 class SqlReport(Report):
     
     def prep_data(self, *args, **kwargs):
@@ -221,7 +224,6 @@ class SqlReport(Report):
         results = cursor.fetchall()
         cursor.close ()
         return results
-    
     def prep_query_str(self, query):
         
         from django.template import Template, Context
