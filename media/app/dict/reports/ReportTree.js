@@ -8,7 +8,7 @@ App.dict.ReportTree = Ext.extend(Ext.tree.TreePanel, {
         config = {
                 margins: '0 0 5 5',
                 root:  new Ext.tree.AsyncTreeNode({
-	            	expanded: false,
+	            	expanded: true,
 	            	text:'Отчеты',
 	            	id:'root'
                 }),
@@ -57,8 +57,6 @@ App.dict.ReportTree = Ext.extend(Ext.tree.TreePanel, {
 			}
 		}, this);
 		
-		
-
 		Ext.apply(this, Ext.apply(this.initialConfig, config));
 		App.dict.ReportTree.superclass.initComponent.apply(this, arguments);
 	}

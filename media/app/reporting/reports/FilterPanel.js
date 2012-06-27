@@ -4,6 +4,23 @@ App.reporting.FilterPanel = Ext.extend(Ext.Panel, {
 	
     initComponent: function() {
     	
+    	this.startDateField = new Ext.form.DateField({
+			name:'start_date',
+			format:'d.m.Y',
+			plugins:[new Ext.ux.netbox.InputTextMask('99.99.9999')],
+			minValue:new Date(1901,1,1),
+        	fieldLabel: 'Дата с',
+        	allowBlank:false
+		}),
+    	this.endDateField = new Ext.form.DateField({		
+			name:'end_date',
+			format:'d.m.Y',
+			plugins:[new Ext.ux.netbox.InputTextMask('99.99.9999')],
+			minValue:new Date(1901,1,1),
+        	fieldLabel: 'Дата по',
+        	allowBlank:false
+		}),
+    	
     	this.clsCmb = new Ext.form.LazyClearableComboBox({
 		    typeAhead: true,
 		    fieldLabel:'Форма обслуживания',
@@ -45,7 +62,7 @@ App.reporting.FilterPanel = Ext.extend(Ext.Panel, {
         	fieldLabel:'Пациент',
         	name: 'order__patient',
 			anchor:'98%',
-			hideTrigger:true,
+			hideTrigger:false,
         	store:this.patientStore,
 		    displayField: 'full_name',
 		    listeners:{
@@ -85,7 +102,7 @@ App.reporting.FilterPanel = Ext.extend(Ext.Panel, {
         	fieldLabel:'Врач',
         	name: 'staff__staff',
 			anchor:'98%',
-			hideTrigger:true,
+			hideTrigger:false,
         	store:this.staffStore,
 		    displayField: 'name',
 		    listeners:{
@@ -137,7 +154,7 @@ App.reporting.FilterPanel = Ext.extend(Ext.Panel, {
         	fieldLabel:'Кто направил',
         	name: 'order__referral',
 			anchor:'98%',
-			hideTrigger:true,
+			hideTrigger:false,
         	store:this.referralStore,
 		    displayField: 'name',
 		    listeners:{
@@ -155,7 +172,7 @@ App.reporting.FilterPanel = Ext.extend(Ext.Panel, {
         	fieldLabel:'Место первичной регистрации (филиал)',
         	name: 'from_place_filial',
 			anchor:'98%',
-			hideTrigger:true,
+			hideTrigger:false,
         	store: new Ext.data.RESTStore({
 				autoLoad : false,
 				autoSave : true,
@@ -182,7 +199,7 @@ App.reporting.FilterPanel = Ext.extend(Ext.Panel, {
         	fieldLabel:'Лаборатория (плательщик)',
         	name: 'from_lab',
 			anchor:'98%',
-			hideTrigger:true,
+			hideTrigger:false,
         	store: new Ext.data.RESTStore({
 				autoLoad : false,
 				autoSave : true,
@@ -209,7 +226,7 @@ App.reporting.FilterPanel = Ext.extend(Ext.Panel, {
         	fieldLabel:'Место выполнения (ОФИС)',
         	name: 'execution_place_office',
 			anchor:'98%',
-			hideTrigger:true,
+			hideTrigger:false,
         	store: new Ext.data.RESTStore({
 				autoLoad : false,
 				autoSave : true,
@@ -236,7 +253,7 @@ App.reporting.FilterPanel = Ext.extend(Ext.Panel, {
         	fieldLabel:'Место выполнения (ФИЛИАЛ)',
         	name: 'execution_place_filial',
 			anchor:'98%',
-			hideTrigger:true,
+			hideTrigger:false,
         	store: new Ext.data.RESTStore({
 				autoLoad : false,
 				autoSave : true,
@@ -259,7 +276,7 @@ App.reporting.FilterPanel = Ext.extend(Ext.Panel, {
 		    }
 		});
 		
-		this.paymentTypeCB = new Ext.form.ComboBox({
+		this.paymentTypeCB = new Ext.form.ClearableComboBox({
 			fieldLabel:'Форма оплаты',
 			name:'order__payment_type',
 			store:new Ext.data.ArrayStore({
@@ -281,7 +298,7 @@ App.reporting.FilterPanel = Ext.extend(Ext.Panel, {
 			anchor:'98%'
 		});
 		
-		this.priceTypeCB = new Ext.form.ComboBox({
+		this.priceTypeCB = new Ext.form.ClearableComboBox({
 			fieldLabel:'Тип цены',
 			name:'price_type',
 			store:new Ext.data.ArrayStore({
@@ -304,25 +321,10 @@ App.reporting.FilterPanel = Ext.extend(Ext.Panel, {
 		
     	var config = {
 			layout: 'form',
+			labelWidth:150,
             items: [
-            	{
-					xtype:'datefield',
-					name:'start_date',
-					format:'d.m.Y',
-					plugins:[new Ext.ux.netbox.InputTextMask('99.99.9999')],
-					minValue:new Date(1901,1,1),
-                	fieldLabel: 'Дата с',
-                	allowBlank:false
-				},
-				{
-					xtype:'datefield',
-					name:'end_date',
-					format:'d.m.Y',
-					plugins:[new Ext.ux.netbox.InputTextMask('99.99.9999')],
-					minValue:new Date(1901,1,1),
-                	fieldLabel: 'Дата по',
-                	allowBlank:false
-				},
+            	this.startDateField,
+            	this.endDateField,
 				this.clsCmb,
             	this.PatientCombo,
             	this.StaffCombo,
@@ -330,26 +332,39 @@ App.reporting.FilterPanel = Ext.extend(Ext.Panel, {
             	this.ReferralCombo,
             	this.fromPlaceCombo,
             	this.fromLabCombo,
-            	this.exPlOfficeCombo,
+//            	this.exPlOfficeCombo,
             	this.exPlFilialCombo,
             	this.paymentTypeCB,
             	this.priceTypeCB
-            	
             ]
         };
         
 		Ext.apply(this, Ext.apply(this.initialConfig, config));
         App.reporting.FilterPanel.superclass.initComponent.call(this);
+        
+        this.on('afterrender',function(){
+        	this.today = new Date();
+        	this.startDateField.setValue(this.today);
+        	this.endDateField.setValue(this.today);
+		},this)
     },
     
     onPrint:function(){},
     
+    onClearForm: function(){
+    	Ext.each(this.items.items,function(item){
+    		if (item.name == 'start_date' || item.name == 'end_date'){
+    			item.setValue(this.today)
+    		} else {
+    			item.setRawValue('');
+    		}
+    	},this)
+    },
+    
     onChoice: function(type,source) {
-    	console.log(App.choices)
     	if (!type) return false;
     	if (!source) source = type;
     	var name = type+'ChoiceWindow';
-    	console.log(App.choices[name])
         var win = new App.choices[type+'ChoiceWindow']({
        		scope:this,
        		fn:function(record){
