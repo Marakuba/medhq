@@ -33,6 +33,7 @@ App.reporting.ReportApp = Ext.extend(Ext.Panel, {
 		this.tree = new App.dict.ReportTree({
 			collapsible:true,
 			collapseMode:'mini',
+			rootVisible:false,
  			width:550,
  			region:'west',
  			margins:'0 5 0 0',
@@ -48,8 +49,23 @@ App.reporting.ReportApp = Ext.extend(Ext.Panel, {
 			text:'Обновить',
 			iconCls:'silk-printer',
 			handler:function(){
-        		this.tree.loader.load();
+				var rootNode = this.tree.getRootNode()
+        		this.tree.loader.load(rootNode);
+        		rootNode.expand();
         	},
+        	scope:this
+		});
+		
+		this.printBtn = new Ext.Button({
+			text:'Сформировать отчет',
+			iconCls:'silk-printer',
+			handler:this.onPreview.createDelegate(this,[]),
+        	scope:this
+		});
+		
+		this.clearBtn = new Ext.Button({
+			text:'Очистить форму',
+			handler:this.onClearForm.createDelegate(this,[]),
         	scope:this
 		})
 		
@@ -80,7 +96,7 @@ App.reporting.ReportApp = Ext.extend(Ext.Panel, {
 				this.filtersPanel
 			],
 			tbar:[
-				this.refreshBtn
+				this.refreshBtn,'-',this.printBtn,'->',this.clearBtn
 			]
 		};
 		
@@ -93,14 +109,11 @@ App.reporting.ReportApp = Ext.extend(Ext.Panel, {
 	},
 	
 	onPreview: function(report_id){
-		var list = new Ext.Panel({
-			autoLoad:String.format('/widget/examination/card/{0}/',card_id)
-		});
-		this.contentPanel.removeAll();
-		this.contentPanel.add(list);
-		this.contentPanel.setTitle('Предпросмотр');
-		this.contentPanel.doLayout();
-		this.doLayout();
+	},
+	
+	onClearForm: function(){
+		
+		this.filtersPanel.onClearForm()
 	},
 	
 	editCard: function(record){

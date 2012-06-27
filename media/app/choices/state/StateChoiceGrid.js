@@ -101,7 +101,7 @@ App.choices.StateChoiceGrid = Ext.extend(Ext.grid.GridPanel, {
 	onGlobalSearch: function(v){
 		var s = this.store;
 		s.baseParams = { format:'json' };
-		s.setBaseParam('name', v);
+		s.setBaseParam('name__istartswith', v);
 		s.load();
 	},
 	

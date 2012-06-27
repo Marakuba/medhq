@@ -716,6 +716,25 @@ class StaffResource(ModelResource):
         bundle.data['title'] = bundle.obj.short_name()
         return bundle
     
+    def build_filters(self, filters=None):
+        if filters is None:
+            filters = {}
+
+        orm_filters = super(StaffResource, self).build_filters(filters)
+
+        if "search" in filters:
+            smart_filters = smartFilter(filters['search'])
+            if len(smart_filters.keys())==1:
+                try:
+                    orm_filters = ComplexQuery( Q(visit__barcode__id=int(filters['search'])) | Q(**smart_filters), \
+                                      **orm_filters)
+                except:
+                    orm_filters.update(**smart_filters)
+            else:
+                orm_filters.update(**smart_filters)
+            
+        return orm_filters
+    
     class Meta:
         queryset = Staff.objects.all()
         resource_name = 'staff'
@@ -735,6 +754,25 @@ class PositionResource(ModelResource):
         bundle.data['text'] = bundle.obj.__unicode__()
         bundle.data['name'] = bundle.obj.__unicode__()
         return bundle
+    
+    def build_filters(self, filters=None):
+        if filters is None:
+            filters = {}
+
+        orm_filters = super(PositionResource, self).build_filters(filters)
+
+        if "search" in filters:
+            smart_filters = smartFilter(filters['search'],'staff')
+            if len(smart_filters.keys())==1:
+                try:
+                    orm_filters = ComplexQuery( Q(visit__barcode__id=int(filters['search'])) | Q(**smart_filters), \
+                                      **orm_filters)
+                except:
+                    orm_filters.update(**smart_filters)
+            else:
+                orm_filters.update(**smart_filters)
+            
+        return orm_filters
     
     class Meta:
         queryset = Position.objects.select_related().all()

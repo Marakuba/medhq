@@ -123,7 +123,7 @@ App.choices.StaffChoiceGrid = Ext.extend(Ext.grid.GridPanel, {
 	onGlobalSearch: function(v){
 		var s = this.store;
 		s.baseParams = { format:'json' };
-		s.setBaseParam('first_name', v);
+		s.setBaseParam('search', v);
 		s.load();
 	},
 	
