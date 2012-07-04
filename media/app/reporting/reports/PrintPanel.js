@@ -9,9 +9,13 @@ App.reporting.PrintPanel = Ext.extend(Ext.Panel, {
     		handler:this.onPrint.createDelegate(this,[]),
     		scope:this
     	});
+    	this.previewPanel = new Ext.Panel({
+    		autoLoad:this.url
+    	})
     	var config = {
 			layout: 'fit',
             items: [
+            	this.previewPanel
             ],
             tbar:[this.printBtn]
         };
@@ -20,8 +24,11 @@ App.reporting.PrintPanel = Ext.extend(Ext.Panel, {
         App.reporting.PrintPanel.superclass.initComponent.call(this);
     },
     
-    onPrint:function(){}
+    onPrint:function(){
+    	var url = String.format('/old/reporting/{0}/test_print/?{1}',this.slug,this.params);
+		window.open(url);
+    }
     
 });
 
-Ext.reg('printpanel', App.reporting.PrintPanel);
+Ext.reg('printspanel', App.reporting.PrintPanel);
