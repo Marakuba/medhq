@@ -738,6 +738,9 @@ js_reporting = Bundle(
     'app/choices/patient/PatientChoiceWindow.js',
     
     'app/reporting/reports/FilterPanel.js',
+    'app/reporting/editor/field.js',
+    'app/reporting/editor/ReportEditor.js',
+    'app/reporting/reports/ReportPanel.js',
     
     'app/dict/reports/ReportTree.js',
     'app/reporting/reports/ReportApp.js',

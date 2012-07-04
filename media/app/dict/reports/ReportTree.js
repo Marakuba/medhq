@@ -16,7 +16,7 @@ App.dict.ReportTree = Ext.extend(Ext.tree.TreePanel, {
                 split:true,
                 loader: new Ext.tree.TreeLoader({
                 	nodeParameter:'parent',
-                	dataUrl: get_api_url('report'),
+                	dataUrl: get_api_url('reporttree'),
                 	requestMethod:'GET',
                 	processResponse : function(response, node, callback, scope){
 				        var json = response.responseText;

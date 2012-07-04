@@ -47,6 +47,7 @@ from scheduler.models import RejectionCause
 from medstandart.models import Standart, StandartItem, Term,\
     Complications, Stage, Phase, NosologicalForm, AgeCategory
 from reporting.models import Report
+from medhq.apps.reporting.models import Query
 
 class UserResource(ModelResource):
 
@@ -2311,12 +2312,13 @@ class ServiceToSend(ExtResource):
         }        
         
         
-class ReportResource(ModelResource):
+class ReportTreeResource(ModelResource):
     
     parent = fields.ForeignKey('self','parent', null=True)
     
     def dehydrate(self, bundle):
         bundle.data['text'] = bundle.obj.name
+        bundle.data['slug'] = bundle.obj.slug
         bundle.data['parent'] =  bundle.obj.parent and bundle.obj.parent.id
         if bundle.obj.is_leaf_node():
             bundle.data['leaf'] = bundle.obj.is_leaf_node()
@@ -2327,7 +2329,7 @@ class ReportResource(ModelResource):
         if filters is None:
             filters = {}
 
-        orm_filters = super(ReportResource, self).build_filters(filters)
+        orm_filters = super(ReportTreeResource, self).build_filters(filters)
 
         if "parent" in filters:
             if filters['parent']=='root':
@@ -2340,7 +2342,7 @@ class ReportResource(ModelResource):
         queryset = Report.objects.filter(is_active=True) 
         limit = 20000
         fields = ('id',)
-        resource_name = 'report'
+        resource_name = 'reporttree'
         authorization = DjangoAuthorization()
         filtering = {
             'id':ALL,
@@ -2348,6 +2350,38 @@ class ReportResource(ModelResource):
             'is_active':ALL,
             'parent':ALL_WITH_RELATIONS
         }
+
+class QueryResource(ExtResource):
+    """
+    """
+    class Meta:
+        queryset = Query.objects.all()
+        resource_name = 'sqlquery'
+        authorization = DjangoAuthorization()
+        always_return_data = True
+        limit = 200
+        filtering = {
+            'id' : ALL,
+        }
+
+class ReportResource(ExtResource):
+    """
+    """
+    sql_query = fields.ForeignKey(QueryResource, 'sql_query')
+
+    def dehydrate(self, bundle):
+        bundle.data['sql_query_text'] = bundle.obj.sql_query.sql
+        return bundle
+    
+    class Meta:
+        queryset = Report.objects.all()
+        resource_name = 'report'
+        authorization = DjangoAuthorization()
+        always_return_data = True
+        limit = 200
+        filtering = {
+            'id' : ALL,
+        }        
         
 
 class NosologicalFormResource(ExtResource):
@@ -2604,6 +2638,8 @@ api.register(MedStandartResource())
 api.register(StandartItemResource())
 
 #reporting
+api.register(QueryResource())
+api.register(ReportTreeResource())
 api.register(ReportResource())
 
 #api.register(FilterItemResource())
