@@ -2319,6 +2319,7 @@ class ReportTreeResource(ModelResource):
     def dehydrate(self, bundle):
         bundle.data['text'] = bundle.obj.name
         bundle.data['slug'] = bundle.obj.slug
+        bundle.data['fields'] = bundle.obj.get_fields()
         bundle.data['parent'] =  bundle.obj.parent and bundle.obj.parent.id
         if bundle.obj.is_leaf_node():
             bundle.data['leaf'] = bundle.obj.is_leaf_node()

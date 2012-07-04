@@ -3,8 +3,6 @@ Ext.ns('App.reporting','App.dict');
 App.reporting.ReportApp = Ext.extend(Ext.Panel, {
 	initComponent : function() {
 		
-		this.fields = ['start_date','end_date'];
-		
 		this.printBtn = new Ext.Button({
     		text:'Печать',
     		iconCls:'silk-printer',
@@ -65,6 +63,7 @@ App.reporting.ReportApp = Ext.extend(Ext.Panel, {
 		
 		this.printBtn = new Ext.Button({
 			text:'Сформировать отчет',
+			disabled:true,
 			iconCls:'silk-printer',
 			handler:this.onPreview.createDelegate(this,[]),
         	scope:this
@@ -116,9 +115,11 @@ App.reporting.ReportApp = Ext.extend(Ext.Panel, {
 	},
 	
 	onPreview: function(node){
+		node = this.tree.getSelectionModel().getSelectedNode();
+		if (!node) return false;
 		var slug = node.attributes.slug;
 		
-		var params = this.filtersPanel.makeParamStr(this.fields);
+		var params = this.filtersPanel.makeParamStr(node.attributes.fields);
 		if(params){
 			var url = String.format('/old/reporting/{0}/test_print/?{1}',slug,params);
 			window.open(url);
@@ -149,7 +150,8 @@ App.reporting.ReportApp = Ext.extend(Ext.Panel, {
 	},
 	
 	openReport: function(node){
-		this.filtersPanel.showFields(this.fields);
+		this.filtersPanel.showFields(node.attributes.fields);
+		this.printBtn.setDisabled(false);
 	},
 	
 	onPrint:function(){}
