@@ -93,6 +93,7 @@ class Report(MPTTModel):
     template = models.CharField(u'Шаблон', max_length=100, blank = True) 
     sql_query = models.ForeignKey(Query, null = True, blank = True)
     is_active = models.BooleanField(u'Активен', default=True)
+    formclass = models.CharField(u'Форма', max_length=100, null = True, blank = True) 
     
     class Meta:
         verbose_name = u'отчет'
@@ -101,6 +102,22 @@ class Report(MPTTModel):
     def get_sql(self):
         if self.sql_query:
             return self.sql_query.sql
+        
+    def get_form(self):
+        formclass = self.formclass
+        path = formclass.split('.')
+        cls = path[-1]
+        app = ".".join(path[:-1])
+        fromlist = path[-2]
+        form_module = __import__(app,{},{},fromlist,-1)
+        form = getattr(form_module,cls)
+        return form
+        
+    def get_fields(self):
+        formclass = self.get_form()
+        form = formclass()
+        fields = form.fields.keys()
+        return fields
         
     def __unicode__(self):
         return u'%s'  %(self.name)

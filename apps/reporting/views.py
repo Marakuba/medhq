@@ -44,9 +44,12 @@ def test_report_list(request):
 def test_print_report(request, slug):
     
     report_config = get_object_or_404(ReportConfig, slug=slug, is_active=True)
+    formclass = report_config.get_form()
+    report_config.get_fields()
     report = reporting.get_report(slug)(request=request,
                                         query=report_config.get_sql(),
-                                        request_filters='GET')
+                                        request_filters='GET',
+                                        formclass = formclass)
     return render_to_response([report_config.template,'reporting/price-dynamic-test.html','reporting/base.html'], 
                               {
                                 'name':report_config.name,
