@@ -3,6 +3,8 @@ Ext.ns('App.reporting','App.dict');
 App.reporting.ReportApp = Ext.extend(Ext.Panel, {
 	initComponent : function() {
 		
+		this.fields = ['start_date','end_date'];
+		
 		this.printBtn = new Ext.Button({
     		text:'Печать',
     		iconCls:'silk-printer',
@@ -41,6 +43,11 @@ App.reporting.ReportApp = Ext.extend(Ext.Panel, {
 			fn:function(node){
 				this.node = node;
 				Ext.callback(this.fn, this.scope || window, [node]);
+			},
+			listeners:{
+				scope:this,
+				dblclick:this.onPreview,
+				click:this.openReport
 			},
 			scope:this
 		});
@@ -108,7 +115,15 @@ App.reporting.ReportApp = Ext.extend(Ext.Panel, {
 		},this)
 	},
 	
-	onPreview: function(report_id){
+	onPreview: function(node){
+		var slug = node.attributes.slug;
+		
+		var params = this.filtersPanel.makeParamStr(this.fields);
+		if(params){
+			var url = String.format('/old/reporting/{0}/test_print/?{1}',slug,params);
+			window.open(url);
+		}
+		
 	},
 	
 	onClearForm: function(){
@@ -131,6 +146,10 @@ App.reporting.ReportApp = Ext.extend(Ext.Panel, {
 		
 		App.eventManager.fireEvent('launchapp', 'neocard',config);
 		
+	},
+	
+	openReport: function(node){
+		this.filtersPanel.showFields(this.fields);
 	},
 	
 	onPrint:function(){}

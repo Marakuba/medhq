@@ -1,21 +1,23 @@
 Ext.ns('App.reporting');
 
-App.reporting.FilterPanel = Ext.extend(Ext.Panel, {
+App.reporting.FilterPanel = Ext.extend(Ext.form.FormPanel, {
 	
     initComponent: function() {
     	
     	this.startDateField = new Ext.form.DateField({
 			name:'start_date',
-			format:'d.m.Y',
-			plugins:[new Ext.ux.netbox.InputTextMask('99.99.9999')],
+			format:'Y-m-d',
+			allowBlank: false,
+			plugins:[new Ext.ux.netbox.InputTextMask('9999-99-99')],
 			minValue:new Date(1901,1,1),
         	fieldLabel: 'Дата с',
         	allowBlank:false
 		}),
     	this.endDateField = new Ext.form.DateField({		
 			name:'end_date',
-			format:'d.m.Y',
-			plugins:[new Ext.ux.netbox.InputTextMask('99.99.9999')],
+			format:'Y-m-d',
+			allowBlank: false,
+			plugins:[new Ext.ux.netbox.InputTextMask('9999-99-99')],
 			minValue:new Date(1901,1,1),
         	fieldLabel: 'Дата по',
         	allowBlank:false
@@ -49,6 +51,7 @@ App.reporting.FilterPanel = Ext.extend(Ext.Panel, {
 			autoSave : true,
 			apiUrl : get_api_url('patient'),
 			model: [
+					{name: 'id'},
 				    {name: 'resource_uri'},
 				    {name: 'short_name'},
 				    {name: 'full_name'},
@@ -65,6 +68,7 @@ App.reporting.FilterPanel = Ext.extend(Ext.Panel, {
 			hideTrigger:false,
         	store:this.patientStore,
 		    displayField: 'full_name',
+		    valueField: 'id',
 		    listeners:{
 		    	'render': function(f){
 		    		var el = f.getEl()
@@ -105,6 +109,7 @@ App.reporting.FilterPanel = Ext.extend(Ext.Panel, {
 			hideTrigger:false,
         	store:this.staffStore,
 		    displayField: 'name',
+		    valueField: 'id',
 		    listeners:{
 		    	'render': function(f){
 		    		var el = f.getEl()
@@ -134,7 +139,8 @@ App.reporting.FilterPanel = Ext.extend(Ext.Panel, {
 			anchor:'98%',
 			hideTrigger:false,
         	store:this.departmentStore,
-		    displayField: 'name'
+		    displayField: 'name',
+		    valueField: 'id'
 		    
 		});
 		
@@ -157,6 +163,7 @@ App.reporting.FilterPanel = Ext.extend(Ext.Panel, {
 			hideTrigger:false,
         	store:this.referralStore,
 		    displayField: 'name',
+		    valueField: 'id',
 		    listeners:{
 		    	'render': function(f){
 		    		var el = f.getEl()
@@ -184,6 +191,7 @@ App.reporting.FilterPanel = Ext.extend(Ext.Panel, {
 					]
 			}),
 		    displayField: 'name',
+		    valueField: 'id',
 		    listeners:{
 		    	'render': function(f){
 		    		var el = f.getEl()
@@ -211,6 +219,7 @@ App.reporting.FilterPanel = Ext.extend(Ext.Panel, {
 					]
 			}),
 		    displayField: 'name',
+		    valueField: 'id',
 		    listeners:{
 		    	'render': function(f){
 		    		var el = f.getEl()
@@ -238,6 +247,7 @@ App.reporting.FilterPanel = Ext.extend(Ext.Panel, {
 					]
 			}),
 		    displayField: 'name',
+		    valueField: 'id',
 		    listeners:{
 		    	'render': function(f){
 		    		var el = f.getEl()
@@ -265,6 +275,7 @@ App.reporting.FilterPanel = Ext.extend(Ext.Panel, {
 					]
 			}),
 		    displayField: 'name',
+		    valueField: 'id',
 		    listeners:{
 		    	'render': function(f){
 		    		var el = f.getEl()
@@ -349,7 +360,17 @@ App.reporting.FilterPanel = Ext.extend(Ext.Panel, {
 		},this)
     },
     
-    onPrint:function(){},
+    onPrint:function(node){
+    	var rec = this.getSelected();
+		if(rec){
+			var url = String.format('/visit/print/{0}/{1}/',slug,rec.id);
+			window.open(url);
+		}
+    },
+    
+    toPrint:function(slug){
+		
+	},
     
     onClearForm: function(){
     	Ext.each(this.items.items,function(item){
@@ -376,6 +397,44 @@ App.reporting.FilterPanel = Ext.extend(Ext.Panel, {
 			}
        	 });
        	win.show();
+    },
+    
+    makeParamStr: function(fields){
+    	if (fields.length){
+    		this.showFields(fields);
+    	};
+    	var paramStr = '';
+    	var f = this.getForm();
+    	if(!f.isValid()){
+			Ext.MessageBox.alert('Предупреждение','Пожалуйста, заполните обязательные поля!');
+			return false;
+		}
+    	Ext.each(this.items.items,function(item){
+    		if (item.value && !item.hidden){
+	    		if (item.name == 'start_date'){
+	    			paramStr = item.name+'='+item.value+paramStr;
+	    		} else {
+	    			paramStr += '&'+item.name+'='+item.value;
+	    		}
+    		}
+    	},this);
+    	return paramStr
+    	
+    },
+    
+    contains: function (arr, obj) {
+	    for(var i=0; i<arr.length; i++) {
+	        if (arr[i] == obj) return true;
+	    };
+	    return false
+	},
+
+    
+    showFields: function(fields){
+    	Ext.each(this.items.items,function(item){
+   			item.setVisible(this.contains(fields,item.name));
+    	},this);
+    	this.doLayout();
     }
     
 });
