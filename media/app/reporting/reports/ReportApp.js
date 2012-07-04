@@ -121,9 +121,21 @@ App.reporting.ReportApp = Ext.extend(Ext.Panel, {
 		
 		var params = this.filtersPanel.makeParamStr(node.attributes.fields);
 		if(params){
-			var url = String.format('/old/reporting/{0}/test_print/?{1}',slug,params);
-			window.open(url);
+			var url = String.format('/widget/reporting/report/{0}/?{1}',slug,params)
+//			var url = String.format('/old/reporting/{0}/test_print/?{1}',slug,params);
+//			window.open(url);
+			config = {
+				autoScroll:true,
+				url:url,
+				title:'Отчет',
+				closable:true,
+				slug:slug,
+				params:params
+			}
+			App.eventManager.fireEvent('launchapp','printspanel',config)
 		}
+		
+		
 		
 	},
 	

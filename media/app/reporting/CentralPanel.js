@@ -175,6 +175,7 @@ App.CentralPanel = Ext.extend(Ext.Panel, {
 	},
 	
 	launchApp: function(appId,config, setActive) {
+		var a 
         var app_config = {
             xtype:appId,
             medstateStore:this.medstateStore,
