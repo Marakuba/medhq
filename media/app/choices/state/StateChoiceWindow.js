@@ -15,7 +15,7 @@ App.choices.StateChoiceWindow = Ext.extend(Ext.Window, {
 			height:500,
 			modal:true,
 			layout:'fit',
-			title:'Врачи',
+			title:'Организации',
 			items:[
 				this.grid
 			]
