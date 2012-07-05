@@ -23,24 +23,29 @@ App.reporting.FilterPanel = Ext.extend(Ext.form.FormPanel, {
         	allowBlank:false
 		}),
     	
-    	this.clsCmb = new Ext.form.LazyClearableComboBox({
-		    typeAhead: true,
+    	this.clsCmb = new Ext.form.ClearableComboBox({
 		    fieldLabel:'Форма обслуживания',
 		    name:'order__cls',
-		    triggerAction: 'all',
-		    lazyRender:true,
-		    mode: 'local',
-		    store: new Ext.data.ArrayStore({
+			typeAhead: true,
+			triggerAction: 'all',
+			baseCls:'x-border-layout-ct',
+			mode: 'local',
+			forceSelection:true,
+			selectOnFocus:false,
+			editable:false,
+			store: new Ext.data.ArrayStore({
 		        id: 0,
 		        fields: [
 		            'id',
 		            'displayText'
 		        ],
-		        data: [['п','Посещение'], 
+		        data: [
+		            ['п','Посещение'], 
 		        	['б','Прием биоматериала'],
-		        	['н','Внутреннее направление'],
-		        	['з','Предварительная запись'],
-		        	['в','Возврат']]
+//		        	['н','Внутреннее направление'],
+//		        	['з','Предварительная запись'],
+//		        	['в','Возврат']
+		        ]
 		    }),
 		    valueField: 'id',
 		    displayField: 'displayText'
@@ -77,7 +82,8 @@ App.reporting.FilterPanel = Ext.extend(Ext.form.FormPanel, {
 		    	'select':function(combo,record,index){
 		    	},
 		    	scope:this
-		    }
+		    },
+		    onTriggerClick:this.onChoice.createDelegate(this,['Patient'])
 		});
 		
 		this.staffStore = new Ext.data.RESTStore({
@@ -118,7 +124,8 @@ App.reporting.FilterPanel = Ext.extend(Ext.form.FormPanel, {
 		    	'select':function(combo,record,index){
 		    	},
 		    	scope:this
-		    }
+		    },
+		    onTriggerClick:this.onChoice.createDelegate(this,['Staff'])
 		});
 		
 		this.departmentStore = new Ext.data.RESTStore({
@@ -172,11 +179,12 @@ App.reporting.FilterPanel = Ext.extend(Ext.form.FormPanel, {
 		    	'select':function(combo,record,index){
 		    	},
 		    	scope:this
-		    }
+		    },
+		    onTriggerClick:this.onChoice.createDelegate(this,['Referral'])
 		});
 		
 		this.fromPlaceCombo = new Ext.form.LazyClearableComboBox({
-        	fieldLabel:'Место первичной регистрации (филиал)',
+        	fieldLabel:'Филиал',
         	name: 'from_place_filial',
 			anchor:'98%',
 			hideTrigger:false,
@@ -200,14 +208,14 @@ App.reporting.FilterPanel = Ext.extend(Ext.form.FormPanel, {
 		    	'select':function(combo,record,index){
 		    	},
 		    	scope:this
-		    }
+		    },
+		    onTriggerClick:this.onChoice.createDelegate(this,['State','fromPlace'])
 		});
     	
 		this.fromLabCombo = new Ext.form.LazyClearableComboBox({
-        	fieldLabel:'Лаборатория (плательщик)',
+        	fieldLabel:'Плательщик / Лаборатория',
         	name: 'from_lab',
 			anchor:'98%',
-			hideTrigger:false,
         	store: new Ext.data.RESTStore({
 				autoLoad : false,
 				autoSave : true,
@@ -228,14 +236,14 @@ App.reporting.FilterPanel = Ext.extend(Ext.form.FormPanel, {
 		    	'select':function(combo,record,index){
 		    	},
 		    	scope:this
-		    }
+		    },
+		    onTriggerClick:this.onChoice.createDelegate(this,['State','fromLab'])
 		});
 		
 		this.exPlOfficeCombo = new Ext.form.LazyClearableComboBox({
-        	fieldLabel:'Место выполнения (ОФИС)',
+        	fieldLabel:'Место выполнения',
         	name: 'execution_place_office',
 			anchor:'98%',
-			hideTrigger:false,
         	store: new Ext.data.RESTStore({
 				autoLoad : false,
 				autoSave : true,
@@ -256,14 +264,14 @@ App.reporting.FilterPanel = Ext.extend(Ext.form.FormPanel, {
 		    	'select':function(combo,record,index){
 		    	},
 		    	scope:this
-		    }
+		    },
+		    onTriggerClick:this.onChoice.createDelegate(this,['State','exPlOffice'])
 		});
 		
 		this.exPlFilialCombo = new Ext.form.LazyClearableComboBox({
-        	fieldLabel:'Место выполнения (ФИЛИАЛ)',
+        	fieldLabel:'Место выполнения',
         	name: 'execution_place_filial',
 			anchor:'98%',
-			hideTrigger:false,
         	store: new Ext.data.RESTStore({
 				autoLoad : false,
 				autoSave : true,
@@ -304,9 +312,9 @@ App.reporting.FilterPanel = Ext.extend(Ext.form.FormPanel, {
 			displayField:'title',
 			mode: 'local',
 			forceSelection:true,
-			selectOnFocus:true,
+			selectOnFocus:false,
 			editable:false,
-			anchor:'98%'
+			anchor:'50%'
 		});
 		
 		this.priceTypeCB = new Ext.form.ClearableComboBox({
@@ -325,26 +333,27 @@ App.reporting.FilterPanel = Ext.extend(Ext.form.FormPanel, {
 			displayField:'title',
 			mode: 'local',
 			forceSelection:true,
-			selectOnFocus:true,
+			selectOnFocus:false,
 			editable:false,
-			anchor:'98%'
+			anchor:'50%'
 		});
 		
     	var config = {
 			layout: 'form',
-			labelWidth:150,
+			padding:8,
+			labelWidth:180,
             items: [
             	this.startDateField,
             	this.endDateField,
 				this.clsCmb,
             	this.PatientCombo,
-            	this.StaffCombo,
             	this.DepartmentCombo,
+            	this.StaffCombo,
             	this.ReferralCombo,
             	this.fromPlaceCombo,
             	this.fromLabCombo,
-//            	this.exPlOfficeCombo,
-            	this.exPlFilialCombo,
+            	this.exPlOfficeCombo,
+//            	this.exPlFilialCombo,
             	this.paymentTypeCB,
             	this.priceTypeCB
             ]
@@ -392,7 +401,7 @@ App.reporting.FilterPanel = Ext.extend(Ext.form.FormPanel, {
        			if (!record){
        				return 0;
        			}
-       			this[source+'Combo'].forceValue(record.data.resource_uri);
+       			this[source+'Combo'].forceValue(record.data.id);
 				win.close();
 			}
        	 });

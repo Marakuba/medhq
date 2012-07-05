@@ -52,7 +52,7 @@ App.reporting.ReportApp = Ext.extend(Ext.Panel, {
 		
 		this.refreshBtn = new Ext.Button({
 			text:'Обновить',
-			iconCls:'silk-printer',
+			iconCls:'x-tbar-loading',
 			handler:function(){
 				var rootNode = this.tree.getRootNode()
         		this.tree.loader.load(rootNode);
