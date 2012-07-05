@@ -116,7 +116,7 @@ App.reporting.ReportApp = Ext.extend(Ext.Panel, {
 	
 	onPreview: function(node){
 		node = this.tree.getSelectionModel().getSelectedNode();
-		if (!node) return false;
+		if (!node || !node.attributes.leaf) return false;
 		var slug = node.attributes.slug;
 		
 		var params = this.filtersPanel.makeParamStr(node.attributes.fields);
@@ -127,7 +127,7 @@ App.reporting.ReportApp = Ext.extend(Ext.Panel, {
 			config = {
 				autoScroll:true,
 				url:url,
-				title:'Отчет',
+				title:node.attributes.text,
 				closable:true,
 				slug:slug,
 				params:params
@@ -162,8 +162,10 @@ App.reporting.ReportApp = Ext.extend(Ext.Panel, {
 	},
 	
 	openReport: function(node){
-		this.filtersPanel.showFields(node.attributes.fields);
-		this.printBtn.setDisabled(false);
+		if (node.attributes.leaf) {
+			this.filtersPanel.showFields(node.attributes.fields);
+			this.printBtn.setDisabled(false);
+		}
 	},
 	
 	onPrint:function(){}

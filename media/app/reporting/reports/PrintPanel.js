@@ -10,10 +10,13 @@ App.reporting.PrintPanel = Ext.extend(Ext.Panel, {
     		scope:this
     	});
     	this.previewPanel = new Ext.Panel({
-    		autoLoad:this.url
+    		autoLoad:this.url,
+    		autoScroll:true,
+    		border:false
     	})
     	var config = {
 			layout: 'fit',
+			border:false,
             items: [
             	this.previewPanel
             ],
