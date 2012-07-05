@@ -102,7 +102,7 @@ App.choices.ServiceGroupChoiceGrid = Ext.extend(Ext.grid.GridPanel, {
 	onGlobalSearch: function(v){
 		var s = this.store;
 		s.baseParams = { format:'json' };
-		s.setBaseParam('search', v);
+		s.setBaseParam('name__icontains', v);
 		s.load();
 	},
 	
