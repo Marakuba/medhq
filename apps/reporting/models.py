@@ -3,6 +3,7 @@ from django.db import models
 from service.models import BaseService
 from state.models import State
 from django.conf import settings
+from constance import config
 from django.contrib.auth.models import Group
 from mptt.models import MPTTModel
 
@@ -89,7 +90,7 @@ class Report(MPTTModel):
     """
     parent = models.ForeignKey('self', null=True, blank=True, verbose_name=u'Родительский элемент', related_name='children')
     name = models.CharField(u'Название', max_length=300)
-    slug = models.CharField(u'Модуль', max_length=100) 
+    slug = models.CharField(u'Модуль', max_length=100, blank = True) 
     template = models.CharField(u'Шаблон', max_length=100, blank = True) 
     sql_query = models.ForeignKey(Query, null = True, blank = True)
     is_active = models.BooleanField(u'Активен', default=True)
@@ -104,7 +105,9 @@ class Report(MPTTModel):
             return self.sql_query.sql
         
     def get_form(self):
-        formclass = self.formclass
+        formclass = self.formclass or config.BASE_REPORT_FORM
+        if not formclass:
+            return False
         path = formclass.split('.')
         cls = path[-1]
         app = ".".join(path[:-1])
@@ -115,9 +118,12 @@ class Report(MPTTModel):
         
     def get_fields(self):
         formclass = self.get_form()
-        form = formclass()
-        fields = form.fields.keys()
-        return fields
+        if formclass:
+            form = formclass()
+            fields = form.fields.keys()
+            return fields
+        else:
+            return []
         
     def __unicode__(self):
         return u'%s'  %(self.name)
