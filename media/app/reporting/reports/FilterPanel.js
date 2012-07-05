@@ -50,6 +50,32 @@ App.reporting.FilterPanel = Ext.extend(Ext.form.FormPanel, {
 		    valueField: 'id',
 		    displayField: 'displayText'
 		});
+		
+		this.ptypeCmb = new Ext.form.ClearableComboBox({
+		    fieldLabel:'Способ оплаты',
+		    name:'cash_type',
+			typeAhead: true,
+			triggerAction: 'all',
+			baseCls:'x-border-layout-ct',
+			mode: 'local',
+			forceSelection:true,
+			selectOnFocus:false,
+			editable:false,
+			store: new Ext.data.ArrayStore({
+		        id: 0,
+		        fields: [
+		            'id',
+		            'displayText'
+		        ],
+		        data: [
+		            ['cash','Наличные'], 
+		        	['non_cash','Безналичный расчет'],
+		        	['card','Банковская карта']
+		        ]
+		    }),
+		    valueField: 'id',
+		    displayField: 'displayText'
+		});
     	
     	this.patientStore = new Ext.data.RESTStore({
 			autoLoad : false,
@@ -126,6 +152,39 @@ App.reporting.FilterPanel = Ext.extend(Ext.form.FormPanel, {
 		    	scope:this
 		    },
 		    onTriggerClick:this.onChoice.createDelegate(this,['Staff'])
+		});
+		
+		this.ServiceGroupStore = new Ext.data.RESTStore({
+			autoLoad : false,
+			autoSave : true,
+			apiUrl : get_api_url('baseservicegroup'),
+			model: [
+				    {name: 'id'},
+				    {name: 'resource_uri'},
+				    {name: 'name'},
+				    {name: 'labservice'},
+				    {name: 'short_name'}
+				]
+		});
+		
+		this.ServiceGroupCombo = new Ext.form.LazyClearableComboBox({
+        	fieldLabel:'Группа услуг',
+        	name: 'service_group',
+			anchor:'98%',
+			hideTrigger:false,
+        	store:this.ServiceGroupStore,
+		    displayField: 'name',
+		    valueField: 'id',
+		    listeners:{
+		    	'render': function(f){
+		    		var el = f.getEl()
+		    		el.on('click',this.onChoice.createDelegate(this,['ServiceGroup']),this)
+		    	},
+		    	'select':function(combo,record,index){
+		    	},
+		    	scope:this
+		    },
+		    onTriggerClick:this.onChoice.createDelegate(this,['ServiceGroup'])
 		});
 		
 		this.departmentStore = new Ext.data.RESTStore({
@@ -349,12 +408,14 @@ App.reporting.FilterPanel = Ext.extend(Ext.form.FormPanel, {
             	this.PatientCombo,
             	this.DepartmentCombo,
             	this.StaffCombo,
+            	this.ServiceGroupCombo,
             	this.ReferralCombo,
             	this.fromPlaceCombo,
             	this.fromLabCombo,
             	this.exPlOfficeCombo,
 //            	this.exPlFilialCombo,
             	this.paymentTypeCB,
+            	this.ptypeCmb,
             	this.priceTypeCB
             ]
         };

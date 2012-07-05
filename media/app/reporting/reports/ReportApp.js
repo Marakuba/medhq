@@ -162,9 +162,9 @@ App.reporting.ReportApp = Ext.extend(Ext.Panel, {
 	},
 	
 	openReport: function(node){
+		this.printBtn.setDisabled(!node.attributes.leaf);
 		if (node.attributes.leaf) {
 			this.filtersPanel.showFields(node.attributes.fields);
-			this.printBtn.setDisabled(false);
 		}
 	},
 	

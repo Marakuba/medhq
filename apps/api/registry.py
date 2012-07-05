@@ -46,6 +46,7 @@ from patient.models import ContractType, Contract
 from medhq.apps.scheduler.models import RejectionCause
 from reporting.models import Report
 from medhq.apps.reporting.models import Query
+from django.db.models.expressions import F
 
 class UserResource(ModelResource):
 
@@ -693,6 +694,31 @@ class BaseServiceResource(ExtResource):
         authorization = DjangoAuthorization()
         always_return_data = True
         resource_name = 'baseservice'
+        filtering = {
+            'id':ALL,
+            'name':ALL,
+            'parent':ALL_WITH_RELATIONS,
+            'labservice':ALL_WITH_RELATIONS
+        }
+
+lookups = {}
+lookups[BaseService._meta.right_attr] = F(BaseService._meta.left_attr)+1
+
+
+class BaseServiceGroupResource(ExtResource):
+    parent = fields.ForeignKey('self', 'parent', null=True)
+    labservice = fields.ForeignKey(LSResource,'labservice', null=True)
+    
+    def dehydrate(self, bundle):
+        service = bundle.obj
+        bundle.data['name'] = '-'*service.level + service.name
+        return bundle
+    
+    class Meta:
+        queryset = BaseService.objects.exclude(**lookups).order_by(BaseService._meta.tree_id_attr, BaseService._meta.left_attr, 'level')
+        authorization = DjangoAuthorization()
+        always_return_data = True
+        resource_name = 'baseservicegroup'
         filtering = {
             'id':ALL,
             'name':ALL,
@@ -2410,6 +2436,7 @@ api.register(EquipmentTaskReadOnlyResource())
 #service
 api.register(LSResource())
 api.register(BaseServiceResource())
+api.register(BaseServiceGroupResource())
 api.register(ExtendedServiceResource())
 api.register(LabServiceGroupResource())
 api.register(ICD10Resource())
