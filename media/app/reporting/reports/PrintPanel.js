@@ -5,6 +5,7 @@ App.reporting.PrintPanel = Ext.extend(Ext.Panel, {
     initComponent: function() {
     	
     	this.printBtn = new Ext.Button({
+    		iconCls:'silk-printer',
     		text:'Печать',
     		handler:this.onPrint.createDelegate(this,[]),
     		scope:this
@@ -16,11 +17,19 @@ App.reporting.PrintPanel = Ext.extend(Ext.Panel, {
     	})
     	var config = {
 			layout: 'fit',
+			padding:3,
 			border:false,
             items: [
             	this.previewPanel
             ],
-            tbar:[this.printBtn]
+            tbar:[this.printBtn,'-',{
+            	text:'Обновить',
+            	iconCls:'x-tbar-loading',
+            	handler:function(){
+            		this.previewPanel.load(this.url);
+            	},
+            	scope:this
+            }]
         };
         
 		Ext.apply(this, Ext.apply(this.initialConfig, config));

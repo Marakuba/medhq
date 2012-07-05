@@ -4,9 +4,9 @@ import datetime
 from visit.settings import PAYMENT_TYPES
 from django.conf import settings
 from django.db import connection
-from amqplib.client_0_8.method_framing import defaultdict
 from operator import itemgetter
 from django import forms
+from collections import defaultdict
 
 
 def escape_param(value):
