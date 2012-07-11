@@ -376,13 +376,27 @@ App.registry.PreorderGrid = Ext.extend(Ext.grid.GridPanel, {
     	if (!record || record.data.visit) {
     		return false
     	};
-    	this.eventStore.setBaseParam('preord',App.uriToId(record.data.id))
-    	this.eventStore.load({calback:function(records){
-    		if (records[0]){
-    			records[0]['vacancy'] = true
-    		}
-    	},scope:this})
-    	this.store.remove(record)
+//    	this.eventStore.setBaseParam('preord',App.uriToId(record.data.id))
+//    	this.eventStore.load({calback:function(records){
+//    		if (records[0]){
+//    			records[0]['vacancy'] = true
+//    		}
+//    	},scope:this})
+    	var causeWin = new App.assignment.DeletePromptWindow({
+    		fn: function(cause_uri){
+    			if (!cause_uri) return false;
+    			this.store.autoSave = false;
+    			record.set('deleted',true);
+    			record.set('rejection_cause',cause_uri);
+    			this.store.autoSave = true;
+    			this.store.save();
+    			this.store.load();
+    			this.btnSetDisabled(true)
+    		},
+    		scope:this
+    	});
+    	causeWin.show();
+//    	this.store.remove(record)
     	
     },
     

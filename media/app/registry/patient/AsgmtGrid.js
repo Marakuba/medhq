@@ -1,4 +1,4 @@
-Ext.ns('App.patient', 'App.preorder');
+Ext.ns('App.patient', 'App.preorder', 'App.assignment');
 
 App.patient.AsgmtGrid = Ext.extend(Ext.grid.EditorGridPanel, {
 
@@ -449,29 +449,31 @@ App.patient.AsgmtGrid = Ext.extend(Ext.grid.EditorGridPanel, {
     
     onDelPreorderClick : function() {
     	var records = this.getSelectionModel().getSelections();
-    	if(records.length>1) {
-    		Ext.MessageBox.confirm('Предупреждение','Будут удалены все выделенные направления. Продолжить?', function(btn){
-    			if(btn=='yes') {
-    				this.removePreorders(records);
-    			}
-    		}, this)
-    	} else {
-    		this.removePreorders(records);
-    	}
+    	var causeWin = new App.assignment.DeletePromptWindow({
+    		fn: function(cause_uri){
+    			if (!cause_uri) return false;
+    			this.removePreorders(records, cause_uri);
+    		},
+    		manyRecords:records.length>1,
+    		scope:this
+    	});
+    	causeWin.show()
     },
     
-    removePreorders : function(records) {
+    removePreorders : function(records,cause_uri) {
     	var r = [];
-    	Ext.each(records, function(record){
-    		if(!record.data.visit) {
-    			r.push(record);
-    		}
-    	});
     	var s = this.store;
     	s.autoSave = false;
-    	s.remove(r);
+    	Ext.each(records, function(record){
+    		if(!record.data.visit) {
+    			record.set('deleted',true);
+    			record.set('rejection_cause',cause_uri);
+    		}
+    	});
+    	
     	s.save();
     	s.autoSave = true;
+    	s.load();
     },
     
     onCreate: function(){
