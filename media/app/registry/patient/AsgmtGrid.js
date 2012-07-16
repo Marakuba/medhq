@@ -6,6 +6,13 @@ App.patient.AsgmtGrid = Ext.extend(Ext.grid.EditorGridPanel, {
 	
 	initComponent : function() {
 		
+		this.updatingStoreCheck = new Ext.form.Checkbox({
+			checked:true,
+			hidden:this.hasPatient,
+			boxLabel:'Автоматическое обновление',
+			handler:this.updatingCheckClick.createDelegate(this)
+		});
+		
 		this.start_date = new Date();
 		
 		this.emptyText = this.hasPatient? 'Для данного пациента направлений нет':'На выбранную дату направлений нет',
@@ -81,7 +88,7 @@ App.patient.AsgmtGrid = Ext.extend(Ext.grid.EditorGridPanel, {
 						Ext.ux.Printer.print(this);
 					},
 					scope:this
-			},'->']
+			},'-',this.updatingStoreCheck,'->']
 		});
 
 		this.medstateStore.on('load',function(store,records){
@@ -342,8 +349,11 @@ App.patient.AsgmtGrid = Ext.extend(Ext.grid.EditorGridPanel, {
 				this.store.setBaseParam('expiration__day', day);
 				if (this.searchValue){
 					this.onGlobalSearch(this.searchValue)
-				} else {
-					this.store.load();
+				}  else {
+					//при открытии если выключено автообновление, то загрузить store один раз
+					if (!this.updatingStoreCheck.getValue()){
+						this.store.load()
+					}
 				}
 			}
 		},this);
@@ -369,6 +379,16 @@ App.patient.AsgmtGrid = Ext.extend(Ext.grid.EditorGridPanel, {
 		
 		this.on('preorderselect', this.onPreorderSelect, this);
 		
+	},
+	
+	updateInfo: function(){
+		if(this.updatingStoreCheck.getValue()){
+	        this.store.load();
+		}
+	},
+	
+	setUpdating: function(status){
+		this.updatingStoreCheck.setValue(status);
 	},
 	
 	onVisitCreate: function(){
@@ -647,6 +667,10 @@ App.patient.AsgmtGrid = Ext.extend(Ext.grid.EditorGridPanel, {
 		}
 		s.load();
 
+	},
+	
+	updatingCheckClick: function(checkbox, checked){
+		this.fireEvent('setupdating',this,checked);
 	}
 	
 	

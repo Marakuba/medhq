@@ -260,7 +260,7 @@ class Preorder(models.Model):
         ordering = ('id',)
         
     def __unicode__(self):
-        return self.id
+        return self.patient and self.patient.short_name() or u'Предзаказ'
     
     
 ### SIGNALS
