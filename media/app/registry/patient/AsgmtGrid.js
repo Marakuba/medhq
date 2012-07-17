@@ -1,10 +1,17 @@
-Ext.ns('App.patient', 'App.preorder');
+Ext.ns('App.patient', 'App.preorder', 'App.assignment');
 
 App.patient.AsgmtGrid = Ext.extend(Ext.grid.EditorGridPanel, {
 
 	loadInstant: false,
 	
 	initComponent : function() {
+		
+		this.updatingStoreCheck = new Ext.form.Checkbox({
+			checked:true,
+			hidden:this.hasPatient,
+			boxLabel:'Автоматическое обновление',
+			handler:this.updatingCheckClick.createDelegate(this)
+		});
 		
 		this.start_date = new Date();
 		
@@ -81,7 +88,7 @@ App.patient.AsgmtGrid = Ext.extend(Ext.grid.EditorGridPanel, {
 						Ext.ux.Printer.print(this);
 					},
 					scope:this
-			},'->']
+			},'-',this.updatingStoreCheck,'->']
 		});
 
 		this.medstateStore.on('load',function(store,records){
@@ -342,8 +349,11 @@ App.patient.AsgmtGrid = Ext.extend(Ext.grid.EditorGridPanel, {
 				this.store.setBaseParam('expiration__day', day);
 				if (this.searchValue){
 					this.onGlobalSearch(this.searchValue)
-				} else {
-					this.store.load();
+				}  else {
+					//при открытии если выключено автообновление, то загрузить store один раз
+					if (!this.updatingStoreCheck.getValue()){
+						this.store.load()
+					}
 				}
 			}
 		},this);
@@ -369,6 +379,16 @@ App.patient.AsgmtGrid = Ext.extend(Ext.grid.EditorGridPanel, {
 		
 		this.on('preorderselect', this.onPreorderSelect, this);
 		
+	},
+	
+	updateInfo: function(){
+		if(this.updatingStoreCheck.getValue()){
+	        this.store.load();
+		}
+	},
+	
+	setUpdating: function(status){
+		this.updatingStoreCheck.setValue(status);
 	},
 	
 	onVisitCreate: function(){
@@ -449,29 +469,31 @@ App.patient.AsgmtGrid = Ext.extend(Ext.grid.EditorGridPanel, {
     
     onDelPreorderClick : function() {
     	var records = this.getSelectionModel().getSelections();
-    	if(records.length>1) {
-    		Ext.MessageBox.confirm('Предупреждение','Будут удалены все выделенные направления. Продолжить?', function(btn){
-    			if(btn=='yes') {
-    				this.removePreorders(records);
-    			}
-    		}, this)
-    	} else {
-    		this.removePreorders(records);
-    	}
+    	var causeWin = new App.assignment.DeletePromptWindow({
+    		fn: function(cause_uri){
+    			if (!cause_uri) return false;
+    			this.removePreorders(records, cause_uri);
+    		},
+    		manyRecords:records.length>1,
+    		scope:this
+    	});
+    	causeWin.show()
     },
     
-    removePreorders : function(records) {
+    removePreorders : function(records,cause_uri) {
     	var r = [];
-    	Ext.each(records, function(record){
-    		if(!record.data.visit) {
-    			r.push(record);
-    		}
-    	});
     	var s = this.store;
     	s.autoSave = false;
-    	s.remove(r);
+    	Ext.each(records, function(record){
+    		if(!record.data.visit) {
+    			record.set('deleted',true);
+    			record.set('rejection_cause',cause_uri);
+    		}
+    	});
+    	
     	s.save();
     	s.autoSave = true;
+    	s.load();
     },
     
     onCreate: function(){
@@ -645,6 +667,10 @@ App.patient.AsgmtGrid = Ext.extend(Ext.grid.EditorGridPanel, {
 		}
 		s.load();
 
+	},
+	
+	updatingCheckClick: function(checkbox, checked){
+		this.fireEvent('setupdating',this,checked);
 	}
 	
 	

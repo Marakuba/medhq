@@ -23,7 +23,11 @@ App.registry.PreorderManager = Ext.extend(Ext.TabPanel, {
 			hasPatient:this.hasPatient,
 			patientStore: this.patientStore,
 			medstateStore: this.medstateStore,
-			searchValue: this.searchValue
+			searchValue: this.searchValue,
+			listeners:{
+				scope:this,
+				setupdating:this.setUpdating
+			}
 		});
 		this.completedTab = new App.registry.PreorderGrid({
 			hasPatient:this.hasPatient,
@@ -36,13 +40,21 @@ App.registry.PreorderManager = Ext.extend(Ext.TabPanel, {
 				format:'json',
 				'timeslot__isnull':false,
 				'visit__isnull':false
+			},
+			listeners:{
+				scope:this,
+				setupdating:this.setUpdating
 			}
 		});
 		this.assigmentTab = new App.patient.AsgmtGrid({
 			hasPatient:this.hasPatient,
 			medstateStore: this.medstateStore,
 			patientStore: this.patientStore,
-			searchValue: this.searchValue
+			searchValue: this.searchValue,
+			listeners:{
+				scope:this,
+				setupdating:this.setUpdating
+			}
 		});
 		
 		config = {
@@ -61,8 +73,27 @@ App.registry.PreorderManager = Ext.extend(Ext.TabPanel, {
 		App.registry.PreorderManager.superclass.initComponent.apply(this, arguments);
 		this.on('afterrender', function(){
 			this.setActiveTab(this[this.openTab] || 0);
+			if(!this.hasPatient){
+				Ext.TaskMgr.start({
+	                run: this.updateInfo.createDelegate(this),
+	                interval: 30000
+	            });
+			}
 //			this.assigmentTab.store.load();
 		},this);
+	},
+	
+	updateInfo: function(){
+		var tab = this.getActiveTab();
+		if(tab.updateInfo)	{
+			tab.updateInfo();
+		}
+	},
+	
+	setUpdating: function(tab,status){
+		Ext.each(this.items.items,function(item){
+			if (item != tab && item.updateInfo) item.setUpdating(status);
+		},this)
 	},
 
 	btnSetDisabled: function(status) {

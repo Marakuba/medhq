@@ -134,16 +134,7 @@ Ext.calendar.TimeslotEditWindow = Ext.extend(Ext.Window, {
 		});
 	    
 
-    	this.preorderModel = new Ext.data.Record.create([
-		    {name: 'id'},
-		    {name: 'resource_uri'},
-		    {name: 'patient'},
-		    {name: 'timeslot'},
-		    {name: 'service'},
-		    {name: 'comment'},
-		    {name: 'expiration'},
-		    {name: 'payment_type'}
-		]);
+    	this.preorderModel = App.models.preorderModel;
 
     	this.preorderStore = new Ext.data.RESTStore({
 			autoLoad : false,
@@ -677,14 +668,17 @@ Ext.calendar.TimeslotEditWindow = Ext.extend(Ext.Window, {
         		//Если была нажата кнопка Отменить предзаказ
       			if (this.setRemovePreorder) {
       			  	this.setRemovePreorder = false;
-        			this.preorderStore.remove(this.preorder);
+      			  	this.preorder.beginEdit();
+      			  	this.preorder.set('deleted',true);
+					this.preorder.set('rejection_cause',this.cause_uri);
+					this.preorder.endEdit();
         		} else {
 	        		this.preorder.set('patient',this.patient.data.resource_uri);
 	        		this.preorder.set('service',this.serviceCombo.getValue());
 	        		this.preorder.set('payment_type',this.paymentTypeCB.getValue());
 	        		this.preorder.set('comment',this.formPanel.form.findField('comment').getValue());
 	        		this.preorder.commit();
-        		}
+        		};
         	} else {
         		var record = new this.preorderModel();
         		record.set('patient',this.patient.data.resource_uri);
@@ -819,21 +813,22 @@ Ext.calendar.TimeslotEditWindow = Ext.extend(Ext.Window, {
     },
     
     onClear: function(){
-       	Ext.Msg.confirm('Предупреждение','Отменить предзаказ?',
-              function(btn){
-    			if (btn=='yes') {
-    				if (this.preorder){
-    					this.clearButton.setDisabled(true);
-    					this.moveButton.setDisabled(true);
-   						this.setRemovePreorder = true;
-   						this.formPanel.form.findField('Title').setValue('');
-   						this.formPanel.form.findField('Status').setValue('с');
-   						this.onSave();
-   					}
-    			}
-            },this
-        );
-    	
+    	var causeWin = new App.assignment.DeletePromptWindow({
+    		fn: function(cause_uri){
+    			if (!cause_uri) return false;
+    			this.cause_uri = cause_uri;
+    			if (this.preorder){
+					this.clearButton.setDisabled(true);
+					this.moveButton.setDisabled(true);
+					this.setRemovePreorder = true;
+					this.formPanel.form.findField('Title').setValue('');
+					this.formPanel.form.findField('Status').setValue('с');
+					this.onSave();
+				}
+    		},
+    		scope:this
+    	});
+    	causeWin.show();
     	
     },
     
