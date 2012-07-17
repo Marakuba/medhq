@@ -74,13 +74,17 @@ App.registry.PreorderManager = Ext.extend(Ext.TabPanel, {
 		this.on('afterrender', function(){
 			this.setActiveTab(this[this.openTab] || 0);
 			if(!this.hasPatient){
-				Ext.TaskMgr.start({
+				this.task = Ext.TaskMgr.start({
 	                run: this.updateInfo.createDelegate(this),
 	                interval: 30000
 	            });
 			}
 //			this.assigmentTab.store.load();
 		},this);
+		
+		this.on('beforedestroy',function(){
+			Ext.TaskMgr.stop(this.task)
+		},this)
 	},
 	
 	updateInfo: function(){
