@@ -445,7 +445,7 @@ App.patient.AsgmtGrid = Ext.extend(Ext.grid.EditorGridPanel, {
         var records = this.getSelectionModel().getSelections();
         
         if (records.length) {
-        	App.preorder.accessCheck(records,function(recs){
+        	App.preorder.accessCheck(records,true,function(recs){
         		if (recs.length){
 		    		if (this.hasPatient){
 						App.eventManager.fireEvent('launchapp','visittab',{

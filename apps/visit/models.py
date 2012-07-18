@@ -32,7 +32,8 @@ from lab.widgets import get_widget
 REFERRAL_TYPES = (
     (u'ф',u'Физическое лицо'),
     (u'в',u'Врач/Организация'),
-    (u'с',u'Страховая компания')
+    (u'с',u'Страховая компания'),
+    (u'л',u'Лечащий врач')
 )
 
 class ReferralAgent(make_operator_object('referralagent')):

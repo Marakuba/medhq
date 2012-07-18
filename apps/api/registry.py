@@ -702,6 +702,7 @@ class BaseServiceResource(ExtResource):
         }
         
 class StaffResource(ModelResource):
+    referral = fields.ForeignKey(ReferralResource, 'referral', null = True)
     """
     """
     def dehydrate(self, bundle):
@@ -1861,6 +1862,7 @@ class PreorderResource(ExtResource):
     promotion = fields.ForeignKey(PromotionResource, 'promotion', null=True)
     rejection_cause = fields.ForeignKey(RejectionCauseResource, 'rejection_cause', null=True)
     card = fields.ForeignKey(CardResource, 'card', null = True)
+    referral = fields.ForeignKey(ReferralResource, 'referral', null = True)
     
     def obj_create(self, bundle, request=None, **kwargs):
         kwargs['operator']=request.user
@@ -1905,9 +1907,13 @@ class ExtPreorderResource(ExtBatchResource):
     service = fields.ForeignKey(ExtendedServiceResource, 'service', null=True)
     promotion = fields.ForeignKey(PromotionResource, 'promotion', null=True)
     card = fields.ForeignKey(CardResource, 'card', null = True)
+    referral = fields.ForeignKey(ReferralResource, 'referral', null = True)
     
     def obj_create(self, bundle, request=None, **kwargs):
         kwargs['operator']=request.user
+        referral = request and request.active_profile.staff.referral
+        if referral:
+            kwargs['referral']=referral
         result = super(ExtPreorderResource, self).obj_create(bundle=bundle, request=request, **kwargs)
         return result
     
@@ -1947,6 +1953,7 @@ class ExtPreorderResource(ExtBatchResource):
         bundle.data['patient_phone'] = obj.patient and obj.patient.mobile_phone
         bundle.data['operator_name'] = obj.operator or ''
         bundle.data['branches'] = obj.service and bundle.obj.service.branches.all().values_list('id', flat=True)
+        bundle.data['referral_name'] = obj.referral and obj.referral.__unicode__()
         return bundle
     
     class Meta:
