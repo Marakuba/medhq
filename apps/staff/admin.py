@@ -21,7 +21,7 @@ class StaffAdmin(TabbedAdmin):
     list_display = ('__unicode__','mobile_phone','user','status')
     fieldsets = (
         ('Личные данные',{
-            'fields':('last_name','first_name','mid_name','birth_day','gender','status'),
+            'fields':('last_name','first_name','mid_name','birth_day','gender','status','referral'),
         }),
         ('Контакты и адрес',{
             'fields':('work_phone','home_phone','mobile_phone','work_address_street','home_address_street'),

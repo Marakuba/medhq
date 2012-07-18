@@ -781,6 +781,21 @@ App.visit.VisitForm = Ext.extend(Ext.FormPanel, {
 	},
 	
 	addPreorderRecords : function(records) {
+		//Устанавливаем реферрала. У всех добавляемых предзаказов один реферрал
+		if (records.length){
+			var cur_ref = this.referralCB.getValue();
+			var preorder_ref = records[0].data.referral
+			if (cur_ref || (!cur_ref && this.orderedService.store.data.items.length)){
+				if ((preorder_ref || '') != cur_ref){
+					Ext.Msg.alert('Внимание!',String.format('Реферралы не совпадают! {0} и {1}',this.referralCB.getRawValue() || 'не указан',records[0].data.referral_name || 'не указан') )
+					return false;
+				}
+			} else {
+				if (preorder_ref){
+					this.referralCB.forceValue(preorder_ref)
+				}
+			}
+		}
 		Ext.each(records, function(rec){
 			if(rec.data.service){
 				this.addPreorderService(rec);
