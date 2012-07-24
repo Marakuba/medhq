@@ -44,6 +44,8 @@ from remoting.models import RemoteState
 from api.authorization import LocalAuthorization
 from patient.models import ContractType, Contract
 from medhq.apps.scheduler.models import RejectionCause
+from medhq.apps.medstandart.models import Standart, StandartItem, Term,\
+    Complications, Stage, Phase, NosologicalForm
 
 class UserResource(ModelResource):
 
@@ -2255,6 +2257,113 @@ class ServiceToSend(ExtResource):
         }        
         
 
+class NosologicalFormResource(ExtResource):
+    
+    class Meta:
+        queryset = NosologicalForm.objects.all()
+        resource_name = 'nosological_form'
+        authorization = DjangoAuthorization()
+        always_return_data = True
+        limit = 200
+        filtering = {
+            'id' : ALL,
+        }
+        
+class AgeCategoryResource(ExtResource):
+    
+    class Meta:
+        queryset = Standart.objects.all()
+        resource_name = 'age_category'
+        authorization = DjangoAuthorization()
+        always_return_data = True
+        limit = 200
+        filtering = {
+            'id' : ALL,
+        }
+        
+class PhaseResource(ExtResource):
+    
+    class Meta:
+        queryset = Phase.objects.all()
+        resource_name = 'phase'
+        authorization = DjangoAuthorization()
+        always_return_data = True
+        limit = 200
+        filtering = {
+            'id' : ALL,
+        }
+        
+class StageResource(ExtResource):
+    
+    class Meta:
+        queryset = Stage.objects.all()
+        resource_name = 'stage'
+        authorization = DjangoAuthorization()
+        always_return_data = True
+        limit = 200
+        filtering = {
+            'id' : ALL,
+        }
+        
+class ComplicationsResource(ExtResource):
+    
+    class Meta:
+        queryset = Complications.objects.all()
+        resource_name = 'complications'
+        authorization = DjangoAuthorization()
+        always_return_data = True
+        limit = 200
+        filtering = {
+            'id' : ALL,
+        }
+        
+class TermResource(ExtResource):
+    
+    class Meta:
+        queryset = Term.objects.all()
+        resource_name = 'term'
+        authorization = DjangoAuthorization()
+        always_return_data = True
+        limit = 200
+        filtering = {
+            'id' : ALL,
+        }
+        
+class MedStandartResource(ExtResource):
+    nosological_form = fields.ForeignKey(NosologicalFormResource,'nosological_form')
+    age_category = fields.ForeignKey(AgeCategoryResource,'age_category')
+    phase = fields.ForeignKey(PhaseResource,'phase')
+    stage = fields.ForeignKey(StageResource,'stage')
+    complications = fields.ForeignKey(ComplicationsResource,'complications')
+    term = fields.ForeignKey(TermResource,'term')
+    icd10 = fields.ForeignKey(ICD10Resource,'icd10')
+    
+    class Meta:
+        queryset = Standart.objects.all()
+        resource_name = 'medstandart'
+        authorization = DjangoAuthorization()
+        always_return_data = True
+        limit = 200
+        filtering = {
+            'id' : ALL,
+            'icd10':ALL
+        }
+        
+class StandartItemResource(ExtResource):
+    standart = fields.ForeignKey(MedStandartResource,'standart')
+    base_service = fields.ForeignKey(BaseServiceResource,'base_service')
+    
+    class Meta:
+        queryset = StandartItem.objects.all()
+        resource_name = 'standartitem'
+        authorization = DjangoAuthorization()
+        always_return_data = True
+        limit = 200
+        filtering = {
+            'id' : ALL,
+        }
+              
+
 api = Api(api_name=get_api_name('dashboard'))
 
 api.register(UserResource())
@@ -2374,6 +2483,16 @@ api.register(AdSourceResource())
 
 #remoting
 api.register(ServiceToSend())
+
+#medstandart
+api.register(NosologicalFormResource())
+api.register(AgeCategoryResource())
+api.register(PhaseResource())
+api.register(StageResource())
+api.register(ComplicationsResource())
+api.register(TermResource())
+api.register(MedStandartResource())
+api.register(StandartItemResource())
 
 #reporting
 #api.register(ReportResource())
