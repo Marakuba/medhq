@@ -107,12 +107,20 @@ class Standart(models.Model):
         
 class StandartItem(models.Model):
     standart = models.ForeignKey(Standart)
+<<<<<<< HEAD
     service = models.ForeignKey(ExtendedService)
+=======
+    base_service = models.ForeignKey(BaseService)
+>>>>>>> medstandart__inint
     frequency = models.DecimalField(u'Частота предоставления',max_digits=7, decimal_places=4,default = 1)
     average = models.DecimalField(u'Среднее количество',max_digits=7, decimal_places=4,default = 1)
     
     def __unicode__(self):
+<<<<<<< HEAD
         return u"%s" % ( self.standart.name)
+=======
+        return u"%s" % ( self.name)
+>>>>>>> medstandart__inint
         
     class Meta:
         verbose_name = u"Элемент стандартов"

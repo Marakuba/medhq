@@ -44,7 +44,7 @@ from remoting.models import RemoteState
 from api.authorization import LocalAuthorization
 from patient.models import ContractType, Contract
 from scheduler.models import RejectionCause
-from medhq.apps.medstandart.models import Standart, StandartItem, Term,\
+from medstandart.models import Standart, StandartItem, Term,\
     Complications, Stage, Phase, NosologicalForm, AgeCategory
 
 class UserResource(ModelResource):
