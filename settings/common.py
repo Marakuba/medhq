@@ -103,6 +103,7 @@ INSTALLED_APPS = [
     'direct',
     'helpdesk',
     'webapp',
+    'medstandart',
     'numeration',
     'patient',
     'reporting',
