@@ -10,7 +10,7 @@ from south.modelsinspector import add_introspection_rules
 
 add_introspection_rules([], ["^tagging\.fields\.TagField"])
 
-TIMESLOTS =(
+TIMESLOTS =((0,10),
             (1,15),
             (2,20),
             (3,25),

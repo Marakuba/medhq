@@ -34,7 +34,7 @@ class StandardServiceAdmin(TreeEditor):
 
 class PriceInlineAdmin(admin.TabularInline):
     model = Price
-    exclude = ('service','type')
+    exclude = ('service',)
 
 
 
