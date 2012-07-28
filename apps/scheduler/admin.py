@@ -2,6 +2,7 @@
 from django.contrib import admin
 from scheduler.models import Calendar, Event, Preorder
 from staff.models import Position
+from scheduler.models import RejectionCause
 
 class PreorderInlineAdmin(admin.TabularInline):
     """
@@ -42,3 +43,4 @@ class PreorderAdmin(admin.ModelAdmin):
 admin.site.register(Preorder, PreorderAdmin)
 admin.site.register(Event, EventAdmin)
 admin.site.register(Calendar)
+admin.site.register(RejectionCause)

@@ -150,7 +150,9 @@ App.models.preorderModel = new Ext.data.Record.create([
 	{name: 'price'},
 	{name: 'card'},
 	{name: 'branches'},
-	{name: 'start', type: 'date',format:'c'}
+	{name: 'start', type: 'date',format:'c'},
+	{name: 'deleted'},
+	{name: 'rejection_cause'}
 ]);
 
 App.models.patientModel = new Ext.data.Record.create([

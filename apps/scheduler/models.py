@@ -102,6 +102,20 @@ class Calendar(models.Model):
     def __unicode__(self):
         return self.title
     
+class RejectionCause(models.Model):
+    """
+    Причина отказа
+    """
+    name = models.CharField(u'Причина', max_length = 150)
+    
+    class Meta:
+        verbose_name = u'Причина отказа'
+        verbose_name_plural = u'причины отказа'
+        ordering = ('name',)
+        
+    def __unicode__(self):
+        return self.name
+    
 class Event(models.Model):
     """
     Модель смены врача
@@ -186,6 +200,8 @@ class Preorder(models.Model):
     card = models.ForeignKey(Card, null = True, blank = True)
     completed_count = models.PositiveIntegerField(u'Количество выполненных', default=0)
     price = models.DecimalField(u'Цена', max_digits=10, decimal_places=2, null=True)
+    rejection_cause = models.ForeignKey(RejectionCause, null = True, blank = True)
+    deleted = models.BooleanField(u'Удалено', default=False)
     objects = models.Manager()
     
     def get_staff_name(self):
@@ -199,29 +215,36 @@ class Preorder(models.Model):
     
     @transaction.commit_on_success
     def save(self, *args, **kwargs):
-        if self.timeslot:
+        if self.deleted:
+            if self.timeslot:
+                self.timeslot.status = u'с' 
+                self.timeslot.save()
+                self.timeslot = None
+        else:
+            if self.timeslot:
+                if self.visit:
+                    self.timeslot.status = u'о'
+                else: 
+                    self.timeslot.status = u'з'
+                self.timeslot.save()
             if self.visit:
-                self.timeslot.status = u'о'
-            else: 
-                self.timeslot.status = u'з'
-            self.timeslot.save()
-        if self.visit:
-            self.completed_count += 1
-            if self.count > self.completed_count:
-                args_list = model_to_dict(self,['created','modified','visit','id','timeslot','expiration'])
-                if self.expiration and self.created:
-                    dt = self.expiration - self.created
-                    args_list['expiration'] = self.expiration + dt
-                Preorder.objects.create(**args_list)
-        if self.service and self.created and self.payment_type:
-            self.price = self.service.get_actual_price(self.created,self.payment_type)    
+                self.completed_count += 1
+                if self.count > self.completed_count:
+                    args_list = model_to_dict(self,['created','modified','visit','id','timeslot','expiration'])
+                    if self.expiration and self.created:
+                        dt = self.expiration - self.created
+                        args_list['expiration'] = self.expiration + dt
+                    Preorder.objects.create(**args_list)
+            if self.service and self.created and self.payment_type:
+                self.price = self.service.get_actual_price(self.created,self.payment_type)    
         super(Preorder, self).save(*args, **kwargs) 
         
     def delete(self, *args, **kwargs):
         if self.timeslot:
             self.timeslot.status = u'с' 
             self.timeslot.save()
-        super(Preorder, self).delete(*args, **kwargs) 
+        self.deleted = True
+        self.save() 
     
     def get_discount(self):
         if self.promotion:
@@ -237,7 +260,7 @@ class Preorder(models.Model):
         ordering = ('id',)
         
     def __unicode__(self):
-        return "<<%s>>" % self.id
+        return self.patient and self.patient.short_name() or u'Предзаказ'
     
     
 ### SIGNALS

@@ -3,6 +3,12 @@ Ext.ns('App','App.registry','App.preorder');
 App.registry.PreorderGrid = Ext.extend(Ext.grid.GridPanel, {
 
 	initComponent : function() {
+		this.updatingStoreCheck = new Ext.form.Checkbox({
+			checked:true,
+			hidden:this.hasPatient,
+			boxLabel:'Автоматическое обновление',
+			handler:this.updatingCheckClick.createDelegate(this)
+		});
 		
 		this.start_date = new Date();
 		
@@ -63,7 +69,7 @@ App.registry.PreorderGrid = Ext.extend(Ext.grid.GridPanel, {
 					Ext.ux.Printer.print(this);
 				},
 				scope:this
-			},'->',this.pTypeButton]
+			},'-',this.updatingStoreCheck,'->',this.pTypeButton]
 		});
 
 		this.medstateStore.on('load',function(store,records){
@@ -289,7 +295,10 @@ App.registry.PreorderGrid = Ext.extend(Ext.grid.GridPanel, {
 				if (this.searchValue){
 					this.onGlobalSearch(this.searchValue)
 				} else {
-					this.store.load();
+					//при открытии если выключено автообновление, то загрузить store один раз
+					if (!this.updatingStoreCheck.getValue()){
+						this.store.load()
+					}
 				}
 			}
 		},this);
@@ -376,13 +385,27 @@ App.registry.PreorderGrid = Ext.extend(Ext.grid.GridPanel, {
     	if (!record || record.data.visit) {
     		return false
     	};
-    	this.eventStore.setBaseParam('preord',App.uriToId(record.data.id))
-    	this.eventStore.load({calback:function(records){
-    		if (records[0]){
-    			records[0]['vacancy'] = true
-    		}
-    	},scope:this})
-    	this.store.remove(record)
+//    	this.eventStore.setBaseParam('preord',App.uriToId(record.data.id))
+//    	this.eventStore.load({calback:function(records){
+//    		if (records[0]){
+//    			records[0]['vacancy'] = true
+//    		}
+//    	},scope:this})
+    	var causeWin = new App.assignment.DeletePromptWindow({
+    		fn: function(cause_uri){
+    			if (!cause_uri) return false;
+    			this.store.autoSave = false;
+    			record.set('deleted',true);
+    			record.set('rejection_cause',cause_uri);
+    			this.store.autoSave = true;
+    			this.store.save();
+    			this.store.load();
+    			this.btnSetDisabled(true)
+    		},
+    		scope:this
+    	});
+    	causeWin.show();
+//    	this.store.remove(record)
     	
     },
     
@@ -461,6 +484,18 @@ App.registry.PreorderGrid = Ext.extend(Ext.grid.GridPanel, {
 			delete s.baseParams['search']
 		}
 		s.load();
+	},
+	
+	updateInfo: function(){
+		if(this.updatingStoreCheck.getValue()){
+	        this.store.load();
+		}
+	},
+	setUpdating: function(status){
+		this.updatingStoreCheck.setValue(status);
+	},
+	updatingCheckClick: function(checkbox, checked){
+		this.fireEvent('setupdating',this,checked);
 	}
 	
 });

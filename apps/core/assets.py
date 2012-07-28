@@ -151,6 +151,7 @@ js_registry = Bundle(
     'app/registry/visit/OrderedServiceInlineGrid.js',
     'app/registry/visit/VisitTab.js',
     
+    'app/registry/asgmt/DeletePromptWindow.js',
     'app/registry/asgmt/PreorderInlineGrid.js',
     'app/registry/asgmt/AsgmtListWindow.js',
     'app/registry/asgmt/AsgmtForm.js',
@@ -524,6 +525,7 @@ js_examination = Bundle(
     'app/examination/patient/PatientHistoryPanel.js',
     'app/examination/patient/PatientHistory.js',
     
+    'app/registry/asgmt/DeletePromptWindow.js',
     'app/registry/asgmt/AsgmtListWindow.js',
     'app/registry/asgmt/PreorderInlineGrid.js',
     'app/registry/asgmt/AsgmtForm.js',

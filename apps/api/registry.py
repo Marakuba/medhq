@@ -43,6 +43,7 @@ from promotion.models import Promotion
 from remoting.models import RemoteState
 from api.authorization import LocalAuthorization
 from patient.models import ContractType, Contract
+from medhq.apps.scheduler.models import RejectionCause
 
 class UserResource(ModelResource):
 
@@ -1834,11 +1835,23 @@ class CalendarResource(ExtResource):
             'title':ALL,
         }
         
+class RejectionCauseResource(ExtResource):
+    
+    class Meta:
+        queryset = RejectionCause.objects.all()
+        resource_name = 'rejection_cause'
+        authorization = DjangoAuthorization()
+        filtering = {
+            'name':ALL,
+        }
+
+        
 class PreorderResource(ExtResource):
     patient = fields.ForeignKey(PatientResource, 'patient', null=True)
     timeslot = fields.OneToOneField('apps.api.registry.EventResource','timeslot', null=True)
     service = fields.ForeignKey(ExtendedServiceResource, 'service', null=True)
     promotion = fields.ForeignKey(PromotionResource, 'promotion', null=True)
+    rejection_cause = fields.ForeignKey(RejectionCauseResource, 'rejection_cause', null=True)
     card = fields.ForeignKey(CardResource, 'card', null = True)
     
     def obj_create(self, bundle, request=None, **kwargs):
@@ -1865,7 +1878,7 @@ class PreorderResource(ExtResource):
         return orm_filters
     
     class Meta:
-        queryset = Preorder.objects.all()
+        queryset = Preorder.objects.filter(deleted = False)
         resource_name = 'preorder'
         authorization = DjangoAuthorization()
         always_return_data = True
@@ -1929,7 +1942,7 @@ class ExtPreorderResource(ExtBatchResource):
         return bundle
     
     class Meta:
-        queryset = Preorder.objects.all().select_related().order_by('-timeslot__start')
+        queryset = Preorder.objects.filter(deleted = False).select_related().order_by('-timeslot__start')
         resource_name = 'extpreorder'
         authorization = DjangoAuthorization()
         always_return_data = True
@@ -1970,7 +1983,7 @@ class VisitPreorderResource(ExtPreorderResource):
         return orm_filters
     
     class Meta:
-        queryset = Preorder.objects.filter(timeslot__isnull=True).order_by('-expiration')
+        queryset = Preorder.objects.filter(timeslot__isnull=True,deleted = False).order_by('-expiration')
         resource_name = 'visitpreorder'
         authorization = DjangoAuthorization()
         always_return_data = True
@@ -2008,7 +2021,8 @@ class EventResource(ExtResource):
             'start':ALL,
             'end':ALL,
             'timeslot':ALL,
-            'status':ALL
+            'status':ALL,
+            'preord':ALL
             
         }       
         limit = 1000
@@ -2324,6 +2338,7 @@ api.register(IssueTypeResource())
 api.register(IssueResource())
 
 #scheduler
+api.register(RejectionCauseResource())
 api.register(CalendarResource())
 api.register(PreorderResource())
 api.register(ExtPreorderResource())
