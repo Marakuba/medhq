@@ -251,6 +251,7 @@ App.examination.TicketTab = Ext.extend(Ext.Panel, {
 	},
 	
 	addStandartServices:function(records){
+		var today = new Date();
 		Ext.each(records,function(rec){
 			var asgmtType = this.asgmtPanel.store.recordType;
 			var asgmt = new asgmtType({
@@ -262,8 +263,10 @@ App.examination.TicketTab = Ext.extend(Ext.Panel, {
 				card:this.record.data.resource_uri || '',
 				count:rec.data.avarage || 1,
 				patient:App.getApiUrl('patient',this.patient)
-			})	
-		},this)
+			});
+			this.asgmtPanel.store.add(asgmt)
+		},this);
+		this.asgmtPanel.store.save();
 		
 	}
 });
