@@ -12,6 +12,7 @@ from mptt.models import MPTTModel
 
 import Image
 import simplejson
+from scheduler.models import Preorder
 
 SECTIONS = (
     (u'anamnesis',u'УЗИ'),
@@ -316,6 +317,11 @@ class Card(models.Model):
     contrast_enhancement = models.TextField(u'Контрастное усиление', null=True, blank=True)
     deleted = models.BooleanField(u'Удалено', default=False)
     
+    def save(self,*args, **kwargs):
+        if self.deleted:
+            preorders = Preorder.objects.filter(card=self.id)
+            [p.delete() for p in preorders]
+        super(Card, self).save(*args, **kwargs)
     
     def __unicode__(self):
         return "%s - %s - %s" % (self.created.strftime("%d/%m/%Y"),self.name or self.print_name,self.ordered_service.order.patient.short_name())

@@ -27,6 +27,12 @@ App.examination.CardApp = Ext.extend(Ext.Panel, {
 			model: App.models.Card
 		});
 		
+		this.cardStore.on('write',function(store, action, result, res, rs){
+			if (rs.data.deleted){
+				this.destroy();
+			}
+		},this)
+		
 		this.fieldSetStore = new Ext.data.RESTStore({
 			autoSave: false,
 			autoLoad : true,
@@ -129,7 +135,7 @@ App.examination.CardApp = Ext.extend(Ext.Panel, {
 					movearhcivetmp:function(){
 					},
 					deleterecord:function(){
-						this.destroy();
+//						this.destroy();
 					},
 					changetitle: function(text){
 						this.contentPanel.setTitle(text);
