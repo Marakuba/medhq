@@ -27,6 +27,7 @@ import time
 from django.core.serializers.json import DjangoJSONEncoder
 
 import logging
+from medhq.apps.pricelist.models import get_actual_ptype
 logger = logging.getLogger('general')
 
 
@@ -349,8 +350,9 @@ def get_service_tree(request):
             payer = State.objects.get(id=payer)
         except:
             payer = None
+    p_type_id = get_actual_ptype()
         
-    _cache_key = u'%sservice_list_%s_%s_%s' % (ext and 'ext_' or '', state and state.id or u'*', payment_type, payer and payer.id or '*')
+    _cache_key = u'%sservice_list_%s_%s_%s_%s' % (ext and 'ext_' or '', state and state.id or u'*', payment_type, payer and payer.id or '*', p_type_id or '*')
     
     # запрос с параметром recache удаляет ВСЕ записи в нём
     if recache:
@@ -378,6 +380,7 @@ def get_service_tree(request):
             args['payer'] = payer.id
         else:
             args['payer__isnull'] = True
+        args['type'] = p_type_id
     
         nodes = []
         values = Price.objects.filter(**args).\

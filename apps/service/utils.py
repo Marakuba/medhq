@@ -7,6 +7,7 @@ from django.db.models.aggregates import Max
 from service.models import BaseService
 
 import logging
+from medhq.apps.pricelist.models import get_actual_ptype
 logger = logging.getLogger('general')
 
 def unicode_csv_reader(unicode_csv_data, **kwargs):
@@ -43,7 +44,7 @@ def revert_tree_objects(obj):
         child.move_to(obj, position='first-child')
         revert_tree_objects(child)
 
-def get_service_tree(state=None,payer=None,payment_type=None):
+def get_service_tree(state=None,payer=None,payment_type=None,price_type=None):
     """
     Генерирует дерево в json-формате.
     """
@@ -82,7 +83,9 @@ def get_service_tree(state=None,payer=None,payment_type=None):
             args['payer'] = payer.id
 
     nodes = []
-    values = Price.objects.filter(extended_service__is_active=True, price_type='r',**args).\
+    if not price_type:
+        price_type = get_actual_ptype()
+    values = Price.objects.filter(extended_service__is_active=True, price_type='r',type=price_type,**args).\
         order_by('extended_service__id').\
         values('extended_service__id','value','extended_service__base_service__id').\
         annotate(Max('on_date'))
