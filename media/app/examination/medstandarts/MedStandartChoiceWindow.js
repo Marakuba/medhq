@@ -4,14 +4,21 @@ App.examination.MedStandartChoiceWindow = Ext.extend(Ext.Window, {
 
 	initComponent:function(){
 		this.form = new App.examination.MedStandartChoiceForm({
+			mkb10:this.mkb10,
 			fn:function(record){
 				Ext.callback(this.fn, this.scope || window, [record]);
+			},
+			listeners:{
+				scope:this,
+				pushservices:function(records){
+					this.fireEvent('pushservices',records);
+				}
 			},
 			scope:this
 		});
 		
 		config = {
-			width:800,
+			width:1000,
 			height:600,
 			modal:true,
 			layout:'fit',

@@ -2340,13 +2340,22 @@ class TermResource(ExtResource):
         }
         
 class MedStandartResource(ExtResource):
-    nosological_form = fields.ForeignKey(NosologicalFormResource,'nosological_form')
-    age_category = fields.ForeignKey(AgeCategoryResource,'age_category')
-    phase = fields.ForeignKey(PhaseResource,'phase')
-    stage = fields.ForeignKey(StageResource,'stage')
-    complications = fields.ForeignKey(ComplicationsResource,'complications')
-    term = fields.ForeignKey(TermResource,'term')
-    icd10 = fields.ForeignKey(ICD10Resource,'icd10')
+    nosological_form = fields.ForeignKey(NosologicalFormResource,'nosological_form',null=True)
+    age_category = fields.ManyToManyField(AgeCategoryResource,'age_category',null=True)
+    phase = fields.ForeignKey(PhaseResource,'phase',null=True)
+    stage = fields.ForeignKey(StageResource,'stage',null=True)
+    complications = fields.ForeignKey(ComplicationsResource,'complications',null=True)
+    terms = fields.ManyToManyField(TermResource,'terms',null=True)
+    mkb10 = fields.ForeignKey(ICD10Resource,'mkb10')
+    
+    def dehydrate(self, bundle):
+        bundle.data['nosological_form_name'] = bundle.obj.nosological_form and bundle.obj.nosological_form.name or u'Не указано'
+#        bundle.data['age_category_name'] = bundle.obj.age_category and bundle.obj.age_category.name or u'Не указано'
+        bundle.data['phase_name'] = bundle.obj.phase and bundle.obj.phase.name or u'Не указано'
+        bundle.data['stage_name'] = bundle.obj.stage and bundle.obj.stage.name or u'Не указано'
+        bundle.data['complications_name'] = bundle.obj.complications and bundle.obj.complications.name or u'Не указано'
+#        bundle.data['phase_name'] = bundle.obj.phase and bundle.obj.phase.name or u'Не указано'
+        return bundle
     
     class Meta:
         queryset = Standart.objects.all()
@@ -2356,12 +2365,18 @@ class MedStandartResource(ExtResource):
         limit = 200
         filtering = {
             'id' : ALL,
-            'icd10':ALL
+            'mkb10':ALL,
         }
         
 class StandartItemResource(ExtResource):
     standart = fields.ForeignKey(MedStandartResource,'standart')
-    base_service = fields.ForeignKey(BaseServiceResource,'base_service')
+    service = fields.ForeignKey(ExtendedServiceResource,'service')
+    
+    def dehydrate(self, bundle):
+        bundle.data['service_name'] = bundle.obj.service.base_service.name
+        bundle.data['price'] = bundle.obj.service.base_service.price
+        bundle.data['state'] = bundle.obj.service.base_service.state
+        return bundle
     
     class Meta:
         queryset = StandartItem.objects.all()
@@ -2371,6 +2386,7 @@ class StandartItemResource(ExtResource):
         limit = 200
         filtering = {
             'id' : ALL,
+            'standart':ALL
         }
               
 

@@ -474,6 +474,11 @@ js_examination = Bundle(
     'app/dict/mkb/MKBTree.js',
     'app/dict/mkb/MKBWindow.js',
     
+    'app/examination/medstandarts/MedStandartGrid.js',
+    'app/examination/medstandarts/MedStandartServiceGrid.js',
+    'app/examination/medstandarts/MedStandartChoiceForm.js',
+    'app/examination/medstandarts/MedStandartChoiceWindow.js',
+    
     'app/examination/EventManager.js',
     'app/examination/CentralPanel.js',
     'app/examination/MainPanel.js',

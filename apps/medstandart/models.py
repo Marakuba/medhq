@@ -1,7 +1,8 @@
 # -*- coding: utf-8 -*-
 
 from django.db import models
-from service.models import ICD10, BaseService
+from service.models import ICD10
+from medhq.apps.service.models import ExtendedService
 
 class AgeCategory(models.Model):
     
@@ -80,7 +81,7 @@ class Standart(models.Model):
     
     name = models.CharField(u'Наименование', max_length=200)
     age_category = models.ManyToManyField(AgeCategory, 
-                                 null=True, blank=True)
+                                 null=True, blank=True, related_name='age_category')
     age_from = models.PositiveIntegerField(u'Возраст от', default = 0)
     age_to = models.PositiveIntegerField(u'Возраст до', default = 250)
     nosological_form = models.ForeignKey(NosologicalForm, 
@@ -91,7 +92,7 @@ class Standart(models.Model):
                                  null=True, blank=True)
     complications = models.ForeignKey(Complications, 
                                  null=True, blank=True)
-    terms = models.ManyToManyField(Term,
+    terms = models.ManyToManyField(Term, related_name='terms',
                                  null=True, blank=True)
     mkb10 = models.ForeignKey(ICD10, 
                                  null=True, blank=True)
@@ -106,12 +107,12 @@ class Standart(models.Model):
         
 class StandartItem(models.Model):
     standart = models.ForeignKey(Standart)
-    base_service = models.ForeignKey(BaseService)
+    service = models.ForeignKey(ExtendedService)
     frequency = models.DecimalField(u'Частота предоставления',max_digits=7, decimal_places=4,default = 1)
     average = models.DecimalField(u'Среднее количество',max_digits=7, decimal_places=4,default = 1)
     
     def __unicode__(self):
-        return u"%s" % ( self.name)
+        return u"%s" % ( self.standart.name)
         
     class Meta:
         verbose_name = u"Элемент стандартов"
