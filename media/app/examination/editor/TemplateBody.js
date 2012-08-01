@@ -55,7 +55,6 @@ App.examination.TemplateBody = Ext.extend(Ext.TabPanel, {
 			text: this.isCard? 'Переместить в Мои шаблоны': 'Сохранить как шаблон',
 			hidden:this.fromArchive,
 			handler:function(){
-				console.log('isCard:',this.isCard);
 				if (!this.isCard){
 					this.record.set('base_service','');
 					this.fireEvent('movearhcivetmp');
@@ -165,6 +164,7 @@ App.examination.TemplateBody = Ext.extend(Ext.TabPanel, {
 		this.generalTab.on('setmkb',function(value){
 			if (this.record){
 				this.record.set('mkb_diag',value);
+				this.openMedStandarts(value);
 			}
 		},this);
 		
@@ -478,8 +478,21 @@ App.examination.TemplateBody = Ext.extend(Ext.TabPanel, {
 		ticketEditor.loadTicket(ticket);
 		this.doLayout();
 		this.setActiveTab(ticketEditor)
-	}
+	},
 	
+	openMedStandarts: function(mkb10){
+		var stWin = new App.examination.MedStandartChoiceWindow({
+			mkb10:App.uriToId(mkb10),
+			listeners:{
+				scope:this,
+				pushservices:function(records){
+					this.dataTab.addStandartServices(records)
+				}
+			}
+		});
+		stWin.show();
+		this.setActiveTab(this.dataTab)
+	}
 
 });
 

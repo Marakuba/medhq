@@ -493,7 +493,7 @@ App.models.ServiceToSend = new Ext.data.Record.create([
     {name: 'patient_birth_day', type:'date', format:'c'}
 ]);
 
-App.models.MedSatndartModel = new Ext.data.Record.create([
+App.models.MedStandartModel = new Ext.data.Record.create([
     {name: 'id'},
     {name: 'resource_uri'},
     {name: 'mkb10'},
@@ -501,18 +501,25 @@ App.models.MedSatndartModel = new Ext.data.Record.create([
     {name: 'age_category'},
     {name: 'stage'},
     {name: 'phase'},
-    {name: 'nosological_form'}
+    {name: 'nosological_form'},
+    {name: 'complications'},
+    {name: 'stage_name'},
+    {name: 'phase_name'},
+    {name: 'nosological_form_name'},
+    {name: 'complications_name'},
+    {name: 'age_from'},
+    {name: 'age_to'}
 ]);
 
-App.models.SatndartItemModel = new Ext.data.Record.create([
+App.models.StandartItemModel = new Ext.data.Record.create([
     {name: 'id'},
     {name: 'resource_uri'},
-    {name: 'mkb10'},
-    {name: 'name'},
-    {name: 'age_category'},
-    {name: 'stage'},
-    {name: 'phase'},
-    {name: 'nosological_form'}
+    {name: 'standart'},
+    {name: 'service'},
+    {name: 'service_name'},
+    {name: 'price'},
+    {name: 'frequency'},
+    {name: 'average'}
 ]);
 
 App.models.MedState = new Ext.data.Record.create([
