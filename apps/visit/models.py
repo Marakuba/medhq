@@ -31,7 +31,8 @@ from service.exceptions import TubeIsNoneException
 REFERRAL_TYPES = (
     (u'ф',u'Физическое лицо'),
     (u'в',u'Врач/Организация'),
-    (u'с',u'Страховая компания')
+    (u'с',u'Страховая компания'),
+    (u'л',u'Лечащий врач')
 )
 
 class ReferralAgent(make_operator_object('referralagent')):
