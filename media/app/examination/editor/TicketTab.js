@@ -266,7 +266,7 @@ App.examination.TicketTab = Ext.extend(Ext.Panel, {
 			});
 			this.asgmtPanel.store.add(asgmt)
 		},this);
-		this.asgmtPanel.store.save();
+//		this.asgmtPanel.store.save();
 		
 	}
 });

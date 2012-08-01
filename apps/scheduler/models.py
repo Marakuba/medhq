@@ -22,7 +22,7 @@ from core.utils import model_to_dict
 from datetime import timedelta
 from service.models import ExtendedService
 from promotion.models import Promotion
-from examination.models import Card
+#from examination.models import Card
 from copy import deepcopy
 from django.core.exceptions import ObjectDoesNotExist
 
@@ -197,7 +197,7 @@ class Preorder(models.Model):
                                     choices=PAYMENT_TYPES)
     promotion = models.ForeignKey(Promotion,blank = True, null=True)
     count = models.PositiveIntegerField(u'Количество', default=1)
-    card = models.ForeignKey(Card, null = True, blank = True)
+    card = models.ForeignKey('examination.Card', null = True, blank = True)
     completed_count = models.PositiveIntegerField(u'Количество выполненных', default=0)
     price = models.DecimalField(u'Цена', max_digits=10, decimal_places=2, null=True)
     rejection_cause = models.ForeignKey(RejectionCause, null = True, blank = True)
