@@ -132,7 +132,8 @@ App.patient.AsgmtGrid = Ext.extend(Ext.grid.EditorGridPanel, {
 			autoSave : true,
 			baseParams:this.baseParams ? this.baseParams : {
 				format:'json',
-				visit__isnull:true
+				visit__isnull:true,
+				deleted:false
 			},
 			apiUrl : get_api_url('visitpreorder'),
 			model: App.models.preorderModel
@@ -402,7 +403,7 @@ App.patient.AsgmtGrid = Ext.extend(Ext.grid.EditorGridPanel, {
 		this.patientId = id;
 		this.patientRecord = rec;
 		var s = this.store;
-		s.baseParams = {format:'json','patient': id, visit__isnull:true};
+		s.baseParams = {format:'json','patient': id, visit__isnull:true,deleted:false};
 		if (this.card_id){
 			s.setBaseParam('card',this.card_id);
 		}

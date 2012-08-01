@@ -7,14 +7,14 @@ App.examination.MedStandartServiceGrid = Ext.extend(Ext.grid.GridPanel, {
 		this.store = new Ext.data.RESTStore({
 			autoLoad : false,
 			apiUrl : get_api_url('standartitem'),
-			model: App.models.StandartItemModel,
-			disabled:true
+			model: App.models.StandartItemModel
 		});
 		
 		this.choiceBtn = new Ext.Button({
 			text:'Выбрать',
 			handler:this.onServiceChoice.createDelegate(this,[]),
-			iconCls:'silk-accept'
+			iconCls:'silk-accept',
+			disabled:true
 		})
 		
 		this.sm = new Ext.grid.CheckboxSelectionModel({
@@ -33,7 +33,7 @@ App.examination.MedStandartServiceGrid = Ext.extend(Ext.grid.GridPanel, {
 		    	header: "Услуга", 
 		    	width: 60, 
 		    	sortable: true, 
-		    	dataIndex: 'base_service_name'
+		    	dataIndex: 'service_name'
 		    },{
 		    	header: "Частота предоставления", 
 		    	width: 20,

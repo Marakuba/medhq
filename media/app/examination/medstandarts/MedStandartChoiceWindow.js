@@ -12,6 +12,7 @@ App.examination.MedStandartChoiceWindow = Ext.extend(Ext.Window, {
 				scope:this,
 				pushservices:function(records){
 					this.fireEvent('pushservices',records);
+					this.close();
 				}
 			},
 			scope:this
