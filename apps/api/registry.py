@@ -45,7 +45,7 @@ from api.authorization import LocalAuthorization
 from patient.models import ContractType, Contract
 from scheduler.models import RejectionCause
 from medhq.apps.medstandart.models import Standart, StandartItem, Term,\
-    Complications, Stage, Phase, NosologicalForm
+    Complications, Stage, Phase, NosologicalForm, AgeCategory
 
 class UserResource(ModelResource):
 
@@ -1964,6 +1964,7 @@ class ExtPreorderResource(ExtBatchResource):
         authorization = DjangoAuthorization()
         always_return_data = True
         filtering = {
+            'deleted':ALL,
             'patient':ALL,
             'start':ALL,
             'timeslot':ALL_WITH_RELATIONS,
@@ -2005,6 +2006,7 @@ class VisitPreorderResource(ExtPreorderResource):
         authorization = DjangoAuthorization()
         always_return_data = True
         filtering = {
+            'deleted':ALL,
             'patient':ALL,
             'start':ALL,
             'expiration':ALL,
@@ -2282,7 +2284,7 @@ class NosologicalFormResource(ExtResource):
 class AgeCategoryResource(ExtResource):
     
     class Meta:
-        queryset = Standart.objects.all()
+        queryset = AgeCategory.objects.all()
         resource_name = 'age_category'
         authorization = DjangoAuthorization()
         always_return_data = True
@@ -2374,8 +2376,8 @@ class StandartItemResource(ExtResource):
     
     def dehydrate(self, bundle):
         bundle.data['service_name'] = bundle.obj.service.base_service.name
-        bundle.data['price'] = bundle.obj.service.base_service.price
-        bundle.data['state'] = bundle.obj.service.base_service.state
+        bundle.data['price'] = bundle.obj.service.get_actual_price()
+        bundle.data['state'] = bundle.obj.service.state
         return bundle
     
     class Meta:
