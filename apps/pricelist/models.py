@@ -105,12 +105,11 @@ def get_actual_ptype(m = time.localtime()):
     Возвращает id актуального на текущий момент типа цены PriceType
     """
     t = cache.get('periods') or build_period_table()
-    r = filter(lambda x:x if (str(m.tm_hour)+':'+str(m.tm_min) >= x['hour_from'])
-             and (str(m.tm_hour)+':'+str(m.tm_min) <= x['hour_to'])
-             and (x['month_day_from'] <= m.tm_mday) and (x['month_day_to'] >= m.tm_mday) 
-             and (m.tm_wday >= x['week_day_from']) and (m.tm_wday <= x['week_day_to']) 
-             and (m.tm_mon >= x['month_from']) and (m.tm_mon <= x['month_to']) 
-             else False,t)
+    r = filter(lambda x:(str(m.tm_hour)+':'+str(m.tm_min) >= x['hour_from']) \
+             and (str(m.tm_hour)+':'+str(m.tm_min) <= x['hour_to']) \
+             and (x['month_day_from'] <= m.tm_mday) and (x['month_day_to'] >= m.tm_mday) \
+             and (m.tm_wday >= x['week_day_from']) and (m.tm_wday <= x['week_day_to']) \
+             and (m.tm_mon >= x['month_from']) and (m.tm_mon <= x['month_to']) ,t)
     r = sorted(r,key=itemgetter('priority'),reverse=True)
     if len(r) == 0:
         return False
