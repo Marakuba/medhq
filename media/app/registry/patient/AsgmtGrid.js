@@ -132,7 +132,8 @@ App.patient.AsgmtGrid = Ext.extend(Ext.grid.EditorGridPanel, {
 			autoSave : true,
 			baseParams:this.baseParams ? this.baseParams : {
 				format:'json',
-				visit__isnull:true
+				visit__isnull:true,
+				deleted:false
 			},
 			apiUrl : get_api_url('visitpreorder'),
 			model: App.models.preorderModel
@@ -402,7 +403,7 @@ App.patient.AsgmtGrid = Ext.extend(Ext.grid.EditorGridPanel, {
 		this.patientId = id;
 		this.patientRecord = rec;
 		var s = this.store;
-		s.baseParams = {format:'json','patient': id, visit__isnull:true};
+		s.baseParams = {format:'json','patient': id, visit__isnull:true,deleted:false};
 		if (this.card_id){
 			s.setBaseParam('card',this.card_id);
 		}
@@ -445,7 +446,7 @@ App.patient.AsgmtGrid = Ext.extend(Ext.grid.EditorGridPanel, {
         var records = this.getSelectionModel().getSelections();
         
         if (records.length) {
-        	App.preorder.accessCheck(records,function(recs){
+        	App.preorder.accessCheck(records,true,function(recs){
         		if (recs.length){
 		    		if (this.hasPatient){
 						App.eventManager.fireEvent('launchapp','visittab',{
@@ -508,7 +509,6 @@ App.patient.AsgmtGrid = Ext.extend(Ext.grid.EditorGridPanel, {
 					s.each(function(rec){
 						idList.push(rec.id);
 					});
-					console.info(idList);
 					var win = new App.patient.AsgmtListWindow({
 						idList:idList.join(",")
 					});

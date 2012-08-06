@@ -229,8 +229,9 @@ App.assignment.PreorderInlineGrid = Ext.extend(Ext.grid.EditorGridPanel, {
 		var id = attrs.id;
 		var Preorder = this.store.recordType;
 		var state = this.getPlace(id);
+		//Если направление создается из карты осмотра
 		if (this.card_id){
-			var card_resource = App.getApiUrl('card') + '/' + this.card_id
+			var card_resource = App.getApiUrl('card') + '/' + this.card_id;
 		};
 		var s = new Preorder({
 			service:App.getApiUrl('extendedservice')+'/'+id, 

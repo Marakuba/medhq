@@ -47,6 +47,8 @@ from medhq.apps.scheduler.models import RejectionCause
 from reporting.models import Report
 from medhq.apps.reporting.models import Query
 from django.db.models.expressions import F
+from medhq.apps.medstandart.models import Standart, StandartItem, Term,\
+    Complications, Stage, Phase, NosologicalForm, AgeCategory
 
 class UserResource(ModelResource):
 
@@ -727,6 +729,7 @@ class BaseServiceGroupResource(ExtResource):
         }
         
 class StaffResource(ModelResource):
+    referral = fields.ForeignKey(ReferralResource, 'referral', null = True)
     """
     """
     def dehydrate(self, bundle):
@@ -1923,6 +1926,7 @@ class PreorderResource(ExtResource):
     promotion = fields.ForeignKey(PromotionResource, 'promotion', null=True)
     rejection_cause = fields.ForeignKey(RejectionCauseResource, 'rejection_cause', null=True)
     card = fields.ForeignKey(CardResource, 'card', null = True)
+    referral = fields.ForeignKey(ReferralResource, 'referral', null = True)
     
     def obj_create(self, bundle, request=None, **kwargs):
         kwargs['operator']=request.user
@@ -1967,9 +1971,13 @@ class ExtPreorderResource(ExtBatchResource):
     service = fields.ForeignKey(ExtendedServiceResource, 'service', null=True)
     promotion = fields.ForeignKey(PromotionResource, 'promotion', null=True)
     card = fields.ForeignKey(CardResource, 'card', null = True)
+    referral = fields.ForeignKey(ReferralResource, 'referral', null = True)
     
     def obj_create(self, bundle, request=None, **kwargs):
         kwargs['operator']=request.user
+        referral = request and request.active_profile.staff.referral
+        if referral:
+            kwargs['referral']=referral
         result = super(ExtPreorderResource, self).obj_create(bundle=bundle, request=request, **kwargs)
         return result
     
@@ -2009,6 +2017,7 @@ class ExtPreorderResource(ExtBatchResource):
         bundle.data['patient_phone'] = obj.patient and obj.patient.mobile_phone
         bundle.data['operator_name'] = obj.operator or ''
         bundle.data['branches'] = obj.service and bundle.obj.service.branches.all().values_list('id', flat=True)
+        bundle.data['referral_name'] = obj.referral and obj.referral.__unicode__()
         return bundle
     
     class Meta:
@@ -2017,6 +2026,7 @@ class ExtPreorderResource(ExtBatchResource):
         authorization = DjangoAuthorization()
         always_return_data = True
         filtering = {
+            'deleted':ALL,
             'patient':ALL,
             'start':ALL,
             'timeslot':ALL_WITH_RELATIONS,
@@ -2058,6 +2068,7 @@ class VisitPreorderResource(ExtPreorderResource):
         authorization = DjangoAuthorization()
         always_return_data = True
         filtering = {
+            'deleted':ALL,
             'patient':ALL,
             'start':ALL,
             'expiration':ALL,
@@ -2393,6 +2404,129 @@ class ReportResource(ExtResource):
         }        
         
 
+class NosologicalFormResource(ExtResource):
+    
+    class Meta:
+        queryset = NosologicalForm.objects.all()
+        resource_name = 'nosological_form'
+        authorization = DjangoAuthorization()
+        always_return_data = True
+        limit = 200
+        filtering = {
+            'id' : ALL,
+        }
+        
+class AgeCategoryResource(ExtResource):
+    
+    class Meta:
+        queryset = AgeCategory.objects.all()
+        resource_name = 'age_category'
+        authorization = DjangoAuthorization()
+        always_return_data = True
+        limit = 200
+        filtering = {
+            'id' : ALL,
+        }
+        
+class PhaseResource(ExtResource):
+    
+    class Meta:
+        queryset = Phase.objects.all()
+        resource_name = 'phase'
+        authorization = DjangoAuthorization()
+        always_return_data = True
+        limit = 200
+        filtering = {
+            'id' : ALL,
+        }
+        
+class StageResource(ExtResource):
+    
+    class Meta:
+        queryset = Stage.objects.all()
+        resource_name = 'stage'
+        authorization = DjangoAuthorization()
+        always_return_data = True
+        limit = 200
+        filtering = {
+            'id' : ALL,
+        }
+        
+class ComplicationsResource(ExtResource):
+    
+    class Meta:
+        queryset = Complications.objects.all()
+        resource_name = 'complications'
+        authorization = DjangoAuthorization()
+        always_return_data = True
+        limit = 200
+        filtering = {
+            'id' : ALL,
+        }
+        
+class TermResource(ExtResource):
+    
+    class Meta:
+        queryset = Term.objects.all()
+        resource_name = 'term'
+        authorization = DjangoAuthorization()
+        always_return_data = True
+        limit = 200
+        filtering = {
+            'id' : ALL,
+        }
+        
+class MedStandartResource(ExtResource):
+    nosological_form = fields.ForeignKey(NosologicalFormResource,'nosological_form',null=True)
+    age_category = fields.ManyToManyField(AgeCategoryResource,'age_category',null=True)
+    phase = fields.ForeignKey(PhaseResource,'phase',null=True)
+    stage = fields.ForeignKey(StageResource,'stage',null=True)
+    complications = fields.ForeignKey(ComplicationsResource,'complications',null=True)
+    terms = fields.ManyToManyField(TermResource,'terms',null=True)
+    mkb10 = fields.ForeignKey(ICD10Resource,'mkb10')
+    
+    def dehydrate(self, bundle):
+        bundle.data['nosological_form_name'] = bundle.obj.nosological_form and bundle.obj.nosological_form.name or u'Не указано'
+#        bundle.data['age_category_name'] = bundle.obj.age_category and bundle.obj.age_category.name or u'Не указано'
+        bundle.data['phase_name'] = bundle.obj.phase and bundle.obj.phase.name or u'Не указано'
+        bundle.data['stage_name'] = bundle.obj.stage and bundle.obj.stage.name or u'Не указано'
+        bundle.data['complications_name'] = bundle.obj.complications and bundle.obj.complications.name or u'Не указано'
+#        bundle.data['phase_name'] = bundle.obj.phase and bundle.obj.phase.name or u'Не указано'
+        return bundle
+    
+    class Meta:
+        queryset = Standart.objects.all()
+        resource_name = 'medstandart'
+        authorization = DjangoAuthorization()
+        always_return_data = True
+        limit = 200
+        filtering = {
+            'id' : ALL,
+            'mkb10':ALL,
+        }
+        
+class StandartItemResource(ExtResource):
+    standart = fields.ForeignKey(MedStandartResource,'standart')
+    service = fields.ForeignKey(ExtendedServiceResource,'service')
+    
+    def dehydrate(self, bundle):
+        bundle.data['service_name'] = bundle.obj.service.base_service.name
+        bundle.data['price'] = bundle.obj.service.get_actual_price()
+        bundle.data['state'] = bundle.obj.service.state
+        return bundle
+    
+    class Meta:
+        queryset = StandartItem.objects.all()
+        resource_name = 'standartitem'
+        authorization = DjangoAuthorization()
+        always_return_data = True
+        limit = 200
+        filtering = {
+            'id' : ALL,
+            'standart':ALL
+        }
+              
+
 api = Api(api_name=get_api_name('dashboard'))
 
 api.register(UserResource())
@@ -2513,6 +2647,16 @@ api.register(AdSourceResource())
 
 #remoting
 api.register(ServiceToSend())
+
+#medstandart
+api.register(NosologicalFormResource())
+api.register(AgeCategoryResource())
+api.register(PhaseResource())
+api.register(StageResource())
+api.register(ComplicationsResource())
+api.register(TermResource())
+api.register(MedStandartResource())
+api.register(StandartItemResource())
 
 #reporting
 api.register(QueryResource())

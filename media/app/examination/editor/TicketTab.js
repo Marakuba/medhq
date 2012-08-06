@@ -248,5 +248,25 @@ App.examination.TicketTab = Ext.extend(Ext.Panel, {
 			this.asgmtPanel.setActivePatient(this.patientRecord);
 			this.insertTicketInPos(this.asgmtPanel,'order');
 		},scope:this});
+	},
+	
+	addStandartServices:function(records){
+		var today = new Date();
+		Ext.each(records,function(rec){
+			var asgmtType = this.asgmtPanel.store.recordType;
+			var asgmt = new asgmtType({
+				service:rec.data.service, 
+				service_name:rec.data.service_name,
+				price:rec.data.price || null,
+				execution_place : rec.data.state,
+				expiration: today.add(Date.DAY,30),
+				card:this.record.data.resource_uri || '',
+				count:rec.data.avarage || 1,
+				patient:App.getApiUrl('patient',this.patient)
+			});
+			this.asgmtPanel.store.add(asgmt)
+		},this);
+//		this.asgmtPanel.store.save();
+		
 	}
 });
