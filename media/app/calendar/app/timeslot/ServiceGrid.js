@@ -13,6 +13,7 @@ App.calendar.ServiceChoiceGrid = Ext.extend(Ext.grid.GridPanel, {
 				    {name: 'resource_uri'},
 				    {name: 'service_name'},
 				    {name: 'state'},
+				    {name: 'is_active'},
 				    {name: 'state_name'},
 				    {name: 'price'}
 				]
@@ -35,7 +36,7 @@ App.calendar.ServiceChoiceGrid = Ext.extend(Ext.grid.GridPanel, {
 		    	sortable: true, 
 		    	dataIndex: 'price',
 		    	renderer: function(val, meta, record) {
-		    		if (val == 0){
+		    		if (val == 0 || !record.data.is_active){
 		    			return 'услуга не оказывается'
 		    		} else {
 		    			return val
@@ -94,7 +95,8 @@ App.calendar.ServiceChoiceGrid = Ext.extend(Ext.grid.GridPanel, {
 				forceFit : true,
 				getRowClass: function(record, index, p, store) {
             		var price = record.get('price');
-            		if (price == 0) {
+            		var is_active = record.get('is_active');
+            		if (price == 0 || !is_active) {
                 		return 'preorder-deactive-row-body';
             		};
             		return 'preorder-actual-row-body';

@@ -37,6 +37,8 @@ payment_types.append((u'-',u'---'))
 class PriceForm(forms.Form):
     """
     """
+    
+    date = forms.DateField(label=u'Дата', required=True)
     state = forms.ModelChoiceField(label=u'Организация',
                                             queryset=state_qs,
                                             required=False)

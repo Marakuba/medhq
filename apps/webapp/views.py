@@ -40,6 +40,8 @@ def get_apps(request):
     if request.user.has_perm('examination.add_examinationcard') or request.user.is_superuser:
         apps.append([u'Обследования',u'/webapp/oldexam/'])
         apps.append([u'Обследования (новая версия)',u'/webapp/examination/'])
+    if request.user.is_superuser:
+        apps.append([u'Отчеты',u'/webapp/reporting/'])
     if request.user.is_staff or request.user.is_superuser:
         apps.append([u'Администрирование',u'/admin/'])
 
@@ -146,7 +148,9 @@ def testing(request):
 @login_required
 @render_to('webapp/reporting/index.html')
 def reporting(request):
-    return {}
+    return {
+        'apps':simplejson.dumps(get_apps(request))
+    }
     
 
 @login_required
@@ -226,7 +230,7 @@ def get_service_tree(request):
                 node['staff'] = obj.base_service_id in staff_all and sorted(staff_all[obj.base_service_id], key=lambda staff: staff[1])
                 return node
             except Exception, err:
-                logger.error(u"WEBAPP: %s" % err)
+                logger.error(u"NODE DICT: %s" % err.__unicode__())
                 return None
             
         return {

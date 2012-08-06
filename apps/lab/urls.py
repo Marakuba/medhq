@@ -12,4 +12,5 @@ urlpatterns = patterns('lab.views',
     (r'^revert_results/$','revert_results'),
     (r'^confirm_results/$','confirm_results'),
     (r'^pull_invoice/$','pull_invoice'),
+    (r'^hem_results/$','hem_results'),
 )

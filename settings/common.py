@@ -214,7 +214,7 @@ LOGGING = {
             'propagate':False
         },
         'general':{
-            'handlers': ['file'],
+            'handlers': ['sentry'],
             'level':'DEBUG',
             'propagate':False
         },
@@ -256,6 +256,7 @@ djcelery.setup_loader()
 
 CONSTANCE_CONFIG = {
     'BRAND': (u'', 'company brand'),
+    'BASE_REPORT_FORM': (u'', 'Форма отчетов по умолчанию'),
     'MAIN_STATE_ID' : (1,'main state id'),
     'PRICE_BY_PAYMENT_TYPE':(False,'Индивидуальные цены по каждому способу оплаты'),
     'START_HOUR':(8,u'Начало работы'),

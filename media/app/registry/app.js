@@ -15,11 +15,12 @@ Ext.onReady(function(){
 		if(res && res.success) {
 			App.barcoding.printers = res.data.printers;
 			if(App.barcoding.printers.length) {
-				var printer = Ext.state.Manager.getProvider().get('registry_printer');
+				var key = String.format('registry_printer_{0}', active_state_id);
+				var printer = Ext.state.Manager.getProvider().get(key);
 				
 				if(!printer){
 					printer = App.barcoding.printers[0];
-					Ext.state.Manager.getProvider().set('registry_printer', printer);
+					Ext.state.Manager.getProvider().set(key, printer);
 				}
 				App.WebSocket = new WebSocket(String.format("ws://{0}:{1}/",printer.address,printer.port));
 		    	App.WebSocket.onopen = function() {

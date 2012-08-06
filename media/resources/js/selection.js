@@ -26,15 +26,7 @@ function onSelection(choicer, id, title) {
 	}
 }
 
-jQuery(function($){
-    //$("#id_0-birth_day").mask("99.99.9999");
-    //$("#id_0-contact_phone").mask("(999) 999-9999");
-    //$("#id_0-sample_dt").mask("99.99.9999 99:99");
-	
-	$(".choicer").click(function(){
-		activeChoicer = this;
-		//onSelection(this);
-	});
+function initFancyBox(){
 	$(".choicer").fancybox({
 		width:600,
 		height:550,
@@ -42,4 +34,17 @@ jQuery(function($){
 		speedOut:100,
 		transitionIn:'none'
 	});
+}
+
+jQuery(function($){
+    //$("#id_0-birth_day").mask("99.99.9999");
+    //$("#id_0-contact_phone").mask("(999) 999-9999");
+    //$("#id_0-sample_dt").mask("99.99.9999 99:99");
+	
+	$(".choicer").live('click',function(){
+		activeChoicer = this;
+		//onSelection(this);
+	});
+	
+	initFancyBox();
 });
