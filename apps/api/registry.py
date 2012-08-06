@@ -546,6 +546,7 @@ class VisitResource(ExtResource):
     class Meta:
         queryset = Visit.objects.select_related().filter(cls__in=(u'п',u'б'))
         resource_name = 'visit'
+        allowed_methods = ['get', 'post', 'put']
         authorization = DjangoAuthorization()
         caching = SimpleCache()
         always_return_data = True
@@ -1345,6 +1346,7 @@ class ServiceBasketResource(ExtBatchResource):
     class Meta:
         queryset = OrderedService.objects.select_related().all()
         resource_name = 'servicebasket'
+        allowed_methods = ['get', 'post', 'put']
         always_return_data = True
         filtering = {
             'order': ALL_WITH_RELATIONS

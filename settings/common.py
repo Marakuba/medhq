@@ -213,7 +213,7 @@ LOGGING = {
             'propagate':False
         },
         'general':{
-            'handlers': ['file'],
+            'handlers': ['sentry'],
             'level':'DEBUG',
             'propagate':False
         },

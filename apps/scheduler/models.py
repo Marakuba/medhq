@@ -172,7 +172,7 @@ class Event(models.Model):
 
 
     def __unicode__(self):
-        return '%s-%s' % (self.staff.staff.last_name,self.start)
+        return '%s-%s' % (self.staff and self.staff.staff.last_name or '<<EVENT>>',self.start)
             
     class Meta:
         verbose_name = u'смена'

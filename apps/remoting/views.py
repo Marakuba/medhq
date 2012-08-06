@@ -15,6 +15,8 @@ from remoting.models import Transaction, TransactionItem, SyncObject
 from django.db.models.aggregates import Count
 import logging
 from urllib2 import HTTPError, URLError
+from state.models import State
+from constance import config
 
 logger = logging.getLogger('remoting')
 
@@ -30,7 +32,7 @@ def post_orders_to_local(request, data_set, options):
             msg = u'Заказ "%s" для образца №%s %s' % (ord_service.service,specimen_id,status)
         except Exception, err:
             msg = err.__unicode__()
-            logger.exception(u"Ошибка при размещении заказа: %s/%s - %s" % (ord_service.service,specimen_id,msg) )
+            logger.exception(u"Ошибка при размещении заказа: %s - %s" % (specimen_id,msg) )
             success = False
             
         result.append({
@@ -159,9 +161,6 @@ def post_results(lab_order):
                 'measurement':a.measurement and a.measurement.name,
                 'ref_interval':a.ref_range_text
             },
-#            'laborder': {
-#                'staff':lab_order.staff_text
-#            }
         }
         results.append(data)
     
@@ -195,6 +194,10 @@ def post_orders(request):
         _object_list_cache[obj.id] = obj
         p = obj.order.patient
         s = obj.execution_place
+        source_lab = obj.order.office.uuid
+        if source_lab=='':
+            state = State.objects.get(id=config['MAIN_STATE_ID'])
+            source_lab = state.uuid
         data = {
             'patient':{
                 'id':p.id,
@@ -220,7 +223,7 @@ def post_orders(request):
                 'sampled':obj.order.sampled
             },
             'dest_lab':s.uuid,
-            'source_lab':obj.order.office.uuid
+            'source_lab':source_lab
         }
         labs[s.uuid].append(data)
         _labs_cache[s.uuid] = s

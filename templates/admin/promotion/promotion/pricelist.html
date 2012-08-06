@@ -8,7 +8,7 @@
 	<tr {% if not item.is_active%} bgcolor="red" {% endif %}>
 		<td>{{ item.service }}</td>
 		<td>{{ item.count }}</td>
-		<td>{{ item.price }}</td>
+		<td>{{ item.price }} {{ item.is_active }}</td>
 	</tr>
 	{% endfor %}
 </table>

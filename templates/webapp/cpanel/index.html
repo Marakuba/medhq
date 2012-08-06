@@ -47,7 +47,7 @@
 	{% autoescape off %}
 	<script>
 		var profiles = [
-		{% for position in request.user.get_profile.position_set.all %}
+		{% for position in request.user.get_profile.position_set.active %}
 		['{{ position.id }}','{{ position.profile }}'],
 		{% endfor %}
 		]

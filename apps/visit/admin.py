@@ -18,6 +18,7 @@ from django.conf import settings
 from reversion.admin import VersionAdmin
 from selection.fields import ModelChoiceField
 from patient.models import Contract, InsurancePolicy
+from django.views.generic.list_detail import object_list
 
 
 class OrderedServiceForm(forms.ModelForm):
@@ -153,6 +154,17 @@ class ReferralAdmin(admin.ModelAdmin):
     exclude = ('operator',)
     list_display = ('__unicode__','name','agent','visit_count')
     list_editable = ('name','agent',)
+    
+    def get_urls(self):
+        urls = super(ReferralAdmin, self).get_urls()
+        my_urls = patterns('',
+            (r'^list/$', self.ref_list),
+        )
+        return my_urls + urls
+    
+    def ref_list(self, request):
+        qs = Referral.objects.all()
+        return object_list(request, qs, template_name='print/visit/referral_list.html')
     
     def visit_count(self, obj):
         return obj.visit_set.all().count()

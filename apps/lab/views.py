@@ -316,7 +316,7 @@ def confirm_results(request):
                                   action=router, 
                                   object=lab_order, 
                                   action_params=action_params,
-                                  task_params={'countdown':20})
+                                  task_params={'countdown':300})
 #                    for r in resp:
 #                        logger.debug(u"LAB: %s %s" % (r['success'],r['message']))
         except Exception, err:
@@ -442,3 +442,21 @@ def confirm_manual_service(request):
 
     
     return dict(success=True, message=u"Исследование успешно подтверждено")
+
+def clean_value(v):
+    if "." in v:
+        return "%0.2f" % float(v)
+    return str(int(v))
+
+def hem_results(request):
+
+    data = simplejson.loads(request.raw_post_data)
+    specimen = data['specimenID']
+    results = Result.objects.filter(order__visit__specimen=int(specimen))
+    for result in results:
+        if result.analysis.code in data:
+            result.previous_value = result.value
+            result.value = clean_value(data[result.analysis.code])
+            result.save()
+    
+    return HttpResponse('OK')
