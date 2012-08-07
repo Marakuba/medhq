@@ -15,19 +15,11 @@ App.examination.MedStandartGrid = Ext.extend(Ext.grid.GridPanel, {
 		    	width: 60, 
 		    	sortable: true, 
 		    	dataIndex: 'name'
-		    },/*{
+		    },{
 		    	header: "Возрастная категория", 
 		    	width: 60, 
 		    	sortable: true, 
 		    	dataIndex: 'age_category_name'
-		    },*/{
-		    	header: "Возраст от", 
-		    	width: 20,
-		    	dataIndex: 'age_from'
-		    },{
-		    	header: "Возраст до", 
-		    	width: 20,
-		    	dataIndex: 'age_to'
 		    },{
 		    	header: "Носологическая форма", 
 		    	width: 20, 
@@ -48,6 +40,11 @@ App.examination.MedStandartGrid = Ext.extend(Ext.grid.GridPanel, {
 		    	width: 20, 
 		    	sortable: true, 
 		    	dataIndex: 'complications_name'
+		    },{
+		    	header: "Условие оказания", 
+		    	width: 20, 
+		    	sortable: true, 
+		    	dataIndex: 'terms_name'
 		    }];		
 		
 		var config = {
