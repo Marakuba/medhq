@@ -2487,11 +2487,11 @@ class MedStandartResource(ExtResource):
     
     def dehydrate(self, bundle):
         bundle.data['nosological_form_name'] = bundle.obj.nosological_form and bundle.obj.nosological_form.name or u'Не указано'
-#        bundle.data['age_category_name'] = bundle.obj.age_category and bundle.obj.age_category.name or u'Не указано'
+        bundle.data['age_category_name'] = bundle.obj.get_items_str('age_category') or u'Не указано'
         bundle.data['phase_name'] = bundle.obj.phase and bundle.obj.phase.name or u'Не указано'
         bundle.data['stage_name'] = bundle.obj.stage and bundle.obj.stage.name or u'Не указано'
         bundle.data['complications_name'] = bundle.obj.complications and bundle.obj.complications.name or u'Не указано'
-#        bundle.data['phase_name'] = bundle.obj.phase and bundle.obj.phase.name or u'Не указано'
+        bundle.data['terms_name'] = bundle.obj.get_items_str('terms') or u'Не указано'
         return bundle
     
     class Meta:

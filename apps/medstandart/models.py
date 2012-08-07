@@ -97,6 +97,11 @@ class Standart(models.Model):
     mkb10 = models.ForeignKey(ICD10, 
                                  null=True, blank=True)
     
+    def get_items_str(self,field):
+        items = getattr(self,field).get_query_set()
+        i_names = [i.name for i in items]
+        return ', '.join(i_names)
+    
     def __unicode__(self):
         return u"%s" % ( self.name)
         
