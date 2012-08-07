@@ -330,6 +330,9 @@ App.patient.AsgmtGrid = Ext.extend(Ext.grid.EditorGridPanel, {
 	            			return 'preorder-other-place-row-body';
 	            		};
             		}
+            		if (record.data.deleted){
+            			return 'preorder-deactive-row-body'
+            		}
             		return 'preorder-actual-row-body';
         		},
         		scope:this
@@ -403,9 +406,11 @@ App.patient.AsgmtGrid = Ext.extend(Ext.grid.EditorGridPanel, {
 		this.patientId = id;
 		this.patientRecord = rec;
 		var s = this.store;
-		s.baseParams = {format:'json','patient': id, visit__isnull:true,deleted:false};
+		s.baseParams = {format:'json','patient': id, visit__isnull:true};
 		if (this.card_id){
 			s.setBaseParam('card',this.card_id);
+		} else {
+			s.setBaseParam('deleted',false);
 		}
 		s.load();
 	},
@@ -413,7 +418,7 @@ App.patient.AsgmtGrid = Ext.extend(Ext.grid.EditorGridPanel, {
 	btnSetDisabled: function(status) {
 		if (!status){
 			var record = this.getSelected();
-			if (record.data.visit){
+			if (record.data.visit || record.data.deleted){
 				this.visitButton.setDisabled(true);
 	        	this.clearButton.setDisabled(true);
 //	        	this.setTimeButton.setDisabled(true);
@@ -433,9 +438,15 @@ App.patient.AsgmtGrid = Ext.extend(Ext.grid.EditorGridPanel, {
 		} else {
 			this.setTimeButton.setDisabled(false)
 		}
+		status = true
+		Ext.each(records,function(rec){
+			if (!rec.data.visit && !rec.data.deleted){
+				status = false
+			};
+			this.visitButton.setDisabled(status);
+    		this.clearButton.setDisabled(status);
+		},this)
 		
-		this.visitButton.setDisabled(false);
-        this.clearButton.setDisabled(false);
 	},
 	
     getSelected: function() {
@@ -446,7 +457,7 @@ App.patient.AsgmtGrid = Ext.extend(Ext.grid.EditorGridPanel, {
         var records = this.getSelectionModel().getSelections();
         
         if (records.length) {
-        	App.preorder.accessCheck(records,true,function(recs){
+        	App.preorder.accessCheck(records,function(recs){
         		if (recs.length){
 		    		if (this.hasPatient){
 						App.eventManager.fireEvent('launchapp','visittab',{
@@ -484,17 +495,25 @@ App.patient.AsgmtGrid = Ext.extend(Ext.grid.EditorGridPanel, {
     removePreorders : function(records,cause_uri) {
     	var r = [];
     	var s = this.store;
-    	s.autoSave = false;
-    	Ext.each(records, function(record){
-    		if(!record.data.visit) {
-    			record.set('deleted',true);
-    			record.set('rejection_cause',cause_uri);
-    		}
-    	});
-    	
-    	s.save();
-    	s.autoSave = true;
-    	s.load();
+    	if (this.card_id){
+    		Ext.each(records, function(record){
+	    		if(!record.data.visit && !record.data.deleted) {
+	    			this.store.remove(record)
+	    		}
+	    	});
+    	} else {
+	    	s.autoSave = false;
+	    	Ext.each(records, function(record){
+	    		if(!record.data.visit && !record.data.deleted) {
+	    			record.set('deleted',true);
+	    			record.set('rejection_cause',cause_uri);
+	    		}
+	    	});
+	    	
+	    	s.save();
+	    	s.autoSave = true;
+	    	s.load();
+    	}
     },
     
     onCreate: function(){

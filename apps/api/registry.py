@@ -763,7 +763,7 @@ class StaffResource(ModelResource):
         return orm_filters
     
     class Meta:
-        queryset = Staff.objects.all()
+        queryset = Staff.objects.filter(status=u'д')
         resource_name = 'staff'
         always_return_data = True
         limit = 100
@@ -950,7 +950,7 @@ class StaffSchedResource(ModelResource):
         return bundle
     
     class Meta:
-        queryset = Staff.objects.filter(doctor__isnull = False)
+        queryset = Staff.objects.filter(doctor__isnull = False,status=u'д')
         resource_name = 'staffsched'
         always_return_data = True
         limit = 100
@@ -2070,7 +2070,7 @@ class VisitPreorderResource(ExtPreorderResource):
         return orm_filters
     
     class Meta:
-        queryset = Preorder.objects.filter(timeslot__isnull=True,deleted = False).order_by('-expiration')
+        queryset = Preorder.objects.filter(timeslot__isnull=True).order_by('-expiration')
         resource_name = 'visitpreorder'
         authorization = DjangoAuthorization()
         always_return_data = True
