@@ -245,7 +245,7 @@ class Preorder(models.Model):
             self.timeslot.status = u'с' 
             self.timeslot.save()
         self.deleted = True
-        self.save() 
+        super(Preorder, self).delete(*args, **kwargs) 
     
     def get_discount(self):
         if self.promotion:

@@ -28,7 +28,7 @@ class PriceType(models.Model):
     month_day = models.CharField(u'Дни месяца',max_length=150, default=u'', null=True, blank=True)
     month = models.CharField(u'Месяцы',max_length=150, default=u'', null=True, blank=True)
     active = models.BooleanField(u'Активно',default = True)
-    priority = models.PositiveIntegerField(u'Приоритет',default = 0)
+    priority = models.PositiveIntegerField(u'Приоритет',default = 0, unique=True)
     
     def get_period_table(self):
         """
@@ -91,6 +91,7 @@ class PriceType(models.Model):
     class Meta:
         verbose_name = u"тип цены"
         verbose_name_plural = u"типы цены"
+        ordering = ('priority','active',)
         
 def build_period_table():
     pt_list = PriceType.objects.filter(active=True)

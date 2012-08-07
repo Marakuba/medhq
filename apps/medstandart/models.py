@@ -7,6 +7,8 @@ from medhq.apps.service.models import ExtendedService
 class AgeCategory(models.Model):
     
     name = models.CharField(u'Наименование', max_length=200)
+    age_from = models.PositiveIntegerField(u'Возраст от', default = 0)
+    age_to = models.PositiveIntegerField(u'Возраст до', default = 250)
     
     def __unicode__(self):
         return u"%s" % ( self.name)
@@ -82,8 +84,6 @@ class Standart(models.Model):
     name = models.CharField(u'Наименование', max_length=200)
     age_category = models.ManyToManyField(AgeCategory, 
                                  null=True, blank=True, related_name='age_category')
-    age_from = models.PositiveIntegerField(u'Возраст от', default = 0)
-    age_to = models.PositiveIntegerField(u'Возраст до', default = 250)
     nosological_form = models.ForeignKey(NosologicalForm, 
                                  null=True, blank=True)
     phase = models.ForeignKey(Phase, 
