@@ -20,6 +20,11 @@ import logging
 from decimal import Decimal
 logger = logging.getLogger('general')
 
+NOTIFICATION_TYPES = (
+    (0,u'Не уведомлять'),
+    (1,u'Уведомлять по SMS'),
+    (2,u'Уведомлять по Email'),
+)
 
 class Patient(make_person_object('patient')):
     
@@ -37,6 +42,8 @@ class Patient(make_person_object('patient')):
     client_item = models.OneToOneField(ClientItem, null=True, blank= True, related_name = 'client')
     balance = models.FloatField(u'Баланс', blank=True, null=True)
     ad_source = models.ForeignKey(AdSource, blank=True, null=True, verbose_name=u'Источник рекламы')
+    preorder_notify = models.PositiveIntegerField(u'Уведомление о предзаказах', default = 0, choices = NOTIFICATION_TYPES)
+    assignment_notify = models.PositiveIntegerField(u'Уведомление о направлениях', default = 0, choices = NOTIFICATION_TYPES)
     
     objects = models.Manager()
     

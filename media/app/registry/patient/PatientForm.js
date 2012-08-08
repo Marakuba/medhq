@@ -28,7 +28,11 @@ App.patient.PatientForm = Ext.extend(Ext.form.FormPanel, {
 		
 		this.idCard = new App.patient.IDCardForm({
 			record:this.record
-		})
+		});
+		
+		this.notifyForm = new App.patient.NotifyForm({
+			record:this.record
+		});
 		
 		this.inlines.add('inspolicy', this.insPolicy);
 		this.inlines.add('idcard', this.idCard);
@@ -107,7 +111,12 @@ App.patient.PatientForm = Ext.extend(Ext.form.FormPanel, {
 				items:[this.insPolicy]
 			},
 			this.cl_acc_grid,
-			this.contractGrid
+			this.contractGrid,
+			{
+				title:'Уведомления',
+				layout:'fit',
+				items:[this.notifyForm]
+			}
 			
 			]
 		});
