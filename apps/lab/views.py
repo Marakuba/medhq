@@ -444,8 +444,10 @@ def confirm_manual_service(request):
     return dict(success=True, message=u"Исследование успешно подтверждено")
 
 def clean_value(v):
+    if not v:
+        return ''
     if "." in v:
-        return "%0.2f" % float(v)
+        return str( round( float(v),2 ) )
     return str(int(v))
 
 def hem_results(request):

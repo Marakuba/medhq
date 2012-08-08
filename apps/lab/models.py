@@ -106,8 +106,8 @@ class Analysis(models.Model):
     ref_range_text = models.TextField(u'Реф.интервалы (текст)', blank=True)
     order = models.PositiveIntegerField(u'Порядок', default=0, null=True, blank=True)
     by_age = models.BooleanField(u'Оценивать по возрасту')
-    by_gender = models.BooleanField(u'Оценивать по возрасту')
-    by_pregnancy = models.BooleanField(u'Оценивать по возрасту')
+    by_gender = models.BooleanField(u'Оценивать по полу')
+    by_pregnancy = models.BooleanField(u'Оценивать по сроку беременности')
     hidden = models.BooleanField(u'Скрытый', default=False)
     
     def __unicode__(self):
