@@ -16,15 +16,23 @@ App.remoting.ResultWindow = Ext.extend(Ext.Window, {
 			items:[{
 				xtype:'textarea',
 				anchor:'100% 100%',
-				html:this.messages.join("\n\n")
+				name:'msg'
+//				html:this.messages.join("\n\n")
 			}]
 		});
 		
 		config = {
 			title:'Протокол передачи заказов',
-			width:600,
+			width:650,
 			height:500,
-			items: this.form,
+			items: {
+				xtype:'box',
+				style:{
+					backgroundColor:'white',
+					fontSize:'1.2em',
+					padding:'3px'
+				}
+			},
 			layout:'fit',
 			modal:true,
 			buttons:[/*{
@@ -43,6 +51,10 @@ App.remoting.ResultWindow = Ext.extend(Ext.Window, {
 
 		Ext.apply(this, Ext.apply(this.initialConfig, config));
 		App.remoting.ResultWindow.superclass.initComponent.apply(this, arguments);
+		
+		this.on('afterrender',function(){
+			this.items.itemAt(0).update(this.messages.join("<br>"));
+		},this);
 	}
 
 });

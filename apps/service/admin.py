@@ -235,8 +235,8 @@ class BaseServiceAdmin(TreeEditor, TabbedAdmin):
     actions = [make_inactive_action,dump_for_load]
 
     def pricelist(self, request):
-        form = PriceForm()
-        extra_context = {'today':datetime.date.today().strftime("%d.%m.%Y"),'form' : form}
+        form = PriceForm({'date':datetime.date.today()})
+        extra_context = {'form' : form}
         return direct_to_template(request, "admin/service/pricelist.html", extra_context=extra_context)
         
     def pricelist_print(self, request):

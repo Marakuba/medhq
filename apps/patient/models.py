@@ -129,9 +129,9 @@ class Patient(make_person_object('patient')):
             return ''
         
     def save(self, *args, **kwargs):
-        self.first_name = self.first_name.strip()
-        self.last_name = self.last_name.strip()
-        self.mid_name = self.mid_name.strip()
+        self.first_name = self.first_name.strip().capitalize()
+        self.last_name = self.last_name.strip().capitalize()
+        self.mid_name = self.mid_name.strip().capitalize()
         
         super(Patient, self).save(*args, **kwargs)
 

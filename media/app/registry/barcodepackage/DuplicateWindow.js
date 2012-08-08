@@ -78,7 +78,6 @@ App.barcodepackage.DuplicateWindow = Ext.extend(Ext.Window, {
 				fieldLabel:'Принтер',
 				anchor:'99%',
 				store:new Ext.data.JsonStore({
-					autoDestroy:true,
 					data:App.barcoding,
 					root:'printers',
 					fields:['id','name','address','port'],
@@ -100,6 +99,8 @@ App.barcodepackage.DuplicateWindow = Ext.extend(Ext.Window, {
 					}
 				},
 				mode:'local',
+				typeAhead: true,
+				triggerAction:'all',
 				valueField:'id',
 				displayField:'name',
 				value:this.printer.id

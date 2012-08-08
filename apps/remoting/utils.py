@@ -77,7 +77,7 @@ def get_ordered_service(request, data):
         service = BaseService.objects.get(code=data['order']['code'])
 
     except ObjectDoesNotExist:
-        msg = u"Исследование с кодом '%s' не найдено" % data['order']['code']
+        msg = u"<font color='red'>Образец %s: исследование с кодом '%s' не найдено</font>" % (data['visit']['specimen'], data['order']['code'])
         if __debug__:
             logger.exception(msg)
         raise Exception(msg)
@@ -164,7 +164,6 @@ def get_result(request, data):
         result.value = r['value']
         result.validation = 1
         result.save()
-        result.order.append_staff(data['laborder']['staff'])
         
         msg = u"Результат теста '%s' для образца %s сохранен" % (r['name'],specimen_id)
         if __debug__:

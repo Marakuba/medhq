@@ -43,8 +43,11 @@ from promotion.models import Promotion
 from remoting.models import RemoteState
 from api.authorization import LocalAuthorization
 from patient.models import ContractType, Contract
-from medhq.apps.scheduler.models import RejectionCause
-from medhq.apps.medstandart.models import Standart, StandartItem, Term,\
+from scheduler.models import RejectionCause
+from reporting.models import Report
+from reporting.models import Query
+from django.db.models.expressions import F
+from medstandart.models import Standart, StandartItem, Term,\
     Complications, Stage, Phase, NosologicalForm, AgeCategory
 
 class UserResource(ModelResource):
@@ -328,6 +331,9 @@ class ReferralResource(ExtResource):
         kwargs['operator']=request.user
         result = super(ReferralResource, self).obj_create(bundle=bundle, request=request, **kwargs)
         return result
+    def dehydrate(self, bundle):
+        bundle.data['referral_type_name'] = bundle.obj.get_referral_type_display()
+        return bundle
 
     class Meta:
         queryset = Referral.objects.all() #@UndefinedVariable
@@ -401,7 +407,7 @@ class StateResource(ModelResource):
         filtering = {
             'id':ALL,
             'type':ALL,
-            'name':('istartswith',),
+            'name':ALL,
             'uuid':ALL,
             'remotestate':ALL_WITH_RELATIONS
         }
@@ -548,6 +554,7 @@ class VisitResource(ExtResource):
     class Meta:
         queryset = Visit.objects.select_related().filter(cls__in=(u'п',u'б'))
         resource_name = 'visit'
+        allowed_methods = ['get', 'post', 'put']
         authorization = DjangoAuthorization()
         caching = SimpleCache()
         always_return_data = True
@@ -695,6 +702,31 @@ class BaseServiceResource(ExtResource):
             'parent':ALL_WITH_RELATIONS,
             'labservice':ALL_WITH_RELATIONS
         }
+
+lookups = {}
+lookups[BaseService._meta.right_attr] = F(BaseService._meta.left_attr)+1
+
+
+class BaseServiceGroupResource(ExtResource):
+    parent = fields.ForeignKey('self', 'parent', null=True)
+    labservice = fields.ForeignKey(LSResource,'labservice', null=True)
+    
+    def dehydrate(self, bundle):
+        service = bundle.obj
+        bundle.data['name'] = '-'*service.level + service.name
+        return bundle
+    
+    class Meta:
+        queryset = BaseService.objects.exclude(**lookups).order_by(BaseService._meta.tree_id_attr, BaseService._meta.left_attr, 'level')
+        authorization = DjangoAuthorization()
+        always_return_data = True
+        resource_name = 'baseservicegroup'
+        filtering = {
+            'id':ALL,
+            'name':ALL,
+            'parent':ALL_WITH_RELATIONS,
+            'labservice':ALL_WITH_RELATIONS
+        }
         
 class StaffResource(ModelResource):
     referral = fields.ForeignKey(ReferralResource, 'referral', null = True)
@@ -704,6 +736,25 @@ class StaffResource(ModelResource):
         bundle.data['name'] = bundle.obj.short_name()
         bundle.data['title'] = bundle.obj.short_name()
         return bundle
+    
+    def build_filters(self, filters=None):
+        if filters is None:
+            filters = {}
+
+        orm_filters = super(StaffResource, self).build_filters(filters)
+
+        if "search" in filters:
+            smart_filters = smartFilter(filters['search'])
+            if len(smart_filters.keys())==1:
+                try:
+                    orm_filters = ComplexQuery( Q(visit__barcode__id=int(filters['search'])) | Q(**smart_filters), \
+                                      **orm_filters)
+                except:
+                    orm_filters.update(**smart_filters)
+            else:
+                orm_filters.update(**smart_filters)
+            
+        return orm_filters
     
     class Meta:
         queryset = Staff.objects.all()
@@ -724,6 +775,25 @@ class PositionResource(ModelResource):
         bundle.data['text'] = bundle.obj.__unicode__()
         bundle.data['name'] = bundle.obj.__unicode__()
         return bundle
+    
+    def build_filters(self, filters=None):
+        if filters is None:
+            filters = {}
+
+        orm_filters = super(PositionResource, self).build_filters(filters)
+
+        if "search" in filters:
+            smart_filters = smartFilter(filters['search'],'staff')
+            if len(smart_filters.keys())==1:
+                try:
+                    orm_filters = ComplexQuery( Q(visit__barcode__id=int(filters['search'])) | Q(**smart_filters), \
+                                      **orm_filters)
+                except:
+                    orm_filters.update(**smart_filters)
+            else:
+                orm_filters.update(**smart_filters)
+            
+        return orm_filters
     
     class Meta:
         queryset = Position.objects.select_related().all()
@@ -772,7 +842,8 @@ class ExtendedServiceResource(ModelResource):
             'base_service':ALL_WITH_RELATIONS,
             'state':ALL_WITH_RELATIONS,
             'staff':ALL_WITH_RELATIONS,
-            'name':ALL
+            'name':ALL,
+            'is_active':ALL
         }
 
 
@@ -1347,6 +1418,7 @@ class ServiceBasketResource(ExtBatchResource):
     class Meta:
         queryset = OrderedService.objects.select_related().all()
         resource_name = 'servicebasket'
+        allowed_methods = ['get', 'post', 'put']
         always_return_data = True
         filtering = {
             'order': ALL_WITH_RELATIONS
@@ -2258,6 +2330,79 @@ class ServiceToSend(ExtResource):
             'state':ALL_WITH_RELATIONS
         }        
         
+        
+class ReportTreeResource(ModelResource):
+    
+    parent = fields.ForeignKey('self','parent', null=True)
+    
+    def dehydrate(self, bundle):
+        bundle.data['text'] = bundle.obj.name
+        bundle.data['slug'] = bundle.obj.slug
+        bundle.data['fields'] = bundle.obj.get_fields()
+        bundle.data['parent'] =  bundle.obj.parent and bundle.obj.parent.id
+        if bundle.obj.is_leaf_node():
+            bundle.data['leaf'] = bundle.obj.is_leaf_node()
+        return bundle
+    
+
+    def build_filters(self, filters=None):
+        if filters is None:
+            filters = {}
+
+        orm_filters = super(ReportTreeResource, self).build_filters(filters)
+
+        if "parent" in filters:
+            if filters['parent']=='root':
+                del orm_filters['parent__exact']
+                orm_filters['parent__isnull'] = True
+
+        return orm_filters
+    
+    class Meta:
+        queryset = Report.objects.filter(is_active=True).order_by(Report._meta.tree_id_attr, Report._meta.left_attr, 'level')
+        limit = 20000
+        fields = ('id',)
+        resource_name = 'reporttree'
+        authorization = DjangoAuthorization()
+        filtering = {
+            'id':ALL,
+            'name':('istartswith',),
+            'is_active':ALL,
+            'parent':ALL_WITH_RELATIONS
+        }
+
+class QueryResource(ExtResource):
+    """
+    """
+    class Meta:
+        queryset = Query.objects.all()
+        resource_name = 'sqlquery'
+        authorization = DjangoAuthorization()
+        always_return_data = True
+        limit = 200
+        filtering = {
+            'id' : ALL,
+        }
+
+class ReportResource(ExtResource):
+    """
+    """
+    sql_query = fields.ForeignKey(QueryResource, 'sql_query')
+
+    def dehydrate(self, bundle):
+        bundle.data['sql_query_text'] = bundle.obj.sql_query.sql
+        return bundle
+    
+    class Meta:
+        queryset = Report.objects.all()
+        resource_name = 'report'
+        authorization = DjangoAuthorization()
+        always_return_data = True
+        limit = 200
+        filtering = {
+            'id' : ALL,
+        }        
+        
 
 class NosologicalFormResource(ExtResource):
     
@@ -2382,6 +2527,8 @@ class StandartItemResource(ExtResource):
         }
               
 
+              
+
 api = Api(api_name=get_api_name('dashboard'))
 
 api.register(UserResource())
@@ -2425,6 +2572,7 @@ api.register(EquipmentTaskReadOnlyResource())
 #service
 api.register(LSResource())
 api.register(BaseServiceResource())
+api.register(BaseServiceGroupResource())
 api.register(ExtendedServiceResource())
 api.register(LabServiceGroupResource())
 api.register(ICD10Resource())
@@ -2513,7 +2661,10 @@ api.register(MedStandartResource())
 api.register(StandartItemResource())
 
 #reporting
-#api.register(ReportResource())
+api.register(QueryResource())
+api.register(ReportTreeResource())
+api.register(ReportResource())
+
 #api.register(FilterItemResource())
 #api.register(FieldItemResource())
 #api.register(GroupItemResource())

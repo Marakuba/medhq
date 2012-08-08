@@ -13,10 +13,6 @@
 			return [API_URL,'dashboard',resource].join("/");
 		}
 		var apps = {{ apps }};
-	    // Set URL of your WebSocketMain.swf here:
-	    WEB_SOCKET_SWF_LOCATION = "{{ STATIC_URL }}resources/js/web-socket-js/WebSocketMain.swf";
-	    // Set this to dump debug message from Flash to console.log:
-	    WEB_SOCKET_DEBUG = false;
 
 	</script>
 	{% endautoescape %}
@@ -79,6 +75,16 @@
 	{% assets "js_registry" %}
 	    <script type="text/javascript" src="{{ ASSET_URL }}"></script>
 	{% endassets %}
+	
+	<script type="text/javascript">
+	    
+	    WEB_SOCKET_SUPPRESS_CROSS_DOMAIN_SWF_ERROR = true;
+		WEB_SOCKET_SWF_LOCATION = "{{ STATIC_URL }}resources/js/web-socket-js/WebSocketMain.swf";
+	    WEB_SOCKET_DEBUG = true;
+	    
+	</script>
+
+	
 	
 {% endblock %}
 

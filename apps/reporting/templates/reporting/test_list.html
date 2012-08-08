@@ -1,0 +1,172 @@
+{% extends "admin/base_site.html" %}
+
+{% load i18n lab_tags %} 
+
+{%block header%} {% include "print/header.html"%} {%endblock%}
+
+{% block title %}{{ title }}{% endblock %}
+
+{% block extrastyle %}
+{{ block.super }}
+<style>
+	.title-0 {
+		font-weight:bolder;
+		font-size:1.1em;
+		background: #e9f4fa;
+	}
+	.title-1 {
+		font-weight:bold;
+		background: #fbf9bb;
+	}
+	.total-row {
+		font-weight:bolder;
+		font-size:1.2em;
+		background: #ffc0cb;
+	}
+	h7 {
+	    font-weight:bold;
+		font-size:1.1em;
+	}
+</style>
+
+<script type="text/javascript" src="{{ STATIC_URL }}resources/js/jquery-1.4.4.js"></script>
+<script type="text/javascript" src="{{ STATIC_URL }}resources/js/jui/ui/jquery.ui.core.js"></script>
+<script type="text/javascript" src="{{ STATIC_URL }}resources/js/jui/ui/jquery.ui.widget.js"></script>
+<script type="text/javascript" src="{{ STATIC_URL }}resources/js/jui/ui/jquery.ui.datepicker.js"></script>
+
+<script> 
+function go(slug){ 
+
+    var start_date;
+    var end_date;
+    var order__patient;
+    var staff__staff;
+    var staff__department;
+    var order__referral;
+    var execution_place_office;
+    var execution_place_filial;
+    var order__payment_type;
+    var order__cls;
+    var from_place_filial;
+    var details;
+
+    start_date = document.f1.start_date.value;
+    end_date = document.f1.end_date.value;
+    order__patient = document.f1.order__patient.options[document.f1.order__patient.selectedIndex].value;
+    staff__staff = document.f1.staff__staff.options[document.f1.staff__staff.selectedIndex].value;
+    staff__department = document.f1.staff__department.options[document.f1.staff__department.selectedIndex].value;
+    order__referral = document.f1.order__referral.options[document.f1.order__referral.selectedIndex].value;
+    execution_place_office = document.f1.execution_place_office.options[document.f1.execution_place_office.selectedIndex].value;
+    execution_place_filial = document.f1.execution_place_filial.options[document.f1.execution_place_filial.selectedIndex].value;
+    order__payment_type = document.f1.order__payment_type.options[document.f1.order__payment_type.selectedIndex].value;    
+    price_type = document.f1.price_type.options[document.f1.price_type.selectedIndex].value;    
+    order__cls = document.f1.order__cls.options[document.f1.order__cls.selectedIndex].value;    
+    from_place_filial = document.f1.from_place_filial.options[document.f1.from_place_filial.selectedIndex].value;    
+    details = $('#id_details').attr('checked');    
+
+    window.open('/old/reporting/'+slug+'/test_print/?'
+        +'start_date='+start_date
+        +'&end_date='+end_date
+        +'&order__patient='+order__patient
+        +'&staff__staff='+staff__staff
+        +'&staff__department='+staff__department
+        +'&order__referral='+order__referral
+        +'&execution_place_office='+execution_place_office
+        +'&execution_place_filial='+execution_place_filial
+        +'&order__payment_type='+order__payment_type
+        +'&price_type='+price_type
+        +'&order__cls='+order__cls
+        +'&from_place_filial='+from_place_filial
+        + (details ? '&details=да' : '')
+    );
+
+
+} 
+</script>
+
+<link href="{{ STATIC_URL }}resources/js/jui/themes/base/jquery.ui.all.css" type="text/css" media="all" rel="stylesheet" />
+<script src="{{ STATIC_URL }}resources/js/jui/ui/i18n/jquery.ui.datepicker-ru.js"></script>
+<script>
+	$(function() {
+		$( ".date-field" ).datepicker({ dateFormat: 'yy-mm-dd' });
+	});
+</script>
+
+{% endblock %}
+
+{% block breadcrumbs %}
+{% endblock %}
+
+{% block content %}
+
+<form name=f1>
+<table>
+{{form}}
+</table>
+
+<h3>Основные отчеты</h3>
+<h7>1). </h7> <input type="button" 
+value="<<Врач>> - количество,сумма" onClick="go('vrachi')""/> 
+</br>
+<h7>2). </h7> <input type="button" 
+value="<<Врач - Кто направил>> - пациент дата, № приема, полис,услуга, колич.,сумма" onClick="go('vrachi-refrl-pnt_usl')""/> 
+</br>
+<h7>  2.1 </h7> <input type="button" 
+value="<<Врач>> - пациент дата, № приема, полис,услуга, колич.,сумма" onClick="go('vrachi-pnt_usl')""/> 
+</br>
+<h7>3). </h7> <<Кто направил>> - услуга,колич.,сумма,10%,15%,20%..
+<input type="button" value=" без УЗИ " onClick="go('referal-usl-sum')""/> 
+<input type="button" value=" УЗИ " onClick="go('referal-usl-sum-uzi')""/> 
+<input type="button" value=" Лаборатория " onClick="go('referal-usl-sum-lab')""/> 
+</br>
+<h7>4). </h7> <input type="button" 
+value="<<Форма оплаты>> - дата,№,пациент,услуга,кол-во, сумма" onClick="go('payment-pnt-serv')""/> 
+</br>
+<h7>5). </h7> << Место выполнения >> - дата,№,пациент,услуга,кол-во, сумма 
+<input type="button" value=" Филиал " onClick="go('place_filial-pnt-serv')""/>
+<input type="button" value=" ОФИС " onClick="go('place_office-pnt-serv')""/> 
+</br>
+<h7>6). </h7> << Пациент - Место выполнения >> - дата, № приема, услуга, колич., цена, сумма 
+<input type="button" value=" Филиал " onClick="go('patient-place_filial-usl-sum')""/> 
+<input type="button" value=" ОФИС " onClick="go('patient-place_office-usl-sum')""/> 
+</br>
+<h7>6.1). </h7> << Пациент - Место выполнения только лаборатория>> - дата, № приема, услуга, колич., цена, сумма 
+<input type="button" value=" Филиал " onClick="go('patient-place_filial-usl-sum-lab-only')""/> 
+<input type="button" value=" ОФИС " onClick="go('patient-place_office-usl-sum-lab-only')""/> 
+</br>
+<h7>7). </h7> Услуги - количество,сумма
+<input type="button" value="Лаборатория" onClick="go('service_lab')""/> 
+<input type="button" value="все кроме Лаборатории" onClick="go('service_without_lab')""/> 
+</br>
+<h7>8). </h7> <<Группы услуг>> услуги - количество,сумма
+<input type="button" value="По количеству" onClick="go('service_lab_group_count')""/> 
+<input type="button" value="По сумме" onClick="go('service_lab_group_summ')""/> 
+
+<h3>Прайсы</h3>
+<h7>1).</h7>
+<input type="button" value="Динамика цен по услугам" onClick="go('price-dynamic')""/>  
+</br>
+<h7>2).</h7>
+<input type="button" value="Дата, Ф.И.О, Услуга, Цена, Кол-во, Сумма по закупочным ценам КЛЦ" onClick="go('KLC-reestr')""/>
+
+<h3>Дополнительные отчеты </h3>
+<h7>1). </h7> 
+<input type="button" value="<<Врач>> - услуга" onClick="go('vrachi-usl-sum')""/>
+<h7>2). </h7> 
+<input type="button" value="<<Пациент>> - дата, № приема, услуга, колич., цена, сумма" onClick="go('patient-usl-sum')""/>  
+<h7>3). </h7> 
+<input type="button" value="<<Кто направил - пациент>> полис,№,дата,услуга.." onClick="go('referal-pnt_usl')""/> 
+<h7>4). </h7> 
+<input type="button" value="<<Форма оплаты - Место выполнения>> - услуга" onClick="go('payment-place-serv')""/> 
+</br>
+<h7>5). </h7> <<Форма оплаты - Кто направил>> - пациент,услуга 
+<input type="button" value="по дате" onClick="go('payment-refrl-pnt_serv')""/> 
+<input type="button" value="по ФИО" onClick="go('payment-refrl-pnt_serv2')""/> 
+
+<h7>6). </h7> Отчет по кассе 
+<input type="button" value="по дате" onClick="go('cashier')""/> 
+
+</form >
+
+
+{% endblock %}

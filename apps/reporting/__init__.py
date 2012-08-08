@@ -5,8 +5,11 @@ from base import *
 
 _registry = {}
 
-def register(slug, klass):
-    _registry[slug] = klass
+def register(slug):
+    def dec(klass):
+        _registry[slug] = klass
+        return klass
+    return dec
 
 def get_report(slug):
     try:
