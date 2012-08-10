@@ -10,7 +10,7 @@ from service.models import BaseService
 from django.db import transaction
 from remoting.exceptions import ServiceDoesNotExist
 from django.core.exceptions import ObjectDoesNotExist, MultipleObjectsReturned
-from lab.models import Result, LabOrder
+from lab.models import Result, LabOrder, Measurement
 import logging
 
 logger = logging.getLogger('remoting')
@@ -159,6 +159,14 @@ def get_result(request, data):
     try:
         result = Result.objects.get(order__visit__specimen=specimen_id, 
                                     analysis__code=r['code'])
+        
+        #updating analysis info
+        if r['measurement']:
+            measurement,m_created = Measurement.objects.get_or_create(name=r['measurement'])
+            result.analysis.measurement = measurement
+        result.analysis.ref_range_text = r['ref_interval']
+        result.analysis.save()
+        
         if result.value:
             result.previous_value = result.value
         result.value = r['value']

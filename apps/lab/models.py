@@ -269,6 +269,8 @@ class Result(models.Model):
     value = models.CharField(u"Результат", max_length=200, blank=True, null=True)
     presence = models.CharField(u"Наличие", max_length=1, blank=True, null=True, choices=RESULTS)
     test_form = models.CharField(u"Форма", max_length=6, blank=True, null=True, choices=TEST_FORM)
+    measurement = models.CharField(u'Ед.измерения', max_length=50, null=True, blank=True)
+    ref_range_text = models.TextField(u'Реф.интервалы', blank=True)
     to_print = models.BooleanField(u'Печатать', default=True)
     input_list = models.ForeignKey(InputList, blank=True, null=True, verbose_name=u'Дополнительное значение')
     is_validated = models.BooleanField(u'V', default=True)
@@ -305,6 +307,13 @@ class Result(models.Model):
         if self.test_form:
             title = u"%s (%s)" % (title, self.test_form)
         return title
+    
+    def save(self, *args, **kwargs):
+        if not self.ref_range_text:
+            self.ref_range_text = self.analysis.ref_range_text
+        if not self.measurement:
+            self.measurement = self.analysis.measurement.name
+        super(Result, self).save(*args, **kwargs)
     
     class Meta:
         verbose_name = u'результат'
