@@ -4,7 +4,7 @@ from service.models import BaseService
 from state.models import State
 from django.conf import settings
 from constance import config
-from django.contrib.auth.models import Group
+from django.contrib.auth.models import Group, User
 from mptt.models import MPTTModel
 
 #GROUP_SERVICE_UZI = 'uzi'
@@ -94,7 +94,9 @@ class Report(MPTTModel):
     template = models.CharField(u'Шаблон', max_length=100, blank = True) 
     sql_query = models.ForeignKey(Query, null = True, blank = True)
     is_active = models.BooleanField(u'Активен', default=True)
-    formclass = models.CharField(u'Форма', max_length=100, null = True, blank = True) 
+    formclass = models.CharField(u'Форма', max_length=100, null = True, blank = True)
+    groups = models.ManyToManyField(Group, blank=True,null=True)
+    users = models.ManyToManyField(User, blank=True, null=True)
     
     class Meta:
         verbose_name = u'отчет'
