@@ -2365,6 +2365,20 @@ class ReportTreeResource(ModelResource):
 
         return orm_filters
     
+    def get_object_list(self, request):
+        """
+        An ORM-specific implementation of ``get_object_list``.
+
+        Returns a queryset that may have been limited by other overrides.
+        """
+        qs = self._meta.queryset._clone()
+        user = request.user
+        groups = user.groups.get_query_set()
+        
+        qs = qs.complex_filter(Q(groups__in=groups) | Q(users__in=[user]))
+        return qs
+
+    
     class Meta:
         queryset = Report.objects.filter(is_active=True) 
         limit = 20000
