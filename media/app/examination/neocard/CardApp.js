@@ -60,10 +60,10 @@ App.examination.CardApp = Ext.extend(Ext.Panel, {
 		
 		this.contentPanel = new Ext.Panel({
 			region:'center',
- 			border:true,
+ 			border:false,
  			margins:'5 5 5 0',
  			layout: 'fit',
- 			title:'Выберите действие',
+// 			title:'Выберите действие',
  			defaults:{
  				border:false
  			},

@@ -48,7 +48,7 @@ class Staff(make_person_object('staff')):
     medical_experience = models.CharField(u"Общемедицинский стаж", max_length=2, blank=True)
     spec_experience = models.CharField(u"Стаж работы по специальности", max_length=2, blank=True)
     status = models.CharField(u'Статус работника', default = 'д', choices = STAFF_STATUSES, max_length=1)
-    referral = models.OneToOneField('visit.Referral', null=True, blank=True)
+    referral = models.OneToOneField('visit.Referral', verbose_name='реферрал',null=True, blank=True)
     #position = models.CharField(u'Должность', max_length=50)
     
     objects = models.Manager()

@@ -21,7 +21,7 @@ from promotion.models import Promotion, PromotionItem
 from state.models import State
 from pricelist.models import Price
 from django.db.models import Max
-from staff.models import Position
+from staff.models import Position, Staff
 import datetime
 import time
 from django.core.serializers.json import DjangoJSONEncoder
@@ -354,6 +354,12 @@ def get_service_tree(request):
             payer = State.objects.get(id=payer)
         except:
             payer = None
+            
+    if staff:
+        try:
+            staff = Staff.objects.get(id=staff)
+        except:
+            staff = None
     p_type_id = get_actual_ptype()
         
     _cache_key = u'%sservice_list_%s_%s_%s_%s' % (ext and 'ext_' or '', state and state.id or u'*', payment_type, payer and payer.id or '*', p_type_id or '*')
@@ -379,7 +385,7 @@ def get_service_tree(request):
         if staff:
             args['extended_service__staff']=staff
         if state:
-            args['extended_service__branches']=state.id
+            args['extended_service__branches']=state
         if payer:
             args['payer'] = payer.id
         else:

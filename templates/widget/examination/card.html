@@ -109,11 +109,14 @@
 	<h2> Рекомендации </h2>
 	<table class="results">
 	<tr>
-		<td>Услуга</td><td>Количество</td>
+		<td>Услуга</td><td>Количество</td><td>Дата истечения</td><td>Отметка</td>
 	</tr>
 	{% for a in asgmts %}
 	<tr>
-		<td>{{a.text}}</td><td>{{a.count}}</td>
+		<td>{{a.text}}</td>
+		<td>{{a.count}}</td>
+		<td>{{a.expiration|date:"d.m.Y H:i"}}</td>
+		<td>{{a.deleted}}</td>
 	</tr>	
 	{% endfor %}
 {% endif %}

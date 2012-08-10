@@ -6,7 +6,7 @@ from pricelist.models import PriceType, Discount
 class PriceTypeAdmin(admin.ModelAdmin):
     """
     """
-    list_display = ('name','slug')
+    list_display = ('name','slug', 'active', 'priority')
     
 class DiscountAdmin(admin.ModelAdmin):
     """

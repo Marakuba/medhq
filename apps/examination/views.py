@@ -42,7 +42,10 @@ def card(request, object_id):
                              'text':"%s, %s" % (card.mkb_diag.code, card.mkb_diag.name)
                              })
     asgmt_list = Preorder.objects.filter(patient=card.ordered_service.order.patient.id,card=card.id)
-    assigments = [{'count':a.count,'text':a.service and a.service.base_service.name or u'Нет названия'} for a in asgmt_list]
+    assigments = [{'count':a.count,
+                   'text':a.service and a.service.base_service.name or u'Нет названия',
+                   'expiration':a.expiration or u'Не указано',
+                   'deleted':a.deleted and u'Отменено' or ''} for a in asgmt_list]
     field_sets = dict([(fs.name, fs.title) for fs in FieldSet.objects.all()]) 
     data = card.data and simplejson.loads(card.data) or []
     for d in data:

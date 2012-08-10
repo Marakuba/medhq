@@ -757,7 +757,7 @@ class StaffResource(ModelResource):
         return orm_filters
     
     class Meta:
-        queryset = Staff.objects.all()
+        queryset = Staff.objects.filter(status=u'д')
         resource_name = 'staff'
         always_return_data = True
         limit = 100
@@ -943,7 +943,7 @@ class StaffSchedResource(ModelResource):
         return bundle
     
     class Meta:
-        queryset = Staff.objects.filter(doctor__isnull = False)
+        queryset = Staff.objects.filter(doctor__isnull = False,status=u'д')
         resource_name = 'staffsched'
         always_return_data = True
         limit = 100
@@ -2063,7 +2063,7 @@ class VisitPreorderResource(ExtPreorderResource):
         return orm_filters
     
     class Meta:
-        queryset = Preorder.objects.filter(timeslot__isnull=True,deleted = False).order_by('-expiration')
+        queryset = Preorder.objects.filter(timeslot__isnull=True).order_by('-expiration')
         resource_name = 'visitpreorder'
         authorization = DjangoAuthorization()
         always_return_data = True
@@ -2487,11 +2487,11 @@ class MedStandartResource(ExtResource):
     
     def dehydrate(self, bundle):
         bundle.data['nosological_form_name'] = bundle.obj.nosological_form and bundle.obj.nosological_form.name or u'Не указано'
-#        bundle.data['age_category_name'] = bundle.obj.age_category and bundle.obj.age_category.name or u'Не указано'
+        bundle.data['age_category_name'] = bundle.obj.get_items_str('age_category') or u'Не указано'
         bundle.data['phase_name'] = bundle.obj.phase and bundle.obj.phase.name or u'Не указано'
         bundle.data['stage_name'] = bundle.obj.stage and bundle.obj.stage.name or u'Не указано'
         bundle.data['complications_name'] = bundle.obj.complications and bundle.obj.complications.name or u'Не указано'
-#        bundle.data['phase_name'] = bundle.obj.phase and bundle.obj.phase.name or u'Не указано'
+        bundle.data['terms_name'] = bundle.obj.get_items_str('terms') or u'Не указано'
         return bundle
     
     class Meta:

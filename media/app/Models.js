@@ -187,7 +187,9 @@ App.models.patientModel = new Ext.data.Record.create([
 	{name: 'id_card_org'},
 	{name: 'contract'},
 	{name: 'short_name'},
-	{name: 'accepted', type:'date'}
+	{name: 'accepted', type:'date'},
+	{name: 'assignment_notify'},
+	{name: 'preorder_notify'}
 	 
 ]);
 
@@ -499,6 +501,7 @@ App.models.MedStandartModel = new Ext.data.Record.create([
     {name: 'mkb10'},
     {name: 'name'},
     {name: 'age_category'},
+    {name: 'age_category_name'},
     {name: 'stage'},
     {name: 'phase'},
     {name: 'nosological_form'},
@@ -507,8 +510,8 @@ App.models.MedStandartModel = new Ext.data.Record.create([
     {name: 'phase_name'},
     {name: 'nosological_form_name'},
     {name: 'complications_name'},
-    {name: 'age_from'},
-    {name: 'age_to'}
+    {name: 'terms_name'},
+    {name: 'terms'}
 ]);
 
 App.models.StandartItemModel = new Ext.data.Record.create([
