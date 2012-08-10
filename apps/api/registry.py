@@ -770,7 +770,8 @@ class ExtendedServiceResource(ModelResource):
             'base_service':ALL_WITH_RELATIONS,
             'state':ALL_WITH_RELATIONS,
             'staff':ALL_WITH_RELATIONS,
-            'name':ALL
+            'name':ALL,
+            'is_active':ALL
         }
 
 

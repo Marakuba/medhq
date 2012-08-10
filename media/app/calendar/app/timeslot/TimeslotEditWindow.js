@@ -46,6 +46,7 @@ Ext.calendar.TimeslotEditWindow = Ext.extend(Ext.Window, {
 				    {name: 'service_name'},
 				    {name: 'state_name'},
 				    {name: 'state'},
+				    {name: 'is_active'},
 				    {name: 'price'}
 				]
 		});
@@ -550,6 +551,7 @@ Ext.calendar.TimeslotEditWindow = Ext.extend(Ext.Window, {
         
         
         this.serviceStore.setBaseParam('staff',this.staff_id);
+        this.serviceStore.setBaseParam('is_active',true);
 //        this.serviceStore.load();
         
         var today = new Date();
