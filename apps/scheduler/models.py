@@ -172,12 +172,12 @@ class Event(models.Model):
 
 
     def __unicode__(self):
-        return '%s-%s' % (self.staff and self.staff.staff.last_name or '<<EVENT>>',self.start)
+        return '%s-%s' % (self.cid,self.start)
             
     class Meta:
         verbose_name = u'смена'
         verbose_name_plural = u'смены'
-        ordering = ('cid',)
+        ordering = ('-id',)
         
 class Preorder(models.Model):
     """
@@ -258,7 +258,7 @@ class Preorder(models.Model):
     class Meta:
         verbose_name = u'предзаказ'
         verbose_name_plural = u'предзаказы'
-        ordering = ('id',)
+        ordering = ('-id',)
         
     def __unicode__(self):
         return self.patient and self.patient.short_name() or u'Предзаказ'
