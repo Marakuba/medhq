@@ -384,6 +384,23 @@ App.models.LabService = new Ext.data.Record.create([
     {name: 'staff_name'}
 ]);
 
+App.models.StaffModel = new Ext.data.Record.create([
+	{name: 'id'},
+	{name: 'resource_uri'},
+	{name: 'name'},
+	{name: 'referral'},
+	{name: 'referral_type'}
+]);
+
+App.models.ReferralModel = new Ext.data.Record.create([
+	{name: 'id'},
+	{name: 'resource_uri'},
+	{name: 'name'},
+	{name: 'agent'},
+	{name: 'referral_type'},
+	{name: 'referral_type_name'}
+])
+
 App.models.LabOrder = new Ext.data.Record.create([
 	{name: 'id'},
 	{name: 'created', type:'date',format:'c'},

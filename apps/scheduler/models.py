@@ -202,6 +202,7 @@ class Preorder(models.Model):
     price = models.DecimalField(u'Цена', max_digits=10, decimal_places=2, null=True)
     rejection_cause = models.ForeignKey(RejectionCause, null = True, blank = True)
     deleted = models.BooleanField(u'Удалено', default=False)
+    confirmed = models.BooleanField(u'Подтверждено', default=False)
     referral = models.ForeignKey(Referral, null=True, blank=True)
     objects = models.Manager()
     

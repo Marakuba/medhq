@@ -24,7 +24,7 @@ App.registry.PreorderGrid = Ext.extend(Ext.grid.GridPanel, {
 		this.visitButton = new Ext.Button({
 			iconCls:'silk-add',
 			disabled:true,
-			hidden:this.completed ? true : false,
+			hidden:this.completed || this.doctorMode ? true : false,
 			text:'Оформить заказ',
 			handler:this.onVisitButtonClick.createDelegate(this, []),
 			scope:this

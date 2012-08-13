@@ -6,6 +6,13 @@ App.patient.AsgmtGrid = Ext.extend(Ext.grid.EditorGridPanel, {
 	
 	initComponent : function() {
 		
+		this.refStore = new Ext.data.RESTStore({
+			autoSave: false,
+			autoLoad : false,
+			apiUrl : get_api_url('referral'),
+			model: App.models.ReferralModel
+		});
+		
 		this.updatingStoreCheck = new Ext.form.Checkbox({
 			checked:true,
 			hidden:this.hasPatient,
@@ -56,7 +63,7 @@ App.patient.AsgmtGrid = Ext.extend(Ext.grid.EditorGridPanel, {
 		this.visitButton = new Ext.Button({
 			iconCls:'silk-add',
 			disabled:true,
-			hidden:this.card_id,
+			hidden:this.card_id || this.doctorMode,
 			text:'Оформить заказ',
 			handler:this.onVisitButtonClick.createDelegate(this, []),
 			scope:this
@@ -79,9 +86,17 @@ App.patient.AsgmtGrid = Ext.extend(Ext.grid.EditorGridPanel, {
 			scope:this
 		});
 		
+		this.confirmButton = new Ext.Button({
+			text:'Подтвердить',
+			hidden:true,
+			disabled:false,
+			handler:this.confirmRecord.createDelegate(this, []),
+			scope:this
+		});
+		
 		this.ttb = new Ext.Toolbar({
 			items:[this.createButton,'-',
-				this.visitButton, this.clearButton, this.setTimeButton,'-',
+				this.visitButton, this.clearButton, this.setTimeButton,this.confirmButton,'-',
 				{
 					text:'Реестр',
 					handler:function(){
@@ -317,6 +332,9 @@ App.patient.AsgmtGrid = Ext.extend(Ext.grid.EditorGridPanel, {
             		if (record.data.comment){
             			p.body = '<p class="helpdesk-row-body"> Комментарий: '+record.data.comment+'</p>';
             		};
+            		if (record.data.deleted){
+            			return 'preorder-deactive-row-body'
+            		};
             		if (record.data.start) {
                 		return 'preorder-visited-row-body';
             		};
@@ -329,9 +347,6 @@ App.patient.AsgmtGrid = Ext.extend(Ext.grid.EditorGridPanel, {
 	            		if (!in_array) {
 	            			return 'preorder-other-place-row-body';
 	            		};
-            		}
-            		if (record.data.deleted){
-            			return 'preorder-deactive-row-body'
             		}
             		return 'preorder-actual-row-body';
         		},
@@ -358,8 +373,11 @@ App.patient.AsgmtGrid = Ext.extend(Ext.grid.EditorGridPanel, {
 					if (!this.updatingStoreCheck.getValue()){
 						this.store.load()
 					}
+				};
+				if (this.referral_type=='л'){
+					this.confirmButton.show();
 				}
-			}
+			};
 		},this);
 		App.calendar.eventManager.on('preorderwrite', this.storeReload,this);
 		App.eventManager.on('globalsearch', this.onGlobalSearch, this);
@@ -410,7 +428,9 @@ App.patient.AsgmtGrid = Ext.extend(Ext.grid.EditorGridPanel, {
 		if (this.card_id){
 			s.setBaseParam('card',this.card_id);
 		} else {
-			s.setBaseParam('deleted',false);
+			if(!this.referral_type || (this.referral_type != 'л')){
+				s.setBaseParam('deleted',false);
+			}
 		}
 		s.load();
 	},
@@ -436,7 +456,9 @@ App.patient.AsgmtGrid = Ext.extend(Ext.grid.EditorGridPanel, {
 		if (records.length != 1){
 			this.setTimeButton.setDisabled(true)
 		} else {
-			this.setTimeButton.setDisabled(false)
+			if (!records[0].data.deleted){
+				this.setTimeButton.setDisabled(false)
+			}
 		}
 		status = true
 		Ext.each(records,function(rec){
@@ -690,6 +712,37 @@ App.patient.AsgmtGrid = Ext.extend(Ext.grid.EditorGridPanel, {
 	
 	updatingCheckClick: function(checkbox, checked){
 		this.fireEvent('setupdating',this,checked);
+	},
+	
+	confirmRecord: function(){
+		var rec = this.getSelectionModel().getSelected();
+		if (!rec){
+			return
+		};
+		if (rec.data.referral){
+			this.refStore.load({params:{format:'json',id:App.uriToId(rec.data.referral)},callback:function(records){
+				if (records.length){
+					if (records[0].data.referral_type != 'л'){
+						this.setPreorderReferral(rec,this.referral);
+					}
+				}
+				
+			},scope:this})
+		} else {
+			this.setPreorderReferral(rec,this.referral);
+		}
+	},
+	
+	setPreorderReferral: function(rec,referral){
+		this.store.autoSave = false;
+		rec.beginEdit();
+		rec.set('referral',this.referral);
+		rec.set('deleted',false);
+		rec.set('confirmed',true);
+		rec.endEdit();
+		this.store.save();
+		this.store.autoSave = true;
+		this.store.load();
 	}
 	
 	

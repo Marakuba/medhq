@@ -201,6 +201,23 @@ App.ExamCentralPanel = Ext.extend(Ext.Panel, {
                 	},
                     scope:this
                 }]
+	        },{
+              xtype: 'buttongroup',
+//            title: 'Пациенты',
+	            columns: 2,
+	            defaults: {
+	                scale: 'small'
+	            },
+	            items: [{
+                	text:'Лечащий врач',
+                	scale:'medium',
+                	handler:function(){
+                		this.launchApp('gendocpanel',{
+                			closable:true
+                		});
+                	},
+                    scope:this
+                }]
 	        },'->',
 	        {
 				xtype:'buttongroup',
