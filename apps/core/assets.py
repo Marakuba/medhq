@@ -442,6 +442,8 @@ js_calendar = Bundle(
     filters='rjsmin', output='assets/calendar.js',)
 
 js_examination = Bundle(
+    'extjs/ux/printer/Printer-all.js',
+    
     'libs/markdown.js',
     'extjs/ux/progresscolumn/ProgressColumn.js',
     'extjs/ux/RowEditor.js',
@@ -537,6 +539,10 @@ js_examination = Bundle(
     'app/registry/asgmt/AsgmtForm.js',
     'app/registry/asgmt/AsgmtTab.js',
     'app/registry/patient/AsgmtGrid.js',
+    'app/registry/preorder/PreorderGrid.js',
+    'app/registry/preorder/PreorderManager.js',
+    
+    'app/examination/gendoc/GeneralDoctorPanel.js',
     
     'app/examination/neocard/CardStartPanel.js',
     'app/examination/neocard/CardGeneralTab.js',

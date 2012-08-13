@@ -24,6 +24,7 @@ App.registry.PreorderManager = Ext.extend(Ext.TabPanel, {
 			patientStore: this.patientStore,
 			medstateStore: this.medstateStore,
 			searchValue: this.searchValue,
+			doctorMode: this.doctorMode,
 			listeners:{
 				scope:this,
 				setupdating:this.setUpdating
@@ -35,6 +36,7 @@ App.registry.PreorderManager = Ext.extend(Ext.TabPanel, {
 			medstateStore: this.medstateStore,
 			patientStore: this.patientStore,
 			searchValue: this.searchValue,
+			doctorMode: this.doctorMode,
 			title:'Выполненные',
 			baseParams:{
 				format:'json',
@@ -46,11 +48,12 @@ App.registry.PreorderManager = Ext.extend(Ext.TabPanel, {
 				setupdating:this.setUpdating
 			}
 		});
-		this.assigmentTab = new App.patient.AsgmtGrid({
+		this.assignmentTab = new App.patient.AsgmtGrid({
 			hasPatient:this.hasPatient,
 			medstateStore: this.medstateStore,
 			patientStore: this.patientStore,
 			searchValue: this.searchValue,
+			doctorMode: this.doctorMode,
 			listeners:{
 				scope:this,
 				setupdating:this.setUpdating
@@ -64,7 +67,7 @@ App.registry.PreorderManager = Ext.extend(Ext.TabPanel, {
 			items:[
 				this.preorderTab,
 				this.completedTab,
-				this.assigmentTab
+				this.assignmentTab
 				
 			]
 			
@@ -79,11 +82,13 @@ App.registry.PreorderManager = Ext.extend(Ext.TabPanel, {
 	                interval: 30000
 	            });
 			}
-//			this.assigmentTab.store.load();
+//			this.assignmentTab.store.load();
 		},this);
 		
 		this.on('beforedestroy',function(){
-			Ext.TaskMgr.stop(this.task)
+			if(!this.hasPatient){
+				Ext.TaskMgr.stop(this.task)
+			}
 		},this)
 	},
 	
@@ -106,15 +111,22 @@ App.registry.PreorderManager = Ext.extend(Ext.TabPanel, {
 	},
 	
 	setActivePatient: function(rec) {
-		this.assigmentTab.setActivePatient(rec);
+		this.assignmentTab.setActivePatient(rec);
 		this.preorderTab.store.setBaseParam('patient',rec.id)
 		this.preorderTab.store.load();
 		this.completedTab.store.setBaseParam('patient',rec.id);
 		this.completedTab.store.load();
+	},
+	
+	setReferral: function(referral,referral_type){
+		this.assignmentTab.referral = referral;
+		this.assignmentTab.referral_type = referral_type;
+		if (referral_type == 'л'){
+			this.assignmentTab.confirmButton.hidden = false;
+			this.assignmentTab.doLayout()
+		}
 	}
 	
 });
-
-
 
 Ext.reg('preordermanager', App.registry.PreorderManager);

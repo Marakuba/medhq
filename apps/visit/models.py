@@ -32,7 +32,8 @@ REFERRAL_TYPES = (
     (u'ф',u'Физическое лицо'),
     (u'в',u'Врач/Организация'),
     (u'с',u'Страховая компания'),
-    (u'л',u'Лечащий врач')
+    (u'л',u'Лечащий врач'),
+    (u'к',u'Врач клиники')
 )
 
 class ReferralAgent(make_operator_object('referralagent')):

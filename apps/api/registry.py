@@ -734,6 +734,7 @@ class StaffResource(ModelResource):
     """
     def dehydrate(self, bundle):
         bundle.data['name'] = bundle.obj.short_name()
+        bundle.data['referral_type'] = bundle.obj.referral and bundle.obj.referral.referral_type 
         bundle.data['title'] = bundle.obj.short_name()
         return bundle
     
