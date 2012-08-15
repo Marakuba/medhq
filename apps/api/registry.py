@@ -1928,10 +1928,20 @@ class PreorderResource(ExtResource):
     rejection_cause = fields.ForeignKey(RejectionCauseResource, 'rejection_cause', null=True)
     card = fields.ForeignKey(CardResource, 'card', null = True)
     referral = fields.ForeignKey(ReferralResource, 'referral', null = True)
+    who_deleted = fields.ForeignKey(UserResource,'who_deleted', null=True)
     
     def obj_create(self, bundle, request=None, **kwargs):
         kwargs['operator']=request.user
+        referral = request and request.active_profile.staff.referral
+        if referral:
+            kwargs['referral']=referral
         result = super(PreorderResource, self).obj_create(bundle=bundle, request=request, **kwargs)
+        return result
+    
+    def obj_update(self, bundle, request=None, **kwargs):
+        if bundle.data['deleted']:
+            bundle.data['who_deleted']=request.user
+        result = super(PreorderResource, self).obj_update(bundle=bundle, request=request, **kwargs)
         return result
     
     def build_filters(self, filters=None):
@@ -1973,6 +1983,7 @@ class ExtPreorderResource(ExtBatchResource):
     promotion = fields.ForeignKey(PromotionResource, 'promotion', null=True)
     card = fields.ForeignKey(CardResource, 'card', null = True)
     referral = fields.ForeignKey(ReferralResource, 'referral', null = True)
+    who_deleted = fields.ForeignKey(UserResource,'who_deleted',null=True)
     
     def obj_create(self, bundle, request=None, **kwargs):
         kwargs['operator']=request.user
@@ -1980,6 +1991,13 @@ class ExtPreorderResource(ExtBatchResource):
         if referral:
             kwargs['referral']=referral
         result = super(ExtPreorderResource, self).obj_create(bundle=bundle, request=request, **kwargs)
+        return result
+    
+    def obj_update(self, bundle, request=None, **kwargs):
+#        import pdb; pdb.set_trace()
+        if bundle.data['deleted']:
+            bundle.data['who_deleted']=request.user
+        result = super(ExtPreorderResource, self).obj_update(bundle=bundle, request=request, **kwargs)
         return result
     
     def build_filters(self, filters=None):

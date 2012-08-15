@@ -54,6 +54,8 @@ App.registry.PreorderManager = Ext.extend(Ext.TabPanel, {
 			patientStore: this.patientStore,
 			searchValue: this.searchValue,
 			doctorMode: this.doctorMode,
+			referral:this.referral,
+			referral_type:this.referral_type,
 			listeners:{
 				scope:this,
 				setupdating:this.setUpdating
@@ -116,15 +118,6 @@ App.registry.PreorderManager = Ext.extend(Ext.TabPanel, {
 		this.preorderTab.store.load();
 		this.completedTab.store.setBaseParam('patient',rec.id);
 		this.completedTab.store.load();
-	},
-	
-	setReferral: function(referral,referral_type){
-		this.assignmentTab.referral = referral;
-		this.assignmentTab.referral_type = referral_type;
-		if (referral_type == 'л'){
-			this.assignmentTab.confirmButton.hidden = false;
-			this.assignmentTab.doLayout()
-		}
 	}
 	
 });

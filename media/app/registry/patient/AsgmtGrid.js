@@ -80,7 +80,7 @@ App.patient.AsgmtGrid = Ext.extend(Ext.grid.EditorGridPanel, {
 		this.setTimeButton = new Ext.Button({
 			xtype:'button',
 			text:'Назначить время',
-			hidden:this.card_id,
+			hidden:this.referral_type != 'л',
 			disabled:true,
 			handler:this.staffWindow.createDelegate(this, []),
 			scope:this
