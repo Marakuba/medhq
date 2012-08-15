@@ -1,3 +1,5 @@
+{% load report_tags %}
+
 <style>
     div.reporting {
         font-family:'Arial';
@@ -120,9 +122,7 @@ filter: progid:DXImageTransform.Microsoft.gradient( startColorstr='#eeeeee', end
     </table>
                 
     <br><br>
-                
-
-{% with report.as_list as results %}
+{% get_report_as_list report True as results%}
 <div class="template-preview">
 <table class="data">
 {% for row in results %}
@@ -140,4 +140,3 @@ filter: progid:DXImageTransform.Microsoft.gradient( startColorstr='#eeeeee', end
 </div>
         
     </div>
-{% endwith %}
