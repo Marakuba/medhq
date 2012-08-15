@@ -17,6 +17,18 @@ App.examination.TemplateBody = Ext.extend(Ext.TabPanel, {
 			},
 			model: App.models.Template
 		});
+		this.ticketOkBtn = new Ext.Button({
+			text:'Ok',
+			hidden:true,
+			source:'ticket-edit-panel',
+			handler:function(){
+				var tab = this.getActiveTab();
+				if (tab.editComplete){
+					tab.editComplete();
+				}
+			},
+			scope:this
+		})
 		
 		this.previewBtn = new Ext.Button({
 			iconCls:'silk-zoom',
@@ -82,7 +94,7 @@ App.examination.TemplateBody = Ext.extend(Ext.TabPanel, {
 		});
 		
 		this.ttb = new Ext.Toolbar({
-			items: ['-',this.printBtn,this.previewBtn,'-', this.historyBtn,'-', this.closeBtn, this.moveArchiveBtn, this.dltBtn]
+			items: ['-',this.ticketOkBtn,this.printBtn,this.previewBtn,'-', this.historyBtn,'-', this.closeBtn, this.moveArchiveBtn, this.dltBtn]
 		});
 		
 		this.dataTab = new App.examination.TicketTab({
@@ -118,6 +130,7 @@ App.examination.TemplateBody = Ext.extend(Ext.TabPanel, {
 		},
 		this.on('tabchange',function(panel,tab){
 			if (tab){
+				this.showTtbItems(tab.type)
 				App.eventManager.fireEvent('tmptabchange');
 			};
 		},this);
@@ -381,7 +394,7 @@ App.examination.TemplateBody = Ext.extend(Ext.TabPanel, {
 				
 				this.additionalMenu.push({
 					text:rec.title,
-					handler:this.onAddSubSection.createDelegate(this,['Заголовок',rec.name,rec.order]),
+					handler:this.onAddSubSection.createDelegate(this,['',rec.name,rec.order]),
 					scope:this
 				});
 			},this);
@@ -492,6 +505,20 @@ App.examination.TemplateBody = Ext.extend(Ext.TabPanel, {
 		});
 		stWin.show();
 		this.setActiveTab(this.dataTab)
+	},
+	
+	showTtbItems: function(source){
+		if (!source){
+			source == null
+		}
+		Ext.each(this.ttb.items.items,function(item){
+			if (item.source == source){
+				item.show()
+			} else {
+				item.hide()
+			}
+		},this);
+		this.doLayout();
 	}
 
 });

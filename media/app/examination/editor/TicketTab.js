@@ -231,7 +231,15 @@ App.examination.TicketTab = Ext.extend(Ext.Panel, {
 			order:10000,
 			height:500,
 			autoScroll:true,
-			hasPatient:true
+			hasPatient:true,
+			autoHeight: true,
+			listeners: {
+				scope:this,
+				asgmtcreate: function(){
+					this.doLayout()
+				}
+			}
+			
 		});
 		return asgmt_panel
 	},
@@ -271,6 +279,7 @@ App.examination.TicketTab = Ext.extend(Ext.Panel, {
 		
 		this.asgmtPanel.store.save();
 		s.autoSave = true;
+		this.doLayout();
 		
 	}
 });
