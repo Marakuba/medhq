@@ -200,28 +200,28 @@ App.patient.AsgmtGrid = Ext.extend(Ext.grid.EditorGridPanel, {
 		
 		this.columns =  [{
 		    	header: "Пациент", 
-		    	width: 60, 
+		    	width: 150, 
 		    	sortable: true, 
 		    	dataIndex: 'patient_name',
 		    	hidden: this.hasPatient ? true : false
 		    },{
 		    	header: "Услуга", 
-		    	width: 100, 
+		    	width: 250, 
 		    	sortable: true, 
 		    	dataIndex: 'service_name'
 		     },{
 		    	header: "Количество", 
-		    	width: 20, 
+		    	width: 75, 
 		    	sortable: true, 
 		    	dataIndex: 'count'
 		    },{
 		    	header: "Выполнено", 
-		    	width: 20, 
+		    	width: 75, 
 		    	sortable: true, 
 		    	dataIndex: 'completed_count'
 		    }, new Ext.ux.ProgressColumn({
                 header: '%',
-                width: 70, 
+                width: 100, 
                 dataIndex: 'completed_count',
                 divisor: 'count',
                 align: 'center',
@@ -230,24 +230,24 @@ App.patient.AsgmtGrid = Ext.extend(Ext.grid.EditorGridPanel, {
                 }
             }),{
 		    	header: "Цена", 
-		    	width: 20, 
+		    	width: 50, 
 		    	hidden:this.card_id,
 		    	sortable: true, 
 		    	dataIndex: 'price'
 		    },{
 		    	header: "Врач", 
-		    	width: 30, 
+		    	width: 100, 
 		    	sortable: true, 
 		    	dataIndex: 'staff_name'
 		    },{
 		    	header: "Время", 
-		    	width: 32, 
+		    	width: 60, 
 		    	sortable: true, 
 		    	dataIndex: 'start',
 		    	renderer:Ext.util.Format.dateRenderer('H:i / d.m.y')
 		    },{
 		    	header: "Дата выполнения", 
-		    	width: 32, 
+		    	width: 100, 
 		    	sortable: true, 
 		    	dataIndex: 'expiration',
 		    	renderer:Ext.util.Format.dateRenderer('d.m.y'),
@@ -259,24 +259,24 @@ App.patient.AsgmtGrid = Ext.extend(Ext.grid.EditorGridPanel, {
 				
 		    },{
 		    	header: "Место выполнения", 
-		    	width: 40, 
+		    	width: 120, 
 		    	sortable: true, 
 		    	dataIndex: 'execution_place_name'
 		    },{
 		    	header: "Телефон", 
-		    	width: 35, 
+		    	width: 100, 
 		    	hidden:this.card_id,
 		    	sortable: false, 
 		    	dataIndex: 'patient_phone'
 		    },{
 		    	header: "Акция", 
-		    	width: 35, 
+		    	width: 80, 
 		    	hidden:this.card_id,
 		    	sortable: false, 
 		    	dataIndex: 'promotion_name'
 		    },{
 		    	header: "Оператор", 
-		    	width: 35, 
+		    	width: 80, 
 		    	hidden:this.card_id,
 		    	sortable: true, 
 		    	dataIndex: 'operator_name'
@@ -322,9 +322,9 @@ App.patient.AsgmtGrid = Ext.extend(Ext.grid.EditorGridPanel, {
                 	iconCls: 'x-tbar-page-next'
             	}]
             },
-			viewConfig : {
+			viewConfig : this.viewConfig || {
 				emptyText :this.emptyText,
-				forceFit : true,
+				forceFit : false,
 				showPreview:true,
 				enableRowBody:true,
 				getRowClass: function(record, index, p, store) {
@@ -374,10 +374,10 @@ App.patient.AsgmtGrid = Ext.extend(Ext.grid.EditorGridPanel, {
 						this.store.load()
 					}
 				};
-				if (this.referral_type=='л'){
-					this.confirmButton.show();
-				}
 			};
+			if (this.referral_type=='л'){
+				this.confirmButton.show();
+			}
 		},this);
 		App.calendar.eventManager.on('preorderwrite', this.storeReload,this);
 		App.eventManager.on('globalsearch', this.onGlobalSearch, this);

@@ -18,7 +18,8 @@ App.registry.PreorderManager = Ext.extend(Ext.TabPanel, {
 			model: App.models.patientModel
 		});
 		
-		this.preorderTab = new App.registry.PreorderGrid({
+		
+		var preorderCfg =  {
 			title:'Ближайшие',
 			hasPatient:this.hasPatient,
 			patientStore: this.patientStore,
@@ -29,7 +30,9 @@ App.registry.PreorderManager = Ext.extend(Ext.TabPanel, {
 				scope:this,
 				setupdating:this.setUpdating
 			}
-		});
+		};
+		Ext.apply(preorderCfg,this.preorderCfg);
+		this.preorderTab = new App.registry.PreorderGrid(preorderCfg);
 		this.completedTab = new App.registry.PreorderGrid({
 			hasPatient:this.hasPatient,
 			completed:true,
@@ -48,7 +51,7 @@ App.registry.PreorderManager = Ext.extend(Ext.TabPanel, {
 				setupdating:this.setUpdating
 			}
 		});
-		this.assignmentTab = new App.patient.AsgmtGrid({
+		var assignmentCfg = {
 			hasPatient:this.hasPatient,
 			medstateStore: this.medstateStore,
 			patientStore: this.patientStore,
@@ -60,7 +63,9 @@ App.registry.PreorderManager = Ext.extend(Ext.TabPanel, {
 				scope:this,
 				setupdating:this.setUpdating
 			}
-		});
+		};
+		Ext.apply(assignmentCfg,this.assignmentCfg);
+		this.assignmentTab = new App.patient.AsgmtGrid(assignmentCfg);
 		
 		config = {
 			id:this.hasPatient? Ext.id() : 'preorder-manager',
