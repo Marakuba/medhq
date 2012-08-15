@@ -23,6 +23,7 @@ from pricelist.models import Price
 from django.views.generic.simple import direct_to_template
 from service.forms import PriceForm
 from core.admin import TabbedAdmin
+from django.conf import settings
 
 
 class StandardServiceAdmin(TreeEditor):
@@ -37,11 +38,22 @@ class PriceInlineAdmin(admin.TabularInline):
     exclude = ('service','type')
 
 
+class AnalysisInlineAdminForm(forms.ModelForm):
+    
+    code = forms.CharField(label=u'Код', required=False,
+                           widget=forms.TextInput(attrs={'size':15}))
+    ref_range_text = forms.CharField(label=u'Реф.интервалы', required=False,
+                                     widget=forms.Textarea(attrs={'cols':30,'rows':3}))
+    
+    class Meta:
+        model = Analysis
 
 class AnalysisInlineAdmin(admin.TabularInline):
     model = Analysis
+    form = AnalysisInlineAdminForm
     extra = 0
-    exclude = ('input_mask','equipment_assay')
+    exclude = ('input_list','input_mask','equipment_assay','tube','by_age','by_gender','by_pregnancy')
+    
 
 
 def is_leaf(obj):
@@ -288,6 +300,11 @@ class BaseServiceAdmin(TreeEditor, TabbedAdmin):
         )
         return my_urls + urls
 
+    class Media:
+        js = [
+            settings.STATIC_URL + "resources/js/analysis.js",
+            settings.STATIC_URL + "resources/js/inlines.js",
+        ]
 
     
 

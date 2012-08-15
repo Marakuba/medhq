@@ -21,6 +21,7 @@ import logging
 from django.template import Template, Context
 from django.db.models.signals import post_save
 from lab.managers import ResultManager
+from taskmanager.settings import DELAYED_TASK_STATUSES
 logger = logging.getLogger(__name__)
 
 
@@ -90,6 +91,20 @@ class InputList(models.Model):
     class Meta:
         verbose_name = u'маска результатов'
         verbose_name_plural = u'маски результатов'
+
+
+class AnalysisProfile(models.Model):
+    """
+    """
+    name = models.CharField(u'Наименование', max_length=150)
+    
+    def __unicode__(self):
+        return self.name
+    
+    class Meta:
+        verbose_name = u'профиль оборудования'
+        verbose_name_plural = u'профили оборудования'
+        ordering = ('name',)
         
 
 class Analysis(models.Model):
@@ -97,6 +112,7 @@ class Analysis(models.Model):
     """
     service = models.ForeignKey(BaseService, null=True, blank=True)
     equipment_assay = models.ForeignKey('lab.EquipmentAssay', null=True, blank=True)
+    profile = models.ForeignKey(AnalysisProfile, null=True, blank=True)
     name = models.CharField(u'Наименование', max_length=300)
     code = models.CharField(u'Код', max_length=20, blank=True)
     input_mask = models.ForeignKey(InputMask, null=True, blank=True, verbose_name=InputMask._meta.verbose_name)
@@ -122,7 +138,7 @@ class Analysis(models.Model):
     class Meta:
         verbose_name = u'тест'
         verbose_name_plural = u'тесты'
-        ordering = ('order',)
+        ordering = ('profile','order',)
         
 
 class RefRange(models.Model):
@@ -163,7 +179,8 @@ class LabOrder(models.Model):
     is_completed = models.BooleanField(u'Выполнен', default=False)
     is_printed = models.BooleanField(u'Печать', default=False)
     is_manual = models.BooleanField(u'Ручные исследования', default=False)
-    status = models.ForeignKey(Status, blank=True, null=True)
+#    status = models.ForeignKey(Status, blank=True, null=True)
+    send_status = models.CharField(u'Статус', max_length=10, choices=DELAYED_TASK_STATUSES)
     print_date = models.DateTimeField(u'Дата печати', blank=True, null=True)
     printed_by = models.ForeignKey(User, blank=True, null=True)
     comment = models.TextField(u'Комментарий', blank=True, default='')
@@ -198,7 +215,7 @@ class LabOrder(models.Model):
         self.staff_text = "\n".join(chunks)
         self.save()
     
-    def confirm_results(self, autoclean=True):
+    def confirm_results(self, autoclean=True, confirm_orders=True):
         if autoclean:
             Result.objects.filter(analysis__service__labservice__is_manual=False, 
                                   order=self, 
@@ -210,7 +227,7 @@ class LabOrder(models.Model):
             if not result.is_completed():
                 self.is_completed = False
                 break
-        if self.is_completed:
+        if self.is_completed and confirm_orders:
             ordered_services = self.visit.orderedservice_set.filter(execution_place=self.laboratory,
                                                                     service__lab_group=self.lab_group)
             if self.is_manual:

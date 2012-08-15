@@ -418,7 +418,9 @@ def confirm_manual_service(request):
     
     results = Result.objects.filter(order__visit=obj.order, analysis__service=obj.service)
     if len(results):
+        results.update(validation=1)
         lab_order = results[0].order
+        lab_order.confirm_results(False, False)
         try:
             state = lab_order.visit.office.remotestate
             logger.info(u"LabOrder for specimen %s is remote" % lab_order.visit.specimen)
@@ -454,7 +456,7 @@ def hem_results(request):
 
     data = simplejson.loads(request.raw_post_data)
     specimen = data['specimenID']
-    results = Result.objects.filter(order__visit__specimen=int(specimen))
+    results = Result.objects.filter(order__visit__barcode__id=int(specimen))
     for result in results:
         if result.analysis.code in data:
             result.previous_value = result.value

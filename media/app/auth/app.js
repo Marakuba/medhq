@@ -18,6 +18,7 @@ App.auth.Form = Ext.extend(Ext.form.FormPanel, {
 			},{
 				fieldLabel:'Логин',
 				name:'username',
+				anchor:'99%',
 				listeners: {
 	                specialkey: function(field, e){
 	                    if (e.getKey() == e.ENTER) {
@@ -30,6 +31,7 @@ App.auth.Form = Ext.extend(Ext.form.FormPanel, {
 				inputType:'password',
 				fieldLabel:'Пароль',
 				name:'password',
+				anchor:'99%',
 				listeners: {
 	                specialkey: function(field, e){
 	                    if (e.getKey() == e.ENTER) {

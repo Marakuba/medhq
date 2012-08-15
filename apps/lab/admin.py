@@ -170,8 +170,9 @@ class AnalysisAdminForm(forms.ModelForm):
 class AnalysisAdmin(admin.ModelAdmin):
     """
     """
-    exclude = ('input_mask',)
+    exclude = ('input_mask','tube')
     search_fields = ['name',]
+    filter_horizontal = ['input_list',]
     formfield_overrides = {
         models.ManyToManyField: {'widget': forms.CheckboxSelectMultiple()},
     }
@@ -203,7 +204,7 @@ class ResultAdmin(admin.ModelAdmin):
     """
     """
     list_display = ('visit','order','analysis','modified','modified_by')
-    readonly_fields = ('visit','analysis','sample')
+    readonly_fields = ('visit','order','analysis','sample')
     search_fields = ('order__visit__barcode__id','order__visit__patient__last_name','analysis__service__short_name')
     ordering = ('-order__visit__barcode__id',)
     actions = [separate]
@@ -270,6 +271,7 @@ class SamplingAdmin(admin.ModelAdmin):
     def barcode(self, obj):
         return obj.visit.barcode.id
     
+admin.site.register(AnalysisProfile)
 admin.site.register(Analysis, AnalysisAdmin)
 admin.site.register(Sampling, SamplingAdmin)
 admin.site.register(InputList)

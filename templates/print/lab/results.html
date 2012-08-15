@@ -37,8 +37,8 @@
 	<tr>
 		<td class="analysis">{{ result.object.get_title }}</td>
 		<td>{% autoescape off %}{{ result.object.get_result|sup }}{% endautoescape %}</td>
-		<td>{{ result.object.analysis.measurement|default:"---" }}</td>
-		<td>{{ result.object.analysis.ref_range_text|default:"---"|linebreaks }}</td>
+		<td>{{ result.object.measurement|default:"---" }}</td>
+		<td>{{ result.object.ref_range_text|default:"---"|linebreaks }}</td>
 	</tr>
 	{% endif %}
 	{% if result.class == 'progress' %}
