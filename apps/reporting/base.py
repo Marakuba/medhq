@@ -12,6 +12,7 @@ from collections import defaultdict
 def escape_param(value):
     return value
 
+        
 class Report():
     """
     """
@@ -114,19 +115,26 @@ class Report():
 #        self.results = map(lambda x:map(lambda y:self.fields[y]['renderer'](x[y],x) if isinstance(self.fields[y],dict) else x[y],x),dict_result)
 
         group_list = map(lambda x:x['name'] if isinstance(x,dict) else x,self.groups)
-        self.results = sorted(list_results, key=itemgetter(*group_list))
+        if group_list:
+            self.results = sorted(list_results, key=itemgetter(*group_list))
+        else:
+            self.results = list_results
         root_node = RootNode(self.results)
         
-        if not 'aggr' in self.totals:
-            self.totals['aggr'] = []
-        total_aggrs = self.totals['aggr']
-        totals_data = [aggr for aggr in total_aggrs if aggr['scope']=='data']
-        totals_group = [aggr for aggr in total_aggrs if aggr['scope']=='group']
-        for aggr in totals_data:
-            root_node.do_aggr_func(aggr)
-        root_node.groups = self.make_groups(root_node.data,self.groups,self.totals)
-        for aggr in totals_group:
-            root_node.do_aggr_func(aggr)
+        if self.totals:
+            if not 'aggr' in self.totals:
+                self.totals['aggr'] = []
+            total_aggrs = self.totals['aggr']
+            totals_data = [aggr for aggr in total_aggrs if aggr['scope']=='data']
+            totals_group = [aggr for aggr in total_aggrs if aggr['scope']=='group']
+            for aggr in totals_data:
+                root_node.do_aggr_func(aggr)
+            for aggr in totals_group:
+                root_node.do_aggr_func(aggr)
+        if self.groups:
+            root_node.groups = self.make_groups(root_node.data,self.groups,self.totals)
+        else:
+            root_node.groups = []
         self.root_node = root_node
     
     def make_groups(self,data,groups,totals=[]):
@@ -172,8 +180,8 @@ class Report():
             data_list.append(item)
         for group in node.groups:
             data = [set_params({'value':group.value},self.dgroups[group.name])]
-            if 'aggr' in self.dgroups.keys():
-                daggrs = self.fdict(self.dgroups['aggr'])
+            if 'aggr' in self.dgroups[group.name]:
+                daggrs = self.fdict(self.dgroups[group.name]['aggr'])
                 data += get_aggrs(group.aggr_val,daggrs)
             item = {'type':'group',
                     'name':group.name,
@@ -182,16 +190,18 @@ class Report():
             data_list += self.get_group_data(group)
         return data_list
     
-    def as_list(self,node=None):
+    def as_list(self,node=None,header=True):
         
         node = node or self.root_node
+        
         general_list = []
         #Заголовки таблицы
         headers_data = dict(map(lambda x:(x['name'], x['verbose']) if isinstance(x,dict) and x.has_key('verbose') else (x['name'],x['name']) if isinstance(x,dict) else (x,x),self.fields))
         headers_data = get_aggrs(headers_data,self.dfields,self.field_list)
         headers = {'type':'header',
                     'data':headers_data}
-        general_list.append(headers)
+        if header:
+            general_list.append(headers)
         
         #Итоги
         item_totals = {'type':'totals'}
