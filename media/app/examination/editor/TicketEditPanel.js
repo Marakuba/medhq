@@ -147,11 +147,12 @@ App.examination.TicketEditPanel = Ext.extend(Ext.Panel, {
 		
 		config = {
 			layout:'border',
+			type:'ticket-edit-panel',
 			items:[
 				this.ticketPanel,
 				this.glossPanel
-			],
-			tbar:this.ttb
+			]
+//			tbar:this.ttb
 		};
 		
 		Ext.apply(this, Ext.apply(this.initialConfig, config));

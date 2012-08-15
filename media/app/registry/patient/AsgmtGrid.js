@@ -545,6 +545,7 @@ App.patient.AsgmtGrid = Ext.extend(Ext.grid.EditorGridPanel, {
 				card_id:this.card_id,
 				fn: function(asgmttab){
 					this.store.load();
+					this.fireEvent('asgmtcreate');
 					var idList = [];
 					var s = asgmttab.form.preorderGrid.store;
 					s.each(function(rec){
