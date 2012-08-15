@@ -34,6 +34,30 @@ Ext.each(apps, function(app){
 App.ExamCentralPanel = Ext.extend(Ext.Panel, {
 	
 	initComponent: function(){
+		
+		this.staffStore = new Ext.data.RESTStore({
+			autoSave: false,
+			autoLoad : false,
+			apiUrl : get_api_url('staff'),
+			model: App.models.StaffModel
+		});
+		
+		this.genDocButton = new Ext.Button({
+			text:'Пациенты',
+			handler:this.openGenDocApp.createDelegate(this, []),
+			scope:this
+		});
+		
+		this.genDocGroup = new Ext.ButtonGroup({
+	            columns: 2,
+	            hidden:true,
+	            defaults: {
+	                scale: 'medium'
+	            },
+	            items: [this.genDocButton]
+	        }
+	    )
+		
 		this.mainPanel = new App.ExamMainPanel({});
 		
 		this.cmb = new Ext.form.ComboBox({
@@ -167,22 +191,6 @@ App.ExamCentralPanel = Ext.extend(Ext.Panel, {
                 }
                 ]
             },{
-                xtype: 'buttongroup',
-//              title: 'Пациенты',
-              columns: 2,
-              defaults: {
-                  scale: 'small'
-              },
-              items: [{
-                  text: 'Реестр пациентов',
-                  scale:'medium',
-                  iconAlign: 'top',
-                  handler: function(){
-                  	this.launchApp('patientgridpanel');
-                  },
-                  scope:this
-              }]
-          },{
               xtype: 'buttongroup',
 //            title: 'Пациенты',
 	            columns: 2,
@@ -201,24 +209,7 @@ App.ExamCentralPanel = Ext.extend(Ext.Panel, {
                 	},
                     scope:this
                 }]
-	        },{
-              xtype: 'buttongroup',
-//            title: 'Пациенты',
-	            columns: 2,
-	            defaults: {
-	                scale: 'small'
-	            },
-	            items: [{
-                	text:'Лечащий врач',
-                	scale:'medium',
-                	handler:function(){
-                		this.launchApp('gendocpanel',{
-                			closable:true
-                		});
-                	},
-                    scope:this
-                }]
-	        },'->',
+	        },this.genDocGroup,'->',
 	        {
 				xtype:'buttongroup',
 				defaults:{
@@ -256,6 +247,23 @@ App.ExamCentralPanel = Ext.extend(Ext.Panel, {
 		App.eventManager.on('launchapp', this.launchApp, this);
 		App.eventManager.on('closeapp', this.closeApp, this);
 		
+		this.on('afterrender', function(){
+			//Показать кнопку лечащего врача
+			this.staffStore.load({params:{format:'json',id:active_staff},callback:function(records){
+				if (records.length){
+					this.referral = records[0].data.referral;
+					this.referral_type = records[0].data.referral_type;
+				} else {
+					this.referral = null;
+					this.referral_type = null;
+				};
+				if (this.referral_type == 'л'){
+					this.genDocGroup.show();
+				}
+			},scope:this})
+			
+		},this);
+		
 		this.on('destroy', function(){
 		    App.eventManager.un('launchapp', this.launchApp, this);
 			App.eventManager.un('closeapp', this.closeApp, this); 
@@ -277,6 +285,19 @@ App.ExamCentralPanel = Ext.extend(Ext.Panel, {
 			this.closeApp(app)
 		},this)
 		this.mainPanel.setActiveTab(new_app);
+	},
+	
+	openGenDocApp: function(){
+		app_config = {
+			xtype:'gendocpanel',
+			referral:this.referral,
+			referral_type:this.referral_type
+		}
+		var gen_doc_app = this.mainPanel.add(app_config);
+		gen_doc_app.on('close',function(app){
+			this.closeApp(app)
+		},this)
+		this.mainPanel.setActiveTab(gen_doc_app);
 	}
 });
 

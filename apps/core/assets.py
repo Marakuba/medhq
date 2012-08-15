@@ -542,6 +542,8 @@ js_examination = Bundle(
     'app/registry/preorder/PreorderGrid.js',
     'app/registry/preorder/PreorderManager.js',
     
+    'app/registry/patient/ExamCardGrid.js',
+    'app/examination/gendoc/PatientCard.js',
     'app/examination/gendoc/GeneralDoctorPanel.js',
     
     'app/examination/neocard/CardStartPanel.js',

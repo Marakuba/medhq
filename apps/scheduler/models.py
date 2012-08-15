@@ -202,6 +202,8 @@ class Preorder(models.Model):
     price = models.DecimalField(u'Цена', max_digits=10, decimal_places=2, null=True)
     rejection_cause = models.ForeignKey(RejectionCause, null = True, blank = True)
     deleted = models.BooleanField(u'Удалено', default=False)
+    who_deleted = models.ForeignKey(User,verbose_name=u'Кем удалено', related_name='operator_deleted_preorder', blank = True, null=True)
+    deleted_time = models.DateTimeField(u'Время удаления', blank = True, null=True)
     confirmed = models.BooleanField(u'Подтверждено', default=False)
     referral = models.ForeignKey(Referral, null=True, blank=True)
     objects = models.Manager()
@@ -218,6 +220,7 @@ class Preorder(models.Model):
     @transaction.commit_on_success
     def save(self, *args, **kwargs):
         if self.deleted:
+            self.deleted_time = datetime.datetime.now()
             if self.timeslot:
                 self.timeslot.status = u'с' 
                 self.timeslot.save()
@@ -245,7 +248,6 @@ class Preorder(models.Model):
         if self.timeslot:
             self.timeslot.status = u'с' 
             self.timeslot.save()
-        self.deleted = True
         super(Preorder, self).delete(*args, **kwargs) 
     
     def get_discount(self):
