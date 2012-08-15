@@ -517,6 +517,7 @@ App.patient.AsgmtGrid = Ext.extend(Ext.grid.EditorGridPanel, {
     removePreorders : function(records,cause_uri) {
     	var r = [];
     	var s = this.store;
+    	s.autoSave = false;
     	if (this.card_id){
     		Ext.each(records, function(record){
 	    		if(!record.data.visit && !record.data.deleted) {
@@ -524,18 +525,17 @@ App.patient.AsgmtGrid = Ext.extend(Ext.grid.EditorGridPanel, {
 	    		}
 	    	});
     	} else {
-	    	s.autoSave = false;
+	    	
 	    	Ext.each(records, function(record){
 	    		if(!record.data.visit && !record.data.deleted) {
 	    			record.set('deleted',true);
 	    			record.set('rejection_cause',cause_uri);
 	    		}
 	    	});
-	    	
-	    	s.save();
-	    	s.autoSave = true;
 	    	s.load();
-    	}
+    	};
+    	s.save();
+    	s.autoSave = true;
     },
     
     onCreate: function(){

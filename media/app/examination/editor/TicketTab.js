@@ -252,8 +252,10 @@ App.examination.TicketTab = Ext.extend(Ext.Panel, {
 	
 	addStandartServices:function(records){
 		var today = new Date();
+		var s = this.asgmtPanel.store;
+		s.autoSave = false;
 		Ext.each(records,function(rec){
-			var asgmtType = this.asgmtPanel.store.recordType;
+			var asgmtType = s.recordType;
 			var asgmt = new asgmtType({
 				service:rec.data.service, 
 				service_name:rec.data.service_name,
@@ -264,9 +266,11 @@ App.examination.TicketTab = Ext.extend(Ext.Panel, {
 				count:rec.data.avarage || 1,
 				patient:App.getApiUrl('patient',this.patient)
 			});
-			this.asgmtPanel.store.add(asgmt)
+			s.add(asgmt);
 		},this);
-//		this.asgmtPanel.store.save();
+		
+		this.asgmtPanel.store.save();
+		s.autoSave = true;
 		
 	}
 });
