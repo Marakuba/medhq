@@ -154,7 +154,8 @@ App.models.preorderModel = new Ext.data.Record.create([
 	{name: 'deleted'},
 	{name: 'rejection_cause'},
 	{name: 'referral'},
-	{name: 'referral_name'}
+	{name: 'referral_name'},
+	{name: 'confirmed'}
 ]);
 
 App.models.patientModel = new Ext.data.Record.create([

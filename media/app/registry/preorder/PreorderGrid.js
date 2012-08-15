@@ -141,39 +141,39 @@ App.registry.PreorderGrid = Ext.extend(Ext.grid.GridPanel, {
 		this.columns =  [
 		    {
 		    	header: "Пациент", 
-		    	width: 60, 
+		    	width: 100, 
 		    	sortable: true, 
 		    	dataIndex: 'patient_name',
 		    	hidden: this.hasPatient ? true : false
 		    },{
 		    	header: "Услуга", 
-		    	width: 100, 
+		    	width: 250, 
 		    	sortable: true, 
 		    	dataIndex: 'service_name'
 		     },{
 		    	header: "Врач", 
-		    	width: 50, 
+		    	width: 100, 
 		    	sortable: true, 
 		    	dataIndex: 'staff_name'
 		    },{
 		    	header: "Цена", 
-		    	width: 20, 
+		    	width: 50, 
 		    	sortable: true, 
 		    	dataIndex: 'price'
 		    },{
 		    	header: "Место выполнения", 
-		    	width: 40, 
+		    	width: 120, 
 		    	sortable: true, 
 		    	dataIndex: 'execution_place_name'
 		    },{
 		    	header: "Время", 
-		    	width: 35, 
+		    	width: 50, 
 		    	sortable: true, 
 		    	dataIndex: 'start',
 		    	renderer:Ext.util.Format.dateRenderer('H:i / d.m.Y')
 		    },{
 		    	header: "Форма оплаты", 
-		    	width: 25, 
+		    	width: 100, 
 		    	sortable: true, 
 		    	dataIndex: 'ptype_name'
 		    },{
@@ -184,12 +184,12 @@ App.registry.PreorderGrid = Ext.extend(Ext.grid.GridPanel, {
 		    	dataIndex: 'payment_type'
 		    },{
 		    	header: "Телефон", 
-		    	width: 35, 
+		    	width: 100, 
 		    	sortable: false, 
 		    	dataIndex: 'patient_phone'
 		    },{
 		    	header: "Оператор", 
-		    	width: 35, 
+		    	width: 90, 
 		    	sortable: true, 
 		    	dataIndex: 'operator_name'
 		    }
@@ -253,8 +253,8 @@ App.registry.PreorderGrid = Ext.extend(Ext.grid.GridPanel, {
                 	iconCls: 'x-tbar-page-next'
             	}]
         	},
-			viewConfig : {
-				forceFit : true,
+			viewConfig : this.viewConfig || {
+				forceFit : false,
 				showPreview:true,
 				emptyText :this.emptyText,
 				enableRowBody:true,

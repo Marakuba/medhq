@@ -444,6 +444,7 @@ js_calendar = Bundle(
 js_examination = Bundle(
     'extjs/ux/printer/Printer-all.js',
     
+    
     'libs/markdown.js',
     'extjs/ux/progresscolumn/ProgressColumn.js',
     'extjs/ux/RowEditor.js',
@@ -465,6 +466,7 @@ js_examination = Bundle(
     'app/Backend.js',
     'app/form/ClearableComboBox.js',
     'app/form/LazyComboBox.js',
+    'app/registry/preorder/utils.js',
 
     'app/data/RestStore.js',
 

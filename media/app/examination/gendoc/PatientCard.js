@@ -21,7 +21,35 @@ App.examination.PatientCard = Ext.extend(Ext.TabPanel, {
 				doctorMode:true,
 				border:false,
 				referral:this.referral,
-				referral_type:this.referral_type
+				referral_type:this.referral_type,
+				preorderCfg:{
+					viewConfig:{
+						forceFit : false,
+						showPreview:true,
+						emptyText :'Для данного пациента предзаказов нет',
+						enableRowBody:true,
+						getRowClass:function(){
+							return ''
+						}
+					}
+				},
+				assignmentCfg:{
+					viewConfig:{
+						emptyText :'Для данного пациента направлений нет',
+						forceFit : false,
+						showPreview:true,
+						enableRowBody:true,
+						getRowClass:function(record, index, p, store){
+							if (record.data.deleted){
+		            			return 'preorder-other-place-row-body'
+		            		};
+		            		if (record.data.confirmed){
+		            			return 'preorder-visited-row-body'
+		            		}
+		            		return ''
+						}
+					}
+				}
 			}],
 			setActivePatient:function(rec){
 				this.items.each(function(item,i){
