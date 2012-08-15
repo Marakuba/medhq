@@ -28,6 +28,7 @@ class StateGroupAdmin(admin.ModelAdmin):
 
 class ReportAdmin(TreeEditor):
     list_display = ('name','slug','is_active')
+    filter_horizontal = ('groups','users',)
     
 class QueryAdmin(admin.ModelAdmin):
     pass

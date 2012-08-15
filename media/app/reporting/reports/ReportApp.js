@@ -11,8 +11,9 @@ App.reporting.ReportApp = Ext.extend(Ext.Panel, {
     	});
     	
     	this.filtersPanel = new App.reporting.FilterPanel({
-    		region:'center',
+    		region:'east',
     		border:true,
+    		width:550,
  			margins:'5 5 5 0'
     	})
 		
@@ -34,8 +35,7 @@ App.reporting.ReportApp = Ext.extend(Ext.Panel, {
 			collapsible:true,
 			collapseMode:'mini',
 			rootVisible:false,
- 			width:550,
- 			region:'west',
+ 			region:'center',
  			margins:'0 5 0 0',
  			border:false,
 			fn:function(node){
