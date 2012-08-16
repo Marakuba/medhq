@@ -120,9 +120,9 @@ filter: progid:DXImageTransform.Microsoft.gradient( startColorstr='#eeeeee', end
     <td>{{ params.0 }}</td><td class="data">{{ params.1 }}</td></tr>
     {% endfor %}
     </table>
-                
     <br><br>
-{% get_report_as_list report True as results%}
+   
+{% get_report_as_list report False as results%}
 <div class="template-preview">
 <table class="data">
 {% for row in results %}
