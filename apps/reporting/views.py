@@ -54,6 +54,7 @@ def test_print_report(request, slug):
                               {
                                 'name':report_config.name,
                                 'report':report,
+                                'header':1
                               },
                               context_instance=RequestContext(request))
     
