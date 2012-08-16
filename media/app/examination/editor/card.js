@@ -261,6 +261,7 @@ Ext.ux.form.Ticket = Ext.extend(Ext.Panel,{
 			}
 			if(d.private) {
 				this.addClass('private');
+				this.pntMenuItem.setDisabled(true);
 			}
 		}		
 		this.doLayout()
