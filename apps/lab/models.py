@@ -329,7 +329,7 @@ class Result(models.Model):
         if not self.ref_range_text:
             self.ref_range_text = self.analysis.ref_range_text
         if not self.measurement:
-            self.measurement = self.analysis.measurement.name
+            self.measurement = self.analysis.measurement and self.analysis.measurement.name or ''
         super(Result, self).save(*args, **kwargs)
     
     class Meta:
@@ -528,7 +528,8 @@ class EquipmentResult(models.Model):
                         try:
                             result_obj = Result.objects.get(order__visit=visit,
                                                             analysis=self.equipment_task.equipment_assay.equipment_analysis.analysis)
-                            logger.debug(u"LAB: result %s" % result_obj.id)
+                            if __debug__:
+                                logger.debug(u"LAB: result %s" % result_obj.id)
                             if result_obj.value:
                                 result_obj.previous_value = result_obj.value
                             result_obj.value=self.result
@@ -538,14 +539,14 @@ class EquipmentResult(models.Model):
                             self.equipment_task.repeats += 1
                             self.equipment_task.save()
                         except MultipleObjectsReturned:
-                            logger.exception(u"LAB: MultipleObjectsReturned")
+                            logger.exception(u"LAB: MultipleObjectsReturned for specimen %s, analysis: %s" % (visit.barcode.id, self.equipment_task.equipment_assay.equipment_analysis.analysis.name))
                         except ObjectDoesNotExist:
-                            logger.exception(u"LAB: result not found")
+                            logger.exception(u"LAB: result not found for specimen %s, analysis: %s" % (visit.barcode.id, self.equipment_task.equipment_assay.equipment_analysis.analysis.name))
                         except Exception, err:
-                            smart_unicode
-                            logger.exception(u"LAB:Error during result finding")
+                            logger.exception(u"LAB:Error during result finding for specimen %s, analysis: %s" % (visit.barcode.id, self.equipment_task.equipment_assay.equipment_analysis.analysis.name))
             except Exception, err:
-                logger.debug(u"""LAB:Error during eq/task finding: %s SN: %s Name: %s Code: %s Specimen: %s""" % ( err.__unicode__(), self.eq_serial_number, self.assay_name, self.assay_code, self.specimen ) )
+                if __debug__:
+                    logger.debug(u"""LAB:Error during eq/task finding: %s SN: %s Name: %s Code: %s Specimen: %s""" % ( err.__unicode__(), self.eq_serial_number, self.assay_name, self.assay_code, self.specimen ) )
         super(EquipmentResult, self).save(*args, **kwargs)
 
         
