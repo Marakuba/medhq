@@ -233,6 +233,21 @@ App.examination.TicketTab = Ext.extend(Ext.Panel, {
 			autoScroll:true,
 			hasPatient:true,
 			autoHeight: true,
+			viewConfig:{
+				emptyText :'Для данного пациента направлений нет',
+				forceFit : false,
+				showPreview:true,
+				enableRowBody:true,
+				getRowClass:function(record, index, p, store){
+					if (record.data.deleted){
+            			return 'preorder-other-place-row-body'
+            		};
+            		if (record.data.confirmed){
+            			return 'preorder-visited-row-body'
+            		}
+            		return ''
+				}
+			},
 			listeners: {
 				scope:this,
 				asgmtcreate: function(){

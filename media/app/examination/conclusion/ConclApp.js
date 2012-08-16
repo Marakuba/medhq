@@ -20,11 +20,13 @@ App.examination.ConclApp = Ext.extend(Ext.Panel, {
 		this.contentPanel = new Ext.Panel({
 			region:'center',
  			border:true,
+ 			autoScroll:true,
  			margins:'5 5 5 0',
  			layout: 'fit',
 // 			title:'Предпросмотр',
  			defaults:{
- 				border:false
+ 				border:false,
+ 				autoScroll:true
  			},
     		items: [
     		]
@@ -98,7 +100,8 @@ App.examination.ConclApp = Ext.extend(Ext.Panel, {
 	
 	onPreview: function(card_id){
 		var list = new Ext.Panel({
-			autoLoad:String.format('/widget/examination/card/{0}/',card_id)
+			autoLoad:String.format('/widget/examination/card/{0}/',card_id),
+			autoScroll:true
 		});
 		this.contentPanel.removeAll();
 		this.contentPanel.add(list);
