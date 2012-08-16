@@ -1947,7 +1947,7 @@ class PreorderResource(ExtResource):
     
     def obj_update(self, bundle, request=None, **kwargs):
         if bundle.data['deleted']:
-            bundle.data['who_deleted']=request.user
+            kwargs['who_deleted']=request.user
         result = super(PreorderResource, self).obj_update(bundle=bundle, request=request, **kwargs)
         return result
     
