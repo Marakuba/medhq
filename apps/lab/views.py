@@ -448,15 +448,21 @@ def confirm_manual_service(request):
 def clean_value(v):
     if not v:
         return ''
-    if "." in v:
-        return str( round( float(v),2 ) )
-    return str(int(v))
+    try:
+        if "." in v:
+            return str( round( float(v),2 ) )
+        return str(int(v))
+    except:
+        return v
 
 def hem_results(request):
 
     data = simplejson.loads(request.raw_post_data)
-    specimen = data['specimenID']
-    results = Result.objects.filter(order__visit__barcode__id=int(specimen))
+    try:
+        specimen = int(data['specimenID'])
+    except:
+        return HttpResponse('Invalid specimen')
+    results = Result.objects.filter(order__visit__barcode__id=specimen)
     for result in results:
         if result.analysis.code in data:
             result.previous_value = result.value

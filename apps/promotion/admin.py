@@ -8,7 +8,7 @@ from django import forms
 from service.fields import ServiceModelChoiceField
 from service.models import BaseService, ExtendedService
 from django.db.models.expressions import F
-from django.http import HttpResponseRedirect
+from django.http import HttpResponseRedirect, HttpResponseBadRequest
 from django.shortcuts import render_to_response
 from django.template.context import RequestContext
 
@@ -43,9 +43,17 @@ def update_total_price(modeladmin, request, queryset):
         total_price = 0.0
         cfg = {'instance':p}
         for item in p.promotionitem_set.all():
+            try:
+                ext_service = ExtendedService.objects.get(base_service=item.base_service.id,state=item.execution_place)
+            except Exception, err:
+                return HttpResponseBadRequest(u"""
+Комплескная услуга/акция: %s<br>
+Ошибка в определении услуги: %s<br>
+Место выполнения: %s<br>
+Exception: %s
+""" % (p, item.base_service, item.execution_place, err.__unicode__()))
             service_price = item.base_service.price(state=item.execution_place)
             price = service_price*item.count
-            ext_service = ExtendedService.objects.get(base_service=item.base_service.id,state=item.execution_place)
             is_active = ext_service.is_active
             
             items.append({ 'service':item.base_service, 'price':service_price, 'count':item.count, 'is_active': is_active})

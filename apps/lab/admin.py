@@ -173,6 +173,7 @@ class AnalysisAdmin(admin.ModelAdmin):
     exclude = ('input_mask','tube')
     search_fields = ['name',]
     filter_horizontal = ['input_list',]
+    list_display = ('name','code','ref_range_text')
     formfield_overrides = {
         models.ManyToManyField: {'widget': forms.CheckboxSelectMultiple()},
     }
