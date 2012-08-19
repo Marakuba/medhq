@@ -18,7 +18,7 @@ App.equipment.EquipmentAssayGrid = Ext.extend(Ext.grid.EditorGridPanel, {
         ]);
 		
 		this.store = new Ext.data.RESTStore({
-			autoLoad:true,
+			autoLoad:false,
 			model:this.model,
 			apiUrl:App.getApiUrl('equipmentassay')
 		});
@@ -150,6 +150,10 @@ App.equipment.EquipmentAssayGrid = Ext.extend(Ext.grid.EditorGridPanel, {
 
 		Ext.apply(this, Ext.apply(this.initialConfig, config));
 		App.equipment.EquipmentAssayGrid.superclass.initComponent.apply(this, arguments);
+		
+		this.on('afterrender', function(){
+			this.store.load();
+		}, this);
 		
 	},
 	

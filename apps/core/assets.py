@@ -660,6 +660,7 @@ js_laboratory = Bundle(
     'app/laboratory/search/SearchWindow.js',
 
     'app/laboratory/register/RegisterWindow.js',
+    'app/laboratory/register/RegisterApp.js',
 
     'app/laboratory/fields/InputList.js',
 

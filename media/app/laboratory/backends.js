@@ -119,63 +119,6 @@ App.regBackend('labtest', new App.Backend({
 }));
 
 
-
-
-App.models.EquipmentAssay = new Ext.data.Record.create([
-    {name: 'id'},
-    {name: 'resource_uri'},
-    {name: 'equipment'},
-    {name: 'equipment_name'},
-    {name: 'service'},
-    {name: 'service_name'}
-]);
-
-
-App.regBackend('equipmentassay', new App.Backend({
-
-		store:new Ext.data.Store({
-			autoLoad:true,
-			autoSave:true,
-		    baseParams: {
-		    	format:'json'
-		    },
-		    paramNames: {
-			    start : 'offset',
-			    limit : 'limit',
-			    sort : 'sort',
-			    dir : 'dir'
-			},
-		    restful: true,
-		    proxy: new Ext.data.HttpProxy({
-			    url: get_api_url('equipmentassay')
-			}),
-		    reader: new Ext.data.JsonReader({
-			    totalProperty: 'meta.total_count',
-			    successProperty: 'success',
-			    idProperty: 'id',
-			    root: 'objects',
-			    messageProperty: 'message'
-			}, App.models.EquipmentAssay),
-		    writer: new Ext.data.JsonWriter({
-			    encode: false,
-			    writeAllFields: true
-			}),
-		    listeners:{
-		    	exception:function(proxy, type, action, options, response, arg){
-		    	},
-		    	write:function(store, action, result, res, rs){
-		    		if(action=='create') {
-			    		App.eventManager.fireEvent('equipmentassaycreate', rs);
-		    		}
-		    	},
-		    	scope:this
-		    }
-		})	
-	
-}));
-
-
-
 App.models.EquipmentResult = new Ext.data.Record.create([
     {name: 'id'},
     {name: 'resource_uri'},
@@ -189,7 +132,7 @@ App.models.EquipmentResult = new Ext.data.Record.create([
 App.regBackend('equipmentresult', new App.Backend({
 
 		store:new Ext.data.Store({
-			autoLoad:true,
+			autoLoad:false,
 			autoSave:true,
 		    baseParams: {
 		    	format:'json'
@@ -245,7 +188,7 @@ App.models.Equipment = new Ext.data.Record.create([
 App.regBackend('equipment', new App.Backend({
 
 		store:new Ext.data.Store({
-			autoLoad:true,
+			autoLoad:false,
 			autoSave:true,
 		    baseParams: {
 		    	format:'json'
@@ -277,69 +220,6 @@ App.regBackend('equipment', new App.Backend({
 		    	write:function(store, action, result, res, rs){
 		    		if(action=='create') {
 			    		App.eventManager.fireEvent('equipmentcreate', rs);
-		    		}
-		    	},
-		    	scope:this
-		    }
-		})	
-	
-}));
-
-
-
-
-
-App.models.EquipmentTask = new Ext.data.Record.create([
-    {name: 'id'},
-    {name: 'resource_uri'},
-    {name: 'equipment_assay'},
-    {name: 'ordered_service'},
-    {name: 'equipment_name'},
-    {name: 'service_name'},
-    {name: 'patient_name'},
-    {name: 'order'},
-    {name: 'status'},
-    {name: 'status_name'},
-    {name: 'completed', type:'date', format:'c'},
-    {name: 'created', type:'date', format:'c'}
-]);
-
-
-App.regBackend('equipmenttask', new App.Backend({
-
-		store:new Ext.data.Store({
-			autoLoad:true,
-			autoSave:true,
-		    baseParams: {
-		    	format:'json'
-		    },
-		    paramNames: {
-			    start : 'offset',
-			    limit : 'limit',
-			    sort : 'sort',
-			    dir : 'dir'
-			},
-		    restful: true,
-		    proxy: new Ext.data.HttpProxy({
-			    url: get_api_url('equipmenttask')
-			}),
-		    reader: new Ext.data.JsonReader({
-			    totalProperty: 'meta.total_count',
-			    successProperty: 'success',
-			    idProperty: 'id',
-			    root: 'objects',
-			    messageProperty: 'message'
-			}, App.models.EquipmentTask),
-		    writer: new Ext.data.JsonWriter({
-			    encode: false,
-			    writeAllFields: true
-			}),
-		    listeners:{
-		    	exception:function(proxy, type, action, options, response, arg){
-		    	},
-		    	write:function(store, action, result, res, rs){
-		    		if(action=='create') {
-			    		App.eventManager.fireEvent('equipmenttaskcreate', rs);
 		    		}
 		    	},
 		    	scope:this

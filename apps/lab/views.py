@@ -72,7 +72,8 @@ def print_register(request):
                 'order__is_completed',
                 'order__visit__patient__last_name',
                 'order__visit__patient__first_name',
-                'order__visit__patient__mid_name') \
+                'order__visit__patient__mid_name',
+                'order__visit__office__name') \
         .annotate(count=Count('analysis__service__name'))
 
         
@@ -83,7 +84,9 @@ def print_register(request):
                                                                      result['order__visit__patient__mid_name'],\
                                                                      ), 
                                                      result['order__visit__created'].strftime("%d.%m.%Y"),\
-                                                     result['order__is_completed'] ])
+                                                     result['order__is_completed'],
+                                                     result['order__visit__barcode__id'],
+                                                     result['order__visit__office__name'] ])
     result_list = []
     for k in sorted(r.keys()):
         tmp_list = sorted(r[k], key=operator.itemgetter(0))

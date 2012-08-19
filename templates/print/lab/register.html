@@ -1,68 +1,84 @@
-{% extends "print.html" %}
-
-{% load flatblock_tags %}
-
-{% block title %}Реестр исследований{% endblock %}
-
-
-{% block body %}
-
 <style>
-	h1 {
+	#LabRegistry {
+		font-family:'Arial';
+		padding:4px;
+	}
+	 
+	#LabRegistry h1 {
 		font-size:18pt;
 		padding:6pt 0;
 	}
 	
-	table {
+	#LabRegistry table {
+		width:100%;
+		border-collapse: collapse;
+		border-spacing: 0;
 	}
 	
-	td, th {
+	#LabRegistry td, th {
 		border:1px solid gray;
-		padding:1px;
+		padding:1px 3px;
+		font-size:10pt;
 	}
-	th {
+	#LabRegistry th {
 		background-color:#DDD;
 		vertical-align: middle;
 	}
-	td.analysis {
+	#LabRegistry td a {
+		text-decoration: none;
+		color: black;
+	}
+	#LabRegistry td a:hover {
+		text-decoration: underline;
+	}
+	#LabRegistry td.analysis {
 		border:none;
-		padding:5px 1px 3px 1px;
+		padding:8px 1px 3px 1px;
 		font-weight: bold;
 		font-size: 13pt;
 	}
-	td.num {
-		width:1cm;
+	#LabRegistry td.num {
 	}
-	td.date {
-		width:2cm;
+	#LabRegistry td.date {
 		text-align: center;
 	}
-	tr.complete {
+	#LabRegistry tr.complete {
 		background-color: #D3FFC7;
+	}
+	#LabRegistry tr.data:hover {
+		/* background-color: #FAEF7A; */
+		border-top:1px solid #EEE;
+		border-bottom:1px solid #AAA;
 	}
 </style>
 
-<h1>Реестр исследований</h1>
+<div id="LabRegistry">
 
-<table>
-	<tr>
-		<th>№ п/п</th>
-		<th>Исследование / Пациент</th>
-		<th>Дата</th>
-	</tr>
+<!-- <h1>Реестр исследований</h1> -->
+
+<table cellspacing="0" cellpadding="0" border="0">
 	{% for result in result_list %}
 	<tr>
-		<td colspan="3" class="analysis">{{ result.0 }}</td>
+		<td colspan="5" class="analysis">{{ result.0 }}</td>
+	</tr>
+	<tr>
+		<th style="width:40px">№ п/п</th>
+		<th style="width:20px">Дата</th>
+		<th style="width:20px">Заказ</th>
+		<th>Пациент</th>
+		<th style="width:130px">Офис</th>
 	</tr>
 		{% for row in result.1 %}
-		<tr{% if row.2 %} class="complete"{% endif %}>
+		<tr class="data {% if row.2 %}complete{% endif %}">
 			<td class="num">{{ forloop.counter }}</td>
-			<td>{{ row.0 }}</td>
-			<td class="date">{{ row.1 }}</td>
+			<td class="date"><a href="#filter">{{ row.1 }}</a></td>
+			<td class=""><a href="#search">{{ row.3 }}</a></td>
+			<td><a href="#search">{{ row.0 }}</a></td>
+			<td><a href="#filter">{{ row.4 }}</a></td>
 		</tr>
 		{% endfor %}
 	{% endfor %}
 
 </table>
 
-{% endblock %}
+</div>
