@@ -76,6 +76,121 @@ class CardTemplate(models.Model):
     width = models.TextField(u'ширина/шаг', null=True, blank=True)
     contrast_enhancement = models.TextField(u'Контрастное усиление', null=True, blank=True)
     
+    def convertData(self):
+        field_set = FieldSet.objects.all()
+        sections = [fs.name for fs in field_set]
+        fields = [
+            {'section':'anamnesis','tickets':[]},
+            {'section':'diagnosis','tickets':[]},
+            {'section':'complaints','tickets':[]},
+            {'section':'examination','tickets':[]},
+            {'section':'treatment','tickets':[]},
+            {'section':'referral','tickets':[]},
+            {'section':'conclusion','tickets':[]},
+            {'section':'other','tickets':[]}
+        ]
+        
+        def insertToOther(ticket):
+            if not 'other' in sections:
+                FieldSet.objects.create(name='other',order=1000,title=u'Дополнительно')
+                sections.append('other')
+            fields[7]['tickets'].append(ticket)
+                
+        if self.anamnesis:
+            ticket = {'title':u'Общий анамнез','printable':True,'private':False,'text':self.anamnesis}
+            if 'anamnesis' in sections:
+                fields[0]['tickets'].append(ticket)
+            else:
+                insertToOther(ticket)
+                    
+        if self.complaints:
+            ticket = {'title':u'Жалобы','printable':True,'private':False,'text':self.complaints}
+            if 'complaints' in sections:
+                fields[2]['tickets'].append(ticket)
+            else:
+                insertToOther(ticket)
+                    
+        if self.objective_data:
+            ticket = {'title':u'Объективные данные','printable':True,'private':False,'text':self.objective_data}
+            if 'anamnesis' in sections:
+                fields[0]['tickets'].append(ticket)
+            else:
+                insertToOther(ticket)
+                    
+        if self.psycho_status:
+            ticket = {'title':u'Психологический/неврологический статус','printable':True,'private':False,'text':self.psycho_status}
+            if 'anamnesis' in sections:
+                fields[0]['tickets'].append(ticket)
+            else:
+                insertToOther(ticket)
+                    
+        if self.gen_diag:
+            ticket = {'title':u'Основной диагноз','printable':True,'private':False,'text':self.gen_diag}
+            if 'diagnosis' in sections:
+                fields[1]['tickets'].append(ticket)
+            else:
+                insertToOther(ticket)
+                    
+        if self.complication:
+            ticket = {'title':u'Осложнения','printable':True,'private':False,'text':self.complication}
+            if 'complication' in sections:
+                fields[0]['tickets'].append(ticket)
+            else:
+                insertToOther(ticket)
+                    
+        if self.concomitant_diag:
+            ticket = {'title':u'Сопутствующий диагноз','printable':True,'private':False,'text':self.concomitant_diag}
+            if 'diagnosis' in sections:
+                fields[1]['tickets'].append(ticket)
+            else:
+                insertToOther(ticket)
+                    
+        if self.clinical_diag:
+            ticket = {'title':u'Клинический диагноз','printable':True,'private':False,'text':self.clinical_diag}
+            if 'diagnosis' in sections:
+                fields[1]['tickets'].append(ticket)
+            else:
+                insertToOther(ticket)
+                    
+        if self.treatment:
+            ticket = {'title':u'Лечение','printable':True,'private':False,'text':self.treatment}
+            if 'treatment' in sections:
+                fields[4]['tickets'].append(ticket)
+            else:
+                insertToOther(ticket)
+                    
+        if self.referral:
+            ticket = {'title':u'Направление','printable':True,'private':False,'text':self.referral}
+            if 'referral' in sections:
+                fields[5]['tickets'].append(ticket)
+            else:
+                insertToOther(ticket)
+                
+        if self.conclusion:
+            ticket = {'title':u'Заключение','printable':True,'private':False,'text':self.conclusion}
+            if 'conclusion' in sections:
+                fields[6]['tickets'].append(ticket)
+            else:
+                insertToOther(ticket)
+                
+        data = [p for p in fields if p['tickets']]
+        return data
+    
+    def getAttributes(self):
+        attrs = {}
+        data = simplejson.dumps(self.convertData())
+        attrs['data'] = data
+        attrs['name'] = self.name
+        attrs['staff'] = self.staff and self.staff.staff
+        attrs['print_name'] = self.print_name
+        attrs['equipment'] = self.equipment
+        attrs['area'] = self.area
+        attrs['scan_mode'] = self.scan_mode
+        attrs['thickness'] = self.thickness
+        attrs['width'] = self.width
+        attrs['contrast_enhancement'] = self.contrast_enhancement
+        return attrs
+    
     def __unicode__(self):
         return self.name
     
@@ -135,7 +250,10 @@ class ExaminationCard(models.Model):
             {'section':'conclusion','tickets':[]},
             {'section':'other','tickets':[]}
         ]
-        printed_fields = self.comment.split(',')
+        printed_fields = self.comment and self.comment.split(',') or ['anamnesis','disease','complaints','history','objective_data',
+                                                                      'psycho_status','gen_diag','diagnosis','complication',
+                                                                      'clinical_diag','concomitant_diag','treatment','referral',
+                                                                      'conclusion','extra_service']
         
         def insertToOther(ticket):
             if not 'other' in sections:
@@ -252,6 +370,8 @@ class ExaminationCard(models.Model):
         attrs = {}
         data = simplejson.dumps(self.convertData())
         attrs['data'] = data
+        attrs['created'] = self.created
+        attrs['modified'] = self.modified
         attrs['name'] = self.name or self.ordered_service.service.name
         attrs['print_name'] = self.print_name or self.ordered_service.service.name
         attrs['print_date'] = self.print_date

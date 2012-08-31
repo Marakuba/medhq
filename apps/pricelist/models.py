@@ -105,16 +105,16 @@ def get_actual_ptype(m = time.localtime()):
     """
     Возвращает id актуального на текущий момент типа цены PriceType
     """
-    t = cache.get('periods') or build_period_table()
-    r = filter(lambda x:(str(m.tm_hour)+':'+str(m.tm_min) >= x['hour_from']) \
-             and (str(m.tm_hour)+':'+str(m.tm_min) <= x['hour_to']) \
+    table = cache.get('periods') or build_period_table()
+    types = filter(lambda x:((m.tm_hour > 9 and str(m.tm_hour) or ('0'+str(m.tm_hour)))+':'+(str(m.tm_min)>9 and str(m.tm_min) or '0'+str(m.tm_min)) >= x['hour_from']) \
+             and ((m.tm_hour > 9 and str(m.tm_hour) or ('0'+str(m.tm_hour)))+':'+(str(m.tm_min)>9 and str(m.tm_min) or '0'+str(m.tm_min)) <= x['hour_to']) \
              and (x['month_day_from'] <= m.tm_mday) and (x['month_day_to'] >= m.tm_mday) \
              and (m.tm_wday >= x['week_day_from']) and (m.tm_wday <= x['week_day_to']) \
-             and (m.tm_mon >= x['month_from']) and (m.tm_mon <= x['month_to']) ,t)
-    r = sorted(r,key=itemgetter('priority'),reverse=True)
-    if len(r) == 0:
+             and (m.tm_mon >= x['month_from']) and (m.tm_mon <= x['month_to']) ,table)
+    types = sorted(types,key=itemgetter('priority'),reverse=True)
+    if len(types) == 0:
         return False
-    return r[0]['id']
+    return types[0]['id']
     
 PRICE_TYPES = (
     (u'r',u'Розничная'),

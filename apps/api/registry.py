@@ -841,7 +841,7 @@ class ExtendedServiceResource(ModelResource):
         return bundle
     
     class Meta:
-        queryset = ExtendedService.objects.all().select_related()
+        queryset = ExtendedService.objects.filter(is_active=True).select_related()
         resource_name = 'extendedservice'
         always_return_data = True
         filtering = {
