@@ -378,22 +378,22 @@ def get_service_tree(request):
     # если отсутствует кэш, то начинаем построение дерева услуг    
     if not _cached_tree:
 
-        args = dict(extended_service__is_active=True, 
+        price_args = dict(extended_service__is_active=True, 
                     payment_type=payment_type,
                     price_type='r',
                     on_date__lte=on_date)
         if staff:
-            args['extended_service__staff']=staff
+            price_args['extended_service__staff']=staff.position_set.all()
         if state:
-            args['extended_service__branches']=state
+            price_args['extended_service__branches']=state
         if payer:
-            args['payer'] = payer.id
+            price_args['payer'] = payer.id
         else:
-            args['payer__isnull'] = True
-        args['type'] = p_type_id
+            price_args['payer__isnull'] = True
+        price_args['type'] = p_type_id
     
         nodes = []
-        values = Price.objects.filter(**args).\
+        values = Price.objects.filter(**price_args).\
             order_by('extended_service__id','on_date').\
             values('on_date','extended_service__id','extended_service__state__id','extended_service__staff__id','value','extended_service__base_service__id').\
             annotate(Max('on_date'))

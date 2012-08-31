@@ -36,7 +36,7 @@ App.calendar.ServiceChoiceGrid = Ext.extend(Ext.grid.GridPanel, {
 		    	sortable: true, 
 		    	dataIndex: 'price',
 		    	renderer: function(val, meta, record) {
-		    		if (val == 0 || !record.data.is_active){
+		    		if (!record.data.is_active || val == 0){
 		    			return 'услуга не оказывается'
 		    		} else {
 		    			return val

@@ -353,6 +353,8 @@ App.examination.TemplateBody = Ext.extend(Ext.TabPanel, {
 	},
 	
 	openEquipTab: function(record){
+		//TODO:при открытии вкладки проверять запись на наличие соотв. данных
+		//на тот случай, если оборудование не указано, но остальные поля все равно заполнены
 		if (!this.equipTab){
 			this.equipTab = this.newEquipTab();
 			this.add(this.equipTab);

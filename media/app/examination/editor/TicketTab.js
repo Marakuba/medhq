@@ -149,7 +149,7 @@ App.examination.TicketTab = Ext.extend(Ext.Panel, {
 					},
 					pos:ticket.pos,
 					section:section.section,
-					order:this.sectionPlan[section.section].order
+					order:this.sectionPlan[section.section] && this.sectionPlan[section.section].order || 0
 				});
 				//вставляем тикет на свое место согласно позиции pos
 				if(new_ticket.pos){
@@ -209,7 +209,7 @@ App.examination.TicketTab = Ext.extend(Ext.Panel, {
 					}
 					inserted = true;
 				} else {
-					if (item[paramName] > ticket[paramName]){
+					if (item[paramName] >= ticket[paramName]){
 						this.portalColumn.insert(ind,ticket);
 						inserted = true;
 					}
