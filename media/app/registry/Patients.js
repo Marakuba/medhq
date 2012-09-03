@@ -159,7 +159,7 @@ App.Patients = Ext.extend(Ext.Panel, {
 	
 	onPatientLoad : function(store,r,options){
 		if(this.changeTitle){
-			this.setTitle(String.format('{0} ({1})', this.origTitle, r.length));
+			this.setTitle(String.format('{0} ({1})', this.origTitle, store.getTotalCount()));
 		}
 	},
 	

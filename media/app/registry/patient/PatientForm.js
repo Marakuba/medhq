@@ -187,11 +187,14 @@ App.patient.PatientForm = Ext.extend(Ext.form.FormPanel, {
                     	fieldLabel: 'Дата рождения',
                     	allowBlank:false
 					},{
-						xtype:'textfield',
-						name:'mobile_phone',
-                    	fieldLabel: 'Телефон',
-                    	allowBlank:false,
-                    	value:''
+						xtype:'numberfield',
+					    id: 'mobile_phone',
+					     fieldLabel: 'Телефон',
+					     allowBlank:false,
+					     value:'',
+					     maxLength: 15, // for validation
+					     autoCreate: {tag: 'input', type: 'text', size: '20', autocomplete:
+						'off', maxlength: '15',value:''} 
 					},{
 						xtype:'radiogroup',
 						fieldLabel: 'Пол',

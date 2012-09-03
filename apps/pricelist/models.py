@@ -107,12 +107,12 @@ def get_actual_ptype(m = None):
     """
     m = m or datetime.datetime.now()
     t = cache.get('periods') or build_period_table()
-    now = "%02d:%02d" % (m.tm_hour, m.tm_min)
+    now = "%02d:%02d" % (m.hour, m.minute)
     r = filter(lambda x:(now >= x['hour_from']) \
              and (now <= x['hour_to']) \
-             and (x['month_day_from'] <= m.tm_mday) and (x['month_day_to'] >= m.tm_mday) \
-             and (m.tm_wday >= x['week_day_from']) and (m.tm_wday <= x['week_day_to']) \
-             and (m.tm_mon >= x['month_from']) and (m.tm_mon <= x['month_to']) ,t)
+             and (x['month_day_from'] <= m.day) and (x['month_day_to'] >= m.day) \
+             and (m.weekday >= x['week_day_from']) and (m.weekday <= x['week_day_to']) \
+             and (m.month >= x['month_from']) and (m.month <= x['month_to']) ,t)
     r = sorted(r,key=itemgetter('priority'),reverse=True)
     if len(r) == 0:
         return False

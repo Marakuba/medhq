@@ -139,6 +139,9 @@ js_registry = Bundle(
     'app/registry/insurance/StateGrid.js',
     'app/registry/insurance/StateWindow.js',
     
+    'app/choices/staff/StaffChoiceGrid.js',
+    'app/choices/staff/StaffChoiceWindow.js',
+    
     'app/registry/preorder/utils.js',
     'app/registry/preorder/PatientPreorderGrid.js',
     'app/registry/preorder/PreorderGrid.js',

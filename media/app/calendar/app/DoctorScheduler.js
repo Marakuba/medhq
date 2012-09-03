@@ -496,8 +496,8 @@ Ext.calendar.DoctorScheduler = Ext.extend(Ext.Panel, {
     },
     
     setTimeToDate: function(value,dt) {
-		dt.setHours(value.substring(0,2));
-		dt.setMinutes(value.substring(3,5));
+		dt.setHours(value.substring ? value.substring(0,2) : value);
+		dt.setMinutes(value.substring ? value.substring(3,5) : 0);
         dt.setSeconds(0);
         return dt;
     },
@@ -547,7 +547,7 @@ Ext.calendar.DoctorScheduler = Ext.extend(Ext.Panel, {
                 break;
             default: 
             	start = undefined;
-                start = undefined;
+                end = undefined;
                 break;
         };
             
@@ -581,13 +581,12 @@ Ext.calendar.DoctorScheduler = Ext.extend(Ext.Panel, {
         if (start) {
         	start = this.setTimeToDate(start,new Date(dt));
         } else {
-        	start = new Date();
+        	start = this.setTimeToDate(this.startHour,new Date(dt));
         };
         if (end) {
         	end = this.setTimeToDate(end,new Date(dt));
         } else {
-        	end = new Date();
-            end.add('h',1);
+        	end = this.setTimeToDate(this.endHour,new Date(dt));
         };
                        			
         if (isWorking) {

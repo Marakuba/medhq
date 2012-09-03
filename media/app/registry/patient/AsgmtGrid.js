@@ -1,4 +1,4 @@
-Ext.ns('App.patient', 'App.preorder', 'App.assignment');
+Ext.ns('App.patient', 'App.preorder', 'App.assignment','App.choices');
 
 App.patient.AsgmtGrid = Ext.extend(Ext.grid.EditorGridPanel, {
 
@@ -94,6 +94,53 @@ App.patient.AsgmtGrid = Ext.extend(Ext.grid.EditorGridPanel, {
 			scope:this
 		});
 		
+		this.staffStore = new Ext.data.RESTStore({
+			autoLoad : false,
+			autoSave : true,
+			apiUrl : get_api_url('position'),
+			model: [
+				    {name: 'id'},
+				    {name: 'resource_uri'},
+				    {name: 'first_name', allowBlank: false},
+				    {name: 'mid_name'},
+				    {name: 'short_name'},
+				    {name: 'last_name', allowBlank: false},
+				    {name: 'gender', allowBlank: false},
+				    {name: 'mobile_phone'},
+				    {name: 'home_address_street'},
+				    {name: 'email'},
+				    {name: 'birth_day', allowBlank: false, type:'date'},
+				    {name: 'name'},
+				    {name: 'title'},
+				    {name: 'department'}
+				]
+		});
+		
+		this.StaffCombo = new Ext.form.LazyClearableComboBox({
+        	fieldLabel:'Врач',
+        	hidden:this.card_id,
+        	name: 'staff__staff',
+			anchor:'98%',
+			hideTrigger:false,
+        	store:this.staffStore,
+		    displayField: 'name',
+		    valueField: 'id',
+		    listeners:{
+		    	'render': function(f){
+		    		var el = f.getEl()
+		    		el.on('click',this.onChoice.createDelegate(this,['Staff']),this)
+		    	},
+		    	'select':function(combo,record,index){
+		    	},
+		    	'clearclick':function(){
+		    		delete this.store.baseParams['timeslot__cid'];
+		    		this.store.load();
+		    	},
+		    	scope:this
+		    },
+		    onTriggerClick:this.onChoice.createDelegate(this,['Staff'])
+		});
+		
 		this.ttb = new Ext.Toolbar({
 			items:[this.createButton,'-',
 				this.visitButton, this.clearButton, this.setTimeButton,this.confirmButton,'-',
@@ -103,7 +150,7 @@ App.patient.AsgmtGrid = Ext.extend(Ext.grid.EditorGridPanel, {
 						Ext.ux.Printer.print(this);
 					},
 					scope:this
-			},'-',this.updatingStoreCheck,'->']
+			},'-',this.updatingStoreCheck,'->','Врач:',this.StaffCombo]
 		});
 
 		this.medstateStore.on('load',function(store,records){
@@ -744,7 +791,26 @@ App.patient.AsgmtGrid = Ext.extend(Ext.grid.EditorGridPanel, {
 		this.store.save();
 		this.store.autoSave = true;
 		this.store.load();
-	}
+	},
+	
+	onChoice: function(type,source) {
+    	if (!type) return false;
+    	if (!source) source = type;
+    	var name = type+'ChoiceWindow';
+        var win = new App.choices[type+'ChoiceWindow']({
+       		scope:this,
+       		fn:function(record){
+       			if (!record){
+       				return 0;
+       			}
+       			this[source+'Combo'].forceValue(record.data.id);
+       			this.store.setBaseParam('timeslot__cid',record.data.id);
+       			this.store.load();
+				win.close();
+			}
+       	 });
+       	win.show();
+    }
 	
 	
 });

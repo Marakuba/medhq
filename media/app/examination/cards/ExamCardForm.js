@@ -118,7 +118,7 @@ App.examination.ExamCardForm = Ext.extend(Ext.form.FormPanel, {
 			valueField:'resource_uri',
 			queryParam : 'staff__last_name__istartswith',
 			store:new Ext.data.RESTStore({
-				autoLoad : true,
+				autoLoad : false,
 				apiUrl : get_api_url('position'),
 				model: ['id','name','resource_uri']
 			}),

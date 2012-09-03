@@ -237,7 +237,7 @@ App.investigation.InvestigationGrid = Ext.extend(Ext.grid.GridPanel, {
 		this.store.load({
 			callback:function(r){
 				if(this.changeTitle){
-					this.setTitle(String.format('{0} ({1})', this.origTitle, r.length));
+					this.setTitle(String.format('{0} ({1})', this.origTitle, store.getTotalCount()));
 				}
 			},
 			scope:this
