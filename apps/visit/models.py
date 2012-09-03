@@ -26,6 +26,7 @@ from constance import config
 from django.contrib.contenttypes import generic
 from remoting.models import TransactionItem, SyncObject
 from service.exceptions import TubeIsNoneException
+from lab.widgets import get_widget
 #from scheduler.models import Preorder
 
 REFERRAL_TYPES = (
@@ -331,51 +332,66 @@ class OrderedService(make_operator_object('ordered_service')):
             ext_service = self.service.extendedservice_set.get(state=self.execution_place)
         except ObjectDoesNotExist:
             raise Exception(u'Для услуги <strong>%s</strong> не найдено место выполнения <strong>%s</strong>' % (s, self.execution_place))
-
-        if s.is_lab():
-            
-            save_lab_order = False
-            
-            if ext_service.tube is None:
-                raise TubeIsNoneException( u"В расширенной услуге <strong>'%s'</strong> для организации <strong>%s</strong> не указан тип пробирки" % 
-                                           (ext_service.base_service.name, ext_service.state) )
-            
-            sampling, created = Sampling.objects.get_or_create(visit=visit,
-                                                               laboratory=self.execution_place,
-                                                               is_barcode=ext_service.is_manual,
-                                                               tube=ext_service.tube)
+        try:
+            lab_service = s.labservice
+        except:
+            return
+        
+        save_lab_order = False
+        
+        if ext_service.tube is None:
+            raise TubeIsNoneException( u"В расширенной услуге <strong>'%s'</strong> для организации <strong>%s</strong> не указан тип пробирки" % 
+                                       (ext_service.base_service.name, ext_service.state) )
+        
+        sampling, created = Sampling.objects.get_or_create(visit=visit,
+                                                           laboratory=self.execution_place,
+                                                           is_barcode=ext_service.is_manual,
+                                                           tube=ext_service.tube)
+        is_manual = lab_service.is_manual
+        if is_manual:
+            lab_order = LabOrder.objects.create(visit=visit,  
+                                                       laboratory=self.execution_place,
+                                                       lab_group=s.lab_group,
+                                                       widget=lab_service.widget,
+                                                       is_manual=is_manual)
+        else:
             lab_order, created = LabOrder.objects.get_or_create(visit=visit,  
                                                        laboratory=self.execution_place,
                                                        lab_group=s.lab_group,
-                                                       is_manual=s.is_manual())
-                
-            for analysis in self.service.analysis_set.all():
-                result, created = Result.objects.get_or_create(order=lab_order,
-                                                               analysis=analysis, 
-                                                               sample=sampling)
-                if created:
-                    save_lab_order = True
-                    lab_order.is_completed = False
-                    
-                try:
-                    eq_analysis = analysis.equipmentanalysis
-                    ### Generating AssayTask
-                    
-                    assays = eq_analysis.equipmentassay_set.filter(is_active=True)
-                    for assay in assays:
-                        EquipmentTask.objects.get_or_create(equipment_assay=assay, ordered_service=self)
-                except:
-                    pass
-                
-            if save_lab_order:
-                lab_order.save()
-    
-            if sampling:
-                self.sampling = sampling
+                                                       widget=lab_service.widget,
+                                                       is_manual=is_manual)
             
-            if self.status==u'т':
-                self.status = u'л'    
-            self.save()
+        for analysis in self.service.analysis_set.all():
+            result, created = Result.objects.get_or_create(order=lab_order,
+                                                           analysis=analysis, 
+                                                           sample=sampling)
+            if created:
+                save_lab_order = True
+                lab_order.is_completed = False
+                
+            try:
+                eq_analysis = analysis.equipmentanalysis
+                ### Generating AssayTask
+                
+                assays = eq_analysis.equipmentassay_set.filter(is_active=True)
+                for assay in assays:
+                    EquipmentTask.objects.get_or_create(equipment_assay=assay, ordered_service=self)
+            except:
+                pass
+        
+        widget = get_widget(lab_service.widget)()
+        
+        widget.process_results(lab_order.result_set.all())
+            
+        if save_lab_order:
+            lab_order.save()
+
+        if sampling:
+            self.sampling = sampling
+        
+        if self.status==u'т':
+            self.status = u'л'    
+        self.save()
             
                 
     def get_absolute_url(self):

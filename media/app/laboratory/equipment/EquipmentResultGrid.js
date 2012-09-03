@@ -69,6 +69,10 @@ App.equipment.EquipmentResultGrid = Ext.extend(Ext.grid.GridPanel, {
 		Ext.apply(this, Ext.apply(this.initialConfig, config));
 		App.equipment.EquipmentResultGrid.superclass.initComponent.apply(this, arguments);
 		
+		this.on('afterrender', function(){
+			this.store.load();
+		},this);
+		
 	},
 	
 	onAdd: function() {

@@ -1,0 +1,29 @@
+{% extends "print/base.html" %}
+
+{% block head %}
+{% endblock %}
+
+{% block header %}
+<style>
+	td.comment {
+		text-align:left;
+		font-style:italic;
+		border-top:none;
+	}
+	td.with-comment {
+		border-bottom:1px dotted;
+	}
+</style>
+{% endblock %}
+
+{% block body %}
+<div id="print-box">
+	<a href="javascript:window.print();">Печать</a>
+</div>
+
+<div class="page_wrapper_A4_{% block orientation %}{% endblock %}">
+	<div class="page_wrapper">
+		{% block content %}{% endblock %}
+	</div>
+</div>
+{% endblock %}

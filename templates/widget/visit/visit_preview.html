@@ -154,7 +154,7 @@
 		<td class="name">Дата оформления:</td><td class="bold">{{ visit.created|date:"d.m.Y" }}</td>
 	</tr>
 	<tr>
-		<td class="name">Номер визита:</td><td class="bold">{{ visit.barcode.id}}</td>
+		<td class="name">Номер визита / образец:</td><td class="bold">{{ visit.barcode.id}} / {{ visit.specimen}}</td>
 	</tr>
 	<tr>
 		<td class="name">Номер договора:</td><td class="bold">{{ visit.contract.id }}</td>

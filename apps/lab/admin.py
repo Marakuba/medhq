@@ -12,6 +12,7 @@ from django.conf import settings
 from django.utils.encoding import smart_unicode
 from lab.fields import EqAnlModelChoiceField
 from django.http import HttpResponseRedirect
+from remoting.utils import update_result_feed
 
 class LabServiceInline(admin.TabularInline):
     """
@@ -49,6 +50,28 @@ actions.short_description = u'Действия'
 actions.allow_tags = True
 
 
+def update_specimen_action(modeladmin, request, queryset):
+    """
+    """
+    states = {}
+    for obj in queryset:
+        try:
+            state = obj.laboratory.remotestate
+            k = state.secret_key
+            if k not in states:
+                states[k] = []
+        except Exception, err:
+            print err
+            continue
+        specimen = obj.visit.specimen
+        if specimen not in states[k]:
+            states[k].append(specimen)
+    
+    for secret_key,specimens in states.iteritems():
+        update_result_feed(state_key=secret_key, specimens=specimens)
+        
+update_specimen_action.short_description = u"Загрузить результаты"
+
 class LabOrderAdmin(admin.ModelAdmin):
     
     readonly_fields = ('laboratory',)
@@ -58,6 +81,7 @@ class LabOrderAdmin(admin.ModelAdmin):
     list_filter = ('laboratory','is_completed','lab_group')
     date_hierarchy = 'created'
     inlines = [ResultInline]
+    actions = [update_specimen_action]
     search_fields = ['visit__barcode__id','visit__patient__last_name']
     
     def visit_id(self, obj):

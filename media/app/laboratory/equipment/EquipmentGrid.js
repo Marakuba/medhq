@@ -73,6 +73,9 @@ App.equipment.EquipmentGrid = Ext.extend(Ext.grid.EditorGridPanel, {
 		Ext.apply(this, Ext.apply(this.initialConfig, config));
 		App.equipment.EquipmentGrid.superclass.initComponent.apply(this, arguments);
 		
+		this.on('afterrender', function(){
+			this.store.load();
+		},this);
 	},
 	
 	onAdd: function() {

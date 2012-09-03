@@ -29,7 +29,32 @@ App.result.ResultCard = Ext.extend(Ext.Panel, {
 				nullFormatter: function(v) 
 		    		{ return v ? v : 'не указано'; }
 			}
-		),
+		);
+		
+		this.warnTpl = new Ext.XTemplate(
+			'<tpl if="wholes.length">',
+			'Данная операция приведет к удалению всех тестов, т.к. нет ни одного отвалидированного значения в следующих исследованиях:',
+				'<tpl for="wholes">',
+					'<br>{#}. {.}',
+					'</tpl>',
+				'<br><br>',
+			'</tpl>',
+			'<tpl if="singles.length">',
+			'Следующие тесты не могут быть удалены и <b>должны быть валидированы</b>:',
+				'<tpl for="singles">',
+					'<br>{#}. {analysis_name}',
+					'</tpl>',
+				'<br><br>',
+			'</tpl>',
+			'<tpl if="un.length">',
+			'Внимание, данная операция приведет к <b>удалению</b> всех тестов, которые не были помечены как отвалидированные: ',
+				'<tpl for="un">',
+					'<br>{#}. {analysis_name}',
+				'</tpl>',
+				'<br><br>',
+			'</tpl>',
+			'<tpl if="confirm">Продолжить?</tpl>'
+		);
 		
 		this.dateField = new Ext.form.DateField({
 			emptyText:'дата',
@@ -103,33 +128,7 @@ App.result.ResultCard = Ext.extend(Ext.Panel, {
 				},this.printBtn,'-',{
 					iconCls:'silk-accept',
 					text:'Подтвердить',
-					handler: function(){
-						if(this.labOrderRecord){
-							this.saveSDT(this.labOrderRecord);
-						}
-						var un = [];
-						var records = [];
-						var q = this.ResultGrid.store.queryBy(function(record,id){
-							return record.data.validation == 0;
-						});
-						q.each(function(rec,i){
-							un.push(rec.data);
-							records.push(rec);
-						},this);		
-						if(un.length){
-							Ext.MessageBox.confirm('Предупреждение!',
-								new Ext.XTemplate('Внимание, данная операция приведет к удалению всех тестов, которые не были помечены как отвалидированные: ',
-								'<tpl for="."><br>{#}. {analysis_name}</tpl><br><br>',
-								'Продолжить?').apply(un),
-								function(btn){
-									if(btn=='yes') {
-										this.confirm();
-									}
-							}, this);
-						} else {
-							this.confirm();
-						}
-					},
+					handler: this.onSubmit.createDelegate(this),
 					scope:this
 				},'->',{
 //					text:'Восстановить',
@@ -162,18 +161,11 @@ App.result.ResultCard = Ext.extend(Ext.Panel, {
 				}]
 		}); 
 		
-		this.ResultGrid = new App.result.ResultGrid({
-			id:'lab-result-grid',
-			closable:false
-		});
-		this.ResultComment = new Ext.form.FormPanel({
-			layout:'fit',
-			title:'Комментарий',
-			padding:5,
-			items:[{
-				xtype:'htmleditor',
-				name:'comment'
-			}]
+		this.tab = new Ext.TabPanel({
+			border:false,
+			tabPosition:'bottom',
+			activeTab:0,
+			items:[]
 		});
 		
 		config = {
@@ -187,12 +179,7 @@ App.result.ResultCard = Ext.extend(Ext.Panel, {
 				scope:this,
 				qtip:'Посмотреть информацию о пациенте'
 			}],
-			items:new Ext.TabPanel({
-				border:false,
-				tabPosition:'bottom',
-				activeTab:0,
-				items:[this.ResultGrid,this.ResultComment]
-			})
+			items:this.tab
 		}
 		
 		Ext.apply(this, Ext.apply(this.initialConfig, config));
@@ -200,8 +187,83 @@ App.result.ResultCard = Ext.extend(Ext.Panel, {
 
 	},
 	
+	onSubmit : function(){
+		if(this.labOrderRecord){
+			this.saveSDT(this.labOrderRecord);
+		}
+		var un = [];
+		var services = {};
+		var singles = [];
+		var records = [];
+		var wholes = []
+		var all = this.ResultGrid.store.getCount();
+		var q = this.ResultGrid.store.queryBy(function(record,id){
+			return !record.data.is_group;
+		});
+		q.each(function(rec,i){
+			if(!services[rec.data.service_name]){
+				services[rec.data.service_name] = { y:[], n:[] };
+			}
+			if(rec.data.validation === 0) {
+				services[rec.data.service_name]['n'].push(rec.data);
+			} else if (rec.data.validation === 1) {
+				services[rec.data.service_name]['y'].push(rec.data);
+			}
+		},this);
+		for(s in services){
+			tests = services[s];
+			if(!tests.y.length && tests.n.length==1) {
+				singles.push(tests.n[0]);
+			} else if(!tests.y.length && tests.n.length>1) {
+				wholes.push(s);
+			} else {
+				un = un.concat(tests.n);
+			}
+		}
+		if(wholes.length || singles.length) {
+			Ext.MessageBox.alert('Ошибка!',this.warnTpl.apply({ wholes:wholes, un:[], singles:singles, confirm:false }));
+			return
+		}
+//		if(!un.length && singles.length) {
+//			Ext.MessageBox.alert('Ошибка!',this.warnTpl.apply({ wholes:wholes, un:un, singles:singles, confirm:false }));
+//			return
+//		}
+		if(un.length){
+			Ext.MessageBox.maxWidth = 700;
+			Ext.MessageBox.confirm('Предупреждение!',
+				this.warnTpl.apply({ wholes:wholes, un:un, singles:singles, confirm:true }),
+				function(btn){
+					if(btn=='yes') {
+						this.confirm();
+					}
+			}, this);
+		} else {
+			this.confirm();
+		}
+	},
+	
 	setActiveRecord: function(rec) {
+		this.tab.removeAll();
+		this.ResultComment = new Ext.form.FormPanel({
+			layout:'fit',
+			title:'Комментарий',
+			padding:5,
+			items:[{
+				xtype:'htmleditor',
+				name:'comment'
+			}]
+		});
 		this.labOrderRecord = rec;
+		var xtype = rec.data.widget+'widget';
+		console.info(xtype);
+		var id = rec.data.widget+'result';
+		this.tab.add({
+			xtype:xtype,
+			id:id,
+			closable:false
+		});
+		this.tab.setActiveTab(0);
+		this.tab.add(this.ResultComment);
 		var d = rec.data;
 		if(d.staff) {
 			this.staffField.setValue(d.staff);
@@ -215,8 +277,13 @@ App.result.ResultCard = Ext.extend(Ext.Panel, {
 		this.timeField.setValue(d.executed);
 		this.setTitle(String.format('Результаты: {0}, {2} &nbsp;&nbsp;&nbsp; {1}', 
 				rec.data.patient_name, rec.data.info, rec.data.patient_age));
-		this.ResultGrid.setActiveRecord(rec);
-		this.items.itemAt(0).setActiveTab(0);
+//		this.ResultGrid.setActiveRecord(rec);
+		this.tab.items.each(function(item){
+			if(item.setActiveRecord) {
+				item.setActiveRecord(rec);
+			}
+		});
+//		this.items.itemAt(0).setActiveTab(0);
 		this.ResultComment.getForm().findField('comment').setValue(rec.data.comment);
 	},
 	
@@ -270,6 +337,8 @@ App.result.ResultCard = Ext.extend(Ext.Panel, {
 			        alignment: "tr-tr",
 			        offset: [-10, 10]
 			    })
+			} else {
+				Ext.MessageBox.alert('Ошибка!', r.message);
 			}
 		}, this);
 		

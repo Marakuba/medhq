@@ -87,8 +87,9 @@ App.CentralPanel = Ext.extend(Ext.Panel, {
                     scale:'medium',
                     iconAlign: 'top',
                     handler: function(){
-                    	var win = new App.laboratory.RegisterWindow({});
-                    	win.show(this.getEl());
+                    	this.launchApp('labregisterapp');
+//                    	var win = new App.laboratory.RegisterWindow({});
+//                    	win.show(this.getEl());
                     },
                     scope:this
                 }]
@@ -107,15 +108,15 @@ App.CentralPanel = Ext.extend(Ext.Panel, {
                     	this.launchApp('equipmenttaskgrid');
                     },
                     scope:this            	
-                }/*,{
-            		text:'Результаты',
+                },{
+            		text:'Загрузка результатов',
             		scale:'medium',
                     handler: function(){
-                    	this.launchApp('equipmentresultgrid');
+                    	this.launchApp('labresultloaderapp');
                     },
                     scope:this            	
-                }*/,{
-					text:'Дубликат штрих-кода',
+                },{
+					text:'Дубликат ш/к',
 					tooltip:'Печать дубликата',
 					handler:function(btn){
 						var win = new App.barcodepackage.DuplicateWindow();
@@ -214,7 +215,8 @@ App.CentralPanel = Ext.extend(Ext.Panel, {
 	launchApp: function(appId,config,active) {
         var app_config = {
             xtype:appId,
-            searchValue: this.searchValue
+            searchValue: this.searchValue,
+            centralPanel : this
         };
         config = config || {};
 		Ext.apply(app_config, config);

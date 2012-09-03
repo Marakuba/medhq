@@ -1,6 +1,6 @@
 Ext.ns('App.result');
 
-App.result.ResultGrid = Ext.extend(Ext.grid.EditorGridPanel, {
+App.result.BasePlain = Ext.extend(Ext.grid.EditorGridPanel, {
 
 	initComponent : function() {
 		
@@ -286,8 +286,7 @@ App.result.ResultGrid = Ext.extend(Ext.grid.EditorGridPanel, {
 		}
 
 		Ext.apply(this, Ext.apply(this.initialConfig, config));
-		App.result.ResultGrid.superclass.initComponent.apply(this, arguments);
-		App.eventManager.on('globalsearch', this.onGlobalSearch, this);
+		App.result.BasePlain.superclass.initComponent.apply(this, arguments);
 		
 		this.on('afterrender', function(){
 			new Ext.KeyMap(this.getEl(), {
@@ -367,10 +366,6 @@ App.result.ResultGrid = Ext.extend(Ext.grid.EditorGridPanel, {
 //		this.enable();
 	},
 	
-	onGlobalSearch: function(v) {
-//		this.disable();
-	},
-	
 	storeFilter: function(field, value){
 		if(value===undefined) {
 			delete this.store.baseParams[field]
@@ -388,4 +383,4 @@ App.result.ResultGrid = Ext.extend(Ext.grid.EditorGridPanel, {
 
 
 
-Ext.reg('resultgrid',App.result.ResultGrid);
+Ext.reg('baseplainwidget',App.result.BasePlain);

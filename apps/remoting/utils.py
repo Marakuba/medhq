@@ -2,7 +2,7 @@
 
 """
 """
-from remoting.models import SyncObject
+from remoting.models import SyncObject, RemoteState
 from patient.models import Patient
 from state.models import State
 from visit.models import Visit, OrderedService
@@ -12,6 +12,12 @@ from remoting.exceptions import ServiceDoesNotExist
 from django.core.exceptions import ObjectDoesNotExist, MultipleObjectsReturned
 from lab.models import Result, LabOrder, Measurement
 import logging
+import time
+import datetime
+from urllib import urlencode
+import httplib2
+import simplejson
+from simplejson.decoder import JSONDecodeError
 
 logger = logging.getLogger('remoting')
 
@@ -146,7 +152,7 @@ def get_ordered_service(request, data):
     return ordered_service, created
 
 
-def get_result(request, data):
+def get_result(data, request=None):
     specimen_id = data['visit']['specimen_id']
     code = data['order']['code']
     r = data['result']
@@ -203,3 +209,163 @@ def try_confirm(specimen_id, services):
     
     for lo in laborders:
         lo.confirm_results(autoclean=False)
+
+
+####
+
+
+def post_orders_to_local(data_set, options, request=None):
+    result = []
+    for data in data_set:
+        success = True
+        specimen_id = data['visit']['specimen']
+        
+        try:
+            ord_service, created = get_ordered_service(request, data)
+            status = created and u'успешно размещен' or u'уже был добавлен ранее'
+            msg = u'Заказ "%s" для образца №%s %s' % (ord_service.service,specimen_id,status)
+        except Exception, err:
+            msg = err.__unicode__()
+            logger.exception(u"Ошибка при размещении заказа: %s - %s" % (specimen_id,msg) )
+            success = False
+            
+        result.append({
+            'order':specimen_id,
+            'service':data['order']['code'],
+            'success': success,
+            'message':msg
+        })
+
+    return result
+
+def post_results_to_local(data_set, options, request=None):
+
+    result = []
+    ts = True
+    for data in data_set:
+        success = True
+        specimen_id = data['visit']['specimen_id']
+        name = data['result']['name']
+        msg = u'Результат %s (%s) принят' % (data['result']['name'], specimen_id)
+        
+        try:
+            res = get_result(data, request=request)
+            if __debug__:
+                logger.debug(u"Результат анализов успешно сохранен: %s/%s" % (name,specimen_id) )
+        except Exception, err:
+            msg = err.__unicode__()
+            logger.exception(u"Ошибка при получении результата: %s/%s - %s" % (name,specimen_id,msg) )
+            success = False
+            ts = False
+        
+        result.append({
+            'result':name,
+            'specimen':specimen_id,
+            'success': success,
+            'message':msg
+        })
+        
+#    print ts
+
+    if 'services' in options and options['services'] and ts:
+        try_confirm(specimen_id, options['services'])
+    
+    return result
+
+
+
+####PASSIVE MODE
+
+def flat(results):
+    orders = []
+    for order in results['orders']:
+        dataset = []
+        services = {}
+        for service in order['services']:
+            services[service['code']] = True
+            for test in service['tests']:
+                data = {
+                    'order':{
+                        'code':service['code']
+                    },
+                    'visit':{
+                        'specimen_id':order['specimen']
+                    },
+                    'result': {
+                        'name':test['name'],
+                        'code':test['code'],
+                        'value':test['value'],
+                        'measurement':test['measurement'],
+                        'ref_interval':test['ref_interval']
+                    }
+                }
+                dataset.append(data)
+        orders.append( (dataset, services.keys()) )
+    return orders
+
+def post_results(orders):
+    """
+    """
+    for order in orders:
+        data_set = order[0]
+        options = {
+            'services':order[1]
+        }
+        print data_set
+        print options
+        post_results_to_local(data_set, options)
+
+
+def update_result_feed(state_key, start=None, end=None, specimens=None, date_type=0, update=True):
+    """
+    """
+    NOW = datetime.datetime.now()
+    try:
+        state = RemoteState.objects.get(secret_key=state_key)
+    except:
+        return 
+    
+    params = {
+        'state_key':state_key
+    }
+    
+    if specimens:
+        params['specimen'] = ",".join(specimens)
+    else:
+        if not start:
+            start = state.last_updated
+        if isinstance(start, datetime.datetime):
+            start = int(time.mktime(start.timetuple()))
+        params['start'] = start
+        if end:
+            if isinstance(end, datetime.datetime):
+                end = int(time.mktime(end.timetuple()))
+            params['end'] = end
+            
+    params = urlencode(params)
+    URL = "%slab/feed/?%s" % (state.domain_url, params)
+
+    print URL
+
+    h = httplib2.Http()
+    
+    try:
+        resp, content = h.request(URL,
+                                  'GET',
+                                  headers={'Content-Type': 'application/json'})
+        try:
+            results = simplejson.loads(content)
+            if not results:
+                print "No results"
+                return
+            orders = flat(results)
+            post_results(orders)
+            if update:
+                state.last_updated = NOW
+                state.save()
+            return results
+        except JSONDecodeError, err:
+            print err
+        
+    except Exception, err:
+        print "error occured", err
