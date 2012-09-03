@@ -39,8 +39,18 @@ html {
 	
 }
 
+.results .subgroup {
+	font-weight:bold;
+	font-style:italic;
+	font-size:10pt;
+}
+
 .results td {
 	border: 1px solid black;
+}
+
+.results .stripe {
+	background-color:#F0F0F0;
 }
 
 .results td.inline.header {

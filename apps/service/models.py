@@ -129,7 +129,6 @@ class ExecutionTypeGroup(ServiceGroup):
             
 BS_TYPES = (
     (u'cons',u'консультативная услуга'),
-    (u'lab',u'лабораторная услуга'),
     (u'man',u'манипуляция'),
     (u'exam',u'обследование'),
     (u'article',u'товар'),
@@ -137,8 +136,9 @@ BS_TYPES = (
     (u'group',u'группа'),
     (u'archive',u'архив'),
 )
-
-
+if 'lab' in settings.INSTALLED_APPS:
+    BS_TYPES = BS_TYPES + ( (u'lab',u'лабораторная услуга'), )
+    
 class BaseService(models.Model):
     
     parent = models.ForeignKey('self', null=True, blank=True, 
@@ -294,12 +294,17 @@ class ExtendedService(models.Model):
                               related_name = 'branches')
     tube = models.ForeignKey('lab.Tube', 
                              related_name='tube', 
-                             null=True, blank=True)
+                             null=True, blank=True,
+                             verbose_name=u'Пробирка')
     tube_count = models.IntegerField(u'Количество пробирок', 
                                      null=True, blank=True)
     is_active = models.BooleanField(u'Активно', default=True)
     is_manual = models.BooleanField(u'Ручной метод', default=False)
     staff = models.ManyToManyField(Position, verbose_name=u'Кем выполняется', null=True, blank=True)
+    code = models.CharField(u'Внешний код', max_length=20, blank=True)
+    base_profile = models.ForeignKey('lab.AnalysisProfile', null=True, blank=True,
+                                     verbose_name=u'Профиль')
+    
     
     objects = ExtendedServiceManager()
     
@@ -328,9 +333,9 @@ class ExtendedService(models.Model):
         except:
             return 0
     
-    def get_absolute_url(self):
-        return "/admin/service/extendedservice/%s/" % self.id
-    
+#    def get_absolute_url(self):
+#        return "/admin/service/extendedservice/%s/" % self.id
+#    
     def __unicode__(self):
         return smart_unicode(u"%s" % self.base_service.short_name)
     

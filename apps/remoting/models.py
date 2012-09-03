@@ -30,6 +30,12 @@ class SyncObject(models.Model):
         return smart_unicode("<<SyncObject>>")
     
     
+REMOTE_STATE_MODES = (
+    (u'a',u'Активный'),
+    (u'p',u'Пассивный'),
+    (u'c',u'Пассивный с подтверждением'),
+)
+    
 class RemoteState(models.Model):
     """
     """
@@ -38,6 +44,8 @@ class RemoteState(models.Model):
     state = models.OneToOneField(State)
     secret_key = models.CharField(u'Секретный код', max_length=256)
     domain_url = models.URLField(u'URL', verify_exists=False)
+    mode = models.CharField(u'Режим', max_length=1, default=u'a', choices=REMOTE_STATE_MODES)
+    last_updated = models.DateTimeField(u'Последнее обновление', blank=True, null=True)
     user = models.ForeignKey(User, blank=True, null=True)
     
     class Meta:

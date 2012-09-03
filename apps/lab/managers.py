@@ -8,3 +8,4 @@ class ResultManager(models.Manager):
     
     def active(self):
         return self.filter(analysis__hidden=False)
+    

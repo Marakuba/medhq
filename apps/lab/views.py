@@ -23,6 +23,10 @@ from extdirect.django.decorators import remoting
 import logging
 from taskmanager.tasks import manageable_task, SendError
 from urllib2 import URLError
+import time
+from remoting.models import RemoteState
+from remoting.utils import update_result_feed
+from lab.widgets import get_widget
 
 logger = logging.getLogger('lab.models')
 
@@ -116,32 +120,10 @@ MANUAL_TEST_CONFIG = {
 from django.template import loader, RequestContext
 
 def print_results(request, order):
-    result_qs = Result.objects.active().filter(analysis__service__labservice__is_manual=False, order=order, to_print=True).order_by('analysis__service__%s' % BaseService._meta.tree_id_attr, 
-                '-analysis__service__%s' % BaseService._meta.left_attr,
-                'analysis__order')
     
-    cur_service = None
-    cur_group = None
-    result_list = []
-    set_len = 0
-    for result in result_qs:
-        if cur_service != result.analysis.service:
-            if set_len>1:
-                result_list.append({'class':'blank','object':cur_service.gen_ref_interval or ' '})
-            cur_service = result.analysis.service
-            set_len = cur_service.analysis_set.all().count()
-            group = cur_service.parent#", ".join([node.__unicode__() for node in cur_service.get_ancestors()]) 
-            if cur_group != group:
-                cur_group = group
-                result_list.append({'class':'group','object':cur_group}) 
-            if set_len>1:
-                result_list.append({'class':'service','object':cur_service.__unicode__()})
-        
-        cls = result.is_completed() and 'result' or 'progress'
-        result_list.append({'class':cls,'object':result})
-            
-    if set_len>1:
-        result_list.append({'class':'blank','object':cur_service.gen_ref_interval or ' '})
+    widget = get_widget(order.widget)()
+    
+    result_ctx = widget.make_results(order)
 
     preview = request.GET.get('preview')
     
@@ -159,10 +141,11 @@ def print_results(request, order):
     
     ec = {
             'order':order,
-            'results':result_list,
             'preview':preview,
     }
-    template = order.lab_group and order.lab_group.template or "print/lab/results.html"
+    ec.update(result_ctx)
+#    template = order.lab_group and order.lab_group.template or widget.get_template()
+    template = widget.get_template()
     return render_to_response(["print/lab/results_state_%s.html" % request.active_profile.state,template],
                               ec,
                               context_instance=RequestContext(request))
@@ -311,15 +294,17 @@ def confirm_results(request):
     if lab_order.is_completed:
         try:
             state = lab_order.visit.office.remotestate
-            logger.info(u"LabOrder for specimen %s is remote" % lab_order.visit.specimen)
-            action_params = {
-            }
-            manageable_task.delay(operator=request.user, 
-                                  task_type='remote', 
-                                  action=router, 
-                                  object=lab_order, 
-                                  action_params=action_params,
-                                  task_params={'countdown':300})
+#            logger.info(u"LabOrder for specimen %s is remote" % lab_order.visit.specimen)
+            if state.mode==u'a':
+                action_params = {}
+                manageable_task.delay(operator=request.user, 
+                                      task_type='remote', 
+                                      action=router, 
+                                      object=lab_order, 
+                                      action_params=action_params,
+                                      task_params={'countdown':300})
+            else:
+                pass
 #                    for r in resp:
 #                        logger.debug(u"LAB: %s %s" % (r['success'],r['message']))
         except Exception, err:
@@ -423,20 +408,19 @@ def confirm_manual_service(request):
     if len(results):
         results.update(validation=1)
         lab_order = results[0].order
+        lab_order.executed = obj.executed
+        lab_order.save()
         lab_order.confirm_results(False, False)
         try:
             state = lab_order.visit.office.remotestate
-            logger.info(u"LabOrder for specimen %s is remote" % lab_order.visit.specimen)
-            action_params = {
-            }
-            manageable_task.delay(operator=request.user, 
-                                  task_type='remote', 
-                                  action=router, 
-                                  object=lab_order, 
-                                  action_params=action_params,
-                                  task_params={'countdown':20})
-#                    for r in resp:
-#                        logger.debug(u"LAB: %s %s" % (r['success'],r['message']))
+            if state.mode==u'a':
+                action_params = {}
+                manageable_task.delay(operator=request.user, 
+                                      task_type='remote', 
+                                      action=router, 
+                                      object=lab_order, 
+                                      action_params=action_params,
+                                      task_params={'countdown':20})
         except Exception, err:
             pass
         
@@ -473,3 +457,183 @@ def hem_results(request):
             result.save()
     
     return HttpResponse('OK')
+
+
+from annoying.decorators import ajax_request
+
+DATE_TYPES = {
+    0:'confirmed',
+    1:'visit__created',
+    2:'executed'
+}
+
+@ajax_request
+def feed(request):
+    """
+    """
+    data = {
+    }
+    
+    orders = {}
+    
+    state_key = request.GET.get('state_key', None) or request.POST.get('state_key', None)
+    
+    if not state_key:
+        return { 'error':u'Не указан ключ организации' }
+    
+    try:
+        state = RemoteState.objects.get(secret_key=state_key)
+        state = state.state
+    except:
+        return { 'error':u'Неверный ключ организации' }
+    
+    start = request.GET.get('start', None) or request.POST.get('start', None)
+    end = request.GET.get('end', None) or request.POST.get('end', None)
+    specimen = request.GET.get('specimen', None) or request.POST.get('specimen', None)
+    
+    date_type = request.GET.get('date_type', 0) or request.POST.get('date_type', 0)
+    date_type = DATE_TYPES.get(date_type, 0)
+    
+    if start:
+        try:
+            start = datetime.datetime.fromtimestamp(int(start))
+            
+            lookups = {
+                'order__visit__office':state,
+                'order__%s__gte' % date_type:start,
+                'order__is_completed':True
+            }
+            print lookups
+            results = Result.objects.filter(**lookups) \
+                .order_by('-order__confirmed','order__visit__specimen')
+            
+        except Exception, err:
+            print err
+            results = None
+    
+        if end and results:
+            try:
+                end = datetime.datetime.fromtimestamp(int(end))
+                lookups = {
+                    'order__%s__lte' % date_type:end
+                }
+                results.filter(**lookups)
+            except:
+                pass
+            
+    elif specimen:
+        specimens = specimen.split(',')
+        results = Result.objects.filter(order__visit__office=state, order__visit__specimen__in=specimens, order__is_completed=True)
+    
+    if not results:
+        return {}
+    
+    for r in results:
+        if r.order_id not in orders:
+            order = {}
+            order['patient'] = {
+                'first_name':r.order.visit.patient.first_name,
+                'last_name':r.order.visit.patient.last_name,
+                'mid_name':r.order.visit.patient.mid_name
+            }
+            order['order_id'] = r.order_id
+            order['specimen'] = r.order.visit.specimen
+            order['created'] = r.order.visit.created.strftime('%Y-%m-%d %H:%M:%S')
+            order['executed'] = r.order.executed.strftime('%Y-%m-%d %H:%M:%S')
+            order['confirmed'] = r.order.confirmed.strftime('%Y-%m-%d %H:%M:%S')
+            order['services'] = {}
+            orders[r.order_id] = order
+        code = r.analysis.service.code
+        if not code in orders[r.order_id]['services']:
+            orders[r.order_id]['services'][code] = {
+                'code':code,
+                'name':r.analysis.service.name,
+                'tests':[]
+            }
+        res = {
+            'name':r.analysis.name,
+            'code':r.analysis.code,
+            'value':r.value,
+            'measurement':r.measurement,
+            'ref_interval':r.ref_range_text
+        }
+        orders[r.order_id]['services'][code]['tests'].append(res)
+
+    orders = orders.values()
+    for o in orders:
+        o['services'] = o['services'].values()
+    data['orders'] = orders
+    
+    return data
+
+
+@ajax_request
+def feed_confirm(request):
+    """
+    """
+    
+    return {}
+
+
+
+@ajax_request
+def result_loader(request):
+    """
+    """
+
+    state_id = request.POST.get('state_id', None)
+    start = request.POST.get('start', None)
+    end = request.POST.get('end', None)
+    specimens = request.POST.get('specimens', None)
+    date_type = request.POST.get('date_type', None)
+    
+    try:
+        state = RemoteState.objects.get(state__id=state_id)
+        state_key = state.secret_key
+    except Exception, err:
+        print err
+        return {
+            'error':u'Ошибка определения лаборатории'
+        }
+    
+    if specimens:
+        try:
+            specimens = specimens.replace(' ','').split(',')
+        except:
+            return {
+                'error':u'Неправильно заданы номера образцов'
+            }
+        
+        results = update_result_feed(state_key, specimens=specimens)
+        return {
+            'results':results
+        }
+    
+    if start:
+        try:
+            start = datetime.datetime.strptime(start,'%Y-%m-%dT%H:%M:%S')
+        except:
+            return {
+                'error':u'Некорректная начальная дата'
+            }
+        if end:
+            try:
+                end = datetime.datetime.strptime(end,'%Y-%m-%dT%H:%M:%S')
+                end = datetime.datetime(year=end.year, month=end.month, day=end.day,
+                                        hour=23, minute=59, second=59)
+                print end
+            except Exception, err:
+                print err
+                return {
+                    'error':u'Некорректная конечная дата'
+                }
+        results = update_result_feed(state_key, start, end, update=False)
+        return {
+            'results':results
+        }
+            
+    return {
+        'error':u'Нет данных'
+    }
+
+

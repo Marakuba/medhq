@@ -1,62 +1,73 @@
-{% extends "print/off_blank.html" %}
+{% extends "print/preview_blank.html" %}
 
 {% load lab_tags flatblock_tags %}
 
 {% block title %}{{ order }} - Результаты{% endblock %}
 
-{% block body %}
+{% block orientation %}book{% endblock %}
 
-<div id="print-box">
-	<a href="javascript:window.print();">Печать</a>
-</div>
+{% block content %}
 
-<div class="page_wrapper_A4_book">
-<div class="page_wrapper">
 {% block page_header %}
-{% include "print/lab/results_header.html" %}
+	{% include "print/lab/header.html" %}
 {% endblock %}
-<table class="results">
+
+{% block details %}
+<table class="patient">
 	<tr>
-		<th>Наименование исследования</th>
-		<th>Результат</th>
-		<th>Единицы измерения</th>
-		<th>Референсные значения</th>
-	</tr>
-	
-	{% for result in results %}
-	{% if result.class == 'group' or result.class == 'service' or result.class == 'blank'%}
-	<tr>
-		<td colspan="4" class="{{ result.class }}">{{ result.object|linebreaks }}
-		{% if result.object.description %}
-			<div class="descr">{{ result.object.description|linebreaks }}</div>
-		{% endif %}
+		<td>
+			<table>
+				<tr>
+					<td class="name">Ф.И.О.:</td><td class="bold">{{ order.visit.patient.full_name }}</td>
+				</tr>
+				<tr>
+					<td class="name">Дата рождения:</td><td class="bold">{{ order.visit.patient.birth_day|date:"d.m.Y" }}</td>
+				</tr>
+				<tr>
+					<td class="name">Дата исследования:</td><td class="bold">{{ order.visit.created|date:"d.m.Y, H:i" }}</td>
+				</tr>
+				{% if order.visit.pregnancy_week %}
+				<tr>
+					<td class="name">Срок беременности:</td><td class="bold">{{ order.visit.pregnancy_week }} нед.</td>
+				</tr>
+				{% endif %}
+				{% if order.visit.menses_day %}
+				<tr>
+					<td class="name">День цикла:</td><td class="bold">{{ order.visit.menses_day }}</td>
+				</tr>
+				{% endif %}
+			</table>
+		</td>
+		<td align="right">
+			<table>
+				<tr>
+					<td class="name">Заказ:</td>
+					<td class="bold">{{ order.visit.barcode_id|zid:"5" }}</td>
+				</tr>
+				<tr>
+					<td class="name">Врач:</td>
+					<td class="bold">{{ order.staff.id|zid:"5"|default:'---' }}</td>
+				</tr>
+				<tr>
+					<td class="name">Направившее учреждение:</td>
+					<td class="bold">{{ order.visit.referral.id|zid:"5" }}</td>
+				</tr>
+			</table>
 		</td>
 	</tr>
-	{% endif %}
-	{% if result.class == 'result' %}
-	<tr>
-		<td class="analysis">{{ result.object.get_title }}</td>
-		<td>{% autoescape off %}{{ result.object.get_result|sup }}{% endautoescape %}</td>
-		<td>{{ result.object.measurement|default:"---" }}</td>
-		<td>{{ result.object.ref_range_text|default:"---"|linebreaks }}</td>
-	</tr>
-	{% endif %}
-	{% if result.class == 'progress' %}
-	<tr>
-		<td class="analysis">{{ result.object.get_title }}</td>
-		<td colspan="3" class="progress">В работе</td>
-	</tr>
-	{% endif %}
-	{% empty %}
-	<tr><td colspan="4">Результаты анализов отсутствуют</td></tr>
-	{% endfor %}
-	
-
 </table>
-{% if order.is_completed or preview %}
-<div class="comment">{% autoescape off %}{{ order.comment }}{% endautoescape %}</div>
-{% endif %}
-<div class="print_time">{{ order.print_date_display }}</div>
-</div>
-</div>
+{% endblock %}
+
+{% block data %}{% endblock %}
+
+{% block underwrite %}
+	{% if order.is_completed or preview %}
+	<div class="comment">{% autoescape off %}{{ order.comment }}{% endautoescape %}</div>
+	{% endif %}
+	<div class="print_time">{{ order.print_date_display }}</div>
+{% endblock %}
+
+{% block page_footer %}
+{% endblock %}
+
 {% endblock %}

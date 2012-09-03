@@ -187,7 +187,7 @@ App.laboratory.RegisterApp = Ext.extend(Ext.Panel, {
 			            'click': function(e, t){ // if they tab + enter a link, need to do it old fashioned way
 			            	e.stopEvent();
 			            	var type = t.href.split('#')[1];
-			            	var val = t.innerText;
+			            	var val = t.text || t.innerText;
 			            	switch (type) {
 							case 'search':
 								this.centralPanel.gsf.imitate(val);

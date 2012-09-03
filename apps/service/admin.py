@@ -36,6 +36,7 @@ class StandardServiceAdmin(TreeEditor):
 class PriceInlineAdmin(admin.TabularInline):
     model = Price
     exclude = ('service','type')
+    extra = 0
 
 
 class AnalysisInlineAdminForm(forms.ModelForm):
@@ -205,9 +206,9 @@ class ExtendedServiceAdmin(admin.ModelAdmin):
     inlines = [PriceInlineAdmin]
     
 
-class ExtendedServiceInlineAdmin(admin.TabularInline):
+class ExtendedServiceInlineAdmin(admin.StackedInline):
     
-    template = "admin/service/tabular.html"
+#    template = "admin/service/tabular.html"
     model = ExtendedService
     extra = 0
     exclude = ('staff',)

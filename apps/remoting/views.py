@@ -10,7 +10,7 @@ from visit.models import OrderedService, Visit
 from collections import defaultdict
 from django.utils import simplejson
 from django.core.serializers.json import DjangoJSONEncoder
-from remoting.utils import get_ordered_service, get_result, try_confirm
+from remoting.utils import post_orders_to_local, post_results_to_local
 from remoting.models import Transaction, TransactionItem, SyncObject
 from django.db.models.aggregates import Count
 import logging
@@ -19,74 +19,6 @@ from state.models import State
 from constance import config
 
 logger = logging.getLogger('remoting')
-
-def post_orders_to_local(request, data_set, options):
-    result = []
-    for data in data_set:
-        success = True
-        specimen_id = data['visit']['specimen']
-        
-        try:
-            ord_service, created = get_ordered_service(request, data)
-            status = created and u'успешно размещен' or u'уже был добавлен ранее'
-            msg = u'Заказ "%s" для образца №%s %s' % (ord_service.service,specimen_id,status)
-        except Exception, err:
-            msg = err.__unicode__()
-            logger.exception(u"Ошибка при размещении заказа: %s - %s" % (specimen_id,msg) )
-            success = False
-            
-        result.append({
-            'order':specimen_id,
-            'service':data['order']['code'],
-            'success': success,
-            'message':msg
-        })
-
-    return result
-
-def post_results_to_local(request, data_set, options):
-
-    result = []
-    success_results = []
-#    print "results:",data_set
-    lab_orders = {}
-    _visit_cache = {}
-    ts = True
-    for data in data_set:
-        success = True
-        specimen_id = data['visit']['specimen_id']
-        name = data['result']['name']
-        msg = u'Результат %s (%s) принят' % (data['result']['name'], specimen_id)
-        
-        try:
-            res = get_result(request, data)
-            success_results.append(res.id)
-            if __debug__:
-                logger.debug(u"Результат анализов успешно сохранен: %s/%s" % (name,specimen_id) )
-        except Exception, err:
-            msg = err.__unicode__()
-            logger.exception(u"Ошибка при получении результата: %s/%s - %s" % (name,specimen_id,msg) )
-            success = False
-            ts = False
-        
-        if success:
-            if not lab_orders.has_key(res.order.id):
-                lab_orders[res.order.id] = res.order
-
-            
-        result.append({
-            'result':name,
-            'specimen':specimen_id,
-            'success': success,
-            'message':msg
-        })
-        
-#    print ts
-
-    if 'services' in options and options['services'] and ts:
-        try_confirm(specimen_id, options['services'])
-    
-    return result
 
 
 ACTIONS = {
@@ -103,7 +35,7 @@ def router(request):
     options = data['options']
     if action in ACTIONS:
         func = ACTIONS[action]
-        result = func(request, data_set, options)
+        result = func(data_set, options, request)
     
     return HttpResponse(simplejson.dumps(result), mimetype="application/json")    
     

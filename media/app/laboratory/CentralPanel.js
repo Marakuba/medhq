@@ -108,15 +108,15 @@ App.CentralPanel = Ext.extend(Ext.Panel, {
                     	this.launchApp('equipmenttaskgrid');
                     },
                     scope:this            	
-                }/*,{
-            		text:'Результаты',
+                },{
+            		text:'Загрузка результатов',
             		scale:'medium',
                     handler: function(){
-                    	this.launchApp('equipmentresultgrid');
+                    	this.launchApp('labresultloaderapp');
                     },
                     scope:this            	
-                }*/,{
-					text:'Дубликат штрих-кода',
+                },{
+					text:'Дубликат ш/к',
 					tooltip:'Печать дубликата',
 					handler:function(btn){
 						var win = new App.barcodepackage.DuplicateWindow();

@@ -10,7 +10,7 @@ App.laboratory.LabOrderGrid = Ext.extend(Ext.grid.GridPanel, {
 			apiUrl : get_api_url('laborder'),
 			model: App.models.LabOrder
 		});
-		this.store.setBaseParam('is_manual',false);
+//		this.store.setBaseParam('is_manual',false);
 
 		this.fields = [
   		    ['start_date','visit__created__gte','Дата с','Y-m-d 00:00'],
@@ -49,8 +49,8 @@ App.laboratory.LabOrderGrid = Ext.extend(Ext.grid.GridPanel, {
 		    	width: 18,
 		    	dataIndex: 'office_name',
 		    	renderer:function(v,opts,rec) {
-		    		return String.format("<div><b>{0}</b><p>{1}</p></div>", 
-		    				v, rec.data.operator_name) 
+		    		return String.format('<div style="{2}"><b>{0}</b><p>{1}</p></div>', 
+		    				v, rec.data.operator_name, rec.data.is_manual ? 'background:gray;' : '') 
 		    	}
 		    },{
 		    	id:'staff',

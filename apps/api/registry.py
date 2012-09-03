@@ -43,7 +43,7 @@ from promotion.models import Promotion
 from remoting.models import RemoteState
 from api.authorization import LocalAuthorization
 from patient.models import ContractType, Contract
-from medhq.apps.scheduler.models import RejectionCause
+from scheduler.models import RejectionCause
 
 class UserResource(ModelResource):
 
@@ -637,7 +637,13 @@ class LabOrderResource(ExtResource):
             smart_filters = smartFilter(filters['search'],'visit__patient')
             if len(smart_filters.keys())==1:
                 try:
-                    orm_filters = ComplexQuery( Q(visit__barcode__id=int(filters['search'])) | Q(**smart_filters), \
+                    cond = Q(**smart_filters)
+                    if filters['search'].startswith('!'):
+                        cond |= Q(visit__specimen=filters['search'][1:])
+                    else:
+                        cond |= Q(visit__barcode__id=int(filters['search']))
+                        
+                    orm_filters = ComplexQuery( cond , \
                                       **orm_filters)
                 except:
                     orm_filters.update(**smart_filters)
@@ -808,7 +814,8 @@ class ResultResource(ExtResource):
         bundle.data['patient'] = obj.order.visit.patient.full_name()
         bundle.data['service_name'] = obj.analysis.service
         bundle.data['laboratory'] = obj.order.laboratory
-        bundle.data['analysis_name'] = obj.analysis
+        bundle.data['is_group'] = obj.is_group()
+        bundle.data['analysis_name'] = obj.__unicode__()
         bundle.data['analysis_code'] = obj.analysis.code
         bundle.data['inputlist'] = [[input.name] for input in obj.analysis.input_list.all()]
         bundle.data['measurement'] = obj.analysis.measurement

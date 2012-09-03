@@ -22,19 +22,31 @@ from django.template import Template, Context
 from django.db.models.signals import post_save
 from lab.managers import ResultManager
 from taskmanager.settings import DELAYED_TASK_STATUSES
+from lab.base_widgets import BasePlain, BaseColumn
+from lab.widgets import register, widget_choices
 logger = logging.getLogger(__name__)
 
+
+
+register('baseplain', BasePlain)
+register('basecolumn', BaseColumn)
+
+WIDGET_CHOICES = widget_choices()
 
 class LabService(models.Model):
     """
     """
     base_service = models.OneToOneField(BaseService)
-    is_manual = models.BooleanField(u'Ручное исследование', default=False)
+    is_manual = models.BooleanField(u'В отдельный ордер', default=False)
     code = models.CharField(u'Код ручного исследования', max_length=10, blank=True)
+    widget = models.CharField(u'Виджет', max_length=32, blank=True, choices=WIDGET_CHOICES)
     
     class Meta:
         verbose_name = u'лабораторная услуга'
         verbose_name_plural = u'лабораторные услуги'
+        
+    def __unicode__(self):
+        return u'Профиль лабораторной услуги %s' % self.base_service.code
 
 
 class Tube(models.Model):
@@ -163,6 +175,14 @@ class RefRange(models.Model):
         verbose_name_plural = u'реф.значения'
 
 
+LABORDER_STATUSES = (
+    (u'work',u'в работе'),
+    (u'ready',u'готово к отправке'),
+    (u'sended',u'отправлено'),
+    (u'failed',u'неудачная отправка'),
+)
+
+
 class LabOrder(models.Model):
     """
     """
@@ -176,17 +196,20 @@ class LabOrder(models.Model):
     staff = models.ForeignKey(Position, verbose_name=u'Врач', blank=True, null=True, related_name='staff_pos')
     staff_text = models.TextField(u'Врач (текст)', blank=True)
     executed = models.DateTimeField(u'Дата выполнения', blank=True, null=True)
+    confirmed = models.DateTimeField(u'Дата подтверждения', blank=True, null=True)
     is_completed = models.BooleanField(u'Выполнен', default=False)
     is_printed = models.BooleanField(u'Печать', default=False)
     is_manual = models.BooleanField(u'Ручные исследования', default=False)
-#    status = models.ForeignKey(Status, blank=True, null=True)
-    send_status = models.CharField(u'Статус', max_length=10, choices=DELAYED_TASK_STATUSES)
+    send_status = models.CharField(u'Статус отправки', max_length=10, blank=True,
+                                   choices=LABORDER_STATUSES)
+    sended = models.DateTimeField(u'Дата/время отправки', blank=True, null=True)
+    widget = models.CharField(u'Виджет', max_length=32, blank=True)
     print_date = models.DateTimeField(u'Дата печати', blank=True, null=True)
     printed_by = models.ForeignKey(User, blank=True, null=True)
     comment = models.TextField(u'Комментарий', blank=True, default='')
     
     def __unicode__(self):
-        return u"Заказ №%s (%s) - %s - %s" % (str(self.id).zfill(8), self.visit.patient.short_name(), self.visit.office, self.laboratory) 
+        return u"Заказ №%s (%s) - %s - %s" % (str(self.visit.barcode_id).zfill(8), self.visit.patient.short_name(), self.visit.office, self.laboratory) 
     
     def get_info(self):
         if not hasattr(self, '_info'):
@@ -219,21 +242,34 @@ class LabOrder(models.Model):
         if autoclean:
             Result.objects.filter(analysis__service__labservice__is_manual=False, 
                                   order=self, 
-                                  validation=0).delete()
+                                  validation=0).exclude(analysis__name__istartswith='##').delete()
+                                  
             Result.objects.filter(order=self, 
                                   validation=-1).update(validation=1)
+            #### checking for empty groups
+            results = Result.objects.filter(analysis__service__labservice__is_manual=False, 
+                                  order=self).order_by('-analysis__order',)
+            last_result_is_group = True
+            for r in results:
+                is_group = r.is_group()
+                if last_result_is_group and is_group:
+                    r.delete()
+                last_result_is_group = is_group    
+
         self.is_completed = True
         for result in self.result_set.all():
             if not result.is_completed():
                 self.is_completed = False
                 break
-        if self.is_completed and confirm_orders:
-            ordered_services = self.visit.orderedservice_set.filter(execution_place=self.laboratory,
-                                                                    service__lab_group=self.lab_group)
-            if self.is_manual:
-                ordered_services.filter(labservice__is_manual=True)
-            ordered_services.update(status=u'з',
-                                    executed=self.executed)
+        if self.is_completed:
+            self.confirmed = datetime.datetime.now()
+            if confirm_orders:
+                ordered_services = self.visit.orderedservice_set.filter(execution_place=self.laboratory,
+                                                                        service__lab_group=self.lab_group)
+                if self.is_manual:
+                    ordered_services.filter(service__labservice__is_manual=True)
+                ordered_services.update(status=u'з',
+                                        executed=self.executed)
         self.save()
         
     def revert_results(self):
@@ -255,8 +291,9 @@ class LabOrder(models.Model):
     def operator(self):
         operator = self.visit.operator
         try:
-            return operator.staff_user
-        except:
+            staff_user = operator.staff_user
+            return u"%s, %s" % (staff_user.short_name(), staff_user.get_position())
+        except Exception, err:
             return operator
     operator.short_description = u'Регистратор'
     
@@ -296,22 +333,26 @@ class Result(models.Model):
     status = models.ForeignKey(Status, blank=True, null=True)
     modified = models.DateTimeField(auto_now=True)
     modified_by = models.ForeignKey(User, blank=True, null=True)
+    comment = models.TextField(u'Комментарий', blank=True, null=True)
     
     objects = ResultManager()
     
     def __unicode__(self):
-        a = self.analysis.__unicode__()
-        s = self.analysis.service.__unicode__()
-        if a==s:
-            return u"%s" % self.analysis
-        return u"%s (%s)" % (self.analysis, self.analysis.service)
+        if self.is_group():
+            return self.analysis.name.replace('##','')
+        return u"%s" % self.analysis
     
     def is_completed(self):
+        if self.is_group():
+            return True
         if self.analysis.service.labservice.is_manual:
             return True
         if self.value or self.input_list or not self.to_print:
             return True
         return False
+    
+    def is_group(self):
+        return self.analysis.name.startswith('##')
     
     def get_result(self):
         return self.value or self.input_list or u'---'
@@ -569,4 +610,15 @@ def generate_lab_code(sender, **kwargs):
         obj.save()
 
 post_save.connect(generate_analysis_code, sender=Analysis)
-post_save.connect(generate_analysis_code, sender=LabService)
+#post_save.connect(generate_analysis_code, sender=LabService)
+
+
+
+def auto_create_lab_service(sender, **kwargs):
+    if kwargs['created']:
+        obj = kwargs['instance']
+        if 'lab' in settings.INSTALLED_APPS and obj.type==u'lab':
+            LabService.objects.create(base_service=obj)
+            
+post_save.connect(auto_create_lab_service, sender=BaseService)
+

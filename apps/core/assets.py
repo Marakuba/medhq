@@ -662,6 +662,11 @@ js_laboratory = Bundle(
     'app/laboratory/register/RegisterWindow.js',
     'app/laboratory/register/RegisterApp.js',
 
+    'app/laboratory/result/widget/BasePlain.js',
+    'app/laboratory/result/widget/BaseColumn.js',
+
+    'app/laboratory/result/loader/ResultLoaderApp.js',
+
     'app/laboratory/fields/InputList.js',
 
     'app/laboratory/manual/cards/BaseCard.js',
@@ -682,6 +687,7 @@ js_laboratory = Bundle(
     'app/laboratory/equipment/EquipmentResultGrid.js',
     'app/laboratory/equipment/EquipmentAssayGrid.js',
 
+    'app/laboratory/result/CommentWindow.js',
     'app/laboratory/result/ResultGrid.js',
     'app/laboratory/result/ResultCard.js',
 
