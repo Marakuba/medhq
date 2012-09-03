@@ -18,23 +18,28 @@ App.registry.PreorderManager = Ext.extend(Ext.TabPanel, {
 			model: App.models.patientModel
 		});
 		
-		this.preorderTab = new App.registry.PreorderGrid({
+		
+		var preorderCfg =  {
 			title:'Ближайшие',
 			hasPatient:this.hasPatient,
 			patientStore: this.patientStore,
 			medstateStore: this.medstateStore,
 			searchValue: this.searchValue,
+			doctorMode: this.doctorMode,
 			listeners:{
 				scope:this,
 				setupdating:this.setUpdating
 			}
-		});
+		};
+		Ext.apply(preorderCfg,this.preorderCfg);
+		this.preorderTab = new App.registry.PreorderGrid(preorderCfg);
 		this.completedTab = new App.registry.PreorderGrid({
 			hasPatient:this.hasPatient,
 			completed:true,
 			medstateStore: this.medstateStore,
 			patientStore: this.patientStore,
 			searchValue: this.searchValue,
+			doctorMode: this.doctorMode,
 			title:'Выполненные',
 			baseParams:{
 				format:'json',
@@ -46,16 +51,21 @@ App.registry.PreorderManager = Ext.extend(Ext.TabPanel, {
 				setupdating:this.setUpdating
 			}
 		});
-		this.assigmentTab = new App.patient.AsgmtGrid({
+		var assignmentCfg = {
 			hasPatient:this.hasPatient,
 			medstateStore: this.medstateStore,
 			patientStore: this.patientStore,
 			searchValue: this.searchValue,
+			doctorMode: this.doctorMode,
+			referral:this.referral,
+			referral_type:this.referral_type,
 			listeners:{
 				scope:this,
 				setupdating:this.setUpdating
 			}
-		});
+		};
+		Ext.apply(assignmentCfg,this.assignmentCfg);
+		this.assignmentTab = new App.patient.AsgmtGrid(assignmentCfg);
 		
 		config = {
 			id:this.hasPatient? Ext.id() : 'preorder-manager',
@@ -64,7 +74,7 @@ App.registry.PreorderManager = Ext.extend(Ext.TabPanel, {
 			items:[
 				this.preorderTab,
 				this.completedTab,
-				this.assigmentTab
+				this.assignmentTab
 				
 			]
 			
@@ -79,11 +89,13 @@ App.registry.PreorderManager = Ext.extend(Ext.TabPanel, {
 	                interval: 30000
 	            });
 			}
-//			this.assigmentTab.store.load();
+//			this.assignmentTab.store.load();
 		},this);
 		
 		this.on('beforedestroy',function(){
-			Ext.TaskMgr.stop(this.task)
+			if(!this.hasPatient){
+				Ext.TaskMgr.stop(this.task)
+			}
 		},this)
 	},
 	
@@ -106,7 +118,7 @@ App.registry.PreorderManager = Ext.extend(Ext.TabPanel, {
 	},
 	
 	setActivePatient: function(rec) {
-		this.assigmentTab.setActivePatient(rec);
+		this.assignmentTab.setActivePatient(rec);
 		this.preorderTab.store.setBaseParam('patient',rec.id)
 		this.preorderTab.store.load();
 		this.completedTab.store.setBaseParam('patient',rec.id);
@@ -114,7 +126,5 @@ App.registry.PreorderManager = Ext.extend(Ext.TabPanel, {
 	}
 	
 });
-
-
 
 Ext.reg('preordermanager', App.registry.PreorderManager);

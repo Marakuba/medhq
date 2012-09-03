@@ -35,8 +35,7 @@ class StandardServiceAdmin(TreeEditor):
 
 class PriceInlineAdmin(admin.TabularInline):
     model = Price
-    exclude = ('service','type')
-    extra = 0
+    exclude = ('service',)
 
 
 class AnalysisInlineAdminForm(forms.ModelForm):

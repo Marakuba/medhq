@@ -175,6 +175,13 @@ App.examination.CardGrid = Ext.extend(Ext.grid.EditorGridPanel, {
             	emptyText:'нет карт осмотра',
 //                forceFit: true
             },
+            bbar: new Ext.PagingToolbar({
+	            pageSize: 20,
+	            store: this.store,
+	            displayInfo: true,
+	            displayMsg: 'Записи {0} - {1} из {2}',
+	            emptyMsg: "Нет записей"
+	        }),
 			tbar:this.tbar
         };
         Ext.apply(this, Ext.apply(this.initialConfig, config));

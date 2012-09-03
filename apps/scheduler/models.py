@@ -11,7 +11,7 @@ from visit.settings import PAYMENT_TYPES
 from staff.models import Staff, Position
 from patient.models import Patient
 from mptt.models import MPTTModel
-from visit.models import BaseService
+from visit.models import BaseService, Referral
 from state.models import State
 from django.conf import settings
 from visit.models import Visit
@@ -22,7 +22,7 @@ from core.utils import model_to_dict
 from datetime import timedelta
 from service.models import ExtendedService
 from promotion.models import Promotion
-from examination.models import Card
+#from examination.models import Card
 from copy import deepcopy
 from django.core.exceptions import ObjectDoesNotExist
 
@@ -172,12 +172,12 @@ class Event(models.Model):
 
 
     def __unicode__(self):
-        return '%s-%s' % (self.staff and self.staff.staff.last_name or '<<EVENT>>',self.start)
+        return '%s-%s' % (self.cid,self.start)
             
     class Meta:
         verbose_name = u'смена'
         verbose_name_plural = u'смены'
-        ordering = ('cid',)
+        ordering = ('-id',)
         
 class Preorder(models.Model):
     """
@@ -197,11 +197,15 @@ class Preorder(models.Model):
                                     choices=PAYMENT_TYPES)
     promotion = models.ForeignKey(Promotion,blank = True, null=True)
     count = models.PositiveIntegerField(u'Количество', default=1)
-    card = models.ForeignKey(Card, null = True, blank = True)
+    card = models.ForeignKey('examination.Card', null = True, blank = True)
     completed_count = models.PositiveIntegerField(u'Количество выполненных', default=0)
     price = models.DecimalField(u'Цена', max_digits=10, decimal_places=2, null=True)
     rejection_cause = models.ForeignKey(RejectionCause, null = True, blank = True)
     deleted = models.BooleanField(u'Удалено', default=False)
+    who_deleted = models.ForeignKey(User,verbose_name=u'Кем удалено', related_name='operator_deleted_preorder', blank = True, null=True)
+    deleted_time = models.DateTimeField(u'Время удаления', blank = True, null=True)
+    confirmed = models.BooleanField(u'Подтверждено', default=False)
+    referral = models.ForeignKey(Referral, null=True, blank=True)
     objects = models.Manager()
     
     def get_staff_name(self):
@@ -216,6 +220,7 @@ class Preorder(models.Model):
     @transaction.commit_on_success
     def save(self, *args, **kwargs):
         if self.deleted:
+            self.deleted_time = datetime.datetime.now()
             if self.timeslot:
                 self.timeslot.status = u'с' 
                 self.timeslot.save()
@@ -243,8 +248,7 @@ class Preorder(models.Model):
         if self.timeslot:
             self.timeslot.status = u'с' 
             self.timeslot.save()
-        self.deleted = True
-        self.save() 
+        super(Preorder, self).delete(*args, **kwargs) 
     
     def get_discount(self):
         if self.promotion:
@@ -257,7 +261,7 @@ class Preorder(models.Model):
     class Meta:
         verbose_name = u'предзаказ'
         verbose_name_plural = u'предзаказы'
-        ordering = ('id',)
+        ordering = ('-id',)
         
     def __unicode__(self):
         return self.patient and self.patient.short_name() or u'Предзаказ'

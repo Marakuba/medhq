@@ -7,6 +7,7 @@ from state.models import State
 from visit.settings import PAYMENT_TYPES
 
 from django.contrib.admin import widgets
+from pricelist.models import PriceType
 
 class HelperForm(forms.Form):
     """
@@ -30,6 +31,7 @@ class StaffForm(forms.Form):
     
 state_qs = State.objects.filter(type='b')
 payer_qs = State.objects.all()
+price_type_qs = PriceType.objects.all()
 payment_types = PAYMENT_TYPES
 payment_types.append((u'-',u'---'))
 class PriceForm(forms.Form):
@@ -45,4 +47,7 @@ class PriceForm(forms.Form):
                                             required=False)
     payment_type = forms.ChoiceField(label=u'Форма оплаты',
                                             choices=payment_types,
+                                            required=False)
+    price_type = forms.ModelChoiceField(label=u'Тип цены',
+                                            queryset=price_type_qs,
                                             required=False)

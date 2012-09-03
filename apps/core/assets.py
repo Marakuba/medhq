@@ -120,6 +120,7 @@ js_registry = Bundle(
     'app/registry/patient/ServiceGrid.js',
     'app/registry/patient/RefundGrid.js',
     'app/registry/patient/ContractGrid.js',
+    'app/registry/patient/NotifyForm.js',
     'app/registry/patient/IDCardForm.js',
     'app/registry/patient/PatientForm.js',
     'app/registry/patient/PatientWindow.js',
@@ -441,6 +442,9 @@ js_calendar = Bundle(
     filters='rjsmin', output='assets/calendar.js',)
 
 js_examination = Bundle(
+    'extjs/ux/printer/Printer-all.js',
+    
+    
     'libs/markdown.js',
     'extjs/ux/progresscolumn/ProgressColumn.js',
     'extjs/ux/RowEditor.js',
@@ -462,6 +466,7 @@ js_examination = Bundle(
     'app/Backend.js',
     'app/form/ClearableComboBox.js',
     'app/form/LazyComboBox.js',
+    'app/registry/preorder/utils.js',
 
     'app/data/RestStore.js',
 
@@ -473,6 +478,11 @@ js_examination = Bundle(
 
     'app/dict/mkb/MKBTree.js',
     'app/dict/mkb/MKBWindow.js',
+    
+    'app/examination/medstandarts/MedStandartGrid.js',
+    'app/examination/medstandarts/MedStandartServiceGrid.js',
+    'app/examination/medstandarts/MedStandartChoiceForm.js',
+    'app/examination/medstandarts/MedStandartChoiceWindow.js',
     
     'app/examination/EventManager.js',
     'app/examination/CentralPanel.js',
@@ -531,6 +541,12 @@ js_examination = Bundle(
     'app/registry/asgmt/AsgmtForm.js',
     'app/registry/asgmt/AsgmtTab.js',
     'app/registry/patient/AsgmtGrid.js',
+    'app/registry/preorder/PreorderGrid.js',
+    'app/registry/preorder/PreorderManager.js',
+    
+    'app/registry/patient/ExamCardGrid.js',
+    'app/examination/gendoc/PatientCard.js',
+    'app/examination/gendoc/GeneralDoctorPanel.js',
     
     'app/examination/neocard/CardStartPanel.js',
     'app/examination/neocard/CardGeneralTab.js',
@@ -703,16 +719,51 @@ js_laboratory = Bundle(
     filters='rjsmin', output='assets/laboratory.js',)
 
 js_reporting = Bundle(
-    'extjs/ux/RowEditor.js',
-
-    'app/reporting/FilterGrid.js',
-    'app/reporting/FieldGrid.js',
-    'app/reporting/GroupGrid.js',
-    'app/reporting/SummaryGrid.js',
+    'extjs/ux/statusbar/StatusBar.js',
+    'app/App.js',
+    'app/Backend.js',
+    'app/Models.js',
+    'app/data/RestStore.js',
+    'app/form/ClearableComboBox.js',
+    'app/form/LazyComboBox.js',
+    'app/ux/GSearchField.js',
+    'app/ux/InputTextMask.js',
     
-    'app/reporting/Designer.js',
-    'app/reporting/Grid.js',
-    'app/reporting/Viewport.js',
+    'app/registry/patient/clientaccount/backends.js',
+    'app/registry/patient/clientaccount/ClientAccountGrid.js',
+    'app/registry/patient/IDCardForm.js',
+    'app/registry/patient/ContractGrid.js',
+    'app/registry/insurance/PolicyGrid.js',
+    'app/registry/patient/PatientForm.js',
+    'app/registry/patient/PatientWindow.js',
+    'app/choices/staff/StaffChoiceGrid.js',
+    'app/choices/staff/StaffChoiceWindow.js',
+    
+    'app/choices/referral/ReferralChoiceGrid.js',
+    'app/choices/referral/ReferralChoiceWindow.js',
+    
+    'app/choices/state/StateChoiceGrid.js',
+    'app/choices/state/StateChoiceWindow.js',
+    
+    'app/choices/patient/PatientChoiceGrid.js',
+    'app/choices/patient/PatientChoiceWindow.js',
+    
+    'app/choices/servicegroup/ServiceGroupChoiceGrid.js',
+    'app/choices/servicegroup/ServiceGroupChoiceWindow.js',
+    
+    'app/reporting/reports/PrintPanel.js',
+    'app/reporting/reports/FilterPanel.js',
+    'app/reporting/editor/field.js',
+    'app/reporting/editor/ReportEditor.js',
+    'app/reporting/reports/ReportPanel.js',
+    
+    'app/dict/reports/ReportTree.js',
+    'app/reporting/reports/ReportApp.js',
+    
+    'app/reporting/EventManager.js',
+    'app/reporting/CentralPanel.js',
+    'app/reporting/MainPanel.js',
+    'app/reporting/app.js',
     filters='rjsmin', output='assets/reporting.js',)
 
 js_service = Bundle(

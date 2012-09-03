@@ -116,23 +116,23 @@ App.preorder.accessCheck = function(records,fn,scope){
 	 * в которой имеются поля service_name либо staff_name(если предзаказ без услуги)
 	 * Функция возвращает либо массив записей, прошедших отбор, либо пустой список
 	 * */
-	var makeErrorText = function(text,type,title){
+	var makeErrorText = function(text,type,content){
 		var error = ['']
-			switch(type){
-				case 'staff':
-					error[0] = String.format('Врач {0}: ', title || 'Не указан');
-					break;
-				case 'service':
-					error[0] = String.format('Услуга {0}: ', title || 'Не указана');
-					break;
-				case 'general':
-					error[0] = 'Ошибка!';
-					break;
-				default: 
-					error['0'] = title || ''
-					break;
-			};
-		error['1'] = text || '';
+		switch(type){
+			case 'staff':
+				error[0] = String.format('Врач {0}: ', content || 'Не указан');
+				break;
+			case 'service':
+				error[0] = String.format('Услуга {0}: ', content || 'Не указана');
+				break;
+			case 'general':
+				error[0] = 'Ошибка!';
+				break;
+			default: 
+				error[0] = content || ''
+				break;
+		};
+		error[1] = text || '';
 		return error
 	};
 	
@@ -142,6 +142,7 @@ App.preorder.accessCheck = function(records,fn,scope){
 	var errors = [];
 	var patient = records[0].data.patient;
 	var ptype = records[0].data.payment_type;
+	var referrals = {};
 	Ext.each(records,function(rec){
     	if (rec.data.patient != patient){
     		only_one_patient = false
@@ -150,7 +151,11 @@ App.preorder.accessCheck = function(records,fn,scope){
     	if (rec.data.payment_type != ptype){
     		only_one_ptype = false
     		return
-    	}
+    	};
+    	if (!referrals[rec.data.referral]){
+    		referrals[rec.data.referral] = {'name':rec.data.referral_name,'services':[]}
+    	};
+    	referrals[rec.data.referral]['services'].push({'service':rec.data.service_name, 'staff':rec.data.staff_name});
     });
 	
 	if (!only_one_patient){
@@ -159,6 +164,17 @@ App.preorder.accessCheck = function(records,fn,scope){
 	if(!only_one_ptype){
 		errors.push(makeErrorText('Выбрано несколько видов оплаты!','general'));
 	};
+	
+	if (Object.keys(referrals).length > 1){
+		
+		errors.push(makeErrorText('Указано несколько реферралов!','general'));
+		Ext.each(Object.keys(referrals),function(ref){
+			errors.push([String.format('Реферрал {0}: ', referrals[ref]['name'] || 'не указан'),'']);
+			Ext.each(referrals[ref]['services'],function(item){
+				errors.push(['',String.format('Услуга: {0}, Врач: {1} ', item['service'] || 'не указана', item['staff'] || 'не указан')])
+			});
+		})
+	}
 	
     var errorType = 'alert';
     var errorCaption = '';

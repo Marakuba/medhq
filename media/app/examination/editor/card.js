@@ -249,6 +249,7 @@ Ext.ux.form.Ticket = Ext.extend(Ext.Panel,{
 			if (d.title) {
 				this.setTitle(d.title);
 			} else {
+				this.setTitle('Щелкните здесь чтобы установить заголовок...');
 				this.header.addClass('empty-header');
 			};
 			if (d.text) {
@@ -260,8 +261,10 @@ Ext.ux.form.Ticket = Ext.extend(Ext.Panel,{
 			}
 			if(d.private) {
 				this.addClass('private');
+				this.pntMenuItem.setDisabled(true);
 			}
 		}		
+		this.doLayout()
 	},
 	
 	setPrintable : function(checked) {

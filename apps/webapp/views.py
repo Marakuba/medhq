@@ -27,6 +27,8 @@ import time
 from django.core.serializers.json import DjangoJSONEncoder
 
 import logging
+from medhq.apps.pricelist.models import get_actual_ptype
+from medhq.apps.staff.models import Staff
 logger = logging.getLogger('general')
 
 
@@ -39,6 +41,8 @@ def get_apps(request):
     if request.user.has_perm('examination.add_examinationcard') or request.user.is_superuser:
         apps.append([u'Обследования',u'/webapp/oldexam/'])
         apps.append([u'Обследования (новая версия)',u'/webapp/examination/'])
+    if request.user.is_superuser:
+        apps.append([u'Отчеты',u'/webapp/reporting/'])
     if request.user.is_staff or request.user.is_superuser:
         apps.append([u'Администрирование',u'/admin/'])
 
@@ -145,7 +149,9 @@ def testing(request):
 @login_required
 @render_to('webapp/reporting/index.html')
 def reporting(request):
-    return {}
+    return {
+        'apps':simplejson.dumps(get_apps(request))
+    }
     
 
 @login_required
@@ -349,8 +355,15 @@ def get_service_tree(request):
             payer = State.objects.get(id=payer)
         except:
             payer = None
+            
+    if staff:
+        try:
+            staff = Staff.objects.get(id=staff)
+        except:
+            staff = None
+    p_type_id = get_actual_ptype()
         
-    _cache_key = u'%sservice_list_%s_%s_%s' % (ext and 'ext_' or '', state and state.id or u'*', payment_type, payer and payer.id or '*')
+    _cache_key = u'%sservice_list_%s_%s_%s_%s' % (ext and 'ext_' or '', state and state.id or u'*', payment_type, payer and payer.id or '*', p_type_id or '*')
     
     # запрос с параметром recache удаляет ВСЕ записи в нём
     if recache:
@@ -366,21 +379,22 @@ def get_service_tree(request):
     # если отсутствует кэш, то начинаем построение дерева услуг    
     if not _cached_tree:
 
-        args = dict(extended_service__is_active=True, 
+        price_args = dict(extended_service__is_active=True, 
                     payment_type=payment_type,
                     price_type='r',
                     on_date__lte=on_date)
         if staff:
-            args['extended_service__staff']=staff
+            price_args['extended_service__staff']=staff.position_set.all()
         if state:
-            args['extended_service__branches']=state.id
+            price_args['extended_service__branches']=state
         if payer:
-            args['payer'] = payer.id
+            price_args['payer'] = payer.id
         else:
-            args['payer__isnull'] = True
+            price_args['payer__isnull'] = True
+        price_args['type'] = p_type_id
     
         nodes = []
-        values = Price.objects.filter(**args).\
+        values = Price.objects.filter(**price_args).\
             order_by('extended_service__id','on_date').\
             values('on_date','extended_service__id','extended_service__state__id','extended_service__staff__id','value','extended_service__base_service__id').\
             annotate(Max('on_date'))

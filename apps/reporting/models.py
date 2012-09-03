@@ -3,7 +3,9 @@ from django.db import models
 from service.models import BaseService
 from state.models import State
 from django.conf import settings
-from django.contrib.auth.models import Group
+from constance import config
+from django.contrib.auth.models import Group, User
+from mptt.models import MPTTModel
 
 #GROUP_SERVICE_UZI = 'uzi'
 #GROUP_SERVICE_LAB = 'lab'
@@ -72,16 +74,58 @@ class StateGroup(models.Model):
         return u'%s'  %(self.name)
 
 
-class Report(models.Model):
-    """
-    """
+class Query(models.Model):
+    sql = models.TextField(u'SQL-запрос')
     name = models.CharField(u'Название', max_length=300)
-    module = models.CharField(u'Модуль', max_length=100)
-    is_active = models.BooleanField(u'Активен', default=True)
     
+    class Meta:
+        verbose_name = u'sql-запрос'
+        verbose_name_plural = u'sql-запросы'
+        
+    def __unicode__(self):
+        return u'%s'  %(self.name)
 
-class ReportPermission(models.Model):
+class Report(MPTTModel):
     """
     """
-    group = models.ForeignKey(Group)
-    reports = models.ManyToManyField(Report, blank=True, null=True)
+    parent = models.ForeignKey('self', null=True, blank=True, verbose_name=u'Родительский элемент', related_name='children')
+    name = models.CharField(u'Название', max_length=300)
+    slug = models.CharField(u'Модуль', max_length=100, blank = True) 
+    template = models.CharField(u'Шаблон', max_length=100, blank = True) 
+    sql_query = models.ForeignKey(Query, null = True, blank = True)
+    is_active = models.BooleanField(u'Активен', default=True)
+    formclass = models.CharField(u'Форма', max_length=100, null = True, blank = True)
+    groups = models.ManyToManyField(Group, blank=True,null=True)
+    users = models.ManyToManyField(User, blank=True, null=True)
+    
+    class Meta:
+        verbose_name = u'отчет'
+        verbose_name_plural = u'отчеты'
+        
+    def get_sql(self):
+        if self.sql_query:
+            return self.sql_query.sql
+        
+    def get_form(self):
+        formclass = self.formclass or config.BASE_REPORT_FORM
+        if not formclass:
+            return False
+        path = formclass.split('.')
+        cls = path[-1]
+        app = ".".join(path[:-1])
+        fromlist = path[-2]
+        form_module = __import__(app,{},{},fromlist,-1)
+        form = getattr(form_module,cls)
+        return form
+        
+    def get_fields(self):
+        formclass = self.get_form()
+        if formclass:
+            form = formclass()
+            fields = form.fields.keys()
+            return fields
+        else:
+            return []
+        
+    def __unicode__(self):
+        return u'%s'  %(self.name)

@@ -6,6 +6,13 @@ App.patient.AsgmtGrid = Ext.extend(Ext.grid.EditorGridPanel, {
 	
 	initComponent : function() {
 		
+		this.refStore = new Ext.data.RESTStore({
+			autoSave: false,
+			autoLoad : false,
+			apiUrl : get_api_url('referral'),
+			model: App.models.ReferralModel
+		});
+		
 		this.updatingStoreCheck = new Ext.form.Checkbox({
 			checked:true,
 			hidden:this.hasPatient,
@@ -56,7 +63,7 @@ App.patient.AsgmtGrid = Ext.extend(Ext.grid.EditorGridPanel, {
 		this.visitButton = new Ext.Button({
 			iconCls:'silk-add',
 			disabled:true,
-			hidden:this.card_id,
+			hidden:this.card_id || this.doctorMode,
 			text:'Оформить заказ',
 			handler:this.onVisitButtonClick.createDelegate(this, []),
 			scope:this
@@ -73,15 +80,23 @@ App.patient.AsgmtGrid = Ext.extend(Ext.grid.EditorGridPanel, {
 		this.setTimeButton = new Ext.Button({
 			xtype:'button',
 			text:'Назначить время',
-			hidden:this.card_id,
+			hidden:this.referral_type != 'л',
 			disabled:true,
 			handler:this.staffWindow.createDelegate(this, []),
 			scope:this
 		});
 		
+		this.confirmButton = new Ext.Button({
+			text:'Подтвердить',
+			hidden:true,
+			disabled:false,
+			handler:this.confirmRecord.createDelegate(this, []),
+			scope:this
+		});
+		
 		this.ttb = new Ext.Toolbar({
 			items:[this.createButton,'-',
-				this.visitButton, this.clearButton, this.setTimeButton,'-',
+				this.visitButton, this.clearButton, this.setTimeButton,this.confirmButton,'-',
 				{
 					text:'Реестр',
 					handler:function(){
@@ -132,7 +147,8 @@ App.patient.AsgmtGrid = Ext.extend(Ext.grid.EditorGridPanel, {
 			autoSave : true,
 			baseParams:this.baseParams ? this.baseParams : {
 				format:'json',
-				visit__isnull:true
+				visit__isnull:true,
+				deleted:false
 			},
 			apiUrl : get_api_url('visitpreorder'),
 			model: App.models.preorderModel
@@ -184,28 +200,28 @@ App.patient.AsgmtGrid = Ext.extend(Ext.grid.EditorGridPanel, {
 		
 		this.columns =  [{
 		    	header: "Пациент", 
-		    	width: 60, 
+		    	width: 150, 
 		    	sortable: true, 
 		    	dataIndex: 'patient_name',
 		    	hidden: this.hasPatient ? true : false
 		    },{
 		    	header: "Услуга", 
-		    	width: 100, 
+		    	width: 250, 
 		    	sortable: true, 
 		    	dataIndex: 'service_name'
 		     },{
 		    	header: "Количество", 
-		    	width: 20, 
+		    	width: 75, 
 		    	sortable: true, 
 		    	dataIndex: 'count'
 		    },{
 		    	header: "Выполнено", 
-		    	width: 20, 
+		    	width: 75, 
 		    	sortable: true, 
 		    	dataIndex: 'completed_count'
 		    }, new Ext.ux.ProgressColumn({
                 header: '%',
-                width: 70, 
+                width: 100, 
                 dataIndex: 'completed_count',
                 divisor: 'count',
                 align: 'center',
@@ -214,24 +230,24 @@ App.patient.AsgmtGrid = Ext.extend(Ext.grid.EditorGridPanel, {
                 }
             }),{
 		    	header: "Цена", 
-		    	width: 20, 
+		    	width: 50, 
 		    	hidden:this.card_id,
 		    	sortable: true, 
 		    	dataIndex: 'price'
 		    },{
 		    	header: "Врач", 
-		    	width: 30, 
+		    	width: 100, 
 		    	sortable: true, 
 		    	dataIndex: 'staff_name'
 		    },{
 		    	header: "Время", 
-		    	width: 32, 
+		    	width: 60, 
 		    	sortable: true, 
 		    	dataIndex: 'start',
 		    	renderer:Ext.util.Format.dateRenderer('H:i / d.m.y')
 		    },{
 		    	header: "Дата выполнения", 
-		    	width: 32, 
+		    	width: 100, 
 		    	sortable: true, 
 		    	dataIndex: 'expiration',
 		    	renderer:Ext.util.Format.dateRenderer('d.m.y'),
@@ -243,24 +259,24 @@ App.patient.AsgmtGrid = Ext.extend(Ext.grid.EditorGridPanel, {
 				
 		    },{
 		    	header: "Место выполнения", 
-		    	width: 40, 
+		    	width: 120, 
 		    	sortable: true, 
 		    	dataIndex: 'execution_place_name'
 		    },{
 		    	header: "Телефон", 
-		    	width: 35, 
+		    	width: 100, 
 		    	hidden:this.card_id,
 		    	sortable: false, 
 		    	dataIndex: 'patient_phone'
 		    },{
 		    	header: "Акция", 
-		    	width: 35, 
+		    	width: 80, 
 		    	hidden:this.card_id,
 		    	sortable: false, 
 		    	dataIndex: 'promotion_name'
 		    },{
 		    	header: "Оператор", 
-		    	width: 35, 
+		    	width: 80, 
 		    	hidden:this.card_id,
 		    	sortable: true, 
 		    	dataIndex: 'operator_name'
@@ -306,15 +322,18 @@ App.patient.AsgmtGrid = Ext.extend(Ext.grid.EditorGridPanel, {
                 	iconCls: 'x-tbar-page-next'
             	}]
             },
-			viewConfig : {
+			viewConfig : this.viewConfig || {
 				emptyText :this.emptyText,
-				forceFit : true,
+				forceFit : false,
 				showPreview:true,
 				enableRowBody:true,
 				getRowClass: function(record, index, p, store) {
             		var service = record.get('service');
             		if (record.data.comment){
             			p.body = '<p class="helpdesk-row-body"> Комментарий: '+record.data.comment+'</p>';
+            		};
+            		if (record.data.deleted){
+            			return 'preorder-deactive-row-body'
             		};
             		if (record.data.start) {
                 		return 'preorder-visited-row-body';
@@ -354,7 +373,10 @@ App.patient.AsgmtGrid = Ext.extend(Ext.grid.EditorGridPanel, {
 					if (!this.updatingStoreCheck.getValue()){
 						this.store.load()
 					}
-				}
+				};
+			};
+			if (this.referral_type=='л'){
+				this.confirmButton.show();
 			}
 		},this);
 		App.calendar.eventManager.on('preorderwrite', this.storeReload,this);
@@ -405,6 +427,10 @@ App.patient.AsgmtGrid = Ext.extend(Ext.grid.EditorGridPanel, {
 		s.baseParams = {format:'json','patient': id, visit__isnull:true};
 		if (this.card_id){
 			s.setBaseParam('card',this.card_id);
+		} else {
+			if(!this.referral_type || (this.referral_type != 'л')){
+				s.setBaseParam('deleted',false);
+			}
 		}
 		s.load();
 	},
@@ -412,7 +438,7 @@ App.patient.AsgmtGrid = Ext.extend(Ext.grid.EditorGridPanel, {
 	btnSetDisabled: function(status) {
 		if (!status){
 			var record = this.getSelected();
-			if (record.data.visit){
+			if (record.data.visit || record.data.deleted){
 				this.visitButton.setDisabled(true);
 	        	this.clearButton.setDisabled(true);
 //	        	this.setTimeButton.setDisabled(true);
@@ -430,11 +456,19 @@ App.patient.AsgmtGrid = Ext.extend(Ext.grid.EditorGridPanel, {
 		if (records.length != 1){
 			this.setTimeButton.setDisabled(true)
 		} else {
-			this.setTimeButton.setDisabled(false)
+			if (!records[0].data.deleted){
+				this.setTimeButton.setDisabled(false)
+			}
 		}
+		status = true
+		Ext.each(records,function(rec){
+			if (!rec.data.visit && !rec.data.deleted){
+				status = false
+			};
+			this.visitButton.setDisabled(status);
+    		this.clearButton.setDisabled(status);
+		},this)
 		
-		this.visitButton.setDisabled(false);
-        this.clearButton.setDisabled(false);
 	},
 	
     getSelected: function() {
@@ -484,16 +518,24 @@ App.patient.AsgmtGrid = Ext.extend(Ext.grid.EditorGridPanel, {
     	var r = [];
     	var s = this.store;
     	s.autoSave = false;
-    	Ext.each(records, function(record){
-    		if(!record.data.visit) {
-    			record.set('deleted',true);
-    			record.set('rejection_cause',cause_uri);
-    		}
-    	});
-    	
+    	if (this.card_id){
+    		Ext.each(records, function(record){
+	    		if(!record.data.visit && !record.data.deleted) {
+	    			this.store.remove(record)
+	    		}
+	    	});
+    	} else {
+	    	
+	    	Ext.each(records, function(record){
+	    		if(!record.data.visit && !record.data.deleted) {
+	    			record.set('deleted',true);
+	    			record.set('rejection_cause',cause_uri);
+	    		}
+	    	});
+	    	s.load();
+    	};
     	s.save();
     	s.autoSave = true;
-    	s.load();
     },
     
     onCreate: function(){
@@ -503,12 +545,12 @@ App.patient.AsgmtGrid = Ext.extend(Ext.grid.EditorGridPanel, {
 				card_id:this.card_id,
 				fn: function(asgmttab){
 					this.store.load();
+					this.fireEvent('asgmtcreate');
 					var idList = [];
 					var s = asgmttab.form.preorderGrid.store;
 					s.each(function(rec){
 						idList.push(rec.id);
 					});
-					console.info(idList);
 					var win = new App.patient.AsgmtListWindow({
 						idList:idList.join(",")
 					});
@@ -671,6 +713,37 @@ App.patient.AsgmtGrid = Ext.extend(Ext.grid.EditorGridPanel, {
 	
 	updatingCheckClick: function(checkbox, checked){
 		this.fireEvent('setupdating',this,checked);
+	},
+	
+	confirmRecord: function(){
+		var rec = this.getSelectionModel().getSelected();
+		if (!rec){
+			return
+		};
+		if (rec.data.referral){
+			this.refStore.load({params:{format:'json',id:App.uriToId(rec.data.referral)},callback:function(records){
+				if (records.length){
+					if (records[0].data.referral_type != 'л'){
+						this.setPreorderReferral(rec,this.referral);
+					}
+				}
+				
+			},scope:this})
+		} else {
+			this.setPreorderReferral(rec,this.referral);
+		}
+	},
+	
+	setPreorderReferral: function(rec,referral){
+		this.store.autoSave = false;
+		rec.beginEdit();
+		rec.set('referral',this.referral);
+		rec.set('deleted',false);
+		rec.set('confirmed',true);
+		rec.endEdit();
+		this.store.save();
+		this.store.autoSave = true;
+		this.store.load();
 	}
 	
 	

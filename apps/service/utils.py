@@ -10,6 +10,7 @@ import logging
 import cStringIO
 import codecs
 import datetime
+from pricelist.models import get_actual_ptype
 logger = logging.getLogger('general')
 
 def unicode_csv_reader(unicode_csv_data, **kwargs):
@@ -46,7 +47,7 @@ def revert_tree_objects(obj):
         child.move_to(obj, position='first-child')
         revert_tree_objects(child)
 
-def get_service_tree(state=None,payer=None,payment_type=None):
+def get_service_tree(state=None,payer=None,payment_type=None,price_type=None, date=datetime.datetime.today()):
     """
     Генерирует дерево в json-формате.
     """
@@ -77,16 +78,19 @@ def get_service_tree(state=None,payer=None,payment_type=None):
     args = {}
     if state:
         ignored = State.objects.filter(type='b').exclude(id=state.id)
-        args['extended_service__state']=state.id
+        args['extended_service__branches']=state
     
     if payment_type:
         args['payment_type'] = payment_type
         if payer and payment_type in [u'б',u'к']:
             args['payer'] = payer.id
 
+    args['on_date__lte'] = date
     nodes = []
-    values = Price.objects.filter(extended_service__is_active=True, price_type='r',**args).\
-        order_by('extended_service__id').\
+    if not price_type:
+        price_type = get_actual_ptype()
+    values = Price.objects.filter(extended_service__is_active=True, price_type='r',type=price_type,**args).\
+        order_by('extended_service__id','on_date').\
         values('extended_service__id','value','extended_service__base_service__id').\
         annotate(Max('on_date'))
     result = {}

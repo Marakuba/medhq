@@ -44,6 +44,11 @@ from remoting.models import RemoteState
 from api.authorization import LocalAuthorization
 from patient.models import ContractType, Contract
 from scheduler.models import RejectionCause
+from medstandart.models import Standart, StandartItem, Term,\
+    Complications, Stage, Phase, NosologicalForm, AgeCategory
+from reporting.models import Report
+from medhq.apps.reporting.models import Query
+from django.db.models.expressions import F
 
 class UserResource(ModelResource):
 
@@ -326,6 +331,9 @@ class ReferralResource(ExtResource):
         kwargs['operator']=request.user
         result = super(ReferralResource, self).obj_create(bundle=bundle, request=request, **kwargs)
         return result
+    def dehydrate(self, bundle):
+        bundle.data['referral_type_name'] = bundle.obj.get_referral_type_display()
+        return bundle
 
     class Meta:
         queryset = Referral.objects.all() #@UndefinedVariable
@@ -399,7 +407,7 @@ class StateResource(ModelResource):
         filtering = {
             'id':ALL,
             'type':ALL,
-            'name':('istartswith',),
+            'name':ALL,
             'uuid':ALL,
             'remotestate':ALL_WITH_RELATIONS
         }
@@ -700,17 +708,63 @@ class BaseServiceResource(ExtResource):
             'parent':ALL_WITH_RELATIONS,
             'labservice':ALL_WITH_RELATIONS
         }
+
+lookups = {}
+lookups[BaseService._meta.right_attr] = F(BaseService._meta.left_attr)+1
+
+
+class BaseServiceGroupResource(ExtResource):
+    parent = fields.ForeignKey('self', 'parent', null=True)
+    labservice = fields.ForeignKey(LSResource,'labservice', null=True)
+    
+    def dehydrate(self, bundle):
+        service = bundle.obj
+        bundle.data['name'] = '-'*service.level + service.name
+        return bundle
+    
+    class Meta:
+        queryset = BaseService.objects.exclude(**lookups).order_by(BaseService._meta.tree_id_attr, BaseService._meta.left_attr, 'level')
+        authorization = DjangoAuthorization()
+        always_return_data = True
+        resource_name = 'baseservicegroup'
+        filtering = {
+            'id':ALL,
+            'name':ALL,
+            'parent':ALL_WITH_RELATIONS,
+            'labservice':ALL_WITH_RELATIONS
+        }
         
 class StaffResource(ModelResource):
+    referral = fields.ForeignKey(ReferralResource, 'referral', null = True)
     """
     """
     def dehydrate(self, bundle):
         bundle.data['name'] = bundle.obj.short_name()
+        bundle.data['referral_type'] = bundle.obj.referral and bundle.obj.referral.referral_type 
         bundle.data['title'] = bundle.obj.short_name()
         return bundle
     
+    def build_filters(self, filters=None):
+        if filters is None:
+            filters = {}
+
+        orm_filters = super(StaffResource, self).build_filters(filters)
+
+        if "search" in filters:
+            smart_filters = smartFilter(filters['search'])
+            if len(smart_filters.keys())==1:
+                try:
+                    orm_filters = ComplexQuery( Q(visit__barcode__id=int(filters['search'])) | Q(**smart_filters), \
+                                      **orm_filters)
+                except:
+                    orm_filters.update(**smart_filters)
+            else:
+                orm_filters.update(**smart_filters)
+            
+        return orm_filters
+    
     class Meta:
-        queryset = Staff.objects.all()
+        queryset = Staff.objects.filter(status=u'д')
         resource_name = 'staff'
         always_return_data = True
         limit = 100
@@ -728,6 +782,25 @@ class PositionResource(ModelResource):
         bundle.data['text'] = bundle.obj.__unicode__()
         bundle.data['name'] = bundle.obj.__unicode__()
         return bundle
+    
+    def build_filters(self, filters=None):
+        if filters is None:
+            filters = {}
+
+        orm_filters = super(PositionResource, self).build_filters(filters)
+
+        if "search" in filters:
+            smart_filters = smartFilter(filters['search'],'staff')
+            if len(smart_filters.keys())==1:
+                try:
+                    orm_filters = ComplexQuery( Q(visit__barcode__id=int(filters['search'])) | Q(**smart_filters), \
+                                      **orm_filters)
+                except:
+                    orm_filters.update(**smart_filters)
+            else:
+                orm_filters.update(**smart_filters)
+            
+        return orm_filters
     
     class Meta:
         queryset = Position.objects.select_related().all()
@@ -768,7 +841,7 @@ class ExtendedServiceResource(ModelResource):
         return bundle
     
     class Meta:
-        queryset = ExtendedService.objects.all().select_related()
+        queryset = ExtendedService.objects.filter(is_active=True).select_related()
         resource_name = 'extendedservice'
         always_return_data = True
         filtering = {
@@ -878,7 +951,7 @@ class StaffSchedResource(ModelResource):
         return bundle
     
     class Meta:
-        queryset = Staff.objects.filter(doctor__isnull = False)
+        queryset = Staff.objects.filter(doctor__isnull = False,status=u'д')
         resource_name = 'staffsched'
         always_return_data = True
         limit = 100
@@ -1861,10 +1934,21 @@ class PreorderResource(ExtResource):
     promotion = fields.ForeignKey(PromotionResource, 'promotion', null=True)
     rejection_cause = fields.ForeignKey(RejectionCauseResource, 'rejection_cause', null=True)
     card = fields.ForeignKey(CardResource, 'card', null = True)
+    referral = fields.ForeignKey(ReferralResource, 'referral', null = True)
+    who_deleted = fields.ForeignKey(UserResource,'who_deleted', null=True)
     
     def obj_create(self, bundle, request=None, **kwargs):
         kwargs['operator']=request.user
+        referral = request and request.active_profile.staff.referral
+        if referral:
+            kwargs['referral']=referral
         result = super(PreorderResource, self).obj_create(bundle=bundle, request=request, **kwargs)
+        return result
+    
+    def obj_update(self, bundle, request=None, **kwargs):
+        if bundle.data['deleted']:
+            kwargs['who_deleted']=request.user
+        result = super(PreorderResource, self).obj_update(bundle=bundle, request=request, **kwargs)
         return result
     
     def build_filters(self, filters=None):
@@ -1905,10 +1989,22 @@ class ExtPreorderResource(ExtBatchResource):
     service = fields.ForeignKey(ExtendedServiceResource, 'service', null=True)
     promotion = fields.ForeignKey(PromotionResource, 'promotion', null=True)
     card = fields.ForeignKey(CardResource, 'card', null = True)
+    referral = fields.ForeignKey(ReferralResource, 'referral', null = True)
+    who_deleted = fields.ForeignKey(UserResource,'who_deleted',null=True)
     
     def obj_create(self, bundle, request=None, **kwargs):
         kwargs['operator']=request.user
+        referral = request and request.active_profile.staff.referral
+        if referral:
+            kwargs['referral']=referral
         result = super(ExtPreorderResource, self).obj_create(bundle=bundle, request=request, **kwargs)
+        return result
+    
+    def obj_update(self, bundle, request=None, **kwargs):
+#        import pdb; pdb.set_trace()
+        if bundle.data['deleted']:
+            bundle.data['who_deleted']=request.user
+        result = super(ExtPreorderResource, self).obj_update(bundle=bundle, request=request, **kwargs)
         return result
     
     def build_filters(self, filters=None):
@@ -1947,6 +2043,7 @@ class ExtPreorderResource(ExtBatchResource):
         bundle.data['patient_phone'] = obj.patient and obj.patient.mobile_phone
         bundle.data['operator_name'] = obj.operator or ''
         bundle.data['branches'] = obj.service and bundle.obj.service.branches.all().values_list('id', flat=True)
+        bundle.data['referral_name'] = obj.referral and obj.referral.__unicode__()
         return bundle
     
     class Meta:
@@ -1955,6 +2052,7 @@ class ExtPreorderResource(ExtBatchResource):
         authorization = DjangoAuthorization()
         always_return_data = True
         filtering = {
+            'deleted':ALL,
             'patient':ALL,
             'start':ALL,
             'timeslot':ALL_WITH_RELATIONS,
@@ -1991,11 +2089,12 @@ class VisitPreorderResource(ExtPreorderResource):
         return orm_filters
     
     class Meta:
-        queryset = Preorder.objects.filter(timeslot__isnull=True,deleted = False).order_by('-expiration')
+        queryset = Preorder.objects.filter(timeslot__isnull=True).order_by('-expiration')
         resource_name = 'visitpreorder'
         authorization = DjangoAuthorization()
         always_return_data = True
         filtering = {
+            'deleted':ALL,
             'patient':ALL,
             'start':ALL,
             'expiration':ALL,
@@ -2257,6 +2356,216 @@ class ServiceToSend(ExtResource):
             'state':ALL_WITH_RELATIONS
         }        
         
+        
+class ReportTreeResource(ModelResource):
+    
+    parent = fields.ForeignKey('self','parent', null=True)
+    
+    def dehydrate(self, bundle):
+        bundle.data['text'] = bundle.obj.name
+        bundle.data['slug'] = bundle.obj.slug
+        bundle.data['fields'] = bundle.obj.get_fields()
+        bundle.data['parent'] =  bundle.obj.parent and bundle.obj.parent.id
+        if bundle.obj.is_leaf_node():
+            bundle.data['leaf'] = bundle.obj.is_leaf_node()
+        return bundle
+    
+
+    def build_filters(self, filters=None):
+        if filters is None:
+            filters = {}
+
+        orm_filters = super(ReportTreeResource, self).build_filters(filters)
+
+        if "parent" in filters:
+            if filters['parent']=='root':
+                del orm_filters['parent__exact']
+                orm_filters['parent__isnull'] = True
+
+        return orm_filters
+    
+    def get_object_list(self, request):
+        """
+        An ORM-specific implementation of ``get_object_list``.
+
+        Returns a queryset that may have been limited by other overrides.
+        """
+        qs = self._meta.queryset._clone()
+        user = request.user
+        groups = user.groups.get_query_set()
+        
+        qs = qs.complex_filter(Q(groups__in=groups) | Q(users__in=[user]))
+        return qs
+
+    
+    class Meta:
+        queryset = Report.objects.filter(is_active=True) 
+        limit = 20000
+        fields = ('id',)
+        resource_name = 'reporttree'
+        authorization = DjangoAuthorization()
+        filtering = {
+            'id':ALL,
+            'name':('istartswith',),
+            'is_active':ALL,
+            'parent':ALL_WITH_RELATIONS
+        }
+
+class QueryResource(ExtResource):
+    """
+    """
+    class Meta:
+        queryset = Query.objects.all()
+        resource_name = 'sqlquery'
+        authorization = DjangoAuthorization()
+        always_return_data = True
+        limit = 200
+        filtering = {
+            'id' : ALL,
+        }
+
+class ReportResource(ExtResource):
+    """
+    """
+    sql_query = fields.ForeignKey(QueryResource, 'sql_query')
+
+    def dehydrate(self, bundle):
+        bundle.data['sql_query_text'] = bundle.obj.sql_query.sql
+        return bundle
+    
+    class Meta:
+        queryset = Report.objects.all()
+        resource_name = 'report'
+        authorization = DjangoAuthorization()
+        always_return_data = True
+        limit = 200
+        filtering = {
+            'id' : ALL,
+        }        
+        
+
+class NosologicalFormResource(ExtResource):
+    
+    class Meta:
+        queryset = NosologicalForm.objects.all()
+        resource_name = 'nosological_form'
+        authorization = DjangoAuthorization()
+        always_return_data = True
+        limit = 200
+        filtering = {
+            'id' : ALL,
+        }
+        
+class AgeCategoryResource(ExtResource):
+    
+    class Meta:
+        queryset = AgeCategory.objects.all()
+        resource_name = 'age_category'
+        authorization = DjangoAuthorization()
+        always_return_data = True
+        limit = 200
+        filtering = {
+            'id' : ALL,
+        }
+        
+class PhaseResource(ExtResource):
+    
+    class Meta:
+        queryset = Phase.objects.all()
+        resource_name = 'phase'
+        authorization = DjangoAuthorization()
+        always_return_data = True
+        limit = 200
+        filtering = {
+            'id' : ALL,
+        }
+        
+class StageResource(ExtResource):
+    
+    class Meta:
+        queryset = Stage.objects.all()
+        resource_name = 'stage'
+        authorization = DjangoAuthorization()
+        always_return_data = True
+        limit = 200
+        filtering = {
+            'id' : ALL,
+        }
+        
+class ComplicationsResource(ExtResource):
+    
+    class Meta:
+        queryset = Complications.objects.all()
+        resource_name = 'complications'
+        authorization = DjangoAuthorization()
+        always_return_data = True
+        limit = 200
+        filtering = {
+            'id' : ALL,
+        }
+        
+class TermResource(ExtResource):
+    
+    class Meta:
+        queryset = Term.objects.all()
+        resource_name = 'term'
+        authorization = DjangoAuthorization()
+        always_return_data = True
+        limit = 200
+        filtering = {
+            'id' : ALL,
+        }
+        
+class MedStandartResource(ExtResource):
+    nosological_form = fields.ForeignKey(NosologicalFormResource,'nosological_form',null=True)
+    age_category = fields.ManyToManyField(AgeCategoryResource,'age_category',null=True)
+    phase = fields.ForeignKey(PhaseResource,'phase',null=True)
+    stage = fields.ForeignKey(StageResource,'stage',null=True)
+    complications = fields.ForeignKey(ComplicationsResource,'complications',null=True)
+    terms = fields.ManyToManyField(TermResource,'terms',null=True)
+    mkb10 = fields.ForeignKey(ICD10Resource,'mkb10')
+    
+    def dehydrate(self, bundle):
+        bundle.data['nosological_form_name'] = bundle.obj.nosological_form and bundle.obj.nosological_form.name or u'Не указано'
+        bundle.data['age_category_name'] = bundle.obj.get_items_str('age_category') or u'Не указано'
+        bundle.data['phase_name'] = bundle.obj.phase and bundle.obj.phase.name or u'Не указано'
+        bundle.data['stage_name'] = bundle.obj.stage and bundle.obj.stage.name or u'Не указано'
+        bundle.data['complications_name'] = bundle.obj.complications and bundle.obj.complications.name or u'Не указано'
+        bundle.data['terms_name'] = bundle.obj.get_items_str('terms') or u'Не указано'
+        return bundle
+    
+    class Meta:
+        queryset = Standart.objects.all()
+        resource_name = 'medstandart'
+        authorization = DjangoAuthorization()
+        always_return_data = True
+        limit = 200
+        filtering = {
+            'id' : ALL,
+            'mkb10':ALL,
+        }
+        
+class StandartItemResource(ExtResource):
+    standart = fields.ForeignKey(MedStandartResource,'standart')
+    service = fields.ForeignKey(ExtendedServiceResource,'service')
+    
+    def dehydrate(self, bundle):
+        bundle.data['service_name'] = bundle.obj.service.base_service.name
+        bundle.data['price'] = bundle.obj.service.get_actual_price()
+        bundle.data['state'] = bundle.obj.service.state
+        return bundle
+    
+    class Meta:
+        queryset = StandartItem.objects.all()
+        resource_name = 'standartitem'
+        authorization = DjangoAuthorization()
+        always_return_data = True
+        limit = 200
+        filtering = {
+            'id' : ALL,
+            'standart':ALL
+        }
+              
 
 api = Api(api_name=get_api_name('dashboard'))
 
@@ -2301,6 +2610,7 @@ api.register(EquipmentTaskReadOnlyResource())
 #service
 api.register(LSResource())
 api.register(BaseServiceResource())
+api.register(BaseServiceGroupResource())
 api.register(ExtendedServiceResource())
 api.register(LabServiceGroupResource())
 api.register(ICD10Resource())
@@ -2378,8 +2688,21 @@ api.register(AdSourceResource())
 #remoting
 api.register(ServiceToSend())
 
+#medstandart
+api.register(NosologicalFormResource())
+api.register(AgeCategoryResource())
+api.register(PhaseResource())
+api.register(StageResource())
+api.register(ComplicationsResource())
+api.register(TermResource())
+api.register(MedStandartResource())
+api.register(StandartItemResource())
+
 #reporting
-#api.register(ReportResource())
+api.register(QueryResource())
+api.register(ReportTreeResource())
+api.register(ReportResource())
+
 #api.register(FilterItemResource())
 #api.register(FieldItemResource())
 #api.register(GroupItemResource())

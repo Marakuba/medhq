@@ -152,7 +152,10 @@ App.models.preorderModel = new Ext.data.Record.create([
 	{name: 'branches'},
 	{name: 'start', type: 'date',format:'c'},
 	{name: 'deleted'},
-	{name: 'rejection_cause'}
+	{name: 'rejection_cause'},
+	{name: 'referral'},
+	{name: 'referral_name'},
+	{name: 'confirmed'}
 ]);
 
 App.models.patientModel = new Ext.data.Record.create([
@@ -185,7 +188,9 @@ App.models.patientModel = new Ext.data.Record.create([
 	{name: 'id_card_org'},
 	{name: 'contract'},
 	{name: 'short_name'},
-	{name: 'accepted', type:'date'}
+	{name: 'accepted', type:'date'},
+	{name: 'assignment_notify'},
+	{name: 'preorder_notify'}
 	 
 ]);
 
@@ -380,6 +385,23 @@ App.models.LabService = new Ext.data.Record.create([
     {name: 'staff_name'}
 ]);
 
+App.models.StaffModel = new Ext.data.Record.create([
+	{name: 'id'},
+	{name: 'resource_uri'},
+	{name: 'name'},
+	{name: 'referral'},
+	{name: 'referral_type'}
+]);
+
+App.models.ReferralModel = new Ext.data.Record.create([
+	{name: 'id'},
+	{name: 'resource_uri'},
+	{name: 'name'},
+	{name: 'agent'},
+	{name: 'referral_type'},
+	{name: 'referral_type_name'}
+])
+
 App.models.LabOrder = new Ext.data.Record.create([
 	{name: 'id'},
 	{name: 'created', type:'date',format:'c'},
@@ -493,11 +515,64 @@ App.models.ServiceToSend = new Ext.data.Record.create([
     {name: 'patient_birth_day', type:'date', format:'c'}
 ]);
 
+App.models.MedStandartModel = new Ext.data.Record.create([
+    {name: 'id'},
+    {name: 'resource_uri'},
+    {name: 'mkb10'},
+    {name: 'name'},
+    {name: 'age_category'},
+    {name: 'age_category_name'},
+    {name: 'stage'},
+    {name: 'phase'},
+    {name: 'nosological_form'},
+    {name: 'complications'},
+    {name: 'stage_name'},
+    {name: 'phase_name'},
+    {name: 'nosological_form_name'},
+    {name: 'complications_name'},
+    {name: 'terms_name'},
+    {name: 'terms'}
+]);
+
+App.models.StandartItemModel = new Ext.data.Record.create([
+    {name: 'id'},
+    {name: 'resource_uri'},
+    {name: 'standart'},
+    {name: 'service'},
+    {name: 'service_name'},
+    {name: 'price'},
+    {name: 'frequency'},
+    {name: 'average'}
+]);
+
 App.models.MedState = new Ext.data.Record.create([
     {name: 'id'},
     {name: 'resource_uri'},
     {name: 'name'},
     {name: 'print_name'}
+]);
+
+App.models.BaseService = new Ext.data.Record.create([
+    {name: 'id'},
+    {name: 'resource_uri'},
+    {name: 'name'},
+    {name: 'parent'},
+    {name: 'base_group'},
+    {name: 'execution_type_group'},
+    {name: 'short_name'},
+    {name: 'code'},
+    {name: 'standard_service'},
+    {name: 'execution_time'},
+    {name: 'partnership'},
+    {name: 'version'},
+    {name: 'is_group'},
+    {name: 'material'},
+    {name: 'gen_ref_interval'},
+    {name: 'lab_group'},
+    {name: 'inner_template'},
+    {name: 'conditions'},
+    {name: 'description'},
+    {name: 'type'}
 ]);
 
 App.models.Patient = App.models.patientModel // patientModel will deprecate

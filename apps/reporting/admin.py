@@ -2,6 +2,7 @@
 from django.contrib import admin
 from models import *
 from forms import *
+from feincms.admin.tree_editor import TreeEditor
 
 class StateGroup_StateInline(admin.TabularInline):
     model = StateGroup_State
@@ -25,6 +26,16 @@ class StateGroupAdmin(admin.ModelAdmin):
 
     pass
 
+class ReportAdmin(TreeEditor):
+    list_display = ('name','slug','is_active')
+    filter_horizontal = ('groups','users',)
+    
+class QueryAdmin(admin.ModelAdmin):
+    pass
+
 admin.site.register(ServiceGroupPrice,ServiceGroupPriceAdmin)
 admin.site.register(ServiceGroup,ServiceGroupAdmin)
 admin.site.register(StateGroup,StateGroupAdmin)
+
+admin.site.register(Query, QueryAdmin)
+admin.site.register(Report, ReportAdmin)

@@ -47,7 +47,11 @@ class BasePlain(BaseWidget):
         
         return { 'results' : result_list }
     
-from collections import defaultdict, OrderedDict
+from collections import defaultdict
+try:
+    from collections import OrderedDict
+except:
+    from ordereddict import OrderedDict
 
 class BaseColumn(BaseWidget):
     """

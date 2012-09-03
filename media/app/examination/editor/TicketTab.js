@@ -149,7 +149,7 @@ App.examination.TicketTab = Ext.extend(Ext.Panel, {
 					},
 					pos:ticket.pos,
 					section:section.section,
-					order:this.sectionPlan[section.section].order
+					order:this.sectionPlan[section.section] && this.sectionPlan[section.section].order || 0
 				});
 				//вставляем тикет на свое место согласно позиции pos
 				if(new_ticket.pos){
@@ -209,7 +209,7 @@ App.examination.TicketTab = Ext.extend(Ext.Panel, {
 					}
 					inserted = true;
 				} else {
-					if (item[paramName] > ticket[paramName]){
+					if (item[paramName] >= ticket[paramName]){
 						this.portalColumn.insert(ind,ticket);
 						inserted = true;
 					}
@@ -231,7 +231,30 @@ App.examination.TicketTab = Ext.extend(Ext.Panel, {
 			order:10000,
 			height:500,
 			autoScroll:true,
-			hasPatient:true
+			hasPatient:true,
+			autoHeight: true,
+			viewConfig:{
+				emptyText :'Для данного пациента направлений нет',
+				forceFit : false,
+				showPreview:true,
+				enableRowBody:true,
+				getRowClass:function(record, index, p, store){
+					if (record.data.deleted){
+            			return 'preorder-other-place-row-body'
+            		};
+            		if (record.data.confirmed){
+            			return 'preorder-visited-row-body'
+            		}
+            		return ''
+				}
+			},
+			listeners: {
+				scope:this,
+				asgmtcreate: function(){
+					this.doLayout()
+				}
+			}
+			
 		});
 		return asgmt_panel
 	},
@@ -248,5 +271,30 @@ App.examination.TicketTab = Ext.extend(Ext.Panel, {
 			this.asgmtPanel.setActivePatient(this.patientRecord);
 			this.insertTicketInPos(this.asgmtPanel,'order');
 		},scope:this});
+	},
+	
+	addStandartServices:function(records){
+		var today = new Date();
+		var s = this.asgmtPanel.store;
+		s.autoSave = false;
+		Ext.each(records,function(rec){
+			var asgmtType = s.recordType;
+			var asgmt = new asgmtType({
+				service:rec.data.service, 
+				service_name:rec.data.service_name,
+				price:rec.data.price || null,
+				execution_place : rec.data.state,
+				expiration: today.add(Date.DAY,30),
+				card:this.record.data.resource_uri || '',
+				count:rec.data.avarage || 1,
+				patient:App.getApiUrl('patient',this.patient)
+			});
+			s.add(asgmt);
+		},this);
+		
+		this.asgmtPanel.store.save();
+		s.autoSave = true;
+		this.doLayout();
+		
 	}
 });

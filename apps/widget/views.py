@@ -3,7 +3,8 @@
 """
 """
 from annoying.decorators import render_to
-from django.shortcuts import get_object_or_404
+from django.shortcuts import render_to_response, get_object_or_404
+from django.template.context import RequestContext
 from examination.models import Template, FieldSet, Card
 import simplejson
 from visit.models import OrderedService, Visit
@@ -12,6 +13,8 @@ from django.views.generic.simple import direct_to_template
 from service.models import BaseService
 import operator
 from scheduler.models import Preorder
+import reporting
+from reporting.models import Report as ReportConfig
 
 @render_to('widget/examination/template.html')
 def examination_template(request, object_id):
@@ -51,7 +54,10 @@ def examination_card(request, object_id):
                              'text':"%s, %s" % (card.mkb_diag.code, card.mkb_diag.name)
                              })
     asgmt_list = Preorder.objects.filter(patient=card.ordered_service.order.patient.id,card=card.id)
-    assigments = [{'count':a.count,'text':a.service and a.service.base_service.name or u'Нет названия'} for a in asgmt_list]
+    assigments = [{'count':a.count,
+                   'text':a.service and a.service.base_service.name or u'Нет названия',
+                   'expiration':a.expiration or u'Не указано',
+                   'deleted':a.deleted and u'Отменено' or ''} for a in asgmt_list]
     field_sets = dict([(fs.name, fs.title) for fs in FieldSet.objects.all()]) 
     data = card.data and simplejson.loads(card.data) or []
     for d in data:
@@ -69,6 +75,22 @@ def examination_card(request, object_id):
     }
 
     return ctx
+
+@render_to('widget/reporting/report.html')
+def report(request,slug):
+    report_config = get_object_or_404(ReportConfig, slug=slug, is_active=True)
+    formclass = report_config.get_form()
+    report_config.get_fields()
+    report = reporting.get_report(slug)(request=request,
+                                        query=report_config.get_sql(),
+                                        request_filters='GET',
+                                        formclass = formclass)
+    return direct_to_template(request=request, 
+                              template="widget/reporting/report.html",
+                              extra_context={
+                                'name':report_config.name,
+                                'report':report,
+                              })
 
 @render_to('widget/lab/results.html')
 def lab_results(request, object_id):

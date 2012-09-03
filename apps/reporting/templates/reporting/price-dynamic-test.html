@@ -1,0 +1,19 @@
+{% extends "reporting/base.html" %}
+{% load report_tags %}
+
+{% block data %}
+		{% get_report_as_list report False as results %}
+		
+		{%for row in results%}
+			<tr>
+				{%for cell in row.data%}
+					{% if forloop.counter == 0 %}
+						<th colspan="{{ cell.colspan }}">{{cell.value}}</th>
+					{%else%}
+						<td colspan="{{ cell.colspan }}">{{cell.value}}</td>
+					{%endif%}
+				{%endfor%}
+			</tr>
+		{%endfor%}
+		
+{% endblock %}
