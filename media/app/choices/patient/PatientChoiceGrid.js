@@ -71,6 +71,43 @@ App.choices.PatientChoiceGrid = Ext.extend(Ext.grid.GridPanel, {
 			scope:this
 		});
 		
+		this.searchField = new App.SearchField({
+			stripCharsRe:new RegExp('[\;\?]'),
+			listeners:{
+				scope:this,
+				specialkey:function(f,e){
+					if(e.getKey() == e.ENTER){
+		                this.searchField.onTrigger2Click(f);
+		            }
+				},
+				search:function(v){
+					this.onSearch(v)
+				}
+				
+			},
+			onTrigger1Click : function(){
+		        if(this.hasSearch){
+		        	this.fireEvent('search',undefined)
+					this.el.dom.value = '';
+		            this.triggers[0].hide();
+		            this.hasSearch = false;
+					this.focus();
+		        }
+		    },
+		    onTrigger2Click : function(){
+		        var v = this.getRawValue();
+		        if(v.length < 1){
+		            this.onTrigger1Click();
+		            return;
+		        };
+		        this.fireEvent('search',v)
+		        this.hasSearch = true;
+		        this.triggers[0].show();
+				this.focus();
+		    },
+		    scope:this
+		});
+		
 		var config = {
 			loadMask : {
 				msg : 'Подождите, идет загрузка...'
@@ -100,10 +137,7 @@ App.choices.PatientChoiceGrid = Ext.extend(Ext.grid.GridPanel, {
 				text:'Новый пациент',
 				handler:this.onPatientAdd.createDelegate(this, [])
 			},this.editButton,
-			{
-				xtype:'gsearchfield',
-				stripCharsRe:new RegExp('[\;\?]')
-			}],
+			this.searchField],
 	        bbar: new Ext.PagingToolbar({
 	            pageSize: 20,
 	            store: this.store,
@@ -155,7 +189,7 @@ App.choices.PatientChoiceGrid = Ext.extend(Ext.grid.GridPanel, {
 		window.open(url);
 	},
 	
-	onGlobalSearch: function(v){
+	onSearch: function(v){
 		var s = this.store;
 		s.baseParams = { format:'json' };
 		s.setBaseParam('search', v);

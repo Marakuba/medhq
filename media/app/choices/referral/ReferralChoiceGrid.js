@@ -37,6 +37,43 @@ App.choices.ReferralChoiceGrid = Ext.extend(Ext.grid.GridPanel, {
 			scope:this
 		});
 		
+		this.searchField = new App.SearchField({
+			stripCharsRe:new RegExp('[\;\?]'),
+			listeners:{
+				scope:this,
+				specialkey:function(f,e){
+					if(e.getKey() == e.ENTER){
+		                this.searchField.onTrigger2Click(f);
+		            }
+				},
+				search:function(v){
+					this.onSearch(v)
+				}
+				
+			},
+			onTrigger1Click : function(){
+		        if(this.hasSearch){
+		        	this.fireEvent('search',undefined)
+					this.el.dom.value = '';
+		            this.triggers[0].hide();
+		            this.hasSearch = false;
+					this.focus();
+		        }
+		    },
+		    onTrigger2Click : function(){
+		        var v = this.getRawValue();
+		        if(v.length < 1){
+		            this.onTrigger1Click();
+		            return;
+		        };
+		        this.fireEvent('search',v)
+		        this.hasSearch = true;
+		        this.triggers[0].show();
+				this.focus();
+		    },
+		    scope:this
+		});
+		
 		var config = {
 			loadMask : {
 				msg : 'Подождите, идет загрузка...'
@@ -61,10 +98,7 @@ App.choices.ReferralChoiceGrid = Ext.extend(Ext.grid.GridPanel, {
                 }
 			}),
 			tbar:[this.choiceButton,
-			{
-				xtype:'gsearchfield',
-				stripCharsRe:new RegExp('[\;\?]')
-			}],
+			this.searchField],
 	        bbar: new Ext.PagingToolbar({
 	            pageSize: 20,
 	            store: this.store,
@@ -84,10 +118,6 @@ App.choices.ReferralChoiceGrid = Ext.extend(Ext.grid.GridPanel, {
 
 		Ext.apply(this, Ext.apply(this.initialConfig, config));
 		App.choices.ReferralChoiceGrid.superclass.initComponent.apply(this, arguments);
-		App.eventManager.on('globalsearch', this.onGlobalSearch, this);
-		this.on('destroy', function(){
-			App.eventManager.un('globalsearch', this.onGlobalSearch, this);
-		},this);
 //		App.eventManager.on('patientwrite', this.onPatientWrite, this);
 		this.on('referralselect', this.onReferralSelect, this);
 		//this.store.on('write', this.onStoreWrite, this);
@@ -105,7 +135,7 @@ App.choices.ReferralChoiceGrid = Ext.extend(Ext.grid.GridPanel, {
 		return this.getSelectionModel().getSelected()
 	},
 	
-	onGlobalSearch: function(v){
+	onSearch: function(v){
 		var s = this.store;
 		s.baseParams = { format:'json' };
 		s.setBaseParam('name__istartswith', v);

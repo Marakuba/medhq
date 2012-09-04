@@ -4,6 +4,12 @@ App.registry.PreorderManager = Ext.extend(Ext.TabPanel, {
 
 	initComponent : function() {
 		
+		this.preorderTitle = 'Ближайшие';
+		
+		this.completedTitle = 'Выполненные';
+		
+		this.asgmtTitle = 'Направления';
+		
 		this.medstateStore = this.medstateStore || new Ext.data.RESTStore({
 			autoSave: true,
 			autoLoad : true,
@@ -20,7 +26,7 @@ App.registry.PreorderManager = Ext.extend(Ext.TabPanel, {
 		
 		
 		var preorderCfg =  {
-			title:'Ближайшие',
+			title:this.preorderTitle,
 			hasPatient:this.hasPatient,
 			patientStore: this.patientStore,
 			medstateStore: this.medstateStore,
@@ -40,7 +46,7 @@ App.registry.PreorderManager = Ext.extend(Ext.TabPanel, {
 			patientStore: this.patientStore,
 			searchValue: this.searchValue,
 			doctorMode: this.doctorMode,
-			title:'Выполненные',
+			title:this.completedTitle,
 			baseParams:{
 				format:'json',
 				'timeslot__isnull':false,
@@ -53,6 +59,7 @@ App.registry.PreorderManager = Ext.extend(Ext.TabPanel, {
 		});
 		var assignmentCfg = {
 			hasPatient:this.hasPatient,
+			title:this.asgmtTitle,
 			medstateStore: this.medstateStore,
 			patientStore: this.patientStore,
 			searchValue: this.searchValue,
@@ -66,6 +73,10 @@ App.registry.PreorderManager = Ext.extend(Ext.TabPanel, {
 		};
 		Ext.apply(assignmentCfg,this.assignmentCfg);
 		this.assignmentTab = new App.patient.AsgmtGrid(assignmentCfg);
+
+		this.preorderTab.getStore().on('load',this.onPreorderLoad,this);
+		this.completedTab.getStore().on('load',this.onCompletedLoad,this);
+		this.assignmentTab.getStore().on('load',this.onAsgmtLoad,this);
 		
 		config = {
 			id:this.hasPatient? Ext.id() : 'preorder-manager',
@@ -92,11 +103,43 @@ App.registry.PreorderManager = Ext.extend(Ext.TabPanel, {
 //			this.assignmentTab.store.load();
 		},this);
 		
+		App.eventManager.on('globalsearch', this.onGlobalSearch, this);
+		this.on('destroy', function(){
+			App.eventManager.un('globalsearch', this.onGlobalSearch, this);
+		},this);
+		
 		this.on('beforedestroy',function(){
 			if(!this.hasPatient){
 				Ext.TaskMgr.stop(this.task)
 			}
 		},this)
+	},
+	
+	onPreorderLoad : function(store,r,options){
+		if(this.changeTitle){
+			this.preorderTab.setTitle(String.format('{0} ({1})', this.preorderTitle, store.getTotalCount()));
+		}
+	},
+	
+	onCompletedLoad : function(store,r,options){
+		if(this.changeTitle){
+			this.completedTab.setTitle(String.format('{0} ({1})', this.completedTitle, store.getTotalCount()));
+		}
+	},
+	
+	onAsgmtLoad : function(store,r,options){
+		if(this.changeTitle){
+			this.assignmentTab.setTitle(String.format('{0} ({1})', this.asgmtTitle, store.getTotalCount()));
+		}
+	},
+	
+	onGlobalSearch : function(v) {
+		this.changeTitle = v!==undefined;
+		if(!v){
+			this.preorderTab.setTitle(this.preorderTitle);
+			this.completedTab.setTitle(this.completedTitle);
+			this.assignmentTab.setTitle(this.asgmtTitle);
+		}
 	},
 	
 	updateInfo: function(){

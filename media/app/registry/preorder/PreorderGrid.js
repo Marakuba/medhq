@@ -4,7 +4,7 @@ App.registry.PreorderGrid = Ext.extend(Ext.grid.GridPanel, {
 
 	initComponent : function() {
 		this.updatingStoreCheck = new Ext.form.Checkbox({
-			checked:true,
+			checked:false,
 			hidden:this.hasPatient,
 			boxLabel:'Автоматическое обновление',
 			handler:this.updatingCheckClick.createDelegate(this)

@@ -102,11 +102,16 @@ Ext.calendar.TimeslotEditWindow = Ext.extend(Ext.Window, {
         	queryParam:'base_service__name__icontains',
 		    displayField: 'service_name',
 		    listeners:{
+		    	'render': function(f){
+		    		var el = f.getEl()
+		    		el.on('click',this.onServiceChoice.createDelegate(this, []),this)
+		    	},
 		    	'select':function(combo,record,index){
 		    		this.service = record.data.resource_uri;
 		    	},
 		    	scope:this
-		    }
+		    },
+		    onTriggerClick:this.onServiceChoice.createDelegate(this, [])
 		});
 		
 		this.patientCombo = new Ext.form.LazyComboBox({
@@ -120,6 +125,10 @@ Ext.calendar.TimeslotEditWindow = Ext.extend(Ext.Window, {
 		    displayField: 'full_name',
 		    queryParam:'search',
 		    listeners:{
+		    	'render': function(f){
+		    		var el = f.getEl()
+		    		el.on('click',this.onPatientChoice.createDelegate(this, []),this)
+		    	},
 		    	'select':function(combo,record,index){
 		    		this.formPanel.form.findField('Title').setValue(' ');
 		    		this.formPanel.form.findField('Status').setValue('з');
@@ -131,7 +140,8 @@ Ext.calendar.TimeslotEditWindow = Ext.extend(Ext.Window, {
 //		    		this.patientPanel.body.highlight('#c3daf9', {block:false})
 		    	},
 		    	scope:this
-		    }
+		    },
+		    onTriggerClick:this.onPatientChoice.createDelegate(this, [])
 		});
 	    
 

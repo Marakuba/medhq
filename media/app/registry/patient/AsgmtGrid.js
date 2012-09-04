@@ -14,7 +14,7 @@ App.patient.AsgmtGrid = Ext.extend(Ext.grid.EditorGridPanel, {
 		});
 		
 		this.updatingStoreCheck = new Ext.form.Checkbox({
-			checked:true,
+			checked:false,
 			hidden:this.hasPatient,
 			boxLabel:'Автоматическое обновление',
 			handler:this.updatingCheckClick.createDelegate(this)

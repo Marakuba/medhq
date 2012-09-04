@@ -71,6 +71,32 @@ App.calendar.PatientGrid = Ext.extend(Ext.grid.GridPanel, {
 			scope:this
 		});
 		
+		this.searchField = new App.SearchField({
+			stripCharsRe:new RegExp('[\;\?]'),
+			onTrigger1Click : function(){
+				var f = this.searchField;
+		        if(f.hasSearch){
+		        	this.onSearch(undefined)
+					f.el.dom.value = '';
+		            f.triggers[0].hide();
+		            f.hasSearch = false;
+					f.focus();
+		        }
+		    },
+		    onTrigger2Click : function(){
+		    	var f = this.searchField;
+		        var v = f.getRawValue();
+		        if(v.length < 1){
+		            f.onTrigger1Click();
+		            return;
+		        }
+				this.onSearch(v)
+		        f.hasSearch = true;
+		        f.triggers[0].show();
+				f.focus();
+		    }
+		});
+		
 		var config = {
 			loadMask : {
 				msg : 'Подождите, идет загрузка...'
@@ -100,10 +126,7 @@ App.calendar.PatientGrid = Ext.extend(Ext.grid.GridPanel, {
 				text:'Новый пациент',
 				handler:this.onPatientAdd.createDelegate(this, [])
 			},this.editButton,
-			{
-				xtype:'gsearchfield',
-				stripCharsRe:new RegExp('[\;\?]')
-			}],
+			this.searchField],
 	        bbar: new Ext.PagingToolbar({
 	            pageSize: 20,
 	            store: this.store,
@@ -123,10 +146,10 @@ App.calendar.PatientGrid = Ext.extend(Ext.grid.GridPanel, {
 
 		Ext.apply(this, Ext.apply(this.initialConfig, config));
 		App.calendar.PatientGrid.superclass.initComponent.apply(this, arguments);
-		App.eventManager.on('globalsearch', this.onGlobalSearch, this);
-		this.on('destroy', function(){
-			App.eventManager.un('globalsearch', this.onGlobalSearch, this);
-		},this);
+//		App.eventManager.on('globalsearch', this.onGlobalSearch, this);
+//		this.on('destroy', function(){
+//			App.eventManager.un('globalsearch', this.onGlobalSearch, this);
+//		},this);
 //		App.eventManager.on('patientwrite', this.onPatientWrite, this);
 		this.on('patientselect', this.onPatientSelect, this);
 		//this.store.on('write', this.onStoreWrite, this);
@@ -155,7 +178,7 @@ App.calendar.PatientGrid = Ext.extend(Ext.grid.GridPanel, {
 		window.open(url);
 	},
 	
-	onGlobalSearch: function(v){
+	onSearch: function(v){
 		var s = this.store;
 		s.baseParams = { format:'json' };
 		s.setBaseParam('search', v);
