@@ -230,7 +230,7 @@ App.patient.PatientForm = Ext.extend(Ext.form.FormPanel, {
 						value:''
 					}]
 				}]
-			},this.bottom]
+			}, this.bottom]
 		}
 		Ext.apply(this, Ext.apply(this.initialConfig, config));
 		App.patient.PatientForm.superclass.initComponent.apply(this, arguments);

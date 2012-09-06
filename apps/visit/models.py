@@ -349,21 +349,26 @@ class OrderedService(make_operator_object('ordered_service')):
                                                            laboratory=self.execution_place,
                                                            is_barcode=ext_service.is_manual,
                                                            tube=ext_service.tube)
+        widget = get_widget(lab_service.widget)()
+        
         is_manual = lab_service.is_manual
         if is_manual:
             lab_order = LabOrder.objects.create(visit=visit,  
                                                        laboratory=self.execution_place,
                                                        lab_group=s.lab_group,
-                                                       widget=lab_service.widget,
+                                                       widget=widget.ext_app_name,
                                                        is_manual=is_manual)
         else:
             lab_order, created = LabOrder.objects.get_or_create(visit=visit,  
                                                        laboratory=self.execution_place,
                                                        lab_group=s.lab_group,
-                                                       widget=lab_service.widget,
+                                                       widget=widget.ext_app_name,
                                                        is_manual=is_manual)
             
-        for analysis in self.service.analysis_set.all():
+        analysis_list = self.service.analysis_set.all()
+        if ext_service.base_profile:
+            analysis_list = analysis_list.filter(profile=ext_service.base_profile)
+        for analysis in analysis_list:
             result, created = Result.objects.get_or_create(order=lab_order,
                                                            analysis=analysis, 
                                                            sample=sampling)
@@ -380,8 +385,6 @@ class OrderedService(make_operator_object('ordered_service')):
                     EquipmentTask.objects.get_or_create(equipment_assay=assay, ordered_service=self)
             except:
                 pass
-        
-        widget = get_widget(lab_service.widget)()
         
         widget.process_results(lab_order.result_set.all())
             

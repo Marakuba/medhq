@@ -27,11 +27,11 @@
 	</tr>
 	{% endif %}
 	{% if result.class == 'result' %}
-	<tr class="{% cycle 'row' 'stripe' %}">
-		<td class="analysis {% if result.object.comment %}with-comment{% endif %}">{{ result.object.get_title }}</td>
-		<td class="{% if result.object.comment %}with-comment{% endif %}">{% autoescape off %}{{ result.object.get_result|sup }}{% endautoescape %}</td>
-		<td class="{% if result.object.comment %}with-comment{% endif %}">{{ result.object.measurement|default:"---" }}</td>
-		<td class="{% if result.object.comment %}with-comment{% endif %}">{{ result.object.ref_range_text|default:"---"|linebreaks }}</td>
+	<tr class="{% cycle 'stripe' 'row' %}">
+		<td class="analysis">{{ result.object.get_title }}</td>
+		<td class="">{% autoescape off %}{{ result.object.get_result|sup }}{% endautoescape %}</td>
+		<td class="">{{ result.object.measurement|default:"---" }}</td>
+		<td class="">{{ result.object.ref_range_text|default:"---"|linebreaks }}</td>
 	</tr>
 		{% if result.object.comment %}
 		<tr>

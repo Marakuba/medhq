@@ -119,6 +119,14 @@ MANUAL_TEST_CONFIG = {
 
 from django.template import loader, RequestContext
 
+def format_tpl(v):
+    def wrap(tpl):
+        try:
+            return tpl % v
+        except:
+            return tpl
+    return wrap
+
 def print_results(request, order):
     
     widget = get_widget(order.widget)()
@@ -144,10 +152,14 @@ def print_results(request, order):
             'preview':preview,
     }
     ec.update(result_ctx)
-#    template = order.lab_group and order.lab_group.template or widget.get_template()
-    template = widget.get_template()
-    return render_to_response(["print/lab/results_state_%s.html" % request.active_profile.state,template],
-                              ec,
+
+    templates = widget.get_template()
+    if widget.allow_tpl_override and order.lab_group and order.lab_group.template:
+        templates.insert(0, order.lab_group.template)
+        
+    templates = map(format_tpl(request.active_profile.state), templates)# [t %  for t in templates]
+    print templates
+    return render_to_response(templates, ec,
                               context_instance=RequestContext(request))
 
 def print_manuals(request, object_id):

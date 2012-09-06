@@ -21,9 +21,14 @@ import StringIO
 
 from pricelist.models import Price
 from django.views.generic.simple import direct_to_template
-from service.forms import PriceForm
+from service.forms import PriceForm, TreeLoaderForm
 from core.admin import TabbedAdmin
 from django.conf import settings
+from annoying.decorators import render_to
+from django.shortcuts import render_to_response
+from django.template.context import RequestContext
+from django.core.files.uploadedfile import InMemoryUploadedFile
+from service.utils import ServiceTreeLoader
 
 
 class StandardServiceAdmin(TreeEditor):
@@ -245,6 +250,35 @@ class BaseServiceAdmin(TreeEditor, TabbedAdmin):
     exclude = ('standard_service',)
     search_fields = ['name','short_name','code']
     actions = [make_inactive_action,dump_for_load]
+    
+    def tree_loader(self, request):
+        
+        def handle_uploaded_file(f, name):
+                destination = open(name, 'w')
+                for chunk in f.chunks():
+                    destination.write(chunk)
+                f.close()
+                destination.close()
+        
+        if request.method=='POST':
+            """
+            """
+            form = TreeLoaderForm(request.POST, request.FILES)
+            if form.is_valid():
+                f = request.FILES['f']
+                tmp_name = '/tmp/'+f.name
+                handle_uploaded_file(f, tmp_name)
+                d = form.cleaned_data
+                ServiceTreeLoader(tmp_name,d['branches'],d['state'],d['root'],d['top'])
+        else:
+            form = TreeLoaderForm()
+        
+        ec = {
+            'form':form
+        }
+        
+        return render_to_response('admin/service/tree_loader.html', ec,
+                                  context_instance=RequestContext(request))
 
     def pricelist(self, request):
         form = PriceForm({'date':datetime.date.today()})
@@ -293,6 +327,7 @@ class BaseServiceAdmin(TreeEditor, TabbedAdmin):
     def get_urls(self):
         urls = super(BaseServiceAdmin, self).get_urls()
         my_urls = patterns('',
+            (r'^tree_loader/$', self.tree_loader),
             (r'^export/csv/$', self.export_csv),
             (r'^pricelist/$', self.pricelist),
             (r'^pricelist/print/$', self.pricelist_print),

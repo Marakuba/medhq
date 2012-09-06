@@ -4,6 +4,31 @@ App.result.BasePlain = Ext.extend(Ext.grid.EditorGridPanel, {
 
 	initComponent : function() {
 		
+		this.warnTpl = new Ext.XTemplate(
+			'<tpl if="wholes.length">',
+			'Данная операция приведет к удалению всех тестов, т.к. нет ни одного отвалидированного значения в следующих исследованиях:',
+				'<tpl for="wholes">',
+					'<br>{#}. {.}',
+					'</tpl>',
+				'<br><br>',
+			'</tpl>',
+			'<tpl if="singles.length">',
+			'Следующие тесты не могут быть удалены и <b>должны быть валидированы</b>:',
+				'<tpl for="singles">',
+					'<br>{#}. {analysis_name}',
+					'</tpl>',
+				'<br><br>',
+			'</tpl>',
+			'<tpl if="un.length">',
+			'Внимание, данная операция приведет к <b>удалению</b> всех тестов, которые не были помечены как отвалидированные: ',
+				'<tpl for="un">',
+					'<br>{#}. {analysis_name}',
+				'</tpl>',
+				'<br><br>',
+			'</tpl>',
+			'<tpl if="confirm">Продолжить?</tpl>'
+		);
+			
 		this.proxy = new Ext.data.HttpProxy({
 		    url: get_api_url('result')
 		});
@@ -44,8 +69,7 @@ App.result.BasePlain = Ext.extend(Ext.grid.EditorGridPanel, {
 			autoSave:false,
 			autoLoad:false,
 		    baseParams: {
-		    	format:'json',
-//		    	analysis__service__labservice__is_manual:false
+		    	format:'json'
 		    },
 		    paramNames: {
 			    start : 'offset',
@@ -282,7 +306,8 @@ App.result.BasePlain = Ext.extend(Ext.grid.EditorGridPanel, {
 		            return cls.join(" ");
 		        }
 				//getRowClass : this.applyRowClass
-			})
+			}),
+			saveOnActivate:true
 		}
 
 		Ext.apply(this, Ext.apply(this.initialConfig, config));
@@ -366,6 +391,79 @@ App.result.BasePlain = Ext.extend(Ext.grid.EditorGridPanel, {
 //		this.enable();
 	},
 	
+	onSubmit : function(){
+		var un = [];
+		var services = {};
+		var singles = [];
+		var records = [];
+		var wholes = []
+		var all = this.store.getCount();
+		var q = this.store.queryBy(function(record,id){
+			return !record.data.is_group;
+		});
+		q.each(function(rec,i){
+			if(!services[rec.data.service_name]){
+				services[rec.data.service_name] = { y:[], n:[] };
+			}
+			if(rec.data.validation === 0) {
+				services[rec.data.service_name]['n'].push(rec.data);
+			} else if (rec.data.validation === 1) {
+				services[rec.data.service_name]['y'].push(rec.data);
+			}
+		},this);
+		for(s in services){
+			tests = services[s];
+			if(!tests.y.length && tests.n.length==1) {
+				singles.push(tests.n[0]);
+			} else if(!tests.y.length && tests.n.length>1) {
+				wholes.push(s);
+			} else {
+				un = un.concat(tests.n);
+			}
+		}
+		if(wholes.length || singles.length) {
+			Ext.MessageBox.alert('Ошибка!',this.warnTpl.apply({ wholes:wholes, un:[], singles:singles, confirm:false }));
+			return
+		}
+//		if(!un.length && singles.length) {
+//			Ext.MessageBox.alert('Ошибка!',this.warnTpl.apply({ wholes:wholes, un:un, singles:singles, confirm:false }));
+//			return
+//		}
+		if(un.length){
+			Ext.MessageBox.maxWidth = 700;
+			Ext.MessageBox.confirm('Предупреждение!',
+				this.warnTpl.apply({ wholes:wholes, un:un, singles:singles, confirm:true }),
+				function(btn){
+					if(btn=='yes') {
+						this.confirm();
+					}
+			}, this);
+		} else {
+			this.confirm();
+		}
+	},
+	
+	confirm : function() {
+		params = {
+			order:this.labOrderRecord.id
+		}
+		App.direct.lab.confirmResults(this.labOrderRecord.id, function(r, e){
+			this.store.reload();
+			if(r.success) {
+				this.labOrderRecord.set('is_completed',true);
+				Ext.ux.Growl.notify({
+			        title: "Успешная операция!", 
+			        message: r.message,
+			        iconCls: "x-growl-accept",
+			        alignment: "tr-tr",
+			        offset: [-10, 10]
+			    })
+			} else {
+				Ext.MessageBox.alert('Ошибка!', r.message);
+			}
+		}, this);
+	},
+	
 	storeFilter: function(field, value){
 		if(value===undefined) {
 			delete this.store.baseParams[field]
@@ -377,6 +475,10 @@ App.result.BasePlain = Ext.extend(Ext.grid.EditorGridPanel, {
 	
 	getSelected: function() {
 		return this.getSelectionModel().getSelected()
+	},
+	
+	onReload : function(){
+		this.store.reload();
 	}
 	
 });

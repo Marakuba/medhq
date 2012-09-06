@@ -133,6 +133,20 @@
 
 .icon-clear-left { background-image: url(../images/clear-left.png) !important; background-repeat: no-repeat; }
 
+#lab-order-grid .x-grid3-cell-inner.x-grid3-col-laboratory {
+	margin:0px;
+	padding:0px;
+	height:45px;
+}
+#lab-order-grid .x-grid3-col-laboratory div {
+	padding:3px;
+	height:100%;
+}
+
+#lab-order-grid .x-grid3-row-selected .x-grid3-col-laboratory div {
+	color:black;
+}
+
 #lab-order-grid .x-grid3-cell-inner, #lab-result-grid .x-grid3-cell-inner {
 	padding:3px 0;
 }
@@ -316,4 +330,9 @@ button.icon-main-button {
 
 .to-right {
 	text-align:right;
+}
+.x-grid-group-hd {
+	padding-top:3px;
+	border-top:2px solid #edf4ff;
+	background-color:#cee1ff;
 }

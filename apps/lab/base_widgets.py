@@ -3,17 +3,18 @@
 """
 """
 
-from lab.widgets import register, BaseWidget
+from lab.widgets import BaseWidget
 from service.models import BaseService
-#from lab.models import Result
 
 class BasePlain(BaseWidget):
     """
     """
+    allow_tpl_override = True
     verbose_name = u'Базовый построчный'
+    ext_app_name = 'baseplain'
     
     def get_template(self):
-        return "print/lab/widgets/baseplain.html"
+        return ["print/lab/widgets/baseplain_state_%s.html","print/lab/widgets/baseplain.html"]
     
     def make_results(self, lab_order):
         result_qs = lab_order.result_set.active().filter(order=lab_order, to_print=True).order_by('analysis__service__%s' % BaseService._meta.tree_id_attr, 
@@ -57,10 +58,12 @@ class BaseColumn(BaseWidget):
     """
     Требуется строгий порядок сортировки тестов
     """
+    allow_tpl_override = False
     title_delimiter = "::"
     code_delimiter = "_"
     verbose_name = u'Базовый колоночный'
-
+    ext_app_name = 'basecolumn'
+    
     def process_results(self, results):
         return results
     
@@ -76,7 +79,7 @@ class BaseColumn(BaseWidget):
         cols = [u'Наименование показателя',]
         service = None
         for r in result_qs:
-            service = r.analysis.service
+            service = r.service or r.analysis.service
             name, col = r.analysis.name.split(self.title_delimiter)
             if col not in cols:
                 cols.append(col)

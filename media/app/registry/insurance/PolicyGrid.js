@@ -40,7 +40,7 @@ App.insurance.PolicyGrid = Ext.extend(Ext.grid.GridPanel, {
 		    //id: 'laborder-store',
 			//autoLoad:true,
 		    autoDestroy:true,
-			autoSave:this.showChoiceButton || this.record,
+			autoSave:false, //this.showChoiceButton || this.record,
 		    baseParams: {
 		    	format:'json'
 		    },
@@ -143,10 +143,34 @@ App.insurance.PolicyGrid = Ext.extend(Ext.grid.GridPanel, {
        		saveText: 'Сохранить',
        		cancelText: 'Отменить',
        		listeners: {
+       			validateedit:function(editor, changes, rec, rowIndex) {
+       				q = this.store.queryBy(function(rec,id){
+       					return rec.data.number==changes.number && rec.data.insurance_state==changes.insurance_state
+       				},this);
+       				if(q.length){
+       					Ext.MessageBox.alert('Ошибка!','Полис с таким номером и компанией уже существует!');
+           				var rec = this.store.getAt(rowIndex);
+           				if(rec.phantom){
+           					this.store.remove(rec);
+           				}
+       					return false
+       				} else {
+       					return true
+       				}
+       			},
+       			canceledit:function(editor,forced){
+//       				var rec = this.store.getAt(this.store.getTotal()-1);
+//       				console.info(rec);
+//       				if(rec.phantom){
+//       					this.store.remove(rec);
+//       				}
+       			},
        			afteredit:function(editor,changes,rec,i){
 //       				rec.data.patient = this.record.data.resource_uri;
 //       				rec.data.insurance_state = rec.data.state_name;
-//       				this.store.save();
+       				if(this.showChoiceButton) {
+       					this.store.save();
+       				}
        			}, 
        			scope:this
        		}

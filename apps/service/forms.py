@@ -8,6 +8,8 @@ from visit.settings import PAYMENT_TYPES
 
 from django.contrib.admin import widgets
 from pricelist.models import PriceType
+from mptt.forms import TreeNodeChoiceField
+from django.db.models.expressions import F
 
 class HelperForm(forms.Form):
     """
@@ -51,3 +53,23 @@ class PriceForm(forms.Form):
     price_type = forms.ModelChoiceField(label=u'Тип цены',
                                             queryset=price_type_qs,
                                             required=False)
+
+lookups = {}
+lookups[BaseService._meta.right_attr] = F(BaseService._meta.left_attr)+1
+
+class TreeLoaderForm(forms.Form):
+    """
+    """
+    f = forms.FileField(label=u'Файл', required=True)
+    branches = forms.ModelMultipleChoiceField(label=u'Филиалы',
+                                            queryset=state_qs,
+                                            required=True,
+                                            widget=forms.CheckboxSelectMultiple())
+    state = forms.ModelChoiceField(label=u'Организация',
+                                            queryset=payer_qs,
+                                            required=True)
+    root = TreeNodeChoiceField(label=u'Группа', 
+                                 queryset=BaseService.objects.exclude(**lookups).order_by(BaseService._meta.tree_id_attr, BaseService._meta.left_attr, 'level'), 
+                                 required=False)
+    top = forms.CharField(label=u'Добавить в группу', required=False, max_length=300, 
+                           widget=forms.TextInput(attrs={'size':100}))

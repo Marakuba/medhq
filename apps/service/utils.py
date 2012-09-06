@@ -4,13 +4,17 @@ import csv
 from state.models import State
 from pricelist.models import Price
 from django.db.models.aggregates import Max
-from service.models import BaseService
+from service.models import BaseService, ExtendedService
 
 import logging
 import cStringIO
 import codecs
 import datetime
 from pricelist.models import get_actual_ptype
+from django.utils import simplejson
+from lab.models import LabService, Tube, InputList, Measurement, Analysis
+from django.core.exceptions import MultipleObjectsReturned
+from django.db import transaction
 logger = logging.getLogger('general')
 
 def unicode_csv_reader(unicode_csv_data, **kwargs):
@@ -175,3 +179,114 @@ def pricelist_dump(on_date=None, file_handler=None):
                              price and str(price) or u''])
     
     table.writerows(rows)
+
+
+class ServiceTreeLoader():
+    
+    def __init__(self, f, branches, state, root=None, top=None, data_format='medhqjson'):
+        self.root = root
+        self.branches = branches
+        self.state = state
+        self.top = top
+        self.format = data_format
+        if self.top:
+            self.top, created = BaseService.objects.get_or_create(parent=self.root, 
+                                                                  name=self.top, 
+                                                                  short_name=self.top)
+            self.root = self.top
+        self.load_data(f)
+
+    def load_data(self, f):
+        """
+        """
+        data_file = open(f)
+        data = simplejson.loads("".join(data_file))
+        if self.format=='medhqjson':
+            for node in data:
+                self.build_service(node, self.root)
+            if self.root is not None:
+                print "Reverting root node..."
+                root = BaseService.objects.get(id=self.root.id)
+                revert_tree_objects(root)
+        else:
+            pass
+        print "Done."
+        data_file.close()
+        
+    def make_indent(self, indent):
+        
+        return ( (indent-1)*"\t", indent*"\t" )
+    
+    @transaction.commit_on_success
+    def build_service(self, node, root=None, indent=1):
+        service, created = BaseService.objects.get_or_create(parent=root,
+                                                             name=node['name'],
+                                                             short_name=node['short_name'],
+                                                             code=node['code'],
+                                                             execution_time=node['execution_time'],
+                                                             gen_ref_interval=node['gen_ref_interval'],
+                                                             is_group=node['is_group'])
+        ti,di = self.make_indent(indent)
+        print ti, service
+        
+        if node.has_key('lab_service'):
+            ls = node['lab_service']
+            try:
+                lab_service = service.labservice
+                lab_service.code = ls['code']
+                lab_service.is_manual = ls['is_manual']
+                lab_service.save()
+            except:
+                LabService.objects.create(base_service=service,
+                                          is_manual=ls['is_manual'],
+                                          code=ls['code'])
+        
+        if node.has_key('extended_service'):
+            es_list = node['extended_service']
+            for es in es_list:
+                tube = None
+                if es.has_key('tube') and es['tube']:
+                    tube, created = Tube.objects.get_or_create(name=es['tube']['name'],bc_count=es['tube']['bc_count'])
+                try:
+                    extended_service, created = ExtendedService.objects.get_or_create(base_service=service,
+                                                                                      state=self.state,
+                                                                                      tube=tube,
+                                                                                      tube_count=es['tube_count'],
+                                                                                      is_manual=es['is_manual'])
+                except Exception, err:
+                    print "error:",err
+                    
+                if self.branches:
+                    extended_service.branches.add(*self.branches)
+        
+        if node.has_key('analysis'):
+            anl_list = node['analysis']
+            for anl in anl_list:
+                print anl['name'], anl['code']
+                il_cache = []
+                if anl.has_key('input_list'):
+                    for il in anl['input_list']:
+                        try:
+                            obj, created = InputList.objects.get_or_create(name=il)
+                        except MultipleObjectsReturned:
+                            obj = InputList.objects.filter(name=il)[0]
+                        il_cache.append(obj)
+                
+                measurement = None
+                if anl.has_key('measurement') and anl['measurement']:
+                    measurement, created = Measurement.objects.get_or_create(name=anl['measurement'])
+                
+                analysis = Analysis.objects.create(service=service,
+                                                          name=anl['name'],
+                                                          code=anl['code'],
+                                                          measurement=measurement,
+                                                          ref_range_text=anl['ref_range_text'],
+                                                          order=anl['order'])
+#                if len(il_cache):
+#                    analysis.input_list.add(*il_cache)
+        
+        if node.has_key('children'):
+            for child in node['children']:
+                self.build_service(child, service, indent+1)
+    
+    

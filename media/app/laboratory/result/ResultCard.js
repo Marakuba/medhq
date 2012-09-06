@@ -31,31 +31,6 @@ App.result.ResultCard = Ext.extend(Ext.Panel, {
 			}
 		);
 		
-		this.warnTpl = new Ext.XTemplate(
-			'<tpl if="wholes.length">',
-			'Данная операция приведет к удалению всех тестов, т.к. нет ни одного отвалидированного значения в следующих исследованиях:',
-				'<tpl for="wholes">',
-					'<br>{#}. {.}',
-					'</tpl>',
-				'<br><br>',
-			'</tpl>',
-			'<tpl if="singles.length">',
-			'Следующие тесты не могут быть удалены и <b>должны быть валидированы</b>:',
-				'<tpl for="singles">',
-					'<br>{#}. {analysis_name}',
-					'</tpl>',
-				'<br><br>',
-			'</tpl>',
-			'<tpl if="un.length">',
-			'Внимание, данная операция приведет к <b>удалению</b> всех тестов, которые не были помечены как отвалидированные: ',
-				'<tpl for="un">',
-					'<br>{#}. {analysis_name}',
-				'</tpl>',
-				'<br><br>',
-			'</tpl>',
-			'<tpl if="confirm">Продолжить?</tpl>'
-		);
-		
 		this.dateField = new Ext.form.DateField({
 			emptyText:'дата',
 			plugins:[new Ext.ux.netbox.InputTextMask('99.99.9999')], // маска ввода __.__._____ - не надо точки ставить
@@ -119,11 +94,7 @@ App.result.ResultCard = Ext.extend(Ext.Panel, {
 			new Ext.Toolbar.Separator(), {
 					iconCls:'icon-save',
 //					text:'Сохранить черновик',
-					handler:function(){
-						if(this.labOrderRecord){
-							this.saveSDT(this.labOrderRecord);
-						}
-					},
+					handler:this.onSave.createDelegate(this),
 					scope:this
 				},this.printBtn,'-',{
 					iconCls:'silk-accept',
@@ -134,7 +105,6 @@ App.result.ResultCard = Ext.extend(Ext.Panel, {
 //					text:'Восстановить',
 					iconCls:'silk-arrow-undo',
 					handler:function(){
-						var s = this.ResultGrid.store;
 						Ext.MessageBox.confirm('Подтверждение',
 							'Восстановить все тесты?',
 							function(btn){
@@ -148,7 +118,11 @@ App.result.ResultCard = Ext.extend(Ext.Panel, {
 										success:function(response, opts) {
 											var r = Ext.decode(response.responseText);
 											this.labOrderRecord.set('is_completed',r.status);
-											this.ResultGrid.store.reload();
+											this.tab.items.each(function(item){
+												if(item.onReload) {
+													item.onReload();
+												}
+											});
 										},
 										failure: function(response, opts) {
 										},
@@ -165,7 +139,20 @@ App.result.ResultCard = Ext.extend(Ext.Panel, {
 			border:false,
 			tabPosition:'bottom',
 			activeTab:0,
-			items:[]
+			items:[],
+			listeners:{
+				tabchange:function(tabpanel, panel){
+					if(panel && panel.id && !this.preventSave){
+						if(panel.saveOnActivate) {
+							this.onSave();
+						}
+					}
+					if(this.preventSave){
+						this.preventSave = false;
+					}
+				},
+				scope:this
+			}
 		});
 		
 		config = {
@@ -187,84 +174,44 @@ App.result.ResultCard = Ext.extend(Ext.Panel, {
 
 	},
 	
+	onSave : function(){
+		if(this.labOrderRecord){
+			this.saveSDT(this.labOrderRecord);
+		}
+		this.tab.items.each(function(item){
+			if(item.onSave) {
+				item.onSave();
+			}
+		});
+	},
+	
 	onSubmit : function(){
 		if(this.labOrderRecord){
 			this.saveSDT(this.labOrderRecord);
 		}
-		var un = [];
-		var services = {};
-		var singles = [];
-		var records = [];
-		var wholes = []
-		var all = this.ResultGrid.store.getCount();
-		var q = this.ResultGrid.store.queryBy(function(record,id){
-			return !record.data.is_group;
+		this.tab.items.each(function(item){
+			if(item.onSubmit) {
+				item.onSubmit();
+			}
 		});
-		q.each(function(rec,i){
-			if(!services[rec.data.service_name]){
-				services[rec.data.service_name] = { y:[], n:[] };
-			}
-			if(rec.data.validation === 0) {
-				services[rec.data.service_name]['n'].push(rec.data);
-			} else if (rec.data.validation === 1) {
-				services[rec.data.service_name]['y'].push(rec.data);
-			}
-		},this);
-		for(s in services){
-			tests = services[s];
-			if(!tests.y.length && tests.n.length==1) {
-				singles.push(tests.n[0]);
-			} else if(!tests.y.length && tests.n.length>1) {
-				wholes.push(s);
-			} else {
-				un = un.concat(tests.n);
-			}
-		}
-		if(wholes.length || singles.length) {
-			Ext.MessageBox.alert('Ошибка!',this.warnTpl.apply({ wholes:wholes, un:[], singles:singles, confirm:false }));
-			return
-		}
-//		if(!un.length && singles.length) {
-//			Ext.MessageBox.alert('Ошибка!',this.warnTpl.apply({ wholes:wholes, un:un, singles:singles, confirm:false }));
-//			return
-//		}
-		if(un.length){
-			Ext.MessageBox.maxWidth = 700;
-			Ext.MessageBox.confirm('Предупреждение!',
-				this.warnTpl.apply({ wholes:wholes, un:un, singles:singles, confirm:true }),
-				function(btn){
-					if(btn=='yes') {
-						this.confirm();
-					}
-			}, this);
-		} else {
-			this.confirm();
-		}
 	},
 	
-	setActiveRecord: function(rec) {
-		this.tab.removeAll();
+	initCommentPanel : function(){
+		var commentField = new Ext.form.HtmlEditor({
+			name:'comment',
+			value:this.labOrderRecord.data.comment
+		});
 		this.ResultComment = new Ext.form.FormPanel({
+			id:'result-comment-panel',
 			layout:'fit',
 			title:'Комментарий',
 			padding:5,
-			items:[{
-				xtype:'htmleditor',
-				name:'comment'
-			}]
+			items:[commentField]
 		});
-		this.labOrderRecord = rec;
-		var xtype = rec.data.widget+'widget';
-		console.info(xtype);
-		var id = rec.data.widget+'result';
-		this.tab.add({
-			xtype:xtype,
-			id:id,
-			closable:false
-		});
-		this.tab.setActiveTab(0);
-		this.tab.add(this.ResultComment);
-		var d = rec.data;
+	},
+	
+	initLabOrder : function(){
+		var d = this.labOrderRecord.data;
 		if(d.staff) {
 			this.staffField.setValue(d.staff);
 		} else {
@@ -276,15 +223,28 @@ App.result.ResultCard = Ext.extend(Ext.Panel, {
 		this.dateField.setValue(d.executed);
 		this.timeField.setValue(d.executed);
 		this.setTitle(String.format('Результаты: {0}, {2} &nbsp;&nbsp;&nbsp; {1}', 
-				rec.data.patient_name, rec.data.info, rec.data.patient_age));
-//		this.ResultGrid.setActiveRecord(rec);
+				this.labOrderRecord.data.patient_name, this.labOrderRecord.data.info, this.labOrderRecord.data.patient_age));
+	},
+	
+	setActiveRecord: function(rec) {
+		this.tab.removeAll();
+		this.labOrderRecord = rec;
+		this.initCommentPanel();
+		var xtype = rec.data.widget+'widget';
+		var id = rec.data.widget+'result';
+		this.tab.add({
+			xtype:xtype,
+			id:id,
+			closable:false
+		});
+		this.preventSave = true;
+		this.tab.setActiveTab(0);
+		this.tab.add(this.ResultComment);
 		this.tab.items.each(function(item){
 			if(item.setActiveRecord) {
 				item.setActiveRecord(rec);
 			}
 		});
-//		this.items.itemAt(0).setActiveTab(0);
-		this.ResultComment.getForm().findField('comment').setValue(rec.data.comment);
 	},
 	
 	setDateTime : function() {
@@ -322,53 +282,9 @@ App.result.ResultCard = Ext.extend(Ext.Panel, {
 		}
 	},
 	
-	confirm : function() {
-		params = {
-			order:this.labOrderRecord.id
-		}
-		App.direct.lab.confirmResults(this.labOrderRecord.id, function(r, e){
-			this.ResultGrid.store.reload();
-			if(r.success) {
-				this.labOrderRecord.set('is_completed',true);
-				Ext.ux.Growl.notify({
-			        title: "Успешная операция!", 
-			        message: r.message,
-			        iconCls: "x-growl-accept",
-			        alignment: "tr-tr",
-			        offset: [-10, 10]
-			    })
-			} else {
-				Ext.MessageBox.alert('Ошибка!', r.message);
-			}
-		}, this);
-		
-/*		Ext.Ajax.request({
-			url:'/lab/confirm_results/',
-			params:params,
-			method:'POST',
-			success:function(response, opts) {
-				var r = Ext.decode(response.responseText);
-				this.ResultGrid.store.reload();
-				if(r.success) {
-					this.labOrderRecord.set('is_completed',true);
-					Ext.ux.Growl.notify({
-				        title: "Успешная операция!", 
-				        message: r.message,
-				        iconCls: "x-growl-accept",
-				        alignment: "tr-tr",
-				        offset: [-10, 10]
-				    })
-				}
-			},
-			failure: function(response, opts) {
-			},
-			scope:this
-		});*/
-	},
-	
 	onPrint: function() {
 		var id = this.getSelected().data.id;
-		var url = ['/lab/print/results',id,''].join('/');
+		var url = String.format('/lab/print/results/{0}/', id);
 		window.open(url);
 	},
 	

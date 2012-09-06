@@ -143,9 +143,8 @@ class Analysis(models.Model):
 
     def save(self, *args, **kwargs):
         super(Analysis, self).save(*args, **kwargs)
-        if not self.code:
-            self.code = u'ASSAY%s' % self.pk
-        super(Analysis, self).save(*args, **kwargs)
+#        if not self.code:
+#            self.code = u'ASSAY%s' % self.pk
             
     class Meta:
         verbose_name = u'тест'
@@ -319,6 +318,8 @@ class Result(models.Model):
     
     order = models.ForeignKey(LabOrder)
     analysis = models.ForeignKey(Analysis, verbose_name=Analysis._meta.verbose_name)
+    service = models.CharField(u'Наименование услуги', blank=True, max_length=300)
+    service_group = models.CharField(u'Группа услуг', blank=True, max_length=300)
     previous_value = models.CharField(u"Предыдущий результат", max_length=200, blank=True, null=True)
     value = models.CharField(u"Результат", max_length=200, blank=True, null=True)
     presence = models.CharField(u"Наличие", max_length=1, blank=True, null=True, choices=RESULTS)
@@ -371,6 +372,10 @@ class Result(models.Model):
             self.ref_range_text = self.analysis.ref_range_text
         if not self.measurement:
             self.measurement = self.analysis.measurement and self.analysis.measurement.name or ''
+        if not self.service:
+            self.service = self.analysis.service.name
+        if not self.service_group and self.analysis.service.parent:
+            self.service_group = self.analysis.service.parent.name
         super(Result, self).save(*args, **kwargs)
     
     class Meta:
@@ -621,4 +626,3 @@ def auto_create_lab_service(sender, **kwargs):
             LabService.objects.create(base_service=obj)
             
 post_save.connect(auto_create_lab_service, sender=BaseService)
-

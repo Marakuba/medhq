@@ -42,7 +42,7 @@
 			<table>
 				<tr>
 					<td class="name">Заказ:</td>
-					<td class="bold">{{ order.visit.barcode_id|zid:"5" }}</td>
+					<td class="bold">{{ order.visit.barcode_id|zid:"10" }}</td>
 				</tr>
 				<tr>
 					<td class="name">Врач:</td>
@@ -50,7 +50,7 @@
 				</tr>
 				<tr>
 					<td class="name">Направившее учреждение:</td>
-					<td class="bold">{{ order.visit.referral.id|zid:"5" }}</td>
+					<td class="bold">{{ order.visit.referral.id|zid:"5"|default:'б/н' }}</td>
 				</tr>
 			</table>
 		</td>

@@ -111,7 +111,7 @@ class BaseServiceGroup(ServiceGroup):
 class LabServiceGroup(ServiceGroup):
     """
     """
-    template = models.CharField(u'Шаблон', max_length=100, default="print/lab/results.html")
+    template = models.CharField(u'Шаблон', max_length=100, blank=True)
     numerator = models.ForeignKey(Numerator, null=True, blank=True)
     
     class Meta:

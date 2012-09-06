@@ -198,7 +198,8 @@ App.result.BaseColumn = Ext.extend(Ext.Panel,{
 			title:'Загрузка тестов...',
 			border:false,
 			layout:'fit',
-			items:[]
+			items:[],
+			saveOnActivate:true
 		}
 
 		Ext.apply(this, Ext.apply(this.initialConfig, config));

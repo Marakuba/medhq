@@ -50,7 +50,7 @@ App.laboratory.LabOrderGrid = Ext.extend(Ext.grid.GridPanel, {
 		    	dataIndex: 'office_name',
 		    	renderer:function(v,opts,rec) {
 		    		return String.format('<div style="{2}"><b>{0}</b><p>{1}</p></div>', 
-		    				v, rec.data.operator_name, rec.data.is_manual ? 'background:gray;' : '') 
+		    				v, rec.data.operator_name, rec.data.is_manual ? 'background:#DDD;' : '') 
 		    	}
 		    },{
 		    	id:'staff',
