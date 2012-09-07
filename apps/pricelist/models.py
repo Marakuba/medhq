@@ -111,7 +111,7 @@ def get_actual_ptype(m = None):
     r = filter(lambda x:(now >= x['hour_from']) \
              and (now <= x['hour_to']) \
              and (x['month_day_from'] <= m.day) and (x['month_day_to'] >= m.day) \
-             and (m.weekday >= x['week_day_from']) and (m.weekday <= x['week_day_to']) \
+             and (m.weekday() >= x['week_day_from']) and (m.weekday() <= x['week_day_to']) \
              and (m.month >= x['month_from']) and (m.month <= x['month_to']) ,t)
     r = sorted(r,key=itemgetter('priority'),reverse=True)
     if len(r) == 0:

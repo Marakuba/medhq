@@ -102,6 +102,44 @@ App.ReferralGrid = Ext.extend(Ext.grid.GridPanel, {
        		saveText: 'Сохранить',
        		cancelText: 'Отменить'
     	});
+    	
+    	this.searchField = new App.SearchField({
+			stripCharsRe:new RegExp('[\;\?]'),
+			listeners:{
+				scope:this,
+				specialkey:function(f,e){
+					if(e.getKey() == e.ENTER){
+		                this.searchField.onTrigger2Click(f);
+		            }
+				},
+				search:function(v){
+					this.onSearch(v)
+				}
+				
+			},
+			onTrigger1Click : function(){
+		        if(this.hasSearch){
+		        	this.fireEvent('search',undefined)
+					this.el.dom.value = '';
+		            this.triggers[0].hide();
+		            this.hasSearch = false;
+					this.focus();
+		        }
+		    },
+		    onTrigger2Click : function(){
+		        var v = this.getRawValue();
+		        if(v.length < 1){
+		            this.onTrigger1Click();
+		            return;
+		        };
+		        this.fireEvent('search',v)
+		        this.hasSearch = true;
+		        this.triggers[0].show();
+				this.focus();
+		    },
+		    scope:this
+		});
+		
 		var config = {
 			loadMask : {
 				msg : 'Подождите, идет загрузка...'
@@ -123,10 +161,17 @@ App.ReferralGrid = Ext.extend(Ext.grid.GridPanel, {
 				iconCls:'silk-accept',
 				text:'Выбрать',
 				handler:this.onChoice.createDelegate(this, [])
-			}],
+			},this.searchField],
 			viewConfig : {
 				forceFit : true
-			}			
+			},
+			bbar: new Ext.PagingToolbar({
+	            pageSize: 20,
+	            store: this.store,
+	            displayInfo: true,
+	            displayMsg: 'Записи {0} - {1} из {2}',
+	            emptyMsg: "Нет записей"
+	        })
 		}
 
 		Ext.apply(this, Ext.apply(this.initialConfig, config));
@@ -147,6 +192,13 @@ App.ReferralGrid = Ext.extend(Ext.grid.GridPanel, {
         if (record) {
         	Ext.callback(this.fn, this.scope || window, [record]);
         };
+	},
+	
+	onSearch: function(v){
+		var s = this.store;
+		s.baseParams = { format:'json' };
+		s.setBaseParam('name__istartswith', v);
+		s.load();
 	}
     
     /*onDelete: function() {
