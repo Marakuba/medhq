@@ -26,16 +26,16 @@ App.patient.PatientForm = Ext.extend(Ext.form.FormPanel, {
 			}
 		});
 		
-		this.idCard = new App.patient.IDCardForm({
-			record:this.record
-		});
-		
-		this.notifyForm = new App.patient.NotifyForm({
-			record:this.record
-		});
+//		this.idCard = new App.patient.IDCardForm({
+//			record:this.record
+//		});
+//		
+//		this.notifyForm = new App.patient.NotifyForm({
+//			record:this.record
+//		});
 		
 		this.inlines.add('inspolicy', this.insPolicy);
-		this.inlines.add('idcard', this.idCard);
+//		this.inlines.add('idcard', this.idCard);
 		this.inlines.add('contracts', this.contractGrid);
 		
 		this.cl_acc_grid = new App.patient.ClientAccountGrid({
@@ -103,8 +103,51 @@ App.patient.PatientForm = Ext.extend(Ext.form.FormPanel, {
 			},
 			items:[{
 				title:'Удостоверение личности',
-				layout:'fit',
-				items:[this.idCard]
+				layout:'form',
+				padding:5,
+				items:[{
+					xtype:'textfield',
+					fieldLabel:'Законный представитель',
+					name:'guardian',
+					anchor:'99%'
+				},{
+					xtype:'compositefield',
+					items:[{
+						xtype:'textfield',
+						name:'id_card_series',
+						width:50,
+						maxLength:6, 
+		            	fieldLabel: 'Серия',
+		            	allowBlank:true,
+		            	autoCreate: {tag: 'input', type: 'text', size: '6', autocomplete: 'off', maxlength: '6'},
+		            	value: ''
+					},{
+						xtype:'textfield',
+						name:'id_card_number',
+						maxLength:10,
+						width:78,
+		            	fieldLabel: 'Номер',
+		            	value: '',
+		            	autoCreate: {tag: 'input', type: 'text', size: '10', autocomplete: 'off', maxlength: '10'},
+		            	allowBlank:true
+					}]
+				},{
+					xtype:'datefield',
+					name:'id_card_issue_date',
+					format:'d.m.Y',
+					plugins:[new Ext.ux.netbox.InputTextMask('99.99.9999')],
+					minValue:new Date(1901,1,1),
+	            	fieldLabel: 'Дата выдачи',
+	            	allowBlank:true
+				},{
+					xtype:'textarea',
+					name:'id_card_org',
+					maxLength:200,
+	            	fieldLabel: 'Кем выдан',
+	            	value: '',
+	            	autoCreate: {tag: 'textarea', type: 'text', size: '200', autocomplete: 'off', maxlength: '200'},
+	            	width:305
+				}]
 			},{
 				title:'ДМС',
 				layout:'fit',
@@ -114,8 +157,51 @@ App.patient.PatientForm = Ext.extend(Ext.form.FormPanel, {
 			this.contractGrid,
 			{
 				title:'Уведомления',
-				layout:'fit',
-				items:[this.notifyForm]
+				layout:'form',
+				padding:5,
+				items:[new Ext.form.ComboBox({
+					fieldLabel:'Предварительная запись',
+					name:'preorder_notify',
+					store:new Ext.data.ArrayStore({
+						fields:['id','title'],
+						data: [
+							['0','Не уведомлять'],
+							['1','Уведомлять по SMS'],
+							['2','Уведомлять по Email']
+						]
+					}),
+					typeAhead: true,
+					triggerAction: 'all',
+					valueField:'id',
+					displayField:'title',
+					mode: 'local',
+					forceSelection:true,
+					selectOnFocus:true,
+					editable:false,
+					anchor:'68%',
+					value:'0'
+				}), new Ext.form.ComboBox({
+					fieldLabel:'Направления врачей',
+					name:'assignment_notify',
+					store:new Ext.data.ArrayStore({
+						fields:['id','title'],
+						data: [
+							['0','Не уведомлять'],
+							['1','Уведомлять по SMS'],
+							['2','Уведомлять по Email']
+						]
+					}),
+					typeAhead: true,
+					triggerAction: 'all',
+					valueField:'id',
+					displayField:'title',
+					mode: 'local',
+					forceSelection:true,
+					selectOnFocus:true,
+					editable:false,
+					anchor:'68%',
+					value:'0'
+				})]
 			}
 			
 			]

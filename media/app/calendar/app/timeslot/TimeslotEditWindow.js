@@ -274,7 +274,7 @@ Ext.calendar.TimeslotEditWindow = Ext.extend(Ext.Window, {
 	        }
 	    });
 
-		this.fieldSet = new Ext.FormPanel({
+		this.fieldSet = new Ext.Panel({
 	    	baseCls:'x-border-layout-ct',
 	    	labelWidth: 100,
 	    	frame: false,
@@ -283,6 +283,7 @@ Ext.calendar.TimeslotEditWindow = Ext.extend(Ext.Window, {
 	    	defaults:{
 	    		anchor:'100%'
 	    	},
+	    	layout:'form',
 	    	items:[
     	{
     	   xtype: 'hidden',
