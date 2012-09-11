@@ -2,33 +2,27 @@ Ext.ns('App.examinaiton');
 
 App.examination.QuestApp = Ext.extend(Ext.Panel, {
 	initComponent : function() {
-		/*
-		 {layout:'auto',
-    items:[
-    {
-        title:'1',
-        layout:'tab',
-        items:[
-        {   
-items:[{type:'text',
-            value:'555'},{type:'text',
-            value:'555'}],
-            title:'1',
-            
-        }, {
-            title:'2',
-            type:'text',
-            value:'666'
-        }]
-    },{
-        title:'2',
-        items:[
-        {
-             type:'text'
-         }]
-    }]
-}
-		 */
+		
+		this.types = {
+			'text':{
+				'constructor':Ext.form.TextField,
+				'config':{
+					width:50
+				}
+			},
+			'checkbox':{
+				'constructor':Ext.form.CheckboxGroup,
+				'config':{
+					fieldLabel:'Введите значения'
+				}
+			},
+			'space':{
+				'constructor':Ext.panel,
+				'config':{
+					height:10
+				}
+			}
+		};
 		
     	this.editor = new App.examination.QuestEditor({
     		region:'west',
@@ -50,14 +44,6 @@ items:[{type:'text',
         	scope:this
 		});
 		
-		this.getDataBtn = new Ext.Button({
-			text:'Собрать данные',
-			handler:function(){
-				this.previewPanel.collectData();
-			},
-			scope:this
-		});
-		
 		
 		
 		var config = {
@@ -69,7 +55,7 @@ items:[{type:'text',
 				this.previewPanel
 			],
 			tbar:[
-				this.refreshBtn, this.getDataBtn
+				this.refreshBtn
 			]
 		};
 		
@@ -81,22 +67,31 @@ items:[{type:'text',
 	},
 	
 	onPreview: function(){
-		//Если после обработки отображаются не все элементы области, заключите область в квадратные скобки []
-		//
-		var rawdata = this.editor.getData();
-		if (!rawdata) return;
-		var data = Ext.decode(rawdata);
-		if (!data['items']) {
-			Ext.Msg.alert('Синтаксическая ошибка','Нет параметра "items"');
-			return
+		var data = Ext.decode(this.editor.getData());
+		var elems = [];
+		if (data.length){
+			Ext.each(data,function(obj){
+				//Если в редакторе указан тип для текущего элемента
+				if (obj['type']){
+					//выбираем компонент из словаря компонентов
+					var comp = this.types[obj['type']];
+					if (comp['constructor']){
+						//объединяем пользовательскую и преднастроенную конфигурацию. 
+						var config = obj['config'] || {};
+						Ext.apply(comp['config']||{},config)
+						var elem = new comp['constructor'](config);
+						elems.push(elem);
+					}	
+				}
+			},this)
 		};
-		this.previewPanel.clear();
-		//добавляем элементы в главную панель
-		this.previewPanel.add(this.previewPanel.buildElem(data))
-		
-		this.previewPanel.doLayout();
-		
-	}	
+		if (elems.length){
+			this.previewPanel.clear();
+			this.previewPanel.items.items=elems;
+			this.previewPanel.doLayout();
+		}
+	}
+	
 });
 
 Ext.reg('questionnaire', App.examination.QuestApp);
