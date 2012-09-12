@@ -44,6 +44,7 @@ class Patient(make_person_object('patient')):
     ad_source = models.ForeignKey(AdSource, blank=True, null=True, verbose_name=u'Источник рекламы')
     preorder_notify = models.PositiveIntegerField(u'Уведомление о предзаказах', default = 0, choices = NOTIFICATION_TYPES)
     assignment_notify = models.PositiveIntegerField(u'Уведомление о направлениях', default = 0, choices = NOTIFICATION_TYPES)
+    lab_notify = models.PositiveIntegerField(u'Уведомление о готовых результатах анализов', default = 0, choices = NOTIFICATION_TYPES)
     
     objects = models.Manager()
     
