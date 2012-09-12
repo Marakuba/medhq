@@ -455,6 +455,10 @@ def BarcodeGenerator(sender, **kwargs):
             if not visit.specimen:
                 visit.specimen = str(visit.barcode.id)
             visit.save()
+        else:
+            visit.barcode.status = 1
+            visit.barcode.save()
+            print 'status %s' % visit.barcode.status
             
 post_save.connect(BarcodeGenerator, sender=Visit)              
 
