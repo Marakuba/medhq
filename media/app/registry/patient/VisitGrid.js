@@ -100,7 +100,7 @@ App.patient.VisitGrid = Ext.extend(Ext.grid.GridPanel, {
 		this.materialBtn = {
 			text:'Поступление биоматериала',
 			iconCls:'med-testtubes',
-			handler:this.onCreate.createDelegate(this,['material',true])
+			handler:this.onCreate.createDelegate(this,['material',false])
 		};
 		
 		this.barcodeMaterialBtn = {
@@ -113,7 +113,7 @@ App.patient.VisitGrid = Ext.extend(Ext.grid.GridPanel, {
 			xtype:'splitbutton',
 			iconCls:'med-usersetup',
 			text:'Новый прием',
-			handler:this.onCreate.createDelegate(this,['visit',true]),
+			handler:this.onCreate.createDelegate(this,['visit',false]),
 			menu:{
 				items:[this.materialBtn,this.barcodeMaterialBtn]
 			}

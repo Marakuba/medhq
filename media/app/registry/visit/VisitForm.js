@@ -17,38 +17,68 @@ App.visit.VisitForm = Ext.extend(Ext.FormPanel, {
 		this.curActionPos = -1;
 		
 		//Окно для сканирования штрих-кода. Появляется, если передан параметр hasBarcode
+		this.barcodeInputField = new Ext.form.TextField({
+			fieldLabel:'Штрих-код',
+			style:'font-size:3.5em; height:1em; width:140px',
+			listeners:{
+				scope:this,
+				'specialkey':function(field,e) {
+		     		if(e.getKey()==e.ENTER){
+		     			this.onGetBarcode(field.getValue());
+		     		}
+		     	},
+				'render': function(c) {
+			     	var el = c.getEl();
+			     	el.focus();
+			     	el.on('specialkey', function(field,e) {
+			     		if(e.getKey()==e.ENTER){
+			     			this.onGetBarcode(field.getValue());
+			     		}
+			     	}, this);
+				}
+			}
+		});
 		this.barcodeWin = new Ext.Window({
 			modal:true,
-			height:100,
+			height:140,
 			width:300,
-			layout:'fit',
+			layout:'form',
 			closable:false,
 			onEsc:Ext.emptyFn,
 			title:'Введите или просканируйте штрихкод',
 			items:[{
-				xtype:'textfield',
-				fieldLabel:'Штрих-код',
-				style:'font-size:3.5em; height:1em; width:140px',
-				listeners:{
-					scope:this,
-					'specialkey':function(field,e) {
-			     		if(e.getKey()==e.ENTER){
-			     			this.onGetBarcode(field.getValue());
-			     		}
-			     	},
-					'render': function(c) {
-				     	var el = c.getEl();
-				     	el.on('specialkey', function(field,e) {
-				     		if(e.getKey()==e.ENTER){
-				     			this.onGetBarcode(field.getValue());
-				     		}
-				     	}, this);
-					}
-				}
+				xtype:'panel',
+				layout:'fit',
+				height:80,
+				items:[this.barcodeInputField]
+			},{
+				xtype:'panel',
+				layout:'hbox',
+				height:30,
+				items:[{
+					xtype:'button',
+					text:'Проверить',
+					width:'50%',
+					height:30,
+					handler:function(){
+						this.onGetBarcode(this.barcodeInputField.getValue())
+					},
+					scope:this
+				},{
+					xtype:'button',
+					text:'Отменить',
+					width:'50%',
+					height:30,
+					handler:function(){
+						this.fireEvent('closeall');
+						this.barcodeWin.close();
+					},
+					scope:this
+				}]
 			}],
 			listeners:{
 				render:function(){
-					this.barcodeWin.items.items[0].focus(false,500)
+					this.barcodeWin.items.items[0].items.items[0].focus(false,500)
 				},
 				scope:this
 			},
@@ -1582,7 +1612,7 @@ App.visit.VisitForm = Ext.extend(Ext.FormPanel, {
 	},
 	
 	onGetBarcode:function(value){
-		this.barcodeWin.close();
+//		this.barcodeWin.close();
 		if(value){
 			App.direct.numeration.getBarcodePayer(value,function(res,e) {
 				if(res && res.success) {
@@ -1594,12 +1624,13 @@ App.visit.VisitForm = Ext.extend(Ext.FormPanel, {
 					this.barcodeField.setValue(App.getApiUrl('barcode',res.data['barcode_id']));
 				} else {
 					Ext.Msg.alert('Ошибка!',res.data);
-					this.fireEvent('closeall');
+					this.barcodeInputField.setValue('');
+//					this.fireEvent('closeall');
 				}
 		    }, this);
 		} else {
 			Ext.Msg.alert('Ошибка!','Введен пустой штрихкод!')
-			this.fireEvent('closeall');
+//			this.fireEvent('closeall');
 		}
 	}
 });
