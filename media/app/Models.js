@@ -190,6 +190,7 @@ App.models.patientModel = new Ext.data.Record.create([
 	{name: 'short_name'},
 	{name: 'accepted', type:'date'},
 	{name: 'assignment_notify'},
+	{name: 'lab_notify'},
 	{name: 'preorder_notify'}
 	 
 ]);

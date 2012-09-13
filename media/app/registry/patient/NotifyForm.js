@@ -50,6 +50,29 @@ App.patient.NotifyForm = Ext.extend(Ext.form.FormPanel, {
 			value:'0'
 		});
 		
+		this.labNotifyCombo = new Ext.form.ComboBox({
+			fieldLabel:'Готовые результаты анализов',
+			name:'lab_notify',
+			store:new Ext.data.ArrayStore({
+				fields:['id','title'],
+				data: [
+					['0','Не уведомлять'],
+					['1','Уведомлять по SMS'],
+					['2','Уведомлять по Email']
+				]
+			}),
+			typeAhead: true,
+			triggerAction: 'all',
+			valueField:'id',
+			displayField:'title',
+			mode: 'local',
+			forceSelection:true,
+			selectOnFocus:true,
+			editable:false,
+			anchor:'68%',
+			value:'0'
+		});
+		
 		config = {
 			baseCls:'x-plain',
 			border:false,
@@ -61,7 +84,8 @@ App.patient.NotifyForm = Ext.extend(Ext.form.FormPanel, {
 			layout:'form',
 			labelWidth:115,
 			items:[this.preordNotifyCombo,
-				this.asgmtNotifyCombo]
+				this.asgmtNotifyCombo,
+				this.labNotifyCombo]
 		}
 		Ext.apply(this, Ext.apply(this.initialConfig, config));
 		App.patient.NotifyForm.superclass.initComponent.apply(this, arguments);
