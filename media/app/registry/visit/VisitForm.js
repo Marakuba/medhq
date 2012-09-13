@@ -44,6 +44,10 @@ App.visit.VisitForm = Ext.extend(Ext.FormPanel, {
 			width:300,
 			layout:'form',
 			closable:false,
+			border:false,
+			defaults:{
+				border:false
+			},
 			onEsc:Ext.emptyFn,
 			title:'Введите или просканируйте штрихкод',
 			items:[{
@@ -1622,6 +1626,7 @@ App.visit.VisitForm = Ext.extend(Ext.FormPanel, {
 					this.barcodeId.setValue('Штрих-код:  '+res.data['barcode_id']);
 					this.doLayout();
 					this.barcodeField.setValue(App.getApiUrl('barcode',res.data['barcode_id']));
+					this.barcodeWin.close();
 				} else {
 					Ext.Msg.alert('Ошибка!',res.data);
 					this.barcodeInputField.setValue('');
