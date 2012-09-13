@@ -1,0 +1,29 @@
+{% extends "admin/base_site.html" %}
+
+{% load i18n %} 
+
+{% block title %}Копирование тестов{% endblock %}
+
+{% block breadcrumbs %}{% if not is_popup %}
+<div class="breadcrumbs">
+     <a href="../../../">{% trans "Home" %}</a> &rsaquo;
+     <a href="../../">{{ app_label|capfirst|escape }}</a> &rsaquo; 
+     {% if has_change_permission %}<a href="../">{{ opts.verbose_name_plural|capfirst }}</a>{% else %}{{ opts.verbose_name_plural|capfirst }}{% endif %} &rsaquo; 
+</div>
+{% endif %}{% endblock %}
+
+
+{% block content %}
+<link rel="stylesheet" type="text/css" href="{{ STATIC_URL }}/libs/fancybox/jquery.fancybox-1.3.4.css">
+<script src="{{ STATIC_URL }}libs/jquery.js"></script>
+<script src="{{ STATIC_URL }}libs/fancybox/jquery.fancybox-1.3.4.js"></script>
+<script src="{{ STATIC_URL }}resources/js/selection.js"></script>
+<form method="post" action="." enctype="multipart/form-data">
+	<table>
+		{{form.as_table}}	
+		<tr>
+			<td colspan="2"><button type="submit">Копировать</button></td>
+		</tr>
+	</table> 
+</form>
+{% endblock %}

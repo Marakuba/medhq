@@ -13,6 +13,7 @@ from django.utils.encoding import smart_unicode
 from lab.fields import EqAnlModelChoiceField
 from django.http import HttpResponseRedirect
 from remoting.utils import update_result_feed
+from lab.forms import AnalysisCopierForm
 
 class LabServiceInline(admin.TabularInline):
     """
@@ -201,7 +202,47 @@ class AnalysisAdmin(admin.ModelAdmin):
     formfield_overrides = {
         models.ManyToManyField: {'widget': forms.CheckboxSelectMultiple()},
     }
-    
+
+    def analysis_copier(self, request):
+        if request.method=='POST':
+            form = AnalysisCopierForm(request.POST)
+            if form.is_valid():
+                src = form.cleaned_data['src']
+                dst = form.cleaned_data['dst']
+                for analysis in src.analysis_set.all():
+                    new_analysis = Analysis.objects.create(
+                        service=dst,
+                        profile=analysis.profile,
+                        name=analysis.name,
+                        code=analysis.code,
+                        measurement=analysis.measurement,
+                        ref_range_text=analysis.ref_range_text,
+                        order=analysis.order,
+                        by_age=analysis.by_age,
+                        by_gender=analysis.by_gender,
+                        by_pregnancy=analysis.by_pregnancy,
+                        hidden=analysis.hidden
+                    )
+                    for input_list in analysis.input_list.all():
+                        new_analysis.input_list.add(input_list)
+                return HttpResponseRedirect('/admin/lab/analysis/analysis_copier/')
+        else:
+            form = AnalysisCopierForm()
+        
+        ec = {
+            'form':form
+        }
+        
+        return render_to_response('admin/lab/analysis_copier.html', ec,
+                                  context_instance=RequestContext(request))
+        
+    def get_urls(self):
+        urls = super(AnalysisAdmin, self).get_urls()
+        custom_urls = patterns('',
+            (r'^analysis_copier/$', self.analysis_copier),
+        )
+        return custom_urls + urls
+
     
 def separate(modeladmin, request, queryset):
     """

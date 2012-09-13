@@ -1,7 +1,7 @@
-var activeChoicer;
+var activeChoicer, $$;
 
 function selectionCallback(id, title) {
-	$.fancybox.close();
+	$$.fancybox.close();
 	if (activeChoicer) { 
 		onSelection(activeChoicer, id, title); 
 	}
@@ -43,6 +43,7 @@ jQuery(function($){
 	
 	$(".choicer").live('click',function(){
 		activeChoicer = this;
+		$$ = $;
 		//onSelection(this);
 	});
 	

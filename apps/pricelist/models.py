@@ -139,7 +139,8 @@ class Price(models.Model):
                               null=True, blank=True)
 
     def __unicode__(self):
-        return smart_unicode(u"%s - %s" % (self.extended_service.state, self.get_price_type_display()))
+        return u"<<PRICE OBJECT %s %s>>" % (self.service, self.on_date)
+#        return smart_unicode(u"%s - %s" % (self.extended_service.state, self.get_price_type_display()))
     
     class Meta:
         verbose_name = u"цена"
