@@ -1621,7 +1621,16 @@ App.visit.VisitForm = Ext.extend(Ext.FormPanel, {
 			App.direct.numeration.getBarcodePayer(value,function(res,e) {
 				if(res && res.success) {
 					var payer_id = res.data['payer_id'];
-					this.bioPayerCmb.forceValue(App.getApiUrl('state',payer_id));
+					var payer_uri = App.getApiUrl('state',payer_id)
+					this.bioPayerCmb.forceValue(payer_uri);
+					//обновляются услуги
+					var sp = this.servicePanel;
+					sp.getLoader().baseParams['payer'] = payer_uri;
+					sp.getLoader().baseParams['payment_type'] = 'к'; // корпоративный
+					sp.getLoader().load(sp.getRootNode());
+					this.paymentTypeField.setValue('к');
+					this.rePrice('к',payer_uri);
+					
 					this.barcodeId.setVisible(true);
 					this.barcodeId.setValue('Штрих-код:  '+res.data['barcode_id']);
 					this.doLayout();
