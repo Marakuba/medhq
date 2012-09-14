@@ -47,6 +47,7 @@ App.visit.VisitTab = Ext.extend(Ext.Panel, {
 //        	patientRecord:this.patientRecord,
         	preorderRecord:this.preorderRecord,
         	type:this.type,
+        	hasBarcode:this.hasBarcode,
 			fn:function(record){
 				this.record = record;
 				this.store.insertRecord(record);
@@ -54,7 +55,10 @@ App.visit.VisitTab = Ext.extend(Ext.Panel, {
 			},
 			listeners:{
 				scope:this,
-				basketexception:this.onException
+				basketexception:this.onException,
+				closeall:function(){
+					this.destroy();
+				}
 			},
 			scope:this	
 	    });

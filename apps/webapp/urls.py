@@ -15,6 +15,7 @@ urlpatterns = patterns('',
     (r'^sampling_tree/(?P<visit_id>\d+)/$','webapp.views.sampling_tree'),
 
     (r'^barcode/$','webapp.views.barcodeimg'),
+    (r'^barcoding/$','webapp.views.barcoding'),
     (r'^service/groups/$','webapp.views.groups'),
     (r'^testing/$','webapp.views.testing'),
     (r'^reporting/$','webapp.views.reporting'),

@@ -5,7 +5,7 @@
 from django.shortcuts import get_object_or_404
 from visit.models import Visit
 from django.views.generic.simple import direct_to_template
-from numeration.models import BarcodePackage, BarcodePrinter
+from numeration.models import BarcodePackage, BarcodePrinter, Barcode
 import datetime
 from django.db.models.aggregates import Sum
 
@@ -82,3 +82,31 @@ def getPrinterBySlug(request):
         if __debug__:
             logger.error(u"NUMERATION: %s" % err)
         return dict(success=False, data={})
+    
+@remoting(remote_provider, len=1, action='numeration', name='getBarcodePayer')
+def getBarcodePayer(request):
+    data = simplejson.loads(request.raw_post_data)
+    barcode_id = data['data'][0]
+    
+    try:
+        barcode_id = int(barcode_id)
+    except:
+        return dict(success=False,data=u'Штрих-код введен не числовой')
+    try:
+        b = Barcode.objects.get(id=barcode_id)
+    except:
+        return dict(success=False,data=u'Введенный штрих-код не найден')
+    if b.status == 1:
+        return dict(success=False,data=u'Введенный штрих-код использован')
+    if not b.package:
+        return dict(success=False,data=u'пакет не указан')
+    if not b.package.laboratory:
+        return dict(success=False,data=u'плательщик не указан')
+    try:
+        data = {
+                'barcode_id':b.id,
+                'payer_id':b.package.laboratory.id
+                }
+        return dict(success=True, data=data)
+    except:
+        return dict(success=False,data=u'пакет или плательщик не указаны')

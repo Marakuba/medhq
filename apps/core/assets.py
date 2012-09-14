@@ -769,6 +769,31 @@ js_reporting = Bundle(
     'app/reporting/app.js',
     filters='rjsmin', output='assets/reporting.js',)
 
+js_barcoding = Bundle(
+    'extjs/ux/statusbar/StatusBar.js',
+    'app/App.js',
+    'app/Backend.js',
+    'app/Models.js',
+    'app/data/RestStore.js',
+    'app/form/ClearableComboBox.js',
+    'app/form/LazyComboBox.js',
+    'app/ux/GSearchField.js',
+    'app/ux/InputTextMask.js',
+    
+    'app/registry/barcode/Grid.js',
+    'app/registry/barcode/Window.js',
+    
+    'app/registry/barcodepackage/Grid.js',
+    'app/registry/barcodepackage/Window.js',
+    'app/registry/barcodepackage/Form.js',
+    'app/registry/barcodepackage/DuplicateWindow.js',
+    
+    'app/barcoding/EventManager.js',
+    'app/barcoding/CentralPanel.js',
+    'app/barcoding/MainPanel.js',
+    'app/barcoding/app.js',
+    filters='rjsmin', output='assets/barcoding.js',)
+
 js_service = Bundle(
     'app/service/ServicePanel.js',
     'app/service/MainPanel.js',
@@ -802,6 +827,7 @@ register('js_calendar', js_calendar)
 register('js_helpdesk', js_helpdesk)
 register('js_laboratory', js_laboratory)
 register('js_reporting', js_reporting)
+register('js_barcoding', js_barcoding)
 register('js_service', js_service)
 register('js_treatmentroom', js_treatmentroom)
 ##################################################
@@ -919,6 +945,16 @@ css_reporting = Bundle(
     'extjs/ux/css/RowEditor.css',
     filters=('cssrewrite','cssmin'), output='assets/reporting.css',)
 
+css_barcoding = Bundle(
+    'extjs/resources/css/ext-all.css',
+    
+    'resources/css/app.css',
+    
+    'resources/css/silk.css',
+    'extjs/ux/css/Spinner.css',
+    'extjs/ux/css/RowEditor.css',
+    filters=('cssrewrite','cssmin'), output='assets/barcoding.css',)
+
 css_service = Bundle(
     'extjs/resources/css/ext-all.css',
     
@@ -960,6 +996,7 @@ register('css_calendar', css_calendar)
 register('css_helpdesk', css_helpdesk)
 register('css_laboratory', css_laboratory)
 register('css_reporting', css_reporting)
+register('css_barcoding', css_reporting)
 register('css_service', css_service)
 register('css_testing', css_testing)
 register('css_treatmentroom', css_treatmentroom)
