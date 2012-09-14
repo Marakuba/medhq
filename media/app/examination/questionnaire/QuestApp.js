@@ -119,13 +119,13 @@ App.examination.QuestApp = Ext.extend(Ext.Panel, {
 			if( data.length && Object.prototype.toString.call( data[0] ) !== '[object Array]' ) {
 			    data = [data]
 			}
-		} 
+		};
+		this.previewPanel.clear();
 		//добавляем элементы в главную панель
 		Ext.each(data,function(obj){
-			elems.push(this.buildPanel(obj))
+			this.previewPanel.add(this.buildPanel(obj))
 		},this)
-		this.previewPanel.clear();
-		this.previewPanel.items.items=elems;
+		
 		this.previewPanel.doLayout();
 		
 	},
@@ -146,9 +146,9 @@ App.examination.QuestApp = Ext.extend(Ext.Panel, {
 		})
 		Ext.each(arr,function(obj){
 			if(arr.length && Object.prototype.toString.call( obj ) === '[object Array]' ) {
-			    panel.items.items.push(this.buildPanel(obj))
+			    panel.add(this.buildPanel(obj))
 			} else {
-				panel.items.add(this.buildObject(obj))
+				panel.add(this.buildObject(obj))
 			};
 		},this);
 		return panel
