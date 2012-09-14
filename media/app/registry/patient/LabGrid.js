@@ -38,7 +38,7 @@ App.patient.LabGrid = Ext.extend(Ext.grid.GridPanel, {
 		    id: 'laborder-store',
 		    baseParams: {
 		    	format:'json',
-		    	is_manual:false
+//		    	is_manual:false
 		    },
 		    paramNames: {
 			    start : 'offset',  // The parameter name which specifies the start row

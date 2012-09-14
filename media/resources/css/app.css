@@ -336,3 +336,6 @@ button.icon-main-button {
 	border-top:2px solid #edf4ff;
 	background-color:#cee1ff;
 }
+.cell-completed-icon {
+	background: url('../images/icon-yes.gif') no-repeat;
+}

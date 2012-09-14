@@ -678,6 +678,7 @@ class LabOrderResource(ExtResource):
             'laboratory':ALL_WITH_RELATIONS,
             'lab_group':ALL_WITH_RELATIONS,
             'is_completed':ALL,
+            'is_printed':ALL,
             'is_manual':ALL
         }
         

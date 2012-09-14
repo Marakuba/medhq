@@ -229,6 +229,7 @@ App.result.ResultCard = Ext.extend(Ext.Panel, {
 	setActiveRecord: function(rec) {
 		this.tab.removeAll();
 		this.labOrderRecord = rec;
+		this.initLabOrder();
 		this.initCommentPanel();
 		var xtype = rec.data.widget+'widget';
 		var id = rec.data.widget+'result';

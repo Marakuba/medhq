@@ -18,6 +18,7 @@
 		<th>{{ col }}</th>
 		{% endfor %}
 	</tr>
+{% autoescape off %}
 {% for result in results %}
 	<tr class="{% cycle 'stripe' 'row' %}">
 		{% for r in result %}
@@ -25,5 +26,6 @@
 		{% endfor %}
 	</tr>
 {% endfor %}
+{% endautoescape %}
 </table>
 {% endblock %}

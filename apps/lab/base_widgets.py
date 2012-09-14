@@ -9,7 +9,7 @@ from service.models import BaseService
 class BasePlain(BaseWidget):
     """
     """
-    allow_tpl_override = True
+    allow_tpl_override = False
     verbose_name = u'Базовый построчный'
     ext_app_name = 'baseplain'
     
@@ -52,7 +52,7 @@ from collections import defaultdict
 try:
     from collections import OrderedDict
 except:
-    from ordereddict import OrderedDict
+    from ordereddict import OrderedDict #@Reimport
 
 class BaseColumn(BaseWidget):
     """
@@ -68,7 +68,7 @@ class BaseColumn(BaseWidget):
         return results
     
     def get_template(self):
-        return "print/lab/widgets/basecolumn.html"
+        return ["print/lab/widgets/basecolumn_state_%s.html","print/lab/widgets/basecolumn.html"]
     
     def make_results(self, lab_order):
         result_qs = lab_order.result_set.active().filter(order=lab_order, to_print=True) \

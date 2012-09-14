@@ -23,6 +23,7 @@ App.results.Grid = Ext.extend(Ext.grid.GridPanel, {
 		    {name: 'visit_id'},
 		    {name: 'barcode'},
 		    {name: 'patient_name'},
+		    {name: 'office_name'},
 		    {name: 'laboratory_name'},
 		    {name: 'staff_name'}
 		]);
@@ -31,12 +32,11 @@ App.results.Grid = Ext.extend(Ext.grid.GridPanel, {
 		    encode: false 
 		});
 		
+		this.baseParams = { format:'json' };
+		
 		this.store = new Ext.data.Store({
 			autoLoad:false,
-		    baseParams: {
-		    	format:'json',
-		    	is_manual:false
-		    },
+		    baseParams: this.baseParams,
 		    paramNames: {
 			    start : 'offset',  // The parameter name which specifies the start row
 			    limit : 'limit',  // The parameter name which specifies number of rows to return
@@ -55,72 +55,53 @@ App.results.Grid = Ext.extend(Ext.grid.GridPanel, {
 		
 		this.store.load();		
 
-		this.columns =  [
-		    /*{
+		this.columns =  [{
 		    	header: "№ заказа", 
-		    	width: 8, 
-		    	sortable: true, 
-		    	dataIndex: 'visit_id'
-		    },*/{
-		    	header: "№ заказа", 
-		    	width: 8, 
-		    	sortable: true, 
-		    	dataIndex: 'barcode'
-		    },{
-		    	width: 1, 
-		    	sortable: true, 
+		    	width: 90, 
+		    	sortable: false, 
 		    	dataIndex: 'is_completed', 
-		    	renderer: function(val) {
-		    		flag = val ? 'yes' : 'no';
-		    		return "<img src='"+MEDIA_URL+"admin/img/admin/icon-"+flag+".gif'>"
+		    	renderer: function(val, opts, rec) {
+		    		var cls = val ? "cell-completed-icon" : "";
+		    		return String.format('<div class="{0}" style="pagging-left:18px;text-indent:16px;">{1}</div>',cls,rec.data.barcode);
 		    	}
 		    },{
 		    	header: "Дата", 
-		    	width: 10, 
+		    	width: 70, 
 		    	sortable: true, 
 		    	dataIndex: 'created',
 		    	renderer:Ext.util.Format.dateRenderer('d.m.Y'), 
 		    	editor: new Ext.form.TextField({})
 		    },{
-		    	width: 30,
-		    	sortable: true, 
-		    	header:'Напечатано',
-		    	dataIndex: 'is_printed', 
-		    	renderer: function(val,opts,rec) {
-		    		flag = val ? 'yes' : 'no';
-		    		time = val ? Ext.util.Format.date(rec.data.print_date, 'd.m.Y H:i') : '';
-		    		return "<img src='"+MEDIA_URL+"admin/img/admin/icon-"+flag+".gif'>&nbsp;&nbsp;&nbsp;" + time
-		    	}
-		    },/*{
-		    	width: 1, 
-		    	sortable: true, 
-		    	header:'Напечатано',
-		    	dataIndex: 'is_printed', 
-		    	renderer: function(val) {
-		    		flag = val ? 'yes' : 'no';
-		    		return "<img src='"+MEDIA_URL+"admin/img/admin/icon-"+flag+".gif'>"
-		    	}
-		    },{
-		    	header: "Дата/время печати", 
-		    	width: 12, 
-		    	sortable: true, 
-		    	dataIndex: 'print_date',
-		    	renderer:Ext.util.Format.dateRenderer('d.m.Y') 
-		    },*/{
 		    	header: "Пациент", 
-		    	width: 50, 
+		    	width: 220, 
 		    	sortable: true, 
 		    	dataIndex: 'patient_name'
 		    },{
+		    	header: "Офис", 
+		    	width: 135, 
+		    	sortable: true, 
+		    	dataIndex: 'office_name'
+		    },{
 		    	header: "Лаборатория", 
-		    	width: 35, 
+		    	width: 135, 
 		    	sortable: true, 
 		    	dataIndex: 'laboratory_name'
 		    },{
 		    	header: "Врач", 
-		    	width: 35, 
+		    	width: 150, 
 		    	sortable: true, 
 		    	dataIndex: 'staff_name'
+		    },{
+		    	width: 135,
+		    	sortable: true, 
+		    	header:'Напечатано',
+		    	dataIndex: 'is_printed', 
+		    	renderer: function(val,opts,rec) {
+		    		if(val){
+			    		time = Ext.util.Format.date(rec.data.print_date, 'd.m.Y / H:i');
+			    		return String.format('{0}&nbsp;&nbsp;<img src="{1}admin/img/admin/icon-yes.gif">', time, MEDIA_URL)
+		    		}
+		    	}
 		    }
 		];		
 		
@@ -130,7 +111,7 @@ App.results.Grid = Ext.extend(Ext.grid.GridPanel, {
 				iconCls:'silk-printer',
 				text:'Печать',
 				handler:this.onPrint.createDelegate(this, [])
-			},'->','Период',{
+			}/*,'->','Период',{
 				id:'visits-start-date-filter',
 				xtype:'datefield',
 				format:'d.m.Y',
@@ -161,7 +142,7 @@ App.results.Grid = Ext.extend(Ext.grid.GridPanel, {
 					this.storeFilter('visit__created__gte',undefined);
 				},
 				scope:this
-			},'-'
+			},'-'*/
 			]});
 		
 		var config = {
@@ -186,9 +167,9 @@ App.results.Grid = Ext.extend(Ext.grid.GridPanel, {
 	            emptyMsg: "Нет записей"
 	        }),
 			viewConfig : {
-				forceFit : true,
-				emptyText: 'Нет записей'
-				//getRowClass : this.applyRowClass
+//				forceFit : true,
+				emptyText: 'Нет записей',
+				getRowClass : this.applyRowClass
 			}
 			
 		}
@@ -201,7 +182,15 @@ App.results.Grid = Ext.extend(Ext.grid.GridPanel, {
 		    App.eventManager.un('globalsearch', this.onGlobalSearch, this); 
 		},this);
 		
-		this.initToolbar();
+//		this.initToolbar();
+	},
+	
+	applyRowClass : function(record, index){
+		// x-grid-row-normal
+		if(record.data.is_completed){
+			return "x-grid-row-normal"
+		}
+		return ""
 	},
 	
 	storeFilter: function(field, value){

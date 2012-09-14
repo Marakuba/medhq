@@ -1,5 +1,15 @@
 Ext.ns('App');
 
+function setLabel(field,label){
+    var el = field.el.dom.parentNode.parentNode;
+    if( el.children[0].tagName.toLowerCase() === 'label' ) {
+        el.children[0].innerHTML =label;
+    }else if( el.parentNode.children[0].tagName.toLowerCase() === 'label' ){
+    el.parentNode.children[0].innerHTML =label;
+    }
+    return setLabel; //just for fun
+}
+
 App.Results = Ext.extend(Ext.Panel, {
 	initComponent:function(){
 
@@ -7,9 +17,20 @@ App.Results = Ext.extend(Ext.Panel, {
 			region:'center',
 			xtype:'resultsgrid'
 		});
-
+		
 		this.origTitle = 'Результаты';
 
+		this.singleDate = true;
+		   		
+		this.fields = [
+		    ['start_date','visit__created__gte','Y-m-d 00:00'],
+		    ['end_date','visit__created__lte','Y-m-d 23:59'],
+		    ['laboratory','laboratory'],
+		    ['office','visit__office'],
+		    ['is_completed','is_completed', {0:false,1:true}],
+		    ['is_printed','is_printed', {0:false,1:true}]
+		];
+				
    		this.form = new Ext.form.FormPanel({
    			border:false,
    			baseCls:'x-plain',
@@ -90,27 +111,8 @@ App.Results = Ext.extend(Ext.Panel, {
    			    	},
    			    	scope:this
    			    }
-   			}),new Ext.form.LazyClearableComboBox({
-   				fieldLabel:'Пациент',
-   				name:'patient',
-   				anchor:'100%',
-   				valueField:'id',
-   				displayField:'full_name',
-   				store:new Ext.data.RESTStore({
-   					autoLoad : true,
-   					apiUrl : get_api_url('patient'),
-   					model: ['id','full_name']
-   				}),
-   			    minChars:2,
-   				queryParam : 'last_name__istartswith',
-   			    emptyText:'Выберите пациента...',
-   			    listeners:{
-   			    	select: function(combo, rec,i) {
-   			    	},
-   			    	scope:this
-   			    }
    			}), new Ext.form.ComboBox({
-   				fieldLabel:'Статус',
+   				fieldLabel:'Готовность',
    				name:'is_completed',
    				store:new Ext.data.ArrayStore({
    					fields:['id','title'],
@@ -128,23 +130,44 @@ App.Results = Ext.extend(Ext.Panel, {
    				selectOnFocus:true,
    				editable:false,
    				anchor:'-2',
+   				value:-1,
    				listeners:{
    					afterrender:function(c){
    						c.setValue(-1);
    					}
    				}
-   			}),new Ext.form.Checkbox({
-   				fieldLabel:'Только cito',
-   				name:'cito'
+   			}), new Ext.form.ComboBox({
+   				fieldLabel:'Печать',
+   				name:'is_printed',
+   				store:new Ext.data.ArrayStore({
+   					fields:['id','title'],
+   					data: [
+   						[-1,'Любой'],
+   						[1,'Распечатанные'],
+   						[0,'Не печатанные']]
+   				}),
+   				typeAhead: true,
+   				triggerAction: 'all',
+   				valueField:'id',
+   				displayField:'title',
+   				mode: 'local',
+   				forceSelection:true,
+   				selectOnFocus:true,
+   				editable:false,
+   				anchor:'-2',
+   				value:-1,
+   				listeners:{
+   					afterrender:function(c){
+   						c.setValue(-1);
+   					}
+   				}
    			})],
    			buttons:[{
 				text:'Сформировать',
-				handler:this.doReport.createDelegate(this)
+				handler:this.applyFilter.createDelegate(this)
 			},{
-				text:'Закрыть',
-				handler:function(){
-					App.eventManager.fireEvent('closeapp','results-grid')
-				},
+				text:'Сбросить',
+				handler:this.clearFilter.createDelegate(this),
 				scope:this
 			}]
    		});
@@ -156,7 +179,12 @@ App.Results = Ext.extend(Ext.Panel, {
             defaults: {
 				border:false
 			},
-			items:[this.resultGrid,this.form]
+			items:[this.resultGrid,{
+				region:'east',
+				width:300,
+				baseCls:'x-plain',
+				items:this.form
+			}]
 		}
 
 		Ext.apply(this, Ext.apply(this.initialConfig, config));
@@ -184,6 +212,34 @@ App.Results = Ext.extend(Ext.Panel, {
 		if(this.changeTitle){
 			this.setTitle(String.format('{0} ({1})', this.origTitle, store.getTotalCount()));
 		}
+	},
+	
+	applyFilter: function(){
+		var f = this.form.getForm();
+		var o = {};
+		Ext.each(this.fields, function(field){
+			var ff = f.findField(field[0]);
+			var v = ff.getValue();
+			if((v!==undefined && v!='' && v!==-1) || v===0) {
+				if(v instanceof Date) {
+					v = v.format(field[2] || 'Y-m-d');
+				} else if(field[2] && field[2] instanceof Object){
+					v = field[2][v]
+				}
+				o[field[1]] = v;
+			}
+		}, this);
+		var s = this.resultGrid.getStore();
+		s.baseParams = {};
+		Ext.apply(s.baseParams, o);
+		s.load();
+	},
+	
+	clearFilter: function(){
+		var f = this.form.getForm().reset();
+		var s = this.resultGrid.getStore();
+		s.baseParams = {};
+		s.load();
 	}
 	
 });

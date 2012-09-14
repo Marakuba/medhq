@@ -157,8 +157,8 @@ def print_results(request, order):
     if widget.allow_tpl_override and order.lab_group and order.lab_group.template:
         templates.insert(0, order.lab_group.template)
         
-    templates = map(format_tpl(request.active_profile.state), templates)# [t %  for t in templates]
     print templates
+    templates = map(format_tpl(request.active_profile.state), templates)# [t %  for t in templates]
     return render_to_response(templates, ec,
                               context_instance=RequestContext(request))
 

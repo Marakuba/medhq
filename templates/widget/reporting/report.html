@@ -39,11 +39,13 @@
         padding:1px;
         font-weight:bold;
         border:1px solid #999;
+        font-size:9pt;
     }
 
     table.data td {
         border:1px solid #AAA;
         padding:2px;
+        font-size:10pt;
     }
     .group {
         background:#cdffd1;
@@ -73,10 +75,14 @@
     .number {
         text-align:center;
     }
-    .total {
+    .row-totals {
         background:#ccccff;
+        font-weight: bold;
     }
     .right {
+        text-align:right;
+    }
+    .center {
         text-align:center;
     }
     table.legend {
@@ -122,16 +128,16 @@ filter: progid:DXImageTransform.Microsoft.gradient( startColorstr='#eeeeee', end
     </table>
     <br><br>
    
-{% get_report_as_list report False as results%}
+{% get_report_as_list report True as results%}
 <div class="template-preview">
 <table class="data">
 {% for row in results %}
-    <tr class="row-{{ row.type }} {% if row.type == 'data' %}{% cycle 'row1' 'row2' %}{% endif %}">
+    <tr class="row-{{ row.type }} {% if row.type == 'data' %}{% cycle 'row1' 'row2' %}{% endif %} {{ row.cssCls }}">
         {% for cell in row.data %}
             {% if row.type == 'header' %}
                 <th colspan="{{ cell.colspan }}">{{cell.value}}</th>
             {% else %}
-                <td class="{{ cell.cssCls }}" colspan="{{ cell.colspan }}">{{cell.value}}</td>
+                <td {% if cell.cssCls %}class="{{ cell.cssCls }}"{% endif %} colspan="{{ cell.colspan }}">{{cell.value}}</td>
             {% endif %}
         {% endfor %}
     </tr>
