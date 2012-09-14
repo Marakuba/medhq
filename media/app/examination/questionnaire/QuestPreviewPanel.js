@@ -6,7 +6,7 @@ App.examination.QuestPreviewPanel = Ext.extend(Ext.Panel, {
     	
     	var config = {
     		autoScroll:true,
-			layout: 'auto',
+			layout: 'form',
 			title:'Предпросмотр',
 			padding:3,
 			labelWidth:10,
