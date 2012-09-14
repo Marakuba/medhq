@@ -15,6 +15,79 @@ App.visit.VisitForm = Ext.extend(Ext.FormPanel, {
 		this.historyList = [];
 		// текущая позиция в истории действий
 		this.curActionPos = -1;
+		
+		//Окно для сканирования штрих-кода. Появляется, если передан параметр hasBarcode
+		this.barcodeInputField = new Ext.form.TextField({
+			fieldLabel:'Штрих-код',
+			style:'font-size:3.5em; height:1em; width:140px',
+			listeners:{
+				scope:this,
+				'specialkey':function(field,e) {
+		     		if(e.getKey()==e.ENTER){
+		     			this.onGetBarcode(field.getValue());
+		     		}
+		     	},
+				'render': function(c) {
+			     	var el = c.getEl();
+			     	el.focus();
+			     	el.on('specialkey', function(field,e) {
+			     		if(e.getKey()==e.ENTER){
+			     			this.onGetBarcode(field.getValue());
+			     		}
+			     	}, this);
+				}
+			}
+		});
+		this.barcodeWin = new Ext.Window({
+			modal:true,
+			height:140,
+			width:300,
+			layout:'form',
+			closable:false,
+			border:false,
+			defaults:{
+				border:false
+			},
+			onEsc:Ext.emptyFn,
+			title:'Введите или просканируйте штрихкод',
+			items:[{
+				xtype:'panel',
+				layout:'fit',
+				height:80,
+				items:[this.barcodeInputField]
+			},{
+				xtype:'panel',
+				layout:'hbox',
+				height:30,
+				items:[{
+					xtype:'button',
+					text:'Проверить',
+					width:'50%',
+					height:30,
+					handler:function(){
+						this.onGetBarcode(this.barcodeInputField.getValue())
+					},
+					scope:this
+				},{
+					xtype:'button',
+					text:'Отменить',
+					width:'50%',
+					height:30,
+					handler:function(){
+						this.fireEvent('closeall');
+						this.barcodeWin.close();
+					},
+					scope:this
+				}]
+			}],
+			listeners:{
+				render:function(){
+					this.barcodeWin.items.items[0].items.items[0].focus(false,500)
+				},
+				scope:this
+			},
+			scope:this
+		})
 
 		this.inlines = new Ext.util.MixedCollection({});
 		
@@ -532,14 +605,23 @@ App.visit.VisitForm = Ext.extend(Ext.FormPanel, {
 		this.autoBarcode = new Ext.form.Checkbox({
 			boxLabel:'',
 			handler:this.setBarcode,
+			hidden:this.hasBarcode,
 			checked:true,
 			scope:this
 		});
+		
+		this.barcodeId = new Ext.form.DisplayField({
+			hidden:!this.hasBarcode,
+			value:''
+		})
+		
+		
 		
 		this.barcodeBtn = new Ext.Button({
 			text:'Автоматически',
 			handler:this.setBarcode.createDelegate(this,[false]),
 			disabled:true,
+			hidden:this.hasBarcode,
 			scope:this
 		});
 		
@@ -550,12 +632,14 @@ App.visit.VisitForm = Ext.extend(Ext.FormPanel, {
             labelWidth:100,
             fieldLabel:'Штрих-код',
             items:[
-            	this.autoBarcode,this.barcodeBtn, this.cito
+            	this.autoBarcode,this.barcodeBtn, this.barcodeId,this.cito
 			]
 		});
+		
 		this.barcodeField = new Ext.form.Hidden({
 			name:'barcode'
 		});
+		
 		this.defaultItems = [{
 			xtype:'hidden',
 			name:'patient',
@@ -771,6 +855,9 @@ App.visit.VisitForm = Ext.extend(Ext.FormPanel, {
 			    width: 300,
 			    dismissDelay: 30000 // Hide after 10 seconds hover
 			});
+			if (this.hasBarcode){
+				this.barcodeWin.show();
+			}
 //			this.saveAction();
 		},this);
 		this.orderedService.on('sumchange', this.updateTotalSum, this);
@@ -1526,6 +1613,39 @@ App.visit.VisitForm = Ext.extend(Ext.FormPanel, {
 		id = App.uriToId(id);
 		var url = String.format('/patient/contract/{0}/', id);
 		window.open(url);
+	},
+	
+	onGetBarcode:function(value){
+//		this.barcodeWin.close();
+		if(value){
+			App.direct.numeration.getBarcodePayer(value,function(res,e) {
+				if(res && res.success) {
+					var payer_id = res.data['payer_id'];
+					var payer_uri = App.getApiUrl('state',payer_id)
+					this.bioPayerCmb.forceValue(payer_uri);
+					//обновляются услуги
+					var sp = this.servicePanel;
+					sp.getLoader().baseParams['payer'] = payer_uri;
+					sp.getLoader().baseParams['payment_type'] = 'к'; // корпоративный
+					sp.getLoader().load(sp.getRootNode());
+					this.paymentTypeField.setValue('к');
+					this.rePrice('к',payer_uri);
+					
+					this.barcodeId.setVisible(true);
+					this.barcodeId.setValue('Штрих-код:  '+res.data['barcode_id']);
+					this.doLayout();
+					this.barcodeField.setValue(App.getApiUrl('barcode',res.data['barcode_id']));
+					this.barcodeWin.close();
+				} else {
+					Ext.Msg.alert('Ошибка!',res.data);
+					this.barcodeInputField.setValue('');
+//					this.fireEvent('closeall');
+				}
+		    }, this);
+		} else {
+			Ext.Msg.alert('Ошибка!','Введен пустой штрихкод!')
+//			this.fireEvent('closeall');
+		}
 	}
 });
 

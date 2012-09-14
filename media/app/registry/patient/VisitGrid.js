@@ -100,16 +100,22 @@ App.patient.VisitGrid = Ext.extend(Ext.grid.GridPanel, {
 		this.materialBtn = {
 			text:'Поступление биоматериала',
 			iconCls:'med-testtubes',
-			handler:this.onCreate.createDelegate(this,['material'])
+			handler:this.onCreate.createDelegate(this,['material',false])
+		};
+		
+		this.barcodeMaterialBtn = {
+			text:'Поступление биоматериала со штрихкодом',
+			iconCls:'med-testtubes',
+			handler:this.onCreate.createDelegate(this,['material',true])
 		};
 		
 		this.completeBtn = {
 			xtype:'splitbutton',
 			iconCls:'med-usersetup',
 			text:'Новый прием',
-			handler:this.onCreate.createDelegate(this,['visit']),
+			handler:this.onCreate.createDelegate(this,['visit',false]),
 			menu:{
-				items:[this.materialBtn]
+				items:[this.materialBtn,this.barcodeMaterialBtn]
 			}
 			
 		};
@@ -285,12 +291,16 @@ App.patient.VisitGrid = Ext.extend(Ext.grid.GridPanel, {
 		window.open(url);
 	},
 
-	onCreate: function(type){
+	onCreate: function(type,barcode){
+		if (!barcode){
+			barcode = false
+		}
 		if (this.patientRecord) {
 			App.eventManager.fireEvent('launchapp','visittab',{
 				patientId:this.patientRecord.data.id,
 				hasPatient:true,
-				type:type
+				type:type,
+				hasBarcode:barcode
 			});
 		}
 	},

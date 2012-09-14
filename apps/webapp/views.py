@@ -43,6 +43,8 @@ def get_apps(request):
         apps.append([u'Обследования (новая версия)',u'/webapp/examination/'])
     if request.user.is_superuser:
         apps.append([u'Отчеты',u'/webapp/reporting/'])
+    if request.user.is_superuser:
+        apps.append([u'Штрих-коды',u'/webapp/barcoding/'])
     if request.user.is_staff or request.user.is_superuser:
         apps.append([u'Администрирование',u'/admin/'])
 
@@ -149,6 +151,13 @@ def testing(request):
 @login_required
 @render_to('webapp/reporting/index.html')
 def reporting(request):
+    return {
+        'apps':simplejson.dumps(get_apps(request))
+    }
+    
+@login_required
+@render_to('webapp/barcoding/index.html')
+def barcoding(request):
     return {
         'apps':simplejson.dumps(get_apps(request))
     }
