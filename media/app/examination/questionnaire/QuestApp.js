@@ -71,15 +71,7 @@ App.examination.QuestApp = Ext.extend(Ext.Panel, {
 		
 		this.getDataBtn = new Ext.Button({
 			text:'Собрать данные',
-			handler:function(){
-				this.dataStr = '';
-				Ext.each(this.previewPanel.items.items,function(item){
-					this.dataStr += ' ' + this.getData(item);
-				},this);
-				
-				console.log(this.dataStr)
-				
-			},
+			handler:this.collectData.createDelegate(this),
         	scope:this
 		});
 		
@@ -111,20 +103,13 @@ App.examination.QuestApp = Ext.extend(Ext.Panel, {
 		var rawdata = this.editor.getData();
 		if (!rawdata) return;
 		var data = Ext.decode(rawdata);
-		console.log(data)
-		var elems = [];
-		if( Object.prototype.toString.call( data ) !== '[object Array]' ) {
-		    data = [[data]]
-		} else {
-			if( data.length && Object.prototype.toString.call( data[0] ) !== '[object Array]' ) {
-			    data = [data]
-			}
+		if (!data['items']) {
+			Ext.Msg.alert('Синтаксическая ошибка','Нет параметра "items"');
+			return
 		};
 		this.previewPanel.clear();
 		//добавляем элементы в главную панель
-		Ext.each(data,function(obj){
-			this.previewPanel.add(this.buildPanel(obj))
-		},this)
+		this.previewPanel.add(this.buildElem(data))
 		
 		this.previewPanel.doLayout();
 		
@@ -133,39 +118,68 @@ App.examination.QuestApp = Ext.extend(Ext.Panel, {
 	//Для каждого массива создает отдельную панель и заполняет её объектами
 	//Если массив содержит список массивов, то у текущей панели будет layout vbox. иначе auto.
 	//поэтому массив должен содержать элементы одного типа: либо массивы, либо словари.
-	buildPanel: function(arr){
-		var layout = 'hbox'
-		if(arr.length && Object.prototype.toString.call( arr[0] ) === '[object Array]' ) {
-		    layout = 'vbox'
-		};
-		var panel = new Ext.form.FormPanel({
-			layout:layout,
+	buildElem: function(obj,deep,index){
+		if (!deep) deep = 0;
+		if (!index) {
+			index = 0
+		} else {
+			index += 1;
+		}
+		var panel_conf = {
 			type:'panel',
+			section:obj['section'],
 			border:false,
 			items:[]
-		})
-		Ext.each(arr,function(obj){
-			if(arr.length && Object.prototype.toString.call( obj ) === '[object Array]' ) {
-			    panel.add(this.buildPanel(obj))
+		};
+		if (obj['title']){
+			panel_conf['title'] = obj['title'];
+		};
+		if (obj['items']){
+			if (obj['layout'] && obj['layout']=='tab') {
+				panel_conf['activeTab'] = 0;
+				var elem = new Ext.TabPanel(panel_conf);
 			} else {
-				panel.add(this.buildObject(obj))
-			};
-		},this);
-		return panel
+				panel_conf['layout'] = obj['layout'] || 'auto';
+				var elem = new Ext.form.FormPanel(panel_conf);
+			}
+			var i = 0;
+			Ext.each(obj.items,function(item){
+				elem.add(this.buildElem(item,deep+1,i));
+				i += 1;
+			},this)
+		} else {
+			var elem = this.buildObject(obj,deep,index)
+		}
+		
+		return elem
 	},
 	
 	//Создает объект согласно словаря компонентов
-	buildObject: function(obj){
-		var elem = undefined;
+	buildObject: function(obj,deep,index){
+		var elem;
+		var name = deep + '_' + index;
 		//Если в редакторе указан тип для текущего элемента
 		if (obj['type']){
 			//выбираем компонент из словаря компонентов
 			var comp = this.types[obj['type']];
+			var obj_conf = Ext.apply({},obj);
+			obj_conf['name'] = name;
+			//Заполняем items для checkboxgroup или radiogroup
+			if (obj_conf['data']){
+				obj_conf['items'] = [];
+				Ext.each(obj_conf['data'],function(item){
+					obj_conf['items'].push({
+						name:name+'el',
+						boxLabel:item,
+						inputValue:item
+					});
+				});
+			};
 			if (comp['constructor']){
 				//объединяем пользовательскую и преднастроенную конфигурацию. 
-				var config = obj['config'] || {};
-				Ext.apply(comp['config']||{},config)
-				elem = new comp['constructor'](config);
+				var comp_config = comp['config'] || {};
+				Ext.applyIf(obj_conf,comp_config);
+				elem = new comp['constructor'](obj_conf);
 			}	
 		};
 		if (!elem) return new Ext.form.FieldLabel();
@@ -182,6 +196,38 @@ App.examination.QuestApp = Ext.extend(Ext.Panel, {
 			dataStr += ' ' + item.getData(item);
 		}
 		return dataStr
+	},
+	
+	getCmpValue: function(field) {
+		var value = field.getValue();
+            if ( value.getGroupValue ) {
+                value = value.getGroupValue();
+            } else if ( field.eachItem ) {
+                value = [];
+                field.eachItem(function(item){
+                	if (item.getValue()) value.push(item.getRawValue());
+                });
+            }
+		return value
+    },
+	
+	collectData: function(){
+		var f = this.previewPanel.getForm();
+		data = {
+		    title: f.title || 'УЗИ',
+		    rows:[]
+		};
+		
+//		Ext.apply(data, form.meta);
+		f.items.each(function(field,i){
+//		    label = field.fieldLabel || '';
+		    values = this.getCmpValue(field);
+		    data.rows.push({
+				values: values
+	    	});
+		}, this);
+		console.log(data)
+		return data;
 	}
 	
 });
