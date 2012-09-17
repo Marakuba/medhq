@@ -20,7 +20,7 @@
 	</tr>
 {% autoescape off %}
 {% for result in results %}
-	<tr class="{% cycle 'stripe' 'row' %}">
+	<tr class="{% cycle 'row' 'stripe' %}">
 		{% for r in result %}
 		<td{% if forloop.counter != 0 %} width="80px"{% endif %}>{{ r }}</td>
 		{% endfor %}

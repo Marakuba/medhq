@@ -162,91 +162,12 @@ def print_results(request, order):
     return render_to_response(templates, ec,
                               context_instance=RequestContext(request))
 
-def print_manuals(request, object_id):
-    """
-    """
-    os = get_object_or_404(OrderedService, pk=object_id)
-    
-    #### Рендеринг ручных тестов
-    
-    manuals = []
-    
-    code = os.service.labservice.code
-    if not MANUAL_TEST_CONFIG.has_key(code):
-        raise
-    
-    cfg = MANUAL_TEST_CONFIG[code]
-    mc = {
-        'service':os.service,
-        'object':os,
-        'order':os.order
-    }
-    
-    results = Result.objects.filter(order__visit=os.order, analysis__service=os.service)
-    
-    if len(results):
-        lab_order = results[0].order
-        mc['laborder'] = lab_order
-        
-    if cfg['mode']=='group':
-        manual_result_list = []
-        cur_group = None
-        for result in results:
-            name, group = result.analysis.name.split(cfg['delimiter'])
-            if cur_group!=group:
-                cur_group = group
-                manual_result_list.append({'class':'service','name':cur_group})
-            manual_result_list.append({'class':'result','name':name,'object':result})
-        
-        mc['results'] = manual_result_list
-
-        
-    elif cfg['mode']=='column':
-        mc['columns'] = cfg['columns']
-        data = {}
-        manual_result_list = []
-        
-        for result in results:
-            name, col = result.analysis.name.split(cfg['delimiter'])
-            if not data.has_key(name):
-                data[name] = [result.analysis.order,name,{},result]
-            data[name][2][col] = result.value
-        
-        for item in sorted(data.values(),key=operator.itemgetter(0)):
-            values = []
-            for c in cfg['columns']:
-                values.append(item[2][c])
-            manual_result_list.append({'class':'result','name':item[1],'values':values,'object':item[3]})
-        
-        mc['results'] = manual_result_list
-        
-    preview = request.GET.get('preview')
-    
-    NOW = datetime.datetime.now()
-    
-    if not preview:
-        if os.executed and not os.print_date:
-            os.print_date = NOW
-            os.save()
-        
-    return direct_to_template(request=request, 
-                              template=cfg['template'],
-                              extra_context=mc)
-    
-
 def results(request, object_id):
     """
     """
     
     order = get_object_or_404(LabOrder, pk=object_id)
     return print_results(request, order)
-
-def results_by_visit(request, visit_id, lab_id):
-    try:
-        order = LabOrder.objects.get(visit__id=visit_id, laboratory__id=lab_id)
-        return print_results(request, order)
-    except Exception, err:
-        return HttpResponseBadRequest(u'некорректный запрос: %s' % err)
 
 
 def revert_results(request):
@@ -260,10 +181,8 @@ def revert_results(request):
             ordered_services = lab_order.visit.orderedservice_set.filter(execution_place=lab_order.laboratory,
                                                                          service__lab_group=lab_order.lab_group)
             for ordered_service in ordered_services:
-                for item in ordered_service.service.analysis_set.all():
-                    result, created = Result.objects.get_or_create(order=lab_order,
-                                                                   analysis=item, 
-                                                                   sample=ordered_service.sampling)
+                ordered_service.to_lab()
+                
             for result in lab_order.result_set.all():
                 if not result.is_completed():
                     lab_order.is_completed = False
@@ -407,43 +326,6 @@ def get_specimen_status(request):
     return dict(success=True, data=data)
 
 
-@remoting(remote_provider, len=1, action='lab', name='confirmManualService')
-def confirm_manual_service(request):
-    data = simplejson.loads(request.raw_post_data)
-    orderedservice_id = data['data'][0]
-    try:
-        obj = OrderedService.objects.get(id=orderedservice_id)
-    except:
-        return dict(success=False, message="Ordered Service not found")
-    
-    results = Result.objects.filter(order__visit=obj.order, analysis__service=obj.service)
-    if len(results):
-        results.update(validation=1)
-        lab_order = results[0].order
-        lab_order.executed = obj.executed
-        lab_order.save()
-        lab_order.confirm_results(False, False)
-        try:
-            state = lab_order.visit.office.remotestate
-            if state.mode==u'a':
-                action_params = {}
-                manageable_task.delay(operator=request.user, 
-                                      task_type='remote', 
-                                      action=router, 
-                                      object=lab_order, 
-                                      action_params=action_params,
-                                      task_params={'countdown':20})
-        except Exception, err:
-            pass
-        
-        obj.status = u'з'
-        obj.save()
-    else:
-        return dict(success=False, message="Results not found")
-
-    
-    return dict(success=True, message=u"Исследование успешно подтверждено")
-
 def clean_value(v):
     if not v:
         return ''
@@ -515,12 +397,10 @@ def feed(request):
                 'order__%s__gte' % date_type:start,
                 'order__is_completed':True
             }
-            print lookups
             results = Result.objects.filter(**lookups) \
                 .order_by('-order__confirmed','order__visit__specimen')
             
         except Exception, err:
-            print err
             results = None
     
         if end and results:
@@ -577,15 +457,6 @@ def feed(request):
     data['orders'] = orders
     
     return data
-
-
-@ajax_request
-def feed_confirm(request):
-    """
-    """
-    
-    return {}
-
 
 
 @ajax_request

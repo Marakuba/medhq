@@ -5,8 +5,6 @@ from django.conf.urls.defaults import patterns
 
 urlpatterns = patterns('lab.views',
     (r'^print/results/(?P<object_id>\d+)/$','results'),
-    (r'^print/manualresults/(?P<object_id>\d+)/$','print_manuals'),
-    (r'^print/results_by_visit/(?P<visit_id>\d+)/(?P<lab_id>\d+)/$','results_by_visit'),
     (r'^print/invoice/(?P<invoice_id>\d+)/$','print_invoice'),
     (r'^print/register/$','print_register'),
     (r'^revert_results/$','revert_results'),
@@ -14,6 +12,5 @@ urlpatterns = patterns('lab.views',
     (r'^pull_invoice/$','pull_invoice'),
     (r'^hem_results/$','hem_results'),
     (r'^feed/$','feed'),
-    (r'^feed/confirm/$','feed_confirm'),
     (r'^result_loader/$','result_loader'),
 )

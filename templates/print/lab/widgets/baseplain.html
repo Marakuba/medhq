@@ -27,7 +27,7 @@
 	</tr>
 	{% endif %}
 	{% if result.class == 'result' %}
-	<tr class="{% cycle 'stripe' 'row' %}">
+	<tr class="{% cycle 'row' 'stripe' %}">
 		<td class="analysis">{{ result.object.get_title }}</td>
 		<td class="">{% autoescape off %}{{ result.object.get_result|sup }}{% endautoescape %}</td>
 		<td class="">{{ result.object.measurement|default:"---" }}</td>

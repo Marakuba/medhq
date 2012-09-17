@@ -273,11 +273,12 @@ App.patient.PatientForm = Ext.extend(Ext.form.FormPanel, {
                     	fieldLabel: 'Дата рождения',
                     	allowBlank:false
 					},{
-						xtype:'numberfield',
-					    id: 'mobile_phone',
+						xtype:'textfield',
+					    name: 'mobile_phone',
 					     fieldLabel: 'Телефон',
 					     allowBlank:false,
 					     value:'',
+//						plugins:[new Ext.ux.netbox.InputTextMask('(999)999-99-99')],
 					     maxLength: 15, // for validation
 					     autoCreate: {tag: 'input', type: 'text', size: '20', autocomplete:
 						'off', maxlength: '15',value:''} 

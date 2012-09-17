@@ -8,8 +8,19 @@ from service.models import BaseService, ExtendedService
 from state.models import State
 from pricelist.models import Price
 from django.core.exceptions import MultipleObjectsReturned, ObjectDoesNotExist
+import datetime
+from optparse import make_option
+from lab.models import Analysis
 
 class Command(BaseCommand):
+
+    option_list = BaseCommand.option_list + (
+        make_option('--makelab', action='store_true', dest='makelab',
+            help=u'Автоматическое создание тестов'),
+#        make_option('--format', action='store', dest='format',
+#            default='medhqjson', help=u'Формат файла'),
+    )
+
 
     def handle(self, *args, **options):
         """
@@ -25,7 +36,9 @@ class Command(BaseCommand):
         
         for i,row in enumerate(table):
             cur_row = u'%s: ' % str(i+2)
-            service_id, ext_id, group_id, group_name, name, short_name, state, activity, retail_price, dms_price = [unicode(col.strip(),'utf-8') for col in row]
+            cols = [unicode(col.strip(),'utf-8') for col in row]
+            # service_id, ext_id, group_id, group_name, name, short_name, state, activity, next - prices
+            service_id, ext_id, group_id, group_name, name, short_name, state, branches, activity, service_type = cols[0:10]
             if name=='' and short_name=='':
                 continue
             
@@ -50,9 +63,13 @@ class Command(BaseCommand):
                 if not state:
                     print cur_row, u"Group %s/%s has no ID" % (group_name, name) 
                     try:
-                        parent = BaseService.objects.get(name=group_name)
+                        if group_name!='.':
+                            parent = BaseService.objects.get(name=group_name)
+                        else:
+                            parent = None
                         group_object, created = BaseService.objects.get_or_create(parent=parent,
-                                                                                  name=name)
+                                                                                  name=name,
+                                                                                  type=u'group')
                         _service_cache[u"service_%s" % group_object.name] = group_object
                         params['parent'] = group_object
                     except MultipleObjectsReturned:
@@ -89,28 +106,43 @@ class Command(BaseCommand):
                         _service_cache["ext_%s" % ext_id] = ext_object
                     base_service = ext_object.base_service
                 else:
+                    params['type'] = service_type or u'cons'
                     base_service, created = BaseService.objects.get_or_create(**params)
                     print cur_row, u"BaseService %s/%s created" % ('parent' in params and params['parent'] or u'.',name)
                     ext_object, created = ExtendedService.objects.get_or_create(base_service=base_service,
                                                                        state=state_object)
 #                    print cur_row, u"ExtendedService %s for %s created" % (name, state_object)
-                    ext_object.branches.add(state_object)
-                if retail_price:
-                    try:
-                        Price.objects.create(extended_service=ext_object,
-                                             payment_type=u'н', 
-                                             price_type=u'r', 
-                                             value=retail_price.replace(",","."))
-                    except Exception,err:
-                        print err, retail_price
-                if dms_price:
-                    try:
-                        Price.objects.create(extended_service=ext_object,
-                                             payment_type=u'д', 
-                                             price_type=u'r', 
-                                             value=dms_price.replace(",","."))
-                    except Exception,err:
-                        print err, dms_price
+                    if branches:
+                        branches = branches.split(',')
+                        for branch in branches:
+                            if branch not in _state_cache:
+                                _state_cache[branch] = State.objects.get(name=branch)
+                            branch = _state_cache[branch]
+                            ext_object.branches.add(branch)
+                
+                if options.get('makelab'):
+                    Analysis.objects.create(service=base_service, name=base_service.name)
+                
+                if len(cols)>10:
+                    for idx in range(10,len(cols)):
+                        price_col = cols[idx]
+                        h = header[idx]
+                        price_type,payment_type,payer,on_date = h.split('_')
+                        
+                        try:
+                            on_date = datetime.datetime.strptime(on_date,"%d.%m.%Y")
+                            if payer!='*':
+                                payer = State.objects.get(name=payer)
+                            else:
+                                payer = None
+                            Price.objects.create(extended_service=ext_object,
+                                                 payment_type=payment_type, 
+                                                 on_date=on_date,
+                                                 price_type=price_type,
+                                                 payer=payer,
+                                                 value=price_col.replace(",","."))
+                        except Exception,err:
+                            print err, h
                 
                 ext_object.active = activity=='+'
                 ext_object.save()
