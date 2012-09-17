@@ -1,12 +1,12 @@
 Ext.ns('App.examination');
 
-App.examination.QuestPreviewPanel = Ext.extend(Ext.Panel, {
+App.examination.QuestPreviewPanel = Ext.extend(Ext.form.FormPanel, {
 	
     initComponent: function() {
     	
     	var config = {
     		autoScroll:true,
-			layout: 'form',
+			layout: 'auto',
 			title:'Предпросмотр',
 			padding:3,
 			labelWidth:10,
