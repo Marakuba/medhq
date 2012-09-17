@@ -352,18 +352,23 @@ class OrderedService(make_operator_object('ordered_service')):
         widget = get_widget(lab_service.widget)()
         
         is_manual = lab_service.is_manual
-        if is_manual:
-            lab_order = LabOrder.objects.create(visit=visit,  
-                                                       laboratory=self.execution_place,
-                                                       lab_group=s.lab_group,
-                                                       widget=widget.ext_app_name,
-                                                       is_manual=is_manual)
-        else:
-            lab_order, created = LabOrder.objects.get_or_create(visit=visit,  
-                                                       laboratory=self.execution_place,
-                                                       lab_group=s.lab_group,
-                                                       widget=widget.ext_app_name,
-                                                       is_manual=is_manual)
+#        if is_manual:
+#            lab_order = LabOrder.objects.create(visit=visit,  
+#                                                       laboratory=self.execution_place,
+#                                                       lab_group=s.lab_group,
+#                                                       widget=widget.ext_app_name,
+#                                                       is_manual=is_manual)
+#        else:
+#            lab_order, created = LabOrder.objects.get_or_create(visit=visit,  
+#                                                       laboratory=self.execution_place,
+#                                                       lab_group=s.lab_group,
+#                                                       widget=widget.ext_app_name,
+#                                                       is_manual=is_manual)
+        lab_order, created = LabOrder.objects.get_or_create(visit=visit,  
+                                                   laboratory=self.execution_place,
+                                                   lab_group=s.lab_group,
+                                                   widget=widget.ext_app_name,
+                                                   is_manual=is_manual)
             
         analysis_list = self.service.analysis_set.all()
         if ext_service.base_profile:
