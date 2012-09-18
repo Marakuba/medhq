@@ -20,6 +20,18 @@ App.examination.TemplateBody = Ext.extend(Ext.TabPanel, {
 			},
 			model: App.models.Template
 		});
+		
+		this.questStore = new Ext.data.RESTStore({
+			autoSave: true,
+			autoLoad : false,
+			apiUrl : get_api_url('questionnaire'),
+			baseParams:{
+				format:'json',
+				deleted:false
+			},
+			model: App.models.Questionnaire
+		});
+		
 		this.ticketOkBtn = new Ext.Button({
 			text:'Ok',
 			hidden:true,
@@ -97,8 +109,19 @@ App.examination.TemplateBody = Ext.extend(Ext.TabPanel, {
 			scope:this
 		});
 		
+		this.saveQuestBtn = new Ext.Button({
+			text: 'Сохранить',
+			source:'questionnaire',
+			handler:function(){
+				if (this.questPanel){
+					this.questPanel.collectData();
+				}
+			},
+			scope:this
+		}); 
+		
 		this.ttb = new Ext.Toolbar({
-			items: ['-',this.ticketOkBtn,this.printBtn,this.previewBtn,'-', this.historyBtn, this.closeBtn, this.moveArchiveBtn, this.dltBtn]
+			items: ['-',this.ticketOkBtn,this.printBtn,this.previewBtn,'-', this.historyBtn, this.closeBtn, this.moveArchiveBtn, this.dltBtn,this.saveQuestBtn]
 		});
 		
 		this.dataTab = new App.examination.TicketTab({
@@ -217,6 +240,8 @@ App.examination.TemplateBody = Ext.extend(Ext.TabPanel, {
 			});
 			
 			this.fillSectionMenu();
+			
+			this.fillQuestMenu();
 			
 			this.insert(0,this.dataTab);
 			
@@ -374,10 +399,59 @@ App.examination.TemplateBody = Ext.extend(Ext.TabPanel, {
 		this.doLayout();
 	},
 	
-	fillSectionMenu: function(){
-		this.sectionMenu = new Ext.menu.Menu({
+	fillQuestMenu: function(){
+		this.questItems = new Ext.menu.Menu({
 			items:[]
 		});
+		this.questStore.load({callback:function(records){
+			Ext.each(records,function(record){
+				var rec = record.data;
+				this.questItems.add({
+					text:rec.name,
+					handler:this.openQuestionnaire.createDelegate(this,[rec]),
+					scope:this
+				});
+			},this);
+			this.questBtn = new Ext.Button({
+				text:'Анкеты',
+				menu:this.questItems
+			});
+			this.ttb.insert(0,this.questBtn);
+			this.doLayout();
+		},scope:this})
+	},
+	
+	openQuestionnaire:function(questRecord){
+		if (this.questPanel){
+			Ext.Msg.alert('Уведомление','Одна анкета уже открыта');
+			this.setActiveTab(this.questPanel);
+			return
+		}
+		this.questPanel = new App.examination.QuestPreviewPanel({
+			title:questRecord.name,
+			type:'questionnaire',
+			closable:true,
+			listeners:{
+				scope:this,
+				destroy:function(){this.questPanel = undefined}
+			}
+		});
+		var rawdata = questRecord.code;
+		if (!rawdata) return;
+		var data = Ext.decode(rawdata);
+		if (!data['items']) {
+			Ext.Msg.alert('Синтаксическая ошибка','Нет параметра "items"');
+			return
+		};
+		//добавляем элементы в главную панель
+		this.questPanel.add(this.questPanel.buildElem(data));
+		
+		this.add(this.questPanel);
+		this.setActiveTab(this.questPanel);
+		
+	},
+	
+	fillSectionMenu: function(){
 		
 		this.sectionItems = new Ext.menu.Menu({
 			items:[]

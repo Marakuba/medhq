@@ -565,4 +565,17 @@ class DICOM(models.Model):
         super(DICOM, self).save(*args, **kwargs)
         img = self.get_image()
         img.convert('L').save(self.get_image_path())
+        
+class Questionnaire(models.Model):
+    name = models.TextField(u'Наименование анкеты')
+    staff = models.ManyToManyField(Staff, null=True, blank=True, verbose_name=u'Врач')
+    code = models.TextField(u'Код анкеты')
+    base_service = models.ManyToManyField(BaseService, null=True, blank=True)
 
+    def __unicode__(self):
+        return self.name
+    
+    class Meta:
+        verbose_name = u'Анкета'
+        verbose_name_plural = u'Анкеты'
+        ordering = ('name',)

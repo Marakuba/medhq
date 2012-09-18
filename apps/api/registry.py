@@ -30,7 +30,7 @@ from billing.models import Account, Payment, ClientAccount
 from interlayer.models import ClientItem
 from django.contrib.contenttypes.models import ContentType
 from examination.models import TemplateGroup, DICOM, Card, Template, FieldSet,\
-    SubSection, Glossary
+    SubSection, Glossary, Questionnaire
 from tastypie.cache import SimpleCache
 from django.contrib.auth.models import User
 from examination.models import Equipment as ExamEquipment
@@ -2595,6 +2595,21 @@ class StandartItemResource(ExtResource):
             'standart':ALL
         }
               
+class QuestionnaireResource(ExtResource):
+    base_service = fields.ManyToManyField(BaseServiceResource,'base_service')
+    staff = fields.ManyToManyField(StaffResource,'staff')
+    
+    class Meta:
+        queryset = Questionnaire.objects.all()
+        resource_name = 'questionnaire'
+        authorization = DjangoAuthorization()
+        always_return_data = True
+        limit = 200
+        filtering = {
+            'id' : ALL,
+            'staff':ALL_WITH_RELATIONS,
+            'base_service':ALL_WITH_RELATIONS
+        }
 
 api = Api(api_name=get_api_name('dashboard'))
 
@@ -2679,6 +2694,7 @@ api.register(SubSectionResource())
 api.register(TemplateResource())
 api.register(CardResource())
 api.register(GlossaryResource())
+api.register(QuestionnaireResource())
 
 #helpdesk
 api.register(IssueTypeResource())
