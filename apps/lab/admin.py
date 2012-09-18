@@ -163,21 +163,21 @@ class LabOrderAdmin(admin.ModelAdmin):
         )
         return my_urls + urls
 
-    def save_formset(self, request, form, formset, change):
-        """
-        Given an inline formset save it to the database.
-        """
-#        if formset.model != Result:
-#            return super(LabOrderAdmin, self).save_formset(request, form, formset, change)
-        instances = formset.save(commit=True)
-        
-        flag = True
-        lab_order = form.instance
-        results = Result.objects.filter(order=lab_order)
-        for result in results:
-            flag = flag and result.is_validated
-        lab_order.is_completed = flag
-        lab_order.save()
+#    def save_formset(self, request, form, formset, change):
+#        """
+#        Given an inline formset save it to the database.
+#        """
+##        if formset.model != Result:
+##            return super(LabOrderAdmin, self).save_formset(request, form, formset, change)
+#        instances = formset.save(commit=True)
+#        
+#        flag = True
+#        lab_order = form.instance
+#        results = Result.objects.filter(order=lab_order)
+#        for result in results:
+#            flag = flag and result.is_validated
+#        lab_order.is_completed = flag
+#        lab_order.save()
     
 #    def queryset(self, request):
 #        qs = super(LabOrderAdmin, self).queryset(request)

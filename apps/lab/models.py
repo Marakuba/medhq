@@ -239,15 +239,13 @@ class LabOrder(models.Model):
     
     def confirm_results(self, autoclean=True, confirm_orders=True):
         if autoclean:
-            Result.objects.filter(analysis__service__labservice__is_manual=False, 
-                                  order=self, 
+            Result.objects.filter(order=self, 
                                   validation=0).exclude(analysis__name__istartswith='##').delete()
                                   
             Result.objects.filter(order=self, 
                                   validation=-1).update(validation=1)
             #### checking for empty groups
-            results = Result.objects.filter(analysis__service__labservice__is_manual=False, 
-                                  order=self).order_by('-analysis__order',)
+            results = Result.objects.filter(order=self).order_by('-analysis__order',)
             last_result_is_group = True
             for r in results:
                 is_group = r.is_group()
@@ -345,8 +343,6 @@ class Result(models.Model):
     
     def is_completed(self):
         if self.is_group():
-            return True
-        if self.analysis.service.labservice.is_manual:
             return True
         if self.value or self.input_list or not self.to_print:
             return True
@@ -452,7 +448,9 @@ class EquipmentAnalysis(models.Model):
     analysis = models.OneToOneField(Analysis)
     
     def __unicode__(self):
-        return self.analysis.__unicode__()
+        if self.analysis.name==self.analysis.service.name:
+            return self.analysis.name
+        return u"%s/%s" % (self.analysis.name, self.analysis.service.name)
     
     class Meta:
         ordering = ('analysis__name',)
