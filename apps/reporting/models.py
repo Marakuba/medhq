@@ -6,6 +6,7 @@ from django.conf import settings
 from constance import config
 from django.contrib.auth.models import Group, User
 from mptt.models import MPTTModel
+from reporting import make_report_choices
 
 #GROUP_SERVICE_UZI = 'uzi'
 #GROUP_SERVICE_LAB = 'lab'

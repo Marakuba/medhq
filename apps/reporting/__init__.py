@@ -20,6 +20,8 @@ def get_report(slug):
 def all_reports():
     return _registry.items()
 
+def make_report_choices():
+    return [(kl,getattr(r,'verbose_name',kl)) for (kl,r) in _registry.iteritems()]
 
 def autodiscover():
     from django.conf import settings

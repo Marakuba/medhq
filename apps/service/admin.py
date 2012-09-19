@@ -70,7 +70,14 @@ def make_inactive_action(modeladmin, request, queryset):
         dsc = s.get_descendants()
         for d in dsc:
             d.extendedservice_set.filter(is_active=True).update(is_active=False)
-make_inactive_action.short_description = u'Сделать неактивной все дочерние услуги'
+make_inactive_action.short_description = u'Сделать неактивными все дочерние услуги'
+
+def make_active_action(modeladmin, request, queryset):
+    for s in queryset:
+        dsc = s.get_descendants()
+        for d in dsc:
+            d.extendedservice_set.filter(is_active=False).update(is_active=True)
+make_active_action.short_description = u'Сделать активными все дочерние услуги'
 
 def iterate_service(service):
     """

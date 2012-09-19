@@ -10,6 +10,9 @@ from pricelist.models import PRICE_TYPES
 from models import StateGroup
 
 from fields import PatientModelChoiceField
+from reporting.models import Query, Report
+from djangocodemirror.fields import DjangoCodeMirrorField
+from reporting import make_report_choices
 
 patients = Patient.objects.all()
 staffs = Staff.objects.all()
@@ -86,3 +89,20 @@ class ReportForm(forms.Form):
                                  initial=True,
                                  required=False,
                                  help_text=u'отображать или нет детальные сведения в отчетах с группами')
+    
+    
+    
+class QueryAdminForm(forms.ModelForm):
+    """
+    """
+    
+    sql = DjangoCodeMirrorField(label=u'SQL-запрос', 
+                                codemirror_attrs={
+                                    'lineNumbers':True,
+                                    'mode':'mysql'
+                                })
+    
+    class Meta:
+        model = Query
+
+

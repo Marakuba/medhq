@@ -121,6 +121,7 @@ def cpanel(request):
         'registry':request.user.has_perm('visit.add_visit') or request.user.is_superuser,
         'laboratory':request.user.has_perm('lab.change_laborder') or request.user.is_superuser,
         'examination':request.user.has_perm('examination.add_examinationcard') or request.user.is_superuser,
+        'reporting':request.user.is_superuser,
         'admin':request.user.is_staff or request.user.is_superuser,
     }
     return {
@@ -385,7 +386,8 @@ def get_service_tree(request):
         _cached_tree = cache.get(_cache_key)
         
         
-    # если отсутствует кэш, то начинаем построение дерева услуг    
+    # если отсутствует кэш, то начинаем построение дерева услуг  
+    _cached_tree = None  
     if not _cached_tree:
 
         price_args = dict(extended_service__is_active=True, 

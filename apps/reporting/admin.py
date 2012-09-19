@@ -31,7 +31,10 @@ class ReportAdmin(TreeEditor):
     filter_horizontal = ('groups','users',)
     
 class QueryAdmin(admin.ModelAdmin):
-    pass
+    form = QueryAdminForm
+    
+    class Media:
+        js = ['libs/jquery.js',]
 
 admin.site.register(ServiceGroupPrice,ServiceGroupPriceAdmin)
 admin.site.register(ServiceGroup,ServiceGroupAdmin)

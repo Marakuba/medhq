@@ -48,6 +48,14 @@ Ext.onReady(function(){
 			}
 		},{
             xtype:'button',
+            text: 'Отчеты',
+			scale: 'large',
+			hidden: !permissions['reporting'],
+			handler: function(){
+				window.location.href = '/webapp/reporting/';
+			}
+		},{
+            xtype:'button',
             text: 'Администрирование',
 			scale: 'large',
 			hidden: !permissions['admin'],

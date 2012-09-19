@@ -258,7 +258,7 @@ def set_params(dest,config):
     """
     добавляет в словарь dest параметры с именами из param_names, присутствующие в config
     """
-    param_names = ['colspan','cssCls','hidden']
+    param_names = ['colspan','cssCls','hidden','default']
     dest.update(dict(map(lambda x:(x,config[x]) if x in config.keys() else (None,None),param_names)))
     if dest.has_key(None):
         dest.pop(None)

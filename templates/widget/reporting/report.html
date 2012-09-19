@@ -3,6 +3,7 @@
 <style>
     div.reporting {
         font-family:'Arial';
+        padding:8px;
     }
     div.reporting h1 {
         text-align:center;
@@ -104,15 +105,20 @@
         background-color:#EFEFEF;
     }
     table.data tr.row-data:hover {
-background: #eeeeee; /* Old browsers */
-background: -moz-linear-gradient(top,  #eeeeee 0%, #cccccc 100%); /* FF3.6+ */
-background: -webkit-gradient(linear, left top, left bottom, color-stop(0%,#eeeeee), color-stop(100%,#cccccc)); /* Chrome,Safari4+ */
-background: -webkit-linear-gradient(top,  #eeeeee 0%,#cccccc 100%); /* Chrome10+,Safari5.1+ */
-background: -o-linear-gradient(top,  #eeeeee 0%,#cccccc 100%); /* Opera 11.10+ */
-background: -ms-linear-gradient(top,  #eeeeee 0%,#cccccc 100%); /* IE10+ */
-background: linear-gradient(to bottom,  #eeeeee 0%,#cccccc 100%); /* W3C */
-filter: progid:DXImageTransform.Microsoft.gradient( startColorstr='#eeeeee', endColorstr='#cccccc',GradientType=0 ); /* IE6-9 */
+background: #ffff88; /* Old browsers */
+background: -moz-linear-gradient(top,  #ffff88 0%, #ffff88 100%); /* FF3.6+ */
+background: -webkit-gradient(linear, left top, left bottom, color-stop(0%,#ffff88), color-stop(100%,#ffff88)); /* Chrome,Safari4+ */
+background: -webkit-linear-gradient(top,  #ffff88 0%,#ffff88 100%); /* Chrome10+,Safari5.1+ */
+background: -o-linear-gradient(top,  #ffff88 0%,#ffff88 100%); /* Opera 11.10+ */
+background: -ms-linear-gradient(top,  #ffff88 0%,#ffff88 100%); /* IE10+ */
+background: linear-gradient(to bottom,  #ffff88 0%,#ffff88 100%); /* W3C */
+filter: progid:DXImageTransform.Microsoft.gradient( startColorstr='#ffff88', endColorstr='#ffff88',GradientType=0 ); /* IE6-9 */
 
+    }
+    table.data div.empty {
+    	font-style: italic;
+    	white-space: nowrap;
+    	font-weight:bold;
     }
 </style>
 
@@ -131,17 +137,27 @@ filter: progid:DXImageTransform.Microsoft.gradient( startColorstr='#eeeeee', end
 {% get_report_as_list report True as results%}
 <div class="template-preview">
 <table class="data">
+{% if results|length == 1 %}
+<tr><td><div class="empty">Нет данных по заданным условиям</div></td></tr>
+{% else %}
 {% for row in results %}
     <tr class="row-{{ row.type }} {% if row.type == 'data' %}{% cycle 'row1' 'row2' %}{% endif %} {{ row.cssCls }}">
         {% for cell in row.data %}
             {% if row.type == 'header' %}
                 <th colspan="{{ cell.colspan }}">{{cell.value}}</th>
             {% else %}
-                <td {% if cell.cssCls %}class="{{ cell.cssCls }}"{% endif %} colspan="{{ cell.colspan }}">{{cell.value}}</td>
+                <td {% if cell.cssCls %}class="{{ cell.cssCls }}"{% endif %} colspan="{{ cell.colspan }}">
+                	{% if not cell.value %}
+                		<div class="empty">{{cell.default|default:'Не указано'}}</div>
+                	{% else %}
+                		{{cell.value}}
+                	{% endif %}
+                </td>
             {% endif %}
         {% endfor %}
     </tr>
 {% endfor %}
+{% endif %}
 </table>
 </div>
         

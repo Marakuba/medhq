@@ -146,6 +146,7 @@ INSTALLED_APPS = [
     'tastypie',
     'tagging',
     'raven.contrib.django',
+    'djangocodemirror',
 ]
 
 APPSERVER_ADMIN_TITLE = u'Главная панель'
