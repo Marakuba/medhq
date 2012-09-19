@@ -205,12 +205,13 @@ App.examination.TicketTab = Ext.extend(Ext.Panel, {
 		this.record.set('data',Ext.encode(data));
 	},
 	
-	addTicket:function(title,section,order){
+	addTicket:function(title,section,order,data){
 		var new_ticket = new Ext.ux.form.Ticket({
 			section:section,
 			order:order,
 			data:{
 				title:title,
+				text:data,
 				printable:true,
 				private:false
 			}

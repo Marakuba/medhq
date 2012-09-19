@@ -114,7 +114,13 @@ App.examination.TemplateBody = Ext.extend(Ext.TabPanel, {
 			source:'questionnaire',
 			handler:function(){
 				if (this.questPanel){
-					this.questPanel.collectData();
+					var tickets = this.questPanel.makeTickets();
+					Ext.each(tickets,function(t){
+						this.dataTab.addTicket(t.title,t.section,0,t.data);
+					},this);
+					this.questPanel.destroy();
+					this.setActiveTab(this.dataTab);
+					
 				}
 			},
 			scope:this

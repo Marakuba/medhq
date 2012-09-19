@@ -1,52 +1,5 @@
 Ext.ns('App.examinaiton');
 
-App.examination.QuestComponents = {
-	'text':{
-		'constructor':Ext.form.TextField,
-		'config':{
-			width:50,
-			type:'text',
-			getData:function(obj){
-				return obj.getValue();
-			}
-		}
-	},
-	'label':{
-		'constructor':Ext.form.DisplayField,
-		'config':{
-			type:'label',
-			getData:function(obj){
-				return obj.getValue();
-			}
-		}
-	},
-	'checkbox':{
-		'constructor':Ext.form.CheckboxGroup,
-		'config':{
-//					fieldLabel:'Введите значения',
-			columns:1,
-			type:'checkbox'
-			
-		}
-	},
-	'radio':{
-		'constructor':Ext.form.RadioGroup,
-		'config':{
-//					fieldLabel:'Введите значения',
-			columns:1,
-			type:'radio'
-			
-		}
-	},
-	'space':{
-		'constructor':Ext.panel,
-		'config':{
-			height:10
-		}
-	}
-};
-
-
 App.examination.QuestApp = Ext.extend(Ext.Panel, {
 	initComponent : function() {
 		/*
