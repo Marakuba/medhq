@@ -60,6 +60,10 @@ App.examination.QuestPreviewPanel = Ext.extend(Ext.form.FormPanel, {
         
 		Ext.apply(this, Ext.apply(this.initialConfig, config));
         App.examination.QuestPreviewPanel.superclass.initComponent.call(this);
+        
+        this.on('afterrender',function(){
+        	this.makeTickets();
+        },this)
     },
     
     clear: function(){
@@ -87,26 +91,43 @@ App.examination.QuestPreviewPanel = Ext.extend(Ext.form.FormPanel, {
 			panel_conf['title'] = obj['title'];
 		};
 		if (obj['items']){
-			if (obj['layout'] && obj['layout']=='tab') {
-				panel_conf['activeTab'] = 0;
-				var elem = new Ext.TabPanel(panel_conf);
-			} else {
+			var tabPanel
+			//Если это Таб панель, то оборачиваем ее в FormPanel, чтобы потом можно было взять getForm()
+			if (obj['layout'] && obj['layout']!=='tab') {
 				panel_conf['layout'] = obj['layout'] || 'auto';
-				var elem = new Ext.form.FormPanel(panel_conf);
+			};
+			var elem = new Ext.form.FormPanel(panel_conf);
+			if (obj['layout'] && obj['layout']=='tab') {
+				tabPanel = new Ext.TabPanel({
+					items:[],
+					type:'tabpanel',
+					activeTab:0,
+					border:false
+				});
+				
+				var parent = tabPanel;
+				
+			} else {
+				var parent = elem 
 			}
 			var i = 0;
 			Ext.each(obj.items,function(item){
-				elem.add(this.buildElem(item,deep+1,i));
+				parent.add(this.buildElem(item,deep+1,i));
 				i += 1;
 			},this)
 		} else {
+			//Если у объекта нет поля items, то это не панель
 			var elem = this.buildObject(obj,deep,index)
-		}
+		};
+		
+		if (tabPanel){
+			elem.add(parent)
+		};
 		
 		return elem
 	},
     
-		//Создает объект согласно словаря компонентов
+	//Создает объект согласно словаря компонентов
 	buildObject: function(obj,deep,index){
 		var elem;
 		var name = deep + '_' + index;
@@ -140,35 +161,82 @@ App.examination.QuestPreviewPanel = Ext.extend(Ext.form.FormPanel, {
 	
 	getCmpValue: function(field) {
 		var value = field.getValue();
-            if ( value.getGroupValue ) {
-                value = value.getGroupValue();
-            } else if ( field.eachItem ) {
-                value = [];
-                field.eachItem(function(item){
-                	if (item.getValue()) value.push(item.getRawValue());
-                });
-            }
-		return value
+		if (!value) return '';
+        if ( value.getGroupValue ) {
+            value = value.getGroupValue();
+        } else if ( field.eachItem ) {
+            value = [];
+            field.eachItem(function(item){
+            	if (item.getValue()) value.push(item.getRawValue());
+            });
+        }
+	return value
     },
 	
-	collectData: function(){
-		var f = this.getForm();
+	collectData: function(panel){
+		var f = (panel && panel.getForm()) || this.getForm();
 		data = {
 		    title: f.title || 'УЗИ',
 		    rows:[]
 		};
 		
-//		Ext.apply(data, form.meta);
 		f.items.each(function(field,i){
-//		    label = field.fieldLabel || '';
 		    values = this.getCmpValue(field);
 		    data.rows.push({
 				values: values,
 				name:field.name
 	    	});
 		}, this);
-		console.log(data)
 		return data;
+	},
+	
+	makeTickets:function(){
+		//Выбираем начальную форму секций, в зависимости от того, какого она типа: обычная панель или TabPanel
+		var form = this.get(0).get(0) 
+		if (form && form.type=='tabpanel'){
+			var inceptionForm = form;
+		} else {
+			var inceptionForm = this.get(0);
+		}
+		var tickets = []
+		Ext.each(inceptionForm.items.items,function(panel){
+			var ticketData = this.convertToTicketData(this.collectData(panel));
+			tickets.push(ticketData)
+		},this);
+		return tickets
+	},
+	
+	/* Получает данные в виде
+	 * {
+	 * 		title:'...',
+	 * 		section:'...',
+	 * 		data:[{name:'...',(values:'...'|['...','...',...])},{...}]
+	 * 
+	 * } 
+	 * Преобразует их в вид
+	 * {title:'...',
+	 * section:'...',
+	 * data:'...',
+	 * rawData:dataObj, - данные в непреобразованном виде, для того, чтобы потом вернуть их на форму
+	 * }
+	 */
+	convertToTicketData:function(dataObj){
+		var data = '';
+		Ext.each(dataObj.rows,function(item){
+			if (!Ext.isArray(item.values)){
+				data += item.values + ' '
+			} else { 
+				Ext.each(item.values,function(value){
+					data += ' ' + value + ','
+				});
+				data[data.length-1] = ';'
+			}
+		},this);
+		cObj = {title:dataObj.title,
+				section:dataObj.section,
+				rawData:dataObj,
+				data:data};
+		return cObj
 	}
 });
 
