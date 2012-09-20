@@ -190,7 +190,10 @@ class LabOrder(models.Model):
     created = models.DateTimeField(u'Дата', auto_now_add=True)
     visit = models.ForeignKey('visit.Visit', verbose_name=u'Визит', 
                               blank=True, null=True) 
-    laboratory = models.ForeignKey(State, verbose_name=u'Лаборатория', related_name='laboratory')
+    laboratory = models.ForeignKey(State, 
+                                   verbose_name=u'Лаборатория', 
+                                   related_name='laboratory',
+                                   limit_choices_to={'type__in':['b','m','p']})
     lab_group = models.ForeignKey(LabServiceGroup, blank=True, null=True)
     staff = models.ForeignKey(Position, verbose_name=u'Врач', blank=True, null=True, related_name='staff_pos')
     staff_text = models.TextField(u'Врач (текст)', blank=True)
@@ -199,6 +202,7 @@ class LabOrder(models.Model):
     is_completed = models.BooleanField(u'Выполнен', default=False)
     is_printed = models.BooleanField(u'Печать', default=False)
     is_manual = models.BooleanField(u'Ручные исследования', default=False)
+    manual_service = models.CharField(u'Наименование ручного исследования', max_length=300, blank=True)
     send_status = models.CharField(u'Статус отправки', max_length=10, blank=True,
                                    choices=LABORDER_STATUSES)
     sended = models.DateTimeField(u'Дата/время отправки', blank=True, null=True)

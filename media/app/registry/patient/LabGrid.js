@@ -25,6 +25,7 @@ App.patient.LabGrid = Ext.extend(Ext.grid.GridPanel, {
 		    {name: 'is_printed', allowBlank: false, type:'boolean'},
 		    {name: 'print_date', allowBlank: false, type:'date'},
 		    {name: 'barcode'},
+		    {name: 'manual_service'},
 		    {name: 'laboratory_name'},
 		    {name: 'staff_name'}
 		]);
@@ -53,51 +54,46 @@ App.patient.LabGrid = Ext.extend(Ext.grid.GridPanel, {
 		});
 		
 		
-		this.columns =  [
-		    {
-		    	width: 1, 
-		    	sortable: true, 
-		    	dataIndex: 'is_completed', 
-		    	renderer: function(val) {
-		    		flag = val ? 'yes' : 'no';
-		    		return "<img src='"+MEDIA_URL+"admin/img/admin/icon-"+flag+".gif'>"
-		    	}
-		    },{
-		    	header: "Заказ", 
-		    	width: 25, 
-		    	sortable: true, 
-		    	dataIndex: 'barcode'
-		    },{
+		this.columns =  [{
+	    	header: "№ заказа", 
+	    	width: 90, 
+	    	sortable: false, 
+	    	dataIndex: 'is_completed', 
+	    	renderer: function(val, opts, rec) {
+	    		var cls = val ? "cell-completed-icon" : "";
+	    		return String.format('<div class="{0}" style="pagging-left:18px;text-indent:16px;">{1}</div>',cls,rec.data.barcode);
+	    	}
+	    },{
 		    	header: "Дата", 
-		    	width: 50, 
+		    	width: 70, 
 		    	sortable: true, 
 		    	dataIndex: 'created',
-		    	renderer:Ext.util.Format.dateRenderer('d.m.Y'), 
+		    	renderer:Ext.util.Format.dateRenderer('d.m.y'), 
 		    	editor: new Ext.form.TextField({})
 		    },{
-		    	width: 80,
+		    	header: "Лаборатория", 
+		    	width: 130, 
+		    	sortable: true, 
+		    	dataIndex: 'laboratory_name'
+		    },{
+		    	header: "Исследование", 
+		    	width: 170, 
+		    	sortable: true, 
+		    	dataIndex: 'manual_service'
+		    },{
+		    	width: 130,
 		    	sortable: true, 
 		    	header:'Напечатано',
 		    	dataIndex: 'is_printed', 
 		    	renderer: function(val,opts,rec) {
-		    		flag = val ? 'yes' : 'no';
-		    		time = val ? Ext.util.Format.date(rec.data.print_date, 'd.m.Y H:i') : '';
-		    		return "<img src='"+MEDIA_URL+"admin/img/admin/icon-"+flag+".gif'>&nbsp;&nbsp;&nbsp;" + time
+		    		if(val){
+			    		time = Ext.util.Format.date(rec.data.print_date, 'd.m.y / H:i');
+			    		return String.format('{0}&nbsp;&nbsp;<img src="{1}admin/img/admin/icon-yes.gif">', time, MEDIA_URL)
+		    		}		    	
 		    	}
-		    },/*{
-		    	header: "Дата/время печати", 
-		    	width: 100, 
-		    	sortable: true, 
-		    	dataIndex: 'print_date',
-		    	renderer:Ext.util.Format.dateRenderer('d.m.Y H:i') 
-		    },*/{
-		    	header: "Лаборатория", 
-		    	width: 80, 
-		    	sortable: true, 
-		    	dataIndex: 'laboratory_name'
 		    },{
 		    	header: "Врач", 
-		    	width: 100, 
+		    	width: 160, 
 		    	sortable: true, 
 		    	dataIndex: 'staff_name'
 		    }
@@ -128,23 +124,10 @@ App.patient.LabGrid = Ext.extend(Ext.grid.GridPanel, {
 	            displayInfo: true,
 	            displayMsg: 'Показана запись {0} - {1} из {2}',
 	            emptyMsg: "Нет записей"
-/*	            items:[
-	                '-', {
-	                pressed: true,
-	                enableToggle:true,
-	                text: 'Show Preview',
-	                cls: 'x-btn-text-icon details',
-	                toggleHandler: function(btn, pressed){
-	                    var view = grid.getView();
-	                    view.showPreview = pressed;
-	                    view.refresh();
-	                }
-	            }]*/
 	        }),
 			viewConfig : {
-				forceFit : true,
-				emptyText: 'Нет записей'
-				//getRowClass : this.applyRowClass
+				emptyText: 'Нет записей',
+				getRowClass : this.applyRowClass
 			}
 			
 		}
@@ -153,6 +136,14 @@ App.patient.LabGrid = Ext.extend(Ext.grid.GridPanel, {
 		App.patient.LabGrid.superclass.initComponent.apply(this, arguments);
 		this.ownerCt.on('patientselect', this.setActivePatient, this);
 		//App.eventManager.on('patientselect', this.onPatientSelect, this);
+	},
+	
+	applyRowClass : function(record, index){
+		// x-grid-row-normal
+		if(record.data.is_completed){
+			return "x-grid-row-normal"
+		}
+		return ""
 	},
 	
 	setActivePatient: function(rec) {

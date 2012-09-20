@@ -78,12 +78,16 @@ class LabOrderAdmin(admin.ModelAdmin):
     readonly_fields = ('laboratory',)
     exclude = ('is_completed','is_printed','print_date','visit','lab_group')
 #    list_display = ('__unicode__','is_completed','is_printed','print_date_display',actions)
-    list_display = ('visit_id','visit_created','patient_name','visit_office','laboratory','operator','is_completed','is_printed','print_date_display',actions)
+    list_display = ('visit_id','visit_created','patient_name','visit_office','laboratory','operator','is_completed','is_printed','print_date_display','created_date')
     list_filter = ('laboratory','is_completed','lab_group')
     date_hierarchy = 'created'
     inlines = [ResultInline]
     actions = [update_specimen_action]
     search_fields = ['visit__barcode__id','visit__patient__last_name']
+    
+    def created_date(self, obj):
+        return obj.created.strftime('%d.%m.%y / %H:%M:%S')
+    created_date.short_description = u'Создан'
     
     def visit_id(self, obj):
         return u"№%s" % obj.visit.barcode.id
@@ -94,8 +98,8 @@ class LabOrderAdmin(admin.ModelAdmin):
     visit_office.short_description = u'Офис'
     
     def visit_created(self, obj):
-        return obj.visit.created.strftime("%d.%m.%Y / %H:%M")
-    visit_created.short_description = u'Создано'
+        return obj.visit.created.strftime("%d.%m.%y / %H:%M")
+    visit_created.short_description = u'Дата заказа'
     
     def patient_name(self, obj):
         return obj.visit.patient.full_name()
@@ -257,12 +261,12 @@ def separate(modeladmin, request, queryset):
     laborder = LabOrder.objects.create(visit=o.visit,  
                                         laboratory=o.laboratory,
                                         lab_group=o.lab_group,
-                                        is_manual=o.is_manual)
+                                        is_manual=o.is_manual,
+                                        widget=o.widget,
+                                        manual_service=o.manual_service)
     queryset.update(order=laborder)
     messages.info(request, u'Исследования были успешно перенесены в лабораторный ордер #%s' % laborder.id)
         
-        
-    
 separate.short_description = u'Отделить в новый лабораторный ордер'
     
     

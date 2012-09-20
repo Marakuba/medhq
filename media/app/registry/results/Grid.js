@@ -69,7 +69,7 @@ App.results.Grid = Ext.extend(Ext.grid.GridPanel, {
 		    	width: 70, 
 		    	sortable: true, 
 		    	dataIndex: 'created',
-		    	renderer:Ext.util.Format.dateRenderer('d.m.Y'), 
+		    	renderer:Ext.util.Format.dateRenderer('d.m.y'), 
 		    	editor: new Ext.form.TextField({})
 		    },{
 		    	header: "Пациент", 
@@ -98,7 +98,7 @@ App.results.Grid = Ext.extend(Ext.grid.GridPanel, {
 		    	dataIndex: 'is_printed', 
 		    	renderer: function(val,opts,rec) {
 		    		if(val){
-			    		time = Ext.util.Format.date(rec.data.print_date, 'd.m.Y / H:i');
+			    		time = Ext.util.Format.date(rec.data.print_date, 'd.m.y / H:i');
 			    		return String.format('{0}&nbsp;&nbsp;<img src="{1}admin/img/admin/icon-yes.gif">', time, MEDIA_URL)
 		    		}
 		    	}

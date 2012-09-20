@@ -11,7 +11,7 @@ def get_active_profile(request):
         return position
     except KeyError:
         try:
-            first = Position.objects.filter(staff__user=request.user)[0]
+            first = Position.objects.active(staff__user=request.user)[0]
         except IndexError:
             return None
         return first

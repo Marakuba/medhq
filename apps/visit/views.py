@@ -20,6 +20,7 @@ from service.exceptions import TubeIsNoneException
 from state.models import State
 from patient.models import InsurancePolicy
 from annoying.decorators import render_to
+from lab.utils import make_lab
 #autocomplete = AutocompleteView('visit')
 
 def all(request, visit_id):
@@ -145,7 +146,9 @@ def custom_blank(request):
 def sampling(request, visit_id):
     visit = get_object_or_404(Visit, pk=visit_id)
     try:
-        visit.generate_laborder()
+        ordered_services = visit.orderedservice_set.all()
+        for ordered_service in ordered_services:
+            make_lab(ordered_service)
     except Exception, err:
         return HttpBadRequest(err.__unicode__())
 
@@ -203,7 +206,7 @@ def to_lab(request):
     ids = data['data'][0]
     object_list = OrderedService.objects.filter(id__in=ids)
     for obj in object_list:
-        obj.to_lab()
+        make_lab(obj)
     return dict(success=True, data='some data')
 
 @remoting(remote_provider, len=1, action='visit', name='setPaymentType')
