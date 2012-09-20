@@ -62,7 +62,10 @@ App.examination.QuestPreviewPanel = Ext.extend(Ext.form.FormPanel, {
         App.examination.QuestPreviewPanel.superclass.initComponent.call(this);
         
         this.on('afterrender',function(){
-        	this.makeTickets();
+//        	this.makeTickets();
+        	if (this.data){
+        		this.loadData(this.data);
+        	}
         },this)
     },
     
@@ -101,6 +104,7 @@ App.examination.QuestPreviewPanel = Ext.extend(Ext.form.FormPanel, {
 				tabPanel = new Ext.TabPanel({
 					items:[],
 					type:'tabpanel',
+					section:obj['section'],
 					activeTab:0,
 					border:false
 				});
@@ -140,12 +144,14 @@ App.examination.QuestPreviewPanel = Ext.extend(Ext.form.FormPanel, {
 			//Заполняем items для checkboxgroup или radiogroup
 			if (obj_conf['data']){
 				obj_conf['items'] = [];
+				var id = 0;
 				Ext.each(obj_conf['data'],function(item){
 					obj_conf['items'].push({
-						name:name+'el',
+						name:name+'_'+ obj_conf['type']=='checkbox' ? id : 'el',
 						boxLabel:item,
 						inputValue:item
 					});
+					id++;
 				});
 			};
 			if (comp['constructor']){
@@ -176,7 +182,8 @@ App.examination.QuestPreviewPanel = Ext.extend(Ext.form.FormPanel, {
 	collectData: function(panel){
 		var f = (panel && panel.getForm()) || this.getForm();
 		data = {
-		    title: f.title || 'УЗИ',
+		    title: f.title || '',
+		    section:panel.section,
 		    rows:[]
 		};
 		
@@ -197,13 +204,18 @@ App.examination.QuestPreviewPanel = Ext.extend(Ext.form.FormPanel, {
 			var inceptionForm = form;
 		} else {
 			var inceptionForm = this.get(0);
-		}
-		var tickets = []
+		};
+		//Собираем тикеты
+		var tickets = [];
+		var allData = []
 		Ext.each(inceptionForm.items.items,function(panel){
-			var ticketData = this.convertToTicketData(this.collectData(panel));
+			var rows = this.collectData(panel)
+			var ticketData = this.convertToTicketData(rows);
+			allData = allData.concat(rows['rows']);
 			tickets.push(ticketData)
 		},this);
-		return tickets
+		
+		return [tickets,allData,this.questName]
 	},
 	
 	/* Получает данные в виде
@@ -216,7 +228,7 @@ App.examination.QuestPreviewPanel = Ext.extend(Ext.form.FormPanel, {
 	 * Преобразует их в вид
 	 * {title:'...',
 	 * section:'...',
-	 * data:'...',
+	 * text:'...',
 	 * rawData:dataObj, - данные в непреобразованном виде, для того, чтобы потом вернуть их на форму
 	 * }
 	 */
@@ -234,9 +246,26 @@ App.examination.QuestPreviewPanel = Ext.extend(Ext.form.FormPanel, {
 		},this);
 		cObj = {title:dataObj.title,
 				section:dataObj.section,
-				rawData:dataObj,
-				data:data};
+				text:data,
+				questName:this.questName,
+		    	type:'questionnaire'};
 		return cObj
+	},
+	
+	loadData: function(dataArr){
+		var form = this.getForm();
+		Ext.each(dataArr,function(elem){
+			var field = form.findField(elem['name']);
+			if (Ext.isArray(elem['values'])){
+				var name_list = {};
+				Ext.each(field.items,function(item){
+					name_list[item.name] = elem['values'].indexOf(item.inputValue) > -1 
+				},this);
+				field.setValue(name_list);
+			} else {
+				field.setValue(elem['values']);
+			}
+		},this);
 	}
 });
 

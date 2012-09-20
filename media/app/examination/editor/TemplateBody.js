@@ -10,6 +10,19 @@ App.examination.TemplateBody = Ext.extend(Ext.TabPanel, {
 		
 		this.essenceText = this.isCard ? 'карту осмотра' : 'шаблон';
 		
+		/*Содержит данные всех введенных анкет.
+		Имеет структуру:
+		this.quests[questName] = [{
+									title,
+									section,
+								    rows:[{
+								    	name,
+								    	values:'...'|[]
+								    }]
+								},{...}]
+		*/								
+		this.quests = {};
+		
 		this.tmpStore = new Ext.data.RESTStore({
 			autoSave: true,
 			autoLoad : false,
@@ -114,13 +127,29 @@ App.examination.TemplateBody = Ext.extend(Ext.TabPanel, {
 			source:'questionnaire',
 			handler:function(){
 				if (this.questPanel){
-					var tickets = this.questPanel.makeTickets();
-					Ext.each(tickets,function(t){
-						this.dataTab.addTicket(t.title,t.section,0,t.data);
-					},this);
-					this.questPanel.destroy();
-					this.setActiveTab(this.dataTab);
-					
+					var questData = this.questPanel.makeTickets();
+					var tickets = questData[0];
+					var allData = questData[1];
+					var questName = questData[2];
+					if (this.quests[questName]) {
+						//Если анкета редактируется
+						console.log('анкета редактируется');
+					} else {
+						//Если вводится новая анкета
+						Ext.each(tickets,function(t){
+							var order = this.sectionPlan[t.section] ? this.sectionPlan[t.section]['order'] : 0;
+							ticket_config = {
+								order:order
+							};
+							Ext.apply(ticket_config,t)
+							this.dataTab.addTicket(ticket_config);
+						},this);
+						this.questPanel.destroy();
+						this.dataTab.doLayout();
+						this.setActiveTab(this.dataTab);
+					};
+					this.quests[questName] = allData;
+					this.updateRecord();
 				}
 			},
 			scope:this
@@ -262,7 +291,14 @@ App.examination.TemplateBody = Ext.extend(Ext.TabPanel, {
 	
 	onAddSubSection: function(title,section,order,data){
 		this.setActiveTab(this.dataTab);
-		this.dataTab.addTicket(title,section,order,data);
+		var ticket_config = {
+			title:title,
+			section:section,
+			order:order,
+			type:'text',
+			text:data
+		}; 
+		this.dataTab.addTicket(ticket_config);
 		this.doLayout();
 		this.updateRecord();
 	},
@@ -432,25 +468,38 @@ App.examination.TemplateBody = Ext.extend(Ext.TabPanel, {
 			Ext.Msg.alert('Уведомление','Одна анкета уже открыта');
 			this.setActiveTab(this.questPanel);
 			return
-		}
+		};
+		
+		var rawdata = questRecord.code;
+		if (!rawdata) return;
+		var code = Ext.decode(rawdata);
+		if (!code['items']) {
+			Ext.Msg.alert('Синтаксическая ошибка','Нет параметра "items"');
+			return
+		};
+		//Если анкета уже вводилась
+		if (this.quests[questRecord.name]){
+			var questData = this.quests[questRecord.name];
+		};
+		
 		this.questPanel = new App.examination.QuestPreviewPanel({
 			title:questRecord.name,
+			//Идентифицирует анкету, если вдруг захотят поставить другой заголовок
+			questName:questRecord.name,
 			type:'questionnaire',
+			code:code,
+			data:questData,
 			closable:true,
 			listeners:{
 				scope:this,
 				destroy:function(){this.questPanel = undefined}
 			}
 		});
-		var rawdata = questRecord.code;
-		if (!rawdata) return;
-		var data = Ext.decode(rawdata);
-		if (!data['items']) {
-			Ext.Msg.alert('Синтаксическая ошибка','Нет параметра "items"');
-			return
-		};
+		
+		
 		//добавляем элементы в главную панель
-		this.questPanel.add(this.questPanel.buildElem(data));
+		this.questPanel.add(this.questPanel.buildElem(code));
+		
 		
 		this.add(this.questPanel);
 		this.setActiveTab(this.questPanel);
