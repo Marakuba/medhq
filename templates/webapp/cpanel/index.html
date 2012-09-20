@@ -51,8 +51,8 @@
 		['{{ position.id }}','{{ position.profile }}'],
 		{% endfor %}
 		]
-		var active_profile = {{ request.active_profile.id }};
-		var permissions = {{ perms }};
+		var active_profile = {{ request.active_profile.id|default:'null' }};
+		var permissions = {{ perms|default:'[]' }};
 		
 	</script>
 	{% endautoescape %}

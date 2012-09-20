@@ -7,11 +7,10 @@ def get_active_profile(request):
     try:
         position_id = request.session['ACTIVE_PROFILE']
         position = get_object_or_404(Position, id=position_id)
-#        print position
         return position
     except KeyError:
         try:
-            first = Position.objects.active(staff__user=request.user)[0]
+            first = Position.objects.active().filter(staff__user=request.user)[0]
         except IndexError:
             return None
         return first
