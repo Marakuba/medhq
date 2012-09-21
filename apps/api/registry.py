@@ -49,6 +49,7 @@ from medstandart.models import Standart, StandartItem, Term,\
 from reporting.models import Report
 from medhq.apps.reporting.models import Query
 from django.db.models.expressions import F
+import datetime
 
 class UserResource(ModelResource):
 
@@ -830,15 +831,20 @@ class ExtendedServiceResource(ModelResource):
 
         if "payment_type" in filters:
             setattr(self,'ptype',filters['payment_type'])
+        if "on_date" in filters:
+            on_date = datetime.datetime.strptime(filters['on_date'],'%Y-%m-%dT%H:%M:%S')
+            setattr(self,'on_date',on_date)
 
         return orm_filters
 
     def dehydrate(self, bundle):
         ptype = getattr(self,'ptype',u'н')
+        on_date = getattr(self,'on_date',None)
+        print on_date
         bundle.data['staff'] = bundle.obj.staff and [[staff.id,staff] for staff in bundle.obj.staff.all()] or None
         bundle.data['state_name'] = bundle.obj.state.name
         bundle.data['service_name'] = bundle.obj.base_service.name
-        bundle.data['price'] = bundle.obj.get_actual_price(payment_type=ptype)
+        bundle.data['price'] = bundle.obj.get_actual_price(date=on_date,payment_type=ptype)
         return bundle
     
     class Meta:
@@ -2038,7 +2044,7 @@ class ExtPreorderResource(ExtBatchResource):
         bundle.data['promo_discount'] = obj.promotion and obj.promotion.discount and obj.promotion.discount_id or ''
         bundle.data['staff'] = obj.timeslot and obj.timeslot.cid
         bundle.data['staff_name'] = obj.timeslot and obj.timeslot.cid and obj.get_staff_name()
-        bundle.data['price'] = obj.price or (obj.service and obj.service.get_actual_price())
+        bundle.data['price'] = obj.price or (obj.service and obj.service.get_actual_price(payment_type=obj.payment_type))
         bundle.data['start'] = obj.timeslot and obj.timeslot.start
         bundle.data['base_service'] = obj.service and obj.service.base_service_id
         bundle.data['patient_phone'] = obj.patient and obj.patient.mobile_phone
@@ -2114,6 +2120,7 @@ class EventResource(ExtResource):
     def dehydrate(self, bundle):
         bundle.data['start'] = bundle.obj.start.strftime('%a %b %d %Y %H:%M:%S')
         bundle.data['end'] = bundle.obj.end.strftime('%a %b %d %Y %H:%M:%S ')
+        bundle.data['price'] = bundle.obj.price or (bundle.obj.service and bundle.obj.service.get_actual_price(payment_type=bundle.obj.payment_type))
         #bundle.data['preord'] = bundle.obj.preord and bundle.obj.preord.id
         return bundle
     

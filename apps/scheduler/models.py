@@ -240,8 +240,10 @@ class Preorder(models.Model):
                         dt = self.expiration - self.created
                         args_list['expiration'] = self.expiration + dt
                     Preorder.objects.create(**args_list)
-            if self.service and self.created and self.payment_type:
-                self.price = self.service.get_actual_price(self.created,self.payment_type)    
+            if self.timeslot and self.service:
+                self.price = self.service.get_actual_price(self.timeslot.start,self.payment_type)
+            else:
+                self.price = 0    
         super(Preorder, self).save(*args, **kwargs) 
         
     def delete(self, *args, **kwargs):

@@ -289,8 +289,10 @@ Ext.calendar.TimeslotEditWindow = Ext.extend(Ext.Window, {
     	   xtype: 'hidden',
            name: 'Title'
     	},{
-        	xtype: 'hidden',
-         	name: 'StartDate'
+        	xtype: 'datefield',
+        	hidden:true,
+         	name: 'StartDate',
+         	format:'d.m.Y'
 	    },{
     	   xtype: 'hidden',
            name: 'EndDate'
@@ -922,7 +924,10 @@ Ext.calendar.TimeslotEditWindow = Ext.extend(Ext.Window, {
         var ptype = this.paymentTypeCB.getValue();
         ptype_ind = this.paymentTypeCB.store.find('id',ptype);
         ptype_title = this.paymentTypeCB.store.getAt(ptype_ind).data.title;
+        var on_date = this.formPanel.getForm().findField('StartDate').getValue();
     	this.serviceStore.setBaseParam('payment_type',ptype);
+    	this.serviceStore.setBaseParam('on_date',on_date);
+    	
         var serviceGrid = new App.calendar.ServiceChoiceGrid({
        		scope:this,
        		store:this.serviceStore,
