@@ -5,6 +5,7 @@ from django.contrib import admin
 from models import *
 from django import forms
 from examination.models import CardTemplate, ExaminationCard, FieldSet, SubSection, Glossary, Questionnaire
+from examination.forms import QuestionnaireAdminForm
 
 class DICOMAdmin(admin.TabularInline):
     """
@@ -55,6 +56,10 @@ class FieldSetAdmin(admin.ModelAdmin):
     
 class QuestionnaireAdmin(admin.ModelAdmin):
     filter_horizontal = ('staff','base_service',)
+    form = QuestionnaireAdminForm
+    
+    class Media:
+        js = ['libs/jquery.js',]
 
 admin.site.register(Equipment)
 admin.site.register(Template)
