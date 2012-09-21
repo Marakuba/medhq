@@ -2120,7 +2120,6 @@ class EventResource(ExtResource):
     def dehydrate(self, bundle):
         bundle.data['start'] = bundle.obj.start.strftime('%a %b %d %Y %H:%M:%S')
         bundle.data['end'] = bundle.obj.end.strftime('%a %b %d %Y %H:%M:%S ')
-        bundle.data['price'] = bundle.obj.price or (bundle.obj.service and bundle.obj.service.get_actual_price(payment_type=bundle.obj.payment_type))
         #bundle.data['preord'] = bundle.obj.preord and bundle.obj.preord.id
         return bundle
     
