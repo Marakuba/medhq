@@ -15,7 +15,7 @@ from state.models import State
 from constance import config
 from collections import defaultdict
 from django.template import Context, Template
-from medhq.apps.pricelist.models import get_actual_ptype
+from pricelist.models import get_actual_ptype
 
 
 class ICD10(MPTTModel):
@@ -327,11 +327,10 @@ class ExtendedService(models.Model):
             args['payer'] = payer
         else:
             args['payer__isnull'] = True
-
+        date = date or datetime.date.today()
         if not p_type:
-            p_type = get_actual_ptype()
+            p_type = get_actual_ptype(date)
         try:
-            date = date or datetime.date.today()
             price_item = self.price_set.filter(type=p_type,price_type=u'r', payment_type=payment_type, on_date__lte=date, **args).latest('on_date')
             return int(price_item.value.normalize())
         except:
