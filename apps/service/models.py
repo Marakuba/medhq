@@ -327,7 +327,7 @@ class ExtendedService(models.Model):
             args['payer'] = payer
         else:
             args['payer__isnull'] = True
-        date = date or datetime.date.today()
+        date = date or datetime.datetime.today()
         if not p_type:
             p_type = get_actual_ptype(date)
         try:
