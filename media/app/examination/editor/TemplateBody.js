@@ -114,10 +114,18 @@ App.examination.TemplateBody = Ext.extend(Ext.TabPanel, {
 			source:'questionnaire',
 			handler:this.onSaveQuest.createDelegate(this),
 			scope:this
+		});
+		
+		this.removeQuestBtn = new Ext.Button({
+			text: 'Удалить анкету',
+			source:'questionnaire',
+			disabled:true,
+			handler:this.onRemoveQuest.createDelegate(this),
+			scope:this
 		}); 
 		
 		this.ttb = new Ext.Toolbar({
-			items: ['-',this.ticketOkBtn,this.printBtn,this.previewBtn,'-', this.historyBtn, this.closeBtn, this.moveArchiveBtn, this.dltBtn,this.saveQuestBtn]
+			items: ['-',this.ticketOkBtn,this.printBtn,this.previewBtn,'-', this.historyBtn, this.closeBtn, this.moveArchiveBtn, this.dltBtn,this.saveQuestBtn,this.removeQuestBtn]
 		});
 		
 		this.dataTab = new App.examination.TicketTab({
@@ -294,6 +302,9 @@ App.examination.TemplateBody = Ext.extend(Ext.TabPanel, {
 			var data = Ext.decode(recData);
 		};
 		if (quests){
+			if (quests != '{}'){
+				this.removeQuestBtn.enable();
+			}
 			quests = Ext.decode(quests);
 		}
 		this.dataTab.loadData(data,quests,sectionPlan);
@@ -747,6 +758,32 @@ App.examination.TemplateBody = Ext.extend(Ext.TabPanel, {
 				code:code
 			}
 			this.updateRecord();
+			// Теперь анкету можно удалить, если надо
+			this.removeQuestBtn.enable();
+			
+		}
+	},
+	
+	onRemoveQuest: function(){
+		/*
+		 * Сохраняет данные из анкеты.
+		 * Сначала проходит проверка, вводилась ли такая анкета (есть соответствующий параметр в dataTab.quests)
+		 * Если анкета вводилась, то выбираются все тикеты с именем этой анкеты и заменяются данные
+		 * Если анкета не вводилась, то добавляются новые тикеты в соответствующие секциям позиции.
+		*/
+		if (this.questPanel){
+			var questName = this.questPanel.questName;
+			do {
+				var t = this.dataTab.findTicket('questName',questName);
+				if (t){
+					t.destroy();
+				}
+			} while (t);
+			delete this.dataTab.quests[questName];
+			this.questPanel.destroy();
+			this.dataTab.doLayout();
+			this.setActiveTab(this.dataTab);
+			this.updateRecord()
 		}
 	}
 
