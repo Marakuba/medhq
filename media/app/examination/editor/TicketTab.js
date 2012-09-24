@@ -13,6 +13,25 @@ App.examination.TicketPanel = Ext.extend(Ext.ux.Portal,{
 App.examination.TicketTab = Ext.extend(Ext.Panel, {
 	initComponent : function() {
 		
+		/*Содержит данные всех введенных анкет.
+		Имеет структуру:
+		this.quests[questName] = {data:[{
+										   title,
+										   section,
+										   rows:[{
+										      name,
+										      values:'...'|[]
+									       }]
+									   },
+									   {...}]},
+								   
+								   code:code}
+		*/
+		this.quests = {};
+		
+		this.ticketTypes = {'text':Ext.ux.form.Ticket,
+							'questionnaire':Ext.ux.form.QuestTicket}
+		
 		//Для создания направлений нужна запись текущего пациента
 		this.patientStore = new Ext.data.RESTStore({
 			autoSave: false,
@@ -35,10 +54,13 @@ App.examination.TicketTab = Ext.extend(Ext.Panel, {
 				//запретить возможность перетаскивать тикеты в другие разделы (сейчас drop вообще запрещен)
 				var data = {};
 				this.items.itemAt(0).items.each(function(item,ind){
-//					console.log(ind)
 					if(item.getData){
 						var itemData = item.getData();
 						itemData['pos'] = ind;
+						itemData['type'] = item.type;
+						if (item['questName']){
+							itemData['questName'] = item.questName;
+						}
 					};
 					if (!data[item.section]){
 						data[item.section] = {
@@ -115,26 +137,28 @@ App.examination.TicketTab = Ext.extend(Ext.Panel, {
 		
 		this.on('afterrender',function(panel){
 			
-			if(this.data){
-				Ext.each(this.data.tickets,function(ticket,i){
-					var new_ticket = new Ext.ux.form.Ticket({
-						data:{
-							title:ticket.title,
-							printable:ticket.printable,
-							private:ticket.private,
-							text:ticket.text
-						}
-					});
-					this.portalColumn.add(new_ticket);
-				},this);
-				
-				if (this.isCard){
-					this.openAsgmtPanel();
-				};
-				this.doLayout();
-				
+//			if(this.data){
+//				this.quests = data['quests'];
+//				Ext.each(this.data.tickets,function(ticket,i){
+//					if (!ticket['type']){
+//						ticket['type'] = 'text';
+//					};
+//					var new_ticket = new this.ticketTypes[ticket['type']]({
+//						data:{
+//							title:ticket.title,
+//							printable:ticket.printable,
+//							private:ticket.private,
+//							text:ticket.text
+//						}
+//					});
+//					this.portalColumn.add(new_ticket);
+//				},this);
+//				
+//			};
+			if (this.isCard){
+				this.openAsgmtPanel();
 			};
-			
+			this.doLayout();
 			
 		},this);
 		
@@ -162,13 +186,16 @@ App.examination.TicketTab = Ext.extend(Ext.Panel, {
 		},this);
 	},
 	
-	loadData: function(data,sectionPlan){
+	loadData: function(data,quests,sectionPlan){
 		this.sectionPlan = sectionPlan;
 		if(!data) return false;
 		
+		this.quests = quests;
+		
 		Ext.each(data,function(section){
 			Ext.each(section.tickets,function(ticket,i){
-				var new_ticket = new Ext.ux.form.Ticket({
+				var config = {
+					type: ticket['type'] || 'text',
 					data:{
 						title:ticket.title,
 						printable:ticket.printable,
@@ -178,13 +205,11 @@ App.examination.TicketTab = Ext.extend(Ext.Panel, {
 					pos:ticket.pos,
 					section:section.section,
 					order:this.sectionPlan[section.section] && this.sectionPlan[section.section].order || 0
-				});
-				//вставляем тикет на свое место согласно позиции pos
-				if(new_ticket.pos){
-					this.insertTicketInPos(new_ticket,'pos')
-				} else {
-					this.insertTicketInPos(new_ticket,'order')
-				}
+				};
+				//Добавляем оставшиеся настройки
+				Ext.applyIf(config,ticket)
+				this.addTicket(config);
+				
 				
 			},this);
 			this.doLayout();
@@ -212,10 +237,13 @@ App.examination.TicketTab = Ext.extend(Ext.Panel, {
 				printable:true,
 				private:false}
 		};
-		Ext.apply(config,init_config);
-		var new_ticket = new Ext.ux.form.Ticket(config);
-		this.insertTicketInPos(new_ticket,'order');
-		this.doLayout();
+		if (!config['type']){
+			config['type'] = 'text';
+		};
+		Ext.applyIf(config,init_config);
+		var new_ticket = new this.ticketTypes[config['type']](config);
+		var insertMethod = config['pos'] ? 'pos' : 'order';
+		this.insertTicketInPos(new_ticket,insertMethod);
 	},
 	
 	getLowInd:function(paramName,value){
@@ -254,7 +282,7 @@ App.examination.TicketTab = Ext.extend(Ext.Panel, {
 	
 	getData: function(){
 		var data = this.ticketPanel.getData();
-		return data
+		return [data,this.quests]
 	},
 	
 	newAsgmtPanel: function(){
@@ -330,5 +358,27 @@ App.examination.TicketTab = Ext.extend(Ext.Panel, {
 		s.autoSave = true;
 		this.doLayout();
 		
+	},
+	
+	findTicket:function(paramName,value){
+		var ticket = undefined;
+		this.ticketPanel.items.itemAt(0).items.each(function(item,ind){
+			if (item[paramName] === value) {
+				ticket = item;
+			}
+		},this);
+		
+		return ticket
+	},
+	
+	findByTitle:function(questName,title){
+		var ticket = undefined;
+		this.ticketPanel.items.itemAt(0).items.each(function(item,ind){
+			if ((item['questName'] == questName) && (item.data['title']== title)) {
+				ticket = item;
+			}
+		},this);
+		
+		return ticket
 	}
 });

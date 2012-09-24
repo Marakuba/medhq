@@ -444,6 +444,7 @@ class Card(models.Model):
     width = models.TextField(u'ширина/шаг', null=True, blank=True)
     contrast_enhancement = models.TextField(u'Контрастное усиление', null=True, blank=True)
     deleted = models.BooleanField(u'Удалено', default=False)
+    questionnaire = models.TextField(u'Данные анкет',null=True, blank=True)
     
     def save(self,*args, **kwargs):
         if self.deleted:

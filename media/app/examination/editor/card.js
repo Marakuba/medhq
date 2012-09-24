@@ -13,6 +13,8 @@ Ext.ns('Ext.ux.form');
 Ext.ux.form.Ticket = Ext.extend(Ext.Panel,{
 	initComponent: function(){
 		
+		this.type = 'text';
+		
 		this.curPos = 0;
 		this.defaultText = 'Щелкните здесь чтобы ввести описание...';
 		this.defaultTitle = 'Щелкните здесь чтобы установить заголовок...';
@@ -235,6 +237,7 @@ Ext.ux.form.Ticket = Ext.extend(Ext.Panel,{
 	},
 	
 	setData : function(data) {
+		Ext.applyIf(data,this.data);
 		this.data = data;
 		this.updateData();
 	},

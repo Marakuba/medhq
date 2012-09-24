@@ -77,13 +77,14 @@ App.examination.QuestPreviewPanel = Ext.extend(Ext.form.FormPanel, {
     //Для каждого массива создает отдельную панель и заполняет её объектами
 	//Если массив содержит список массивов, то у текущей панели будет layout vbox. иначе auto.
 	//поэтому массив должен содержать элементы одного типа: либо массивы, либо словари.
-	buildElem: function(obj,deep,index){
+	buildElem: function(obj,deep,index,section){
 		if (!deep) deep = 0;
 		if (!index) {
 			index = 0
 		} else {
 			index += 1;
-		}
+		};
+		var sec = obj['section'] || section;
 		var panel_conf = {
 			type:'panel',
 			section:obj['section'],
@@ -116,12 +117,12 @@ App.examination.QuestPreviewPanel = Ext.extend(Ext.form.FormPanel, {
 			}
 			var i = 0;
 			Ext.each(obj.items,function(item){
-				parent.add(this.buildElem(item,deep+1,i));
+				parent.add(this.buildElem(item,deep+1,i,sec));
 				i += 1;
 			},this)
 		} else {
 			//Если у объекта нет поля items, то это не панель
-			var elem = this.buildObject(obj,deep,index)
+			var elem = this.buildObject(obj,deep,index,sec)
 		};
 		
 		if (tabPanel){
@@ -132,9 +133,9 @@ App.examination.QuestPreviewPanel = Ext.extend(Ext.form.FormPanel, {
 	},
     
 	//Создает объект согласно словаря компонентов
-	buildObject: function(obj,deep,index){
+	buildObject: function(obj,deep,index,section){
 		var elem;
-		var name = deep + '_' + index;
+		var name = section + '_' + deep + '_' + index;
 		//Если в редакторе указан тип для текущего элемента
 		if (obj['type']){
 			//выбираем компонент из словаря компонентов
@@ -229,7 +230,8 @@ App.examination.QuestPreviewPanel = Ext.extend(Ext.form.FormPanel, {
 	 * {title:'...',
 	 * section:'...',
 	 * text:'...',
-	 * rawData:dataObj, - данные в непреобразованном виде, для того, чтобы потом вернуть их на форму
+	 * questName:'...',
+	 * type:'questionnaire'
 	 * }
 	 */
 	convertToTicketData:function(dataObj){
