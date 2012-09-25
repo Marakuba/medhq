@@ -1551,7 +1551,7 @@ class CardTemplateResource(ExtResource):
             'staff':ALL_WITH_RELATIONS,
             'id':ALL
         }
-        limit = 25
+        limit = 150
         
 class ExaminationCardResource(ExtResource):
     
@@ -1655,6 +1655,7 @@ class TemplateResource(ExtResource):
             'deleted':ALL,
             'staff':ALL_WITH_RELATIONS
         }
+        limit = 150
         
 class FieldSetResource(ExtResource):
     

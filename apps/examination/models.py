@@ -94,82 +94,82 @@ class CardTemplate(models.Model):
             if not 'other' in sections:
                 FieldSet.objects.create(name='other',order=10000,title=u'Дополнительно')
                 sections.append('other')
-            fields[7]['tickets'].append(ticket)
+            fields[7]['tickets'].insert(0,ticket)
                 
         if self.anamnesis:
             ticket = {'title':u'Общий анамнез','printable':True,'private':False,'text':self.anamnesis}
             if 'anamnesis' in sections:
-                fields[0]['tickets'].append(ticket)
+                fields[0]['tickets'].insert(0,ticket)
             else:
                 insertToOther(ticket)
                     
         if self.complaints:
             ticket = {'title':u'Жалобы','printable':True,'private':False,'text':self.complaints}
             if 'complaints' in sections:
-                fields[2]['tickets'].append(ticket)
+                fields[2]['tickets'].insert(0,ticket)
             else:
                 insertToOther(ticket)
                     
         if self.objective_data:
             ticket = {'title':u'Объективные данные','printable':True,'private':False,'text':self.objective_data}
             if 'anamnesis' in sections:
-                fields[0]['tickets'].append(ticket)
+                fields[0]['tickets'].insert(0,ticket)
             else:
                 insertToOther(ticket)
                     
         if self.psycho_status:
             ticket = {'title':u'Психологический/неврологический статус','printable':True,'private':False,'text':self.psycho_status}
             if 'anamnesis' in sections:
-                fields[0]['tickets'].append(ticket)
+                fields[0]['tickets'].insert(0,ticket)
             else:
                 insertToOther(ticket)
                     
         if self.gen_diag:
             ticket = {'title':u'Основной диагноз','printable':True,'private':False,'text':self.gen_diag}
             if 'diagnosis' in sections:
-                fields[1]['tickets'].append(ticket)
+                fields[1]['tickets'].insert(0,ticket)
             else:
                 insertToOther(ticket)
                     
         if self.complication:
             ticket = {'title':u'Осложнения','printable':True,'private':False,'text':self.complication}
             if 'complication' in sections:
-                fields[0]['tickets'].append(ticket)
+                fields[0]['tickets'].insert(0,ticket)
             else:
                 insertToOther(ticket)
                     
         if self.concomitant_diag:
             ticket = {'title':u'Сопутствующий диагноз','printable':True,'private':False,'text':self.concomitant_diag}
             if 'diagnosis' in sections:
-                fields[1]['tickets'].append(ticket)
+                fields[1]['tickets'].insert(0,ticket)
             else:
                 insertToOther(ticket)
                     
         if self.clinical_diag:
             ticket = {'title':u'Клинический диагноз','printable':True,'private':False,'text':self.clinical_diag}
             if 'diagnosis' in sections:
-                fields[1]['tickets'].append(ticket)
+                fields[1]['tickets'].insert(0,ticket)
             else:
                 insertToOther(ticket)
                     
         if self.treatment:
             ticket = {'title':u'Лечение','printable':True,'private':False,'text':self.treatment}
             if 'treatment' in sections:
-                fields[4]['tickets'].append(ticket)
+                fields[4]['tickets'].insert(0,ticket)
             else:
                 insertToOther(ticket)
                     
         if self.referral:
             ticket = {'title':u'Направление','printable':True,'private':False,'text':self.referral}
             if 'referral' in sections:
-                fields[5]['tickets'].append(ticket)
+                fields[5]['tickets'].insert(0,ticket)
             else:
                 insertToOther(ticket)
                 
         if self.conclusion:
             ticket = {'title':u'Заключение','printable':True,'private':False,'text':self.conclusion}
             if 'conclusion' in sections:
-                fields[6]['tickets'].append(ticket)
+                fields[6]['tickets'].insert(0,ticket)
             else:
                 insertToOther(ticket)
         
@@ -263,103 +263,103 @@ class ExaminationCard(models.Model):
             if not 'other' in sections:
                 FieldSet.objects.create(name='other',order=10000,title=u'Дополнительно')
                 sections.append('other')
-            fields[7]['tickets'].append(ticket)
+            fields[7]['tickets'].insert(0,ticket)
                 
         if self.anamnesis:
             ticket = {'title':u'Общий анамнез','printable':'anamnesis' in printed_fields,'private':False,'text':self.anamnesis}
             if 'anamnesis' in sections:
-                fields[0]['tickets'].append(ticket)
+                fields[0]['tickets'].insert(0,ticket)
             else:
                 insertToOther(ticket)
                     
         if self.disease:
             ticket = {'title':u'Характер заболевания','printable':'disease' in printed_fields,'private':False,'text':self.disease}
             if 'anamnesis' in sections:
-                fields[0]['tickets'].append(ticket)
+                fields[0]['tickets'].insert(0,ticket)
             else:
                 insertToOther(ticket)
                     
         if self.complaints:
             ticket = {'title':u'Жалобы','printable':'complaints' in printed_fields,'private':False,'text':self.complaints}
             if 'complaints' in sections:
-                fields[2]['tickets'].append(ticket)
+                fields[2]['tickets'].insert(0,ticket)
             else:
                 insertToOther(ticket)
                     
         if self.history:
             ticket = {'title':u'История настоящего заболевания','printable':'history' in printed_fields,'private':False,'text':self.history}
             if 'anamnesis' in sections:
-                fields[0]['tickets'].append(ticket)
+                fields[0]['tickets'].insert(0,ticket)
             else:
                 insertToOther(ticket)
                     
         if self.objective_data:
             ticket = {'title':u'Объективные данные','printable':'objective_data' in printed_fields,'private':False,'text':self.objective_data}
             if 'anamnesis' in sections:
-                fields[0]['tickets'].append(ticket)
+                fields[0]['tickets'].insert(0,ticket)
             else:
                 insertToOther(ticket)
                     
         if self.psycho_status:
             ticket = {'title':u'Психологический/неврологический статус','printable':'psycho_status' in printed_fields,'private':False,'text':self.psycho_status}
             if 'anamnesis' in sections:
-                fields[0]['tickets'].append(ticket)
+                fields[0]['tickets'].insert(0,ticket)
             else:
                 insertToOther(ticket)
                     
         if self.gen_diag:
             ticket = {'title':u'Основной диагноз','printable':'gen_diag' in printed_fields,'private':False,'text':self.gen_diag}
             if 'diagnosis' in sections:
-                fields[1]['tickets'].append(ticket)
+                fields[1]['tickets'].insert(0,ticket)
             else:
                 insertToOther(ticket)
                     
         if self.diagnosis:
             ticket = {'title':u'Диагноз','printable':'diagnosis' in printed_fields,'private':False,'text':self.diagnosis}
             if 'diagnosis' in sections:
-                fields[1]['tickets'].append(ticket)
+                fields[1]['tickets'].insert(0,ticket)
             else:
                 insertToOther(ticket)
                     
         if self.complication:
             ticket = {'title':u'Осложнения','printable':'complication' in printed_fields,'private':False,'text':self.complication}
             if 'complication' in sections:
-                fields[0]['tickets'].append(ticket)
+                fields[0]['tickets'].insert(0,ticket)
             else:
                 insertToOther(ticket)
                     
         if self.concomitant_diag:
             ticket = {'title':u'Сопутствующий диагноз','printable':'concomitant_diag' in printed_fields,'private':False,'text':self.concomitant_diag}
             if 'diagnosis' in sections:
-                fields[1]['tickets'].append(ticket)
+                fields[1]['tickets'].insert(0,ticket)
             else:
                 insertToOther(ticket)
                     
         if self.clinical_diag:
             ticket = {'title':u'Клинический диагноз','printable':'clinical_diag' in printed_fields,'private':False,'text':self.clinical_diag}
             if 'diagnosis' in sections:
-                fields[1]['tickets'].append(ticket)
+                fields[1]['tickets'].insert(0,ticket)
             else:
                 insertToOther(ticket)
                     
         if self.treatment:
             ticket = {'title':u'Лечение','printable':'treatment' in printed_fields,'private':False,'text':self.treatment}
             if 'treatment' in sections:
-                fields[4]['tickets'].append(ticket)
+                fields[4]['tickets'].insert(0,ticket)
             else:
                 insertToOther(ticket)
                     
         if self.referral:
             ticket = {'title':u'Направление','printable':'referral' in printed_fields,'private':False,'text':self.referral}
             if 'referral' in sections:
-                fields[5]['tickets'].append(ticket)
+                fields[5]['tickets'].insert(0,ticket)
             else:
                 insertToOther(ticket)
                 
         if self.conclusion:
             ticket = {'title':u'Заключение','printable':'conclusion' in printed_fields,'private':False,'text':self.conclusion}
             if 'conclusion' in sections:
-                fields[6]['tickets'].append(ticket)
+                fields[6]['tickets'].insert(0,ticket)
             else:
                 insertToOther(ticket)
                 
