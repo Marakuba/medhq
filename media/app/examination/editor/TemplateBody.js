@@ -124,8 +124,17 @@ App.examination.TemplateBody = Ext.extend(Ext.TabPanel, {
 			scope:this
 		}); 
 		
+		this.editQuestBtn = new Ext.Button({
+			text: 'Редактировать анкету',
+//			source:'questionnaire',
+			disabled:true,
+			hidden:true,
+			handler:this.onEditQuest.createDelegate(this),
+			scope:this
+		}); 
+		
 		this.ttb = new Ext.Toolbar({
-			items: ['-',this.ticketOkBtn,this.printBtn,this.previewBtn,'-', this.historyBtn, this.closeBtn, this.moveArchiveBtn, this.dltBtn,this.saveQuestBtn,this.removeQuestBtn]
+			items: ['-',this.ticketOkBtn,this.printBtn,this.previewBtn,'-', this.historyBtn, this.closeBtn, this.moveArchiveBtn, this.dltBtn,this.saveQuestBtn,this.removeQuestBtn,this.editQuestBtn]
 		});
 		
 		this.dataTab = new App.examination.TicketTab({
@@ -243,8 +252,6 @@ App.examination.TemplateBody = Ext.extend(Ext.TabPanel, {
 				model: App.models.SubSection
 			});
 			
-			this.fillSectionMenu();
-			
 			this.fillQuestMenu();
 			
 			this.insert(0,this.dataTab);
@@ -302,10 +309,11 @@ App.examination.TemplateBody = Ext.extend(Ext.TabPanel, {
 			var data = Ext.decode(recData);
 		};
 		if (quests){
-			if (quests != '{}'){
-				this.removeQuestBtn.enable();
-			}
+			this.enableQuests(quests == '{}');
+			
 			quests = Ext.decode(quests);
+		} else {
+			this.enableQuests(true);
 		}
 		this.dataTab.loadData(data,quests,sectionPlan);
 		if (this.record.data.equipment){
@@ -446,6 +454,7 @@ App.examination.TemplateBody = Ext.extend(Ext.TabPanel, {
 			});
 			this.ttb.insert(0,this.questBtn);
 			this.doLayout();
+			this.fillSectionMenu();
 		},scope:this})
 	},
 	
@@ -676,7 +685,8 @@ App.examination.TemplateBody = Ext.extend(Ext.TabPanel, {
 	
 	onEditTicket: function(ticket){
 		this.ticket = ticket;
-		this[(ticket['type'] || 'text') + 'TicketEdit'](ticket)
+//		this[(ticket['type'] || 'text') + 'TicketEdit'](ticket)
+		this.textTicketEdit(ticket);
 	},
 	
 	openMedStandarts: function(mkb10){
@@ -759,7 +769,7 @@ App.examination.TemplateBody = Ext.extend(Ext.TabPanel, {
 			}
 			this.updateRecord();
 			// Теперь анкету можно удалить, если надо
-			this.removeQuestBtn.enable();
+			this.enableQuests(false);
 			
 		}
 	},
@@ -784,7 +794,22 @@ App.examination.TemplateBody = Ext.extend(Ext.TabPanel, {
 			this.dataTab.doLayout();
 			this.setActiveTab(this.dataTab);
 			this.updateRecord()
+		};
+		
+		this.enableQuests(true);
+	},
+	
+	onEditQuest: function(){
+		if (this.dataTab.quests){
+			for (pr in this.dataTab.quests) {var name = String(pr)}; 
+			this.openQuest({questName:name})
 		}
+	},
+	
+	enableQuests: function(status){
+		this.questBtn.setDisabled(!status);
+		this.removeQuestBtn.setDisabled(status);
+		this.editQuestBtn.setDisabled(status);
 	}
 
 });

@@ -292,7 +292,7 @@ Ext.ux.DropDownList = Ext.extend(Ext.Layer, {
 			return
 		};
 		
-        console.log(this.buffer)
+//        console.log(this.buffer)
 		if (this.buffer.length <= this.delay) {
 			if (this.isVisible()) {
                 this.collapse(false);
@@ -320,7 +320,7 @@ Ext.ux.DropDownList = Ext.extend(Ext.Layer, {
 	            //если совпадений не найдено, но размер pauseBuffer = 4 символа, то возможно там уже есть
 	            // пробел. Если он там есть, то нужно сбросить буфер и продолжить поиск со следующего символа после 
 	            //пробела.
-	            console.log('pauseBuffer ', this.pauseBuffer);
+//	            console.log('pauseBuffer ', this.pauseBuffer);
 			}
 		}, scope:this})
     },
