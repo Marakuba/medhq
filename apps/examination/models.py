@@ -184,7 +184,7 @@ class CardTemplate(models.Model):
         attrs = {}
         data = simplejson.dumps(self.convertData())
         attrs['data'] = data
-        attrs['name'] = self.name
+        attrs['name'] = self.name or self.print_name
         attrs['staff'] = self.staff and self.staff.staff
         attrs['print_name'] = self.print_name or self.name or 'Шаблон %s' % (self.id)
         attrs['equipment'] = self.equipment
