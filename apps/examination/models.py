@@ -186,7 +186,7 @@ class CardTemplate(models.Model):
         attrs['data'] = data
         attrs['name'] = self.name
         attrs['staff'] = self.staff and self.staff.staff
-        attrs['print_name'] = self.print_name
+        attrs['print_name'] = self.print_name or self.name or 'Шаблон %s' % (self.id)
         attrs['equipment'] = self.equipment
         attrs['area'] = self.area
         attrs['scan_mode'] = self.scan_mode
