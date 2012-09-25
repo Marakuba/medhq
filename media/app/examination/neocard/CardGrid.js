@@ -75,7 +75,27 @@ App.examination.CardGrid = Ext.extend(Ext.grid.EditorGridPanel, {
         
         if(!this.emptyTbar){
 			
-			this.tbar = this.tbar || [];
+			this.tbar = this.tbar || ['Период',{
+				xtype:'datefield',
+				format:'d.m.Y',
+				emptyText:'с',
+				listeners: {
+					select: function(df, date){
+						this.storeFilter('created__gte',date.format('Y-m-d 00:00'));
+					},
+					scope:this
+				}
+			},{
+				xtype:'datefield',
+				format:'d.m.Y',
+				emptyText:'по',
+				listeners: {
+					select: function(df, date){
+						this.storeFilter('created__lte',date.format('Y-m-d 23:59'));
+					},
+					scope:this
+				}
+			}];
 			
 			this.tbar.push({
 				xtype:'button',
@@ -105,7 +125,7 @@ App.examination.CardGrid = Ext.extend(Ext.grid.EditorGridPanel, {
         this.columns =  [
         	{
                 header: "",
-                width: 25, 
+                width: 15, 
                 sortable: true, 
                 dataIndex: 'executed',
                 renderer:function(val, meta, record) {
@@ -117,23 +137,23 @@ App.examination.CardGrid = Ext.extend(Ext.grid.EditorGridPanel, {
             },
             {
                 header: "Дата создания",
-                width: 100, 
+                width: '.1', 
                 sortable: true, 
                 dataIndex: 'created',
                 renderer:Ext.util.Format.dateRenderer('d.m.y / H:i')
             },{
                 header: "Услуга", 
-                width: 280, 
+                width: '.3', 
                 sortable: true, 
                 dataIndex: 'print_name'
             },{
                 header: "Пациент", 
-                width: 120, 
+                width: '.2', 
                 sortable: true, 
                 dataIndex: 'patient_name'
             },{
                 header: "Лаборант", 
-                width: 80, 
+                width: '.2', 
                 sortable: true, 
                 dataIndex: 'assistant', 
                 editor: this.assistant,
@@ -145,7 +165,7 @@ App.examination.CardGrid = Ext.extend(Ext.grid.EditorGridPanel, {
                 dataIndex: 'assistant_name' 
             },{
                 header: "Изменено", 
-                width: 100, 
+                width: '.1', 
                 sortable: true, 
                 dataIndex: 'modified',
                 renderer:Ext.util.Format.dateRenderer('d.m.y / H:i')
@@ -172,7 +192,7 @@ App.examination.CardGrid = Ext.extend(Ext.grid.EditorGridPanel, {
 						}
 					}),
             viewConfig: {
-            	emptyText:'нет карт осмотра',
+            	emptyText:'нет карт осмотра'
 //                forceFit: true
             },
             bbar: new Ext.PagingToolbar({
@@ -186,11 +206,42 @@ App.examination.CardGrid = Ext.extend(Ext.grid.EditorGridPanel, {
         };
         Ext.apply(this, Ext.apply(this.initialConfig, config));
 	    App.examination.CardGrid.superclass.initComponent.apply(this, arguments);
+	    
+	    App.eventManager.on('globalsearch', this.onGlobalSearch, this);
+		
+		this.on('destroy', function(){
+		    App.eventManager.un('globalsearch', this.onGlobalSearch, this); 
+		},this);
 
 		this.on('afterrender', function(){
 		}, this);
 		
-    }
+    },
+    
+    storeFilter: function(field, value){
+		if(!value) {
+			//console.log(this.store.baseParams[field]);
+			delete this.store.baseParams[field]
+			//this.store.setBaseParam(field, );
+		} else {
+			this.store.setBaseParam(field, value);
+		}
+		this.store.load();
+	},
+	
+	onGlobalSearch: function(v) {
+		if(v) {
+			var letter = v.charAt(0);
+			if( letter=='#' || letter=='№') {
+				v = v.substring(1);
+			}
+			this.storeFilter('search', v);
+		} else {
+			delete this.store.baseParams['search'];
+			delete this.store.baseParams['order__barcode'];
+			this.store.load();
+		}
+	}
 
 });
 

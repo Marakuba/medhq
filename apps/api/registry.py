@@ -1587,6 +1587,25 @@ class CardResource(ExtResource):
     assistant = fields.ForeignKey(PositionResource, 'assistant', null = True)
     mkb_diag = fields.ForeignKey(ICD10Resource, 'mkb_diag', null=True)
     equipment = fields.ForeignKey(ExamEquipmentResource, 'equipment', null=True)
+    
+    def build_filters(self, filters=None):
+        if filters is None:
+            filters = {}
+
+        orm_filters = super(CardResource, self).build_filters(filters)
+
+        if "search" in filters:
+            smart_filters = smartFilter(filters['search'],'ordered_service__order__patient')
+            if len(smart_filters.keys())==1:
+                try:
+                    orm_filters = ComplexQuery( Q(**smart_filters), \
+                                      **orm_filters)
+                except:
+                    orm_filters.update(**smart_filters)
+            else:
+                orm_filters.update(**smart_filters)
+
+        return orm_filters
 
     def dehydrate(self, bundle):
         obj = bundle.obj
@@ -1607,6 +1626,7 @@ class CardResource(ExtResource):
         filtering = {
             'ordered_service':ALL_WITH_RELATIONS,
             'id':ALL,
+            'created':ALL,
             'deleted':ALL,
             'name':ALL
         }

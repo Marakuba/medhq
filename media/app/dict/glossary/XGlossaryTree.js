@@ -26,6 +26,7 @@ App.dict.XGlossaryTree = Ext.extend(Ext.ux.tree.RemoteTreePanel, {
 		
 		this.loader = new Ext.tree.TreeLoader({
 			autoLoad:false,
+			clearOnLoad:true,
         	nodeParameter:'parent',
         	dataUrl: get_api_url('glossary'),
         	requestMethod:'GET',
@@ -83,7 +84,7 @@ App.dict.XGlossaryTree = Ext.extend(Ext.ux.tree.RemoteTreePanel, {
         });
         
         this.insertBtn = new Ext.Button({
-        	text:'конец',
+        	text:'Добавить',
         	handler:this.onAppendChild.createDelegate(this,[]),
         	scope:this
         });
@@ -108,7 +109,7 @@ App.dict.XGlossaryTree = Ext.extend(Ext.ux.tree.RemoteTreePanel, {
 					,expanded:true
 					,uiProvider:false
 				},
-				tbar:['Добавить в',this.appendBtn,'\\',this.insertBtn,'-',this.editBtn],
+				tbar:[this.insertBtn,'-',this.editBtn],
 				tools:[{
 					 id:'refresh',
 					handler:function() {

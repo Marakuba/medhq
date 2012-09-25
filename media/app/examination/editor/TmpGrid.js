@@ -90,6 +90,7 @@ App.examination.TmpGrid = Ext.extend(Ext.grid.EditorGridPanel, {
 		
 		var config = {
 			store: this.store,
+			border:false,
 			autoScroll:true,
 			columns:  [
 			    {

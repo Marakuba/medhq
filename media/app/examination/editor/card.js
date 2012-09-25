@@ -122,7 +122,7 @@ Ext.ux.form.Ticket = Ext.extend(Ext.Panel,{
 	                        		ed.setValue(ed.emptyText);
 	                        		panel.body.addClass('empty-body');
 	                        	} else {
-	                        		ed.setValue(markdown.toHTML(value));
+	                        		ed.setValue(value);
 	                        		panel.body.removeClass('empty-body');
 	                        	}
 	                            return true;
@@ -254,7 +254,7 @@ Ext.ux.form.Ticket = Ext.extend(Ext.Panel,{
 			};
 			if (d.text) {
 				this.body.removeClass('empty-body');
-				this.body.update(markdown.toHTML(d.text));
+				this.body.update(d.text);
 			}; 
 			if(!d.printable) {
 				this.addClass('not-printable');

@@ -9,6 +9,7 @@ App.examination.TrashApp = Ext.extend(Ext.Panel, {
 		
 		this.contentPanel = new Ext.Panel({
 			region:'center',
+			autoScroll:true,
  			border:true,
  			margins:'5 5 5 0',
  			layout: 'fit',
@@ -32,6 +33,7 @@ App.examination.TrashApp = Ext.extend(Ext.Panel, {
 				this.mode = 'template';
 				this.restoreBtn.disable();
 				this.templateGrid.getSelectionModel().selectFirstRow();
+				this.doLayout();
 			},
 			scope:this
 		});
@@ -45,6 +47,7 @@ App.examination.TrashApp = Ext.extend(Ext.Panel, {
 				this.cardGrid.show();
 				this.mode = 'card';
 				this.cardGrid.getSelectionModel().selectFirstRow();
+				this.doLayout();
 			},
 			scope:this
 		});
@@ -70,7 +73,7 @@ App.examination.TrashApp = Ext.extend(Ext.Panel, {
 			staff:this.staff,
 			border: false,
 			split:true,
-			layout:'fit',
+//			layout:'fit',
 			listeners:{
 				rowselect:function(record){
 					if (record){
@@ -91,7 +94,9 @@ App.examination.TrashApp = Ext.extend(Ext.Panel, {
 			},
 			staff:this.staff,
 			hidden:true,
-			layout:'fit',
+			autoWidth:true,
+			autoHeight:true,
+//			layout:'fit',
 			border: false,
 			split:true,
 			emptyTbar:true,
@@ -121,9 +126,10 @@ App.examination.TrashApp = Ext.extend(Ext.Panel, {
 		
 		this.trashPanel = new Ext.Panel({
 			region:'west',
- 			border:true,
+ 			border:false,
  			collapsible:true,
 			collapseMode:'mini',
+			resizeble:true,
  			width:550,
  			margins:'5 5 5 0',
  			layout: 'fit',
@@ -159,6 +165,7 @@ App.examination.TrashApp = Ext.extend(Ext.Panel, {
 	
 	onPreview: function(id){
 		var list = new Ext.Panel({
+			autoScroll:true,
 			autoLoad:String.format('/widget/examination/{0}/{1}/',this.mode,id)
 		});
 		this.contentPanel.removeAll();

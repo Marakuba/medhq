@@ -371,7 +371,7 @@ def get_service_tree(request):
             
     if staff:
         try:
-            staff = Staff.objects.get(id=staff)
+            staff = Position.objects.get(id=staff)
         except:
             staff = None
     p_type_id = get_actual_ptype()
@@ -398,7 +398,7 @@ def get_service_tree(request):
                     price_type='r',
                     on_date__lte=on_date)
         if staff:
-            price_args['extended_service__staff']=staff.position_set.all()
+            price_args['extended_service__staff']=staff
         if state:
             price_args['extended_service__branches']=state
         if payer:

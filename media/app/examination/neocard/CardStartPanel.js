@@ -311,6 +311,12 @@ App.examination.CardStartPanel = Ext.extend(Ext.Panel, {
 					this.cardGrid.getSelectionModel().selectFirstRow();
 					this.onPreview('card');
 					this.radio = 'card';
+					//Проверяем, есть ли шаблон к этой услуге. если нету, то надо заблокировать соответствующий пункт
+					this.tmpStore.load({callback:function(recs){
+						if (!recs.length){
+							this.fromTmpRadio.disable();
+						};
+					},scope:this});
 				} else {
 					this.continueCardRadio.disable();
 					this.tmpStore.load({callback:function(recs){

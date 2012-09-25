@@ -92,7 +92,7 @@ class CardTemplate(models.Model):
         
         def insertToOther(ticket):
             if not 'other' in sections:
-                FieldSet.objects.create(name='other',order=1000,title=u'Дополнительно')
+                FieldSet.objects.create(name='other',order=10000,title=u'Дополнительно')
                 sections.append('other')
             fields[7]['tickets'].append(ticket)
                 
@@ -172,6 +172,10 @@ class CardTemplate(models.Model):
                 fields[6]['tickets'].append(ticket)
             else:
                 insertToOther(ticket)
+        
+        if self.ekg:
+            ticket = {'title':u'ЭКГ','printable':True,'private':False,'text':self.ekg}
+            insertToOther(ticket)
                 
         data = [p for p in fields if p['tickets']]
         return data
@@ -257,7 +261,7 @@ class ExaminationCard(models.Model):
         
         def insertToOther(ticket):
             if not 'other' in sections:
-                FieldSet.objects.create(name='other',order=1000,title=u'Дополнительно')
+                FieldSet.objects.create(name='other',order=10000,title=u'Дополнительно')
                 sections.append('other')
             fields[7]['tickets'].append(ticket)
                 
@@ -361,6 +365,10 @@ class ExaminationCard(models.Model):
                 
         if self.extra_service:
             ticket = {'title':u'Дополнительные услуги','printable':'extra_service' in printed_fields,'private':False,'text':self.extra_service}
+            insertToOther(ticket)
+            
+        if self.ekg:
+            ticket = {'title':u'ЭКГ','printable':True,'private':False,'text':self.ekg}
             insertToOther(ticket)
                 
         data = [p for p in fields if p['tickets']]
@@ -467,6 +475,14 @@ class Template(models.Model):
     width = models.TextField(u'ширина/шаг', null=True, blank=True)
     contrast_enhancement = models.TextField(u'Контрастное усиление', null=True, blank=True)
     deleted = models.BooleanField(u'Удалено', default=False)
+    
+    def __unicode__(self):
+        return "%s - %s" % (self.name,self.staff.short_name())
+    
+    class Meta:
+        verbose_name = u'Шаблон'
+        verbose_name_plural = u'Шаблоны'
+        ordering = ('-id',)
     
     
 class Glossary(MPTTModel):

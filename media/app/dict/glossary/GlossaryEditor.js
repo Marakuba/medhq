@@ -13,9 +13,11 @@ App.dict.GlossaryEditor = Ext.extend(Ext.Panel, {
 				,text:'Глоссарий'
 				,expanded:false
 				,uiProvider:false
+				,autoLoad:false
 			},
 			baseParams:{
 				format:'json',
+				section:'',
 				staff:active_staff
 			},
 			scope:this,
@@ -198,6 +200,7 @@ App.dict.GlossaryEditor = Ext.extend(Ext.Panel, {
 					this.glossary.loader.baseParams['section'] = records[0].data.name;
 					this.glossary['section'] = records[0].data.name;
 					var rootNode = this.glossary.getRootNode()
+					this.glossary.loader.load(rootNode)
 					rootNode.expand()
 					rootNode.setText('Глоссарий - ' + records[0].data.title);
 				} else {

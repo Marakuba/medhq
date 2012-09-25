@@ -20,5 +20,5 @@ class Command(BaseCommand):
                 count += 1
             except:
                 err_count += 1
-                print 'Error! %s card %s' % (err_count, obj.__unicode__())
+                print 'Error! %s template %s' % (err_count, obj.__unicode__())
         print 'Converted %s templates(s)' % (count)
