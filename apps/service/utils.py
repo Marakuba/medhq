@@ -205,16 +205,13 @@ class ServiceTreeLoader():
             for node in data:
                 self.build_service(node, self.root)
             if self.root is not None:
-                print "Reverting root node..."
                 root = BaseService.objects.get(id=self.root.id)
                 revert_tree_objects(root)
         else:
             pass
-        print "Done."
         data_file.close()
         
     def make_indent(self, indent):
-        
         return ( (indent-1)*"\t", indent*"\t" )
     
     @transaction.commit_on_success
@@ -227,7 +224,6 @@ class ServiceTreeLoader():
                                                              gen_ref_interval=node['gen_ref_interval'],
                                                              is_group=node['is_group'])
         ti,di = self.make_indent(indent)
-        print ti, service
         
         if node.has_key('lab_service'):
             ls = node['lab_service']
@@ -254,7 +250,7 @@ class ServiceTreeLoader():
                                                                                       tube_count=es['tube_count'],
                                                                                       is_manual=es['is_manual'])
                 except Exception, err:
-                    print "error:",err
+                    pass
                     
                 if self.branches:
                     extended_service.branches.add(*self.branches)
