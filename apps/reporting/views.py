@@ -26,7 +26,7 @@ from django.db import connection
 @cache_control(no_cache=True)
 def report_list(request):
     form = ReportForm()
-    return render_to_response('reporting/list.html', {'form': form,
+    return render_to_response(['reporting/list_user_%s.html' % request.user.id,'reporting/list.html'], {'form': form,
                                                       'title':u'Панель отчетов',
                                                       'today':datetime.date.today()}, 
                               context_instance=RequestContext(request))
