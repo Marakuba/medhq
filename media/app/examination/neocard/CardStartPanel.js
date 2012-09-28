@@ -11,12 +11,7 @@ App.examination.CardStartPanel = Ext.extend(Ext.Panel, {
 //			hidden:true,
 			autoScroll:true,
 			border:false,
-			tbar:[{
-				text:'Изменить',
-				iconCls:'silk-pencil',
-				handler:this.tmpEdit.createDelegate(this),
-				scope:this
-			}],
+			emptyTbar:true,
 			listeners: {
 				rowselect:this.onPreview.createDelegate(this,['tmp']),
 				rowdblclick:this.onNext.createDelegate(this),
@@ -27,6 +22,8 @@ App.examination.CardStartPanel = Ext.extend(Ext.Panel, {
 		
         this.cardGrid = new App.examination.CardGrid({
 //        	hidden:true,
+        	emptyTbar:true,
+        	
         	baseParams:{
         		ordered_service:App.uriToId(this.ordered_service)
         	},
@@ -258,10 +255,32 @@ App.examination.CardStartPanel = Ext.extend(Ext.Panel, {
                             items: [this.fromCardRadio]
                     	},{
                             xtype: 'panel',
-                            items: [this.fromTmpRadio]
+                            items: [this.fromTmpRadio],
+                            listeners:{
+                            	scope:this,
+                            	afterrender: function(panel){
+                            		panel.body.on('dblclick', function(e, t){
+                            			if (!this.fromTmpRadio.disabled){
+                            				this.fromTmpRadio.setValue(true);
+                            				this.onNext();
+                            			} 
+				                	},this)
+                            	}
+                            }
                     	},{
                             xtype: 'panel',
-                            items: [this.emptyCardRadio]
+                            items: [this.emptyCardRadio],
+                            listeners:{
+                            	scope:this,
+                            	afterrender: function(panel){
+                            		panel.body.on('dblclick', function(e, t){
+                            			if (!this.emptyCardRadio.disabled){
+                            				this.emptyCardRadio.setValue(true);
+                            				this.onNext();
+                            			} 
+				                	},this)
+                            	}
+                            }
                         },
                         {
                             xtype: 'panel',

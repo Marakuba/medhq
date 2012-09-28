@@ -5,6 +5,9 @@ App.examination.TemplateBody = Ext.extend(Ext.TabPanel, {
 	
 	initComponent: function(){
 		
+		//Используется для определения режима редактора, для отображения необходимых кнопок в тулбаре
+		this.mode = this.isCard ? 'card' : 'template',
+		
 		this.essenceText = this.isCard ? 'карту осмотра' : 'шаблон';
 		
 		this.tmpStore = new Ext.data.RESTStore({
@@ -60,6 +63,7 @@ App.examination.TemplateBody = Ext.extend(Ext.TabPanel, {
 			hidden:!this.isCard,
 			text: 'История пациента',
 			handler:this.onHistoryOpen.createDelegate(this),
+			mode:'card',
 			scope:this
 		});
 		
@@ -94,7 +98,7 @@ App.examination.TemplateBody = Ext.extend(Ext.TabPanel, {
 		});
 		
 		this.ttb = new Ext.Toolbar({
-			items: ['-',this.ticketOkBtn,this.printBtn,this.previewBtn,'-', this.historyBtn,'-', this.closeBtn, this.moveArchiveBtn, this.dltBtn]
+			items: ['-',this.ticketOkBtn,this.printBtn,this.previewBtn,'-', this.historyBtn, this.closeBtn, this.moveArchiveBtn, this.dltBtn]
 		});
 		
 		this.dataTab = new App.examination.TicketTab({
@@ -511,14 +515,23 @@ App.examination.TemplateBody = Ext.extend(Ext.TabPanel, {
 	},
 	
 	showTtbItems: function(source){
+		//кнопки в тулбаре разделяются по вкладкам, в которых должны показываться, 
+		// а так же по режимам редактора: карта осмотра или шаблон
+		//вкладка, в которой должна показываться кнопка, указывается в параметре source
+		//режим редактора, в которой кнопка должна быть видима, указывается в параметре mode
+		//если кнопка должна отображаться во всех режимах и в общей вкладке, параметры source и mode могут быть не заданы
 		if (!source){
 			source == null
 		}
 		Ext.each(this.ttb.items.items,function(item){
-			if (item.source == source){
-				item.show()
+			if (item.mode && item.mode != this.mode){
+				item.hide(); 
 			} else {
-				item.hide()
+				if (item.source == source){
+					item.show()
+				} else {
+					item.hide()
+				}
 			}
 		},this);
 		this.doLayout();

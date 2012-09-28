@@ -250,7 +250,7 @@ App.dict.XGlossaryTree = Ext.extend(Ext.ux.tree.RemoteTreePanel, {
 	}, // eo function appendChild
 	
 	renameNode:function(node, newText) {
-		console.log(this.actionNode);
+//		console.log(this.actionNode);
 		var params = this.applyBaseParams();
 		params = {
 			format:'json',
@@ -532,7 +532,7 @@ App.dict.XGlossaryTree = Ext.extend(Ext.ux.tree.RemoteTreePanel, {
 		}.createDelegate(this));
 		
 		var editWin = new App.dict.EditNodeWindow({
-			text:this.newText,
+			text:'',
 			fn:function(value){
 //				var node = this.actionNode;
 				if (value){

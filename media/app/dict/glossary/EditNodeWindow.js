@@ -37,7 +37,8 @@ App.dict.EditNodeWindow = Ext.extend(Ext.Window, {
 				afterrender: function(){
 					if (this.text){
 						this.editField.setValue(this.text);
-					}
+					};
+					this.editField.focus(true,500)
 				},
 				scope:this
 			}

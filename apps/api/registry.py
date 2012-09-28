@@ -1356,7 +1356,8 @@ class ExamServiceResource(ExtResource):
             'sampling': ALL_WITH_RELATIONS,
             'staff': ALL_WITH_RELATIONS,
             'execution_place': ALL_WITH_RELATIONS,
-            'executed':ALL
+            'executed':ALL,
+            'created':ALL
         }
 
 class SamplingServiceResource(ExtResource):
