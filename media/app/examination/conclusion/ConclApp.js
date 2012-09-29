@@ -34,6 +34,7 @@ App.examination.ConclApp = Ext.extend(Ext.Panel, {
 		
 		this.examGrid = new App.examination.CardGrid({
 			staff:this.staff,
+			order:this.order,
 			border: false,
 //			split:true,
 			bbar: new Ext.PagingToolbar({
@@ -94,6 +95,9 @@ App.examination.ConclApp = Ext.extend(Ext.Panel, {
 		App.examination.ConclApp.superclass.initComponent.apply(this, arguments);
 		
 		this.on('afterrender',function(){
+			if (this.order_id){
+				this.examGrid.store.setBaseParam('ordered_service',this.order_id)
+			}
 			this.examGrid.store.load();
 		},this)
 	},

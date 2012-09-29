@@ -209,6 +209,23 @@ App.ExamCentralPanel = Ext.extend(Ext.Panel, {
                 	},
                     scope:this
                 }]
+	        },{
+              xtype: 'buttongroup',
+	            columns: 2,
+	            defaults: {
+	                scale: 'small'
+	            },
+	            items: [{
+                	text:'Редактор анкет',
+                	scale:'medium',
+                	handler:function(){
+                		this.launchApp('questionnaire',{
+                			closable:true,
+                			title:'Редактор анкет'
+                		});
+                	},
+                    scope:this
+                }]
 	        },this.genDocGroup,'->',
 	        {
 				xtype:'buttongroup',

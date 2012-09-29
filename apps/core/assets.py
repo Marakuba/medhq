@@ -476,6 +476,10 @@ js_examination = Bundle(
     'app/examination/backends.js',
     'app/Models.js',
     
+    'app/examination/questionnaire/QuestEditor.js',
+    'app/examination/questionnaire/QuestPreviewPanel.js',
+    'app/examination/questionnaire/QuestApp.js',
+    
     'app/examination/examorder/Grid.js',
     'app/examination/examorder/OldGrid.js',
 
@@ -531,6 +535,7 @@ js_examination = Bundle(
     'app/examination/editor/StartPanel.js',
     'app/examination/editor/Editor.js',
     'app/examination/editor/card.js',
+    'app/examination/editor/QuestTicket.js',
     
     'app/dict/glossary/GlossaryEditor.js',
     

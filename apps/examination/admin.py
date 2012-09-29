@@ -4,7 +4,8 @@ from django.contrib import admin
 
 from models import *
 from django import forms
-from examination.models import CardTemplate, ExaminationCard, FieldSet, SubSection, Glossary
+from examination.models import CardTemplate, ExaminationCard, FieldSet, SubSection, Glossary, Questionnaire
+from examination.forms import QuestionnaireAdminForm
 
 class DICOMAdmin(admin.TabularInline):
     """
@@ -52,6 +53,13 @@ class SubSectionInlineAdmin(admin.TabularInline):
     
 class FieldSetAdmin(admin.ModelAdmin):
     inlines = [SubSectionInlineAdmin]
+    
+class QuestionnaireAdmin(admin.ModelAdmin):
+    filter_horizontal = ('staff','base_service',)
+    form = QuestionnaireAdminForm
+    
+    class Media:
+        js = ['libs/jquery.js',]
 
 admin.site.register(Equipment)
 admin.site.register(Template)
@@ -59,3 +67,4 @@ admin.site.register(FieldSet, FieldSetAdmin)
 admin.site.register(ExaminationCard, ExaminationCardAdmin)
 admin.site.register(CardTemplate, CardTemplateAdmin)
 admin.site.register(Glossary, GlossaryAdmin)
+admin.site.register(Questionnaire, QuestionnaireAdmin)

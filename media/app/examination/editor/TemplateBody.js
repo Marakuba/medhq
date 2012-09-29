@@ -5,6 +5,9 @@ App.examination.TemplateBody = Ext.extend(Ext.TabPanel, {
 	
 	initComponent: function(){
 		
+		//Используется для определения режима редактора, для отображения необходимых кнопок в тулбаре
+		this.mode = this.isCard ? 'card' : 'template',
+		
 		this.essenceText = this.isCard ? 'карту осмотра' : 'шаблон';
 		
 		this.tmpStore = new Ext.data.RESTStore({
@@ -17,6 +20,18 @@ App.examination.TemplateBody = Ext.extend(Ext.TabPanel, {
 			},
 			model: App.models.Template
 		});
+		
+		this.questStore = new Ext.data.RESTStore({
+			autoSave: true,
+			autoLoad : false,
+			apiUrl : get_api_url('questionnaire'),
+			baseParams:{
+				format:'json',
+				deleted:false
+			},
+			model: App.models.Questionnaire
+		});
+		
 		this.ticketOkBtn = new Ext.Button({
 			text:'Ok',
 			hidden:true,
@@ -60,6 +75,7 @@ App.examination.TemplateBody = Ext.extend(Ext.TabPanel, {
 			hidden:!this.isCard,
 			text: 'История пациента',
 			handler:this.onHistoryOpen.createDelegate(this),
+			mode:'card',
 			scope:this
 		});
 		
@@ -93,8 +109,32 @@ App.examination.TemplateBody = Ext.extend(Ext.TabPanel, {
 			scope:this
 		});
 		
+		this.saveQuestBtn = new Ext.Button({
+			text: 'Сохранить',
+			source:'questionnaire',
+			handler:this.onSaveQuest.createDelegate(this),
+			scope:this
+		});
+		
+		this.removeQuestBtn = new Ext.Button({
+			text: 'Удалить анкету',
+			source:'questionnaire',
+			disabled:true,
+			handler:this.onRemoveQuest.createDelegate(this),
+			scope:this
+		}); 
+		
+		this.editQuestBtn = new Ext.Button({
+			text: 'Редактировать анкету',
+//			source:'questionnaire',
+			disabled:true,
+			hidden:true,
+			handler:this.onEditQuest.createDelegate(this),
+			scope:this
+		}); 
+		
 		this.ttb = new Ext.Toolbar({
-			items: ['-',this.ticketOkBtn,this.printBtn,this.previewBtn,'-', this.historyBtn,'-', this.closeBtn, this.moveArchiveBtn, this.dltBtn]
+			items: ['-',this.ticketOkBtn,this.printBtn,this.previewBtn,'-', this.historyBtn, this.closeBtn, this.moveArchiveBtn, this.dltBtn,this.saveQuestBtn,this.removeQuestBtn,this.editQuestBtn]
 		});
 		
 		this.dataTab = new App.examination.TicketTab({
@@ -117,8 +157,8 @@ App.examination.TemplateBody = Ext.extend(Ext.TabPanel, {
 				'ticketremove':function(){
 					this.updateRecord();
 				},
-				'ticketeditstart':this.openTicketEditPanel,
-				'ticketbodyclick':this.openTicketEditPanel
+				'ticketeditstart':this.onEditTicket,
+				'ticketbodyclick':this.onEditTicket
 			}
 		})
 		
@@ -212,7 +252,7 @@ App.examination.TemplateBody = Ext.extend(Ext.TabPanel, {
 				model: App.models.SubSection
 			});
 			
-			this.fillSectionMenu();
+			this.fillQuestMenu();
 			
 			this.insert(0,this.dataTab);
 			
@@ -227,7 +267,14 @@ App.examination.TemplateBody = Ext.extend(Ext.TabPanel, {
 	
 	onAddSubSection: function(title,section,order,data){
 		this.setActiveTab(this.dataTab);
-		this.dataTab.addTicket(title,section,order,data);
+		var ticket_config = {
+			title:title,
+			section:section,
+			order:order,
+			type:'text',
+			text:data
+		}; 
+		this.dataTab.addTicket(ticket_config);
 		this.doLayout();
 		this.updateRecord();
 	},
@@ -236,21 +283,39 @@ App.examination.TemplateBody = Ext.extend(Ext.TabPanel, {
 		if (this.dataLoading) {
 			return false;
 		};
-		var data = this.dataTab.getData();
+		var allData = this.dataTab.getData();
 		
-		data = Ext.encode(data);
+		var data = Ext.encode(allData[0]);
+		var quests = Ext.encode(allData[1]);
+		
+		this.record.store.autoSave = false;
+		this.record.beginEdit();
 		this.record.set('data', data);
+		this.record.set('questionnaire',quests);
+		this.record.endEdit();
+		this.record.store.save();
+		this.record.store.autoSave = true;
 	},
 	
 	loadData: function(sectionPlan){
 		var recData = this.record.data.data;
+		var quests = this.record.data.questionnaire;
 		this.generalTab.setPrintName(this.record.data.print_name || this.print_name);
 		if (!recData){
 			return false
 		}
 		this.dataLoading = true;
-		var data = Ext.decode(recData);
-		this.dataTab.loadData(data,sectionPlan);
+		if (recData){
+			var data = Ext.decode(recData);
+		};
+		if (quests){
+			this.enableQuests(quests == '{}');
+			
+			quests = Ext.decode(quests);
+		} else {
+			this.enableQuests(true);
+		}
+		this.dataTab.loadData(data,quests,sectionPlan);
 		if (this.record.data.equipment){
 			this.openEquipTab(this.record);				
 		}
@@ -370,10 +435,30 @@ App.examination.TemplateBody = Ext.extend(Ext.TabPanel, {
 		this.doLayout();
 	},
 	
-	fillSectionMenu: function(){
-		this.sectionMenu = new Ext.menu.Menu({
+	fillQuestMenu: function(){
+		this.questItems = new Ext.menu.Menu({
 			items:[]
 		});
+		this.questStore.load({callback:function(records){
+			Ext.each(records,function(record){
+				var rec = record.data;
+				this.questItems.add({
+					text:rec.name,
+					handler:this.openQuestionnaireClick.createDelegate(this,[rec]),
+					scope:this
+				});
+			},this);
+			this.questBtn = new Ext.Button({
+				text:'Анкеты',
+				menu:this.questItems
+			});
+			this.ttb.insert(0,this.questBtn);
+			this.doLayout();
+			this.fillSectionMenu();
+		},scope:this})
+	},
+	
+	fillSectionMenu: function(){
 		
 		this.sectionItems = new Ext.menu.Menu({
 			items:[]
@@ -470,7 +555,109 @@ App.examination.TemplateBody = Ext.extend(Ext.TabPanel, {
 		
 	},
 	
-	openTicketEditPanel:function(ticket){
+	openQuestionnaireClick:function(questRecord){
+		if (this.questPanel){
+			Ext.Msg.alert('Уведомление','Одна анкета уже открыта');
+			this.setActiveTab(this.questPanel);
+			return
+		};
+		
+		//Если анкета уже вводилась
+		if (this.dataTab.quests[questRecord.name]){
+			var questData = this.dataTab.quests[questRecord.name]['data'];
+			var code = this.dataTab.quests[questRecord.name]['code'];
+		};
+		
+		if (!code){
+			var rawcode = questRecord.code;
+			if (!rawcode) return;
+			var code = Ext.decode(rawcode);
+		};
+		
+		if (!code['items']) {
+			Ext.Msg.alert('Синтаксическая ошибка','Нет параметра "items"');
+			return
+		};
+		var quest_config = {
+			questName:questRecord.name,
+			data:questData,
+			code:code,
+			title:questRecord.name
+		} 
+		
+		this.openQuest(quest_config);
+	},
+	
+	openQuest: function(config){
+		if (!config['questName']) {
+			console.log('Не указаны необходимые параметры: questName');
+			return;
+		}
+		//Проверка на наличие кода панели.		
+		if (!config['code']) {
+			if (this.dataTab.quests){
+				config['code'] = this.dataTab.quests[config.questName]['code'];
+			} else {
+				var ind = this.questStore.findBy('name',config.questName);
+				if (ind > -1){
+					var rec = this.questStore.getAt(ind);
+					var code = rec.data.code;
+					if (code){
+						config['code'] = Ext.decode(code);
+					} else {
+						console.log('Не указаны необходимые параметры: code');
+						return;
+					} 
+				} else {
+					console.log('Не указаны необходимые параметры: code');
+					return;
+				}
+			}
+		};
+		
+		init_config = 
+			{
+				title:'Анкета',
+				type:'questionnaire',
+				closable:true,
+				listeners:{
+					scope:this,
+					destroy:function(){this.questPanel = undefined}
+				}
+			}
+		Ext.applyIf(config,init_config);
+		
+		this.questPanel = new App.examination.QuestPreviewPanel(config);
+		
+		
+		//добавляем элементы в главную панель
+		this.questPanel.add(this.questPanel.buildElem(config['code']));
+		
+		
+		this.add(this.questPanel);
+		this.setActiveTab(this.questPanel);
+		
+	},
+	
+	questionnaireTicketEdit:function(ticket){
+		if (this.questPanel){
+			Ext.Msg.alert('Уведомление','Одна анкета уже открыта');
+			this.setActiveTab(this.questPanel);
+			return
+		};
+		var config = {
+			questName:ticket.questName,
+			title:ticket.questName
+		};
+		var quests = this.dataTab.quests;
+		if (quests && quests[ticket.questName]){
+			config['data'] = quests[ticket.questName]['data'];
+			config['code'] = quests[ticket.questName]['code'];
+		}
+		this.openQuest(config)
+	},
+	
+	textTicketEdit:function(ticket){
 		this.ticket = ticket;
 		var ticketEditor = new App.examination.TicketEditPanel({
 			title:'Editor',
@@ -496,6 +683,12 @@ App.examination.TemplateBody = Ext.extend(Ext.TabPanel, {
 		this.setActiveTab(ticketEditor)
 	},
 	
+	onEditTicket: function(ticket){
+		this.ticket = ticket;
+//		this[(ticket['type'] || 'text') + 'TicketEdit'](ticket)
+		this.textTicketEdit(ticket);
+	},
+	
 	openMedStandarts: function(mkb10){
 		var stWin = new App.examination.MedStandartChoiceWindow({
 			mkb10:App.uriToId(mkb10),
@@ -511,17 +704,112 @@ App.examination.TemplateBody = Ext.extend(Ext.TabPanel, {
 	},
 	
 	showTtbItems: function(source){
+		//кнопки в тулбаре разделяются по вкладкам, в которых должны показываться, 
+		// а так же по режимам редактора: карта осмотра или шаблон
+		//вкладка, в которой должна показываться кнопка, указывается в параметре source
+		//режим редактора, в которой кнопка должна быть видима, указывается в параметре mode
+		//если кнопка должна отображаться во всех режимах и в общей вкладке, параметры source и mode могут быть не заданы
 		if (!source){
 			source == null
 		}
 		Ext.each(this.ttb.items.items,function(item){
-			if (item.source == source){
-				item.show()
+			if (item.mode && item.mode != this.mode){
+				item.hide(); 
 			} else {
-				item.hide()
+				if (item.source == source){
+					item.show()
+				} else {
+					item.hide()
+				}
 			}
 		},this);
 		this.doLayout();
+	},
+	
+	onSaveQuest: function(){
+		/*
+		 * Сохраняет данные из анкеты.
+		 * Сначала проходит проверка, вводилась ли такая анкета (есть соответствующий параметр в dataTab.quests)
+		 * Если анкета вводилась, то выбираются все тикеты с именем этой анкеты и заменяются данные
+		 * Если анкета не вводилась, то добавляются новые тикеты в соответствующие секциям позиции.
+		*/
+		if (this.questPanel){
+			var questData = this.questPanel.makeTickets();
+			var tickets = questData[0];
+			var allData = questData[1];
+			var questName = questData[2];
+			var code = this.questPanel.code;
+			if (this.dataTab.quests[questName]) {
+				//Если анкета редактируется
+				Ext.each(tickets,function(t){
+					//ищем редактируемый тикет
+					var edTicket = this.dataTab.findByTitle(t.questName,t['title']);
+					edTicket.setData({title:t['title'],text:t['text']});
+				},this);
+				this.questPanel.destroy();
+				this.dataTab.doLayout();
+				this.setActiveTab(this.dataTab);
+			} else {
+				//Если вводится новая анкета
+				Ext.each(tickets,function(t){
+					var order = this.sectionPlan[t.section] ? this.sectionPlan[t.section]['order'] : 0;
+					ticket_config = {
+						order:order
+					};
+					Ext.apply(ticket_config,t)
+					this.dataTab.addTicket(ticket_config);
+				},this);
+				this.questPanel.destroy();
+				this.dataTab.doLayout();
+				this.setActiveTab(this.dataTab);
+			};
+			this.dataTab.quests[questName] = {
+				data: allData,
+				code:code
+			}
+			this.updateRecord();
+			// Теперь анкету можно удалить, если надо
+			this.enableQuests(false);
+			
+		}
+	},
+	
+	onRemoveQuest: function(){
+		/*
+		 * Сохраняет данные из анкеты.
+		 * Сначала проходит проверка, вводилась ли такая анкета (есть соответствующий параметр в dataTab.quests)
+		 * Если анкета вводилась, то выбираются все тикеты с именем этой анкеты и заменяются данные
+		 * Если анкета не вводилась, то добавляются новые тикеты в соответствующие секциям позиции.
+		*/
+		if (this.questPanel){
+			var questName = this.questPanel.questName;
+			do {
+				var t = this.dataTab.findTicket('questName',questName);
+				if (t){
+					t.destroy();
+				}
+			} while (t);
+			delete this.dataTab.quests[questName];
+			this.questPanel.destroy();
+			this.dataTab.doLayout();
+			this.setActiveTab(this.dataTab);
+			this.updateRecord()
+		};
+		
+		this.enableQuests(true);
+	},
+	
+	onEditQuest: function(){
+		if (this.dataTab.quests){
+			for (pr in this.dataTab.quests) {var name = String(pr)}; 
+			this.openQuest({questName:name})
+		}
+	},
+	
+	enableQuests: function(status){
+		this.questBtn.setDisabled(!status);
+		this.removeQuestBtn.setDisabled(status);
+		this.editQuestBtn.setDisabled(status);
 	}
 
 });

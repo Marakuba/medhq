@@ -65,7 +65,7 @@ def examination_card(request, object_id):
             for t in d['tickets']:
                 if t['private'] == True:
                     d['tickets'].remove(t)
-            d['title'] = field_sets[d['section']]
+            d['title'] = field_sets.has_key(d['section']) and field_sets[d['section']] or ''
     
     ctx = {
         'card':card,

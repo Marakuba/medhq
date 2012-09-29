@@ -1,5 +1,14 @@
 Ext.ns('App','App.models');
 
+App.models.Questionnaire = new Ext.data.Record.create([
+    {name: 'id'},
+	{name: 'resource_uri'},
+	{name: 'name'},
+	{name: 'staff'},
+	{name: 'base_service'},
+	{name: 'code'}
+]);
+
 App.models.barcodeModel = new Ext.data.Record.create([
     {name: 'id'},
 	{name: 'resource_uri'},
@@ -346,6 +355,7 @@ App.models.Card = new Ext.data.Record.create([
 	{name: 'patient_name'},
 	{name: 'ordered_service'},
 	{name: 'data'},
+	{name: 'questionnaire'},
 	{name: 'equipment'},
 	{name: 'area'},
 	{name: 'scan_mode'},

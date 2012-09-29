@@ -96,7 +96,7 @@ App.examination.Editor = Ext.extend(Ext.Panel, {
 						print_name:records[0].data.print_name,
 						record : records[0]
 					});
-					this.contentPanel.setTitle(this.tmpBody.print_name);
+					this.contentPanel.setTitle('Шаблон ' + this.tmpBody.print_name);
 					this.contentPanel.add(this.tmpBody);
 					this.contentPanel.doLayout();
 					
@@ -146,7 +146,7 @@ App.examination.Editor = Ext.extend(Ext.Panel, {
 						}
 					},
 					changetitle: function(text){
-						this.contentPanel.setTitle(text);
+						this.contentPanel.setTitle('Шаблон ' +text);
 					},
 					tmpclose: function(){
 						if(this.editMode){
@@ -188,7 +188,7 @@ App.examination.Editor = Ext.extend(Ext.Panel, {
 				base_service:this.service
 			});
 			this.generalTab.print_name = this.tmpBody.print_name;
-			this.contentPanel.setTitle(this.tmpBody.print_name);
+			this.contentPanel.setTitle('Шаблон ' + this.tmpBody.print_name);
 			this.contentPanel.add(this.tmpBody);
 			this.contentPanel.doLayout();
 		},this);

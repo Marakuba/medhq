@@ -250,7 +250,7 @@ App.dict.XGlossaryTree = Ext.extend(Ext.ux.tree.RemoteTreePanel, {
 	}, // eo function appendChild
 	
 	renameNode:function(node, newText) {
-		console.log(this.actionNode);
+//		console.log(this.actionNode);
 		var params = this.applyBaseParams();
 		params = {
 			format:'json',
@@ -521,26 +521,22 @@ App.dict.XGlossaryTree = Ext.extend(Ext.ux.tree.RemoteTreePanel, {
 			var node = this.actionNode;
 		};
 		var child;
-		node.leaf = false;
-		node.expand(false, false, function(n) {
-			if(true === insert) {
-				child = n.insertBefore(this.loader.createNode({text:this.newText, loaded:true}), n.firstChild);
-			}
-			else {
-				child = n.appendChild(this.loader.createNode({text:this.newText, loaded:true}));
-			}
-		}.createDelegate(this));
 		
 		var editWin = new App.dict.EditNodeWindow({
-			text:this.newText,
+			text:'',
 			fn:function(value){
 //				var node = this.actionNode;
-				if (value){
-					child.setText(value);
-					this.appendChild(child,insert);
-				} else {
-					child.setText(this.newText)
-				}
+				if (!value) return false;
+				node.leaf = false;
+				node.expand(false, false, function(n) {
+					if(true === insert) {
+						child = n.insertBefore(this.loader.createNode({text:value, loaded:true}), n.firstChild);
+					}
+					else {
+						child = n.appendChild(this.loader.createNode({text:value, loaded:true}));
+					}
+				}.createDelegate(this));
+				this.appendChild(child,insert);
 				this.fireEvent('nodecreate',child);
 			},
 			scope:this

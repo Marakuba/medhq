@@ -175,11 +175,29 @@ App.assignment.PreorderInlineGrid = Ext.extend(Ext.grid.EditorGridPanel, {
 				forceFit : true
 				//getRowClass : this.applyRowClass
 			},
-			listeners:{
+			listeners: {
 				afteredit:this.onSumChange.createDelegate(this),
+				rowcontextmenu: function(grid,rowindex, e) {
+					e.stopEvent();
+					var sm = grid.getSelectionModel();
+					if(sm.getSelections().length<2){
+						var rec = grid.getStore().getAt(rowindex);
+						sm.selectRow(rowindex);
+					}
+					if(!this.menu) {
+						this.menu = new Ext.menu.Menu({
+							items:[{
+								iconCls:'silk-note-delete',
+								text:'Удалить',
+								handler: this.delRow.createDelegate(this),
+								scope:this
+							}]
+						});
+					}
+					this.menu.showAt(e.getXY());
+				},
 				scope:this
 			}
-			
 		}
 
 		Ext.apply(this, Ext.apply(this.initialConfig, config));
@@ -275,11 +293,29 @@ App.assignment.PreorderInlineGrid = Ext.extend(Ext.grid.EditorGridPanel, {
 		
 	},
 	
+	hasNext: function(){
+		var sm = this.getSelectionModel();		
+		return sm.last !== false && (sm.last+1) < this.store.getCount();
+	},
+	
 	delRow: function() {
-		rec = this.getSelectionModel().getSelected();
-		if(rec.phantom) {
-			this.store.remove(rec);
-		}
+		var sm = this.getSelectionModel();
+		var rec = sm.getSelected();
+		if (!rec) return false;
+        var index = this.store.indexOf(rec);
+        if (this.hasNext()){
+            sm.selectRow(index+1);
+        } else {
+            if (sm.hasPrevious()){
+                sm.selectPrevious();
+            } else {
+                var isLast = true;
+            };
+        };
+        this.store.remove(rec);
+        if (isLast) {
+            sm.selectFirstRow();
+        };
 	},
 	
 	onSave: function() {

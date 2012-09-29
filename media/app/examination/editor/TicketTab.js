@@ -13,6 +13,25 @@ App.examination.TicketPanel = Ext.extend(Ext.ux.Portal,{
 App.examination.TicketTab = Ext.extend(Ext.Panel, {
 	initComponent : function() {
 		
+		/*Содержит данные всех введенных анкет.
+		Имеет структуру:
+		this.quests[questName] = {data:[{
+										   title,
+										   section,
+										   rows:[{
+										      name,
+										      values:'...'|[]
+									       }]
+									   },
+									   {...}]},
+								   
+								   code:code}
+		*/
+		this.quests = {};
+		
+		this.ticketTypes = {'text':Ext.ux.form.Ticket,
+							'questionnaire':Ext.ux.form.QuestTicket}
+		
 		//Для создания направлений нужна запись текущего пациента
 		this.patientStore = new Ext.data.RESTStore({
 			autoSave: false,
@@ -35,11 +54,14 @@ App.examination.TicketTab = Ext.extend(Ext.Panel, {
 				//запретить возможность перетаскивать тикеты в другие разделы (сейчас drop вообще запрещен)
 				var data = {};
 				this.items.itemAt(0).items.each(function(item,ind){
-//					console.log(ind)
 					if(item.getData){
 						var itemData = item.getData();
-						itemData['pos'] = ind
-					}
+						itemData['pos'] = ind;
+						itemData['type'] = item.type;
+						if (item['questName']){
+							itemData['questName'] = item.questName;
+						}
+					};
 					if (!data[item.section]){
 						data[item.section] = {
 							order:item.order,
@@ -59,8 +81,10 @@ App.examination.TicketTab = Ext.extend(Ext.Panel, {
 			},
 			
 			listeners:{
-				'beforedrop':function(res){
-					return false
+				'beforedrop':function(res,e,t){
+					var panel = res.panel;
+					panel['dragged'] = true;
+//					return false
 				},
 				scope:this
 			}
@@ -84,25 +108,53 @@ App.examination.TicketTab = Ext.extend(Ext.Panel, {
 //		App.eventManager.on('tmptabchange',this.closeEditor,this);
 //		
 //		this.on('destroy', function(){
-//		    App.eventManager.un('tmptabchange',this.closeEditor,this); 
+//		    App.eventM
+//		
+//		if (!(this.portalColumn.items && this.portalColumn.items.length)){
+//			this.portalColumn.add(ticket);
+//		} else {
+//			var portalLength = this.portalColumn.items.length;
+//			var inserted = false;
+//			Ext.each(this.portalColumn.items,function(obj,ind,portal){
+//				if (inserted) return
+//				var item = portal.items[ind];
+//				if(ind==portalLength-1){
+//					if (item[paramName] > ticket[paramName]){
+//						this.portalColumn.insert(ind,ticket);
+//					} else {
+//						this.portalColumn.add(ticket);
+//					}
+//					inserted = true;
+//				} else {
+//					if (item[paramName] >= ticket[paramName]){
+//						this.portalColumn.insert(ind,ticket);
+//						inserted = true;
+//					}
+//				}
+//			},this);
+//		};anager.un('tmptabchange',this.closeEditor,this); 
 //		},this);
 		
 		this.on('afterrender',function(panel){
 			
-			if(this.data){
-				Ext.each(this.data.tickets,function(ticket,i){
-					var new_ticket = new Ext.ux.form.Ticket({
-						data:{
-							title:ticket.title,
-							printable:ticket.printable,
-							private:ticket.private,
-							text:ticket.text
-						}
-					});
-					this.portalColumn.add(new_ticket);
-				},this);
-				
-			};
+//			if(this.data){
+//				this.quests = data['quests'];
+//				Ext.each(this.data.tickets,function(ticket,i){
+//					if (!ticket['type']){
+//						ticket['type'] = 'text';
+//					};
+//					var new_ticket = new this.ticketTypes[ticket['type']]({
+//						data:{
+//							title:ticket.title,
+//							printable:ticket.printable,
+//							private:ticket.private,
+//							text:ticket.text
+//						}
+//					});
+//					this.portalColumn.add(new_ticket);
+//				},this);
+//				
+//			};
 			if (this.isCard){
 				this.openAsgmtPanel();
 			};
@@ -134,13 +186,16 @@ App.examination.TicketTab = Ext.extend(Ext.Panel, {
 		},this);
 	},
 	
-	loadData: function(data,sectionPlan){
+	loadData: function(data,quests,sectionPlan){
 		this.sectionPlan = sectionPlan;
 		if(!data) return false;
 		
+		this.quests = quests;
+		
 		Ext.each(data,function(section){
 			Ext.each(section.tickets,function(ticket,i){
-				var new_ticket = new Ext.ux.form.Ticket({
+				var config = {
+					type: ticket['type'] || 'text',
 					data:{
 						title:ticket.title,
 						printable:ticket.printable,
@@ -150,17 +205,19 @@ App.examination.TicketTab = Ext.extend(Ext.Panel, {
 					pos:ticket.pos,
 					section:section.section,
 					order:this.sectionPlan[section.section] && this.sectionPlan[section.section].order || 0
-				});
-				//вставляем тикет на свое место согласно позиции pos
-				if(new_ticket.pos){
-					this.insertTicketInPos(new_ticket,'pos')
-				} else {
-					this.insertTicketInPos(new_ticket,'order')
-				}
+				};
+				//Добавляем оставшиеся настройки
+				Ext.applyIf(config,ticket)
+				this.addTicket(config);
+				
 				
 			},this);
 			this.doLayout();
 		},this);
+		if (this.isCard){
+			this.openAsgmtPanel();
+		};
+		this.doLayout();
 	},
 	
 	removeTab: function(){
@@ -173,18 +230,41 @@ App.examination.TicketTab = Ext.extend(Ext.Panel, {
 		this.record.set('data',Ext.encode(data));
 	},
 	
-	addTicket:function(title,section,order){
-		var new_ticket = new Ext.ux.form.Ticket({
-			section:section,
-			order:order,
-			data:{
-				title:title,
+	addTicket:function(config){
+		var init_config = {
+			data:{title:config['title'],
+				text:config['text'],
 				printable:true,
-				private:false
+				private:false}
+		};
+		if (!config['type']){
+			config['type'] = 'text';
+		};
+		Ext.applyIf(config,init_config);
+		var new_ticket = new this.ticketTypes[config['type']](config);
+		var insertMethod = config['pos'] ? 'pos' : 'order';
+		this.insertTicketInPos(new_ticket,insertMethod);
+	},
+	
+	getLowInd:function(paramName,value){
+		//Возвращает последний индекс элемента, переданный параметр которого меньше указанного
+		var index = -1;
+		if (!this.portalColumn.items){
+			return index;
+		}
+		Ext.each(this.portalColumn.items.items,function(panel,ind){
+			if (panel['dragged']) {
+				//Если тикет поставили сюда вручную, то его пропускаем
+				index = ind
+			} else {
+				if (panel[paramName] <= value) {
+					index = ind
+				} else {
+					return
+				}
 			}
-		});
-		this.insertTicketInPos(new_ticket,'order');
-		this.doLayout();
+		},this);
+		return index;
 	},
 	
 	insertTicketInPos: function(ticket,paramName){
@@ -193,35 +273,16 @@ App.examination.TicketTab = Ext.extend(Ext.Panel, {
 		//либо по значению pos (если загружаются сохраненные тикеты)
 		
 		//если тикетов еще нет, то добавляем в конец
-		if (!(this.portalColumn.items && this.portalColumn.items.length)){
-			this.portalColumn.add(ticket);
-		} else {
-			var portalLength = this.portalColumn.items.length;
-			var inserted = false;
-			Ext.each(this.portalColumn.items,function(obj,ind,portal){
-				if (inserted) return
-				var item = portal.items[ind];
-				if(ind==portalLength-1){
-					if (item[paramName] > ticket[paramName]){
-						this.portalColumn.insert(ind,ticket);
-					} else {
-						this.portalColumn.add(ticket);
-					}
-					inserted = true;
-				} else {
-					if (item[paramName] >= ticket[paramName]){
-						this.portalColumn.insert(ind,ticket);
-						inserted = true;
-					}
-				}
-			},this);
-		};
+		//тикет добавляется в конец секции
+		
+		var ind = this.getLowInd(paramName,ticket[paramName]);
+		this.portalColumn.insert(ind+1,ticket);
 		this.doLayout();
 	},
 	
 	getData: function(){
 		var data = this.ticketPanel.getData();
-		return data
+		return [data,this.quests]
 	},
 	
 	newAsgmtPanel: function(){
@@ -229,6 +290,7 @@ App.examination.TicketTab = Ext.extend(Ext.Panel, {
 			title:'Услуги',
 			card_id:this.record.data.id,
 			order:10000,
+			pos:10000,
 			height:500,
 			autoScroll:true,
 			hasPatient:true,
@@ -296,5 +358,27 @@ App.examination.TicketTab = Ext.extend(Ext.Panel, {
 		s.autoSave = true;
 		this.doLayout();
 		
+	},
+	
+	findTicket:function(paramName,value){
+		var ticket = undefined;
+		this.ticketPanel.items.itemAt(0).items.each(function(item,ind){
+			if (item[paramName] === value) {
+				ticket = item;
+			}
+		},this);
+		
+		return ticket
+	},
+	
+	findByTitle:function(questName,title){
+		var ticket = undefined;
+		this.ticketPanel.items.itemAt(0).items.each(function(item,ind){
+			if ((item['questName'] == questName) && (item.data['title']== title)) {
+				ticket = item;
+			}
+		},this);
+		
+		return ticket
 	}
 });
