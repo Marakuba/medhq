@@ -38,8 +38,8 @@ App.examination.TicketTab = Ext.extend(Ext.Panel, {
 //					console.log(ind)
 					if(item.getData){
 						var itemData = item.getData();
-						itemData['pos'] = ind
-					}
+						itemData['pos'] = ind;
+					};
 					if (!data[item.section]){
 						data[item.section] = {
 							order:item.order,
@@ -59,8 +59,10 @@ App.examination.TicketTab = Ext.extend(Ext.Panel, {
 			},
 			
 			listeners:{
-				'beforedrop':function(res){
-					return false
+				'beforedrop':function(res,e,t){
+					var panel = res.panel;
+					panel['dragged'] = true;
+//					return false
 				},
 				scope:this
 			}
@@ -84,7 +86,31 @@ App.examination.TicketTab = Ext.extend(Ext.Panel, {
 //		App.eventManager.on('tmptabchange',this.closeEditor,this);
 //		
 //		this.on('destroy', function(){
-//		    App.eventManager.un('tmptabchange',this.closeEditor,this); 
+//		    App.eventM
+//		
+//		if (!(this.portalColumn.items && this.portalColumn.items.length)){
+//			this.portalColumn.add(ticket);
+//		} else {
+//			var portalLength = this.portalColumn.items.length;
+//			var inserted = false;
+//			Ext.each(this.portalColumn.items,function(obj,ind,portal){
+//				if (inserted) return
+//				var item = portal.items[ind];
+//				if(ind==portalLength-1){
+//					if (item[paramName] > ticket[paramName]){
+//						this.portalColumn.insert(ind,ticket);
+//					} else {
+//						this.portalColumn.add(ticket);
+//					}
+//					inserted = true;
+//				} else {
+//					if (item[paramName] >= ticket[paramName]){
+//						this.portalColumn.insert(ind,ticket);
+//						inserted = true;
+//					}
+//				}
+//			},this);
+//		};anager.un('tmptabchange',this.closeEditor,this); 
 //		},this);
 		
 		this.on('afterrender',function(panel){
@@ -102,11 +128,13 @@ App.examination.TicketTab = Ext.extend(Ext.Panel, {
 					this.portalColumn.add(new_ticket);
 				},this);
 				
+				if (this.isCard){
+					this.openAsgmtPanel();
+				};
+				this.doLayout();
+				
 			};
-			if (this.isCard){
-				this.openAsgmtPanel();
-			};
-			this.doLayout();
+			
 			
 		},this);
 		
@@ -161,6 +189,10 @@ App.examination.TicketTab = Ext.extend(Ext.Panel, {
 			},this);
 			this.doLayout();
 		},this);
+		if (this.isCard){
+			this.openAsgmtPanel();
+		};
+		this.doLayout();
 	},
 	
 	removeTab: function(){
@@ -187,35 +219,37 @@ App.examination.TicketTab = Ext.extend(Ext.Panel, {
 		this.doLayout();
 	},
 	
+	getLowInd:function(paramName,value){
+		//Возвращает последний индекс элемента, переданный параметр которого меньше указанного
+		var index = -1;
+		if (!this.portalColumn.items){
+			return index;
+		}
+		Ext.each(this.portalColumn.items.items,function(panel,ind){
+			if (panel['dragged']) {
+				//Если тикет поставили сюда вручную, то его пропускаем
+				index = ind
+			} else {
+				if (panel[paramName] <= value) {
+					index = ind
+				} else {
+					return
+				}
+			}
+		},this);
+		return index;
+	},
+	
 	insertTicketInPos: function(ticket,paramName){
 		//вставляем тикет в нужное место согласно порядку order
 		//порядок тикетов может быть определен либо по значению order (если добавляется новый тикет)
 		//либо по значению pos (если загружаются сохраненные тикеты)
 		
 		//если тикетов еще нет, то добавляем в конец
-		if (!(this.portalColumn.items && this.portalColumn.items.length)){
-			this.portalColumn.add(ticket);
-		} else {
-			var portalLength = this.portalColumn.items.length;
-			var inserted = false;
-			Ext.each(this.portalColumn.items,function(obj,ind,portal){
-				if (inserted) return
-				var item = portal.items[ind];
-				if(ind==portalLength-1){
-					if (item[paramName] > ticket[paramName]){
-						this.portalColumn.insert(ind,ticket);
-					} else {
-						this.portalColumn.add(ticket);
-					}
-					inserted = true;
-				} else {
-					if (item[paramName] >= ticket[paramName]){
-						this.portalColumn.insert(ind,ticket);
-						inserted = true;
-					}
-				}
-			},this);
-		};
+		//тикет добавляется в конец секции
+		
+		var ind = this.getLowInd(paramName,ticket[paramName]);
+		this.portalColumn.insert(ind+1,ticket);
 		this.doLayout();
 	},
 	
@@ -229,6 +263,7 @@ App.examination.TicketTab = Ext.extend(Ext.Panel, {
 			title:'Услуги',
 			card_id:this.record.data.id,
 			order:10000,
+			pos:10000,
 			height:500,
 			autoScroll:true,
 			hasPatient:true,
