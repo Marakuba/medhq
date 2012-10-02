@@ -1,6 +1,6 @@
 {% extends "print/off_blank.html" %}
 
-{% load markup lab_tags %}
+{% load lab_tags %}
 
 {% block body %}
 
@@ -97,7 +97,7 @@
 	{% for d in data %}
 		{% for ticket in d.tickets %}
 		<h2>{{ ticket.title }}</h2>
-		<p>{{ ticket.text|markdown }}</p>
+		<p>{{ ticket.text }}</p>
 		{% endfor %}
 	{% endfor %}
 	{% for d in gdata %}

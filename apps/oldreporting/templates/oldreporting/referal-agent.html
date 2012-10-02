@@ -1,0 +1,94 @@
+{% extends "reporting/base.html" %}
+
+{% block data %}
+        <tr class="header">
+            <th></th>
+            <th class="number">№ приема</th>
+            <th class="number">Дата приема</th>
+            <th class="number" colspan=2>Услуга</th>            
+            <th class="number">Цена</th>            
+            <th class="number">5%</th>
+            <th class="number">300</th>
+            <th class="number">100</th>
+            <th class="number">50</th>
+            <th class="number">Количество</th>
+            <th class="number">Сумма</th>
+            <th class="number">Скидка</th>
+            <th class="number">Итого</th>
+        </tr>
+
+        <tr class="footer">        
+            <th colspan=6>ВСЕГО:</th>
+            <th class="number">{{results.0.5}}</th>
+            <th class="number">{{results.0.6}}</th>
+            <th class="number">{{results.0.7}}</th>
+            <th class="number">{{results.0.8}}</th>
+            <th class="number">{{results.0.1}}</th>
+            <th class="number">{{results.0.2}}</th>
+            <th class="number">{{results.0.3}}</th>
+            <th class="number">{{results.0.4}}</th>
+        </tr>
+
+        {% for gr in results.0.0 %}
+            <tr class="group">
+                <td colspan=6>{{ gr.0|default:'<em>Без агента</em>' }}</td>
+                <td class="number">{{ gr.5 }}</td>
+                <td class="number">{{ gr.6 }}</td>
+                <td class="number">{{ gr.7 }}</td>
+                <td class="number">{{ gr.8 }}</td>
+                <td class="number">{{ gr.1 }}</td>
+                <td class="number">{{ gr.2 }}</td>
+                <td class="number">{{ gr.3 }}</td>
+                <td class="number">{{ gr.4 }}</td>
+            </tr>
+            {% for gr2row in gr.9 %}            
+                <tr class="group2">
+                    <td></td>
+                    <td colspan=5>{{gr2row.0|default:'<em>Направление не указано</em>'}}</td>
+                    <td class="number">{{gr2row.5}}</td>
+                    <td class="number">{{gr2row.6}}</td>
+                    <td class="number">{{gr2row.7}}</td>
+                    <td class="number">{{gr2row.8}}</td>
+                    <td class="number">{{gr2row.1}}</td>
+                    <td class="number">{{gr2row.2}}</td>
+                    <td class="number">{{gr2row.3}}</td>
+                    <td class="number">{{gr2row.4}}</td>
+                </tr>
+                {% for grcol2 in gr2row.9 %}
+                    <tr class="group3">
+                        <td></td>
+                        <td colspan=5>{{grcol2.0}}</td>
+                        <td class="number">{{grcol2.5}}</td>
+                        <td class="number">{{grcol2.6}}</td>
+                        <td class="number">{{grcol2.7}}</td>
+                        <td class="number">{{grcol2.8}}</td>
+                        <td class="number">{{grcol2.1}}</td>
+                        <td class="number">{{grcol2.2}}</td>
+                        <td class="number">{{grcol2.3}}</td>
+                        <td class="number">{{grcol2.4}}</td>
+                    </tr>
+                    {% if request.GET.details %}
+                    {% for grcol3 in grcol2.9 %}
+	                    <tr>
+	                        <td></td>
+	                        <td>{{grcol3.1}}</td>
+	                        <td>{{grcol3.2}}</td>
+	                        <td>{{grcol3.3}}</td>
+	                        <td>{{grcol3.4}}</td>
+                            <td class="number">{{grcol3.5}}</td>
+	                        <td class="number">{% if grcol3.11 == 'lab'%}{{grcol3.12}}{% else %}0{% endif %}</td>                        
+	                        <td class="number">{% if grcol3.11 == 'rad'%}{{grcol3.13}}{% else %}0{% endif %}</td>                        
+	                        <td class="number">{% if grcol3.11 == 'uzi'%}{{grcol3.14}}{% else %}0{% endif %}</td>                        
+	                        <td class="number">{% if grcol3.11 == 'rx'%}{{grcol3.15}}{% else %}0{% endif %}</td>                        
+	                        <td class="number">{{grcol3.6}}</td>
+	                        <td class="number">{{grcol3.7}}</td>
+	                        <td class="number">{{grcol3.8}}</td>                        
+	                        <td class="number">{{grcol3.9}}</td>                        
+	                    </tr>
+                    {% endfor %}
+                    {% endif %}
+                {% endfor %}
+            {% endfor %}
+        {% endfor %}
+
+{% endblock %}

@@ -1,0 +1,57 @@
+{% extends "reporting/base.html" %}
+
+{% block data %}
+        <tr class="header">
+            <th></th>
+            <th>Код-Услуга</th>
+            <th class="number">Цена</th>            
+            <th class="number">Количество</th>
+            <th class="number">Сумма</th>
+            <th class="number">15%</th>
+            <th class="number">20%</th>
+            <th class="number">Скидка</th>
+            <th class="number">Итого</th>
+        </tr>
+
+        <tr class="footer">        
+            <th colspan=3>ВСЕГО:</th>
+            <th class="number">{{results.0.1}}</th>
+            <th class="number">{{results.0.2}}</th>
+            <th class="number">{{results.0.3}}</th>
+            <th class="number">{{results.0.4}}</th>
+            <th class="number">{{results.0.5}}</th>
+            <th class="number">{{results.0.6}}</th>
+        </tr>
+        
+        {% for gr in results.0.0 %}
+            <tr class="group">
+                <td colspan=3>{{gr.0|default:'<em>Не указано</em>'}}</td>
+                <td class="number">{{gr.1}}</td>
+                <td class="number">{{gr.2}}</td>
+                <td class="number">{{gr.3}}</td>
+                <td class="number">{{gr.4}}</td>
+                <td class="number">{{gr.5}}</td>
+                <td class="number">{{gr.6}}</td>
+                {% if request.GET.details %}
+                {%for row in gr.11%}
+                    {%for str in row%}
+                        <tr>
+                            <td></td>
+                            <td>{{str.0}}</td>
+                            <td class="number">{{str.1}}</td>
+                            <td class="number">{{str.2}}</td>
+                            <td class="number">{{str.3}}</td>
+                            <td class="number">{{str.4}}</td>
+                            <td class="number">{{str.5}}</td>
+                            <td class="number">{{str.6}}</td>
+                            <td class="number">{{str.7}}</td>
+                        </tr>
+                    {%endfor%}
+                {%endfor%}
+                {% endif %}
+
+            </tr>
+        {% endfor %}
+
+
+{% endblock %}

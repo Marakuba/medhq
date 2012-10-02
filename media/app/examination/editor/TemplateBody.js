@@ -660,7 +660,7 @@ App.examination.TemplateBody = Ext.extend(Ext.TabPanel, {
 	textTicketEdit:function(ticket){
 		this.ticket = ticket;
 		var ticketEditor = new App.examination.TicketEditPanel({
-			title:'Editor',
+			title:'Редактирование: '+ticket.data.title,
 			section:ticket.section,
 			closable:true,
 			staff:this.staff,

@@ -1,0 +1,70 @@
+{% extends "reporting/base.html" %}
+
+{% block print_header %}{% endblock %}
+
+{% block data %}
+        <tr class="header">
+            <th>Ф.И.О.</th>
+<!--             <th>Полис</th>             -->
+<!--             <th>Дата</th> -->
+            <th>№ Приема</th>
+            <th>Наименование</th>
+            <th class="number">Форма оплаты</th>
+            <th class="number">Цена</th>
+            <th class="number">Количество</th>
+            <th class="number">Сумма</th>
+            <th class="number">Скидка</th>
+        </tr>
+
+
+        
+        {% for gr in results.0.0 %}
+<!--             <tr class="group">
+                <td colspan=5>{{ gr.0 }}</td>
+                <td class="number">{{ gr.1 }}</td>
+                <td class="number">{{ gr.2 }}</td>
+                <td class="number">{{ gr.3 }}</td>
+            </tr> -->
+            {% for row in gr.5 %}            
+                {% for list in row %}
+                <tr>
+                    <td >{{ list.0 }}</td>
+<!--                     <td >{{ list.1 }}</td> -->
+<!--                     <td >{{ list.2 }}</td> -->
+                    <td >{{ list.3 }}</td>
+                    <td >{{ list.4 }}</td>
+                    <td class="number">{% if list.10 == 'н' %}Наличная{% endif %}
+                    {% if list.10 == 'д' %}ДМС{% endif %}
+                    {% if list.10 == 'б' %}Безналичная{% endif %}</td>
+                    <td class="number">{{ list.5 }}</td>
+                    <td class="number">{{ list.6 }}</td>
+                    <td class="number">{{ list.7 }}</td>
+                    <td class="number">{{ list.8|default:"0,00" }}</td>
+                </tr>
+                {% endfor %}
+            {% endfor %}
+        {% endfor %}
+
+        <tr class="footer">        
+            <th style="text-align: right;" colspan=5>ВСЕГО:</th>
+            <th class="number">{{results.0.1}}</th>
+            <th class="number">{{results.0.2}}</th>
+            <th class="number">{{results.0.3|default:"0,00"}}</th>
+        </tr>
+
+{% endblock %}
+
+{% block footer %}
+
+<table style="width:100%; margin-top:1.5cm">
+	<tr>
+		<td>Врач</td>
+		<td style="width:4cm;text-align:right;border-bottom:1px solid black">&nbsp;</td>
+	</tr>
+	<tr>
+		<td>&nbsp;</td>
+		<td style="text-align:center; font-size:8pt">подпись</td>
+	</tr>
+</table>
+
+{% endblock %}

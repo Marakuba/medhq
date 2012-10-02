@@ -445,10 +445,12 @@ js_calendar = Bundle(
     filters='rjsmin', output='assets/calendar.js',)
 
 js_examination = Bundle(
+    'libs/tiny_mce/tiny_mce.js',
+    'libs/Ext.ux.TinyMCE.min.js',
     'extjs/ux/printer/Printer-all.js',
     
     
-    'libs/markdown.js',
+#    'libs/markdown.js',
     'extjs/ux/progresscolumn/ProgressColumn.js',
     'extjs/ux/RowEditor.js',
     'extjs/ux/CheckColumn.js',
@@ -775,6 +777,8 @@ js_reporting = Bundle(
     filters='rjsmin', output='assets/reporting.js',)
 
 js_barcoding = Bundle(
+    'resources/js/web-socket-js/swfobject.js',
+    'resources/js/web-socket-js/web_socket.js',
     'extjs/ux/statusbar/StatusBar.js',
     'app/App.js',
     'app/Backend.js',
@@ -790,6 +794,7 @@ js_barcoding = Bundle(
     
     'app/registry/barcodepackage/Grid.js',
     'app/registry/barcodepackage/Window.js',
+    'app/registry/barcodepackage/PrintWindow.js',
     'app/registry/barcodepackage/Form.js',
     'app/registry/barcodepackage/DuplicateWindow.js',
     

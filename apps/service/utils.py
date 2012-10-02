@@ -95,7 +95,7 @@ def get_service_tree(state=None,payer=None,payment_type=None,price_type=None, da
         price_type = get_actual_ptype()
     values = Price.objects.filter(extended_service__is_active=True, price_type='r',type=price_type,**args).\
         order_by('extended_service__id','on_date').\
-        values('extended_service__id','value','extended_service__base_service__id').\
+        values('on_date','extended_service__id','value','extended_service__base_service__id').\
         annotate(Max('on_date'))
     result = {}
     for val in values:

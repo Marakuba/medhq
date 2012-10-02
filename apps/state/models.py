@@ -7,6 +7,7 @@
 
 from django.db import models
 from django_extensions.db.fields import UUIDField
+import pytils
 
 
 #TODO: реквизиты организаций
@@ -49,6 +50,9 @@ class State(models.Model):
 
     def __unicode__(self):
         return u"%s" % self.name
+    
+    def translify(self):
+        return pytils.translit.translify(self.name).upper()
     
     class Meta:
         verbose_name = u"организация"

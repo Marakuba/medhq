@@ -27,8 +27,8 @@ import time
 from django.core.serializers.json import DjangoJSONEncoder
 
 import logging
-from medhq.apps.pricelist.models import get_actual_ptype
-from medhq.apps.staff.models import Staff
+from pricelist.models import get_actual_ptype
+from staff.models import Staff
 logger = logging.getLogger('general')
 
 
@@ -43,8 +43,7 @@ def get_apps(request):
         apps.append([u'Обследования (новая версия)',u'/webapp/examination/'])
     if request.user.is_superuser:
         apps.append([u'Отчеты',u'/webapp/reporting/'])
-    if request.user.is_superuser:
-        apps.append([u'Штрих-коды',u'/webapp/barcoding/'])
+    apps.append([u'Штрих-коды',u'/webapp/barcoding/'])
     if request.user.is_staff or request.user.is_superuser:
         apps.append([u'Администрирование',u'/admin/'])
 
@@ -306,7 +305,7 @@ def get_service_tree(request):
                         #nodes.append(tree_node)
                 else: 
                     tree_node = {
-                            "id":node.id,
+                            "id":ext and 'group-%s' % node.id or node.id,
                             "leaf":False,
                             'text': "%s" % (node.short_name or node.name,),
                             'singleClickExpand':True,

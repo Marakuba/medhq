@@ -172,7 +172,7 @@ Ext.ux.form.Ticket = Ext.extend(Ext.Panel,{
 	                        scope:this
 	                    }
 	                }, cfg));
-	                panel.body.on('dblclick', function(e, t){
+	                panel.body.on('click', function(e, t){
 //	                	sectionEditor.startEdit(panel.body);
 	                	panel.fireEvent('ticketbodyclick',panel);
 	                }, null, {

@@ -12,6 +12,8 @@ App.barcodepackage.Grid = Ext.extend(Ext.grid.GridPanel, {
 		    url: get_api_url('barcodepackage')
 		});
 		
+		this.printer = Ext.state.Manager.getProvider().get('lab_printer');
+		
 		this.reader = new Ext.data.JsonReader({
 		    totalProperty: 'meta.total_count',
 		    successProperty: 'success',
@@ -24,6 +26,7 @@ App.barcodepackage.Grid = Ext.extend(Ext.grid.GridPanel, {
 		    {name: 'print_date', allowBlank: true, type:'date'},
 		    {name: 'laboratory', allowBlank: false},
 		    {name: 'lab_name', allowBlank: true},
+		    {name: 'lat', allowBlank: true},
 		    {name: 'range_from', allowBlank: true},
 		    {name: 'range_to', allowBlank: true},
 		    {name: 'x2', allowBlank: true},
@@ -122,6 +125,8 @@ App.barcodepackage.Grid = Ext.extend(Ext.grid.GridPanel, {
 		];		
 		
 		var config = {
+			id:'barcode-packages',
+			closable:true,
 			title:'Серии штрих-кодов',
 			loadMask : {
 				msg : 'Подождите, идет загрузка...'
@@ -195,30 +200,10 @@ App.barcodepackage.Grid = Ext.extend(Ext.grid.GridPanel, {
 	onPrint: function(){
 		var record = this.getSelectionModel().getSelected();
 		if (record) {
-			var d = record.data;
-			var tpl = new Ext.Template(
-				'<p>Серия штрих-кодов: {range_from} - {range_to}</p>',
-				'<p>Лаборатория: {lab_name}</p>',
-				'<p>Кратность / количество</p>',
-				'<p>x2: {x2}</p>',
-				'<p>x3: {x3}</p>',
-				'<p>x4: {x4}</p>',
-				'<p>x5: {x5}</p>',
-				'<p>x6: {x6}</p>',
-				'<p>x7: {x7}</p>',
-				'<p>x8: {x8}</p>'
-			);
-			Ext.Msg.show({
-				title:'Подтверждение печати', 
-				msg:tpl.apply(d),
-				buttons: Ext.Msg.OKCANCEL,
-				fn:function(btn, text){
-			    	if (btn == 'ok'){
-						var url = '/numeration/package/'+record.id+'/';
-						window.open(url);
-			    	}
-				}
+			var win = new App.barcodepackage.PrintWindow({
+				record:record
 			});
+			win.show();
 		}
 	},
 	
