@@ -21,8 +21,10 @@ queryset = Referral.objects.all()
 selection.register('referral', queryset, 'list', paginate_by=50)
 
 import reporting
+import oldreporting
 admin.autodiscover()
 reporting.autodiscover()
+oldreporting.autodiscover()
 
 from autocomplete.views import autocomplete
 
@@ -30,10 +32,10 @@ urlpatterns = patterns('',
     url(r'^$', lambda r: HttpResponseRedirect('/webapp/cpanel/')),
     url(r'^webapp/',include('webapp.urls')),
     url(r'^widget/',include('widget.urls')),
-    url(r'^old/reporting/', include('reporting.urls')),
+    url(r'^old/reporting/', include('oldreporting.urls')),
+    url(r'^reporting/', include('reporting.urls')),
     url(r'^remoting/', include('remoting.urls')),
     url(r'^promotion/', include('promotion.urls')),
-#    url(r'^monitoring/sentry/', include('sentry.urls')),
     url(r'^admin/', include(admin.site.urls)),
     url(r'^admin_tools/', include('admin_tools.urls')),
     url(r'^api/', include('api.urls')),

@@ -1,0 +1,47 @@
+{% extends "print/off_blank.html" %}
+
+{% block title %}{{ name }} | Отчеты{% endblock %}
+
+{% block extra_head %}
+{% include "print/reporting/resources.html" %}
+{% endblock %}
+
+{% block body %}
+<div id="print-box">
+	<a href="javascript:window.print();">Печать</a>
+</div>
+
+<div class="page_wrapper_A4_landscape">
+<div class="page_wrapper">
+
+	{% block print_header %}
+	{% include "print/header.html"%}
+	{% endblock %}
+	
+	<div id="changelist" class="module">
+	<h1>{{ name }}</h1>
+	
+	<table class="params" border="0" cellpadding="0" cellspacing="1">
+	{% for params in trim_params %}
+	<tr>
+	<td>{{ params.0 }}</td><td class="data">{{ params.1 }}</td></tr>
+	{% endfor %}
+	</table>
+	            
+	<br><br>
+	            
+	<table class="data" class="data">
+	    <tbody>
+	    {% block data %}{% endblock %}
+	    </tbody>
+	</table>
+	
+	
+	{% block footer %}{% endblock %}
+	
+	</div>
+	
+</div>
+</div>
+
+{% endblock %}

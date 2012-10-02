@@ -291,7 +291,7 @@ Ext.calendar.DayBodyView = Ext.extend(Ext.calendar.CalendarView, {
 
     // private
     getTemplateEventBox: function(evt) {
-        var heightFactor = 0.7,
+        var heightFactor = 1.4,
             start = evt[Ext.calendar.EventMappings.StartDate.name],
             end = evt[Ext.calendar.EventMappings.EndDate.name],
             startMins = start.getHours() * 60 + start.getMinutes() - this.startHour * 60,

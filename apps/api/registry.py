@@ -1489,6 +1489,7 @@ class BCPackageResource(ExtResource):
     def dehydrate(self, bundle):
         obj = bundle.obj
         bundle.data['lab_name'] = obj.laboratory
+        bundle.data['lat'] = obj.laboratory.translify()
         rng = obj.range()
         bundle.data['range_from'] = rng[0] 
         bundle.data['range_to'] = rng[1]

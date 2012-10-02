@@ -174,14 +174,14 @@
     top: -1; /* row line alignment fix */
 }
 .ext-cal-dayview .ext-cal-bg-row {
-    height: 42px;
+    height: 84px;
 }
 .ext-cal-dayview .ext-cal-bg-row-div {
     border-bottom: 1px dotted #ddd;
     border-top: 1px solid #ddd;
     font-size: 1px;
-    height: 20px;
-    margin-bottom: 20px;
+    height: 40px;
+    margin-bottom: 40px;
 }
 .ext-cal-dayview .ext-row-1 {
     border-top: 0;
@@ -194,7 +194,7 @@
     vertical-align: top;
 }
 .ext-cal-day-time-inner {
-    height: 38px;
+    height: 80px;
     border-bottom: 1px solid #ddd;
     padding: 3px 4px 0 0;
 }

@@ -1,0 +1,32 @@
+{% extends "reporting/base.html" %}
+
+{% block data %}
+        <tr class="header">
+            <th>Услуга</th>
+            <th class="number">Цена</th>            
+            <th class="number">Количество</th>
+            <th class="number">Сумма</th>
+            <th class="number">Скидка</th>
+            <th class="number">Итого</th>
+        </tr>
+        
+        <tr class="footer">        
+            <th colspan=2>ВСЕГО:</th>
+            <th class="number">{{results.totalcount}}</th>
+            <th class="number">{{results.totalsum}}</th>
+            <th class="number">{{results.totaldisc}}</th>
+            <th class="number">{{results.total}}</th>
+        </tr>
+
+        {% for row in results.list %}
+            <tr>
+                <td>{{row.0}}</td>
+                <td>{{row.1}}</td>
+                <td class="number">{{row.2}}</td>
+                <td class="number">{{row.3}}</td>
+                <td class="number">{{row.4}}</td>
+                <td class="number">{{row.5}}</td>
+            </tr>
+        {% endfor %}
+
+{% endblock %}

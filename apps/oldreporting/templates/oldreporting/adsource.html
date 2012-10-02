@@ -1,0 +1,21 @@
+{% extends "reporting/base.html" %}
+
+{% block data %}
+        <tr class="header">
+            <th>Источник рекламы</th>
+            <th class="number">Итого</th>
+        </tr>
+        
+        <tr class="footer">        
+            <th colspan=1>ВСЕГО:</th>
+            <th class="number">{{results.0.1}}</th>
+        </tr>
+
+        {% for row in results.0.0 %}
+            <tr>
+                <td>{{row.0|default:"<em>Источник не указан</em>"}}</td>
+                <td class="number">{{row.1}}</td>
+            </tr>
+        {% endfor %}
+
+{% endblock %}
