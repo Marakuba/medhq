@@ -214,9 +214,6 @@ App.examination.TicketTab = Ext.extend(Ext.Panel, {
 			},this);
 			this.doLayout();
 		},this);
-		if (this.isCard){
-			this.openAsgmtPanel();
-		};
 		this.doLayout();
 	},
 	

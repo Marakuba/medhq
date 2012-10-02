@@ -391,6 +391,14 @@ App.examination.CardStartPanel = Ext.extend(Ext.Panel, {
 	    		break;
 	    	case 'preset':
 	    	case 'archive':
+	    	case 'tmp':
+	    		var record = this.tmpGrid.getSelectionModel().getSelected();
+	    		if (record){
+	    			this.fireEvent('opentmp',record)
+	    		} else {
+	    			console.log('не выбран источник')
+	    		};
+	    		break
 	    	case 'service':
 	    		var record = this.tmpGrid.getSelectionModel().getSelected();
 	    		if (record){
