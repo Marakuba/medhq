@@ -123,6 +123,7 @@ App.models.visitModel = new Ext.data.Record.create([
     {name: '_cache'},
     {name: 'source_lab'},
     {name: 'payer'},
+    {name: 'payer_name'},
     {name: 'pregnancy_week'},
     {name: 'menses_day'},
     {name: 'menopause'},

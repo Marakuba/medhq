@@ -90,6 +90,11 @@ App.patient.VisitGrid = Ext.extend(Ext.grid.GridPanel, {
 		    	sortable: true, 
 		    	dataIndex: 'office_name' 
 		    },{
+		    	header: "Плательщик", 
+		    	width: 100, 
+		    	sortable: true, 
+		    	dataIndex: 'payer_name'
+		    },{
 		    	header: "Оператор", 
 		    	width: 100, 
 		    	sortable: true, 

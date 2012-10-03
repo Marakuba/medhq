@@ -27,7 +27,8 @@ App.patient.LabGrid = Ext.extend(Ext.grid.GridPanel, {
 		    {name: 'barcode'},
 		    {name: 'manual_service'},
 		    {name: 'laboratory_name'},
-		    {name: 'staff_name'}
+		    {name: 'staff_name'},
+		    {name: 'payer_name'}
 		]);
 		
 		// The new DataWriter component.
@@ -96,6 +97,11 @@ App.patient.LabGrid = Ext.extend(Ext.grid.GridPanel, {
 		    	width: 160, 
 		    	sortable: true, 
 		    	dataIndex: 'staff_name'
+		    },{
+		    	header: "Плательщик", 
+		    	width: 130, 
+		    	sortable: true, 
+		    	dataIndex: 'payer_name'
 		    }
 		];		
 		

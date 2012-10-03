@@ -32,7 +32,8 @@ App.visit.VisitGrid = Ext.extend(Ext.grid.GridPanel, {
 		    {name: 'patient_name', allowBlank: false},
 		    {name: 'is_billed', allowBlank: false, type:'boolean'},
 		    {name: 'is_cito', allowBlank: true, type:'boolean'},
-		    {name: 'referral_name', allowBlank: false}
+		    {name: 'referral_name', allowBlank: false},
+		    {name: 'payer_name', allowBlank: true}
 		]);
 		
 		this.writer = new Ext.data.JsonWriter({
@@ -175,6 +176,11 @@ App.visit.VisitGrid = Ext.extend(Ext.grid.GridPanel, {
 		    	width: 20, 
 		    	sortable: true, 
 		    	dataIndex: 'operator_name' 
+		    },{
+		    	header: "Плательщик", 
+		    	width: 25, 
+		    	sortable: true, 
+		    	dataIndex: 'payer_name' 
 		    }
 		];		
 		

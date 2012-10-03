@@ -525,6 +525,7 @@ class VisitResource(ExtResource):
         bundle.data['discount_value'] = bundle.obj.discount and int(bundle.obj.discount.value) or 0
         bundle.data['patient_name'] = bundle.obj.patient.short_name()
         bundle.data['office_name'] = bundle.obj.office
+        bundle.data['payer_name'] = bundle.obj.payer and bundle.obj.payer.name or '' 
         bundle.data['patient_id'] = bundle.obj.patient.id
         bundle.data['barcode_id'] = bundle.obj.barcode.id
         
@@ -562,6 +563,7 @@ class VisitResource(ExtResource):
         filtering = {
             'patient': ALL_WITH_RELATIONS,
             'barcode': ALL_WITH_RELATIONS,
+            'payer': ALL_WITH_RELATIONS,
             'id':ALL,
             'created':ALL,
             'office':ALL_WITH_RELATIONS
@@ -629,6 +631,7 @@ class LabOrderResource(ExtResource):
             bundle.data['barcode'] = v.barcode.id # -100
             bundle.data['is_male'] = v.patient.gender==u'М'
             bundle.data['patient_name'] = v.patient.full_name()
+            bundle.data['payer_name'] = v.payer and v.payer.name or ''
             bundle.data['patient_age'] = v.patient.full_age()
             bundle.data['lat'] = v.patient.translify()
             bundle.data['operator_name'] = v.operator # -100
@@ -1131,6 +1134,7 @@ class OrderedServiceResource(ExtBatchResource):
         bundle.data['visit_id'] = bundle.obj.order.id
         bundle.data['barcode'] = bundle.obj.order.barcode.id
         bundle.data['patient_name'] = bundle.obj.order.patient.short_name()
+        bundle.data['payer_name'] = bundle.obj.order.payer and bundle.obj.order.payer.name or ''
 #        bundle.data['operator_name'] = bundle.obj.operator
 #        bundle.data['laboratory'] = bundle.obj.execution_place
 #        bundle.data['sampling'] = bundle.obj.sampling and bundle.obj.sampling.short_title()

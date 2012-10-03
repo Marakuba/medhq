@@ -25,7 +25,8 @@ App.results.Grid = Ext.extend(Ext.grid.GridPanel, {
 		    {name: 'patient_name'},
 		    {name: 'office_name'},
 		    {name: 'laboratory_name'},
-		    {name: 'staff_name'}
+		    {name: 'staff_name'},
+		    {name: 'payer_name'}
 		]);
 		
 		this.writer = new Ext.data.JsonWriter({
@@ -57,7 +58,7 @@ App.results.Grid = Ext.extend(Ext.grid.GridPanel, {
 
 		this.columns =  [{
 		    	header: "№ заказа", 
-		    	width: 90, 
+		    	width: 70, 
 		    	sortable: false, 
 		    	dataIndex: 'is_completed', 
 		    	renderer: function(val, opts, rec) {
@@ -83,16 +84,21 @@ App.results.Grid = Ext.extend(Ext.grid.GridPanel, {
 		    	dataIndex: 'office_name'
 		    },{
 		    	header: "Лаборатория", 
-		    	width: 135, 
+		    	width: 125, 
 		    	sortable: true, 
 		    	dataIndex: 'laboratory_name'
 		    },{
 		    	header: "Врач", 
-		    	width: 150, 
+		    	width: 130, 
 		    	sortable: true, 
 		    	dataIndex: 'staff_name'
 		    },{
-		    	width: 135,
+		    	header: "Плательщик", 
+		    	width: 110, 
+		    	sortable: true, 
+		    	dataIndex: 'payer_name'
+		    },{
+		    	width: 115,
 		    	sortable: true, 
 		    	header:'Напечатано',
 		    	dataIndex: 'is_printed', 

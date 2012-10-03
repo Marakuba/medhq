@@ -27,6 +27,7 @@ App.Results = Ext.extend(Ext.Panel, {
 		    ['end_date','visit__created__lte','Y-m-d 23:59'],
 		    ['laboratory','laboratory'],
 		    ['office','visit__office'],
+		    ['payer','visit__payer'],
 		    ['is_completed','is_completed', {0:false,1:true}],
 		    ['is_printed','is_printed', {0:false,1:true}]
 		];
@@ -83,7 +84,7 @@ App.Results = Ext.extend(Ext.Panel, {
    				anchor:'100%',
    				valueField:'id',
    				store:new Ext.data.RESTStore({
-   					autoLoad : true,
+   					autoLoad : false,
    					apiUrl : get_api_url('medstate'),
    					model: ['id','name']
    				}),
@@ -95,12 +96,29 @@ App.Results = Ext.extend(Ext.Panel, {
    			    	scope:this
    			    }
    			}),new Ext.form.LazyClearableComboBox({
+   				fieldLabel:'Плательщик',
+   				name:'payer',
+   				anchor:'100%',
+   				valueField:'id',
+   				store:new Ext.data.RESTStore({
+   					autoLoad : false,
+   					apiUrl : get_api_url('medstate'),
+   					model: ['id','name']
+   				}),
+   			    minChars:2,
+   			    emptyText:'Выберите плательщика...',
+   			    listeners:{
+   			    	select: function(combo, rec,i) {
+   			    	},
+   			    	scope:this
+   			    }
+   			}),new Ext.form.LazyClearableComboBox({
    				fieldLabel:'Лаборатория',
    				name:'laboratory',
    				anchor:'100%',
    				valueField:'id',
    				store:new Ext.data.RESTStore({
-   					autoLoad : true,
+   					autoLoad : false,
    					apiUrl : get_api_url('medstate'),
    					model: ['id','name']
    				}),
