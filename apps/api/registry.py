@@ -1961,7 +1961,7 @@ class RejectionCauseResource(ExtResource):
         }
 
         
-class PreorderResource(ExtResource):
+class PreorderResource(ExtBatchResource):
     patient = fields.ForeignKey(PatientResource, 'patient', null=True)
     timeslot = fields.OneToOneField('apps.api.registry.EventResource','timeslot', null=True)
     service = fields.ForeignKey(ExtendedServiceResource, 'service', null=True)
@@ -1981,7 +1981,7 @@ class PreorderResource(ExtResource):
     
     def obj_update(self, bundle, request=None, **kwargs):
         if bundle.data['deleted']:
-            kwargs['who_deleted']=request.user
+            bundle.data['who_deleted']=request.user
         result = super(PreorderResource, self).obj_update(bundle=bundle, request=request, **kwargs)
         return result
     

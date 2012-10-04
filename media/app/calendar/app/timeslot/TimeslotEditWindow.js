@@ -684,8 +684,12 @@ Ext.calendar.TimeslotEditWindow = Ext.extend(Ext.Window, {
       			if (this.setRemovePreorder) {
       			  	this.setRemovePreorder = false;
       			  	this.preorder.beginEdit();
+//      			  	this.preorder.store.autoSave = false;
       			  	this.preorder.set('deleted',true);
 					this.preorder.set('rejection_cause',this.cause_uri);
+//					this.preorder.store.autoSave = true;
+//					this.preorder.store.save();
+//					this.preorder.commit();
 					this.preorder.endEdit();
         		} else {
 	        		this.preorder.set('patient',this.patient.data.resource_uri);
