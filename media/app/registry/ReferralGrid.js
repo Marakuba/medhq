@@ -100,7 +100,14 @@ App.ReferralGrid = Ext.extend(Ext.grid.GridPanel, {
 		];		
 		this.editor = new Ext.ux.grid.RowEditor({
        		saveText: 'Сохранить',
-       		cancelText: 'Отменить'
+       		cancelText: 'Отменить',
+       		listeners: {
+       			afteredit:function(ed,obj,rec,number){
+       				if(!rec.data.referral_type){
+       					rec.set('referral_type','в');
+       				}
+       			}
+       		}
     	});
     	
     	this.searchField = new App.SearchField({
@@ -180,7 +187,8 @@ App.ReferralGrid = Ext.extend(Ext.grid.GridPanel, {
 	
 	onAdd: function(btn,ev){
         var r = new this.store.recordType({
-            name : ''
+            name : '',
+            referral_type : 'в'
         });
         this.editor.stopEditing();
         this.store.insert(0, r);

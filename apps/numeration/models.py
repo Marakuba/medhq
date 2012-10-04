@@ -158,6 +158,6 @@ def GeneratePackage(sender, **kwargs):
                                            package=obj,
                                            duplicates=x)
                     bc.save()
-        transaction.commit()
+    transaction.commit()
 
 post_save.connect(GeneratePackage, sender=BarcodePackage)

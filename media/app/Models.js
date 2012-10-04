@@ -439,7 +439,8 @@ App.models.LabOrder = new Ext.data.Record.create([
 	{name: 'comment'},
 	{name: 'widget'},
 	{name: 'print_date', type:'date',format:'c'},
-	{name: 'printed_by_name'}
+	{name: 'printed_by_name'},
+    {name: 'payer_name'}
 ]);
 
 App.models.EquipmentAssay = new Ext.data.Record.create([

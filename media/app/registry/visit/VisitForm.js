@@ -1625,7 +1625,7 @@ App.visit.VisitForm = Ext.extend(Ext.FormPanel, {
 					this.bioPayerCmb.forceValue(payer_uri);
 					//обновляются услуги
 					var sp = this.servicePanel;
-					sp.getLoader().baseParams['payer'] = payer_uri;
+					sp.getLoader().baseParams['payer'] = payer_id;
 					sp.getLoader().baseParams['payment_type'] = 'к'; // корпоративный
 					sp.getLoader().load(sp.getRootNode());
 					this.paymentTypeField.setValue('к');
