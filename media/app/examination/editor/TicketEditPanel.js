@@ -71,7 +71,7 @@ App.examination.TicketEditPanel = Ext.extend(Ext.Panel, {
 			floating:false,
 			listeners:{
 				scope:this,
-				'nodeclick': this.onGlossNodeClick,
+				'nodeclick': this.onGlossNodeClick
 			}
 		});
 		

@@ -308,15 +308,6 @@ js_oldexam = Bundle(
     'app/examination/templates/TemplatesWindow.js',
     'app/examination/templates/GroupGrid.js',
     
-    'app/examination/cards/Viewer.js',
-    'app/examination/cards/EpicrisisWindow.js',
-    'app/examination/cards/PromptWindow.js',
-    'app/examination/cards/ExamCardWindow.js',
-    'app/examination/cards/CardsWindow.js',
-    'app/examination/cards/ExamCardForm.js',
-    'app/examination/cards/ExamCardGrid.js',
-    'app/examination/cards/ExamBackend.js',
-    'app/examination/cards/AllExamGrid.js',
     
     'app/examination/patient/PatientGrid.js',
     'app/examination/patient/PatientGridPanel.js',
@@ -575,16 +566,6 @@ js_examination = Bundle(
     'app/examination/templates/TemplateBackend.js',
     'app/examination/templates/TemplatesWindow.js',
     'app/examination/templates/GroupGrid.js',
-    
-    'app/examination/cards/Viewer.js',
-    'app/examination/cards/EpicrisisWindow.js',
-    'app/examination/cards/PromptWindow.js',
-    'app/examination/cards/ExamCardWindow.js',
-    'app/examination/cards/CardsWindow.js',
-    'app/examination/cards/ExamCardForm.js',
-    'app/examination/cards/ExamCardGrid.js',
-    'app/examination/cards/ExamBackend.js',
-    'app/examination/cards/AllExamGrid.js',
     
     'app/examination/patient/PatientGrid.js',
     'app/examination/patient/PatientGridPanel.js',

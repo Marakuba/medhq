@@ -309,11 +309,11 @@ App.examination.TemplateBody = Ext.extend(Ext.TabPanel, {
 			var data = Ext.decode(recData);
 		};
 		if (quests){
-			this.enableQuests(quests == '{}');
+			this.enableQuestBtns(quests == '{}');
 			
 			quests = Ext.decode(quests);
 		} else {
-			this.enableQuests(true);
+			this.enableQuestBtns(true);
 		}
 		this.dataTab.loadData(data,quests,sectionPlan);
 		if (this.record.data.equipment){
@@ -769,7 +769,7 @@ App.examination.TemplateBody = Ext.extend(Ext.TabPanel, {
 			}
 			this.updateRecord();
 			// Теперь анкету можно удалить, если надо
-			this.enableQuests(false);
+			this.enableQuestBtns(false);
 			
 		}
 	},
@@ -796,7 +796,7 @@ App.examination.TemplateBody = Ext.extend(Ext.TabPanel, {
 			this.updateRecord()
 		};
 		
-		this.enableQuests(true);
+		this.enableQuestBtns(true);
 	},
 	
 	onEditQuest: function(){
@@ -806,7 +806,7 @@ App.examination.TemplateBody = Ext.extend(Ext.TabPanel, {
 		}
 	},
 	
-	enableQuests: function(status){
+	enableQuestBtns: function(status){
 		this.questBtn.setDisabled(!status);
 		this.removeQuestBtn.setDisabled(status);
 		this.editQuestBtn.setDisabled(status);
