@@ -52,6 +52,7 @@ def print_register(request):
         'visit__created__lte':u'Дата по',
         'laboratory':u'Лаборатория',
         'visit__office':u'Офис',
+        'visit__payer':u'Плательщик',
         'visit__patient':u'Пациент',
         'visit__is_cito':u'cito'
     }

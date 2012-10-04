@@ -19,6 +19,7 @@ App.laboratory.RegisterApp = Ext.extend(Ext.Panel, {
     		    ['end_date','visit__created__lte','Y-m-d 23:59'],
     		    ['laboratory','laboratory'],
     		    ['office','visit__office'],
+    		    ['payer','visit__payer'],
     		    ['patient','visit__patient'],
     		    ['is_completed','is_completed'],
     		    ['cito','visit__is_cito']
@@ -84,6 +85,23 @@ App.laboratory.RegisterApp = Ext.extend(Ext.Panel, {
    				}),
    			    minChars:2,
    			    emptyText:'Выберите офис...',
+   			    listeners:{
+   			    	select: function(combo, rec,i) {
+   			    	},
+   			    	scope:this
+   			    }
+   			}),new Ext.form.LazyClearableComboBox({
+   				fieldLabel:'Плательщик',
+   				name:'payer',
+   				anchor:'100%',
+   				valueField:'id',
+   				store:new Ext.data.RESTStore({
+   					autoLoad : true,
+   					apiUrl : get_api_url('medstate'),
+   					model: ['id','name']
+   				}),
+   			    minChars:2,
+   			    emptyText:'Выберите плательщика...',
    			    listeners:{
    			    	select: function(combo, rec,i) {
    			    	},

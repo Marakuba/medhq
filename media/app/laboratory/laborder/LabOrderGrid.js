@@ -16,6 +16,7 @@ App.laboratory.LabOrderGrid = Ext.extend(Ext.grid.GridPanel, {
   		    ['start_date','visit__created__gte','Дата с','Y-m-d 00:00'],
   		    ['end_date','visit__created__lte','по','Y-m-d 23:59'],
  		    ['office','visit__office','Офис'],
+ 		    ['payer','visit__payer','Плательщик'],
   		    ['laboratory','laboratory','Лаборатория'],
   		    ['staff','staff','Врач'],
   		    ['patient','visit__patient','Пациент']
@@ -49,8 +50,11 @@ App.laboratory.LabOrderGrid = Ext.extend(Ext.grid.GridPanel, {
 		    	width: 18,
 		    	dataIndex: 'office_name',
 		    	renderer:function(v,opts,rec) {
-		    		return String.format('<div style="{2}"><b>{0}</b><p>{1}</p></div>', 
-		    				v, rec.data.operator_name, rec.data.is_manual ? 'background:#DDD;' : '') 
+		    		return String.format('<div style="{2}"><b>{0}</b>{3}<p>{1}</p></div>', 
+		    				v, 
+		    				rec.data.operator_name, 
+		    				rec.data.is_manual ? 'background:#DDD;' : '', 
+		    				rec.data.payer_name==v ? '' : '<p><em>'+rec.data.payer_name+'</em></p>') 
 		    	}
 		    },{
 		    	id:'staff',
