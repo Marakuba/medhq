@@ -278,7 +278,6 @@ js_oldexam = Bundle(
     'app/examination/editor/TicketTab.js',
     'app/examination/editor/TemplateBody.js',
     'app/examination/editor/StartPanel.js',
-    'app/examination/editor/Editor.js',
     'app/examination/editor/card.js',
     
     'app/examination/patient/PatientHistoryTreeGrid.js',
@@ -526,7 +525,6 @@ js_examination = Bundle(
     'app/examination/editor/DataTab.js',
     'app/examination/editor/TemplateBody.js',
     'app/examination/editor/StartPanel.js',
-    'app/examination/editor/Editor.js',
     'app/examination/editor/card.js',
     'app/examination/editor/QuestTicket.js',
     

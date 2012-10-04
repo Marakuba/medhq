@@ -80,23 +80,7 @@ App.examorder.ExamOrderGrid = Ext.extend(Ext.grid.GridPanel, {
 					}
 				},
 				scope:this
-			},'-',this.historyBtn/*,'-',{
-				xtype:'splitbutton',
-				text:'Открыть',
-				handler:this.onOpen.createDelegate(this, ['order']),
-				menu:{
-					items:[{
-						id:'all-by-visit',
-						text:'Открыть карты осмотра',
-						handler:this.onOpen.createDelegate(this,['order'])
-					},{
-						id:'all-by-lab',
-						text:'Открыть все карты осмотра',
-						handler:this.onOpen.createDelegate(this,['patient'])
-					}]
-				},
-				scope:this
-			}*/,'->','Период',{
+			},'-',this.historyBtn,'->','Период',{
 				xtype:'datefield',
 				format:'d.m.Y',
 				emptyText:'с',
@@ -204,37 +188,20 @@ App.examorder.ExamOrderGrid = Ext.extend(Ext.grid.GridPanel, {
 		//this.on('rowcontextmenu', this.onContextMenu, this);
 	},
 	
-	onOpen: function(mode){
-		var rec = this.getSelected();
-		if(rec) {
-			config = {
-				ordered_service : rec.data.resource_uri,
-				patient:rec.data.patient,
-				mode:mode,
-				patient_name:rec.data.patient_name,
-				title:'Карты осмотра №'+rec.data.barcode+' ' + rec.data.patient_name
-			};
-			App.eventManager.fireEvent('launchapp', 'examcardgrid',config);
-		}
-		//}
-	},
-	
 	onAdd: function() {
 		var rec = this.getSelected();
 		if (!rec) return;
 		if (!rec.data.executed) {
 			var conf = {
 				closable:true,
-        		patient:rec.data.patient,
+        		patientId:App.uriToId(rec.data.patient),
         		patient_name: rec.data.patient_name,
-        		ordered_service:rec.data.resource_uri,
+        		orderId:rec.data.resource_uri,
 				title: rec.data.patient_name +  ': ' + rec.data.service_name,
-				service:rec.data.service,
+				baseServiceId:App.uriToId(rec.data.service),
 				print_name:rec.data.service_name,
 				staff:this.staff
-//				scope:this
 			}
-//			App.eventManager.fireEvent('launchapp', 'examcardform',config);
 			
 			App.eventManager.fireEvent('launchapp', 'neocard',conf);
 			

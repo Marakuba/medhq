@@ -2,7 +2,7 @@ Ext.ns('App.examination');
 Ext.ns('App.ServicePanel','App.ux.tree');
 Ext.ns('Ext.ux');
 
-App.examination.CardApp = Ext.extend(Ext.Panel, {
+App.examination.TemplateApp = Ext.extend(Ext.Panel, {
 	initComponent : function() {
 		/*
 		 *Данный компонент является менеджером карт осмотра
@@ -23,40 +23,45 @@ App.examination.CardApp = Ext.extend(Ext.Panel, {
 		 * 
 		*/
 		
+		this.staff = App.getApiUrl('staff')+ '/' + active_staff;
+		
 		this.tplStore = new Ext.data.RESTStore({
 			autoSave: true,
 			autoLoad : false,
 			apiUrl : get_api_url('examtemplate'),
+			model: App.models.Template,
 			baseParams:{
 				format:'json',
+				staff:active_staff,
 				deleted:false
-			},
-			model: App.models.Template
-		});
-		
-		this.cardStore = new Ext.data.RESTStore({
-			autoSave: true,
-			autoLoad : false,
-			apiUrl : get_api_url('card'),
-			baseParams:{
-				format:'json',
-				deleted:false
-			},
-			model: App.models.Card
-		});
-		
-		this.cardStore.on('write',function(store, action, result, res, rs){
-			if (rs.data.deleted){
-				this.destroy();
 			}
-		},this)
+		});
+		
+		this.serviceTree = new App.ServiceTreeGrid ({
+//			layout: 'fit',
+			region:'west',
+			hidden:this.editMode,
+			baseParams:{
+				payment_type:'н',
+				staff : active_profile,
+				nocache : true
+			},
+			hidePrice: true,
+			autoScroll:true,
+			width:250,
+			searchFieldWidth: 200,
+			border: false,
+			collapsible:true,
+			collapseMode:'mini',
+			split:true
+		});
 		
 		
 		this.contentPanel = new Ext.Panel({
 			region:'center',
  			border:false,
- 			margins:'5 5 5 0',
  			layout: 'fit',
+ 			title:'Выберите услугу',
  			defaults:{
  				border:false
  			},
@@ -66,50 +71,67 @@ App.examination.CardApp = Ext.extend(Ext.Panel, {
 	
 		var config = {
 			closable:true,
-//			title: 'Карта осмотра',
+			title: 'Конструктор',
 			layout: 'border',	
      		items: [
-//				this.patientPanel,
+				this.serviceTree,
 				this.contentPanel
 			]
 		};
 		
 		Ext.apply(this, Ext.apply(this.initialConfig, config));
-		App.examination.CardApp.superclass.initComponent.apply(this, arguments);
+		App.examination.TemplateApp.superclass.initComponent.apply(this, arguments);
 		
-		this.on('afterrender',function(){
-			if (this.record){
-				this.editCard(this.record.data.id)
+		this.on('afterrender',function(form){
+			if (this.editMode){
+				if (this.record){
+					this.editTpl(this.record.dataId)
+				}
 			}
-			else {
-				this.startPanel = this.newStartPanel({
-					baseServiceId:this.baseServiceId,
-					orderId:this.orderId,
-					patientId:this.patientId
-				});
-				this.contentPanel.add(this.startPanel);
-			}
+		});
+		
+		this.serviceTree.on('serviceclick',function(attrs){
+			this.attrs = attrs;
+			this.onServiceClick(this.attrs)
 		},this);
-		
-		
 	},
 	
+	onServiceClick: function(attrs){
+		var ids = attrs.id.split('-');
+		var id = ids[0];
+		this.print_name = attrs.text;
+		
+		this.baseServiceId = id;
+		
+		this.tplStore.setBaseParam('base_service',id);
+		this.tplStore.load({
+			callback:function(records,opts,success){
+				if (records.length){
+					this.openEditor(records[0].data.data)					
+				} else {
+					this.contentPanel.removeAll(true);
+					this.startPanel = this.newStartPanel();
+					this.contentPanel.setTitle('Выберите источник шаблона');
+					this.contentPanel.add(this.startPanel);
+					this.contentPanel.doLayout();
+				}
+			},
+			scope:this
+		});
+	},
 	
 	newStartPanel: function(config){
-		var startPanel = new App.examination.CardStartPanel(config);
+		var startPanel = new App.examination.TemplateStartPanel(config);
 		
-		startPanel.on('copyfromcard',function(cardId){
-			this.copyFromSource(cardId,'card')
-		},this);
 		startPanel.on('copyfromtpl',function(tplId){
 			this.copyFromSource(tplId,'tpl')
 		},this);
-		startPanel.on('editcard',this.editCard,this);
-		startPanel.on('emptycard',this.createEmptyCard,this);
+		startPanel.on('edittpl',this.editTpl,this);
+		startPanel.on('emptytpl',this.createEmptyTpl,this);
 		return startPanel
 	},
 	
-	createEmptyCard:function(){
+	createEmptyTpl:function(){
 		this.record = new this.cardStore.recordType();
 		this.record.set('ordered_service',App.getApiUrl('orderedservice',this.orderId));
 		this.cardStore.add(this.record);
@@ -141,15 +163,15 @@ App.examination.CardApp = Ext.extend(Ext.Panel, {
 		}
 	},
 	
-	editCard: function(cardId){
-		if (cardId){
+	editTpl: function(tplId){
+		if (tplId){
 			this.createEmptyCard();
 			return
 		} else {
-			this.cardStore.setBaseParam('id',cardId);
-			this.cardStore.load({callback:function(records){
+			this.tplStore.setBaseParam('id',tplId);
+			this.tplStore.load({callback:function(records){
 				if (!records.length){
-					console.log('Карта не найдена: ',cardId);
+					console.log('Шаблон не найден: ',tplId);
 					this.createEmptyCard();
 					return
 				} else {
@@ -170,4 +192,4 @@ App.examination.CardApp = Ext.extend(Ext.Panel, {
 });
 
 
-Ext.reg('cardapp', App.examination.CardApp);
+Ext.reg('templateapp', App.examination.TemplateApp);
