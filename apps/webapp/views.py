@@ -184,7 +184,7 @@ def examination(request):
         section_scheme[sec.name] = {
                                     'order':sec.order,
                                     'title':sec.title,
-                                    'items':[subsec.name for subsec in subsecs]
+                                    'items':[subsec.title for subsec in subsecs]
                                     }
     return {
         'section_scheme':simplejson.dumps(section_scheme),

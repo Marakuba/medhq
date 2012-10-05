@@ -196,7 +196,7 @@ App.examorder.ExamOrderGrid = Ext.extend(Ext.grid.GridPanel, {
 				closable:true,
         		patientId:rec.data.patient,
         		patient_name: rec.data.patient_name,
-        		orderId:rec.data.resource_uri,
+        		orderId:rec.data.id,
 				title: rec.data.patient_name +  ': ' + rec.data.service_name,
 				baseServiceId:App.uriToId(rec.data.service),
 				print_name:rec.data.service_name,

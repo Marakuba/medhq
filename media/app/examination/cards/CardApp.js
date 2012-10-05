@@ -78,6 +78,7 @@ App.examination.CardApp = Ext.extend(Ext.Panel, {
 		App.examination.CardApp.superclass.initComponent.apply(this, arguments);
 		
 		this.on('afterrender',function(){
+			console.log(section_scheme)
 			if (this.record){
 				this.editCard(this.record.data.id)
 			}
@@ -96,8 +97,8 @@ App.examination.CardApp = Ext.extend(Ext.Panel, {
 	
 	
 	newStartPanel: function(config){
-		var startPanel = new Ext.Panel();
-//		var startPanel = new App.examination.CardStartPanel(config);
+//		var startPanel = new Ext.Panel();
+		var startPanel = new App.examination.CardStartPanel(config);
 		
 		startPanel.on('copy',this.copyFromSource,this);
 		startPanel.on('edit',this.editCard,this);
@@ -106,6 +107,7 @@ App.examination.CardApp = Ext.extend(Ext.Panel, {
 	},
 	
 	createEmptyCard:function(){
+		console.log('empty');
 		this.record = new this.cardStore.recordType();
 		this.record.set('ordered_service',App.getApiUrl('orderedservice',this.orderId));
 		this.cardStore.add(this.record);
@@ -113,6 +115,7 @@ App.examination.CardApp = Ext.extend(Ext.Panel, {
 	},
 	
 	copyFromSource: function(sourceType,sourceId){
+		console.log('copy ',source,' ',cardId);
 		if (sourceId){
 			this.createEmptyCard();
 			return
@@ -138,7 +141,8 @@ App.examination.CardApp = Ext.extend(Ext.Panel, {
 	},
 	
 	editCard: function(source,cardId){
-		if (srouce !='card') {
+		console.log('edit ',source,' ',cardId);
+		if (source !='card') {
 			console.log('На редактирование передана не карта');
 			return
 		}
