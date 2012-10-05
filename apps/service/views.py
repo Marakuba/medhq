@@ -5,7 +5,18 @@ from extdirect.django.decorators import remoting
 import simplejson
 from service.models import BaseService, ExtendedService
 from state.models import State
+from examination.models import Template
 
+
+@remoting(remote_provider, len=1, action='service', name='getTplForService')
+def get_tpl_for_service(request):
+    r = simplejson.loads(request.raw_post_data)
+    try:
+        service_id = int(r['data'][0])
+        tpl = Template.objects.get(base_service__id=service_id, staff=request.active_profile.staff)
+    except Exception, err:
+        return dict(success=False, msg=err.__unicode__())
+    return dict(success=True, data=dict(id=tpl.id, title=tpl.name))
 
 @remoting(remote_provider, len=1, action='service', name='getActualPrice')
 def get_actual_price(request):

@@ -478,7 +478,7 @@ class Template(models.Model):
     deleted = models.BooleanField(u'Удалено', default=False)
     
     def __unicode__(self):
-        return "%s - %s" % (self.name,self.staff.short_name())
+        return "%s - %s" % (self.name,self.staff and self.staff.short_name() or u'---шаблон клиники---')
     
     class Meta:
         verbose_name = u'Шаблон'

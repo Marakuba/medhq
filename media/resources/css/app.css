@@ -339,3 +339,35 @@ button.icon-main-button {
 .cell-completed-icon {
 	background: url('../images/icon-yes.gif') no-repeat;
 }
+
+
+#startView div.item {
+	padding:4px 2px;
+	font-family:'Lucida Grande', 'Lucida Sans Unicode', Helvetica, Arial, Verdana, sans-serif;
+	font-size:14px;
+	cursor:pointer;
+}
+
+#startView div.group {
+	padding:5px 4px 5px 4px;
+	font-family:'Arial';
+	font-size:12px;
+	font-weight:bold;
+	background-color: #DDD;
+	border-radius:2px;
+	margin:2px;
+}
+
+#startView .item-over {
+	background-color: #DFE8F6;
+	cursor: pointer;
+}
+
+#startView .item-selected 
+{
+    background-color: #7284D6 !important;
+    background-image: none;
+	/* border: 1px dotted #A3BAE9; */
+	color:white;
+	cursor: pointer;
+}

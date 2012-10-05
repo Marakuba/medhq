@@ -225,6 +225,18 @@ App.ExamCentralPanel = Ext.extend(Ext.Panel, {
                 		});
                 	},
                     scope:this
+                }, {
+                	text:'Стартовая панель',
+                	scale:'medium',
+                	handler:function(){
+                		this.launchApp('templatestartpanel',{
+                			closable:true,
+                			title:'templatestartpanel',
+//                			orderId:43314,
+//                			baseServiceId:2475
+                		});
+                	},
+                    scope:this
                 }]
 	        },this.genDocGroup,'->',
 	        {

@@ -61,8 +61,12 @@ class QuestionnaireAdmin(admin.ModelAdmin):
     class Media:
         js = ['libs/jquery.js',]
 
+
+class TemplateAdmin(admin.ModelAdmin):
+    save_as = True
+    
 admin.site.register(Equipment)
-admin.site.register(Template)
+admin.site.register(Template, TemplateAdmin)
 admin.site.register(FieldSet, FieldSetAdmin)
 admin.site.register(ExaminationCard, ExaminationCardAdmin)
 admin.site.register(CardTemplate, CardTemplateAdmin)
