@@ -274,6 +274,7 @@ App.ExamCentralPanel = Ext.extend(Ext.Panel, {
 		Ext.apply(this, Ext.apply(this.initialConfig, config));
 		App.ExamCentralPanel.superclass.initComponent.apply(this, arguments);
 		App.eventManager.on('launchapp', this.launchApp, this);
+		App.eventManager.on('opentab', this.openTab, this);
 		App.eventManager.on('closeapp', this.closeApp, this);
 		
 		this.on('afterrender', function(){
@@ -296,6 +297,7 @@ App.ExamCentralPanel = Ext.extend(Ext.Panel, {
 		this.on('destroy', function(){
 		    App.eventManager.un('launchapp', this.launchApp, this);
 			App.eventManager.un('closeapp', this.closeApp, this); 
+			App.eventManager.un('opentab', this.openTab, this);
 		},this);
 	},
 	
@@ -327,6 +329,11 @@ App.ExamCentralPanel = Ext.extend(Ext.Panel, {
 			this.closeApp(app)
 		},this)
 		this.mainPanel.setActiveTab(gen_doc_app);
+	},
+	
+	openTab: function(panel){
+		this.mainPanel.add(panel);
+		this.mainPanel.setActiveTab(panel)
 	}
 });
 

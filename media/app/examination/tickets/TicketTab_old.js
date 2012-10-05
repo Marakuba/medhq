@@ -72,7 +72,18 @@ App.examination.TicketPanel = Ext.extend(Ext.ux.Portal,{
 App.examination.TicketTab = Ext.extend(Ext.Panel, {
 	initComponent : function() {
 		
-		//Для создания направлений нужен id текущего пациента
+		this.quests = {};
+		
+		this.ticketTypes = {'text':Ext.ux.form.Ticket,
+							'questionnaire':Ext.ux.form.QuestTicket}
+		
+		//Для создания направлений нужна запись текущего пациента
+		this.patientStore = new Ext.data.RESTStore({
+			autoSave: false,
+			autoLoad : false,
+			apiUrl : get_api_url('patient'),
+			model: App.models.Patient
+		});
 		
 		this.portalColumn = new Ext.ux.PortalColumn({
 			columnWidth:1,
@@ -170,9 +181,6 @@ App.examination.TicketTab = Ext.extend(Ext.Panel, {
 //		},this);
 		
 		this.on('afterrender',function(panel){
-			if (this.data){
-				this.loadData(this.data)
-			}
 			
 //			if(this.data){
 //				this.quests = data['quests'];
@@ -192,10 +200,10 @@ App.examination.TicketTab = Ext.extend(Ext.Panel, {
 //				},this);
 //				
 //			};
-//			if (this.isCard){
-//				this.openAsgmtPanel();
-//			};
-//			this.doLayout();
+			if (this.isCard){
+				this.openAsgmtPanel();
+			};
+			this.doLayout();
 			
 		},this);
 		
@@ -251,6 +259,9 @@ App.examination.TicketTab = Ext.extend(Ext.Panel, {
 			},this);
 			this.doLayout();
 		},this);
+		if (this.isCard){
+			this.openAsgmtPanel();
+		};
 		this.doLayout();
 	},
 	

@@ -96,16 +96,12 @@ App.examination.CardApp = Ext.extend(Ext.Panel, {
 	
 	
 	newStartPanel: function(config){
-		var startPanel = new App.examination.CardStartPanel(config);
+		var startPanel = new Ext.Panel();
+//		var startPanel = new App.examination.CardStartPanel(config);
 		
-		startPanel.on('copyfromcard',function(cardId){
-			this.copyFromSource(cardId,'card')
-		},this);
-		startPanel.on('copyfromtpl',function(tplId){
-			this.copyFromSource(tplId,'tpl')
-		},this);
-		startPanel.on('editcard',this.editCard,this);
-		startPanel.on('emptycard',this.createEmptyCard,this);
+		startPanel.on('copy',this.copyFromSource,this);
+		startPanel.on('edit',this.editCard,this);
+		startPanel.on('empty',this.createEmptyCard,this);
 		return startPanel
 	},
 	
@@ -113,10 +109,10 @@ App.examination.CardApp = Ext.extend(Ext.Panel, {
 		this.record = new this.cardStore.recordType();
 		this.record.set('ordered_service',App.getApiUrl('orderedservice',this.orderId));
 		this.cardStore.add(this.record);
-		this.openEditor(this.record.data.data)
+		this.openTickets(this.record.data.data)
 	},
 	
-	copyFromSource: function(sourceId,sourceType){
+	copyFromSource: function(sourceType,sourceId){
 		if (sourceId){
 			this.createEmptyCard();
 			return
@@ -135,13 +131,17 @@ App.examination.CardApp = Ext.extend(Ext.Panel, {
 					delete this.record.data['id'];
 					this.record.set('ordered_service',App.getApiUrl('orderedservice',this.orderId));
 					this.cardStore.add(this.record);
-					this.openEditor(this.record.data.data)
+					this.openTickets(this.record.data.data)
 				}
 			},scope:this});
 		}
 	},
 	
-	editCard: function(cardId){
+	editCard: function(source,cardId){
+		if (srouce !='card') {
+			console.log('На редактирование передана не карта');
+			return
+		}
 		if (cardId){
 			this.createEmptyCard();
 			return
@@ -154,17 +154,36 @@ App.examination.CardApp = Ext.extend(Ext.Panel, {
 					return
 				} else {
 					this.record = records[0];
-					this.openEditor(this.record.data.data)
+					this.openTickets(this.record.data.data)
 				}
 			},scope:this});
 		}
 	},
 	
-	openEditor: function(data){
-		this.cardBody = new Ext.Panel();
+	openTickets: function(data){
+		var decodedData = Ext.decode(data)
+		this.cardBody = new Ext.examination.TicketTab({
+			data:decodedData,
+			listeners:{
+				scope:this,
+				dataupdate:this.updateData,
+				onedtticket:this.onEditTicket
+			}
+		});
 		this.contentPanel.removeAll(true);
 		this.contentPanel.add(this.cardBody);
 		this.contentPanel.doLayout();
+	},
+	
+	updateData: function(data){
+		var encodedData = Ext.encode(data);
+		this.record.set('data',encodedData);
+	},
+	
+	onEditTicket: function(panel,func){
+		App.fireEvent('launchapp')
+		this.add(panel);
+		this.setActivePanel(panel);
 	}
 		
 });

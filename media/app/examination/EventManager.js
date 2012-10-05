@@ -5,5 +5,6 @@ App.eventManager = new Ext.util.Observable();
 App.eventManager.addEvents('saveexamcard');
 App.eventManager.addEvents('savetemplatecard');
 App.eventManager.addEvents('tmptabchange');
+App.eventManager.addEvents('opentab');
 //App.eventManager.addEvents('examcardcreate');
 //App.eventManager.addEvents('teplatecardcreate');

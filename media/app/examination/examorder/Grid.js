@@ -194,7 +194,7 @@ App.examorder.ExamOrderGrid = Ext.extend(Ext.grid.GridPanel, {
 		if (!rec.data.executed) {
 			var conf = {
 				closable:true,
-        		patientId:App.uriToId(rec.data.patient),
+        		patientId:rec.data.patient,
         		patient_name: rec.data.patient_name,
         		orderId:rec.data.resource_uri,
 				title: rec.data.patient_name +  ': ' + rec.data.service_name,
@@ -203,7 +203,7 @@ App.examorder.ExamOrderGrid = Ext.extend(Ext.grid.GridPanel, {
 				staff:this.staff
 			}
 			
-			App.eventManager.fireEvent('launchapp', 'neocard',conf);
+			App.eventManager.fireEvent('launchapp', 'cardapp',conf);
 			
         } else {
         	var conf = {

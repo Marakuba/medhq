@@ -123,11 +123,9 @@ App.examination.TemplateApp = Ext.extend(Ext.Panel, {
 	newStartPanel: function(config){
 		var startPanel = new App.examination.TemplateStartPanel(config);
 		
-		startPanel.on('copyfromtpl',function(tplId){
-			this.copyFromSource(tplId,'tpl')
-		},this);
-		startPanel.on('edittpl',this.editTpl,this);
-		startPanel.on('emptytpl',this.createEmptyTpl,this);
+		startPanel.on('copy',this.copyFromSource,this);
+		startPanel.on('edit',this.editTpl,this);
+		startPanel.on('empty',this.createEmptyTpl,this);
 		return startPanel
 	},
 	
@@ -138,7 +136,7 @@ App.examination.TemplateApp = Ext.extend(Ext.Panel, {
 		this.openEditor(this.record.data.data)
 	},
 	
-	copyFromSource: function(sourceId,sourceType){
+	copyFromSource: function(sourceType,sourceId){
 		if (sourceId){
 			this.createEmptyCard();
 			return
@@ -163,7 +161,11 @@ App.examination.TemplateApp = Ext.extend(Ext.Panel, {
 		}
 	},
 	
-	editTpl: function(tplId){
+	editTpl: function(source,tplId){
+		if(source!='tpl'){
+			console.log('На редактирование передан не шаблон');
+			return 
+		}
 		if (tplId){
 			this.createEmptyCard();
 			return

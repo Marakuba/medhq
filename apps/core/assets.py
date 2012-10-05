@@ -263,8 +263,8 @@ js_oldexam = Bundle(
     'extjs/ux/treegrid/TreeGridColumns.js',
     'extjs/ux/treegrid/TreeGrid.js',
     
-    'app/examination/editor/TmpGrid.js',
-    'app/examination/neocard/CardGrid.js',
+    'app/examination/templates/TmpGrid.js',
+    'app/examination/cards/CardGrid.js',
     
     'app/registry/ServicePanel.js',
     'app/service/ServiceTreeGrid.js',
@@ -289,9 +289,8 @@ js_oldexam = Bundle(
     'app/registry/asgmt/AsgmtTab.js',
     'app/registry/patient/AsgmtGrid.js',
     
-    'app/examination/neocard/CardStartPanel.js',
-    'app/examination/neocard/CardGeneralTab.js',
-    'app/examination/neocard/CardApp.js',
+    'app/examination/cards/CardApp.js',
+    'app/examination/templates/TplApp.js',
     
     'app/examination/conclusion/ConclApp.js',
     
@@ -512,8 +511,8 @@ js_examination = Bundle(
     'extjs/ux/treegrid/TreeGridColumns.js',
     'extjs/ux/treegrid/TreeGrid.js',
     
-    'app/examination/editor/TmpGrid.js',
-    'app/examination/neocard/CardGrid.js',
+    'app/examination/templates/TmpGrid.js',
+    'app/examination/cards/CardGrid.js',
     
     'app/registry/ServicePanel.js',
     'app/service/ServiceTreeGrid.js',
@@ -522,16 +521,12 @@ js_examination = Bundle(
     'app/dict/glossary/GlossaryTree.js',
     'app/dict/glossary/GlossaryPanel.js',
     'app/examination/editor/GlossaryTree.js',
-    'app/examination/editor/TicketEditPanel.js',
     'app/examination/editor/EquipmentTab.js',
     'app/examination/editor/GeneralTab.js',
-    'app/examination/editor/TicketTab.js',
+    'app/examination/tickets/TicketTab.js',
     'app/examination/editor/SectionPanel.js',
     'app/examination/editor/DataTab.js',
     'app/examination/editor/TemplateBody.js',
-    'app/examination/editor/StartPanel.js',
-    'app/examination/editor/card.js',
-    'app/examination/editor/QuestTicket.js',
     
     'app/dict/glossary/GlossaryEditor.js',
     
@@ -552,23 +547,14 @@ js_examination = Bundle(
     'app/examination/gendoc/PatientCard.js',
     'app/examination/gendoc/GeneralDoctorPanel.js',
     
-    'app/examination/neocard/CardStartPanel.js',
-    'app/examination/neocard/CardGeneralTab.js',
-    'app/examination/neocard/CardApp.js',
+    'app/examination/cards/CardApp.js',
+    'app/examination/templates/TplApp.js',
     
     'app/examination/conclusion/ConclApp.js',
     
     'app/examination/archive/ArchiveApp.js',
     
     'app/examination/trash/TrashApp.js',
-    
-    'app/examination/templates/CardTemplateWindow.js',
-    'app/examination/templates/CardTemplateForm.js',
-    'app/examination/templates/TemplateGrid.js',
-    'app/examination/templates/TemplateGlobalGrid.js',
-    'app/examination/templates/TemplateBackend.js',
-    'app/examination/templates/TemplatesWindow.js',
-    'app/examination/templates/GroupGrid.js',
     
     'app/examination/patient/PatientGrid.js',
     'app/examination/patient/PatientGridPanel.js',

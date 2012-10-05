@@ -29,6 +29,7 @@ from django.core.serializers.json import DjangoJSONEncoder
 import logging
 from pricelist.models import get_actual_ptype
 from staff.models import Staff
+from examination.models import FieldSet, SubSection
 logger = logging.getLogger('general')
 
 
@@ -176,7 +177,17 @@ def laboratory(request):
 @login_required
 @render_to('webapp/examination/index.html')
 def examination(request):
+    section_scheme = {}
+    sections = FieldSet.objects.all()
+    for sec in sections:
+        subsecs = SubSection.objects.filter(section=sec.id)
+        section_scheme[sec.name] = {
+                                    'order':sec.order,
+                                    'title':sec.title,
+                                    'items':[subsec.name for subsec in subsecs]
+                                    }
     return {
+        'section_scheme':simplejson.dumps(section_scheme),
         'apps':simplejson.dumps(get_apps(request))
     }
 
