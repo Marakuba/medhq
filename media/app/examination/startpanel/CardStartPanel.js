@@ -22,8 +22,8 @@ App.examination.GeneralCardPlugin = function(config, order){
 					title:'Из шаблона услуги: <b>'+res.data.title+'</b>',
 					objectId:res.data.id
 				});
-				Ext.callback(this.callback, this.config.scope || window, [result, order]);
 			}
+			Ext.callback(this.callback, this.config.scope || window, [result, order]);
 		});
 	} else {
 		Ext.callback(this.callback, this.config.scope || window, [result, order]);

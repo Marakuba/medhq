@@ -159,6 +159,8 @@ App.examination.StartView = Ext.extend(Ext.DataView, {
     	 * 
     	 */
     	
+    	this.addEvents('preview','copy','edit','empty');
+    	
 		var config = {
 		    itemSelector : 'div.item',
 		    overClass    : 'item-over',
@@ -188,19 +190,23 @@ App.examination.StartView = Ext.extend(Ext.DataView, {
 	            fields     : ['id','type','title','action','objectId','cls'],
 	        }),
 	        listeners:{
-	        	click:function(dv,i,node,e){
-	        		var t = e.getTarget('div.item',5, true);
-	        		var objId = t.getAttributeNS('ext', 'objid');
-	        		var objType = t.getAttributeNS('ext', 'type');
-	        		var objAction = t.getAttributeNS('ext', 'action');
-	        		this.fireEvent('preview', objType, objId);
-//	        		console.info(objId, objType, objAction);
+	        	click:{
+	        		fn:function(dv,i,node,e){
+		        		var t = e.getTarget('div.item',5, true);
+		        		var objId = t.getAttributeNS('ext', 'objid');
+		        		var objType = t.getAttributeNS('ext', 'type');
+		        		var objAction = t.getAttributeNS('ext', 'action');
+		        		this.fireEvent('preview', objType, objId);
+		        	},
+		        	buffer:350,
+		        	scope:this
 	        	},
 	        	dblclick:function(dv,i,node,e){
 	        		var t = e.getTarget('div.item',5, true);
 	        		var objId = t.getAttributeNS('ext', 'objid');
 	        		var objType = t.getAttributeNS('ext', 'type');
 	        		var objAction = t.getAttributeNS('ext', 'action');
+	        		console.info(objAction);
 	        		this.fireEvent(objAction, objType, objId);
 	        	},
 	        	scope:this

@@ -19,6 +19,7 @@ App.examination.StartPanel = Ext.extend(Ext.Panel, {
 		
 		var config = {
 			closable:true,
+			bubbleEvents:['preview','copy','edit','empty'],
 			layout: 'border',	
      		items: [
 				{
