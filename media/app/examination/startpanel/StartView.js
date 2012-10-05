@@ -189,6 +189,7 @@ App.examination.StartView = Ext.extend(Ext.DataView, {
 	            idProperty : 'id',
 	            fields     : ['id','type','title','action','objectId','cls'],
 	        }),
+	        bubbleEvents:['preview','copy','edit','empty'],
 	        listeners:{
 	        	click:{
 	        		fn:function(dv,i,node,e){
@@ -218,6 +219,7 @@ App.examination.StartView = Ext.extend(Ext.DataView, {
 		
 		this.runPlugins({
 			orderId:this.orderId,
+			patientId:this.patientId,
 			baseServiceId:this.baseServiceId,
 		});
 		

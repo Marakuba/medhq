@@ -9,6 +9,7 @@ App.examination.StartPanel = Ext.extend(Ext.Panel, {
 		this.startView = new App.examination.StartView({
 			dataPlugins:this.dataPlugins,
 			orderId:this.orderId,
+			patientId:this.patientId,
 			baseServiceId:this.baseServiceId
 		});
 		
@@ -16,6 +17,8 @@ App.examination.StartPanel = Ext.extend(Ext.Panel, {
 			region:'center',
 			html:'...'
 		});
+		
+		this.enableBubble('preview','copy','edit','empty');
 		
 		var config = {
 			closable:true,

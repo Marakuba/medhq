@@ -86,7 +86,8 @@ App.examination.PreviousCardPlugin = function(config, order){
 	this.store.load({
 		params:{
 			deleted:false,
-			ordered_service__staff:active_profile
+			ordered_service__staff:active_profile,
+			ordered_service__order__patient:config.patientId
 		},
 		callback:function(records, opts, success){
 			if(success && records.length){
