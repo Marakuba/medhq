@@ -97,7 +97,10 @@ App.examination.CardApp = Ext.extend(Ext.Panel, {
 	
 	
 	newStartPanel: function(config){
-//		var startPanel = new Ext.Panel();
+		var cardConfig = {
+			border:false
+		};
+		Ext.applyIf(config,cardConfig);
 		var startPanel = new App.examination.CardStartPanel(config);
 		
 		startPanel.on('copy',this.copyFromSource,this);
@@ -116,7 +119,7 @@ App.examination.CardApp = Ext.extend(Ext.Panel, {
 	
 	copyFromSource: function(sourceType,sourceId){
 		console.log('copy ',source,' ',cardId);
-		if (sourceId){
+		if (!sourceId){
 			this.createEmptyCard();
 			return
 		} else {
@@ -146,7 +149,7 @@ App.examination.CardApp = Ext.extend(Ext.Panel, {
 			console.log('На редактирование передана не карта');
 			return
 		}
-		if (cardId){
+		if (!cardId){
 			this.createEmptyCard();
 			return
 		} else {
@@ -166,7 +169,7 @@ App.examination.CardApp = Ext.extend(Ext.Panel, {
 	
 	openTickets: function(data){
 		var decodedData = Ext.decode(data)
-		this.cardBody = new Ext.examination.TicketTab({
+		this.cardBody = new App.examination.TicketTab({
 			data:decodedData,
 			listeners:{
 				scope:this,

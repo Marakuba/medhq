@@ -519,6 +519,7 @@ class FieldSet(models.Model):
 class SubSection(models.Model):
     section = models.ForeignKey(FieldSet)
     title = models.TextField(u'Заголовок')
+    widget = models.CharField('Виджет',max_length=30, default='textticket')
     
     def __unicode__(self):
         return self.title

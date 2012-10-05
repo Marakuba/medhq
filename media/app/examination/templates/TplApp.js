@@ -121,6 +121,10 @@ App.examination.TemplateApp = Ext.extend(Ext.Panel, {
 	},
 	
 	newStartPanel: function(config){
+		var tplConfig = {
+			border:false
+		};
+		Ext.applyIf(config,tplConfig);
 		var startPanel = new App.examination.TemplateStartPanel(config);
 		
 		startPanel.on('copy',this.copyFromSource,this);
@@ -137,7 +141,7 @@ App.examination.TemplateApp = Ext.extend(Ext.Panel, {
 	},
 	
 	copyFromSource: function(sourceType,sourceId){
-		if (sourceId){
+		if (!sourceId){
 			this.createEmptyCard();
 			return
 		} else {
@@ -166,7 +170,7 @@ App.examination.TemplateApp = Ext.extend(Ext.Panel, {
 			console.log('На редактирование передан не шаблон');
 			return 
 		}
-		if (tplId){
+		if (!tplId){
 			this.createEmptyCard();
 			return
 		} else {
