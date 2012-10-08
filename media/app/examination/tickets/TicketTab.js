@@ -89,9 +89,10 @@ App.examination.TicketTab = Ext.extend(Ext.Panel, {
 					if(item.getData){
 						var itemData = item.getData();
 						itemData['pos'] = ind;
+						tickets.push(itemData);
 					};
 				},this);
-				tickets.push(itemData)
+				return(tickets)
 			},
 			
 			listeners:{
@@ -146,6 +147,15 @@ App.examination.TicketTab = Ext.extend(Ext.Panel, {
 			if(this.ticket){
 				this.ticket.body.addClass('selected');
 			};
+			this.updateData();
+		},this);
+		
+		this.on('drop', function(ticket, data){
+			this.updateData();
+		},this);
+		
+		this.on('ticketremove', function(ticket, data){
+			this.updateData();
 		},this);
 	},
 	
@@ -156,9 +166,15 @@ App.examination.TicketTab = Ext.extend(Ext.Panel, {
 		if(!data) return false;
 		
 		Ext.each(data.tickets,function(ticket){
-			//Каждому тикету присваиваем order из section_schema, чтобы видеть, куда вставлять новые тикеты
-			ticket['order'] = section_schema[ticket.section]['order']
-			this.addTicket(ticket)
+			//Каждому тикету присваиваем order из section_scheme, чтобы видеть, куда вставлять новые тикеты
+			ticket['order'] = section_scheme[ticket.section]['order']
+			if (!ticket.title){
+				ticket['title'] = section_scheme[ticket.section]['title']
+			};
+			var ticket_data = {}
+			Ext.apply(ticket_data,ticket);
+			ticket['data'] = ticket_data;
+			this.addTicket(ticket);
 		},this);
 	},
 	
@@ -246,5 +262,12 @@ App.examination.TicketTab = Ext.extend(Ext.Panel, {
 		},this);
 		
 		return ticket
+	},
+	
+	updateData: function(){
+		
+		this.data['tickets'] = this.ticketPanel.getData();
+		this.fireEvent('dataupdate',this.data);
+		
 	}
 });

@@ -118,7 +118,7 @@ App.examination.CardApp = Ext.extend(Ext.Panel, {
 	},
 	
 	copyFromSource: function(sourceType,sourceId){
-		console.log('copy ',source,' ',cardId);
+		console.log('copy ',sourceType,' ',sourceId);
 		if (!sourceId){
 			this.createEmptyCard();
 			return
@@ -143,9 +143,9 @@ App.examination.CardApp = Ext.extend(Ext.Panel, {
 		}
 	},
 	
-	editCard: function(source,cardId){
-		console.log('edit ',source,' ',cardId);
-		if (source !='card') {
+	editCard: function(sourceType,cardId){
+		console.log('edit ',sourceType,' ',cardId);
+		if (sourceType !='card') {
 			console.log('На редактирование передана не карта');
 			return
 		}
