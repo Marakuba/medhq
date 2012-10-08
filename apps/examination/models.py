@@ -448,11 +448,19 @@ class Card(models.Model):
     deleted = models.BooleanField(u'Удалено', default=False)
     questionnaire = models.TextField(u'Данные анкет',null=True, blank=True)
     
+    _cached_data = {}
+    
     def save(self,*args, **kwargs):
         if self.deleted:
             preorders = Preorder.objects.filter(card=self.id)
             [p.delete() for p in preorders]
         super(Card, self).save(*args, **kwargs)
+        self._cached_data[self.pk] = None
+    
+    def get_data(self):
+        if self.pk not in self._cached_data or not self._cached_data[self.pk]:
+            self._cached_data[self.pk] = simplejson.loads(self.data) 
+        return self._cached_data[self.pk]
     
     def __unicode__(self):
         return "%s - %s - %s" % (self.created.strftime("%d/%m/%Y"),self.name or self.print_name,self.ordered_service.order.patient.short_name())
