@@ -28,6 +28,7 @@ App.examination.StartPanel = Ext.extend(Ext.Panel, {
 				{
 					region:'west',
 					width:500,
+					layout:'fit',
 					autoScroll:true,
 					items:this.startView
 				},

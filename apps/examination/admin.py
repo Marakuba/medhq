@@ -65,10 +65,14 @@ class QuestionnaireAdmin(admin.ModelAdmin):
 class TemplateAdmin(admin.ModelAdmin):
     save_as = True
     
+class CardAdmin(admin.ModelAdmin):
+    readonly_fields = ['ordered_service','mkb_diag']
+    
 admin.site.register(Equipment)
+admin.site.register(Card, CardAdmin)
 admin.site.register(Template, TemplateAdmin)
 admin.site.register(FieldSet, FieldSetAdmin)
-admin.site.register(ExaminationCard, ExaminationCardAdmin)
-admin.site.register(CardTemplate, CardTemplateAdmin)
+#admin.site.register(ExaminationCard, ExaminationCardAdmin)
+#admin.site.register(CardTemplate, CardTemplateAdmin)
 admin.site.register(Glossary, GlossaryAdmin)
 admin.site.register(Questionnaire, QuestionnaireAdmin)

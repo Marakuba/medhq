@@ -353,9 +353,11 @@ button.icon-main-button {
 	font-family:'Arial';
 	font-size:12px;
 	font-weight:bold;
-	background-color: #DDD;
-	border-radius:2px;
-	margin:2px;
+	border-top:2px solid #edf4ff;
+	border-bottom: 2px solid #99BBE8;
+	background-color:#cee1ff;
+	color: #3764A0;
+	margin:4px 0 2px 0;
 }
 
 #startView .item-over {

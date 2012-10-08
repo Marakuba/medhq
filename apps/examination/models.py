@@ -14,6 +14,8 @@ import Image
 import simplejson
 from scheduler.models import Preorder
 
+import examination.widgets
+
 SECTIONS = (
     (u'anamnesis',u'УЗИ'),
     (u'к',u'Консультация'),
@@ -519,7 +521,7 @@ class FieldSet(models.Model):
 class SubSection(models.Model):
     section = models.ForeignKey(FieldSet)
     title = models.TextField(u'Заголовок')
-    widget = models.CharField('Виджет',max_length=30, default='textticket')
+    widget = models.CharField('Виджет',max_length=30, default='textticket', choices=examination.widgets.widget_choices())
     
     def __unicode__(self):
         return self.title

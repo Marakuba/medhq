@@ -99,7 +99,7 @@ App.examination.StateTemplatePlugin = function(config, order){
 };
 
 
-App.examination.StartView = Ext.extend(Ext.DataView, {
+App.examination.StartView = Ext.extend(Ext.grid.GridPanel, {
 
 	dataPlugins : this.dataPlugins,
 		           
@@ -111,16 +111,17 @@ App.examination.StartView = Ext.extend(Ext.DataView, {
 		Ext.each(result_order.sort(), function(k){
 			var res = results[k];
 			if(res) {
-				if(res.section){
-					r.push({
-						id:res.section+'0',
-						type:'group',
-						title:res.section,
-						cls:res.cls
-					});
-				}
+//				if(res.section){
+//					r.push({
+//						id:res.section+'0',
+//						type:'group',
+//						title:res.section,
+//						cls:res.cls
+//					});
+//				}
 				Ext.each(res.objects, function(obj,i){
 					obj.id = res.section+"_"+(i+1);
+					obj.section_name = res.section;
 					r.push(obj);
 				});
 			}
@@ -133,9 +134,7 @@ App.examination.StartView = Ext.extend(Ext.DataView, {
 		this.steps-=1;
 		if(this.steps==0){
 			this.store.loadData(this.plainResults(this.results));
-			this.select(0);
-			var rec = this.store.getAt(1);
-			this.fireEvent('preview', rec.data.type, rec.data.objectId);
+			this.getSelectionModel().selectFirstRow();
 		}
 	},
 	
@@ -161,54 +160,73 @@ App.examination.StartView = Ext.extend(Ext.DataView, {
     	
     	this.addEvents('preview','copy','edit','empty');
     	
+    	this.store = new Ext.data.GroupingStore({
+			autoSave:false,
+			autoLoad:false,
+            reader: new Ext.data.JsonReader({
+                idProperty : 'id',
+                fields     : ['id','section_name','type','title','action','objectId','cls'],
+            }),
+		    remoteSort: true,
+		    groupField:'section_name'
+    	});
+    	
 		var config = {
-		    itemSelector : 'div.item',
-		    overClass    : 'item-over',
-		    selectedClass    : 'item-selected',
-		    tpl          : new Ext.XTemplate(
-		    	'<div id="startView">',
-		            '<tpl for=".">',
-		            
-		            '<tpl if="type != \'group\'">',
-		            '<div id="{id}" class="item" ext:objid="{objectId}" ext:type="{type}" ext:action="{action}">',
-		            '</tpl>',
-
-		            '<tpl if="type == \'group\'">',
-		            '<div class="group">',
-		            '<div class="{cls}" style="float:left;width:20px;height:16px;"></div>',
-		            '</tpl>',
-		            
-		            	'{title}',
-		            '</div>',
-		            '</tpl>',
-		        '</div>', {
-		    }),
+//		    itemSelector : 'div.item',
+//		    overClass    : 'item-over',
+//		    selectedClass    : 'item-selected',
+//		    tpl          : new Ext.XTemplate(
+//		    	'<div id="startView">',
+//		            '<tpl for=".">',
+//		            
+//		            '<tpl if="type != \'group\'">',
+//		            '<div id="{id}" class="item" ext:objid="{objectId}" ext:type="{type}" ext:action="{action}">',
+//		            '</tpl>',
+//
+//		            '<tpl if="type == \'group\'">',
+//		            '<div class="group">',
+//		            '<div class="{cls}" style="float:left;width:20px;height:16px;"></div>',
+//		            '</tpl>',
+//		            
+//		            	'{title}',
+//		            '</div>',
+//		            '</tpl>',
+//		        '</div>', {
+//		    }),
 			autoScroll:true,
-			singleSelect: true,
-			store:new Ext.data.JsonStore({
-	            idProperty : 'id',
-	            fields     : ['id','type','title','action','objectId','cls'],
-	        }),
+			store:this.store,
+			border:false,
 	        bubbleEvents:['preview','copy','edit','empty'],
-	        listeners:{
-	        	click:{
-	        		fn:function(dv,i,node,e){
-		        		var t = e.getTarget('div.item',5, true);
-		        		var objId = t.getAttributeNS('ext', 'objid');
-		        		var objType = t.getAttributeNS('ext', 'type');
-		        		var objAction = t.getAttributeNS('ext', 'action');
-		        		this.fireEvent('preview', objType, objId);
-		        	},
-		        	buffer:350,
-		        	scope:this
-	        	},
-	        	dblclick:function(dv,i,node,e){
-	        		var t = e.getTarget('div.item',5, true);
-	        		var objId = t.getAttributeNS('ext', 'objid');
-	        		var objType = t.getAttributeNS('ext', 'type');
-	        		var objAction = t.getAttributeNS('ext', 'action');
-	        		console.info(objAction);
-	        		this.fireEvent(objAction, objType, objId);
+	        columns:[{
+	        	dataIndex:'section_name',
+	        	hidden:true
+	        },{
+	        	dataIndex:'title',
+	        	header:'Объект'
+	        }],
+	        hideHeaders:true,
+			sm : new Ext.grid.RowSelectionModel({
+				singleSelect : false,
+				listeners : {
+					rowselect : function(sm,i,rec){
+						this.fireEvent('preview', rec.data.type, rec.data.objectId)
+					},
+					scope:this
+				}
+			}),
+			view : new Ext.grid.GroupingView({
+				forceFit : true,
+				emptyText: 'Нет записей',
+				groupTextTpl: '{group}',
+				headersDisabled:true,
+			    enableRowBody:true,
+				getRowClass: function(record, index, p, store) {
+		        }
+			}),
+			listeners:{
+	        	rowdblclick:function(grid,i,e){
+	        		var rec = grid.store.getAt(i);
+	        		this.fireEvent(rec.data.action, rec.data.type, rec.data.objectId);
 	        	},
 	        	scope:this
 	        }
@@ -217,23 +235,14 @@ App.examination.StartView = Ext.extend(Ext.DataView, {
 		Ext.apply(this, Ext.apply(this.initialConfig, config));
 		App.examination.StartView.superclass.initComponent.apply(this, arguments);
 		
-		this.runPlugins({
-			orderId:this.orderId,
-			patientId:this.patientId,
-			baseServiceId:this.baseServiceId,
-		});
-		
 		this.on('afterrender',function(){
+			this.runPlugins({
+				orderId:this.orderId,
+				patientId:this.patientId,
+				baseServiceId:this.baseServiceId,
+			});
 		},this)
-	},
-	
-	getAttrs : function(t) {
-		return {
-			objId : t.getAttributeNS('ext', 'objid'),
-			objType : t.getAttributeNS('ext', 'type'),
-			objAction : t.getAttributeNS('ext', 'action')
-		}
-	},
+	}
 	
 });
 

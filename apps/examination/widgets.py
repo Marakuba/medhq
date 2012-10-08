@@ -4,6 +4,7 @@
 """
 from django.shortcuts import render_to_response
 from django.template.context import RequestContext
+import simplejson
 
 _registry = {}
 
@@ -30,15 +31,62 @@ class BaseWidget(object):
     xtype = None
     tpl = 'print/examination/widget/%s.html'
     
-    def __init__(self, request, title, data, **kwargs):
+    def __init__(self, request, title, text, printable=True, private=False, **kwargs):
         self.request = request
         self.title = title
-        self.data = data
+        self.text = text
+        self.printable = printable
+        self.private = private
         self.opts = kwargs
         self.template = self.tpl % self.xtype
     
     def to_html(self):
         raise NotImplemented()
+    
+class WidgetManager():
+    
+    def __init__(self, request, data=None, **kwargs):
+        self.request = request
+        self.widgets = []
+        self.opts = kwargs
+        if data:
+            self.data = data
+            self.parse_data()
+    
+    def parse_data(self):
+        ddata = simplejson.loads(self.data)
+        tickets = ddata['tickets']
+        for t in tickets:
+            self.add_widget(self.request, 
+                            t['xtype'], 
+                            t['title'], 
+                            t['text'], 
+                            t['printable'],
+                            t['private'])
+    
+    def add_widget(self, request, xtype, title, text, printable=True, private=False, **kwargs):
+        try:
+            widget_cls = get_widget(xtype)
+            self.widgets.append(widget_cls(request, title, text, printable, private, **kwargs))
+        except:
+            raise Exception('error with widget "%s"' % xtype)
+    
+    def get(self, wid):
+        if isinstance(wid, basestring):
+            self.get_by_xtype(wid)
+        elif isinstance(wid, int):
+            self.get_by_id(wid)
+        else:
+            raise NotImplemented()
+    
+    def get_by_id(self, wid):
+        return self.widgets[wid]
+    
+    def get_by_xtype(self, xtype):
+        for widget in self.widgets:
+            if widget.xtype==xtype:
+                return widget
+        return None
     
 
 class TextWidget(BaseWidget):
@@ -47,7 +95,7 @@ class TextWidget(BaseWidget):
     def to_html(self):
         ctx = {
             'title':self.title,
-            'data':self.data,
+            'text':self.text,
             'xtype':self.xtype
         }
         render_to_response(self.template, ctx,
@@ -60,7 +108,7 @@ class TitleWidget(BaseWidget):
     def to_html(self):
         ctx = {
             'title':self.title,
-            'data':self.data,
+            'text':self.text,
             'xtype':self.xtype
         }
         render_to_response(self.template, ctx,
@@ -73,7 +121,7 @@ class QuestWidget(BaseWidget):
     def to_html(self):
         ctx = {
             'title':self.title,
-            'data':self.data,
+            'text':self.text,
             'xtype':self.xtype
         }
         render_to_response(self.template, ctx,
@@ -99,9 +147,16 @@ class EquipmentWidget(BaseWidget):
     def to_html(self):
         ctx = {
             'title':self.title,
-            'data':self.data,
+            'text':self.text,
             'xtype':self.xtype
         }
         render_to_response(self.template, ctx,
                            context_instance=RequestContext(self.request))
         
+
+
+register('textticket', TextWidget)
+register('titleticket', TitleWidget)
+register('questticket', QuestWidget)
+register('mkbticket', MkbWidget)
+register('equipmentticket', EquipmentWidget)
