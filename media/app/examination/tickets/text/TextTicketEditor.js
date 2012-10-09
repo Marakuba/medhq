@@ -1,6 +1,6 @@
 Ext.ns('App.examination');
 
-App.examination.TicketEditPanel = Ext.extend(Ext.Panel, {
+App.examination.TextTicketEditor = Ext.extend(Ext.Panel, {
 	initComponent: function(){
 		
 		this.clearFilterList = [Ext.EventObject.ESC, Ext.EventObject.RIGHT, Ext.EventObject.LEFT, 
@@ -13,7 +13,7 @@ App.examination.TicketEditPanel = Ext.extend(Ext.Panel, {
 			autoDestroy:true,
             baseParams:{
         		format:'json',
-				staff:App.uriToId(this.staff)
+				staff:active_staff
         	},
 		    paramNames: {
 			    start : 'offset',
@@ -167,14 +167,16 @@ App.examination.TicketEditPanel = Ext.extend(Ext.Panel, {
 			items:[
 				this.ticketPanel,
 				this.glossPanel
-			]
-//			tbar:this.ttb
+			],
+			tbar:this.ttb
 		};
 		
 		Ext.apply(this, Ext.apply(this.initialConfig, config));
-		App.examination.TicketEditPanel.superclass.initComponent.apply(this, arguments);
+		App.examination.TextTicketEditor.superclass.initComponent.apply(this, arguments);
 		this.on('afterrender',function(){
-			this.bodyField.focus(false, 150);
+			if (this.data){
+				this.loadTicket(this.data)
+			}
 //			console.log(this.bodyField.getEl())
 //			this.glossDropDown.bindElement(this.bodyField.getEl(), this.glossDropDown);
 		});
@@ -189,16 +191,16 @@ App.examination.TicketEditPanel = Ext.extend(Ext.Panel, {
 	},
 	
 	loadTicket: function(ticket){
-		var title = ticket.data.title || '';
+		var title = ticket.title || '';
 		this.headerField.setValue(title);
-		var text = ticket.data.text || '';
+		var text = ticket.value || '';
 		this.bodyField.setValue(text);
 		this.setPos(text.length);
 		var rootNode = this.glossPanel.getRootNode();
 		this.glossStore.setBaseParam('section',ticket.section);
 		this.glossStore.load();
 		this.glossPanel.loader.baseParams['section'] = ticket.section;
-		this.glossPanel.loader.baseParams['staff'] = App.uriToId(this.staff);
+		this.glossPanel.loader.baseParams['staff'] = active_staff;
 //		this.glossPanel.loader.load(rootNode);
 	},
 	
@@ -309,7 +311,13 @@ App.examination.TicketEditPanel = Ext.extend(Ext.Panel, {
     editComplete: function(){
     	var data = {};
     	data['title'] = this.headerField.getValue();
-    	data['text'] = this.bodyField.getValue();
+    	data['value'] = this.bodyField.getValue();
     	this.fireEvent('editcomplete',data);
+    	if (this.fn){
+    		this.fn(data,this.panel)
+    	};
+    	this.destroy();
     }
-})
+});
+
+Ext.reg('textticketeditor', App.examination.TextTicketEditor);

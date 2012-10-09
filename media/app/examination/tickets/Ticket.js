@@ -19,8 +19,8 @@ Ext.ux.form.Ticket = Ext.extend(Ext.Panel,{
 		this.defaultText = 'Щелкните здесь чтобы ввести описание...';
 		this.defaultTitle = 'Щелкните здесь чтобы установить заголовок...';
 		
-		this.addEvents('beforeticketremove','ticketremove','ticketdataupdate','ticketeditstart','editorclose','ticketheadeeditstart','ticketbodyclick');
-		this.enableBubble('beforeticketremove','ticketremove','ticketdataupdate','ticketeditstart','editorclose','ticketheadeeditstart','ticketbodyclick');
+		this.addEvents('beforeticketremove','ticketremove','ticketdataupdate','ticketeditstart','editorclose','ticketheadeeditstart','ticketbodyclick','oneditticket');
+		this.enableBubble('beforeticketremove','ticketremove','ticketdataupdate','ticketeditstart','editorclose','ticketheadeeditstart','ticketbodyclick','oneditticket');
 		
 		this.pntMenuItem = new Ext.menu.CheckItem({
 			text:'Выводить на печать',
@@ -263,27 +263,30 @@ Ext.ux.form.Ticket = Ext.extend(Ext.Panel,{
 	},
 	
 	updateData : function() {
-		if(this.data) {
-			var d = this.data;
-			if (d.title) {
-				this.setTitle(d.title);
-			} else {
-				this.setTitle('Щелкните здесь чтобы установить заголовок...');
-				this.header.addClass('empty-header');
-			};
-			if (d.value) {
-				this.body.removeClass('empty-body');
-				this.body.update(d.value);
-			}; 
-			if(!d.printable) {
-				this.addClass('not-printable');
-			}
-			if(d.private) {
-				this.addClass('private');
-				this.pntMenuItem.setDisabled(true);
-			}
-		}		
-		this.doLayout()
+		var d = this.data || {'printable':true, 'private':false};
+		if (d.title) {
+			this.setTitle(d.title);
+		} else {
+			this.setTitle('Щелкните здесь чтобы установить заголовок...');
+			this.header.addClass('empty-header');
+			d['title'] = ''
+		};
+		if (d.value) {
+			this.body.removeClass('empty-body');
+			this.body.update(d.value);
+		} else {
+			d['value'] = '' 
+		}; 
+		if(!d.printable) {
+			this.addClass('not-printable');
+		}
+		if(d.private) {
+			this.addClass('private');
+			this.pntMenuItem.setDisabled(true);
+		}
+		this.data = d;
+		this.doLayout();
+		this.afterLoad();
 	},
 	
 	setPrintable : function(checked) {
@@ -303,55 +306,6 @@ Ext.ux.form.Ticket = Ext.extend(Ext.Panel,{
 		this.fireEvent('ticketdataupdate', this, this.data);
 		this[checked ? 'addClass' : 'removeClass']('private');
 	},
-	
-	doGetCaretPosition: function (ctrl) {
-		var CaretPos = 0;	// IE Support
-		if (document.selection) {
-			ctrl.focus ();
-			var Sel = document.selection.createRange ();
-			Sel.moveStart ('character', -ctrl.value.length);
-			CaretPos = Sel.text.length;
-		}
-		// Firefox support
-		else if (ctrl.selectionStart || ctrl.selectionStart == '0')
-			CaretPos = ctrl.selectionStart;
-		return (CaretPos);
-	},
-	
-	setCaretTo: function(obj, pos) {
-		this.setPos(pos);
-//		pos = pos - 1;
-		if(obj.createTextRange) { 
-			var range = obj.createTextRange(); 
-			range.move("character", pos); 
-			range.select(); 
-		} else if(obj.selectionStart) {
-			obj.focus(false,300); 
-			obj.setSelectionRange(pos, pos); 
-		};
-	},
-    
-    getCaretPos: function(el) {
- 	    var rng, ii=0;
-		if(typeof el.selectionStart=="number") {
-			ii=el.selectionStart;
-		} else if (document.selection && el.createTextRange){
-			rng=document.selection.createRange();
-			rng.collapse(true);
-			rng.moveStart("character", -el.value.length);
-			ii=rng.text.length;
-		};
-		this.setPos(ii);
-		return ii;
-    },
-    
-    setPos: function(pos){
-    	this.curPos = pos;
-    },
-    
-    getPos: function(){
-    	return this.curPos;
-    },
     
     getText: function(){
     	return this.data.value;
@@ -360,7 +314,22 @@ Ext.ux.form.Ticket = Ext.extend(Ext.Panel,{
     setText: function(text){
     	this.data.value = text;
     	this.updateData();
+    },
+    
+    //пользовательская функция 
+    afterLoad: function(){
+    },
+    
+    onEdit: function(panel){
+		var editorXType = panel.type + 'editor';
+		panel.fireEvent('oneditticket', panel)
+	},
+	
+    //пользовательская функция, выполняется после завершения редактирования тикета
+    afterEdit:function(data){
     }
+	
+	
 });
 
 Ext.reg('ticket', Ext.ux.form.Ticket);

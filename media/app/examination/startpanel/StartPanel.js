@@ -15,6 +15,7 @@ App.examination.StartPanel = Ext.extend(Ext.Panel, {
 		
 		this.previewPanel = new Ext.Panel({
 			region:'center',
+			autoScroll:true,
 			html:'...'
 		});
 		

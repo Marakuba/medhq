@@ -514,6 +514,8 @@ js_examination = Bundle(
     'app/examination/templates/TmpGrid.js',
     'app/examination/cards/CardGrid.js',
     
+    'app/examination/tickets/text/TextTicketEditor.js',
+    
     'app/registry/ServicePanel.js',
     'app/service/ServiceTreeGrid.js',
     'app/dict/glossary/EditNodeWindow.js',

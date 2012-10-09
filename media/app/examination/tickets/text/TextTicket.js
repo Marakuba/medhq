@@ -12,7 +12,6 @@ Ext.ns('Ext.ux.form');
 
 Ext.ux.form.TextTicket = Ext.extend(Ext.ux.form.Ticket,{
 	initComponent: function(){
-		
 		config = {
 			type:'textticket'
 		};
@@ -23,6 +22,21 @@ Ext.ux.form.TextTicket = Ext.extend(Ext.ux.form.Ticket,{
 		this.on('afterrender',function(){
 		},this)
 		
+	},
+	
+	bodyConfig: function(panel){
+		panel.body.on('dblclick', function(e, t){
+				panel.onEdit(panel);
+        		panel.fireEvent('ticketbodyclick',panel);
+        	}, null, {
+        });
+	},
+	
+	afterEdit: function(data,panel){
+		panel.data.title = data.title;
+		panel.data.value = data.value;
+		panel.updateData();
+		panel.fireEvent('ticketdataupdate',this,this.data)
 	}
 	
 });

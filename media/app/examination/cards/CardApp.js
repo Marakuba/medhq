@@ -174,7 +174,7 @@ App.examination.CardApp = Ext.extend(Ext.Panel, {
 			listeners:{
 				scope:this,
 				dataupdate:this.updateData,
-				onedtticket:this.onEditTicket
+				oneditticket:this.onEditTicket
 			}
 		});
 		this.contentPanel.removeAll(true);
@@ -187,10 +187,17 @@ App.examination.CardApp = Ext.extend(Ext.Panel, {
 		this.record.set('data',encodedData);
 	},
 	
-	onEditTicket: function(panel,func){
-		App.fireEvent('launchapp')
-		this.add(panel);
-		this.setActivePanel(panel);
+	onEditTicket: function(panel){
+		var editorConfig = {
+			title:panel.data.title,
+			xtype:panel.xtype+'editor',
+			data:panel.data,
+			fn: panel.afterEdit,
+			panel:panel
+		}
+		App.eventManager.fireEvent('launchapp',panel.xtype+'editor',editorConfig);
+//		this.add(panel);
+//		this.setActivePanel(panel);
 	}
 		
 });

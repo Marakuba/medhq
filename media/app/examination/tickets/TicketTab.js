@@ -6,7 +6,7 @@ App.examination.TicketPanel = Ext.extend(Ext.ux.Portal,{
 //	title:'Новый раздел',
 	autoScroll:true,
 	cls: 'placeholder',
-	bubbleEvents:['beforeticketremove','ticketremove','ticketdataupdate','ticketeditstart','drop','beforedrop','ticketheadeeditrstart','ticketbodyclick'],
+	bubbleEvents:['beforeticketremove','ticketremove','ticketdataupdate','ticketeditstart','drop','beforedrop','ticketheadeeditrstart','ticketbodyclick','oneditticket'],
 	closable: false
 });
 
@@ -105,26 +105,37 @@ App.examination.TicketTab = Ext.extend(Ext.Panel, {
 			}
 		});
 		
+		this.ttb = new Ext.Toolbar({
+			items: []
+		});
+		
 		var config = {
 			
 			layout:'border',
 		    labelAlign: 'top',
 		    autoSctoll:true,
 		    closable:false,
-		    bubbleEvents:['beforeticketremove','ticketremove','ticketdataupdate','ticketeditstart','editorclose','drop','ticketheadeeditrstart','ticketbodyclick'],
+		    bubbleEvents:['beforeticketremove','ticketremove','ticketdataupdate','ticketeditstart','editorclose','drop','ticketheadeeditrstart','ticketbodyclick','oneditticket'],
 		    items: [
 		       this.ticketPanel
-		    ]
+		    ],
+		    tbar:this.ttb
 		}
 								
 		Ext.apply(this, Ext.apply(this.initialConfig, config));
 		App.examination.TicketTab.superclass.initComponent.apply(this, arguments);
 		
 		this.on('afterrender',function(panel){
+			this.fillSectionMenu();
 			if (this.data){
 				this.loadData(this.data)
 			}
 		},this);
+		
+		this.on('oneditticket',function(panel){
+			var a = panel
+		
+		});
 		
 		this.on('ticketbodyclick', function(panel,editor,pos){
 			if (this.ticket) {
@@ -154,14 +165,18 @@ App.examination.TicketTab = Ext.extend(Ext.Panel, {
 			this.updateData();
 		},this);
 		
-		this.on('ticketremove', function(ticket, data){
+		this.on('beforeticketremove', function(ticket){
+			ticket.destroy();
 			this.updateData();
+			this.doLayout();
+			return false
 		},this);
 	},
 	
 	loadData: function(data,quests,sectionPlan){
 		//есть глобальная переменная section_scheme, содержащая все секции
 		//Проходим по всем тикетам и вставляем их в панель в нужном порядке
+		this.dataLoading = true;
 		
 		if(!data) return false;
 		
@@ -176,6 +191,7 @@ App.examination.TicketTab = Ext.extend(Ext.Panel, {
 			ticket['data'] = ticket_data;
 			this.addTicket(ticket);
 		},this);
+		this.dataLoading = false;
 	},
 	
 	addTicket:function(ticketConfig){
@@ -185,10 +201,19 @@ App.examination.TicketTab = Ext.extend(Ext.Panel, {
 		
 		//если тикетов еще нет, то добавляем в конец
 		//тикет добавляется в конец секции
-		var insertMethod = config['pos'] ? 'pos' : 'order';
+		var insertMethod = ticketConfig['pos'] ? 'pos' : 'order';
+		if (!ticketConfig[insertMethod]){
+			ticketConfig[insertMethod] = section_scheme[ticketConfig['section'][insertMethod]];
+		}
 		var ind = this.getLowInd(insertMethod,ticketConfig[insertMethod]);
 		this.portalColumn.insert(ind+1,ticketConfig);
 		this.doLayout();
+		//если добавляется новый тикет, а не существующий, т.е. если у него нет своей позиции pos
+		//иногда в загружаемых тикетах может не быть pos, для этого во время загрузки данных
+		//устанавливается флаг dataLoading
+		if (insertMethod == 'order' && !this.dataLoading){
+			this.updateData();
+		}
 	},
 	
 	getLowInd:function(paramName,value){
@@ -269,5 +294,54 @@ App.examination.TicketTab = Ext.extend(Ext.Panel, {
 		this.data['tickets'] = this.ticketPanel.getData();
 		this.fireEvent('dataupdate',this.data);
 		
+	},
+	
+	fillSectionMenu: function(){
+		this.sectionItems = new Ext.menu.Menu({
+			items:[]
+		});
+		var a = section_scheme;
+//		Ext.each(section_scheme.keys,function(section){
+		for (var section in section_scheme) {
+			this.sectionItems.add(String.format('<b class="menu-title">{0}</b>',section_scheme[section].title));
+			if (section_scheme[section].items.length){
+				Ext.each(section_scheme[section].items,function(item){
+					var ticket_data = {}
+					Ext.apply(ticket_data,item);
+					item['data'] = ticket_data;
+					var subBtn = {
+						text:item.title,
+						handler:this.addTicket.createDelegate(this,[item]),
+						scope:this
+					};
+					this.sectionItems.add(subBtn);
+				},this);
+			};
+			var freeBtn = {
+				text:'Произвольный',
+				handler:this.addTicket.createDelegate(this,[{
+					xtype:'textticket',
+					order:section.order,
+					section:section.name,
+					data:{title:'Произвольный',value:'',printable:true,private:false,section:section.name}
+				}]),
+				scope:this
+			}
+			this.sectionItems.add(freeBtn)
+		};
+		this.addSubSecBtn = new Ext.Button({
+			iconCls:'silk-page-white-add',
+			text:'Добавить раздел',
+			menu:this.sectionItems
+		});
+		
+		if (this.sectionItems.items.length){
+			this.addSubSecBtn.enable();
+		} else {
+			this.addSubSecBtn.disable();
+		};
+		
+		this.ttb.insert(0,this.addSubSecBtn);
+		this.doLayout();
 	}
 });
