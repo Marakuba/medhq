@@ -20,23 +20,7 @@ from examination.widgets import WidgetManager
 @render_to('widget/examination/template.html')
 def examination_template(request, object_id):
     tpl = get_object_or_404(Template, pk=object_id)
-    
-#    general_data = []
-#    if tpl.equipment:
-#        general_data.append({'title':'Оборудование',
-#                             'text':tpl.equipment.name
-#                             })
-#            
-#    field_sets = dict([(fs.name, fs.title) for fs in FieldSet.objects.all()]) 
-#    data = tpl.data and simplejson.loads(tpl.data) or []
-#    for d in data:
-#        for t in d['tickets']:
-#            if t['private'] == True:
-#                d['tickets'].remove(t)
-#        d['title'] = field_sets[d['section']]
-    
     manager = WidgetManager(request, tpl.get_data()['tickets'])
-    
     ctx = {
         'tpl':tpl,
         'data':tpl.data,
@@ -48,34 +32,11 @@ def examination_template(request, object_id):
 @render_to('widget/examination/card.html')
 def examination_card(request, object_id):
     card = get_object_or_404(Card, pk=object_id)
-    general_data = []
-    if card.equipment:
-        general_data.append({'title':'Оборудование',
-                             'text':card.equipment.name
-                             })
-    if card.mkb_diag:
-        general_data.append({'title':'Диагноз по МКБ-10',
-                             'text':"%s, %s" % (card.mkb_diag.code, card.mkb_diag.name)
-                             })
-    asgmt_list = Preorder.objects.filter(patient=card.ordered_service.order.patient.id,card=card.id)
-    assigments = [{'count':a.count,
-                   'text':a.service and a.service.base_service.name or u'Нет названия',
-                   'expiration':a.expiration or u'Не указано',
-                   'deleted':a.deleted and u'Отменено' or ''} for a in asgmt_list]
-    field_sets = dict([(fs.name, fs.title) for fs in FieldSet.objects.all()]) 
-    data = card.data and simplejson.loads(card.data) or []
-    for d in data:
-        if 'section' in d:
-            for t in d['tickets']:
-                if t['private'] == True:
-                    d['tickets'].remove(t)
-            d['title'] = field_sets.has_key(d['section']) and field_sets[d['section']] or ''
-    
+    manager = WidgetManager(request, card.get_data()['tickets'])
     ctx = {
         'card':card,
-        'data':data,
-        'gdata':general_data,
-        'asgmts':assigments
+        'data':card.data,
+        'manager':manager
     }
 
     return ctx
