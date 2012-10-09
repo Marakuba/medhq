@@ -1,0 +1,5 @@
+{% autoescape off %}
+{% for widget in manager.widgets %}
+{{ widget.to_html }}
+{% endfor %}
+{% endautoescape %}

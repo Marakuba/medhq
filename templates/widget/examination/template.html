@@ -12,9 +12,13 @@
 		border-bottom: 1px gray solid;
 	}
 	
-	.template-preview h2 {
+	.template-preview h2, .template-preview .title {
 		font-size:12pt;
 		margin:8pt 0 4pt 0;
+	}
+	
+	.template-preview .title {
+		font-weight:bold;
 	}
 	
 	.template-preview p {
@@ -50,17 +54,7 @@
 
 <div class="template-preview">
 <h1>{{ tpl.print_name }}</h1>
-
-{% for d in data %}
-	{% for ticket in d.tickets %}
-	<h2>{{ ticket.title }}</h2>
-	<p>{{ ticket.text }}</p>
-	{% endfor %}
-{% endfor %}
-{% for d in gdata %}
-	<h2>{{ d.title }}</h2>
-	<p>{{ d.text }}</p>
-{% endfor %}
+{% include "examination/base.html" %}
 <div class="footer">Врач
 	<span>___________________ {{ request.active_profile }}</span>
 </div>

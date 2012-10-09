@@ -4,7 +4,6 @@
 """
 from django.shortcuts import render_to_response
 from django.template.context import RequestContext
-import simplejson
 
 _registry = {}
 
@@ -31,19 +30,25 @@ class BaseWidget(object):
     xtype = None
     tpl = 'print/examination/widget/%s.html'
     
-    def __init__(self, request, title, text, printable=True, private=False, **kwargs):
+    def __init__(self, request, title, value, printable=True, private=False, **kwargs):
         self.request = request
         self.title = title
-        self.text = text
+        self.value = value
         self.printable = printable
         self.private = private
         self.opts = kwargs
         self.template = self.tpl % self.xtype
     
     def to_html(self):
-        raise NotImplemented()
+        ctx = {
+            'title':self.title,
+            'value':self.value,
+            'xtype':self.xtype
+        }
+        return render_to_response(self.template, ctx,
+                           context_instance=RequestContext(self.request)).content
     
-class WidgetManager():
+class WidgetManager(object):
     
     def __init__(self, request, data=None, **kwargs):
         self.request = request
@@ -54,20 +59,18 @@ class WidgetManager():
             self.parse_data()
     
     def parse_data(self):
-        ddata = simplejson.loads(self.data)
-        tickets = ddata['tickets']
-        for t in tickets:
+        for t in self.data:
             self.add_widget(self.request, 
                             t['xtype'], 
                             t['title'], 
-                            t['text'], 
+                            t['value'], 
                             t['printable'],
                             t['private'])
     
-    def add_widget(self, request, xtype, title, text, printable=True, private=False, **kwargs):
+    def add_widget(self, request, xtype, title, value, printable=True, private=False, **kwargs):
         try:
             widget_cls = get_widget(xtype)
-            self.widgets.append(widget_cls(request, title, text, printable, private, **kwargs))
+            self.widgets.append(widget_cls(request, title, value, printable, private, **kwargs))
         except:
             raise Exception('error with widget "%s"' % xtype)
     
@@ -92,68 +95,22 @@ class WidgetManager():
 class TextWidget(BaseWidget):
     xtype = 'textticket'
     
-    def to_html(self):
-        ctx = {
-            'title':self.title,
-            'text':self.text,
-            'xtype':self.xtype
-        }
-        render_to_response(self.template, ctx,
-                           context_instance=RequestContext(self.request))
-        
 
 class TitleWidget(BaseWidget):
     xtype = 'titleticket'
     
-    def to_html(self):
-        ctx = {
-            'title':self.title,
-            'text':self.text,
-            'xtype':self.xtype
-        }
-        render_to_response(self.template, ctx,
-                           context_instance=RequestContext(self.request))
-        
 
 class QuestWidget(BaseWidget):
     xtype = 'questticket'
     
-    def to_html(self):
-        ctx = {
-            'title':self.title,
-            'text':self.text,
-            'xtype':self.xtype
-        }
-        render_to_response(self.template, ctx,
-                           context_instance=RequestContext(self.request))
-        
 
 class MkbWidget(BaseWidget):
     xtype = 'mkbticket'
     
-    def to_html(self):
-        ctx = {
-            'title':self.title,
-            'data':self.data,
-            'xtype':self.xtype
-        }
-        render_to_response(self.template, ctx,
-                           context_instance=RequestContext(self.request))
-        
 
 class EquipmentWidget(BaseWidget):
     xtype = 'equipmentticket'
     
-    def to_html(self):
-        ctx = {
-            'title':self.title,
-            'text':self.text,
-            'xtype':self.xtype
-        }
-        render_to_response(self.template, ctx,
-                           context_instance=RequestContext(self.request))
-        
-
 
 register('textticket', TextWidget)
 register('titleticket', TitleWidget)

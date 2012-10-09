@@ -15,28 +15,32 @@ import operator
 from scheduler.models import Preorder
 import reporting
 from reporting.models import Report as ReportConfig
+from examination.widgets import WidgetManager
 
 @render_to('widget/examination/template.html')
 def examination_template(request, object_id):
     tpl = get_object_or_404(Template, pk=object_id)
     
-    general_data = []
-    if tpl.equipment:
-        general_data.append({'title':'Оборудование',
-                             'text':tpl.equipment.name
-                             })
-            
-    field_sets = dict([(fs.name, fs.title) for fs in FieldSet.objects.all()]) 
-    data = tpl.data and simplejson.loads(tpl.data) or []
-    for d in data:
-        for t in d['tickets']:
-            if t['private'] == True:
-                d['tickets'].remove(t)
-        d['title'] = field_sets[d['section']]
+#    general_data = []
+#    if tpl.equipment:
+#        general_data.append({'title':'Оборудование',
+#                             'text':tpl.equipment.name
+#                             })
+#            
+#    field_sets = dict([(fs.name, fs.title) for fs in FieldSet.objects.all()]) 
+#    data = tpl.data and simplejson.loads(tpl.data) or []
+#    for d in data:
+#        for t in d['tickets']:
+#            if t['private'] == True:
+#                d['tickets'].remove(t)
+#        d['title'] = field_sets[d['section']]
+    
+    manager = WidgetManager(request, tpl.get_data()['tickets'])
     
     ctx = {
         'tpl':tpl,
-        'data':data
+        'data':tpl.data,
+        'manager':manager
     }
 
     return ctx
