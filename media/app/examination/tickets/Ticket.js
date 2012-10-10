@@ -19,8 +19,8 @@ Ext.ux.form.Ticket = Ext.extend(Ext.Panel,{
 		this.defaultText = 'Щелкните здесь чтобы ввести описание...';
 		this.defaultTitle = 'Щелкните здесь чтобы установить заголовок...';
 		
-		this.addEvents('beforeticketremove','ticketremove','ticketdataupdate','ticketeditstart','editorclose','ticketheadeeditstart','ticketbodyclick','oneditticket');
-		this.enableBubble('beforeticketremove','ticketremove','ticketdataupdate','ticketeditstart','editorclose','ticketheadeeditstart','ticketbodyclick','oneditticket');
+		this.addEvents('beforeticketremove','ticketremove','ticketdataupdate','ticketeditstart','editorclose','ticketheadeeditstart','ticketbodyclick','onticketedit','editcomplete');
+		this.enableBubble('beforeticketremove','ticketremove','ticketdataupdate','ticketeditstart','editorclose','ticketheadeeditstart','ticketbodyclick','onticketedit','editcomplete');
 		
 		this.pntMenuItem = new Ext.menu.CheckItem({
 			text:'Выводить на печать',
@@ -48,6 +48,7 @@ Ext.ux.form.Ticket = Ext.extend(Ext.Panel,{
 			baseCls:'x-plain',
 			cls:'section',
 			layout:'anchor',
+			editor:'textticketeditor',
 			draggable : true,
 			headerCfg:{
 				tag:'div',
@@ -157,104 +158,11 @@ Ext.ux.form.Ticket = Ext.extend(Ext.Panel,{
 	},
 	
 	bodyConfig: function(panel){
-		var cfg = {
-			allowBlur:false,
-            shadow: false,
-            completeOnEnter: true,
-            cancelOnEsc: true,
-            updateEl: true,
-            ignoreNoChange: true,
-            style:{
-            	zIndex:9000
-            }
-        };
-
-        var sectionEditor = new Ext.Editor(Ext.apply({
-            alignment: 'tl-tl',
-            emptyText:'Щелкните здесь чтобы ввести описание...',
-            listeners: {
-            	show:function(edt){
-            		var el = edt.field.getEl();
-            		if(edt.field.getValue()==edt.emptyText){
-            			edt.field.setValue('');
-            		} else {
-            			edt.field.setValue(panel.data.value);
-            		};
-            		var pos = this.getPos();
-            		if (!pos){
-            			if(panel.data.value){
-            				pos = panel.data.value.length;
-            			} else {
-            				pos = 0;
-            			}
-//	                    			this.setPos(pos);
-            		}
-            		panel.fireEvent('ticketeditstart',this,edt,pos);
-            		this.setCaretTo(el.dom,pos);
-            	},
-                beforecomplete: function(ed, value){
-                	panel.data.value = value;
-                	if(value==''){
-                		ed.setValue(ed.emptyText);
-                		panel.body.addClass('empty-body');
-                	} else {
-                		ed.setValue(value);
-                		panel.body.removeClass('empty-body');
-                	}
-                    return true;
-                },
-                complete: function(ed, value, oldValue){
-                	panel.fireEvent('ticketdataupdate', panel, panel.data);
-                },
-                scope:this
-            },
-            field: {
-                allowBlank: true,
-                xtype: 'textarea',
-                width: 890,
-                selectOnFocus: true,
-                cls:'text-editor',
-                grow:true,
-                listeners:{
-                	'render': function(c) {
-				     	var el = c.getEl()
-				     	el.on('keypress', function(e,t) {
-				        	this.getCaretPos(el.dom);
-				        	this.fireEvent('search',e,t.value);
-				     	}, this);
-				     	el.on('click',function(e,t,o){
-                    		var pos = this.getCaretPos(el.dom);
-                    		this.fireEvent('editorclick',e,t,o)
-				     	}, this);
-				     	el.on('blur', function(t,e) {
-				        	this.getCaretPos(el.dom);
-				        	if (this.doNotClose){
-				        		this.doNotClose = undefined;
-				        	} else {
-				        		sectionEditor.completeEdit();
-				        		panel.fireEvent('editorclose');
-				        	};
-				        	sectionEditor.fireEvent('complete');
-				     	}, this);
-				     	el.on('focus', function(t,e) {
-//							        	var pos = this.getPos();
-//										el.dom.setSelectionRange(pos, pos);
-				     	}, this);
-				    },
-                	scope:this
-                },
-                scope:this
-            }
-        }, cfg));
-        panel.body.on('dblclick', function(e, t){
-//	                	sectionEditor.startEdit(panel.body);
-        	panel.fireEvent('ticketbodyclick',panel);
-        }, null, {
-//	                	delegate:'div.content'
+		panel.body.on('click', function(e, t){
+				panel.onEdit(panel);
+        		panel.fireEvent('ticketbodyclick',panel);
+        	}, null, {
         });
-        panel.body.on('blur', function(e, t){
-//	                	sectionEditor.completeEdit();
-        }, null);
 	},
 	
 	setData : function() {
@@ -324,12 +232,19 @@ Ext.ux.form.Ticket = Ext.extend(Ext.Panel,{
     },
     
     onEdit: function(panel){
-		var editorXType = panel.type + 'editor';
-		panel.fireEvent('oneditticket', panel)
+		panel.fireEvent('onticketedit', panel)
+	},
+	
+	editComplete: function(data,panel){
+		//посылается событие для того, чтобы все компоненты вверху знали, что редактирование закончено 
+		panel.fireEvent('editcomplete');
+		//Выполняется пользовательская функция обработки отредактированных данных
+		panel.afterEdit(data,panel);
 	},
 	
     //пользовательская функция, выполняется после завершения редактирования тикета
-    afterEdit:function(data){
+    afterEdit:function(data,panel){
+    	//panel - редактируемый тикет
     }
 	
 	

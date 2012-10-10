@@ -24,14 +24,6 @@ Ext.ux.form.TextTicket = Ext.extend(Ext.ux.form.Ticket,{
 		
 	},
 	
-	bodyConfig: function(panel){
-		panel.body.on('dblclick', function(e, t){
-				panel.onEdit(panel);
-        		panel.fireEvent('ticketbodyclick',panel);
-        	}, null, {
-        });
-	},
-	
 	afterEdit: function(data,panel){
 		panel.data.title = data.title;
 		panel.data.value = data.value;

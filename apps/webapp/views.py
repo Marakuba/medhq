@@ -29,7 +29,7 @@ from django.core.serializers.json import DjangoJSONEncoder
 import logging
 from pricelist.models import get_actual_ptype
 from staff.models import Staff
-from examination.models import FieldSet, SubSection
+from examination.models import FieldSet, SubSection, Questionnaire
 logger = logging.getLogger('general')
 
 
@@ -193,8 +193,13 @@ def examination(request):
                                               'section':sec.name
                                               } for subsec in subsecs]
                                     }
+    quests = Questionnaire.objects.all()
+    questionnaires = [{'name':quest.name,
+                      'code':quest.code
+                      } for quest in quests]
     return {
         'section_scheme':simplejson.dumps(section_scheme),
+        'questionnaires':simplejson.dumps(questionnaires),
         'apps':simplejson.dumps(get_apps(request))
     }
 

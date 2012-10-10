@@ -110,15 +110,15 @@ App.examination.CardApp = Ext.extend(Ext.Panel, {
 	},
 	
 	createEmptyCard:function(){
-		console.log('empty');
 		this.record = new this.cardStore.recordType();
+		var emptyData = Ext.encode({'tickets':[]});
+		this.record.set('data',emptyData)
 		this.record.set('ordered_service',App.getApiUrl('orderedservice',this.orderId));
 		this.cardStore.add(this.record);
 		this.openTickets(this.record.data.data)
 	},
 	
 	copyFromSource: function(sourceType,sourceId){
-		console.log('copy ',sourceType,' ',sourceId);
 		if (!sourceId){
 			this.createEmptyCard();
 			return
@@ -144,7 +144,6 @@ App.examination.CardApp = Ext.extend(Ext.Panel, {
 	},
 	
 	editCard: function(sourceType,cardId){
-		console.log('edit ',sourceType,' ',cardId);
 		if (sourceType !='card') {
 			console.log('На редактирование передана не карта');
 			return
@@ -168,13 +167,17 @@ App.examination.CardApp = Ext.extend(Ext.Panel, {
 	},
 	
 	openTickets: function(data){
-		var decodedData = Ext.decode(data)
+		if (data) {
+			var decodedData = Ext.decode(data)
+		} else {
+			var decodedData = {}
+		}
 		this.cardBody = new App.examination.TicketTab({
 			data:decodedData,
 			listeners:{
 				scope:this,
 				dataupdate:this.updateData,
-				oneditticket:this.onEditTicket
+				onticketedit:this.onTicketEdit
 			}
 		});
 		this.contentPanel.removeAll(true);
@@ -187,15 +190,8 @@ App.examination.CardApp = Ext.extend(Ext.Panel, {
 		this.record.set('data',encodedData);
 	},
 	
-	onEditTicket: function(panel){
-		var editorConfig = {
-			title:panel.data.title,
-			xtype:panel.xtype+'editor',
-			data:panel.data,
-			fn: panel.afterEdit,
-			panel:panel
-		}
-		App.eventManager.fireEvent('launchapp',panel.xtype+'editor',editorConfig);
+	onTicketEdit: function(panel){
+		
 //		this.add(panel);
 //		this.setActivePanel(panel);
 	}

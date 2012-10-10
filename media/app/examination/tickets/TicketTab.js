@@ -6,7 +6,7 @@ App.examination.TicketPanel = Ext.extend(Ext.ux.Portal,{
 //	title:'Новый раздел',
 	autoScroll:true,
 	cls: 'placeholder',
-	bubbleEvents:['beforeticketremove','ticketremove','ticketdataupdate','ticketeditstart','drop','beforedrop','ticketheadeeditrstart','ticketbodyclick','oneditticket'],
+	bubbleEvents:['beforeticketremove','ticketremove','ticketdataupdate','ticketeditstart','drop','beforedrop','ticketheadeeditrstart','ticketbodyclick'],
 	closable: false
 });
 
@@ -115,6 +115,26 @@ App.examination.TicketTab = Ext.extend(Ext.Panel, {
 					panel['dragged'] = true;
 //					return false
 				},
+				'onticketedit': function(panel){
+					//если открыт редактор тикета, карту осмотра закрывать нельзя
+					if (!this.editInProcess){
+						this.editInProcess = true;
+						var editorConfig = {
+							title:panel.data.title,
+							data:panel.data,
+							fn: panel.editComplete,
+							panel:panel
+						}
+						App.eventManager.fireEvent('launchapp',panel.editor,editorConfig);
+//						this.fireEvent('onticketedit',panel);
+					} else {
+						Ext.Msg.alert('Внимание!','Один редактор уже открыт!')
+					}
+				
+				},
+				'editcomplete': function(){
+					this.editInProcess = false;
+				},
 				scope:this
 			}
 		});
@@ -129,7 +149,7 @@ App.examination.TicketTab = Ext.extend(Ext.Panel, {
 		    labelAlign: 'top',
 		    autoSctoll:true,
 		    closable:false,
-		    bubbleEvents:['beforeticketremove','ticketremove','ticketdataupdate','ticketeditstart','editorclose','drop','ticketheadeeditrstart','ticketbodyclick','oneditticket'],
+		    bubbleEvents:['beforeticketremove','ticketremove','ticketdataupdate','ticketeditstart','editorclose','drop','ticketheadeeditrstart','ticketbodyclick'],
 		    items: [
 		       this.ticketPanel
 		    ],
@@ -141,15 +161,11 @@ App.examination.TicketTab = Ext.extend(Ext.Panel, {
 		
 		this.on('afterrender',function(panel){
 			this.fillSectionMenu();
+			this.fillQuestsMenu();
 			if (this.data){
 				this.loadData(this.data)
 			}
 		},this);
-		
-		this.on('oneditticket',function(panel){
-			var a = panel
-		
-		});
 		
 		this.on('ticketbodyclick', function(panel,editor,pos){
 			if (this.ticket) {
@@ -314,8 +330,6 @@ App.examination.TicketTab = Ext.extend(Ext.Panel, {
 		this.sectionItems = new Ext.menu.Menu({
 			items:[]
 		});
-		var a = section_scheme;
-//		Ext.each(section_scheme.keys,function(section){
 		for (var section in section_scheme) {
 			this.sectionItems.add(String.format('<b class="menu-title">{0}</b>',section_scheme[section].title));
 			if (section_scheme[section].items.length){
@@ -358,5 +372,36 @@ App.examination.TicketTab = Ext.extend(Ext.Panel, {
 		
 		this.ttb.insert(0,this.addSubSecBtn);
 		this.doLayout();
+	},
+	
+	fillQuestsMenu: function(){
+		this.questItems = new Ext.menu.Menu({
+			items:[]
+		});
+		
+		Ext.each(quests,function(quest){
+			var questBtn = {
+				text:quest.name,
+				handler:this.questBtnClick.createDelegate(this,[quest]),
+				scope:this
+			};
+			this.questItems.add(questBtn)
+		},this);
+		
+		this.questsBtn = new Ext.Button({
+			iconCls:'silk-page-white-add',
+			text:'Анкеты',
+			menu:this.questItems
+		});
+		if (this.questItems.items.items.length){
+			this.ttb.add(this.questsBtn);
+			this.doLayout();
+		} else {
+			console.log('Анкет нет')
+		}
+	},
+	
+	questBtnClick: function(quest){
+		console.log('Открытие анкеты ',quest.name);
 	}
 });
