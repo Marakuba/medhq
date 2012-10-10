@@ -55,7 +55,7 @@ App.examination.CardApp = Ext.extend(Ext.Panel, {
 		this.contentPanel = new Ext.Panel({
 			region:'center',
  			border:false,
- 			margins:'5 5 5 0',
+// 			margins:'5 5 5 0',
  			layout: 'fit',
  			defaults:{
  				border:false

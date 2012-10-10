@@ -53,6 +53,10 @@ App.examination.StartPanel = Ext.extend(Ext.Panel, {
 		App.examination.StartPanel.superclass.initComponent.apply(this, arguments);
 		
 		this.on('afterrender',function(){
+//			this.loadMask = new Ext.LoadMask(this.el, {
+//				msg:'Подождите...'
+//			});
+//			this.loadMask.show();
 		},this)
 		
 		var url_map = {
@@ -69,6 +73,11 @@ App.examination.StartPanel = Ext.extend(Ext.Panel, {
 				})
 			} else {
 				this.previewPanel.update('<p></p>');
+			}
+		}, this);
+		this.startView.on('loadcomplete', function(){
+			if(this.loadMask){
+				this.loadMask.hide();
 			}
 		}, this);
 	}

@@ -126,6 +126,7 @@ App.examination.StartView = Ext.extend(Ext.grid.GridPanel, {
 		this.steps-=1;
 		if(this.steps==0){
 			this.store.loadData(this.plainResults(this.results));
+			this.getView().focusRow(0);
 			this.getSelectionModel().selectFirstRow();
 			this.fireEvent('loadcomplete');
 		}
@@ -179,9 +180,35 @@ App.examination.StartView = Ext.extend(Ext.grid.GridPanel, {
 	        hideHeaders:true,
 			sm : new Ext.grid.RowSelectionModel({
 				singleSelect : false,
+			    initEvents : function(){
+
+			        if(!this.grid.enableDragDrop && !this.grid.enableDrag){
+			            this.grid.on('rowmousedown', this.handleMouseDown, this);
+			        }
+
+			        this.rowNav = new Ext.KeyNav(this.grid.getGridEl(), {
+			            up: this.onKeyPress, 
+			            down: this.onKeyPress,
+			            enter : function(e, name){
+			            	var rec = this.getSelected();
+			            	this.fireEvent('onenter', rec);
+			            },
+			            scope: this
+			        });
+
+			        this.grid.getView().on({
+			            scope: this,
+			            refresh: this.onRefresh,
+			            rowupdated: this.onRowUpdated,
+			            rowremoved: this.onRemove
+			        });
+			    },
 				listeners : {
 					rowselect : function(sm,i,rec){
 						this.fireEvent('preview', rec.data.type, rec.data.objectId, rec.data)
+					},
+					onenter: function(rec){
+						this.fireEvent(rec.data.action, rec.data.type, rec.data.objectId);
 					},
 					scope:this
 				}
@@ -199,6 +226,9 @@ App.examination.StartView = Ext.extend(Ext.grid.GridPanel, {
 	        	rowdblclick:function(grid,i,e){
 	        		var rec = grid.store.getAt(i);
 	        		this.fireEvent(rec.data.action, rec.data.type, rec.data.objectId);
+	        	},
+	        	keypress: function(e){
+	        		console.dir(e);
 	        	},
 	        	scope:this
 	        }

@@ -30,7 +30,7 @@ def create_assistant(sender, **kwargs):
     tickets = card.get_data()['tickets']
     for t in tickets:
         if t['xtype']=='assitantticket':
-            assistant_id = t['text']['resource_uri'].split('/')[-1]
+            assistant_id = t['value']['resource_uri'].split('/')[-1]
             try:
                 assistant = Position.objects.get(id=assistant_id)
             except:
