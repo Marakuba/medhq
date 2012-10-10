@@ -15,8 +15,12 @@ App.examination.StartPanel = Ext.extend(Ext.Panel, {
 		
 		this.previewPanel = new Ext.Panel({
 			region:'center',
-			autoScroll:true,
-			html:'...'
+			autoScroll:true
+		});
+		
+		this.infoPanel = new Ext.Panel({
+			height:40,
+			region:'north'
 		});
 		
 		this.enableBubble('preview','copy','edit','empty');
@@ -32,8 +36,16 @@ App.examination.StartPanel = Ext.extend(Ext.Panel, {
 					layout:'fit',
 					autoScroll:true,
 					items:this.startView
-				},
-				this.previewPanel
+				},{
+					region:'center',
+					layout:'border',
+					border:false,
+					defaults:{
+						border:false
+					},
+					items:[/*this.infoPanel,*/this.previewPanel]
+				}
+				
 			]
 		};
 		
@@ -49,14 +61,14 @@ App.examination.StartPanel = Ext.extend(Ext.Panel, {
 		}
 		var url_tpl = "/widget/examination/{0}/{1}/";
 		
-		this.startView.on('preview', function(objType,objId){
+		this.startView.on('preview', function(objType,objId,d){
 			if(objType && objId) {
 				var url = String.format(url_tpl,url_map[objType], objId);
 				this.previewPanel.load({
 					url:url
 				})
 			} else {
-				this.previewPanel.update('<h1>Создание пустой карты</h1>');
+				this.previewPanel.update('<p></p>');
 			}
 		}, this);
 	}

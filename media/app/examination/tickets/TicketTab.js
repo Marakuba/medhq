@@ -70,19 +70,33 @@ App.examination.TicketPanel = Ext.extend(Ext.ux.Portal,{
 */
 
 App.examination.TicketTab = Ext.extend(Ext.Panel, {
+	
+	addSubSecText : 'Добавить раздел',
+	
 	initComponent : function() {
 		
 		//Для создания направлений нужен id текущего пациента
 		
 		this.portalColumn = new Ext.ux.PortalColumn({
 			columnWidth:1,
-			anchor:'100%'
+			anchor:'100%',
+			style:{
+				backgroundColor:'white',
+				padding:"4px",
+				margin:"7px",
+				border:'1px solid #15428B',
+				boxShadow:"3px 3px 3px #777"
+			}
 		});
 		
 		this.ticketPanel = new App.examination.TicketPanel({
 			region:'center',
 			baseCls:'ticket',
 			items:[this.portalColumn],
+			style:{
+				backgroundColor:"#CCDBEE",
+				padding:"2px"
+			},
 			getData: function(){
 				var tickets = [];
 				this.items.itemAt(0).items.each(function(item,ind){
@@ -329,9 +343,10 @@ App.examination.TicketTab = Ext.extend(Ext.Panel, {
 			}
 			this.sectionItems.add(freeBtn)
 		};
+		
 		this.addSubSecBtn = new Ext.Button({
 			iconCls:'silk-page-white-add',
-			text:'Добавить раздел',
+			text:this.addSubSecText,
 			menu:this.sectionItems
 		});
 		

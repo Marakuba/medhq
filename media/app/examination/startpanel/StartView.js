@@ -111,14 +111,6 @@ App.examination.StartView = Ext.extend(Ext.grid.GridPanel, {
 		Ext.each(result_order.sort(), function(k){
 			var res = results[k];
 			if(res) {
-//				if(res.section){
-//					r.push({
-//						id:res.section+'0',
-//						type:'group',
-//						title:res.section,
-//						cls:res.cls
-//					});
-//				}
 				Ext.each(res.objects, function(obj,i){
 					obj.id = res.section+"_"+(i+1);
 					obj.section_name = res.section;
@@ -135,6 +127,7 @@ App.examination.StartView = Ext.extend(Ext.grid.GridPanel, {
 		if(this.steps==0){
 			this.store.loadData(this.plainResults(this.results));
 			this.getSelectionModel().selectFirstRow();
+			this.fireEvent('loadcomplete');
 		}
 	},
 	
@@ -158,7 +151,7 @@ App.examination.StartView = Ext.extend(Ext.grid.GridPanel, {
     	 * 
     	 */
     	
-    	this.addEvents('preview','copy','edit','empty');
+    	this.addEvents('preview','copy','edit','empty','loadcomplete');
     	
     	this.store = new Ext.data.GroupingStore({
 			autoSave:false,
@@ -172,27 +165,6 @@ App.examination.StartView = Ext.extend(Ext.grid.GridPanel, {
     	});
     	
 		var config = {
-//		    itemSelector : 'div.item',
-//		    overClass    : 'item-over',
-//		    selectedClass    : 'item-selected',
-//		    tpl          : new Ext.XTemplate(
-//		    	'<div id="startView">',
-//		            '<tpl for=".">',
-//		            
-//		            '<tpl if="type != \'group\'">',
-//		            '<div id="{id}" class="item" ext:objid="{objectId}" ext:type="{type}" ext:action="{action}">',
-//		            '</tpl>',
-//
-//		            '<tpl if="type == \'group\'">',
-//		            '<div class="group">',
-//		            '<div class="{cls}" style="float:left;width:20px;height:16px;"></div>',
-//		            '</tpl>',
-//		            
-//		            	'{title}',
-//		            '</div>',
-//		            '</tpl>',
-//		        '</div>', {
-//		    }),
 			autoScroll:true,
 			store:this.store,
 			border:false,
@@ -209,7 +181,7 @@ App.examination.StartView = Ext.extend(Ext.grid.GridPanel, {
 				singleSelect : false,
 				listeners : {
 					rowselect : function(sm,i,rec){
-						this.fireEvent('preview', rec.data.type, rec.data.objectId)
+						this.fireEvent('preview', rec.data.type, rec.data.objectId, rec.data)
 					},
 					scope:this
 				}

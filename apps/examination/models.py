@@ -448,19 +448,14 @@ class Card(models.Model):
     deleted = models.BooleanField(u'Удалено', default=False)
     questionnaire = models.TextField(u'Данные анкет',null=True, blank=True)
     
-    _cached_data = {}
-    
     def save(self,*args, **kwargs):
         if self.deleted:
             preorders = Preorder.objects.filter(card=self.id)
             [p.delete() for p in preorders]
         super(Card, self).save(*args, **kwargs)
-        self._cached_data[self.pk] = None
     
     def get_data(self):
-        if self.pk not in self._cached_data or not self._cached_data[self.pk]:
-            self._cached_data[self.pk] = simplejson.loads(self.data) 
-        return self._cached_data[self.pk]
+        return simplejson.loads(self.data) 
     
     def __unicode__(self):
         return "%s - %s - %s" % (self.created.strftime("%d/%m/%Y"),self.name or self.print_name,self.ordered_service.order.patient.short_name())
@@ -487,19 +482,11 @@ class Template(models.Model):
     contrast_enhancement = models.TextField(u'Контрастное усиление', null=True, blank=True)
     deleted = models.BooleanField(u'Удалено', default=False)
     
-    _cached_data = {}
-    
     def __unicode__(self):
         return "%s - %s" % (self.name,self.staff and self.staff.short_name() or u'---шаблон клиники---')
     
-    def save(self,*args, **kwargs):
-        super(Template, self).save(*args, **kwargs)
-        self._cached_data[self.pk] = None
-    
     def get_data(self):
-        if self.pk not in self._cached_data or not self._cached_data[self.pk]:
-            self._cached_data[self.pk] = simplejson.loads(self.data) 
-        return self._cached_data[self.pk]
+        return simplejson.loads(self.data) 
     
     class Meta:
         verbose_name = u'Шаблон'

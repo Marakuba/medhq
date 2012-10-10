@@ -11,7 +11,7 @@ Ext.each(profiles, function(profile){
 		group:'profile',
 		checkHandler:function(menuitem,checked){
 			if(checked){
-				window.location.href = String.format('/webapp/setactiveprofile/{0}/?redirect_to=/webapp/registry/',menuitem.profileId);
+				window.location.href = String.format('/webapp/setactiveprofile/{0}/?redirect_to=/webapp/examination/',menuitem.profileId);
 			}
 		}
 	}

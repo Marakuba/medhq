@@ -611,6 +611,9 @@ js_examination = Bundle(
     'app/calendar/app/timeslot/TimeslotEditWindow.js',
     'app/calendar/src/CalendarPanel.js',
     'app/calendar/app/DoctorScheduler.js',
+
+    'app/locale/ru.js',
+    
     filters='rjsmin', output='assets/examination.js',)
 
 js_helpdesk = Bundle(

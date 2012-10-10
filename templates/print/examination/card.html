@@ -23,6 +23,13 @@
 		margin:8pt 0 4pt 0;
 	}
 	
+	.template-preview .title {
+		font-size:12pt;
+		margin:4pt 0;
+		color: black;
+		font-weight:bold;
+	}
+	
 	.template-preview p {
 	}
 	
@@ -84,7 +91,7 @@
 			<td align="right">
 				Заказ: <strong>{{ card.ordered_service.order.id|zid:"5" }}</strong><br>
 				Врач: <strong>{{ card.ordered_service.staff.id|zid:"5" }}</strong><br>
-				Направившее учреждение: <strong>{{ card.ordered_service.order.referral.id|zid:"5" }}</strong><br>
+				Направившее учреждение: <strong>{{ card.ordered_service.order.referral.id|zid:"5"|default:'б/н' }}</strong><br>
 				
 			</td>
 		</tr>
@@ -93,33 +100,7 @@
 	
 	<div class="template-preview">
 	<h1>{{ card.print_name }}</h1>
-	
-	{% for d in data %}
-		{% for ticket in d.tickets %}
-		<h2>{{ ticket.title }}</h2>
-		<p>{{ ticket.text }}</p>
-		{% endfor %}
-	{% endfor %}
-	{% for d in gdata %}
-		<h2>{{ d.title }}</h2>
-		<p>{{ d.text }}</p>
-	{% endfor %}
-	{% if asgmts %}
-		<h2> Рекомендации </h2>
-		<table class="results">
-		<tr>
-			<td>Услуга</td><td>Количество</td><td>Дата истечения</td><td>Отметка</td>
-		</tr>
-		{% for a in asgmts %}
-		<tr>
-			<td>{{a.text}}</td>
-			<td>{{a.count}}</td>
-			<td>{{a.expiration|date:"d.m.Y H:i"}}</td>
-			<td>{{a.deleted}}</td>
-		</tr>	
-		{% endfor %}
-		</table>
-	{% endif %}
+{% include "examination/base.html" %}
 	<div class="footer">Врач
 		<span>___________________ {{ request.active_profile }}</span>
 	</div>

@@ -15,6 +15,7 @@ from django.core.serializers.json import DjangoJSONEncoder
 import datetime
 from patient.models import Patient
 from scheduler.models import Preorder
+from examination.widgets import WidgetManager
 #from lab.models import LabOrder, Result
 
 def examcard(request,card_id):
@@ -32,34 +33,11 @@ def examcard(request,card_id):
 @render_to('print/examination/card.html')
 def card(request, object_id):
     card = get_object_or_404(Card, pk=object_id)
-    general_data = []
-    if card.equipment:
-        general_data.append({'title':'Оборудование',
-                             'text':card.equipment.name
-                             })
-    if card.mkb_diag:
-        general_data.append({'title':'Диагноз по МКБ-10',
-                             'text':"%s, %s" % (card.mkb_diag.code, card.mkb_diag.name)
-                             })
-    asgmt_list = Preorder.objects.filter(patient=card.ordered_service.order.patient.id,card=card.id)
-    assigments = [{'count':a.count,
-                   'text':a.service and a.service.base_service.name or u'Нет названия',
-                   'expiration':a.expiration or u'Не указано',
-                   'deleted':a.deleted and u'Отменено' or ''} for a in asgmt_list]
-    field_sets = dict([(fs.name, fs.title) for fs in FieldSet.objects.all()]) 
-    data = card.data and simplejson.loads(card.data) or []
-    for d in data:
-        if 'section' in d:
-            for t in d['tickets']:
-                if t['private'] == True:
-                    d['tickets'].remove(t)
-            d['title'] = field_sets[d['section']]
-    
+    manager = WidgetManager(request, card.get_data()['tickets'])
     ctx = {
         'card':card,
-        'data':data,
-        'gdata':general_data,
-        'asgmts':assigments
+        'data':card.data,
+        'manager':manager
     }
 
     return ctx

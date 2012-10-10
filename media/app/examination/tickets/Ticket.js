@@ -136,6 +136,9 @@ Ext.ux.form.Ticket = Ext.extend(Ext.Panel,{
                 width: 600,
                 selectOnFocus: true,
                 cls:'header-editor',
+                style:{
+                	height:'1.5em'
+                },
                 listeners:{
                 	'render': function(c) {
                 		var el = c.getEl();
