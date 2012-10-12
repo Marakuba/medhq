@@ -154,17 +154,15 @@ App.examination.TicketTab = Ext.extend(Ext.Panel, {
 		       this.ticketPanel
 		    ],
 		    tbar:this.ttb
-		}
+		};
+		
+		this.fillMenu();
 								
 		Ext.apply(this, Ext.apply(this.initialConfig, config));
 		App.examination.TicketTab.superclass.initComponent.apply(this, arguments);
 		
 		this.on('afterrender',function(panel){
-			this.fillSectionMenu();
-			this.fillQuestsMenu();
-			if (this.data){
-				this.loadData(this.data)
-			}
+			
 		},this);
 		
 		this.on('ticketbodyclick', function(panel,editor,pos){
@@ -203,6 +201,46 @@ App.examination.TicketTab = Ext.extend(Ext.Panel, {
 		},this);
 	},
 	
+	fillMenu:function(){
+		
+		//Добавляем обязательные элементы в toolbar
+		
+		//Кнопка с подразделами
+		this.fillSectionMenu();
+		//Кнопка с анкетами
+		this.fillQuestsMenu();
+		
+		this.editQuestBtn = new Ext.Button({
+			text:'Редактировать анкету',
+			hidden:true,
+			handler:this.editQuestClick,
+			scope:this
+		});
+		this.deleteQuestBtn = new Ext.Button({
+			text:'Удалить анкету',
+			hidden:true,
+			handler:this.deleteQuestClick,
+			scope:this
+		});
+		
+		this.ttb.add(this.editQuestBtn);
+		this.ttb.add(this.deleteQuestBtn);
+		//Добавляем пользовательские элементы в toolbar
+		this.fillUsersMenu();
+		if (this.data){
+			this.loadData(this.data);
+			if(this.data.questionnaire){
+				this.editQuestBtn.show();
+				this.deleteQuestBtn.show();
+			}
+		}
+		this.doLayout();
+	},
+	
+	//Пользовательская функция добавления элементов в тулбар. выполняется после добавления обязательных кнопок
+	fillUsersMenu: function(){},
+	
+	
 	loadData: function(data,quests,sectionPlan){
 		//есть глобальная переменная section_scheme, содержащая все секции
 		//Проходим по всем тикетам и вставляем их в панель в нужном порядке
@@ -211,10 +249,11 @@ App.examination.TicketTab = Ext.extend(Ext.Panel, {
 		if(!data) return false;
 		
 		Ext.each(data.tickets,function(ticket){
+			var currentSection = ticket.section || 'other'
 			//Каждому тикету присваиваем order из section_scheme, чтобы видеть, куда вставлять новые тикеты
-			ticket['order'] = section_scheme[ticket.section]['order']
+			ticket['order'] = section_scheme[currentSection] && section_scheme[currentSection]['order'] || 10000
 			if (!ticket.title){
-				ticket['title'] = section_scheme[ticket.section]['title']
+				ticket['title'] = section_scheme[currentSection]['title']
 			};
 			var ticket_data = {}
 			Ext.apply(ticket_data,ticket);
@@ -232,8 +271,9 @@ App.examination.TicketTab = Ext.extend(Ext.Panel, {
 		//если тикетов еще нет, то добавляем в конец
 		//тикет добавляется в конец секции
 		var insertMethod = ticketConfig['pos'] ? 'pos' : 'order';
+		var currentSection = ticketConfig['section'] || ticketConfig['data']['section'] || 'other';
 		if (!ticketConfig[insertMethod]){
-			ticketConfig[insertMethod] = section_scheme[ticketConfig['section'][insertMethod]];
+			ticketConfig[insertMethod] = section_scheme[currentSection] && section_scheme[currentSection][insertMethod]||10000;
 		}
 		var ind = this.getLowInd(insertMethod,ticketConfig[insertMethod]);
 		this.portalColumn.insert(ind+1,ticketConfig);
@@ -300,7 +340,7 @@ App.examination.TicketTab = Ext.extend(Ext.Panel, {
 	findTicket:function(paramName,value){
 		var ticket = undefined;
 		this.ticketPanel.items.itemAt(0).items.each(function(item,ind){
-			if (item[paramName] === value) {
+			if (item['data'][paramName] === value) {
 				ticket = item;
 			}
 		},this);
@@ -311,7 +351,7 @@ App.examination.TicketTab = Ext.extend(Ext.Panel, {
 	findByTitle:function(questName,title){
 		var ticket = undefined;
 		this.ticketPanel.items.itemAt(0).items.each(function(item,ind){
-			if ((item['questName'] == questName) && (item.data['title']== title)) {
+			if ((item.data['questName'] == questName) && (item.data['title']== title)) {
 				ticket = item;
 			}
 		},this);
@@ -403,5 +443,85 @@ App.examination.TicketTab = Ext.extend(Ext.Panel, {
 	
 	questBtnClick: function(quest){
 		console.log('Открытие анкеты ',quest.name);
+		//потом этот код сохранится в this.data.questionnaire.code, если анкета будет сохранена
+		this.questCode = quest.code;
+		App.eventManager.fireEvent('launchApp','questionnaireticketeditor',{
+			title:'Анкета '+quest.name,
+			questName:quest.name,
+			code:Ext.decode(quest.code),
+			fn:this.saveQuestData,
+			scope:this
+		})
+	},
+	
+	//Вызывается после нажатия на кнопку Ок в панели редактирования анкеты
+	saveQuestData: function(dataArr,panel){
+		var tickets = dataArr[0];
+		var allData = dataArr[1];
+		var questName = dataArr[2];
+		if (panel.data.questionnaire){
+			panel.data.questionnaire['data'] = allData;
+			Ext.each(tickets,function(t){
+				//ищем редактируемый тикет
+				var edTicket = panel.findByTitle(t.questName,t['title']);
+				if (edTicket){
+					edTicket.setData({title:t['title'],value:t['value']});
+				} else{
+					t['xtype']='textticket';
+					var ticketConfig = {
+						xtype:'textticket',
+						data:t
+					};
+					panel.addTicket(ticketConfig);
+				} 
+			},this);
+		} else {
+			panel.data.questionnaire = {
+				name:questName,
+				code:panel.questCode,
+				data:allData
+			};
+			panel.dataLoading = true;
+			Ext.each(tickets,function(ticket){
+				ticket['xtype']='textticket';
+				var ticketConfig = {
+					xtype:'textticket',
+					data:ticket
+				};
+				panel.addTicket(ticketConfig);
+			});
+			panel.dataLoading = false;
+		};
+		panel.doLayout();
+		panel.updateData();
+		panel.editQuestBtn.show();
+		panel.deleteQuestBtn.show();
+	},
+	
+	editQuestClick: function(){
+		var quest = this.data.questionnaire;
+		App.eventManager.fireEvent('launchApp','questionnaireticketeditor',{
+			title:'Анкета '+quest.name,
+			questName:quest.name,
+			data:quest.data,
+			code:Ext.decode(quest.code),
+			fn:this.saveQuestData,
+			scope:this
+		})
+	},
+	
+	deleteQuestClick: function(){
+		var questName = this.data.questionnaire.name;
+		do {
+			var t = this.findTicket('questName',questName);
+			if (t){
+				t.destroy();
+			}
+		} while (t);
+		this.doLayout();
+		delete this.data.questionnaire;
+		this.updateData();
+		this.editQuestBtn.hide();
+		this.deleteQuestBtn.hide();
 	}
 });

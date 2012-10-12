@@ -165,7 +165,8 @@ Ext.ux.form.Ticket = Ext.extend(Ext.Panel,{
         });
 	},
 	
-	setData : function() {
+	setData : function(data) {
+		Ext.apply(this.data,data)
 		this.updateData();
 	},
 	
