@@ -22,6 +22,7 @@ class Report():
     base_wuery_from_where = u"\
 FROM \
   public.visit_visit Tvis \
+  left outer join public.numeration_barcode TTbarcode on TTbarcode.id = Tvis.barcode_id \
   left outer join public.visit_orderedservice TTvis on TTvis.order_id = Tvis.id \
   left outer join public.state_state Tstate on Tstate.id = TTvis.execution_place_id \
   left outer join public.service_baseservice Tserv on Tserv.id = TTvis.service_id \

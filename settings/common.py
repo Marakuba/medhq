@@ -106,6 +106,7 @@ INSTALLED_APPS = [
     'numeration',
     'patient',
     'reporting',
+    'oldreporting',
     'service',
     'promotion',
     'remoting',
