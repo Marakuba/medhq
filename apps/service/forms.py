@@ -73,3 +73,16 @@ class TreeLoaderForm(forms.Form):
                                  required=False)
     top = forms.CharField(label=u'Добавить в группу', required=False, max_length=300, 
                            widget=forms.TextInput(attrs={'size':100}))
+
+
+class ExtServiceCopierForm(forms.Form):
+    """
+    """
+    _selected_action = forms.CharField(widget=forms.MultipleHiddenInput)
+    state = forms.ModelChoiceField(label=u'Организация',
+                                            queryset=payer_qs,
+                                            required=True)
+    branches = forms.ModelMultipleChoiceField(label=u'Филиалы',
+                                            queryset=state_qs,
+                                            required=True,
+                                            widget=forms.CheckboxSelectMultiple())

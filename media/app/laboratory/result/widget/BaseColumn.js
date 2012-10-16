@@ -235,7 +235,22 @@ App.result.BaseColumn = Ext.extend(Ext.Panel,{
 		this.store.save();
 	},
 	
-	
+	onSubmit : function() {
+		App.direct.lab.confirmResults(this.labOrder.id, function(r, e){
+			if(r.success) {
+				this.labOrder.set('is_completed',true);
+				Ext.ux.Growl.notify({
+			        title: "Успешная операция!", 
+			        message: r.message,
+			        iconCls: "x-growl-accept",
+			        alignment: "tr-tr",
+			        offset: [-10, 10]
+			    })
+			} else {
+				Ext.MessageBox.alert('Ошибка!', r.message);
+			}
+		}, this);
+	}
 });
 
 

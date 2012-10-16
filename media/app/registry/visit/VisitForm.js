@@ -20,6 +20,8 @@ App.visit.VisitForm = Ext.extend(Ext.FormPanel, {
 		this.barcodeInputField = new Ext.form.TextField({
 			fieldLabel:'Штрих-код',
 			style:'font-size:3.5em; height:1em; width:140px',
+		    autoStripChars:true,
+			stripCharsRe:new RegExp('[\;\?\#\№]'),
 			listeners:{
 				scope:this,
 				'specialkey':function(field,e) {

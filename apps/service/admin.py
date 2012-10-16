@@ -21,7 +21,7 @@ import StringIO
 
 from pricelist.models import Price
 from django.views.generic.simple import direct_to_template
-from service.forms import PriceForm, TreeLoaderForm
+from service.forms import PriceForm, TreeLoaderForm, ExtServiceCopierForm
 from core.admin import TabbedAdmin
 from django.conf import settings
 from annoying.decorators import render_to
@@ -29,6 +29,7 @@ from django.shortcuts import render_to_response
 from django.template.context import RequestContext
 from django.core.files.uploadedfile import InMemoryUploadedFile
 from service.utils import ServiceTreeLoader
+from core.utils import copy_model_object
 
 
 class StandardServiceAdmin(TreeEditor):
@@ -205,7 +206,38 @@ class ExecutionPlaceAdmin(admin.TabularInline):
     model = ExecutionPlace
     extra = 1
 
+def copy_ext_service(modeladmin, request, queryset):
+    
+    if 'apply' in request.POST:
+        # do proccess
+        form = ExtServiceCopierForm(request.POST)
+        if form.is_valid():
+            state = form.cleaned_data['state']
+            branches = form.cleaned_data['branches']
+            for obj in queryset:
+                new_ex = copy_model_object(obj,
+                          copy_rels=['pricelist:price',],
+                          values={
+                                  '_':{
+                                       'state':state,
+                                       'branches':branches
+                                    }
+                                  })
+        
+        return HttpResponseRedirect(request.get_full_path())
+    
+    form = ExtServiceCopierForm(initial={'_selected_action': request.POST.getlist(admin.ACTION_CHECKBOX_NAME)})
+    
+    ctx = {
+        'form':form
+    }
 
+    return render_to_response('admin/service/extendedservice/copier.html',
+                              ctx,
+                              context_instance=RequestContext(request))
+
+copy_ext_service.short_description = u'Копировать расширенные услуги' 
+    
 class ExtendedServiceAdmin(admin.ModelAdmin):
     """
     """
@@ -215,6 +247,7 @@ class ExtendedServiceAdmin(admin.ModelAdmin):
     search_fields = ('base_service__name',)
     list_filter = ('tube','state','is_manual')
     inlines = [PriceInlineAdmin]
+    actions = [copy_ext_service]
     
 
 class ExtendedServiceInlineAdmin(admin.StackedInline):
@@ -222,6 +255,7 @@ class ExtendedServiceInlineAdmin(admin.StackedInline):
 #    template = "admin/service/tabular.html"
     model = ExtendedService
     extra = 0
+    filter_horizontal = ('branches',)
     exclude = ('staff',)
 
 
