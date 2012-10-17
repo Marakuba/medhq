@@ -93,7 +93,7 @@
 	
 	<div class="template-preview">
 	<h1>{{ card.print_name }}</h1>
-	
+	{% autoescape off %}
 	{% for d in data %}
 		{% for ticket in d.tickets %}
 		<h2>{{ ticket.title }}</h2>
@@ -104,6 +104,7 @@
 		<h2>{{ d.title }}</h2>
 		<p>{{ d.text }}</p>
 	{% endfor %}
+	{% endautoescape %}
 	{% if asgmts %}
 		<h2> Рекомендации </h2>
 		<table class="results">

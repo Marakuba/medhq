@@ -26,6 +26,9 @@ NOTIFICATION_TYPES = (
     (2,u'Уведомлять по Email'),
 )
 
+def cap_first(text):
+    return text[0].upper()+text[1:]
+
 class Patient(make_person_object('patient')):
     
     modified = models.DateTimeField(auto_now=True)
@@ -137,9 +140,9 @@ class Patient(make_person_object('patient')):
             return ''
         
     def save(self, *args, **kwargs):
-        self.first_name = self.first_name.strip().capitalize()
-        self.last_name = self.last_name.strip().capitalize()
-        self.mid_name = self.mid_name.strip().capitalize()
+        self.first_name = cap_first(self.first_name.strip())
+        self.last_name = cap_first(self.last_name.strip())
+        self.mid_name = self.mid_name and cap_first(self.mid_name.strip()) or ''
         
         super(Patient, self).save(*args, **kwargs)
 

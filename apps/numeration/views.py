@@ -82,11 +82,13 @@ def getPrinterBySlug(request):
         if __debug__:
             logger.error(u"NUMERATION: %s" % err)
         return dict(success=False, data={})
-    
+
+import re
+
 @remoting(remote_provider, len=1, action='numeration', name='getBarcodePayer')
 def getBarcodePayer(request):
     data = simplejson.loads(request.raw_post_data)
-    barcode_id = data['data'][0]
+    barcode_id = re.sub('\D','',data['data'][0])
     
     try:
         barcode_id = int(barcode_id)
