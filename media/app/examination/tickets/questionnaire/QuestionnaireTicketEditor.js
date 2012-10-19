@@ -180,7 +180,7 @@ App.examination.QuestionnaireTicketEditor = Ext.extend(Ext.form.FormPanel, {
 	//Создает объект согласно словаря компонентов
 	buildObject: function(obj,deep,index,section){
 		var elem;
-		var name = section + '_' + deep + '_' + index;
+		var name = obj.name || section + '_' + deep + '_' + index;
 		//Если в редакторе указан тип для текущего элемента
 		if (obj['type']){
 			//выбираем компонент из словаря компонентов
@@ -323,7 +323,7 @@ App.examination.QuestionnaireTicketEditor = Ext.extend(Ext.form.FormPanel, {
 	
 	onSave: function(){
 		if (this.fn){
-			this.fn(this.makeTickets(),this.scope)
+			this.fn(this.makeTickets(),this.panel)
 		};
 		this.destroy();
 	}

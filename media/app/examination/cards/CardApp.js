@@ -65,6 +65,7 @@ App.examination.CardApp = Ext.extend(Ext.Panel, {
 		});
 	
 		var config = {
+			id:'card-app-'+this.orderId,
 			closable:true,
 //			title: 'Карта осмотра',
 			layout: 'border',	

@@ -2,9 +2,9 @@
 	{% block title %}
 	<div class="title">{{ title }}</div>
 	{% endblock %}
-	{% block value %}
 	{% autoescape off %}
-	<div class="value">{{ value }}</div>
+		{% block value %}
+		<div class="value">{{ value }}</div>
+		{% endblock %}
 	{% endautoescape %}
-	{% endblock %}
 </div>

@@ -38,13 +38,16 @@ class BaseWidget(object):
         self.private = private
         self.opts = kwargs
         self.template = self.tpl % self.xtype
-    
-    def to_html(self):
-        ctx = {
+
+    def get_ctx(self):
+        return {
             'title':self.title,
             'value':self.value,
             'xtype':self.xtype
-        }
+        } 
+    
+    def to_html(self):
+        ctx = self.get_ctx()
         return render_to_response(self.template, ctx,
                            context_instance=RequestContext(self.request)).content
     

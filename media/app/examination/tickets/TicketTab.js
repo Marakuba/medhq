@@ -6,7 +6,14 @@ App.examination.TicketPanel = Ext.extend(Ext.ux.Portal,{
 //	title:'Новый раздел',
 	autoScroll:true,
 	cls: 'placeholder',
-	bubbleEvents:['beforeticketremove','ticketremove','ticketdataupdate','ticketeditstart','drop','beforedrop','ticketheadeeditrstart','ticketbodyclick'],
+	bubbleEvents:['beforeticketremove',
+	              'ticketremove',
+	              'ticketdataupdate',
+	              'ticketeditstart',
+	              'drop',
+	              'beforedrop',
+	              'ticketheadeeditrstart',
+	              'ticketbodyclick'],
 	closable: false
 });
 
@@ -115,24 +122,18 @@ App.examination.TicketTab = Ext.extend(Ext.Panel, {
 					panel['dragged'] = true;
 //					return false
 				},
-				'onticketedit': function(panel){
+				'ticketbeforeedit': function(panel){
 					//если открыт редактор тикета, карту осмотра закрывать нельзя
 					if (!this.editInProcess){
 						this.editInProcess = true;
-						var editorConfig = {
-							title:panel.data.title,
-							data:panel.data,
-							fn: panel.editComplete,
-							panel:panel
-						}
-						App.eventManager.fireEvent('launchapp',panel.editor,editorConfig);
-//						this.fireEvent('onticketedit',panel);
+						return true
 					} else {
-						Ext.Msg.alert('Внимание!','Один редактор уже открыт!')
+						Ext.Msg.alert('Внимание!','Один редактор уже открыт!');
+						return false
 					}
 				
 				},
-				'editcomplete': function(){
+				'ticketeditcomplete': function(){
 					this.editInProcess = false;
 				},
 				scope:this

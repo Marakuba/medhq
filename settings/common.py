@@ -96,6 +96,7 @@ INSTALLED_APPS = [
 #    'sentry',
 #    'sentry.client',
 
+    'assistant',
     'api',
     'crm',
     'core',
@@ -121,7 +122,6 @@ INSTALLED_APPS = [
     'scheduler',
     'interlayer',
     'billing',
-    'django_assets',
     
         
     'django.contrib.admin',
@@ -136,6 +136,7 @@ INSTALLED_APPS = [
     'constance',
     'dbtemplates',
     'debug_toolbar',
+    'django_assets',
     'django_extensions',
     'django_memcached',
     'djcelery',

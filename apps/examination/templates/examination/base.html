@@ -1,5 +1,7 @@
 {% autoescape off %}
 {% for widget in manager.widgets %}
+{% if widget.printable %}
 {{ widget.to_html }}
+{% endif %}
 {% endfor %}
 {% endautoescape %}

@@ -11,6 +11,7 @@ Ext.ns('Ext.ux.form');
 
 
 Ext.ux.form.Ticket = Ext.extend(Ext.Panel,{
+	editor : 'textticketeditor',
 	initComponent: function(){
 		
 		this.type = 'textticket';
@@ -48,7 +49,6 @@ Ext.ux.form.Ticket = Ext.extend(Ext.Panel,{
 			baseCls:'x-plain',
 			cls:'section',
 			layout:'anchor',
-			editor:'textticketeditor',
 			draggable : true,
 			headerCfg:{
 				tag:'div',
@@ -85,6 +85,8 @@ Ext.ux.form.Ticket = Ext.extend(Ext.Panel,{
 					panel.setData();
 					this.headerConfig(panel);
 					this.bodyConfig(panel);
+				},
+				beforedestroy : function(panel){
 				}
 			},
 			scope : this
@@ -233,12 +235,26 @@ Ext.ux.form.Ticket = Ext.extend(Ext.Panel,{
     },
     
     onEdit: function(panel){
-		panel.fireEvent('onticketedit', panel)
+		if(panel.fireEvent('ticketbeforeedit', panel)===true){
+			var editorConfig = panel.getEditorConfig(panel);
+			App.eventManager.fireEvent('launchapp',panel.editor,editorConfig);
+		}
+
+	},
+	
+	getEditorConfig : function(panel){
+		var editorConfig = {
+			title:panel.data.title,
+			data:panel.data,
+			fn: panel.editComplete,
+			panel:panel
+		}
+		return editorConfig
 	},
 	
 	editComplete: function(data,panel){
 		//посылается событие для того, чтобы все компоненты вверху знали, что редактирование закончено 
-		panel.fireEvent('editcomplete');
+		panel.fireEvent('ticketeditcomplete');
 		//Выполняется пользовательская функция обработки отредактированных данных
 		panel.afterEdit(data,panel);
 	},
