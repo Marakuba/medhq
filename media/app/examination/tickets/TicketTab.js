@@ -265,7 +265,7 @@ App.examination.TicketTab = Ext.extend(Ext.Panel, {
 		this.dataLoading = false;
 	},
 	
-	addTicket:function(ticketConfig){
+	addTicket:function(ticketConfig, isNew){
 		//вставляем тикет в нужное место согласно порядку order
 		//порядок тикетов может быть определен либо по значению order (если добавляется новый тикет)
 		//либо по значению pos (если загружаются сохраненные тикеты)
@@ -279,13 +279,17 @@ App.examination.TicketTab = Ext.extend(Ext.Panel, {
 		
 		//если тикетов еще нет, то добавляем в конец
 		//тикет добавляется в конец секции
+		this.sectionItems.hide();
 		var insertMethod = ticketConfig['pos'] ? 'pos' : 'order';
 		var currentSection = ticketConfig['section'] || ticketConfig['data']['section'] || 'other';
 		if (!ticketConfig[insertMethod]){
 			ticketConfig[insertMethod] = section_scheme[currentSection] && section_scheme[currentSection][insertMethod]||10000;
 		}
 		var ind = this.getLowInd(insertMethod,ticketConfig[insertMethod]);
-		this.portalColumn.insert(ind+1,ticketConfig);
+		var newTicket = this.portalColumn.insert(ind+1,ticketConfig);
+		if(isNew){
+			newTicket.onEdit(newTicket);
+		}
 		this.doLayout();
 		//если добавляется новый тикет, а не существующий, т.е. если у него нет своей позиции pos
 		//иногда в загружаемых тикетах может не быть pos, для этого во время загрузки данных
@@ -377,10 +381,35 @@ App.examination.TicketTab = Ext.extend(Ext.Panel, {
 	
 	fillSectionMenu: function(){
 		this.sectionItems = new Ext.menu.Menu({
-			items:[]
+				plain:true,
+				defaults:{
+					xtype:'buttongroup',
+					columns:6,
+					bodyBorder:false,
+					border:false,
+					hideBorders:true,
+					defaults:{
+						xtype:'button',
+						scale:'small',
+						style:{
+							padding:'4px 3px'
+						}
+					}
+				},
+				items:[]
 		});
 		for (var section in section_scheme) {
-			this.sectionItems.add(String.format('<b class="menu-title">{0}</b>',section_scheme[section].title));
+			
+			var items = [];
+			items.push({
+				xtype:'box',
+				html:section_scheme[section].title,
+				style:{
+					width:'110px'
+				}
+			});
+			
+			
 			if (section_scheme[section].items.length){
 				Ext.each(section_scheme[section].items,function(item){
 					var ticket_data = {}
@@ -388,10 +417,10 @@ App.examination.TicketTab = Ext.extend(Ext.Panel, {
 					item['data'] = ticket_data;
 					var subBtn = {
 						text:item.title,
-						handler:this.addTicket.createDelegate(this,[item]),
+						handler:this.addTicket.createDelegate(this,[item, true]),
 						scope:this
 					};
-					this.sectionItems.add(subBtn);
+					items.push(subBtn);
 				},this);
 			};
 			var freeBtn = {
@@ -401,10 +430,13 @@ App.examination.TicketTab = Ext.extend(Ext.Panel, {
 					order:section.order,
 					section:section.name,
 					data:{title:'Произвольный',value:'',printable:true,private:false,section:section.name}
-				}]),
+				}, true]),
 				scope:this
 			}
-			this.sectionItems.add(freeBtn)
+			items.push(freeBtn);
+			this.sectionItems.add({
+				items:[items]
+			})
 		};
 		
 		this.addSubSecBtn = new Ext.Button({

@@ -53,6 +53,8 @@ class SubSectionInlineAdmin(admin.TabularInline):
     
 class FieldSetAdmin(admin.ModelAdmin):
     inlines = [SubSectionInlineAdmin]
+    list_display = ('title','name','order','active')
+    ordering = ('order',)
     
 class QuestionnaireAdmin(admin.ModelAdmin):
     filter_horizontal = ('staff','base_service',)
