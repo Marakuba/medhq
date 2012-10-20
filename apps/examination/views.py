@@ -33,7 +33,7 @@ def examcard(request,card_id):
 @render_to('print/examination/card.html')
 def card(request, object_id):
     card = get_object_or_404(Card, pk=object_id)
-    manager = WidgetManager(request, card.get_data()['tickets'])
+    manager = WidgetManager(request=request, data=card.get_data()['tickets'],card=card)
     ctx = {
         'card':card,
         'data':card.data,

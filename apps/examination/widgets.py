@@ -4,6 +4,7 @@
 """
 from django.shortcuts import render_to_response
 from django.template.context import RequestContext
+from scheduler.models import Preorder
 
 _registry = {}
 
@@ -68,7 +69,8 @@ class WidgetManager(object):
                             t['title'], 
                             t['value'], 
                             t['printable'],
-                            t['private'])
+                            t['private'],
+                            **self.opts)
     
     def add_widget(self, request, xtype, title, value, printable=True, private=False, **kwargs):
         try:
@@ -112,6 +114,17 @@ class MkbWidget(BaseWidget):
     
 class AsgmtWidget(BaseWidget):
     xtype = 'asgmtticket'
+    
+    def to_html(self):
+        asgmts = Preorder.objects.filter(card=self.opts['card'].id)
+        ctx = {
+            'title':self.title,
+            'value':self.value,
+            'xtype':self.xtype,
+            'asgmts':asgmts
+        }
+        return render_to_response(self.template, ctx,
+                           context_instance=RequestContext(self.request)).content
     
 
 class EquipmentWidget(BaseWidget):

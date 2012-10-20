@@ -414,10 +414,10 @@ App.examination.TicketTab = Ext.extend(Ext.Panel, {
 				Ext.each(section_scheme[section].items,function(item){
 					var ticket_data = {}
 					Ext.apply(ticket_data,item);
-					item['data'] = ticket_data;
+					ticket_data['data'] = item;
 					var subBtn = {
 						text:item.title,
-						handler:this.addTicket.createDelegate(this,[item, true]),
+						handler:this.addTicket.createDelegate(this,[ticket_data, true]),
 						scope:this
 					};
 					items.push(subBtn);

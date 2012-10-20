@@ -23,7 +23,7 @@ App.examination.AsgmtTicketEditor = Ext.extend(Ext.Panel, {
 		    writeAllFields: true
 		});
 		
-		this.preorderStore = this.data && this.data.store || new Ext.data.Store({
+		this.preorderStore = this.store || new Ext.data.Store({
 			autoSave:false,
 			autoLoad:true,
 		    baseParams: {

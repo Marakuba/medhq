@@ -46,7 +46,6 @@ App.examination.CardApp = Ext.extend(Ext.Panel, {
 			listeners:{
 				scope:this,
 				write:function(store, action, result, res, rs){
-					console.log(rs)
 				}
 			}
 		});
@@ -89,7 +88,6 @@ App.examination.CardApp = Ext.extend(Ext.Panel, {
 		App.examination.CardApp.superclass.initComponent.apply(this, arguments);
 		
 		this.on('afterrender',function(){
-			console.log(section_scheme)
 			if (this.record){
 				this.editCard(this.record.data.id)
 			}

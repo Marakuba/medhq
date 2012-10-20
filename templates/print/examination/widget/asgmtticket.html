@@ -1,0 +1,21 @@
+<div class="ticket {{ xtype }}">
+	{% block title %}
+	<div class="title">{{ title }}</div>
+	{% endblock %}
+	{% autoescape off %}
+	{% block value %}
+	<table border=1>
+		<tr>
+			<th>Услуга</th> <th>Количество</th>
+		</tr>
+		{%for row in asgmts%}
+			<tr>
+				<td>{{row.service.base_service.name}}</td>
+				<td>{{row.count}}</td>
+			</tr>
+		{%endfor%}
+		</table>
+			
+	{% endblock %}	
+	{% endautoescape %}
+</div>

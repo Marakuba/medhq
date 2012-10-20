@@ -188,6 +188,7 @@ def examination(request):
                                     'items':[{'title':subsec.title,
                                               'order':sec.order,
                                               'xtype':subsec.widget,
+                                              'value':'',
                                               'printable':True,
                                               'private':False,
                                               'section':sec.name

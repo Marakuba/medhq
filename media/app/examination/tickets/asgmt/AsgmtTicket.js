@@ -31,7 +31,7 @@ App.examination.AsgmtTicket = Ext.extend(Ext.ux.form.Ticket,{
 		    writeAllFields: true
 		});
 		
-		this.data.store = new Ext.data.Store({
+		this.store = new Ext.data.Store({
 			autoSave:false,
 			autoLoad:false,
 		    baseParams: {
@@ -77,20 +77,38 @@ App.examination.AsgmtTicket = Ext.extend(Ext.ux.form.Ticket,{
 		
 	},
 	
-	afterEdit: function(data,panel){
-		panel.data.value = data;
+	afterEdit: function(records,panel){
+		panel.records = records;
+//		panel.data.value = '';
 		panel.updateData();
 //		panel.fireEvent('ticketdataupdate',this,this.data)
 	},
 	
 	setData : function(data) {
-		Ext.apply(this.data,data)
-		this.data.store.load({callback:function(records){
-			this.data.value = records;
+		Ext.apply(this.data,data);
+		this.data.value = '';
+		this.store.load({callback:function(records){
+			this.records = records;
 			this.updateData();
 		},scope:this})
 	},
 	
+	getEditorConfig : function(panel){
+		var editorConfig = {
+			store:this.store,
+			title:panel.data.title,
+			data:panel.data,
+			fn: panel.editComplete,
+			panel:panel,
+			listeners:{
+				scope:this,
+				cancel:function(){
+					this.store.load();
+				}
+			}
+		}
+		return editorConfig
+	},
 	
 	updateData : function() {
 		var d = this.data || {'printable':true, 'private':false};
@@ -101,10 +119,10 @@ App.examination.AsgmtTicket = Ext.extend(Ext.ux.form.Ticket,{
 			this.header.addClass('empty-header');
 			d['title'] = ''
 		};
-		if (d.value && d.value.length) {
+		if (this.records && this.records.length) {
 			this.body.removeClass('empty-body');
 			var text = '<table border=1><tr><th>Услуга</th><th>Количество</th></tr>';
-			Ext.each(d.value,function(v){
+			Ext.each(this.records,function(v){
 				text += '<tr><td>' + v.data.service_name + '</td><td>' + v.data.count + '</td></tr>';
 			});
 			text += '</table>';

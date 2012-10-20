@@ -20,7 +20,7 @@ from examination.widgets import WidgetManager
 @render_to('widget/examination/template.html')
 def examination_template(request, object_id):
     tpl = get_object_or_404(Template, pk=object_id)
-    manager = WidgetManager(request, tpl.get_data()['tickets'])
+    manager = WidgetManager(request=request, data=tpl.get_data()['tickets'],tpl=tpl)
     ctx = {
         'tpl':tpl,
         'data':tpl.data,
@@ -32,7 +32,7 @@ def examination_template(request, object_id):
 @render_to('widget/examination/card.html')
 def examination_card(request, object_id):
     card = get_object_or_404(Card, pk=object_id)
-    manager = WidgetManager(request, card.get_data()['tickets'])
+    manager = WidgetManager(request=request, data=card.get_data()['tickets'],card=card)
     ctx = {
         'card':card,
         'data':card.data,
