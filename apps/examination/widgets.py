@@ -110,6 +110,9 @@ class QuestWidget(BaseWidget):
 class MkbWidget(BaseWidget):
     xtype = 'mkbticket'
     
+class AsgmtWidget(BaseWidget):
+    xtype = 'asgmtticket'
+    
 
 class EquipmentWidget(BaseWidget):
     xtype = 'equipmentticket'
@@ -119,4 +122,5 @@ register('textticket', TextWidget)
 register('titleticket', TitleWidget)
 register('questticket', QuestWidget)
 register('mkbticket', MkbWidget)
+register('asgmtticket', AsgmtWidget)
 register('equipmentticket', EquipmentWidget)

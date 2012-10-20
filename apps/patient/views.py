@@ -31,6 +31,7 @@ def contractPrint(request, contract_id):
     contract = get_object_or_404(Contract, id=contract_id)
     
     ec = {
+        'patient':contract.patient,
         'contract':contract
     }
     

@@ -515,6 +515,8 @@ js_examination = Bundle(
     'app/examination/cards/CardGrid.js',
     
     'app/examination/tickets/text/TextTicketEditor.js',
+    'app/examination/tickets/asgmt/PreorderInlineGrid.js',
+    'app/examination/tickets/asgmt/AsgmtTicketEditor.js',
     
     'app/registry/ServicePanel.js',
     'app/service/ServiceTreeGrid.js',
@@ -527,6 +529,7 @@ js_examination = Bundle(
     'app/examination/editor/GeneralTab.js',
     'app/examination/tickets/Ticket.js',
     'app/examination/tickets/text/TextTicket.js',
+    'app/examination/tickets/asgmt/AsgmtTicket.js',
     'app/examination/tickets/questionnaire/QuestionnaireTicketEditor.js',
     'app/examination/tickets/TicketTab.js',
     'app/examination/editor/SectionPanel.js',

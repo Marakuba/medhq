@@ -8,7 +8,7 @@ App.examination.CardApp = Ext.extend(Ext.Panel, {
 		 *Данный компонент является менеджером карт осмотра
 		 *На входе он получает следующие параметры:
 		 *baseServiceId - для поиска шаблона по услуге
-		 *patientId - для открытия карты осмотра
+		 *patientId - для открытия карты осмотра, для создания направлений
 		 *patient_name - для отображении в заголовке
 		 *orderId - для поиска уже созданных карт осмотра для текущего заказа - для их редактирования
 		 *cardId - если карта редактируется
@@ -42,10 +42,20 @@ App.examination.CardApp = Ext.extend(Ext.Panel, {
 				format:'json',
 				deleted:false
 			},
-			model: App.models.Card
+			model: App.models.Card,
+			listeners:{
+				scope:this,
+				write:function(store, action, result, res, rs){
+					console.log(rs)
+				}
+			}
 		});
 		
 		this.cardStore.on('write',function(store, action, result, res, rs){
+			if (action == 'create'){
+				this.cardId = rs.data.id;
+				this.cardBody.cardId = this.cardId;
+			}
 			if (rs.data.deleted){
 				this.destroy();
 			}
@@ -153,6 +163,7 @@ App.examination.CardApp = Ext.extend(Ext.Panel, {
 			this.createEmptyCard();
 			return
 		} else {
+			this.cardId = cardId
 			this.cardStore.setBaseParam('id',cardId);
 			this.cardStore.load({callback:function(records){
 				if (!records.length){
@@ -175,6 +186,8 @@ App.examination.CardApp = Ext.extend(Ext.Panel, {
 		}
 		this.cardBody = new App.examination.TicketTab({
 			data:decodedData,
+			cardId : this.cardId,
+			patientId:this.patientId,
 			listeners:{
 				scope:this,
 				dataupdate:this.updateData,

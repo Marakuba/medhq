@@ -20,8 +20,8 @@ Ext.ux.form.Ticket = Ext.extend(Ext.Panel,{
 		this.defaultText = 'Щелкните здесь чтобы ввести описание...';
 		this.defaultTitle = 'Щелкните здесь чтобы установить заголовок...';
 		
-		this.addEvents('beforeticketremove','ticketremove','ticketdataupdate','ticketeditstart','editorclose','ticketheadeeditstart','ticketbodyclick','onticketedit','editcomplete');
-		this.enableBubble('beforeticketremove','ticketremove','ticketdataupdate','ticketeditstart','editorclose','ticketheadeeditstart','ticketbodyclick','onticketedit','editcomplete');
+		this.addEvents('beforeticketremove','ticketremove','ticketdataupdate','ticketeditstart','editorclose','ticketheadeeditstart','ticketbodyclick','ticketeditstart','editcomplete','beforeticketedit');
+		this.enableBubble('beforeticketremove','ticketremove','ticketdataupdate','ticketeditstart','editorclose','ticketheadeeditstart','ticketbodyclick','ticketeditstart','editcomplete','beforeticketedit');
 		
 		this.pntMenuItem = new Ext.menu.CheckItem({
 			text:'Выводить на печать',
@@ -253,6 +253,7 @@ Ext.ux.form.Ticket = Ext.extend(Ext.Panel,{
 	},
 	
 	editComplete: function(data,panel){
+		//panel - текущий тикет
 		//посылается событие для того, чтобы все компоненты вверху знали, что редактирование закончено 
 		panel.fireEvent('ticketeditcomplete');
 		//Выполняется пользовательская функция обработки отредактированных данных

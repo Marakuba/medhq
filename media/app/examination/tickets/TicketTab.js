@@ -163,7 +163,9 @@ App.examination.TicketTab = Ext.extend(Ext.Panel, {
 		App.examination.TicketTab.superclass.initComponent.apply(this, arguments);
 		
 		this.on('afterrender',function(panel){
-			
+			if (this.data){
+				this.loadData(this.data);
+			}
 		},this);
 		
 		this.on('ticketbodyclick', function(panel,editor,pos){
@@ -229,7 +231,6 @@ App.examination.TicketTab = Ext.extend(Ext.Panel, {
 		//Добавляем пользовательские элементы в toolbar
 		this.fillUsersMenu();
 		if (this.data){
-			this.loadData(this.data);
 			if(this.data.questionnaire){
 				this.editQuestBtn.show();
 				this.deleteQuestBtn.show();
@@ -268,6 +269,13 @@ App.examination.TicketTab = Ext.extend(Ext.Panel, {
 		//вставляем тикет в нужное место согласно порядку order
 		//порядок тикетов может быть определен либо по значению order (если добавляется новый тикет)
 		//либо по значению pos (если загружаются сохраненные тикеты)
+		
+		if (!ticketConfig.data){
+			ticketConfig['data'] = {}
+		}
+		ticketConfig['cardId'] = this.cardId;
+		ticketConfig.data['cardId'] = this.cardId;
+		ticketConfig.data['patientId'] = this.patientId; // нужно для добавления направлений
 		
 		//если тикетов еще нет, то добавляем в конец
 		//тикет добавляется в конец секции
