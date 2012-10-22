@@ -42,18 +42,13 @@ App.examination.CardApp = Ext.extend(Ext.Panel, {
 				format:'json',
 				deleted:false
 			},
-			model: App.models.Card,
-			listeners:{
-				scope:this,
-				write:function(store, action, result, res, rs){
-				}
-			}
+			model: App.models.Card
 		});
 		
 		this.cardStore.on('write',function(store, action, result, res, rs){
 			if (action == 'create'){
 				this.cardId = rs.data.id;
-				this.cardBody.cardId = this.cardId;
+				this.cardBody.setCardId(this.cardId);
 			}
 			if (rs.data.deleted){
 				this.destroy();

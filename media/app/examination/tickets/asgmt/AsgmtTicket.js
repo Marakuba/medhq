@@ -87,6 +87,19 @@ App.examination.AsgmtTicket = Ext.extend(Ext.ux.form.Ticket,{
 	setData : function(data) {
 		Ext.apply(this.data,data);
 		this.data.value = '';
+		if (this.cardId){
+			this.store.setBaseParam('card',this.cardId); //если номер карты передался не при инициализации тикета
+			this.store.load({callback:function(records){
+				this.records = records;
+				this.updateData();
+			},scope:this})
+		}
+	},
+	
+	setCardId: function(cardId){
+		if (this.data.cardId) return false
+		this.data.cardId = cardId;
+		this.store.setBaseParam('card',cardId);
 		this.store.load({callback:function(records){
 			this.records = records;
 			this.updateData();

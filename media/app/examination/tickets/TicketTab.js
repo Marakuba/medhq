@@ -118,8 +118,14 @@ App.examination.TicketTab = Ext.extend(Ext.Panel, {
 			
 			listeners:{
 				'beforedrop':function(res,e,t){
+					if (res.panel.fixed)
+						return false;
+					if (res.position == 0 && this.portalColumn.items.items[0].data.fixed)
+						return false;
+					
 					var panel = res.panel;
-					panel['dragged'] = true;
+					panel.data['dragged'] = true;
+					return true;
 //					return false
 				},
 				'ticketbeforeedit': function(panel){
@@ -163,8 +169,10 @@ App.examination.TicketTab = Ext.extend(Ext.Panel, {
 		App.examination.TicketTab.superclass.initComponent.apply(this, arguments);
 		
 		this.on('afterrender',function(panel){
-			if (this.data){
+			if (this.data && this.data.tickets.length){
 				this.loadData(this.data);
+			} else {
+				this.loadRequiredTickets();
 			}
 		},this);
 		
@@ -226,8 +234,25 @@ App.examination.TicketTab = Ext.extend(Ext.Panel, {
 			scope:this
 		});
 		
+		this.printBtn = new Ext.Button({
+			iconCls:'silk-printer',
+			text: 'Печать',
+			disabled:!this.cardId,
+			handler:this.onPrint.createDelegate(this,[this.card]),
+			scope:this
+		});
+		
+		this.historyBtn = new Ext.Button({
+			iconCls:'silk-package',
+			text: 'История пациента',
+			handler:this.onHistoryOpen.createDelegate(this),
+			scope:this
+		});
+		
 		this.ttb.add(this.editQuestBtn);
 		this.ttb.add(this.deleteQuestBtn);
+		this.ttb.add(this.printBtn);
+		this.ttb.add(this.historyBtn);
 		//Добавляем пользовательские элементы в toolbar
 		this.fillUsersMenu();
 		if (this.data){
@@ -257,9 +282,6 @@ App.examination.TicketTab = Ext.extend(Ext.Panel, {
 			if (!ticket.title){
 				ticket['title'] = section_scheme[currentSection]['title']
 			};
-			var ticket_data = {}
-			Ext.apply(ticket_data,ticket);
-			ticket['data'] = ticket_data;
 			this.addTicket(ticket);
 		},this);
 		this.dataLoading = false;
@@ -271,7 +293,9 @@ App.examination.TicketTab = Ext.extend(Ext.Panel, {
 		//либо по значению pos (если загружаются сохраненные тикеты)
 		
 		if (!ticketConfig.data){
-			ticketConfig['data'] = {}
+			var ticket_data = {}
+			Ext.apply(ticket_data,ticketConfig);
+			ticketConfig['data'] = ticket_data;
 		}
 		ticketConfig['cardId'] = this.cardId;
 		ticketConfig.data['cardId'] = this.cardId;
@@ -306,8 +330,8 @@ App.examination.TicketTab = Ext.extend(Ext.Panel, {
 			return index;
 		}
 		Ext.each(this.portalColumn.items.items,function(panel,ind){
-			if (panel['dragged']) {
-				//Если тикет поставили сюда вручную, то его пропускаем
+			if (panel.data.dragged || panel.data.fixed) {
+				//Если тикет поставили сюда вручную или он зафиксирован, то его пропускаем
 				index = ind
 			} else {
 				if (panel[paramName] <= value) {
@@ -429,7 +453,9 @@ App.examination.TicketTab = Ext.extend(Ext.Panel, {
 					xtype:'textticket',
 					order:section.order,
 					section:section.name,
-					data:{title:'Произвольный',value:'',printable:true,private:false,section:section.name}
+					fixed:false,
+					required:false,
+					data:{xtype:'textticket',title:'Произвольный',value:'',printable:true,private:false,section:section.name,fixed:false,required:false}
 				}, true]),
 				scope:this
 			}
@@ -564,5 +590,48 @@ App.examination.TicketTab = Ext.extend(Ext.Panel, {
 		this.updateData();
 		this.editQuestBtn.hide();
 		this.deleteQuestBtn.hide();
+	},
+	
+	loadRequiredTickets: function(){
+		var tickets = required_tickets;
+		if (!tickets.length){
+			return false
+		} else {
+			for (var i = 0; i < tickets.length; i++){
+				var ticket = {};
+				Ext.apply(ticket,tickets[i]);
+				this.addTicket(ticket);
+			}
+		}
+	},
+	
+	setCardId: function(cardId){
+		this.cardId = cardId;
+		this.printBtn.enable();
+		this.portalColumn.items.each(function(ticket){
+			if (ticket.setCardId){
+				ticket.setCardId(cardId);
+			}
+		})
+	},
+	
+	printUrlTpl : "/widget/examination/card/{0}/",
+	
+	onPrint: function(){
+		var url = String.format(this.printUrlTpl,this.cardId);
+		window.open(url);
+	},
+	
+	onHistoryOpen: function(){
+		var name = this.patient_name.split(' ');
+		
+		config = {
+			closable:true,
+//			title:name[0] + ': История',
+    		patientId:this.patientId
+//    		patient_name: this.patient_name,
+//			staff:this.staff
+		}
+//		App.eventManager.fireEvent('launchapp', 'patienthistory',config);
 	}
 });

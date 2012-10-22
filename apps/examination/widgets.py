@@ -27,6 +27,7 @@ def widget_choices():
 class BaseWidget(object):
     
     fixed = False
+    required = False
     print_title = True
     xtype = None
     tpl = 'print/examination/widget/%s.html'
@@ -114,9 +115,12 @@ class MkbWidget(BaseWidget):
     
 class AsgmtWidget(BaseWidget):
     xtype = 'asgmtticket'
+    required = True
+    fixed = True
     
     def to_html(self):
         asgmts = Preorder.objects.filter(card=self.opts['card'].id)
+        print len(asgmts)
         ctx = {
             'title':self.title,
             'value':self.value,
