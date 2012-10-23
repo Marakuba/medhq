@@ -28,7 +28,8 @@ class BaseWidget(object):
     
     fixed = False
     required = False
-    print_title = True
+    title_print = True
+    title_editable = True
     xtype = None
     tpl = 'print/examination/widget/%s.html'
     
@@ -104,19 +105,27 @@ class TextWidget(BaseWidget):
 
 class TitleWidget(BaseWidget):
     xtype = 'titleticket'
-    
+    required = True
+    fixed = True
+
 
 class QuestWidget(BaseWidget):
     xtype = 'questticket'
     
 
-class MkbWidget(BaseWidget):
-    xtype = 'mkbticket'
+class IcdWidget(BaseWidget):
+    xtype = 'icdticket'
+
+    def get_ctx(self):
+        return {
+            'title':self.title,
+            'value':self.value['_rendered'],
+            'xtype':self.xtype
+        } 
+    
     
 class AsgmtWidget(BaseWidget):
     xtype = 'asgmtticket'
-    required = True
-    fixed = True
     
     def to_html(self):
         asgmts = Preorder.objects.filter(card=self.opts['card'].id)
@@ -135,9 +144,9 @@ class EquipmentWidget(BaseWidget):
     xtype = 'equipmentticket'
     
 
-register('textticket', TextWidget)
-register('titleticket', TitleWidget)
-register('questticket', QuestWidget)
-register('mkbticket', MkbWidget)
-register('asgmtticket', AsgmtWidget)
+register('textticket',      TextWidget)
+register('titleticket',     TitleWidget)
+register('questticket',     QuestWidget)
+register('icdticket',       IcdWidget)
+register('asgmtticket',     AsgmtWidget)
 register('equipmentticket', EquipmentWidget)

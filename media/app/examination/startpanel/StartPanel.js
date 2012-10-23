@@ -23,11 +23,11 @@ App.examination.StartPanel = Ext.extend(Ext.Panel, {
 			region:'north'
 		});
 		
-		this.enableBubble('preview','copy','edit','empty');
+		this.enableBubble('preview','copy','edit','empty','loadcomplete');
 		
 		var config = {
 			closable:true,
-			bubbleEvents:['preview','copy','edit','empty'],
+			bubbleEvents:['preview','copy','edit','empty','loadcomplete'],
 			layout: 'border',	
      		items: [
 				{
@@ -35,6 +35,7 @@ App.examination.StartPanel = Ext.extend(Ext.Panel, {
 					width:500,
 					layout:'fit',
 					autoScroll:true,
+					border:false,
 					items:this.startView
 				},{
 					region:'center',
@@ -76,9 +77,6 @@ App.examination.StartPanel = Ext.extend(Ext.Panel, {
 			}
 		}, this);
 		this.startView.on('loadcomplete', function(){
-			if(this.loadMask){
-				this.loadMask.hide();
-			}
 		}, this);
 	}
 });

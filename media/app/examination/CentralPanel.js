@@ -117,15 +117,7 @@ App.ExamCentralPanel = Ext.extend(Ext.Panel, {
                     },
                     scope:this
                 },{
-                    text: 'Старые карты',
-                    scale:'medium',
-                    iconAlign: 'top',
-                    handler: function(){
-                    	this.launchApp('oldordergrid');
-                    },
-                    scope:this
-                },{
-                	text: 'Заключения',
+                	text: 'Архив заключений',
                     scale:'medium',
                     iconAlign: 'top',
                     handler: function(){
@@ -173,14 +165,6 @@ App.ExamCentralPanel = Ext.extend(Ext.Panel, {
                     },
                     scope:this
                 },{
-                	text: 'Корзина',
-                    scale:'medium',
-                    iconAlign: 'top',
-                    handler: function(){
-                    	this.launchApp('extrash');
-                    },
-                    scope:this
-                },{
                 	text: 'Глоссарий',
                     scale:'medium',
                     iconAlign: 'top',
@@ -188,8 +172,15 @@ App.ExamCentralPanel = Ext.extend(Ext.Panel, {
                     	this.launchApp('glosseditor');
                     },
                     scope:this
-                }
-                ]
+                },{
+                	text: 'Корзина',
+                    scale:'medium',
+                    iconAlign: 'top',
+                    handler: function(){
+                    	this.launchApp('extrash');
+                    },
+                    scope:this
+                }]
             },{
               xtype: 'buttongroup',
 //            title: 'Пациенты',
@@ -209,7 +200,7 @@ App.ExamCentralPanel = Ext.extend(Ext.Panel, {
                 	},
                     scope:this
                 }]
-	        },{
+	        }/*,{
               xtype: 'buttongroup',
 	            columns: 2,
 	            defaults: {
@@ -226,7 +217,7 @@ App.ExamCentralPanel = Ext.extend(Ext.Panel, {
                 	},
                     scope:this
                 }]
-	        },this.genDocGroup,'->',
+	        }*/,this.genDocGroup,'->',
 	        {
 				xtype:'buttongroup',
 				defaults:{

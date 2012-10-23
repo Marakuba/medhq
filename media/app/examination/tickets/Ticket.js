@@ -1,4 +1,4 @@
-Ext.ns('Ext.ux.form');
+Ext.ns('App.examination');
 
 /*
  * data : {
@@ -10,7 +10,7 @@ Ext.ns('Ext.ux.form');
  */
 
 
-Ext.ux.form.Ticket = Ext.extend(Ext.Panel,{
+App.examination.Ticket = Ext.extend(Ext.Panel,{
 	editor : 'textticketeditor',
 	initComponent: function(){
 		
@@ -92,7 +92,7 @@ Ext.ux.form.Ticket = Ext.extend(Ext.Panel,{
 			scope : this
 		};
 		Ext.apply(this, Ext.apply(this.initialConfig, config));
-		Ext.ux.form.Ticket.superclass.initComponent.apply(this, arguments);
+		App.examination.Ticket.superclass.initComponent.apply(this, arguments);
 		
 	},
 	
@@ -176,8 +176,7 @@ Ext.ux.form.Ticket = Ext.extend(Ext.Panel,{
 		return this.data;
 	},
 	
-	updateData : function() {
-		var d = this.data || {'printable':true, 'private':false};
+	updateTitleData : function(d){
 		if (d.title) {
 			this.setTitle(d.title);
 		} else {
@@ -185,12 +184,18 @@ Ext.ux.form.Ticket = Ext.extend(Ext.Panel,{
 			this.header.addClass('empty-header');
 			d['title'] = ''
 		};
+	},
+	
+	updateValueData : function(d) {
 		if (d.value) {
 			this.body.removeClass('empty-body');
 			this.body.update(d.value);
 		} else {
 			d['value'] = '' 
 		}; 
+	},
+	
+	updateOptData : function(d) {
 		if(!d.printable) {
 			this.addClass('not-printable');
 		}
@@ -198,6 +203,13 @@ Ext.ux.form.Ticket = Ext.extend(Ext.Panel,{
 			this.addClass('private');
 			this.pntMenuItem.setDisabled(true);
 		}
+	},
+	
+	updateData : function() {
+		var d = this.data || {'printable':true, 'private':false};
+		this.updateTitleData(d);
+		this.updateValueData(d);
+		this.updateOptData(d);
 		this.data = d;
 		this.doLayout();
 		this.afterLoad();
@@ -268,4 +280,4 @@ Ext.ux.form.Ticket = Ext.extend(Ext.Panel,{
 	
 });
 
-Ext.reg('ticket', Ext.ux.form.Ticket);
+Ext.reg('ticket', App.examination.Ticket);

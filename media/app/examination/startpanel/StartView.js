@@ -128,7 +128,7 @@ App.examination.StartView = Ext.extend(Ext.grid.GridPanel, {
 			this.store.loadData(this.plainResults(this.results));
 			this.getView().focusRow(0);
 			this.getSelectionModel().selectFirstRow();
-			this.fireEvent('loadcomplete');
+			this.fireEvent('loadcomplete', this);
 		}
 	},
 	
@@ -169,7 +169,7 @@ App.examination.StartView = Ext.extend(Ext.grid.GridPanel, {
 			autoScroll:true,
 			store:this.store,
 			border:false,
-	        bubbleEvents:['preview','copy','edit','empty'],
+	        bubbleEvents:['preview','copy','edit','empty','loadcomplete'],
 	        columns:[{
 	        	dataIndex:'section_name',
 	        	hidden:true
@@ -220,6 +220,7 @@ App.examination.StartView = Ext.extend(Ext.grid.GridPanel, {
 				headersDisabled:true,
 			    enableRowBody:true,
 				getRowClass: function(record, index, p, store) {
+//					return record.data.action=='edit' ? 'x-grid-row-info' : ''
 		        }
 			}),
 			listeners:{

@@ -1,4 +1,4 @@
-Ext.ns('Ext.ux.form');
+Ext.ns('App.examination');
 
 /*
  * data : {
@@ -10,22 +10,27 @@ Ext.ns('Ext.ux.form');
  */
 
 
-Ext.ux.form.TitleTicket = Ext.extend(Ext.ux.form.Ticket,{
+App.examination.TitleTicket = Ext.extend(App.examination.Ticket,{
 	initComponent: function(){
 		
 		config = {
-			type:'title'
 		};
 		
 		Ext.apply(this, Ext.apply(this.initialConfig, config));
-		Ext.ux.form.TitleTicket.superclass.initComponent.apply(this, arguments);
+		App.examination.TitleTicket.superclass.initComponent.apply(this, arguments);
 		
 		this.on('afterrender',function(){
-//			console.log(this.type)
 		},this)
 		
+	},
+	
+	afterEdit: function(data,panel){
+		panel.data.title = data.title;
+		panel.data.value = data.value;
+		panel.updateData();
+		panel.fireEvent('ticketdataupdate',this,this.data)
 	}
 	
 });
 
-Ext.reg('titleticket', Ext.ux.form.TitleTicket);
+Ext.reg('titleticket', App.examination.TitleTicket);

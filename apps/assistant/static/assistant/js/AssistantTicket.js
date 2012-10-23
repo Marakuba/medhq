@@ -14,13 +14,8 @@ Ext.ns('App.examination');
  */
 
 
-App.examination.AssistantTicket = Ext.extend(Ext.ux.form.Ticket,{
+App.examination.AssistantTicket = Ext.extend(App.examination.Ticket,{
 	initComponent: function(){
-		
-		this.qtpl = new Ext.XTemplate(
-			'<div>{name}</div>',
-			{
-		});
 		
 		config = {
 		};
@@ -58,6 +53,10 @@ App.examination.AssistantTicket = Ext.extend(Ext.ux.form.Ticket,{
 
 	},
 	
+	qtpl : new Ext.XTemplate(
+		'<div>{name}</div>'
+	),
+	
 	renderData : function(){
 		return this.qtpl.apply({
 			name : this.data.value._name
@@ -72,35 +71,13 @@ App.examination.AssistantTicket = Ext.extend(Ext.ux.form.Ticket,{
 		panel.fireEvent('ticketdataupdate',this,this.data)
 	},
 	
-	updateData : function() {
-		var d = this.data;// || {'printable':true, 'private':false};
-		if (d.title) {
-			this.setTitle(d.title);
-		} else {
-			this.setTitle('Щелкните здесь чтобы установить заголовок...');
-			this.header.addClass('empty-header');
-			d['title'] = ''
-		};
+	updateValueData : function(d){
 		if (d.value) {
 			this.body.removeClass('empty-body');
 			this.body.update(d.value._rendered);
 		} else {
-			d['value'] = {
-				_code : this.code,
-				_rendered : '',
-				_raw : undefined
-			} 
+			d['value'] = {} 
 		}; 
-		if(!d.printable) {
-			this.addClass('not-printable');
-		}
-		if(d.private) {
-			this.addClass('private');
-			this.pntMenuItem.setDisabled(true);
-		}
-		this.data = d;
-		this.doLayout();
-		this.afterLoad();
 	}
 	
 });

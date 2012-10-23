@@ -67,6 +67,11 @@ App.examination.CardApp = Ext.extend(Ext.Panel, {
     		items: [
     		]
 		});
+		
+		this.contentPanel.on('afterrender', function(panel){
+			this.mask = new Ext.LoadMask(panel.container, { msg: "Производится загрузка..." });
+			this.mask.show();
+		},this);
 	
 		var config = {
 			id:'card-app-'+this.orderId,
@@ -90,6 +95,7 @@ App.examination.CardApp = Ext.extend(Ext.Panel, {
 				this.startPanel = this.newStartPanel({
 					baseServiceId:this.baseServiceId,
 					orderId:this.orderId,
+					orderRecord:this.orderRecord,
 					patientId:this.patientId
 				});
 				this.contentPanel.add(this.startPanel);
@@ -110,6 +116,9 @@ App.examination.CardApp = Ext.extend(Ext.Panel, {
 		startPanel.on('copy',this.copyFromSource,this);
 		startPanel.on('edit',this.editCard,this);
 		startPanel.on('empty',this.createEmptyCard,this);
+		startPanel.on('loadcomplete', function(panel){
+			this.mask.hide();
+		}, this);
 		return startPanel
 	},
 	
@@ -180,6 +189,7 @@ App.examination.CardApp = Ext.extend(Ext.Panel, {
 		this.cardBody = new App.examination.TicketTab({
 			data:decodedData,
 			cardId : this.cardId,
+			orderRecord:this.orderRecord,
 			patientId:this.patientId,
 			listeners:{
 				scope:this,

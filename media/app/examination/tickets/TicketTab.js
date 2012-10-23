@@ -4,7 +4,7 @@ Ext.ns('Ext.ux');
 
 App.examination.TicketPanel = Ext.extend(Ext.ux.Portal,{
 //	title:'Новый раздел',
-	autoScroll:true,
+//	autoScroll:true,
 	cls: 'placeholder',
 	bubbleEvents:['beforeticketremove',
 	              'ticketremove',
@@ -83,17 +83,42 @@ App.examination.TicketTab = Ext.extend(Ext.Panel, {
 	initComponent : function() {
 		
 		//Для создания направлений нужен id текущего пациента
-		
 		this.portalColumn = new Ext.ux.PortalColumn({
 			columnWidth:1,
 			anchor:'100%',
 			style:{
 				backgroundColor:'white',
 				padding:"4px",
-				margin:"7px",
+				margin:"7px 100px 15px 100px",
 				border:'1px solid #15428B',
 				boxShadow:"3px 3px 3px #777"
 			}
+		});
+		
+		this.infoTpl = new Ext.XTemplate(
+			'<div>{patient_full}</div>',
+			'<div>{barcode} {created_date}</div>'
+		);
+		
+		this.infoPanel = new Ext.Panel({
+			region:'north',
+			height:60,
+			baseCls:'x-plain',
+			style:{
+				backgroundColor:"#CCDBEE",
+			},
+			items:[new Ext.Panel({
+				border:false,
+				baseCls:'x-plain',
+				style:{
+					backgroundColor:'#F0F0F0',
+					padding:"6px",
+					margin:"7px 150px",
+					border:'1px solid #15428B',
+					boxShadow:"3px 3px 3px #777"
+				},
+				html:this.infoTpl.apply(this.orderRecord.data)
+			})]
 		});
 		
 		this.ticketPanel = new App.examination.TicketPanel({
@@ -151,15 +176,12 @@ App.examination.TicketTab = Ext.extend(Ext.Panel, {
 		});
 		
 		var config = {
-			
 			layout:'border',
 		    labelAlign: 'top',
-		    autoSctoll:true,
+		    autoScroll:true,
 		    closable:false,
 		    bubbleEvents:['beforeticketremove','ticketremove','ticketdataupdate','ticketeditstart','editorclose','drop','ticketheadeeditrstart','ticketbodyclick'],
-		    items: [
-		       this.ticketPanel
-		    ],
+		    items: [ this.infoPanel, this.ticketPanel ],
 		    tbar:this.ttb
 		};
 		

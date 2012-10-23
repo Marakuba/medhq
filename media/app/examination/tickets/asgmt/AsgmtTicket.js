@@ -10,7 +10,7 @@ Ext.ns('App.examination');
  */
 
 
-App.examination.AsgmtTicket = Ext.extend(Ext.ux.form.Ticket,{
+App.examination.AsgmtTicket = Ext.extend(App.examination.Ticket,{
 	data : {},
 	initComponent: function(){
 		
@@ -123,37 +123,29 @@ App.examination.AsgmtTicket = Ext.extend(Ext.ux.form.Ticket,{
 		return editorConfig
 	},
 	
-	updateData : function() {
-		var d = this.data || {'printable':true, 'private':false};
-		if (d.title) {
-			this.setTitle(d.title);
-		} else {
-			this.setTitle('Щелкните здесь чтобы установить заголовок...');
-			this.header.addClass('empty-header');
-			d['title'] = ''
-		};
+	dataTpl : new Ext.XTemplate(
+		'<table width="100%" cellpadding="0" cellspacing="0" border="0">',
+			'<tpl for=".">',
+			'<tr>',
+				'<td>{#}.</td>',
+				'<td>{service_name}</td>',
+				'<td>{count}</td>',
+				'<td>{[fm.date(values.expiration,"d.m.Y")]}</td>',
+			'</tr>',
+			'</tpl>',
+		'</table>'
+	),
+	
+	updateValueData : function(d) {
 		if (this.records && this.records.length) {
 			this.body.removeClass('empty-body');
-			var text = '<table border=1><tr><th>Услуга</th><th>Количество</th></tr>';
-			Ext.each(this.records,function(v){
-				text += '<tr><td>' + v.data.service_name + '</td><td>' + v.data.count + '</td></tr>';
-			});
-			text += '</table>';
+			var recs = _.map(this.records, function(rec){ return rec.data });
+			var text = this.dataTpl.apply(recs);
 			this.body.update(text);
 		} else {
 			d['value'] = '' 
 		}; 
-		if(!d.printable) {
-			this.addClass('not-printable');
-		}
-		if(d.private) {
-			this.addClass('private');
-			this.pntMenuItem.setDisabled(true);
-		}
-		this.data = d;
-		this.doLayout();
-		this.afterLoad();
-	}
+	},
 	
 });
 

@@ -8,6 +8,7 @@ debug = settings.DEBUG and '-debug' or ''
 js_for_all = Bundle(
     'libs/jquery.js',
     'libs/raven.js',
+    'libs/underscore-min.js',
     filters='rjsmin', output='assets/for_all.js',)
 
 js_ext = Bundle(
@@ -514,6 +515,7 @@ js_examination = Bundle(
     'app/examination/templates/TmpGrid.js',
     'app/examination/cards/CardGrid.js',
     
+    'app/examination/tickets/icd/IcdTicketEditor.js',
     'app/examination/tickets/text/TextTicketEditor.js',
     'app/examination/tickets/asgmt/PreorderInlineGrid.js',
     'app/examination/tickets/asgmt/AsgmtTicketEditor.js',
@@ -529,6 +531,8 @@ js_examination = Bundle(
     'app/examination/editor/GeneralTab.js',
     'app/examination/tickets/Ticket.js',
     'app/examination/tickets/text/TextTicket.js',
+    'app/examination/tickets/title/TitleTicket.js',
+    'app/examination/tickets/icd/IcdTicket.js',
     'app/examination/tickets/asgmt/AsgmtTicket.js',
     'app/examination/tickets/questionnaire/QuestionnaireTicketEditor.js',
     'app/examination/tickets/TicketTab.js',

@@ -1,4 +1,4 @@
-Ext.ns('Ext.ux.form');
+Ext.ns('App.examination');
 
 /*
  * data : {
@@ -10,14 +10,14 @@ Ext.ns('Ext.ux.form');
  */
 
 
-Ext.ux.form.TextTicket = Ext.extend(Ext.ux.form.Ticket,{
+App.examination.TextTicket = Ext.extend(App.examination.Ticket,{
 	initComponent: function(){
 		config = {
 			type:'textticket'
 		};
 		
 		Ext.apply(this, Ext.apply(this.initialConfig, config));
-		Ext.ux.form.TextTicket.superclass.initComponent.apply(this, arguments);
+		App.examination.TextTicket.superclass.initComponent.apply(this, arguments);
 		
 		this.on('afterrender',function(){
 		},this)
@@ -33,4 +33,4 @@ Ext.ux.form.TextTicket = Ext.extend(Ext.ux.form.Ticket,{
 	
 });
 
-Ext.reg('textticket', Ext.ux.form.TextTicket);
+Ext.reg('textticket', App.examination.TextTicket);

@@ -1,4 +1,4 @@
-Ext.ns('Ext.ux.form');
+Ext.ns('App.examination');
 
 /*
  * data : {
@@ -10,7 +10,7 @@ Ext.ns('Ext.ux.form');
  */
 
 
-Ext.ux.form.QuestTicket = Ext.extend(Ext.ux.form.Ticket,{
+App.examination.QuestTicket = Ext.extend(App.examination.Ticket,{
 	initComponent: function(){
 		
 		config = {
@@ -18,7 +18,7 @@ Ext.ux.form.QuestTicket = Ext.extend(Ext.ux.form.Ticket,{
 		};
 		
 		Ext.apply(this, Ext.apply(this.initialConfig, config));
-		Ext.ux.form.QuestTicket.superclass.initComponent.apply(this, arguments);
+		App.examination.QuestTicket.superclass.initComponent.apply(this, arguments);
 		
 		this.on('afterrender',function(){
 //			console.log(this.type)
@@ -28,4 +28,4 @@ Ext.ux.form.QuestTicket = Ext.extend(Ext.ux.form.Ticket,{
 	
 });
 
-Ext.reg('questticket', Ext.ux.form.QuestTicket);
+Ext.reg('questticket', App.examination.QuestTicket);

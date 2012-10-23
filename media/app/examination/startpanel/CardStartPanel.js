@@ -4,12 +4,12 @@ App.examination.GeneralCardPlugin = function(config, order){
 	this.config = config || {};
 	this.callback = this.config.callback;
 	var result = {
-		section:'Создать новую карту',
+		section:'Новая карта',
 		cls:'silk-add',
 		objects:[{
 			action:'empty',
 			type:'',
-			title:'Пустая карта',
+			title:'Создать пустую карту',
 			objectId:''
 		}]
 	}
@@ -51,7 +51,7 @@ App.examination.ResumeCardPlugin = function(config, order){
 		callback:function(records, opts, success){
 			if(success && records.length){
 				this.results = {
-					section:'Продолжить редактирование',
+					section:'Продолжить редактирование уже созданных карт',
 					cls:'silk-pencil',
 					objects:[]
 				}
@@ -92,7 +92,7 @@ App.examination.PreviousCardPlugin = function(config, order){
 		callback:function(records, opts, success){
 			if(success && records.length){
 				this.results = {
-					section:'Из предыдущих карт',
+					section:'Создать из предыдущих карт',
 					cls:'silk-add',
 					objects:[]
 				}

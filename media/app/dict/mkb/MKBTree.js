@@ -6,18 +6,18 @@ App.dict.MKBTree = Ext.extend(Ext.tree.TreePanel, {
 	initComponent: function(){
 
         config = {
-                margins: '0 0 5 5',
-                root:  new Ext.tree.AsyncTreeNode({
-	            	expanded: false,
-	            	text:'МКБ',
+                root : new Ext.tree.AsyncTreeNode({
+	            	expanded: true,
+	            	text:'МКБ-10',
 	            	id:'root'
                 }),
-                width:250,
-                split:true,
-                loader: new Ext.tree.TreeLoader({
+                loader : new Ext.tree.TreeLoader({
                 	nodeParameter:'parent',
                 	dataUrl: get_api_url('icd10'),
                 	requestMethod:'GET',
+                	baseAttrs : {
+                		singleClickExpand : true
+                	},
                 	processResponse : function(response, node, callback, scope){
 				        var json = response.responseText;
 				        try {
@@ -39,28 +39,34 @@ App.dict.MKBTree = Ext.extend(Ext.tree.TreePanel, {
                 }),
                 rootVisible:true,
                 lines:false,
-                collapsible: true,
-                collapseMode:'mini',
+    	        animCollapse:false,
+    	        animate: false,
                 autoScroll: true,
                 header: false,
-                requestMethod:'GET'
-//                tbar: [' ', new Ext.form.TextField({
-//                    width:200,
- //               })]
+                requestMethod:'GET',
+                border:false
  
             }
         
+		Ext.apply(this, Ext.apply(this.initialConfig, config));
+		App.dict.MKBTree.superclass.initComponent.apply(this, arguments);
+
         this.on('dblclick', function(node, e){
-//			this.fireEvent('nodeclick',node.id);
 			if (node.attributes.leaf) {
 				Ext.callback(this.fn, this.scope || window, [node]);
 			}
 		}, this);
-		
-		
 
-		Ext.apply(this, Ext.apply(this.initialConfig, config));
-		App.dict.MKBTree.superclass.initComponent.apply(this, arguments);
+        this.getSelectionModel().on('beforeselect', function(sm, node){
+	        return node.isLeaf();
+	    });
+	},
+	
+	/*
+	 * Shortcut for getting selected node
+	 */
+	getSelected : function(){
+		return this.getSelectionModel().getSelectedNode();
 	}
 
 });
