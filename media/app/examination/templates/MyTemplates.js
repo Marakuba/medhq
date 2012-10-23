@@ -1,6 +1,6 @@
 Ext.ns('App.examination');
 
-App.examination.ArchiveApp = Ext.extend(Ext.Panel, {
+App.examination.MyTemplates = Ext.extend(Ext.Panel, {
 	initComponent : function() {
 		
 		this.staff = App.getApiUrl('staff')+ '/' + active_staff;
@@ -87,7 +87,7 @@ App.examination.ArchiveApp = Ext.extend(Ext.Panel, {
 		};
 		
 		Ext.apply(this, Ext.apply(this.initialConfig, config));
-		App.examination.ArchiveApp.superclass.initComponent.apply(this, arguments);
+		App.examination.MyTemplates.superclass.initComponent.apply(this, arguments);
 		
 		this.on('afterrender',function(){
 			this.archiveGrid.store.load();
@@ -111,16 +111,17 @@ App.examination.ArchiveApp = Ext.extend(Ext.Panel, {
 		
 		config = {
 			editMode: true,
+			tplId:record.data.id,
 			closable:true,
 			title: record.data.print_name,
 			print_name:record.data.print_name,
-			record:record,
+//			record:record,
 			staff:this.staff
 		};
 		
-		App.eventManager.fireEvent('launchapp', 'editor',config);
+		App.eventManager.fireEvent('launchapp', 'templateapp',config);
 		
 	}
 });
 
-Ext.reg('tmparchive', App.examination.ArchiveApp);
+Ext.reg('mytpls', App.examination.MyTemplates);

@@ -295,7 +295,7 @@ js_oldexam = Bundle(
     
     'app/examination/conclusion/ConclApp.js',
     
-    'app/examination/archive/ArchiveApp.js',
+    'app/examination/templates/MyTemplates.js',
     
     'app/examination/trash/TrashApp.js',
     
@@ -537,6 +537,7 @@ js_examination = Bundle(
     'app/examination/tickets/questionnaire/QuestionnaireTicketEditor.js',
     'app/examination/tickets/TicketTab.js',
     'app/examination/cards/CardTicketTab.js',
+    'app/examination/templates/TplTicketTab.js',
     'app/examination/editor/SectionPanel.js',
     'app/examination/editor/DataTab.js',
     'app/examination/editor/TemplateBody.js',
@@ -565,7 +566,7 @@ js_examination = Bundle(
     
     'app/examination/conclusion/ConclApp.js',
     
-    'app/examination/archive/ArchiveApp.js',
+    'app/examination/templates/MyTemplates.js',
     
     'app/examination/trash/TrashApp.js',
     

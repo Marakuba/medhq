@@ -7,6 +7,32 @@ App.examination.CardTicketTab = Ext.extend(App.examination.TicketTab, {
 	addSubSecText : 'Добавить раздел',
 	
 	initComponent : function() {
+		this.infoTpl = new Ext.XTemplate(
+			'<div>{patient_full}</div>',
+			'<div>{barcode} {created_date}</div>'
+		);
+		
+		this.infoPanel = new Ext.Panel({
+			region:'north',
+			height:60,
+			baseCls:'x-plain',
+			style:{
+				backgroundColor:"#CCDBEE"
+			},
+			items:[new Ext.Panel({
+				border:false,
+				baseCls:'x-plain',
+				style:{
+					backgroundColor:'#F0F0F0',
+					padding:"6px",
+					margin:"7px 150px",
+					border:'1px solid #15428B',
+					boxShadow:"3px 3px 3px #777"
+				},
+				html:this.infoTpl.apply(this.orderRecord.data)
+			})]
+		});
+		
 		
 		var config = {
 			
@@ -39,6 +65,11 @@ App.examination.CardTicketTab = Ext.extend(App.examination.TicketTab, {
 				ticket.setCardId(cardId);
 			}
 		})
+	},
+	
+	fillUserBody: function(){
+		this.add(this.infoPanel);
+		this.doLayout();
 	},
 	
 	printUrlTpl : "/widget/examination/card/{0}/",

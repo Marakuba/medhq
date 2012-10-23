@@ -7,23 +7,15 @@ App.examination.TemplateApp = Ext.extend(Ext.Panel, {
 		/*
 		 *Данный компонент является менеджером карт осмотра
 		 *На входе он получает следующие параметры:
-		 *baseServiceId - для поиска шаблона по услуге
-		 *patientId - для открытия карты осмотра
-		 *patient_name - для отображении в заголовке
-		 *orderId - для поиска уже созданных карт осмотра для текущего заказа - для их редактирования
-		 *cardId - если карта редактируется
+		 *tplRecord - запись шаблона для редактирования
+		 *tplId
 		 *
-		 *Если передан cardId, то эта карта ищется в store, оттуда берется поле data и передается в 
+		 *Если передан tplId, то этот шаблон ищется в store, оттуда берется поле data и передается в 
 		 *редактор. 
 		 *Если данные изменились, редактор шлет событие с измененными данными - полем data
-		 *Менеджер заносит это поле в редактируемую запись карты осмотра и сохраняет store.
+		 *Менеджер заносит это поле в редактируемую запись шаблона и сохраняет store.
 		 *
-		 *  Если cardId не передан, то вызывается cardStartPanel, которая определяет источник данных,
-		 *  которые будут редактироваться.
-		 * 
 		*/
-		
-		this.staff = App.getApiUrl('staff')+ '/' + active_staff;
 		
 		this.tplStore = new Ext.data.RESTStore({
 			autoSave: true,
@@ -37,10 +29,22 @@ App.examination.TemplateApp = Ext.extend(Ext.Panel, {
 			}
 		});
 		
+		this.tplStore.on('write',function(store, action, result, res, rs){
+			if (action == 'create'){
+				this.tplId = rs.data.id;
+				if (this.tplBody && this.tplBody.setTplId){
+					this.tplBody.setTplId(this.tplId);
+				}
+			}
+			if (rs.data.deleted){
+				this.destroy();
+			}
+		},this);
+		
 		this.serviceTree = new App.ServiceTreeGrid ({
 //			layout: 'fit',
 			region:'west',
-			hidden:this.editMode,
+			collapsed:!!this.tplId,
 			baseParams:{
 				payment_type:'н',
 				staff : active_profile,
@@ -61,7 +65,7 @@ App.examination.TemplateApp = Ext.extend(Ext.Panel, {
 			region:'center',
  			border:false,
  			layout: 'fit',
- 			title:'Выберите услугу',
+ 			title:this.title ? 'Шаблон '+ this.title : 'Выберите услугу',
  			defaults:{
  				border:false
  			},
@@ -83,10 +87,8 @@ App.examination.TemplateApp = Ext.extend(Ext.Panel, {
 		App.examination.TemplateApp.superclass.initComponent.apply(this, arguments);
 		
 		this.on('afterrender',function(form){
-			if (this.editMode){
-				if (this.record){
-					this.editTpl(this.record.dataId)
-				}
+			if (this.tplId){
+				this.editTpl('tpl',this.tplId)
 			}
 		});
 		
@@ -104,13 +106,17 @@ App.examination.TemplateApp = Ext.extend(Ext.Panel, {
 		this.baseServiceId = id;
 		
 		this.tplStore.setBaseParam('base_service',id);
+		this.tplStore.setBaseParam('staff',active_staff);
 		this.tplStore.load({
 			callback:function(records,opts,success){
 				if (records.length){
+					this.record = records[0];
 					this.openEditor(records[0].data.data)					
 				} else {
 					this.contentPanel.removeAll(true);
-					this.startPanel = this.newStartPanel();
+					this.startPanel = this.newStartPanel({
+						baseServiceId:this.baseServiceId
+					});
 					this.contentPanel.setTitle('Выберите источник шаблона');
 					this.contentPanel.add(this.startPanel);
 					this.contentPanel.doLayout();
@@ -134,51 +140,79 @@ App.examination.TemplateApp = Ext.extend(Ext.Panel, {
 	},
 	
 	createEmptyTpl:function(){
-		this.record = new this.cardStore.recordType();
-		this.record.set('ordered_service',App.getApiUrl('orderedservice',this.orderId));
-		this.cardStore.add(this.record);
+		this.serviceTree.collapse();
+		var emptyData = Ext.encode({'tickets':[]});
+		this.record = new this.tplStore.recordType();
+		this.tplStore.autoSave = false;
+		this.record.set('data',emptyData);
+		this.record.set('staff',App.getApiUrl('staff',active_staff));
+		this.record.set('base_service',App.getApiUrl('baseservice',this.baseServiceId));
+		this.tplStore.add(this.record);
+		this.tplStore.save();
+		this.tplStore.autoSave = true;
 		this.openEditor(this.record.data.data)
 	},
 	
 	copyFromSource: function(sourceType,sourceId){
 		if (!sourceId){
-			this.createEmptyCard();
+			this.createEmptyTpl();
 			return
 		} else {
-			var store = this[sourceType+'Store']
-			store.setBaseParam('id',sourceId);
-			store.load({callback:function(records){
-				if (!records.length){
-					console.log('Источник не найден: ',sourceType,' ',sourceId);
-					this.createEmptyCard();
-					return
-				} else {
-					var source = records[0];
-					this.record = new this.cardStore.recordType();
-					Ext.applyIf(this.record.data,source.data);
-					delete this.record.data['id'];
-					this.record.set('ordered_service',App.getApiUrl('orderedservice',this.orderId));
-					this.cardStore.add(this.record);
-					this.openEditor(this.record.data.data)
-				}
-			},scope:this});
+			var store = this[sourceType+'Store'];
+			store.baseParams = {
+				id:sourceId,
+				format:'json'
+			}
+//			delete store.baseParams['base_service'];
+//			delete store.baseParams['staff'];
+//			store.setBaseParam('id',sourceId);
+			store.load({
+				callback:function(records){
+					if (!records.length){
+						console.log('Источник не найден: ',sourceType,' ',sourceId);
+						this.createEmptyTpl();
+						return
+					} else {
+						this.serviceTree.collapse();
+						var source = records[0];
+						this.record = new this.tplStore.recordType();
+						this.tplStore.autoSave = false;
+						Ext.applyIf(this.record.data,source.data);
+						store.baseParams = {
+							format:'json',
+							staff:active_staff,
+							deleted:false
+						}
+						this.record.set('staff',App.getApiUrl('staff',active_staff));
+						this.record.set('base_service',App.getApiUrl('baseservice',this.baseServiceId));
+						this.tplStore.add(this.record);
+						this.tplStore.save();
+						this.tplStore.autoSave = true;
+						this.openEditor(this.record.data.data)
+					}
+				},
+				scope:this
+			});
 		}
 	},
 	
 	editTpl: function(source,tplId){
+		
 		if(source!='tpl'){
 			console.log('На редактирование передан не шаблон');
 			return 
 		}
 		if (!tplId){
-			this.createEmptyCard();
+			this.createEmptyTpl();
 			return
 		} else {
+			this.serviceTree.collapse();
+			this.tplId = tplId;
 			this.tplStore.setBaseParam('id',tplId);
 			this.tplStore.load({callback:function(records){
 				if (!records.length){
 					console.log('Шаблон не найден: ',tplId);
-					this.createEmptyCard();
+					this.createEmptyTpl();
 					return
 				} else {
 					this.record = records[0];
@@ -189,11 +223,31 @@ App.examination.TemplateApp = Ext.extend(Ext.Panel, {
 	},
 	
 	openEditor: function(data){
-		this.cardBody = new Ext.Panel();
+		if (data) {
+			var decodedData = Ext.decode(data)
+		} else {
+			var decodedData = {}
+		};
+		this.tplBody = new App.examination.TplTicketTab({
+			data:decodedData,
+			tplId : this.tplId,
+			listeners:{
+				scope:this,
+				dataupdate:this.updateData,
+				destroy:function(){
+					this.serviceTree.expand();
+				}
+			}
+		});
 		this.contentPanel.removeAll(true);
-		this.contentPanel.add(this.cardBody);
+		this.contentPanel.add(this.tplBody);
 		this.contentPanel.doLayout();
-	}
+	},
+	
+	updateData: function(data){
+		var encodedData = Ext.encode(data);
+		this.record.set('data',encodedData);
+	}	
 		
 });
 

@@ -127,9 +127,12 @@ App.examination.CardApp = Ext.extend(Ext.Panel, {
 	createEmptyCard:function(){
 		this.record = new this.cardStore.recordType();
 		var emptyData = Ext.encode({'tickets':[]});
+		this.cardStore.autoSave = false;
 		this.record.set('data',emptyData)
 		this.record.set('ordered_service',App.getApiUrl('orderedservice',this.orderId));
 		this.cardStore.add(this.record);
+		this.cardStore.save();
+		this.cardStore.autoSave = true;
 		this.openTickets(this.record.data.data)
 	},
 	
@@ -148,10 +151,13 @@ App.examination.CardApp = Ext.extend(Ext.Panel, {
 				} else {
 					var source = records[0];
 					this.record = new this.cardStore.recordType();
+					this.cardStore.autoSave = false;
 					Ext.applyIf(this.record.data,source.data);
 					delete this.record.data['id'];
 					this.record.set('ordered_service',App.getApiUrl('orderedservice',this.orderId));
 					this.cardStore.add(this.record);
+					this.cardStore.save();
+					this.cardStore.autoSave = true;
 					this.openTickets(this.record.data.data)
 				}
 			},scope:this});
@@ -195,8 +201,7 @@ App.examination.CardApp = Ext.extend(Ext.Panel, {
 			patientId:this.patientId,
 			listeners:{
 				scope:this,
-				dataupdate:this.updateData,
-				onticketedit:this.onTicketEdit
+				dataupdate:this.updateData
 			}
 		});
 		this.contentPanel.removeAll(true);
@@ -207,14 +212,7 @@ App.examination.CardApp = Ext.extend(Ext.Panel, {
 	updateData: function(data){
 		var encodedData = Ext.encode(data);
 		this.record.set('data',encodedData);
-	},
-	
-	onTicketEdit: function(panel){
-		
-//		this.add(panel);
-//		this.setActivePanel(panel);
-	}
-		
+	}		
 });
 
 

@@ -153,7 +153,7 @@ App.ExamCentralPanel = Ext.extend(Ext.Panel, {
                     scale:'medium',
                     iconAlign: 'top',
                     handler: function(){
-                    	this.launchApp('editor');
+                    	this.launchApp('templateapp');
                     },
                     scope:this
                 },{
@@ -161,7 +161,7 @@ App.ExamCentralPanel = Ext.extend(Ext.Panel, {
                     scale:'medium',
                     iconAlign: 'top',
                     handler: function(){
-                    	this.launchApp('tmparchive');
+                    	this.launchApp('mytpls');
                     },
                     scope:this
                 },{

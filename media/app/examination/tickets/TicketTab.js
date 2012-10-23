@@ -95,32 +95,6 @@ App.examination.TicketTab = Ext.extend(Ext.Panel, {
 			}
 		});
 		
-		this.infoTpl = new Ext.XTemplate(
-			'<div>{patient_full}</div>',
-			'<div>{barcode} {created_date}</div>'
-		);
-		
-		this.infoPanel = new Ext.Panel({
-			region:'north',
-			height:60,
-			baseCls:'x-plain',
-			style:{
-				backgroundColor:"#CCDBEE",
-			},
-			items:[new Ext.Panel({
-				border:false,
-				baseCls:'x-plain',
-				style:{
-					backgroundColor:'#F0F0F0',
-					padding:"6px",
-					margin:"7px 150px",
-					border:'1px solid #15428B',
-					boxShadow:"3px 3px 3px #777"
-				},
-				html:this.infoTpl.apply(this.orderRecord.data)
-			})]
-		});
-		
 		this.ticketPanel = new App.examination.TicketPanel({
 			region:'center',
 			baseCls:'ticket',
@@ -181,7 +155,7 @@ App.examination.TicketTab = Ext.extend(Ext.Panel, {
 		    autoScroll:true,
 		    closable:false,
 		    bubbleEvents:['beforeticketremove','ticketremove','ticketdataupdate','ticketeditstart','editorclose','drop','ticketheadeeditrstart','ticketbodyclick'],
-		    items: [ this.infoPanel, this.ticketPanel ],
+		    items: [ this.ticketPanel ],
 		    tbar:this.ttb
 		};
 		
@@ -191,11 +165,13 @@ App.examination.TicketTab = Ext.extend(Ext.Panel, {
 		App.examination.TicketTab.superclass.initComponent.apply(this, arguments);
 		
 		this.on('afterrender',function(panel){
+			this.fillUserBody();
 			if (this.data && this.data.tickets.length){
 				this.loadData(this.data);
 			} else {
 				this.loadRequiredTickets();
-			}
+			};
+			
 		},this);
 		
 		this.on('ticketbodyclick', function(panel,editor,pos){
@@ -280,6 +256,9 @@ App.examination.TicketTab = Ext.extend(Ext.Panel, {
 	
 	//Пользовательская функция добавления элементов в тулбар. выполняется после добавления обязательных кнопок
 	fillUsersMenu: function(){},
+	
+	//Пользовательская функция для добавления элементов в основную часть панели
+	fillUserBody: function(){},
 	
 	
 	loadData: function(data,quests,sectionPlan){
