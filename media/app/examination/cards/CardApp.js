@@ -48,7 +48,9 @@ App.examination.CardApp = Ext.extend(Ext.Panel, {
 		this.cardStore.on('write',function(store, action, result, res, rs){
 			if (action == 'create'){
 				this.cardId = rs.data.id;
-				this.cardBody.setCardId(this.cardId);
+				if (this.cardBody.setCardId){
+					this.cardBody.setCardId(this.cardId);
+				}
 			}
 			if (rs.data.deleted){
 				this.destroy();
@@ -186,7 +188,7 @@ App.examination.CardApp = Ext.extend(Ext.Panel, {
 		} else {
 			var decodedData = {}
 		}
-		this.cardBody = new App.examination.TicketTab({
+		this.cardBody = new App.examination.CardTicketTab({
 			data:decodedData,
 			cardId : this.cardId,
 			orderRecord:this.orderRecord,

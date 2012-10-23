@@ -536,6 +536,7 @@ js_examination = Bundle(
     'app/examination/tickets/asgmt/AsgmtTicket.js',
     'app/examination/tickets/questionnaire/QuestionnaireTicketEditor.js',
     'app/examination/tickets/TicketTab.js',
+    'app/examination/cards/CardTicketTab.js',
     'app/examination/editor/SectionPanel.js',
     'app/examination/editor/DataTab.js',
     'app/examination/editor/TemplateBody.js',

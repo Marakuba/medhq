@@ -259,22 +259,14 @@ App.examination.TicketTab = Ext.extend(Ext.Panel, {
 		this.printBtn = new Ext.Button({
 			iconCls:'silk-printer',
 			text: 'Печать',
-			disabled:!this.cardId,
-			handler:this.onPrint.createDelegate(this,[this.card]),
-			scope:this
-		});
-		
-		this.historyBtn = new Ext.Button({
-			iconCls:'silk-package',
-			text: 'История пациента',
-			handler:this.onHistoryOpen.createDelegate(this),
+			disabled:!(this.cardId || this.tplId),
+			handler:this.onPrint.createDelegate(this,[]),
 			scope:this
 		});
 		
 		this.ttb.add(this.editQuestBtn);
 		this.ttb.add(this.deleteQuestBtn);
 		this.ttb.add(this.printBtn);
-		this.ttb.add(this.historyBtn);
 		//Добавляем пользовательские элементы в toolbar
 		this.fillUsersMenu();
 		if (this.data){
@@ -321,6 +313,8 @@ App.examination.TicketTab = Ext.extend(Ext.Panel, {
 		}
 		ticketConfig['cardId'] = this.cardId;
 		ticketConfig.data['cardId'] = this.cardId;
+		ticketConfig['tplId'] = this.tplId;
+		ticketConfig.data['tplId'] = this.tplId;
 		ticketConfig.data['patientId'] = this.patientId; // нужно для добавления направлений
 		
 		//если тикетов еще нет, то добавляем в конец
@@ -627,33 +621,10 @@ App.examination.TicketTab = Ext.extend(Ext.Panel, {
 		}
 	},
 	
-	setCardId: function(cardId){
-		this.cardId = cardId;
-		this.printBtn.enable();
-		this.portalColumn.items.each(function(ticket){
-			if (ticket.setCardId){
-				ticket.setCardId(cardId);
-			}
-		})
-	},
-	
 	printUrlTpl : "/widget/examination/card/{0}/",
 	
 	onPrint: function(){
 		var url = String.format(this.printUrlTpl,this.cardId);
 		window.open(url);
-	},
-	
-	onHistoryOpen: function(){
-		var name = this.patient_name.split(' ');
-		
-		config = {
-			closable:true,
-//			title:name[0] + ': История',
-    		patientId:this.patientId
-//    		patient_name: this.patient_name,
-//			staff:this.staff
-		}
-//		App.eventManager.fireEvent('launchapp', 'patienthistory',config);
 	}
 });
