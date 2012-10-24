@@ -31,6 +31,9 @@
 .med-doctor {
 	background-image: url(../images/doctor.png) !important; background-repeat: no-repeat;
 }
+.x-loading {
+	background-image: url(../images/loading.gif) !important; background-repeat: no-repeat;
+}
 .x-tree-node-anchor {
 	white-space:normal;
 }
@@ -375,7 +378,7 @@ button.icon-main-button {
 }
 
 .patient-info {
-	margin:0 250px;
+	margin:0 250px 0 103px;
 	padding-top:3px;
 }
 

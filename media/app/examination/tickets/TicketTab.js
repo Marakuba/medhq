@@ -277,6 +277,7 @@ App.examination.TicketTab = Ext.extend(Ext.Panel, {
 			};
 			this.addTicket(ticket);
 		},this);
+		this.checkUniqueTickets();
 		this.dataLoading = false;
 	},
 	
@@ -395,24 +396,40 @@ App.examination.TicketTab = Ext.extend(Ext.Panel, {
 	updateData: function(){
 		
 		this.data['tickets'] = this.ticketPanel.getData();
+		this.checkUniqueTickets();
 		this.fireEvent('dataupdate',this.data);
 		
 	},
 	
+	checkUniqueTickets : function(){
+		_.map(this.uniqueTickets, function(xtype){
+			Ext.getCmp('unique-ticket-'+xtype).enable();
+		});
+		
+		var uniques = _.filter(this.data['tickets'], function(ticket){
+			return ticket.unique===true
+		});
+		
+		_.map(uniques, function(ticket){
+			Ext.getCmp('unique-ticket-'+ticket.xtype).disable();
+		});
+	},
+	
 	fillSectionMenu: function(){
+		this.uniqueTickets = [];
 		this.sectionItems = new Ext.menu.Menu({
 				plain:true,
 				defaults:{
 					xtype:'buttongroup',
-					columns:6,
+					columns:10,
 					bodyBorder:false,
 					border:false,
 					hideBorders:true,
 					defaults:{
 						xtype:'button',
-						scale:'small',
+						scale:'medium',
 						style:{
-							padding:'4px 3px'
+							padding:'1px 3px'
 						}
 					}
 				},
@@ -421,14 +438,6 @@ App.examination.TicketTab = Ext.extend(Ext.Panel, {
 		for (var section in section_scheme) {
 			
 			var items = [];
-			items.push({
-				xtype:'box',
-				html:section_scheme[section].title,
-				style:{
-					width:'110px'
-				}
-			});
-			
 			
 			if (section_scheme[section].items.length){
 				Ext.each(section_scheme[section].items,function(item){
@@ -436,29 +445,22 @@ App.examination.TicketTab = Ext.extend(Ext.Panel, {
 					Ext.apply(ticket_data,item);
 					ticket_data['data'] = item;
 					var subBtn = {
+						id:item.unique ? 'unique-ticket-'+item.xtype : section+"-"+item.title,
 						text:item.title,
 						handler:this.addTicket.createDelegate(this,[ticket_data, true]),
 						scope:this
 					};
 					items.push(subBtn);
+
+					if(item.unique){
+						this.uniqueTickets.push(item.xtype);
+					}
+
 				},this);
+				this.sectionItems.add({
+					items:[items]
+				})
 			};
-			var freeBtn = {
-				text:'Произвольный',
-				handler:this.addTicket.createDelegate(this,[{
-					xtype:'textticket',
-					order:section.order,
-					section:section.name,
-					fixed:false,
-					required:false,
-					data:{xtype:'textticket',title:'Произвольный',value:'',printable:true,private:false,section:section.name,fixed:false,required:false}
-				}, true]),
-				scope:this
-			}
-			items.push(freeBtn);
-			this.sectionItems.add({
-				items:[items]
-			})
 		};
 		
 		this.addSubSecBtn = new Ext.Button({
@@ -601,7 +603,7 @@ App.examination.TicketTab = Ext.extend(Ext.Panel, {
 		}
 	},
 	
-	printUrlTpl : "/widget/examination/card/{0}/",
+	printUrlTpl : "/examination/card/{0}/",
 	
 	onPrint: function(){
 		var url = String.format(this.printUrlTpl,this.cardId);

@@ -178,7 +178,7 @@ def laboratory(request):
 @login_required
 @render_to('webapp/examination/index.html')
 def examination(request):
-    section_scheme = {}
+    section_scheme = OrderedDict()
     sections = FieldSet.objects.all()
     required_tickets = []
     for sec in sections:
@@ -198,8 +198,9 @@ def examination(request):
                 'printable':True,
                 'private':False,
                 'section':sec.name,
-                'fixed':hasattr(widget,'fixed') and getattr(widget,'fixed') or False,
-                'required':hasattr(widget,'required') and getattr(widget,'required') or False
+                'fixed':getattr(widget,'fixed', False),
+                'required':getattr(widget,'required', False),
+                'unique':getattr(widget,'unique', False)
             }
             if ticket['required']:
                 required_tickets.append(ticket)
@@ -511,7 +512,7 @@ def service_tree(request):
         resp = u'%s(%s)' % (cb,resp)
     return HttpResponse(resp, mimetype="application/json")
 
-from collections import defaultdict
+from collections import defaultdict, OrderedDict
 
 def sampling_tree(request, visit_id):
     states = defaultdict(list)

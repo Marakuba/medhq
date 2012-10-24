@@ -35,7 +35,7 @@ App.examination.CardApp = Ext.extend(Ext.Panel, {
 		});
 		
 		this.cardStore = new Ext.data.RESTStore({
-			autoSave: true,
+			autoSave : false,
 			autoLoad : false,
 			apiUrl : get_api_url('card'),
 			baseParams:{
@@ -45,6 +45,15 @@ App.examination.CardApp = Ext.extend(Ext.Panel, {
 			model: App.models.Card
 		});
 		
+		this.saveTask = {
+			run : function(){
+				console.info('trying to save store...');
+				this.cardStore.save();
+			},
+			interval : 5000,
+			scope : this
+		}
+			
 		this.cardStore.on('write',function(store, action, result, res, rs){
 			if (action == 'create'){
 				this.cardId = rs.data.id;
@@ -55,8 +64,20 @@ App.examination.CardApp = Ext.extend(Ext.Panel, {
 			if (rs.data.deleted){
 				this.destroy();
 			}
-		},this)
+			this.setIconClass('');
+			
+			
+		},this);
 		
+		this.cardStore.on('exception', function(){
+			
+			this.setIconClass('silk-error');
+			
+			(function(){
+				this.cardStore.save();
+			}).defer(5000, this);
+			
+		}, this);
 		
 		this.contentPanel = new Ext.Panel({
 			region:'center',
@@ -210,8 +231,10 @@ App.examination.CardApp = Ext.extend(Ext.Panel, {
 	},
 	
 	updateData: function(data){
+		this.setIconClass('x-loading');
 		var encodedData = Ext.encode(data);
 		this.record.set('data',encodedData);
+		this.cardStore.save();
 	}		
 });
 

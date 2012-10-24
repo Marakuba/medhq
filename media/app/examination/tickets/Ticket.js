@@ -31,30 +31,6 @@ App.examination.Ticket = Ext.extend(Ext.Panel,{
 	
 	title : this.defaultTitle, //this.initialConfig.title ? this.initialConfig.title : this.defaultTitle,
 			
-	tools:[{
-		id:'gear',
-		handler:function(event, toolEl, panel){
-			if (!this.menu) {
-				this.menu = new Ext.menu.Menu({
-					items:[{
-						text:'Удалить',
-						handler:function(){
-							if( this.fireEvent('beforeticketremove',this)!==false ) {
-								this.fireEvent('ticketremove',this);
-								panel.destroy();
-							}
-						},
-						scope:this
-					},
-					this.pntMenuItem,
-					this.prvtMenuItem]
-				});
-			}
-			this.menu.show(toolEl);
-		},
-		scope:this
-	}],
-	
 	bodyCssClass:'content empty-body',
 	
 	initComponent: function(){
@@ -91,6 +67,7 @@ App.examination.Ticket = Ext.extend(Ext.Panel,{
 		config = {
 			layout:'anchor',
 			html:this.defaultText,
+//			tools:,
 			listeners:{
 				afterrender:function(panel){
 					panel.setData();
@@ -105,6 +82,35 @@ App.examination.Ticket = Ext.extend(Ext.Panel,{
 		Ext.apply(this, Ext.apply(this.initialConfig, config));
 		App.examination.Ticket.superclass.initComponent.apply(this, arguments);
 		
+		this.setTools();
+		
+	},
+	
+	setTools : function(){
+		this.tools = [{
+			id:'gear',
+			handler:function(event, toolEl, panel){
+				if (!this.menu) {
+					this.menu = new Ext.menu.Menu({
+						items:[{
+							text:'Удалить',
+							handler:function(){
+								if( this.fireEvent('beforeticketremove',this)!==false ) {
+									this.fireEvent('ticketremove',this);
+									panel.destroy();
+								}
+							},
+							scope:this
+						},
+						this.pntMenuItem,
+						this.prvtMenuItem]
+					});
+				}
+				this.menu.show(toolEl);
+			},
+			scope:this
+		}]
+		this.doLayout();
 	},
 	
 	headerConfig: function(panel){
@@ -168,6 +174,11 @@ App.examination.Ticket = Ext.extend(Ext.Panel,{
         panel.header.on('click', function(e, t){
         	headerEditor.startEdit(t);
         }, null, { delegate:'span.x-plain-header-text'} );
+
+        panel.header.on('contextmenu', function(e, t, o){
+			e.stopEvent();
+			this.onCtxMenu();
+		}, this)
 	},
 	
 	bodyConfig: function(panel){
@@ -176,6 +187,13 @@ App.examination.Ticket = Ext.extend(Ext.Panel,{
         		panel.fireEvent('ticketbodyclick',panel);
         	}, null, {
         });
+		panel.body.on('contextmenu', function(e, t, o){
+			e.stopEvent();
+			this.onCtxMenu();
+		}, this)
+	},
+	
+	onCtxMenu : function(){
 	},
 	
 	setData : function(data) {

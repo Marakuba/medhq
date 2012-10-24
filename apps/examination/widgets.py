@@ -107,6 +107,7 @@ class TitleWidget(BaseWidget):
     xtype = 'titleticket'
     required = True
     fixed = True
+    unique = True
 
 
 class QuestWidget(BaseWidget):
@@ -126,6 +127,7 @@ class IcdWidget(BaseWidget):
     
 class AsgmtWidget(BaseWidget):
     xtype = 'asgmtticket'
+    unique = True
     
     def to_html(self):
         asgmts = Preorder.objects.filter(card=self.opts['card'].id)
@@ -140,13 +142,9 @@ class AsgmtWidget(BaseWidget):
                            context_instance=RequestContext(self.request)).content
     
 
-class EquipmentWidget(BaseWidget):
-    xtype = 'equipmentticket'
-    
 
 register('textticket',      TextWidget)
 register('titleticket',     TitleWidget)
 register('questticket',     QuestWidget)
 register('icdticket',       IcdWidget)
 register('asgmtticket',     AsgmtWidget)
-register('equipmentticket', EquipmentWidget)

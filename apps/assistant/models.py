@@ -30,6 +30,7 @@ from examination.widgets import BaseWidget, register
 
 class AssistantWidget(BaseWidget):
     xtype = 'assistantticket'
+    unique = True
     
     def get_ctx(self):
         return {

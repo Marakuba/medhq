@@ -28,6 +28,10 @@ App.examination.TitleTicket = Ext.extend(App.examination.Ticket,{
 		
 	},
 	
+	setTools : function(){
+		
+	},
+	
 	headerConfig: function(panel){
 		
 	},
