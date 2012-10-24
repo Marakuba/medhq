@@ -15,7 +15,7 @@ def get_tpl_for_service(request):
         service_id = int(r['data'][0])
         tpl = Template.objects.get(base_service__id=service_id, staff=request.active_profile.staff)
     except Exception, err:
-        return dict(success=False, msg=err.__unicode__())
+        return dict(success=False, msg=str(err))
     return dict(success=True, data=dict(id=tpl.id, title=tpl.name))
 
 @remoting(remote_provider, len=1, action='service', name='getActualPrice')

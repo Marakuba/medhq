@@ -11,14 +11,57 @@ Ext.ns('App.examination');
 
 
 App.examination.Ticket = Ext.extend(Ext.Panel,{
+	
+	defaultText : 'Щелкните здесь чтобы ввести описание...',
+	
+	defaultTitle : 'Щелкните здесь чтобы установить заголовок...',
+
 	editor : 'textticketeditor',
+	
+	baseCls:'x-plain',
+	
+	cls:'section',
+	
+	draggable : true,
+	
+	headerCfg:{
+		tag:'div',
+		cls:'title'
+	},
+	
+	title : this.defaultTitle, //this.initialConfig.title ? this.initialConfig.title : this.defaultTitle,
+			
+	tools:[{
+		id:'gear',
+		handler:function(event, toolEl, panel){
+			if (!this.menu) {
+				this.menu = new Ext.menu.Menu({
+					items:[{
+						text:'Удалить',
+						handler:function(){
+							if( this.fireEvent('beforeticketremove',this)!==false ) {
+								this.fireEvent('ticketremove',this);
+								panel.destroy();
+							}
+						},
+						scope:this
+					},
+					this.pntMenuItem,
+					this.prvtMenuItem]
+				});
+			}
+			this.menu.show(toolEl);
+		},
+		scope:this
+	}],
+	
+	bodyCssClass:'content empty-body',
+	
 	initComponent: function(){
 		
 		this.type = 'textticket';
 		
 		this.curPos = 0;
-		this.defaultText = 'Щелкните здесь чтобы ввести описание...';
-		this.defaultTitle = 'Щелкните здесь чтобы установить заголовок...';
 		
 		this.addEvents('beforeticketremove','ticketremove','ticketdataupdate','ticketeditstart','editorclose','ticketheadeeditstart','ticketbodyclick','ticketeditstart','editcomplete','beforeticketedit');
 		this.enableBubble('beforeticketremove','ticketremove','ticketdataupdate','ticketeditstart','editorclose','ticketheadeeditstart','ticketbodyclick','ticketeditstart','editcomplete','beforeticketedit');
@@ -46,39 +89,7 @@ App.examination.Ticket = Ext.extend(Ext.Panel,{
 		});
 		
 		config = {
-			baseCls:'x-plain',
-			cls:'section',
 			layout:'anchor',
-			draggable : true,
-			headerCfg:{
-				tag:'div',
-				cls:'title'
-			},
-			title:this.initialConfig.title ? this.initialConfig.title : this.defaultTitle,
-			tools:[{
-				id:'gear',
-				handler:function(event, toolEl, panel){
-					if (!this.menu) {
-						this.menu = new Ext.menu.Menu({
-							items:[{
-								text:'Удалить',
-								handler:function(){
-									if( this.fireEvent('beforeticketremove',this)!==false ) {
-										this.fireEvent('ticketremove',this);
-										panel.destroy();
-									}
-								},
-								scope:this
-							},
-							this.pntMenuItem,
-							this.prvtMenuItem]
-						});
-					}
-					this.menu.show(toolEl);
-				},
-				scope:this
-			}],
-			bodyCssClass:'content empty-body',
 			html:this.defaultText,
 			listeners:{
 				afterrender:function(panel){

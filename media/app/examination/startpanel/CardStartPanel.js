@@ -15,7 +15,7 @@ App.examination.GeneralCardPlugin = function(config, order){
 	}
 	if(this.config.baseServiceId){
 		App.direct.service.getTplForService(this.config.baseServiceId, function(res){
-			if(res.success) {
+			if(res && res.success) {
 				result.objects.unshift({
 					action:'copy',
 					type:'tpl',

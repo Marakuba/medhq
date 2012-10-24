@@ -8,29 +8,20 @@ App.examination.CardTicketTab = Ext.extend(App.examination.TicketTab, {
 	
 	initComponent : function() {
 		this.infoTpl = new Ext.XTemplate(
-			'<div>{patient_full}</div>',
-			'<div>{barcode} {created_date}</div>'
+			'<div class="patient-info">',
+				'<div class="info">Заказ: <span>{barcode}</span> &nbsp;&nbsp;&nbsp; Дата: <span>{created_date}</span></div>',
+				'<div class="name">{patient_full}</div>',
+			'</div>'
 		);
 		
 		this.infoPanel = new Ext.Panel({
 			region:'north',
-			height:60,
+			height:23,
 			baseCls:'x-plain',
 			style:{
-				backgroundColor:"#CCDBEE"
+//				backgroundColor:"#CCDBEE"
 			},
-			items:[new Ext.Panel({
-				border:false,
-				baseCls:'x-plain',
-				style:{
-					backgroundColor:'#F0F0F0',
-					padding:"6px",
-					margin:"7px 150px",
-					border:'1px solid #15428B',
-					boxShadow:"3px 3px 3px #777"
-				},
-				html:this.infoTpl.apply(this.orderRecord.data)
-			})]
+			html:this.infoTpl.apply(this.orderRecord.data)
 		});
 		
 		

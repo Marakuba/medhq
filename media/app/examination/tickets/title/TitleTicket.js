@@ -14,6 +14,10 @@ App.examination.TitleTicket = Ext.extend(App.examination.Ticket,{
 	initComponent: function(){
 		
 		config = {
+			tools:[],
+			title:undefined,
+			header:false,
+			bodyCssClass:'content-title empty-body',
 		};
 		
 		Ext.apply(this, Ext.apply(this.initialConfig, config));
@@ -24,11 +28,19 @@ App.examination.TitleTicket = Ext.extend(App.examination.Ticket,{
 		
 	},
 	
+	headerConfig: function(panel){
+		
+	},
+	
 	afterEdit: function(data,panel){
 		panel.data.title = data.title;
 		panel.data.value = data.value;
 		panel.updateData();
 		panel.fireEvent('ticketdataupdate',this,this.data)
+	},
+	
+	updateTitleData : function(){
+		
 	}
 	
 });

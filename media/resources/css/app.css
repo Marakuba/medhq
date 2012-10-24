@@ -373,3 +373,21 @@ button.icon-main-button {
 	color:white;
 	cursor: pointer;
 }
+
+.patient-info {
+	margin:0 250px;
+	padding-top:3px;
+}
+
+.patient-info span {
+	font-weight:bold;
+}
+
+.patient-info .name {
+	font-weight:bold;
+	font-size:14px;
+}
+
+.patient-info .info {
+	float:right;
+}
