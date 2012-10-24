@@ -233,10 +233,7 @@ App.examination.TemplateApp = Ext.extend(Ext.Panel, {
 			tplId : this.tplId,
 			listeners:{
 				scope:this,
-				dataupdate:this.updateData,
-				destroy:function(){
-					this.serviceTree.expand();
-				}
+				dataupdate:this.updateData
 			}
 		});
 		this.contentPanel.removeAll(true);

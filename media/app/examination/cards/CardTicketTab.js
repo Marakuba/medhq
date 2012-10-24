@@ -80,7 +80,7 @@ App.examination.CardTicketTab = Ext.extend(App.examination.TicketTab, {
 	},
 	
 	onHistoryOpen: function(){
-		var name = this.patient_name.split(' ');
+//		var name = this.patient_name.split(' ');
 		
 		config = {
 			closable:true,
