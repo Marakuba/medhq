@@ -86,25 +86,29 @@ App.examination.Ticket = Ext.extend(Ext.Panel,{
 		
 	},
 	
+	initMenu : function(){
+		this.menu = new Ext.menu.Menu({
+			items:[{
+				text:'Удалить',
+				handler:function(){
+					if( this.fireEvent('beforeticketremove',this)!==false ) {
+						this.fireEvent('ticketremove',this);
+						panel.destroy();
+					}
+				},
+				scope:this
+			},
+			this.pntMenuItem,
+			this.prvtMenuItem]
+		});
+	},
+	
 	setTools : function(){
 		this.tools = [{
 			id:'gear',
 			handler:function(event, toolEl, panel){
 				if (!this.menu) {
-					this.menu = new Ext.menu.Menu({
-						items:[{
-							text:'Удалить',
-							handler:function(){
-								if( this.fireEvent('beforeticketremove',this)!==false ) {
-									this.fireEvent('ticketremove',this);
-									panel.destroy();
-								}
-							},
-							scope:this
-						},
-						this.pntMenuItem,
-						this.prvtMenuItem]
-					});
+					this.initMenu();
 				}
 				this.menu.show(toolEl);
 			},
@@ -177,7 +181,7 @@ App.examination.Ticket = Ext.extend(Ext.Panel,{
 
         panel.header.on('contextmenu', function(e, t, o){
 			e.stopEvent();
-			this.onCtxMenu();
+			this.onCtxMenu(e, t, o);
 		}, this)
 	},
 	
@@ -189,11 +193,15 @@ App.examination.Ticket = Ext.extend(Ext.Panel,{
         });
 		panel.body.on('contextmenu', function(e, t, o){
 			e.stopEvent();
-			this.onCtxMenu();
+			this.onCtxMenu(e, t, o);
 		}, this)
 	},
 	
-	onCtxMenu : function(){
+	onCtxMenu : function(e, t, o){
+		if (!this.menu) {
+			this.initMenu();
+		}
+		this.menu.showAt(e.xy);
 	},
 	
 	setData : function(data) {

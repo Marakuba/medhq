@@ -29,7 +29,6 @@ App.examination.CardGrid = Ext.extend(Ext.grid.EditorGridPanel, {
         this.store =  this.store || new Ext.data.Store({
             restful: true,    
             autoLoad: false, 
-			autoDestroy:true,
             baseParams: this.baseParams,
 		    paramNames: {
 			    start : 'offset',
@@ -43,36 +42,9 @@ App.examination.CardGrid = Ext.extend(Ext.grid.EditorGridPanel, {
         });
         
 		this.store.on('load', function(){
-			this.getSelectionModel().selectFirstRow();
+			
 		}, this);
 		
-		this.assistant = new Ext.form.LazyClearableComboBox({
-			fieldLabel:'Лаборант',
-			name:'assistant',
-			anchor:'50%',
-			valueField:'resource_uri',
-			queryParam : 'staff__last_name__istartswith',
-			store:new Ext.data.RESTStore({
-				autoLoad : true,
-				apiUrl : get_api_url('position'),
-				model: ['id','name','resource_uri']
-			}),
-		    minChars:2,
-		    emptyText:'Выберите врача...',
-		    listeners:{
-		    	select: function(combo, rec,i) {
-		    	},
-		    	scope:this
-		    }
-		});
-		
-		Ext.util.Format.comboRenderer = function(combo,field){
-            return function(value, meta, rec){
-                var record = combo.findRecord(combo.valueField, value);
-                return record ? record.get(combo.displayField) : (rec ? rec.get(field) : combo.valueNotFoundText);
-            }
-        };
-        
         if(!this.emptyTbar){
 			
 			this.tbar = this.tbar || ['Период',{
@@ -152,18 +124,6 @@ App.examination.CardGrid = Ext.extend(Ext.grid.EditorGridPanel, {
                 sortable: true, 
                 dataIndex: 'patient_name'
             },{
-                header: "Лаборант", 
-                width: '.2', 
-                sortable: true, 
-                dataIndex: 'assistant', 
-                editor: this.assistant,
-                renderer: Ext.util.Format.comboRenderer(this.assistant,'assistant_name')
-            },{
-                header: "Лаборант", 
-                sortable: true, 
-                hidden:true,
-                dataIndex: 'assistant_name' 
-            },{
                 header: "Изменено", 
                 width: '.1', 
                 sortable: true, 
@@ -214,6 +174,12 @@ App.examination.CardGrid = Ext.extend(Ext.grid.EditorGridPanel, {
 		},this);
 
 		this.on('afterrender', function(){
+			this.store.load({
+				callback : function(){
+//					this.getSelectionModel().selectFirstRow();
+				},
+				scope:this
+			})
 		}, this);
 		
     },

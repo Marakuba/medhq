@@ -44,7 +44,7 @@ App.examination.TmpGrid = Ext.extend(Ext.grid.EditorGridPanel, {
         });
         
         this.store.on('load', function(){
-			this.getSelectionModel().selectFirstRow();
+			
 		}, this);
         
         this.editBtn = new Ext.Button({
@@ -84,7 +84,7 @@ App.examination.TmpGrid = Ext.extend(Ext.grid.EditorGridPanel, {
 				scope:this
 			});
 		} else {
-			this.tbar = []
+			this.tbar = undefined
 		};
 		
 		
@@ -145,6 +145,12 @@ App.examination.TmpGrid = Ext.extend(Ext.grid.EditorGridPanel, {
 	    App.examination.TmpGrid.superclass.initComponent.apply(this, arguments);
 
 		this.on('afterrender', function(){
+			this.store.load({
+				callback : function(){
+//					this.getSelectionModel().selectFirstRow();
+				},
+				scope:this
+			});
 		}, this);
 		
     },

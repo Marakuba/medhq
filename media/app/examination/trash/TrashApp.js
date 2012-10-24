@@ -11,7 +11,6 @@ App.examination.TrashApp = Ext.extend(Ext.Panel, {
 			region:'center',
 			autoScroll:true,
  			border:true,
- 			margins:'5 5 5 0',
  			layout: 'fit',
  			title:'Предпросмотр',
  			defaults:{
@@ -26,15 +25,7 @@ App.examination.TrashApp = Ext.extend(Ext.Panel, {
 			toggled:true,
 			enableToggle:true,
 			toggleGroup:'doc-type',
-			pressed:true,
-			handler: function(){
-				this.cardGrid.hide();
-				this.templateGrid.show();
-				this.mode = 'template';
-				this.restoreBtn.disable();
-				this.templateGrid.getSelectionModel().selectFirstRow();
-				this.doLayout();
-			},
+			handler: this.switchPanel.createDelegate(this,['template',1]),
 			scope:this
 		});
 		
@@ -42,13 +33,8 @@ App.examination.TrashApp = Ext.extend(Ext.Panel, {
 			text:'Карты осмотра',
 			enableToggle:true,
 			toggleGroup:'doc-type',
-			handler: function(){
-				this.templateGrid.hide();
-				this.cardGrid.show();
-				this.mode = 'card';
-				this.cardGrid.getSelectionModel().selectFirstRow();
-				this.doLayout();
-			},
+			pressed:true,
+			handler: this.switchPanel.createDelegate(this,['card',0]),
 			scope:this
 		});
 		
@@ -67,8 +53,10 @@ App.examination.TrashApp = Ext.extend(Ext.Panel, {
 		
 		this.templateGrid = new App.examination.TmpGrid({
 			baseParams:{
-				deleted:true
+				deleted:true,
+				base_service__isnull:true
 			},
+			hidden:true,
 			emptyTbar:true,
 			staff:this.staff,
 			border: false,
@@ -93,9 +81,8 @@ App.examination.TrashApp = Ext.extend(Ext.Panel, {
 				deleted:true
 			},
 			staff:this.staff,
-			hidden:true,
-			autoWidth:true,
-			autoHeight:true,
+//			autoWidth:true,
+//			autoHeight:true,
 //			layout:'fit',
 			border: false,
 			split:true,
@@ -127,20 +114,17 @@ App.examination.TrashApp = Ext.extend(Ext.Panel, {
 		this.trashPanel = new Ext.Panel({
 			region:'west',
  			border:false,
- 			collapsible:true,
-			collapseMode:'mini',
-			resizeble:true,
+ 			collapsible:false,
+//			collapseMode:'mini',
  			width:550,
- 			margins:'5 5 5 0',
- 			layout: 'fit',
- 			tbar:[this.templateBtn,this.cardBtn,'-',this.restoreBtn, this.reloadBtn],
+// 			margins:'5 5 5 0',
+ 			layout: 'card',
+ 			activeItem : 0,
+ 			tbar:[this.cardBtn,this.templateBtn,'-',this.restoreBtn, this.reloadBtn],
  			defaults:{
  				border:false
  			},
-    		items: [
-    			this.templateGrid,
-    			this.cardGrid
-    		]
+    		items: [ this.cardGrid, this.templateGrid ]
 		});
 		
 		var config = {
@@ -148,19 +132,23 @@ App.examination.TrashApp = Ext.extend(Ext.Panel, {
 			closable:true,
 			title: 'Корзина',
 			layout: 'border',	
-     		items: [
-				this.trashPanel,
-				this.contentPanel
-			]
+     		items: [ this.trashPanel, this.contentPanel ]
 		};
 		
 		Ext.apply(this, Ext.apply(this.initialConfig, config));
 		App.examination.TrashApp.superclass.initComponent.apply(this, arguments);
 		
 		this.on('afterrender',function(){
-			this.templateGrid.store.load();
-			this.cardGrid.store.load();
 		},this);
+	},
+	
+	switchPanel : function(mode, activeItem){
+		this.mode = mode;
+		this.contentPanel.removeAll();
+		var l = this.trashPanel.getLayout();
+		l.setActiveItem(activeItem);
+		var panel = l.activeItem;
+		panel.getSelectionModel().selectFirstRow();
 	},
 	
 	onPreview: function(id){
