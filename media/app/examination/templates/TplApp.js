@@ -101,7 +101,7 @@ App.examination.TemplateApp = Ext.extend(Ext.Panel, {
 	onServiceClick: function(attrs){
 		var ids = attrs.id.split('-');
 		var id = ids[0];
-		this.print_name = attrs.text;
+		this.baseServiceName = attrs.text;
 		
 		this.baseServiceId = id;
 		
@@ -143,13 +143,14 @@ App.examination.TemplateApp = Ext.extend(Ext.Panel, {
 		this.serviceTree.collapse();
 		var emptyData = Ext.encode({'tickets':[]});
 		this.record = new this.tplStore.recordType();
-		this.tplStore.autoSave = false;
 		this.record.set('data',emptyData);
 		this.record.set('staff',App.getApiUrl('staff',active_staff));
+		if (this.baseServiceName){
+			this.record.set('name',this.baseServiceName);
+		};
 		this.record.set('base_service',App.getApiUrl('baseservice',this.baseServiceId));
 		this.tplStore.add(this.record);
 		this.tplStore.save();
-		this.tplStore.autoSave = true;
 		this.openEditor(this.record.data.data)
 	},
 	
@@ -182,7 +183,8 @@ App.examination.TemplateApp = Ext.extend(Ext.Panel, {
 							format:'json',
 							staff:active_staff,
 							deleted:false
-						}
+						};
+						this.record.set('name',this.baseServiceName);
 						this.record.set('staff',App.getApiUrl('staff',active_staff));
 						this.record.set('base_service',App.getApiUrl('baseservice',this.baseServiceId));
 						this.tplStore.add(this.record);
@@ -244,6 +246,7 @@ App.examination.TemplateApp = Ext.extend(Ext.Panel, {
 	updateData: function(data){
 		var encodedData = Ext.encode(data);
 		this.record.set('data',encodedData);
+		this.tplStore.save();
 	}	
 		
 });

@@ -59,7 +59,7 @@ App.examination.ResumeCardPlugin = function(config, order){
 					this.results.objects.push({
 						action:'edit',
 						type:'card',
-						title:rec.data.print_name,
+						title:rec.data.name,
 						objectId:rec.data.id
 					});
 				}, this);
@@ -101,7 +101,7 @@ App.examination.PreviousCardPlugin = function(config, order){
 						this.results.objects.push({
 							action:'copy',
 							type:'card',
-							title:rec.data.print_name,
+							title:rec.data.name,
 							objectId:rec.data.id
 						});
 					}

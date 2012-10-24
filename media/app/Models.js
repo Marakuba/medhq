@@ -328,6 +328,7 @@ App.models.Dicom = new Ext.data.Record.create([
 
 App.models.Template = new Ext.data.Record.create([
    	{name: 'id'},
+   	{name: 'name'},
    	{name: 'created'},
    	{name: 'modified'},
 	{name: 'resource_uri'},
@@ -350,6 +351,7 @@ App.models.Card = new Ext.data.Record.create([
    	{name: 'created'},
    	{name: 'modified'},
 	{name: 'resource_uri'},
+	{name: 'name'},
 	{name: 'print_name'},
 	{name: 'print_date'},
 	{name: 'patient_id'},

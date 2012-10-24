@@ -220,7 +220,9 @@ App.examination.Ticket = Ext.extend(Ext.Panel,{
 			this.body.removeClass('empty-body');
 			this.body.update(d.value);
 		} else {
-			d['value'] = '' 
+			d['value'] = ''
+			this.body.addClass('empty-body');
+			this.body.update(d.value);
 		}; 
 	},
 	
@@ -235,7 +237,7 @@ App.examination.Ticket = Ext.extend(Ext.Panel,{
 	},
 	
 	updateData : function() {
-		var d = this.data || {'printable':true, 'private':false};
+		var d = this.data || {'printable':true, 'private':false, 'required':false, 'fixed':false};
 		this.updateTitleData(d);
 		this.updateValueData(d);
 		this.updateOptData(d);
