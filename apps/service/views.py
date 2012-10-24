@@ -13,7 +13,7 @@ def get_tpl_for_service(request):
     r = simplejson.loads(request.raw_post_data)
     try:
         service_id = int(r['data'][0])
-        tpl = Template.objects.get(base_service__id=service_id, staff=request.active_profile.staff)
+        tpl = Template.objects.get(base_service__id=service_id, staff=request.active_profile.staff,deleted=False)
     except Exception, err:
         return dict(success=False, msg=str(err))
     return dict(success=True, data=dict(id=tpl.id, title=tpl.name))

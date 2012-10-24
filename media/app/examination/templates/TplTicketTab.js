@@ -20,6 +20,13 @@ App.examination.TplTicketTab = Ext.extend(App.examination.TicketTab, {
 	
 	//Пользовательская функция добавления элементов в тулбар. выполняется после добавления обязательных кнопок
 	fillUsersMenu: function(){
+		this.deleteBtn = new Ext.Button({
+			iconCls:'silk-cancel',
+			text: 'Удалить шаблон',
+			handler:this.onDelete.createDelegate(this),
+			scope:this
+		});
+		this.ttb.add(this.deleteBtn);
 		this.doLayout();
 	},
 	
@@ -39,6 +46,10 @@ App.examination.TplTicketTab = Ext.extend(App.examination.TicketTab, {
 	onPrint: function(){
 		var url = String.format(this.printUrlTpl,this.cardId);
 		window.open(url);
+	},
+	
+	onDelete: function(){
+		this.fireEvent('deletetpl')
 	}
 	
 });

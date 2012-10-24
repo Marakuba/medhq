@@ -24,7 +24,7 @@ App.examination.CardApp = Ext.extend(Ext.Panel, {
 		*/
 		
 		this.tplStore = new Ext.data.RESTStore({
-			autoSave: true,
+			autoSave: false,
 			autoLoad : false,
 			apiUrl : get_api_url('examtemplate'),
 			baseParams:{
@@ -57,9 +57,7 @@ App.examination.CardApp = Ext.extend(Ext.Panel, {
 		this.cardStore.on('write',function(store, action, result, res, rs){
 			if (action == 'create'){
 				this.cardId = rs.data.id;
-				if (this.cardBody.setCardId){
-					this.cardBody.setCardId(this.cardId);
-				}
+				this.openTickets(rs.data.data)
 			}
 			if (rs.data.deleted){
 				this.destroy();
@@ -153,7 +151,6 @@ App.examination.CardApp = Ext.extend(Ext.Panel, {
 		this.record.set('name',this.orderRecord.data.service_name);
 		this.cardStore.add(this.record);
 		this.cardStore.save();
-		this.openTickets(this.record.data.data)
 	},
 	
 	copyFromSource: function(sourceType,sourceId){
@@ -227,7 +224,8 @@ App.examination.CardApp = Ext.extend(Ext.Panel, {
 			patientId:this.patientId,
 			listeners:{
 				scope:this,
-				dataupdate:this.updateData
+				dataupdate:this.updateData,
+				deletecard:this.deleteCard
 			}
 		});
 		this.contentPanel.removeAll(true);
@@ -240,7 +238,12 @@ App.examination.CardApp = Ext.extend(Ext.Panel, {
 		var encodedData = Ext.encode(data);
 		this.record.set('data',encodedData);
 		this.cardStore.save();
-	}		
+	},
+	
+	deleteCard: function(){
+		this.record.set('deleted',true);
+		this.cardStore.save();
+	}	
 });
 
 

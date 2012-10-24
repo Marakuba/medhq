@@ -43,7 +43,14 @@ App.examination.CardTicketTab = Ext.extend(App.examination.TicketTab, {
 			handler:this.onHistoryOpen.createDelegate(this),
 			scope:this
 		});
+		this.deleteBtn = new Ext.Button({
+			iconCls:'silk-cancel',
+			text: 'Удалить карту осмотра',
+			handler:this.onDelete.createDelegate(this),
+			scope:this
+		});
 		this.ttb.add(this.historyBtn);
+		this.ttb.add(this.deleteBtn);
 		this.doLayout();
 	},
 	
@@ -81,5 +88,9 @@ App.examination.CardTicketTab = Ext.extend(App.examination.TicketTab, {
 //			staff:this.staff
 		}
 //		App.eventManager.fireEvent('launchapp', 'patienthistory',config);
+	},
+	
+	onDelete: function(){
+		this.fireEvent('deletecard')
 	}
 });

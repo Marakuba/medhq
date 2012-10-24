@@ -50,7 +50,7 @@ def create_assistant(sender, **kwargs):
     card = kwargs['instance']
     tickets = card.get_data()['tickets']
     for t in tickets:
-        if t['xtype']=='assistantticket':
+        if t['xtype'] and t['xtype']=='assistantticket':
             try:
                 assistant_id = t['value']['_resource_uri'].split('/')[-1]
             except:

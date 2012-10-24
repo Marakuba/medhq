@@ -18,7 +18,7 @@ App.examination.TemplateApp = Ext.extend(Ext.Panel, {
 		*/
 		
 		this.tplStore = new Ext.data.RESTStore({
-			autoSave: true,
+			autoSave: false,
 			autoLoad : false,
 			apiUrl : get_api_url('examtemplate'),
 			model: App.models.Template,
@@ -32,9 +32,7 @@ App.examination.TemplateApp = Ext.extend(Ext.Panel, {
 		this.tplStore.on('write',function(store, action, result, res, rs){
 			if (action == 'create'){
 				this.tplId = rs.data.id;
-				if (this.tplBody && this.tplBody.setTplId){
-					this.tplBody.setTplId(this.tplId);
-				}
+				this.openEditor(rs.data.data)
 			}
 			if (rs.data.deleted){
 				this.destroy();
@@ -107,6 +105,7 @@ App.examination.TemplateApp = Ext.extend(Ext.Panel, {
 		
 		this.tplStore.setBaseParam('base_service',id);
 		this.tplStore.setBaseParam('staff',active_staff);
+		this.tplStore.setBaseParam('deleted',false);
 		this.tplStore.load({
 			callback:function(records,opts,success){
 				if (records.length){
@@ -151,7 +150,6 @@ App.examination.TemplateApp = Ext.extend(Ext.Panel, {
 		this.record.set('base_service',App.getApiUrl('baseservice',this.baseServiceId));
 		this.tplStore.add(this.record);
 		this.tplStore.save();
-		this.openEditor(this.record.data.data)
 	},
 	
 	copyFromSource: function(sourceType,sourceId){
@@ -177,7 +175,6 @@ App.examination.TemplateApp = Ext.extend(Ext.Panel, {
 						this.serviceTree.collapse();
 						var source = records[0];
 						this.record = new this.tplStore.recordType();
-						this.tplStore.autoSave = false;
 						Ext.applyIf(this.record.data,source.data);
 						store.baseParams = {
 							format:'json',
@@ -189,7 +186,6 @@ App.examination.TemplateApp = Ext.extend(Ext.Panel, {
 						this.record.set('base_service',App.getApiUrl('baseservice',this.baseServiceId));
 						this.tplStore.add(this.record);
 						this.tplStore.save();
-						this.tplStore.autoSave = true;
 						this.openEditor(this.record.data.data)
 					}
 				},
@@ -235,7 +231,8 @@ App.examination.TemplateApp = Ext.extend(Ext.Panel, {
 			tplId : this.tplId,
 			listeners:{
 				scope:this,
-				dataupdate:this.updateData
+				dataupdate:this.updateData,
+				deletetpl:this.deleteTpl
 			}
 		});
 		this.contentPanel.removeAll(true);
@@ -247,7 +244,12 @@ App.examination.TemplateApp = Ext.extend(Ext.Panel, {
 		var encodedData = Ext.encode(data);
 		this.record.set('data',encodedData);
 		this.tplStore.save();
-	}	
+	},
+	
+	deleteTpl: function(){
+		this.record.set('deleted',true);
+		this.tplStore.save();
+	}
 		
 });
 

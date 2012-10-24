@@ -31,6 +31,11 @@ from pricelist.models import get_actual_ptype
 from staff.models import Staff
 from examination.models import FieldSet, SubSection, Questionnaire
 from examination.widgets import get_widget
+try:
+    from collections import OrderedDict
+except:
+    from ordereddict import OrderedDict #@Reimport
+
 logger = logging.getLogger('general')
 
 
@@ -512,7 +517,7 @@ def service_tree(request):
         resp = u'%s(%s)' % (cb,resp)
     return HttpResponse(resp, mimetype="application/json")
 
-from collections import defaultdict, OrderedDict
+from collections import defaultdict
 
 def sampling_tree(request, visit_id):
     states = defaultdict(list)

@@ -411,7 +411,9 @@ App.examination.TicketTab = Ext.extend(Ext.Panel, {
 		});
 		
 		_.map(uniques, function(ticket){
-			Ext.getCmp('unique-ticket-'+ticket.xtype).disable();
+			var cmp = Ext.getCmp('unique-ticket-'+ticket.xtype);
+			if (cmp)
+				cmp.disable();
 		});
 	},
 	
