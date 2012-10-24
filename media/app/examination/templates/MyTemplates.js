@@ -62,8 +62,8 @@ App.examination.MyTemplates = Ext.extend(Ext.Panel, {
 		this.archivePanel = new Ext.Panel({
 			region:'west',
  			border:true,
- 			collapsible:true,
-			collapseMode:'mini',
+ 			collapsible:false,
+//			collapseMode:'mini',
  			width:550,
  			margins:'5 5 5 0',
  			layout: 'fit',

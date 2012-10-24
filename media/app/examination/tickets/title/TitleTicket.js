@@ -11,6 +11,9 @@ Ext.ns('App.examination');
 
 
 App.examination.TitleTicket = Ext.extend(App.examination.Ticket,{
+	
+	defaultText : 'Щелкните здесь чтобы установить заголовок...',
+	
 	initComponent: function(){
 		
 		config = {

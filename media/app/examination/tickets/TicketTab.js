@@ -600,6 +600,7 @@ App.examination.TicketTab = Ext.extend(Ext.Panel, {
 			for (var i = 0; i < tickets.length; i++){
 				var ticket = {};
 				Ext.apply(ticket,tickets[i]);
+				console.info(ticket);
 				this.addTicket(ticket);
 			}
 		}

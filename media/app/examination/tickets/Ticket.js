@@ -132,7 +132,7 @@ App.examination.Ticket = Ext.extend(Ext.Panel,{
         
 		var headerEditor = new Ext.Editor(Ext.apply({
             alignment: 'tl-tl',
-            emptyText:'Щелкните здесь чтобы установить заголовок...',
+            emptyText:this.defaultTitle,
             listeners: {
             	show:function(edt){
             		if(edt.field.getValue()==edt.emptyText){
@@ -217,7 +217,7 @@ App.examination.Ticket = Ext.extend(Ext.Panel,{
 		if (d.title) {
 			this.setTitle(d.title);
 		} else {
-			this.setTitle('Щелкните здесь чтобы установить заголовок...');
+			this.setTitle(this.defaultTitle);
 			this.header.addClass('empty-header');
 			d['title'] = ''
 		};
@@ -230,7 +230,7 @@ App.examination.Ticket = Ext.extend(Ext.Panel,{
 		} else {
 			d['value'] = ''
 			this.body.addClass('empty-body');
-			this.body.update(d.value);
+			this.body.update(this.defaultText);
 		}; 
 	},
 	

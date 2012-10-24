@@ -49,11 +49,31 @@
    		list-style-type: disc;
    		list-style-position: inside;
    	}
+
+   	.ticket.titleticket .value {
+   		text-align:center;
+   		font-size:16pt;
+   		font-weight:bold;
+   		margin:0.4cm 0;
+   	}
+   	
+   	.tpl-info {
+   		padding:4px;
+   		background-color:#c9f497;
+   		font-style: italic;
+   	}
+   	
+   	.tpl-info span {
+   		font-weight:bold;
+   	}
+    	
+
 	
 </style>
 
+<div class="tpl-info"><span>Шаблон:</span> {{ tpl.name }}</div>
+
 <div class="template-preview">
-<h1>{{ tpl.print_name }}</h1>
 {% include "examination/base.html" %}
 <div class="footer">Врач
 	<span>___________________ {{ request.active_profile }}</span>

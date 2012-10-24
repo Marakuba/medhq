@@ -63,6 +63,7 @@ App.dict.GlossaryEditor = Ext.extend(Ext.Panel, {
 	            header: 'Раздел',
 	            dataIndex: 'title'
 	        }],
+	        columnSort:false,
 	        listeners:{
 	        	click:function(dv,index,node,e) {
 	        		var rootNode = this.glossary.getRootNode()
@@ -151,10 +152,11 @@ App.dict.GlossaryEditor = Ext.extend(Ext.Panel, {
 		
 		this.glossPanel = new Ext.Panel({
 			region:'center',
- 			border:true,
+ 			border:false,
  			layout:'border',
  			autoScroll:true,
- 			margins:'5 5 5 0',
+ 			split:true,
+// 			margins:'5 5 5 0',
  			defaults:{
  				border:false
  			},
@@ -166,10 +168,11 @@ App.dict.GlossaryEditor = Ext.extend(Ext.Panel, {
 		
 		this.menuPanel = new Ext.Panel({
 			region:'west',
- 			border:true,
+ 			border:false,
  			collapsible:false,
  			width:150,
- 			margins:'5 5 5 0',
+// 			margins:'5 5 5 0',
+ 			split:true,
  			layout: 'fit',
  			defaults:{
  				border:false

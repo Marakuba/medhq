@@ -70,7 +70,7 @@ App.examination.CardTicketTab = Ext.extend(App.examination.TicketTab, {
 		this.doLayout();
 	},
 	
-	printUrlTpl : "/widget/examination/card/{0}/",
+	printUrlTpl : "/exam/card/{0}/",
 	
 	onPrint: function(){
 		var url = String.format(this.printUrlTpl,this.cardId);
