@@ -8,6 +8,7 @@ debug = settings.DEBUG and '-debug' or ''
 js_for_all = Bundle(
     'libs/jquery.js',
     'libs/raven.js',
+    'libs/underscore-min.js',
     filters='rjsmin', output='assets/for_all.js',)
 
 js_ext = Bundle(
@@ -115,6 +116,7 @@ js_registry = Bundle(
     'app/registry/patient/ManualGrid.js',
     'app/registry/patient/LabGrid.js',
     'app/registry/patient/ExamCardGrid.js',
+    'app/registry/patient/OldExamCardGrid.js',
     'app/registry/patient/AsgmtGrid.js',
     'app/registry/patient/VisitGrid.js',
     'app/registry/patient/ServiceGrid.js',
@@ -263,8 +265,8 @@ js_oldexam = Bundle(
     'extjs/ux/treegrid/TreeGridColumns.js',
     'extjs/ux/treegrid/TreeGrid.js',
     
-    'app/examination/editor/TmpGrid.js',
-    'app/examination/neocard/CardGrid.js',
+    'app/examination/templates/TmpGrid.js',
+    'app/examination/cards/CardGrid.js',
     
     'app/registry/ServicePanel.js',
     'app/service/ServiceTreeGrid.js',
@@ -278,7 +280,6 @@ js_oldexam = Bundle(
     'app/examination/editor/TicketTab.js',
     'app/examination/editor/TemplateBody.js',
     'app/examination/editor/StartPanel.js',
-    'app/examination/editor/Editor.js',
     'app/examination/editor/card.js',
     
     'app/examination/patient/PatientHistoryTreeGrid.js',
@@ -290,13 +291,12 @@ js_oldexam = Bundle(
     'app/registry/asgmt/AsgmtTab.js',
     'app/registry/patient/AsgmtGrid.js',
     
-    'app/examination/neocard/CardStartPanel.js',
-    'app/examination/neocard/CardGeneralTab.js',
-    'app/examination/neocard/CardApp.js',
+    'app/examination/cards/CardApp.js',
+    'app/examination/templates/TemplateApp.js',
     
     'app/examination/conclusion/ConclApp.js',
     
-    'app/examination/archive/ArchiveApp.js',
+    'app/examination/templates/StaffTemplates.js',
     
     'app/examination/trash/TrashApp.js',
     
@@ -308,15 +308,6 @@ js_oldexam = Bundle(
     'app/examination/templates/TemplatesWindow.js',
     'app/examination/templates/GroupGrid.js',
     
-    'app/examination/cards/Viewer.js',
-    'app/examination/cards/EpicrisisWindow.js',
-    'app/examination/cards/PromptWindow.js',
-    'app/examination/cards/ExamCardWindow.js',
-    'app/examination/cards/CardsWindow.js',
-    'app/examination/cards/ExamCardForm.js',
-    'app/examination/cards/ExamCardGrid.js',
-    'app/examination/cards/ExamBackend.js',
-    'app/examination/cards/AllExamGrid.js',
     
     'app/examination/patient/PatientGrid.js',
     'app/examination/patient/PatientGridPanel.js',
@@ -478,6 +469,11 @@ js_examination = Bundle(
     'app/examination/backends.js',
     'app/Models.js',
     
+    'app/examination/startpanel/StartView.js',
+    'app/examination/startpanel/StartPanel.js',
+    'app/examination/startpanel/CardStartPanel.js',
+    'app/examination/startpanel/TemplateStartPanel.js',
+    
     'app/examination/questionnaire/QuestEditor.js',
     'app/examination/questionnaire/QuestPreviewPanel.js',
     'app/examination/questionnaire/QuestApp.js',
@@ -517,8 +513,13 @@ js_examination = Bundle(
     'extjs/ux/treegrid/TreeGridColumns.js',
     'extjs/ux/treegrid/TreeGrid.js',
     
-    'app/examination/editor/TmpGrid.js',
-    'app/examination/neocard/CardGrid.js',
+    'app/examination/templates/TmpGrid.js',
+    'app/examination/cards/CardGrid.js',
+    
+    'app/examination/tickets/icd/IcdTicketEditor.js',
+    'app/examination/tickets/text/TextTicketEditor.js',
+    'app/examination/tickets/asgmt/PreorderInlineGrid.js',
+    'app/examination/tickets/asgmt/AsgmtTicketEditor.js',
     
     'app/registry/ServicePanel.js',
     'app/service/ServiceTreeGrid.js',
@@ -527,17 +528,20 @@ js_examination = Bundle(
     'app/dict/glossary/GlossaryTree.js',
     'app/dict/glossary/GlossaryPanel.js',
     'app/examination/editor/GlossaryTree.js',
-    'app/examination/editor/TicketEditPanel.js',
     'app/examination/editor/EquipmentTab.js',
     'app/examination/editor/GeneralTab.js',
-    'app/examination/editor/TicketTab.js',
+    'app/examination/tickets/Ticket.js',
+    'app/examination/tickets/text/TextTicket.js',
+    'app/examination/tickets/title/TitleTicket.js',
+    'app/examination/tickets/icd/IcdTicket.js',
+    'app/examination/tickets/asgmt/AsgmtTicket.js',
+    'app/examination/tickets/questionnaire/QuestionnaireTicketEditor.js',
+    'app/examination/tickets/TicketTab.js',
+    'app/examination/cards/CardTicketTab.js',
+    'app/examination/templates/TplTicketTab.js',
     'app/examination/editor/SectionPanel.js',
     'app/examination/editor/DataTab.js',
     'app/examination/editor/TemplateBody.js',
-    'app/examination/editor/StartPanel.js',
-    'app/examination/editor/Editor.js',
-    'app/examination/editor/card.js',
-    'app/examination/editor/QuestTicket.js',
     
     'app/dict/glossary/GlossaryEditor.js',
     
@@ -555,36 +559,18 @@ js_examination = Bundle(
     'app/registry/preorder/PreorderManager.js',
     
     'app/registry/patient/ExamCardGrid.js',
+    'app/registry/patient/OldExamCardGrid.js',
     'app/examination/gendoc/PatientCard.js',
     'app/examination/gendoc/GeneralDoctorPanel.js',
     
-    'app/examination/neocard/CardStartPanel.js',
-    'app/examination/neocard/CardGeneralTab.js',
-    'app/examination/neocard/CardApp.js',
+    'app/examination/cards/CardApp.js',
+    'app/examination/templates/TemplateApp.js',
     
     'app/examination/conclusion/ConclApp.js',
     
-    'app/examination/archive/ArchiveApp.js',
+    'app/examination/templates/StaffTemplates.js',
     
     'app/examination/trash/TrashApp.js',
-    
-    'app/examination/templates/CardTemplateWindow.js',
-    'app/examination/templates/CardTemplateForm.js',
-    'app/examination/templates/TemplateGrid.js',
-    'app/examination/templates/TemplateGlobalGrid.js',
-    'app/examination/templates/TemplateBackend.js',
-    'app/examination/templates/TemplatesWindow.js',
-    'app/examination/templates/GroupGrid.js',
-    
-    'app/examination/cards/Viewer.js',
-    'app/examination/cards/EpicrisisWindow.js',
-    'app/examination/cards/PromptWindow.js',
-    'app/examination/cards/ExamCardWindow.js',
-    'app/examination/cards/CardsWindow.js',
-    'app/examination/cards/ExamCardForm.js',
-    'app/examination/cards/ExamCardGrid.js',
-    'app/examination/cards/ExamBackend.js',
-    'app/examination/cards/AllExamGrid.js',
     
     'app/examination/patient/PatientGrid.js',
     'app/examination/patient/PatientGridPanel.js',
@@ -637,6 +623,9 @@ js_examination = Bundle(
     'app/calendar/app/timeslot/TimeslotEditWindow.js',
     'app/calendar/src/CalendarPanel.js',
     'app/calendar/app/DoctorScheduler.js',
+
+    'app/locale/ru.js',
+    
     filters='rjsmin', output='assets/examination.js',)
 
 js_helpdesk = Bundle(

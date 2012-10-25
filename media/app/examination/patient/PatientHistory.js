@@ -7,8 +7,7 @@ App.examination.PatientHistory = Ext.extend(Ext.Panel, {
 		
 		this.patientPanel = new App.examination.PatientHistoryPanel ({
 			region:'west',
-			patient:this.patient,
-			patient_name:this.patient_name,
+			patientId:this.patientId,
 			width:650,
 			border: false,
 			collapsible:true,

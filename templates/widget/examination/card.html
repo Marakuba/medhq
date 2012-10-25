@@ -30,7 +30,7 @@
 		font-size:10pt;
 	}
 
-	.template-preview h1 {
+	.template-preview h1  {
 		font-size:15pt;
 		margin:4pt 0;
 		color: black;
@@ -40,6 +40,13 @@
 	.template-preview h2 {
 		font-size:12pt;
 		margin:8pt 0 4pt 0;
+	}
+	
+	.template-preview .title {
+		font-size:12pt;
+		margin:4pt 0;
+		color: black;
+		font-weight:bold;
 	}
 	
 	.template-preview p {
@@ -70,6 +77,15 @@
    		list-style-type: disc;
    		list-style-position: inside;
    	}
+   	
+   	.ticket.titleticket .value {
+   		text-align:center;
+   		font-size:16pt;
+   		font-weight:bold;
+   		margin:0.4cm 0;
+   	}
+    	
+   	
 </style>
 
 
@@ -93,32 +109,8 @@
 	<br>
 
 <div class="template-preview">
-<h1>{{ card.print_name }}</h1>
-
-{% for d in data %}
-	{% for ticket in d.tickets %}
-	<h2>{{ ticket.title }}</h2>
-	<p>{{ ticket.text }}</p>
-	{% endfor %}
-{% endfor %}
-{% for d in gdata %}
-	<h2>{{ d.title }}</h2>
-	<p>{{ d.text }}</p>
-{% endfor %}
-{% if asgmts %}
-	<h2> Рекомендации </h2>
-	<table class="results">
-	<tr>
-		<td>Услуга</td><td>Количество</td><td>Дата</td>
-	</tr>
-	{% for a in asgmts %}
-	<tr>
-		<td>{{a.text}}</td>
-		<td>{{a.count}}{% if a.deleted %} <em>({{a.deleted}})</em>{% endif %}</td>
-		<td>{{a.expiration|date:"d.m.Y"}}</td>
-	</tr>	
-	{% endfor %}
-{% endif %}
+<!-- <h1>{{ card.print_name }}</h1>  -->
+{% include "examination/base.html" %}
 <div class="footer">Врач
 	<span>___________________ {{ request.active_profile }}</span>
 </div>

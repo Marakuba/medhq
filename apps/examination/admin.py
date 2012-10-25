@@ -53,6 +53,8 @@ class SubSectionInlineAdmin(admin.TabularInline):
     
 class FieldSetAdmin(admin.ModelAdmin):
     inlines = [SubSectionInlineAdmin]
+    list_display = ('title','name','order','active')
+    ordering = ('order',)
     
 class QuestionnaireAdmin(admin.ModelAdmin):
     filter_horizontal = ('staff','base_service',)
@@ -61,10 +63,19 @@ class QuestionnaireAdmin(admin.ModelAdmin):
     class Media:
         js = ['libs/jquery.js',]
 
+
+class TemplateAdmin(admin.ModelAdmin):
+    save_as = True
+    list_display = ('name','print_name','base_service','staff')
+    
+class CardAdmin(admin.ModelAdmin):
+    readonly_fields = ['ordered_service','mkb_diag']
+    
 admin.site.register(Equipment)
-admin.site.register(Template)
+admin.site.register(Card, CardAdmin)
+admin.site.register(Template, TemplateAdmin)
 admin.site.register(FieldSet, FieldSetAdmin)
-admin.site.register(ExaminationCard, ExaminationCardAdmin)
-admin.site.register(CardTemplate, CardTemplateAdmin)
+#admin.site.register(ExaminationCard, ExaminationCardAdmin)
+#admin.site.register(CardTemplate, CardTemplateAdmin)
 admin.site.register(Glossary, GlossaryAdmin)
 admin.site.register(Questionnaire, QuestionnaireAdmin)

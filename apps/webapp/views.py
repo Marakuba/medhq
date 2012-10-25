@@ -29,6 +29,13 @@ from django.core.serializers.json import DjangoJSONEncoder
 import logging
 from pricelist.models import get_actual_ptype
 from staff.models import Staff
+from examination.models import FieldSet, SubSection, Questionnaire
+from examination.widgets import get_widget
+try:
+    from collections import OrderedDict
+except:
+    from ordereddict import OrderedDict #@Reimport
+
 logger = logging.getLogger('general')
 
 
@@ -176,7 +183,42 @@ def laboratory(request):
 @login_required
 @render_to('webapp/examination/index.html')
 def examination(request):
+    section_scheme = OrderedDict()
+    sections = FieldSet.objects.all()
+    required_tickets = []
+    for sec in sections:
+        subsecs = SubSection.objects.filter(section=sec.id)
+        section_scheme[sec.name] = {
+                                    'order':sec.order,
+                                    'title':sec.title,
+                                    'name':sec.name,
+                                    'items':[]
+                                    }
+        for subsec in subsecs:
+            widget = get_widget(subsec.widget)(request,subsec.title,'')
+            ticket = {'title':subsec.title,
+                'order':sec.order,
+                'xtype':subsec.widget,
+                'value':'',
+                'printable':True,
+                'private':False,
+                'section':sec.name,
+                'fixed':getattr(widget,'fixed', False),
+                'required':getattr(widget,'required', False),
+                'unique':getattr(widget,'unique', False)
+            }
+            if ticket['required']:
+                required_tickets.append(ticket)
+            else: 
+                section_scheme[sec.name]['items'].append(ticket)
+    quests = Questionnaire.objects.all()
+    questionnaires = [{'name':quest.name,
+                      'code':quest.code
+                      } for quest in quests]
     return {
+        'section_scheme':simplejson.dumps(section_scheme),
+        'questionnaires':simplejson.dumps(questionnaires),
+        'required_tickets':simplejson.dumps(required_tickets),
         'apps':simplejson.dumps(get_apps(request))
     }
 

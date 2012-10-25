@@ -96,7 +96,8 @@ App.dict.XGlossaryTree = Ext.extend(Ext.ux.tree.RemoteTreePanel, {
         });
         
         config = {
-                margins: '0 0 5 5',
+        		border:false,
+                margins: '0 0 5 0',
                 width:250,
                 split:true,
                 disabled:false,
@@ -240,6 +241,7 @@ App.dict.XGlossaryTree = Ext.extend(Ext.ux.tree.RemoteTreePanel, {
 				'Content-Type':'application/json'
 			}
 		});
+		
 
 		if(false !== this.fireEvent('before' + (insert ? 'insert' : 'append') + 'request', this, o)) {
 

@@ -12,9 +12,13 @@
 		border-bottom: 1px gray solid;
 	}
 	
-	.template-preview h2 {
+	.template-preview h2, .template-preview .title {
 		font-size:12pt;
 		margin:8pt 0 4pt 0;
+	}
+	
+	.template-preview .title {
+		font-weight:bold;
 	}
 	
 	.template-preview p {
@@ -45,22 +49,32 @@
    		list-style-type: disc;
    		list-style-position: inside;
    	}
+
+   	.ticket.titleticket .value {
+   		text-align:center;
+   		font-size:16pt;
+   		font-weight:bold;
+   		margin:0.4cm 0;
+   	}
+   	
+   	.tpl-info {
+   		padding:4px;
+   		background-color:#c9f497;
+   		font-style: italic;
+   	}
+   	
+   	.tpl-info span {
+   		font-weight:bold;
+   	}
+    	
+
 	
 </style>
 
-<div class="template-preview">
-<h1>{{ tpl.print_name }}</h1>
+<div class="tpl-info"><span>Шаблон:</span> {{ tpl.name }}</div>
 
-{% for d in data %}
-	{% for ticket in d.tickets %}
-	<h2>{{ ticket.title }}</h2>
-	<p>{{ ticket.text }}</p>
-	{% endfor %}
-{% endfor %}
-{% for d in gdata %}
-	<h2>{{ d.title }}</h2>
-	<p>{{ d.text }}</p>
-{% endfor %}
+<div class="template-preview">
+{% include "examination/base.html" %}
 <div class="footer">Врач
 	<span>___________________ {{ request.active_profile }}</span>
 </div>

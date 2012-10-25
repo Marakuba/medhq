@@ -7,7 +7,7 @@ App.examination.PatientHistoryPanel = Ext.extend(Ext.Panel, {
     	
     	this.history_tree = new App.PatientHistoryTreeGrid({
     		baseParams: {
-    			patient:this.patient,
+    			patient:this.patientId,
     			get_years:true,
 				get_months:true,
 				get_visits:true,

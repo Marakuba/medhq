@@ -38,7 +38,7 @@ App.patient.PatientWindow = Ext.extend(Ext.Window, {
 		this.postMaterialBtn = new Ext.Button({
 			iconCls:'med-testtubes',
 			text:'Сохранить и перейти к поступлению б/м',
-			handler:this.onFormSave.createDelegate(this,['material']),
+			handler:this.onFormSave.createDelegate(this,['material',false]),
 			disabled:this.fromVisit?true:false,//если окно открыто из визита, то новый визит создавать не надо
 			scope:this
 		});
@@ -46,12 +46,18 @@ App.patient.PatientWindow = Ext.extend(Ext.Window, {
 		this.postVisitlBtn = new Ext.SplitButton({
 			iconCls:'med-usersetup',
 			text:'Сохранить и перейти к приему',
-			handler:this.onFormSave.createDelegate(this,['visit']),
+			handler:this.onFormSave.createDelegate(this,['visit',false]),
 			disabled:this.fromVisit?true:false,
 			menu:[{
 				iconCls:'med-testtubes',
 				text:'Сохранить и перейти к поступлению б/м',
-				handler:this.onFormSave.createDelegate(this,['material']),
+				handler:this.onFormSave.createDelegate(this,['material',false]),
+				disabled:this.fromVisit?true:false,
+				scope:this
+			},{
+				iconCls:'med-testtubes',
+				text:'Сохранить и перейти к поступлению б/м по штрих-коду',
+				handler:this.onFormSave.createDelegate(this,['material',true]),
 				disabled:this.fromVisit?true:false,
 				scope:this
 			}],
@@ -87,8 +93,9 @@ App.patient.PatientWindow = Ext.extend(Ext.Window, {
 		this.form.on('accepted',this.onFormSave.createDelegate(this,[false]),this);
 	},
 	
-	onFormSave: function(post_visit) {
+	onFormSave: function(post_visit, barcode) {
 		this.post_visit = post_visit;
+		this.post_barcode = barcode;
 		var f = this.form;
 		this.steps = f.getSteps();
 		if (this.setAcceptedDate){
@@ -138,7 +145,8 @@ App.patient.PatientWindow = Ext.extend(Ext.Window, {
 			if(this.post_visit) {
 				App.eventManager.fireEvent('launchapp','visittab',{
 					patientId:this.record.data.id,
-					type:this.post_visit
+					type:this.post_visit,
+					hasBarcode:this.post_barcode
 				});
 			}
 			if(this.inCard) {

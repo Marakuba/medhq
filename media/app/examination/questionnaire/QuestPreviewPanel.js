@@ -4,6 +4,39 @@ App.examination.QuestPreviewPanel = Ext.extend(Ext.form.FormPanel, {
 	
     initComponent: function() {
     	
+    	/*Пример кода анкеты
+ * 		{layout:'tab',
+    items:[
+    {
+        title:'Анамнез жизни',
+        section:'anamnesis',
+        layout:'tab',
+        items:[
+        {   
+            items:[{type:'text',
+                value:'555'},{type:'text',
+                value:'555'}],
+            title:'1',
+            
+        }, {
+            title:'2',
+            type:'text',
+            value:'666'
+        }]
+    },{
+        title:'Дополнительно',
+        section:'other',
+        items:[
+        {
+             type:'checkbox',
+             data:['uuu','iii']
+         },{
+             type:'text',
+             value:'453'
+         }]
+    }]
+}*/
+    	
     	this.questComponents = {
 			'text':{
 				'constructor':Ext.form.TextField,

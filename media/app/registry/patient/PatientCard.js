@@ -49,6 +49,10 @@ App.patient.PatientCard = Ext.extend(Ext.TabPanel, {
 			layout:'fit',
 			xtype:'regexamgrid'
 		},{
+			title:'Старые карты*',
+			layout:'fit',
+			xtype:'regoldexamgrid'
+		},{
 			title:'Оплаты',
 			layout:'fit',
 			hasPatient:true,

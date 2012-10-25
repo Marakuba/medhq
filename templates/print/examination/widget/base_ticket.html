@@ -1,0 +1,10 @@
+<div class="ticket {{ xtype }}">
+	{% block title %}
+	<div class="title">{{ title }}</div>
+	{% endblock %}
+	{% autoescape off %}
+		{% block value %}
+		<div class="value">{{ value }}</div>
+		{% endblock %}
+	{% endautoescape %}
+</div>
