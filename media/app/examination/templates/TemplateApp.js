@@ -65,7 +65,7 @@ App.examination.TemplateApp = Ext.extend(Ext.Panel, {
  			layout: 'fit',
 // 			title:this.title ? 'Шаблон '+ this.title : 'Выберите услугу',
  			header:false,
- 			html:'<div style="padding:40px;"><div class="start-help-text">&larr; Выберите услугу</div></div>',
+ 			html:this.tplId ? '<div style="padding:40px;"><div class="start-help-text">Подождите, идет открытие шаблона...</div></div>' : '<div style="padding:40px;"><div class="start-help-text">&larr; Выберите услугу</div></div>',
  			defaults:{
  				border:false
  			},
@@ -261,8 +261,9 @@ App.examination.TemplateApp = Ext.extend(Ext.Panel, {
 		this.tplStore.save();
 	},
 	
-	moveToArchive: function(){
+	moveToArchive: function(name){
 		this.record.set('base_service','');
+//		this.record.set('name',name);
 		var count = this.tplStore.save();
 		if (count > -1){
 			this.destroy()

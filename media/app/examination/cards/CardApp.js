@@ -259,10 +259,11 @@ App.examination.CardApp = Ext.extend(Ext.Panel, {
 		this.cardStore.save();
 	},
 	
-	moveToTpl: function(){
+	moveToTpl: function(name){
 		var archiveRecord = new this.tplStore.model();
 		Ext.applyIf(archiveRecord.data,this.record.data);
-		archiveRecord.set('staff',active_staff);
+		archiveRecord.set('staff',App.getApiUrl('staff',active_staff));
+		archiveRecord.set('name',name);
 		delete archiveRecord.data['base_service']
 		delete archiveRecord.data['id'];
 		this.tplStore.add(archiveRecord);

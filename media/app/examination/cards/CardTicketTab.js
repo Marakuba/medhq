@@ -54,9 +54,7 @@ App.examination.CardTicketTab = Ext.extend(App.examination.TicketTab, {
 		this.moveArchiveBtn = new Ext.Button({
 			text: 'Сохранить в Мои шаблоны',
 			hidden:this.fromArchive,
-			handler:function(){
-				this.fireEvent('movearhcivecard');
-			},
+			handler:this.moveToTpl,
 			scope:this
 		});
 		this.closeBtn = new Ext.Button({
@@ -68,6 +66,7 @@ App.examination.CardTicketTab = Ext.extend(App.examination.TicketTab, {
 			scope:this
 		});
 		this.ttb.add(this.historyBtn);
+		this.ttb.add(this.moveArchiveBtn);
 		this.ttb.add(this.deleteBtn);
 		this.ttb.add(this.closeBtn);
 		this.doLayout();
@@ -113,5 +112,13 @@ App.examination.CardTicketTab = Ext.extend(App.examination.TicketTab, {
 	
 	onClose: function(){
 		this.fireEvent('close')
+	},
+	
+	moveToTpl: function(){
+		Ext.Msg.prompt('Название', 'Введите название шаблона:', function(btn, text){
+		    if (btn == 'ok'){
+		        this.fireEvent('movearhcivecard',text);
+		    }
+		},this);
 	}
 });

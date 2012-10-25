@@ -29,6 +29,7 @@ App.examination.TmpGrid = Ext.extend(Ext.grid.EditorGridPanel, {
     
         this.store =  this.store || new Ext.data.Store({
             restful: true,    
+            autoSave: false,
             autoLoad: false, 
 			autoDestroy:true,
             baseParams: this.baseParams,
@@ -46,6 +47,21 @@ App.examination.TmpGrid = Ext.extend(Ext.grid.EditorGridPanel, {
         this.store.on('load', function(){
 			
 		}, this);
+		
+		this.store.on('write', function(store, action, result, res, rs){
+			if (action=='create'){
+				this.fireEvent('edittmp',rs);
+			}
+		}, this);
+		
+		this.addBtn = new Ext.Button({
+			text:'Добавить',
+			disabled:false,
+			hidden:!this.editable,
+			iconCls:'silk-add',
+			handler:this.onAdd,
+			scope:this
+		});
         
         this.editBtn = new Ext.Button({
 			text:'Изменить',
@@ -72,7 +88,7 @@ App.examination.TmpGrid = Ext.extend(Ext.grid.EditorGridPanel, {
 		
 		if(!this.emptyTbar){
 			
-			this.tbar = this.tbar || [this.editBtn,	this.delBtn];
+			this.tbar = this.tbar || [this.addBtn, this.editBtn,	this.delBtn];
 			
 			this.tbar.push({
 				xtype:'button',
@@ -98,7 +114,7 @@ App.examination.TmpGrid = Ext.extend(Ext.grid.EditorGridPanel, {
 			    	width:400,
 			    	sortable: true, 
 			    	hidden:false,
-			    	dataIndex: 'print_name',
+			    	dataIndex: 'name',
 			    	renderer:this.printNameRenderer()
 			    },{
 			    	header: "Наименование1", 
@@ -158,10 +174,18 @@ App.examination.TmpGrid = Ext.extend(Ext.grid.EditorGridPanel, {
     printNameRenderer: function(){
     	var self = this;
     	return function(value,metaData,record){
-    		if (self.printName){
+    		if (value){
     			return value
     		} else {
-    			return record.data.print_name
+    			var data = Ext.decode(record.data.data);
+    			var name = '';
+    			Ext.each(data.tickets,function(ticket){
+    				if (ticket.xtype == 'titleticket'){
+    					name = ticket.value;
+    					return
+    				}
+    			})
+    			return name
     		}
     	}
     },
@@ -172,10 +196,25 @@ App.examination.TmpGrid = Ext.extend(Ext.grid.EditorGridPanel, {
             return false;
         }
         rec.set('deleted',true);
+        this.store.save();
         this.editBtn.disable();
         this.delBtn.disable();
         this.store.load();
-    }
+    },
+    
+    onAdd: function(){
+		Ext.Msg.prompt('Название', 'Введите название шаблона:', function(btn, text){
+		    if (btn == 'ok'){
+		    	var emptyData = Ext.encode({'tickets':[]});
+				this.record = new this.store.recordType();
+				this.record.set('data',emptyData);
+				this.record.set('staff',App.getApiUrl('staff',active_staff));
+				this.record.set('name',text);
+				this.store.add(this.record);
+				this.store.save();
+		    }
+		},this);
+	}
 
 });
 
