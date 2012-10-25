@@ -109,23 +109,23 @@ App.examination.CardGrid = Ext.extend(Ext.grid.EditorGridPanel, {
             },
             {
                 header: "Дата создания",
-                width: '.1', 
+                width: 90, 
                 sortable: true, 
                 dataIndex: 'created',
                 renderer:Ext.util.Format.dateRenderer('d.m.y / H:i')
             },{
                 header: "Услуга", 
-                width: '.3', 
+                width: 240, 
                 sortable: true, 
-                dataIndex: 'print_name'
+                dataIndex: 'name'
             },{
                 header: "Пациент", 
-                width: '.2', 
+                width: 100, 
                 sortable: true, 
                 dataIndex: 'patient_name'
             },{
                 header: "Изменено", 
-                width: '.1', 
+                width: 90, 
                 sortable: true, 
                 dataIndex: 'modified',
                 renderer:Ext.util.Format.dateRenderer('d.m.y / H:i')

@@ -357,6 +357,7 @@ App.models.Card = new Ext.data.Record.create([
 	{name: 'patient_id'},
 	{name: 'patient_name'},
 	{name: 'ordered_service'},
+	{name: 'staff_name'},
 	{name: 'data'},
 	{name: 'questionnaire'},
 	{name: 'equipment'},

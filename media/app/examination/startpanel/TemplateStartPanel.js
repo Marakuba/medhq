@@ -32,7 +32,7 @@ App.examination.TemplateServicePlugin = function(config, order){
 		params:{
 			deleted:false,
             base_service__isnull:false,
-            staff__isnull:false
+            staff:active_staff
 		},
 		callback:function(records, opts, success){
 			if(success && records.length){

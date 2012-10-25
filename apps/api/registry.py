@@ -1619,6 +1619,7 @@ class CardResource(ExtResource):
         bundle.data['patient_id'] = obj.ordered_service.order.patient.id
         bundle.data['patient_name'] = obj.ordered_service.order.patient.short_name()
         bundle.data['staff_id'] = obj.ordered_service.staff and obj.ordered_service.staff.id
+        bundle.data['staff_name'] = obj.ordered_service.staff and obj.ordered_service.staff
         bundle.data['executed'] = obj.ordered_service.executed and True or False
         bundle.data['assistant_name'] = obj.assistant and obj.assistant.staff.short_name() or ''
         return bundle

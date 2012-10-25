@@ -83,7 +83,7 @@ App.examination.ConclApp = Ext.extend(Ext.Panel, {
 		var config = {
 			id:'concl-app',
 			closable:true,
-			title: 'Журнал заключений',
+			title: 'Архив заключений',
 			layout: 'border',	
      		items: [
 				this.conclPanel,

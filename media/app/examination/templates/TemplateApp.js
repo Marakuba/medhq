@@ -141,7 +141,8 @@ App.examination.TemplateApp = Ext.extend(Ext.Panel, {
 	},
 	
 	createEmptyTpl:function(){
-		this.serviceTree.hide();
+//		this.serviceTree.collapse();
+//		this.serviceTree.hide();
 		var emptyData = Ext.encode({'tickets':[]});
 		this.record = new this.tplStore.recordType();
 		this.record.set('data',emptyData);

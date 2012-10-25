@@ -71,7 +71,7 @@ App.examination.TitleTicket = Ext.extend(App.examination.Ticket,{
 //                	panel.data.title = value;
 //                	panel.fireEvent('ticketdataupdate', panel, panel.data);
                 	if(value==''){
-                		ed.setValue(ed.emptyText);
+//                		ed.setValue(ed.emptyText);
                 		panel.body.addClass('empty-body');
                 	} else {
                 		panel.body.removeClass('empty-body');

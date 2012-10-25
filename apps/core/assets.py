@@ -116,6 +116,7 @@ js_registry = Bundle(
     'app/registry/patient/ManualGrid.js',
     'app/registry/patient/LabGrid.js',
     'app/registry/patient/ExamCardGrid.js',
+    'app/registry/patient/OldExamCardGrid.js',
     'app/registry/patient/AsgmtGrid.js',
     'app/registry/patient/VisitGrid.js',
     'app/registry/patient/ServiceGrid.js',
@@ -558,6 +559,7 @@ js_examination = Bundle(
     'app/registry/preorder/PreorderManager.js',
     
     'app/registry/patient/ExamCardGrid.js',
+    'app/registry/patient/OldExamCardGrid.js',
     'app/examination/gendoc/PatientCard.js',
     'app/examination/gendoc/GeneralDoctorPanel.js',
     
