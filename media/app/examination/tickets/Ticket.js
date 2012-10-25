@@ -42,6 +42,15 @@ App.examination.Ticket = Ext.extend(Ext.Panel,{
 		this.addEvents('beforeticketremove','ticketremove','ticketdataupdate','ticketeditstart','editorclose','ticketheadeeditstart','ticketbodyclick','ticketeditstart','editcomplete','beforeticketedit');
 		this.enableBubble('beforeticketremove','ticketremove','ticketdataupdate','ticketeditstart','editorclose','ticketheadeeditstart','ticketbodyclick','ticketeditstart','editcomplete','beforeticketedit');
 		
+		this.editMenuItem = new Ext.menu.Item({
+			text:'Редактировать',
+			iconCls:'silk-pencil',
+			handler:function(){
+				this.onEdit(this);
+			},
+			scope:this
+		});
+		
 		this.pntMenuItem = new Ext.menu.CheckItem({
 			text:'Выводить на печать',
 			checked:this.initialConfig.printable || true ,
@@ -62,6 +71,18 @@ App.examination.Ticket = Ext.extend(Ext.Panel,{
 				},
 				scope:this
 			}
+		});
+		
+		this.delMenuItem = new Ext.menu.Item({
+			text:'Удалить',
+			iconCls:'silk-cancel',
+			handler:function(){
+				if( this.fireEvent('beforeticketremove',this)!==false ) {
+					this.fireEvent('ticketremove',this);
+					panel.destroy();
+				}
+			},
+			scope:this
 		});
 		
 		config = {
@@ -86,20 +107,16 @@ App.examination.Ticket = Ext.extend(Ext.Panel,{
 		
 	},
 	
-	initMenu : function(){
+	initMenu : function(e, t, o){
+		var items = [this.editMenuItem];
+		if(!this.data.required){
+			items = items.concat(['-',
+			       this.pntMenuItem,
+			       this.prvtMenuItem, '-',
+			       this.delMenuItem]);
+		}
 		this.menu = new Ext.menu.Menu({
-			items:[{
-				text:'Удалить',
-				handler:function(){
-					if( this.fireEvent('beforeticketremove',this)!==false ) {
-						this.fireEvent('ticketremove',this);
-						panel.destroy();
-					}
-				},
-				scope:this
-			},
-			this.pntMenuItem,
-			this.prvtMenuItem]
+			items:items
 		});
 	},
 	
@@ -187,7 +204,7 @@ App.examination.Ticket = Ext.extend(Ext.Panel,{
 	
 	bodyConfig: function(panel){
 		panel.body.on('click', function(e, t){
-				panel.onEdit(panel);
+				panel.onEdit(panel, e, t);
         		panel.fireEvent('ticketbodyclick',panel);
         	}, null, {
         });
@@ -199,7 +216,7 @@ App.examination.Ticket = Ext.extend(Ext.Panel,{
 	
 	onCtxMenu : function(e, t, o){
 		if (!this.menu) {
-			this.initMenu();
+			this.initMenu(e, t, o);
 		}
 		this.menu.showAt(e.xy);
 	},

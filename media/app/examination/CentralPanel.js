@@ -149,7 +149,7 @@ App.ExamCentralPanel = Ext.extend(Ext.Panel, {
                     },
                     scope:this
                 },*/{
-                	text: 'Конструктор шаблонов',
+                	text: 'Шаблоны услуг',
                     scale:'medium',
                     iconAlign: 'top',
                     handler: function(){
@@ -161,7 +161,7 @@ App.ExamCentralPanel = Ext.extend(Ext.Panel, {
                     scale:'medium',
                     iconAlign: 'top',
                     handler: function(){
-                    	this.launchApp('mytpls');
+                    	this.launchApp('stafftemplates');
                     },
                     scope:this
                 },{

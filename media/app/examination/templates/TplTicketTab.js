@@ -7,7 +7,23 @@ App.examination.TplTicketTab = Ext.extend(App.examination.TicketTab, {
 	addSubSecText : 'Добавить раздел',
 	
 	initComponent : function() {
+
+		this.infoTpl = new Ext.XTemplate(
+			'<div class="patient-info">',
+				'<div class="name">Шаблон: {name}</div>',
+			'</div>'
+		);
 		
+		this.infoPanel = new Ext.Panel({
+			region:'north',
+			height:23,
+			baseCls:'x-plain',
+			style:{
+				backgroundColor:"#c9f497"
+			},
+			html:this.infoTpl.apply(this.tplRecord.data)
+		});
+
 		var config = {
 			
 		};
@@ -41,7 +57,12 @@ App.examination.TplTicketTab = Ext.extend(App.examination.TicketTab, {
 		})
 	},
 	
-	printUrlTpl : "/widget/examination/card/{0}/",
+	fillUserBody: function(){
+		this.add(this.infoPanel);
+		this.doLayout();
+	},
+	
+	printUrlTpl : "/widget/examination/template/{0}/",
 	
 	onPrint: function(){
 		var url = String.format(this.printUrlTpl,this.cardId);

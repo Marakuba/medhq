@@ -1,6 +1,6 @@
 Ext.ns('App.examination');
 
-App.examination.MyTemplates = Ext.extend(Ext.Panel, {
+App.examination.StaffTemplates = Ext.extend(Ext.Panel, {
 	initComponent : function() {
 		
 		this.staff = App.getApiUrl('staff')+ '/' + active_staff;
@@ -21,13 +21,16 @@ App.examination.MyTemplates = Ext.extend(Ext.Panel, {
 		
 		this.contentPanel = new Ext.Panel({
 			region:'center',
- 			border:true,
+ 			border:false,
  			autoScroll:true,
- 			margins:'5 5 5 0',
+// 			margins:'5 5 5 0',
  			layout: 'fit',
  			title:'Предпросмотр',
  			defaults:{
  				border:false
+ 			},
+ 			style:{
+ 				borderLeft:"solid 1px #99BBE8"
  			},
     		items: [
     		]
@@ -61,11 +64,11 @@ App.examination.MyTemplates = Ext.extend(Ext.Panel, {
 		
 		this.archivePanel = new Ext.Panel({
 			region:'west',
- 			border:true,
+ 			border:false,
  			collapsible:false,
 //			collapseMode:'mini',
  			width:550,
- 			margins:'5 5 5 0',
+// 			margins:'5 5 5 0',
  			layout: 'fit',
  			defaults:{
  				border:false
@@ -87,7 +90,7 @@ App.examination.MyTemplates = Ext.extend(Ext.Panel, {
 		};
 		
 		Ext.apply(this, Ext.apply(this.initialConfig, config));
-		App.examination.MyTemplates.superclass.initComponent.apply(this, arguments);
+		App.examination.StaffTemplates.superclass.initComponent.apply(this, arguments);
 		
 		this.on('afterrender',function(){
 			this.archiveGrid.store.load();
@@ -124,4 +127,4 @@ App.examination.MyTemplates = Ext.extend(Ext.Panel, {
 	}
 });
 
-Ext.reg('mytpls', App.examination.MyTemplates);
+Ext.reg('stafftemplates', App.examination.StaffTemplates);

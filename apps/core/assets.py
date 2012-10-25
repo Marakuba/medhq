@@ -291,11 +291,11 @@ js_oldexam = Bundle(
     'app/registry/patient/AsgmtGrid.js',
     
     'app/examination/cards/CardApp.js',
-    'app/examination/templates/TplApp.js',
+    'app/examination/templates/TemplateApp.js',
     
     'app/examination/conclusion/ConclApp.js',
     
-    'app/examination/templates/MyTemplates.js',
+    'app/examination/templates/StaffTemplates.js',
     
     'app/examination/trash/TrashApp.js',
     
@@ -562,11 +562,11 @@ js_examination = Bundle(
     'app/examination/gendoc/GeneralDoctorPanel.js',
     
     'app/examination/cards/CardApp.js',
-    'app/examination/templates/TplApp.js',
+    'app/examination/templates/TemplateApp.js',
     
     'app/examination/conclusion/ConclApp.js',
     
-    'app/examination/templates/MyTemplates.js',
+    'app/examination/templates/StaffTemplates.js',
     
     'app/examination/trash/TrashApp.js',
     

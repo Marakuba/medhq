@@ -71,9 +71,13 @@ App.examination.CardApp = Ext.extend(Ext.Panel, {
 			
 			this.setIconClass('silk-error');
 			
-			(function(){
-				this.cardStore.save();
-			}).defer(5000, this);
+			if(!this.isDestroyed){
+				(function(){
+					this.cardStore.save();
+				}).defer(5000, this);
+			} else {
+				return
+			}
 			
 		}, this);
 		
@@ -235,9 +239,11 @@ App.examination.CardApp = Ext.extend(Ext.Panel, {
 	},
 	
 	updateData: function(data){
-		this.setIconClass('x-loading');
 		var encodedData = Ext.encode(data);
 		this.record.set('data',encodedData);
+		if(this.record.dirty){
+			this.setIconClass('x-loading');
+		}
 		this.cardStore.save();
 	},
 	

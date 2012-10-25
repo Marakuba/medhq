@@ -42,7 +42,7 @@ App.examination.TemplateApp = Ext.extend(Ext.Panel, {
 		this.serviceTree = new App.ServiceTreeGrid ({
 //			layout: 'fit',
 			region:'west',
-			collapsed:!!this.tplId,
+			hidden:!!this.tplId,
 			baseParams:{
 				payment_type:'н',
 				staff : active_profile,
@@ -63,7 +63,9 @@ App.examination.TemplateApp = Ext.extend(Ext.Panel, {
 			region:'center',
  			border:false,
  			layout: 'fit',
- 			title:this.title ? 'Шаблон '+ this.title : 'Выберите услугу',
+// 			title:this.title ? 'Шаблон '+ this.title : 'Выберите услугу',
+ 			header:false,
+ 			html:'<div style="padding:40px;"><div class="start-help-text">&larr; Выберите услугу</div></div>',
  			defaults:{
  				border:false
  			},
@@ -73,7 +75,7 @@ App.examination.TemplateApp = Ext.extend(Ext.Panel, {
 	
 		var config = {
 			closable:true,
-			title: 'Конструктор',
+			title: 'Шаблоны услуг',
 			layout: 'border',	
      		items: [
 				this.serviceTree,
@@ -139,7 +141,7 @@ App.examination.TemplateApp = Ext.extend(Ext.Panel, {
 	},
 	
 	createEmptyTpl:function(){
-		this.serviceTree.collapse();
+		this.serviceTree.hide();
 		var emptyData = Ext.encode({'tickets':[]});
 		this.record = new this.tplStore.recordType();
 		this.record.set('data',emptyData);
@@ -172,7 +174,7 @@ App.examination.TemplateApp = Ext.extend(Ext.Panel, {
 						this.createEmptyTpl();
 						return
 					} else {
-						this.serviceTree.collapse();
+						this.serviceTree.hide();
 						var source = records[0];
 						this.record = new this.tplStore.recordType();
 						Ext.applyIf(this.record.data,source.data);
@@ -204,7 +206,7 @@ App.examination.TemplateApp = Ext.extend(Ext.Panel, {
 			this.createEmptyTpl();
 			return
 		} else {
-			this.serviceTree.collapse();
+			this.serviceTree.hide();
 			this.tplId = tplId;
 			this.tplStore.setBaseParam('id',tplId);
 			this.tplStore.load({callback:function(records){
@@ -229,6 +231,7 @@ App.examination.TemplateApp = Ext.extend(Ext.Panel, {
 		this.tplBody = new App.examination.TplTicketTab({
 			data:decodedData,
 			tplId : this.tplId,
+			tplRecord : this.record,
 			listeners:{
 				scope:this,
 				dataupdate:this.updateData,
@@ -238,6 +241,10 @@ App.examination.TemplateApp = Ext.extend(Ext.Panel, {
 		this.contentPanel.removeAll(true);
 		this.contentPanel.add(this.tplBody);
 		this.contentPanel.doLayout();
+
+		var title = 'Шаблон: '+this.record.data.name;
+//		this.contentPanel.setTitle(title);
+		this.setTitle(title);
 	},
 	
 	updateData: function(data){
