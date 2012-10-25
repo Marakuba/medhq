@@ -78,16 +78,14 @@ App.examination.CardTicketTab = Ext.extend(App.examination.TicketTab, {
 	},
 	
 	onHistoryOpen: function(){
-//		var name = this.patient_name.split(' ');
+		var name = this.patientName.split(' ');
 		
 		config = {
 			closable:true,
-//			title:name[0] + ': История',
+			title:name[0] + ': История',
     		patientId:this.patientId
-//    		patient_name: this.patient_name,
-//			staff:this.staff
 		}
-//		App.eventManager.fireEvent('launchapp', 'patienthistory',config);
+		App.eventManager.fireEvent('launchapp', 'patienthistory',config);
 	},
 	
 	onDelete: function(){

@@ -110,7 +110,7 @@ def get_history_tree(request):
     
     visits = Visit.objects.filter(patient = patient).order_by('created')
     os_list = OrderedService.objects.filter(order__patient = patient)
-    cards = Card.objects.filter(ordered_service__order__patient = patient).order_by('ordered_service__order__id')
+    cards = Card.objects.filter(ordered_service__order__patient = patient, deleted=False).order_by('ordered_service__order__id')
     if visits:
         min_date = visits[0].created
         max_date = visits.reverse()[0].created  

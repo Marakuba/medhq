@@ -220,6 +220,7 @@ App.examination.CardApp = Ext.extend(Ext.Panel, {
 		this.cardBody = new App.examination.CardTicketTab({
 			data:decodedData,
 			cardId : this.cardId,
+			patientName: this.patientName,
 			orderRecord:this.orderRecord,
 			patientId:this.patientId,
 			listeners:{

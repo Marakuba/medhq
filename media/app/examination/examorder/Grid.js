@@ -195,7 +195,7 @@ App.examorder.ExamOrderGrid = Ext.extend(Ext.grid.GridPanel, {
 			var conf = {
 				closable:true,
         		patientId:rec.data.patient,
-        		patient_name: rec.data.patient_name,
+        		patientName: rec.data.patient_name,
         		orderId:rec.data.id,
         		orderRecord:rec,
 				title: rec.data.patient_name +  ': ' + rec.data.service_name,
@@ -256,8 +256,7 @@ App.examorder.ExamOrderGrid = Ext.extend(Ext.grid.GridPanel, {
 			config = {
 				closable:true,
 				iconCls:'silk-package',
-        		patient:rec.data.patient,
-        		patient_name: rec.data.patient_name,
+        		patientId:rec.data.patient,
         		ordered_service:rec.data.resource_uri,
 				title: rec.data.patient_name + ': История',
 				service:rec.data.service,
