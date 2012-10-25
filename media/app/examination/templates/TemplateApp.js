@@ -232,10 +232,13 @@ App.examination.TemplateApp = Ext.extend(Ext.Panel, {
 			data:decodedData,
 			tplId : this.tplId,
 			tplRecord : this.record,
+			fromArchive:!this.record.data.base_service,
 			listeners:{
 				scope:this,
 				dataupdate:this.updateData,
-				deletetpl:this.deleteTpl
+				deletetpl:this.deleteTpl,
+				close:function(){this.destroy();},
+				movetoarhcive:this.moveToArchive
 			}
 		});
 		this.contentPanel.removeAll(true);
@@ -256,6 +259,14 @@ App.examination.TemplateApp = Ext.extend(Ext.Panel, {
 	deleteTpl: function(){
 		this.record.set('deleted',true);
 		this.tplStore.save();
+	},
+	
+	moveToArchive: function(){
+		this.record.set('base_service','');
+		var count = this.tplStore.save();
+		if (count > -1){
+			this.destroy()
+		}
 	}
 		
 });

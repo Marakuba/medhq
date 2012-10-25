@@ -63,8 +63,6 @@ App.examination.CardApp = Ext.extend(Ext.Panel, {
 				this.destroy();
 			}
 			this.setIconClass('');
-			
-			
 		},this);
 		
 		this.cardStore.on('exception', function(){
@@ -80,6 +78,13 @@ App.examination.CardApp = Ext.extend(Ext.Panel, {
 			}
 			
 		}, this);
+		
+		this.tplStore.on('write',function(store, action, result, res, rs){
+			//карта перемещена в Мои шаблоны
+			if (action == 'create' && !rs.data.base_service){
+				this.destroy();
+			}
+		},this);
 		
 		this.contentPanel = new Ext.Panel({
 			region:'center',
@@ -230,7 +235,9 @@ App.examination.CardApp = Ext.extend(Ext.Panel, {
 			listeners:{
 				scope:this,
 				dataupdate:this.updateData,
-				deletecard:this.deleteCard
+				deletecard:this.deleteCard,
+				closecard:function(){this.destroy();},
+				movearhcivecard: this.moveToTpl
 			}
 		});
 		this.contentPanel.removeAll(true);
@@ -250,7 +257,17 @@ App.examination.CardApp = Ext.extend(Ext.Panel, {
 	deleteCard: function(){
 		this.record.set('deleted',true);
 		this.cardStore.save();
-	}	
+	},
+	
+	moveToTpl: function(){
+		var archiveRecord = new this.tplStore.model();
+		Ext.applyIf(archiveRecord.data,this.record.data);
+		archiveRecord.set('staff',active_staff);
+		delete archiveRecord.data['base_service']
+		delete archiveRecord.data['id'];
+		this.tplStore.add(archiveRecord);
+		this.tplStore.save();
+	}
 });
 
 

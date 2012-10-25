@@ -42,7 +42,23 @@ App.examination.TplTicketTab = Ext.extend(App.examination.TicketTab, {
 			handler:this.onDelete.createDelegate(this),
 			scope:this
 		});
+		this.moveArchiveBtn = new Ext.Button({
+			text: 'Переместить в Мои шаблоны',
+			hidden:this.fromArchive,
+			handler:function(){
+				this.fireEvent('movetoarhcive');
+			},
+			scope:this
+		});
+		this.closeBtn = new Ext.Button({
+			iconCls:'silk-door-out',
+			text: 'Закрыть шаблон',
+			handler:this.onClose.createDelegate(this),
+			scope:this
+		});
+		this.ttb.add(this.moveArchiveBtn);
 		this.ttb.add(this.deleteBtn);
+		this.ttb.add(this.closeBtn);
 		this.doLayout();
 	},
 	
@@ -71,6 +87,10 @@ App.examination.TplTicketTab = Ext.extend(App.examination.TicketTab, {
 	
 	onDelete: function(){
 		this.fireEvent('deletetpl')
+	},
+	
+	onClose: function(){
+		this.fireEvent('close')
 	}
 	
 });
