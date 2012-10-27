@@ -8,37 +8,7 @@ import simplejson
 class Migration(DataMigration):
 
     def forwards(self, orm):
-        def convert_data(old_data=''):
-            if not old_data:
-                return ''
-            old_data = simplejson.loads(old_data) or []
-            
-            data = {'tickets':[{
-                                'xtype':'textticket',
-                                'section':'section' in section.keys() and section['section'] or '',
-                                'title':'title' in ticket.keys() and ticket['title'] or '',
-                                'printable':'printable' in ticket.keys() and ticket['printable'] or '',
-                                'private':'private' in ticket.keys() and ticket['private'] or '',
-                                'position':'position' in ticket.keys() and ticket['pos'] or '',
-                                'value':'text' in ticket.keys() and ticket['text'] or ''
-                                } for section in old_data for ticket in section['tickets']]
-                    }
-            
-            return simplejson.dumps(data)
-
-        for card in orm.Card.objects.all():
-#            try:
-            card.data = convert_data(card.data)
-            card.save()
-#            except:
-#                print 'Error card %s' % card.id
-
-        for template in orm.Template.objects.all():
-            try:
-                template.data = convert_data(template.data)
-                template.save()
-            except:
-                print 'Error tpl %s' % template.id
+        pass
 
     def backwards(self, orm):
         "Write your backwards methods here."
