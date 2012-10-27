@@ -118,8 +118,8 @@ App.examination.CardApp = Ext.extend(Ext.Panel, {
 		App.examination.CardApp.superclass.initComponent.apply(this, arguments);
 		
 		this.on('afterrender',function(){
-			if (this.record){
-				this.editCard(this.record.data.id)
+			if (this.cardId){
+				this.editCard('card',this.cardId)
 			}
 			else {
 				this.startPanel = this.newStartPanel({

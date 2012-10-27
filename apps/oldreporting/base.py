@@ -163,7 +163,7 @@ Where \
             from_place_filial = u"and Tvis.office_id = '%s'"% (self.params['from_place_filial'])
 
         from_lab = ''
-        if self.params['from_lab'] is not u'':
+        if 'from_lab' in self.params and self.params['from_lab'] is not u'':
             from_lab = u"and Tvis.source_lab_id = '%s'"% (self.params['from_lab'])
 
         execution_place_office = ''

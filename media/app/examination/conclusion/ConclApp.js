@@ -118,16 +118,17 @@ App.examination.ConclApp = Ext.extend(Ext.Panel, {
 		
 		config = {
 			closable:true,
-    		patient:record.data.patient_id,
-    		patient_name: record.data.patient_name,
-    		ordered_service:record.data.ordered_service,
-			title: 'Пациент ' + record.data.patient_name,
-			print_name:record.data.service_name,
-			record:record,
-			staff:this.staff
+			cardId : record.data.id
+//    		patient:record.data.patient_id,
+//    		patient_name: record.data.patient_name,
+//    		ordered_service:record.data.ordered_service,
+//			title: 'Пациент ' + record.data.patient_name,
+//			print_name:record.data.service_name,
+//			record:record,
+//			staff:this.staff
 		};
 		
-		App.eventManager.fireEvent('launchapp', 'neocard',config);
+		App.eventManager.fireEvent('launchapp', 'cardapp',config);
 		
 	}
 });
