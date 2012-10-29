@@ -435,7 +435,7 @@ class Card(models.Model):
     created = models.DateTimeField(u'Дата создания', auto_now_add=True)
     modified = models.DateTimeField(auto_now=True)
     print_date = models.DateTimeField(u'Время печати', blank=True, null=True)
-    ordered_service = models.ForeignKey(OrderedService,blank=True, null=True)
+    ordered_service = models.ForeignKey(OrderedService, blank=True, null=True)
     mkb_diag = models.ForeignKey(ICD10, null=True, blank=True)
     assistant = models.ForeignKey(Position, verbose_name=u'Лаборант', null=True, blank=True)
     data = models.TextField(u'Данные', null=True, blank=True)
@@ -463,7 +463,7 @@ class Card(models.Model):
     class Meta:
         verbose_name = u'Карта осмотра'
         verbose_name_plural = u'Карты осмотра'
-        ordering = ('-id',)
+        ordering = ('-created',)
         
 class Template(models.Model):
     name = models.TextField(u'Рабочее наименование', null=True, blank=True)

@@ -33,21 +33,23 @@ class BaseWidget(object):
     xtype = None
     tpl = 'print/examination/widget/%s.html'
     
-    def __init__(self, request, title, value, printable=True, private=False, **kwargs):
+    def __init__(self, request, title, value, printable=True, private=False, title_print=True, **kwargs):
         self.request = request
         self.title = title
         self.value = value
         self.printable = printable
         self.private = private
+        self.title_print = title_print
         self.opts = kwargs
         self.template = self.tpl % self.xtype
 
     def get_ctx(self):
         return {
-            'title':self.title,
-            'value':self.value,
-            'xtype':self.xtype
-        } 
+            'title': self.title,
+            'value': self.value,
+            'xtype': self.xtype,
+            'object': self
+        }
     
     def to_html(self):
         ctx = self.get_ctx()
@@ -72,12 +74,13 @@ class WidgetManager(object):
                             t['value'], 
                             t['printable'],
                             t['private'],
+                            t['title_print'],
                             **self.opts)
     
-    def add_widget(self, request, xtype, title, value, printable=True, private=False, **kwargs):
+    def add_widget(self, request, xtype, title, value, printable=True, private=False, title_print=True, **kwargs):
         try:
             widget_cls = get_widget(xtype)
-            self.widgets.append(widget_cls(request, title, value, printable, private, **kwargs))
+            self.widgets.append(widget_cls(request, title, value, printable, private, title_print, **kwargs))
         except:
             raise Exception('error with widget "%s"' % xtype)
     

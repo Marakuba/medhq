@@ -97,7 +97,7 @@
 			<td class="name">Дата рождения:</td><td class="bold">{{ card.ordered_service.order.patient.birth_day|date:"d.m.Y" }}</td>
 		</tr>
 		<tr>
-			<td class="name">Заказ:</td><td class="bold">{{ card.ordered_service.order.id }}</td>
+			<td class="name">Заказ:</td><td class="bold">{{ card.ordered_service.order.barcode.id }}</td>
 		</tr>
 		<tr>
 			<td class="name">Дата обследования:</td><td class="bold">{{ card.ordered_service.order.created|date:"d.m.Y H:i" }}</td>
@@ -112,7 +112,7 @@
 <!-- <h1>{{ card.print_name }}</h1>  -->
 {% include "examination/base.html" %}
 <div class="footer">Врач
-	<span>___________________ {{ request.active_profile }}</span>
+	<span>___________________ ({{ card.ordered_service.staff.staff.short_name }})</span>
 </div>
 <br style="clear:both">
 </div>

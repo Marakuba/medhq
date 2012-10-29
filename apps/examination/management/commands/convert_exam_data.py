@@ -9,6 +9,7 @@ from examination.models import CardTemplate, ExaminationCard,\
 import simplejson
 from assistant.models import ExamAssistant
 from visit.models import OrderedService
+from django.db import transaction
 
 class Command(BaseCommand):
 
@@ -17,7 +18,7 @@ class Command(BaseCommand):
         """
         serv = OrderedService.objects.all()
         print "Выбираем уникальные старые новые карты осмотра..."
-        orders_without_ecard = [p for p in serv if len(p.card_set.all()) > len(p.examinationcard_set.all())]
+        orders_without_ecard = []  # #[p for p in serv if len(p.card_set.all()) > len(p.examinationcard_set.all())]
         
         new_cards = []
         for o in orders_without_ecard:
@@ -34,12 +35,10 @@ class Command(BaseCommand):
         attrs_from_newtpl = [new_to_new(tpl) for tpl in new_tpls]
 #        
         print "Удаляем новые карты осмотра..."
-        all_cards = Card.objects.all()
-        [c.delete() for c in all_cards]
+        Card.objects.all().delete()
         
         print "Удаляем новые шаблоны..."
-        all_cards = Template.objects.all()
-        [c.delete() for c in all_cards]
+        Template.objects.all().delete()
         
         print "Конвертируем старые карты осмотра и шаблоны..."
         count = []
@@ -48,16 +47,26 @@ class Command(BaseCommand):
             added_count = 0
             objects = models[0].objects.all()
             print "Было %s %s " % (len(objects),models[1]._meta.object_name)
-            for obj in objects:
-                try:
-                    attributes = get_attributes(obj)
-                    card = models[1].objects.create(**attributes)
-                    if hasattr(obj,'assistant') and getattr(obj,'assistant'):
-                        ExamAssistant.objects.create(assistant =  obj.assistant, card = card)
-                    added_count += 1
-                except:
-                    err_count += 1
-                    print 'Error! %s %s %s' % (err_count, models[1]._meta.object_name,obj.__unicode__())
+            with transaction.commit_manually():
+                for obj in objects:
+                    try:
+                        attributes = get_attributes(obj)
+                        new_obj = models[1].objects.create(**attributes)
+                        if hasattr(obj,'assistant') and getattr(obj,'assistant'):
+                            ExamAssistant.objects.create(assistant =  obj.assistant, card = new_obj)
+                        if hasattr(obj,'created'):
+                            new_obj.created = attributes['created']
+                            new_obj.save()
+                        added_count += 1
+                    except Exception, err:
+                        transaction.rollback()
+                        err_count += 1
+                        print 'Error! %s %s %s' % (err_count, models[1]._meta.object_name,obj.__unicode__())
+                        print err
+                        return
+                    else:
+                        transaction.commit()
+
             count.append(added_count)
                     
         print 'Converted %s card(s)' % (count[0])
@@ -69,8 +78,9 @@ class Command(BaseCommand):
                 card = Card.objects.create(**attrs)
                 if hasattr(card,'assistant') and getattr(card,'assistant'):
                         ExamAssistant.objects.create(assistant =  card.assistant, card = card)
-            except:
+            except Exception, err:
                 print "Не удалось сконвертировать старую новую карту %s order %s" % (attrs['name'],attrs['ordered_service'])
+                print err
                 
         print "Создаем старые новые шаблоны"
         for attrs in attrs_from_newtpl:
@@ -90,7 +100,8 @@ def make_ticket(xtype='textticket',
                 fixed=False,
                 unique=False,
                 printable=True,
-                private=False):
+                private=False,
+                title_print=True):
     
     try:
         Fsection = FieldSet.objects.get(name=section)
@@ -103,6 +114,7 @@ def make_ticket(xtype='textticket',
         'printable':printable,
         'private':private,
         'title':title,
+        'title_print':title_print,
         'value':value,
         'required':required,
         'unique':unique,
@@ -115,14 +127,50 @@ def convert_data(obj):
     data = {'tickets':[]}
     
 #            print_name
+    ttl = obj.print_name or obj.name
+    if not ttl and hasattr(obj, 'ordered_service'):
+        ttl = obj.ordered_service.service.name
     ticket = make_ticket(xtype='titleticket',
-                         value=obj.print_name or '', 
-                         section = 'name',
+                         value=ttl,
+                         section='name',
                          unique=True,
                          required=True,
                          fixed=True)
     data['tickets'].append(ticket)
     
+    if hasattr(obj, 'equipment') and getattr(obj, 'equipment'):
+        rend = [u"<strong>Выполнено на оборудовании:</strong> %s" % obj.equipment.name, ]
+        if obj.area:
+            rend.append(u"<strong>Область исследованияя:</strong> %s" % obj.area)
+        if obj.scan_mode:
+            rend.append(u"<strong>Режим сканирования:</strong> %s" % obj.scan_mode)
+        if obj.thickness:
+            rend.append(u"<strong>Толщина реконструктивного среза:</strong> %s" % obj.thickness)
+        if obj.width:
+            rend.append(u"<strong>Ширина/шаг, мм:</strong> %s" % obj.width)
+        if obj.contrast_enhancement:
+            rend.append(u"<strong>Контрастное усиление:</strong> %s" % obj.contrast_enhancement)
+        value = {
+                    '_raw': {
+                        'equipment': obj.equipment.name,
+                        'area': obj.area,
+                        'scan_mode': obj.scan_mode,
+                        'thickness': obj.thickness,
+                        'width': obj.width,
+                        'contrast_enhancement': obj.contrast_enhancement
+                    },
+                    '_code': {
+
+                    },
+                    '_rendered': "<br>".join(rend)
+                 }
+        ticket = make_ticket(
+                             xtype='equipticket',
+                             value=value,
+                             section='equipment',
+                             title='Выполнено на оборудовании')
+        data['tickets'].append(ticket)
+
     if hasattr(obj,'complaints') and getattr(obj,'complaints'):
         ticket = make_ticket(
                              value=obj.complaints, 
@@ -141,7 +189,8 @@ def convert_data(obj):
         ticket = make_ticket(
                              value=obj.objective_data, 
                              section = 'status',
-                             title='Объективные данные')
+                             title='Объективные данные',
+                             title_print=False)
         data['tickets'].append(ticket)
         
     if hasattr(obj,'psycho_status') and getattr(obj,'psycho_status'):
@@ -173,31 +222,19 @@ def convert_data(obj):
         data['tickets'].append(ticket) 
         
     if hasattr(obj,'mbk_diag') and getattr(obj,'mbk_diag'):
-        value = {'_resource_uri':'/api/v1/dashboard/icd10%s'%obj.mbk_diag.id,
-                 '_name':obj.mbk_diag.name}
+        value = {
+                    '_resource_uri': '/api/v1/dashboard/icd10/%s' % obj.mbk_diag.id,
+                    '_name': obj.mbk_diag.__unicode__(),
+                    '_rendered': u'<div>%s</div>' % obj.mbk_diag.name
+                }
         ticket = make_ticket(
                              xtype='icdticket',
-                             value=value, 
-                             section = 'diagnosis',
+                             value=value,
+                             section='diagnosis',
                              title='Диагноз МКБ')
-        data['tickets'].append(ticket) 
-        
-    if hasattr(obj,'equipment') and getattr(obj,'equipment'):
-        value = {'_raw':{'equipment': obj.equipment.name,
-                         'area':obj.area,
-                         'scan_mode':obj.scan_mode,
-                         'thickness':obj.thickness,
-                         'width':obj.width,
-                         'contrast_enhancement':obj.contrast_enhancement
-                         },
-                 }
-        ticket = make_ticket(
-                             xtype='icdticket',
-                             value=value, 
-                             section = 'diagnosis',
-                             title='Диагноз МКБ')
-        data['tickets'].append(ticket) 
-        
+        data['tickets'].append(ticket)
+
+
     if hasattr(obj,'concomitant_diag') and getattr(obj,'concomitant_diag'):
         ticket = make_ticket(
                              value=obj.concomitant_diag, 
@@ -253,6 +290,8 @@ def convert_data(obj):
                              section = 'other',
                              title='Дополнительные услуги')
         data['tickets'].append(ticket) 
+    for i,d in enumerate(data['tickets']):
+        d['pos'] = i
     return data
         
 #        Переводит аттрибуты старого объекта в аттрибуты нового
@@ -269,6 +308,8 @@ def get_attributes(obj):
     attrs['name'] = obj.name or obj.print_name
     if hasattr(obj,'ordered_service') and getattr(obj,'ordered_service'):
         attrs['ordered_service'] = obj.ordered_service
+        if not attrs['name']:
+            attrs['name'] = obj.ordered_service.service.name
     if hasattr(obj,'staff') and getattr(obj,'staff'):
         attrs['staff'] = obj.staff and obj.staff.staff
     return attrs
@@ -288,30 +329,51 @@ def convert_new_data(obj):
                 } for section in old_data for ticket in section['tickets']]
     }
     if hasattr(obj,'mbk_diag') and getattr(obj,'mbk_diag'):
-        value = {'_resource_uri':'/api/v1/dashboard/icd10%s'%obj.mkb_diag.id,
-                 '_name':obj.mkb_diag.name}
+        value = {
+                    '_resource_uri': '/api/v1/dashboard/icd10%s' % obj.mkb_diag.id,
+                    '_name': obj.mkb_diag.name,
+                    '_rendered': u'<div>%s</div>' % obj.mbk_diag.name
+                }
         ticket = make_ticket(
                              xtype='icdticket',
-                             value=value, 
-                             section = 'diagnosis',
+                             value=value,
+                             section='diagnosis',
                              title='Диагноз МКБ')
-        new_data['tickets'].append(ticket) 
-        
-    if hasattr(obj,'equipment') and getattr(obj,'equipment'):
-        value = {'_raw':{'equipment': obj.equipment.name,
-                         'area':obj.area,
-                         'scan_mode':obj.scan_mode,
-                         'thickness':obj.thickness,
-                         'width':obj.width,
-                         'contrast_enhancement':obj.contrast_enhancement
-                         },
+        new_data['tickets'].append(ticket)
+
+    if hasattr(obj, 'equipment') and getattr(obj, 'equipment'):
+        rend = [u"<strong>Выполнено на оборудовании:</strong> %s" % obj.equipment.name, ]
+        if obj.area:
+            rend.append(u"<strong>Область исследованияя:</strong> %s" % obj.area)
+        if obj.scan_mode:
+            rend.append(u"<strong>Режим сканирования:</strong> %s" % obj.scan_mode)
+        if obj.thickness:
+            rend.append(u"<strong>Толщина реконструктивного среза:</strong> %s" % obj.thickness)
+        if obj.width:
+            rend.append(u"<strong>Ширина/шаг, мм:</strong> %s" % obj.width)
+        if obj.contrast_enhancement:
+            rend.append(u"<strong>Контрастное усиление:</strong> %s" % obj.contrast_enhancement)
+        value = {
+                    '_raw': {
+                        'equipment': obj.equipment.name,
+                        'area': obj.area,
+                        'scan_mode': obj.scan_mode,
+                        'thickness': obj.thickness,
+                        'width': obj.width,
+                        'contrast_enhancement': obj.contrast_enhancement
+                    },
+                    '_code': {
+
+                    },
+                    '_rendered': "<br>".join(rend)
+
                  }
         ticket = make_ticket(
-                             xtype='icdticket',
-                             value=value, 
-                             section = 'diagnosis',
-                             title='Диагноз МКБ')
-        new_data['tickets'].append(ticket) 
+                             xtype='equipticket',
+                             value=value,
+                             section='equipment',
+                             title='Выполнено на оборудовании')
+        new_data['tickets'].append(ticket)
     return new_data
 
 def new_to_new(obj):

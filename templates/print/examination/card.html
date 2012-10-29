@@ -96,7 +96,7 @@
 				</table>
 			</td>
 			<td align="right">
-				Заказ: <strong>{{ card.ordered_service.order.id|zid:"5" }}</strong><br>
+				Заказ: <strong>{{ card.ordered_service.order.barcode.id|zid:"5" }}</strong><br>
 				Врач: <strong>{{ card.ordered_service.staff.id|zid:"5" }}</strong><br>
 				Направившее учреждение: <strong>{{ card.ordered_service.order.referral.id|zid:"5"|default:'б/н' }}</strong><br>
 				
@@ -109,7 +109,7 @@
 	<!-- <h1>{{ card.print_name }}</h1> -->
 {% include "examination/base.html" %}
 	<div class="footer">Врач
-		<span>___________________ {{ request.active_profile }}</span>
+		<span>___________________ ({{ card.ordered_service.staff.staff.short_name }})</span>
 	</div>
 	<br style="clear:both">
 	</div>
