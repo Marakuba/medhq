@@ -5,7 +5,7 @@ App.examination.QuestPreviewPanel = Ext.extend(Ext.form.FormPanel, {
     initComponent: function() {
     	
     	/*Пример кода анкеты
- * 		{layout:'tab',
+ * 		{
     items:[
     {
         title:'Анамнез жизни',
@@ -80,8 +80,21 @@ App.examination.QuestPreviewPanel = Ext.extend(Ext.form.FormPanel, {
 				'config':{
 						height:10
 					}
+				},
+			'combobox':{
+				'constructor':Ext.form.ComboBox,
+				'config':{
+					typeAhead: true,
+				    triggerAction: 'all',
+				    lazyRender:true,
+				    mode: 'local',
+				    valueField: 'item',
+				    displayField: 'item',
+					type:'combobox'
+					
 				}
-			};
+			}
+		};
     	
     	var config = {
     		autoScroll:true,
@@ -177,16 +190,25 @@ App.examination.QuestPreviewPanel = Ext.extend(Ext.form.FormPanel, {
 			obj_conf['name'] = name;
 			//Заполняем items для checkboxgroup или radiogroup
 			if (obj_conf['data']){
-				obj_conf['items'] = [];
-				var id = 0;
-				Ext.each(obj_conf['data'],function(item){
-					obj_conf['items'].push({
-						name:name+'_'+ obj_conf['type']=='checkbox' ? id : 'el',
-						boxLabel:item,
-						inputValue:item
+				if (obj['type'] == 'combobox'){
+					obj_conf['store'] = new Ext.data.ArrayStore({
+				        fields: [
+				            'item'
+				        ],
+				        data: obj_conf['data']
+				    });
+				} else {
+					obj_conf['items'] = [];
+					var id = 0;
+					Ext.each(obj_conf['data'],function(item){
+						obj_conf['items'].push({
+							name:name+'_'+ obj_conf['type']=='checkbox' ? id : 'el',
+							boxLabel:item,
+							inputValue:item
+						});
+						id++;
 					});
-					id++;
-				});
+				}
 			};
 			if (comp['constructor']){
 				//объединяем пользовательскую и преднастроенную конфигурацию. 
