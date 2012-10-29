@@ -45,29 +45,33 @@ App.examination.CardTicketTab = Ext.extend(App.examination.TicketTab, {
 		});
 		this.deleteBtn = new Ext.Button({
 			iconCls:'silk-cancel',
-			text: 'Удалить карту осмотра',
+			text: 'Удалить',
 			handler:function(){
 				this.fireEvent('deletecard');
 			},
 			scope:this
 		});
 		this.moveArchiveBtn = new Ext.Button({
-			text: 'Сохранить в Мои шаблоны',
+			text: 'Сохранить как шаблон',
 			hidden:this.fromArchive,
 			handler:this.moveToTpl,
 			scope:this
 		});
 		this.closeBtn = new Ext.Button({
 			iconCls:'silk-door-out',
-			text: 'Закрыть карту',
+			text: 'Закрыть',
 			handler:function(){
 				this.fireEvent('closecard');
 			},
 			scope:this
 		});
+		this.ttb.add('-');
 		this.ttb.add(this.historyBtn);
+		this.ttb.add('-');
 		this.ttb.add(this.moveArchiveBtn);
+		this.ttb.add('-');
 		this.ttb.add(this.deleteBtn);
+		this.ttb.add('->');
 		this.ttb.add(this.closeBtn);
 		this.doLayout();
 	},
@@ -119,6 +123,6 @@ App.examination.CardTicketTab = Ext.extend(App.examination.TicketTab, {
 		    if (btn == 'ok'){
 		        this.fireEvent('movearhcivecard',text);
 		    }
-		},this);
+		},this, false, this.orderRecord.data.service_full_name);
 	}
 });
