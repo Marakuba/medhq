@@ -330,6 +330,10 @@ App.examination.QuestionnaireTicketEditor = Ext.extend(Ext.form.FormPanel, {
 		cObj = {title:dataObj.title,
 				section:dataObj.section,
 				value:data,
+				printable:true,
+				private:false,
+				fixed:false,
+				required:false,
 				questName:this.questName,
 		    	xtype:'questionnaire'};
 		return cObj
