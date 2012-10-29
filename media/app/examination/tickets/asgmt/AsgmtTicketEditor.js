@@ -131,7 +131,7 @@ App.examination.AsgmtTicketEditor = Ext.extend(Ext.Panel, {
 	onOkBtnClick: function() {
 		this.preorderGrid.onSave();
 		if (this.fn){
-			this.fn(this.preorderStore.data.items,this.scope)
+			this.fn(this.preorderStore.data.items,this.panel)
 		};
 		this.destroy();
 	},

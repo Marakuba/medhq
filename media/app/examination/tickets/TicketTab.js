@@ -505,12 +505,12 @@ App.examination.TicketTab = Ext.extend(Ext.Panel, {
 			this.ttb.add(this.questsBtn);
 			this.doLayout();
 		} else {
-			console.log('Анкет нет')
+			// console.log('Анкет нет')
 		}
 	},
 	
 	questBtnClick: function(quest){
-		console.log('Открытие анкеты ',quest.name);
+		// console.log('Открытие анкеты ',quest.name);
 		//потом этот код сохранится в this.data.questionnaire.code, если анкета будет сохранена
 		this.questCode = quest.code;
 		App.eventManager.fireEvent('launchApp','questionnaireticketeditor',{

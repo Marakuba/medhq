@@ -109,7 +109,7 @@ App.examination.QuestionnaireTicketEditor = Ext.extend(Ext.form.FormPanel, {
 		
     	var config = {
     		autoScroll:true,
-			layout: 'auto',
+			layout: 'form',
 			padding:0,
 			labelWidth:200,
 			items:[this.buildPanel(this.code)],
