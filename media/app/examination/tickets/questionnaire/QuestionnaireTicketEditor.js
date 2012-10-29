@@ -209,6 +209,13 @@ App.examination.QuestionnaireTicketEditor = Ext.extend(Ext.form.FormPanel, {
 				        ],
 				        data: obj_conf['data']
 				    });
+				    if(!this.data){
+					    obj_conf['listeners'] = {
+					    	afterrender:function(combo){
+					    		 combo.setValue(combo.getStore().getAt(0).data.item)
+					    	}
+					    }
+				    }
 				} else {
 					obj_conf['items'] = [];
 					var id = 0;
