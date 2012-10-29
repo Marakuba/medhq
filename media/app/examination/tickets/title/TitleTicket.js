@@ -27,6 +27,9 @@ App.examination.TitleTicket = Ext.extend(App.examination.Ticket,{
 		App.examination.TitleTicket.superclass.initComponent.apply(this, arguments);
 		
 		this.on('afterrender',function(){
+			if (this.record){
+				this.data.value = this.record.data.name
+			}
 		},this)
 		
 	},
@@ -42,6 +45,23 @@ App.examination.TitleTicket = Ext.extend(App.examination.Ticket,{
 	bodyConfig: function(panel){
 		this.bodyEditor = this.setEditor(this);
 		App.examination.TitleTicket.superclass.bodyConfig.apply(this, arguments);
+	},
+	
+	updateValueData : function(d) {
+		if (d.value) {
+			this.body.removeClass('empty-body');
+			this.body.update(d.value);
+		} else {
+			if (this.record){
+				d['value'] = this.record.data.name;
+				this.body.removeClass('empty-body');
+				this.body.update(d.value);
+			} else {
+				d['value'] = ''
+				this.body.addClass('empty-body');
+				this.body.update(this.defaultText);
+			}
+		}; 
 	},
 	
 	setEditor : function(panel) {
