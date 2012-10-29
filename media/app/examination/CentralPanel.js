@@ -200,7 +200,7 @@ App.ExamCentralPanel = Ext.extend(Ext.Panel, {
                 	},
                     scope:this
                 }]
-	        }/*,{
+	        },{
               xtype: 'buttongroup',
 	            columns: 2,
 	            defaults: {
@@ -217,7 +217,7 @@ App.ExamCentralPanel = Ext.extend(Ext.Panel, {
                 	},
                     scope:this
                 }]
-	        }*/,this.genDocGroup,'->',
+	        },this.genDocGroup,'->',
 	        {
 				xtype:'buttongroup',
 				defaults:{

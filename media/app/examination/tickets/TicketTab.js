@@ -516,6 +516,7 @@ App.examination.TicketTab = Ext.extend(Ext.Panel, {
 			title:'Анкета '+quest.name,
 			questName:quest.name,
 			code:Ext.decode(quest.code),
+			panel:this,
 			fn:this.saveQuestData,
 			scope:this
 		})
@@ -571,6 +572,7 @@ App.examination.TicketTab = Ext.extend(Ext.Panel, {
 			title:'Анкета '+quest.name,
 			questName:quest.name,
 			data:quest.data,
+			panel:this,
 			code:Ext.decode(quest.code),
 			fn:this.saveQuestData,
 			scope:this

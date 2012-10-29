@@ -78,10 +78,23 @@ App.examination.QuestionnaireTicketEditor = Ext.extend(Ext.form.FormPanel, {
 			'space':{
 				'constructor':Ext.panel,
 				'config':{
-						height:10
-					}
+					height:10
 				}
-			};
+			},
+			'combobox':{
+				'constructor':Ext.form.ComboBox,
+				'config':{
+					typeAhead: true,
+				    triggerAction: 'all',
+				    lazyRender:true,
+				    mode: 'local',
+				    valueField: 'item',
+				    displayField: 'item',
+					type:'combobox'
+					
+				}
+			}
+		};
 			
 		this.okBtn = new Ext.Button({
 			text:'Ok',
@@ -180,7 +193,7 @@ App.examination.QuestionnaireTicketEditor = Ext.extend(Ext.form.FormPanel, {
 	//Создает объект согласно словаря компонентов
 	buildObject: function(obj,deep,index,section){
 		var elem;
-		var name = obj.name || section + '_' + deep + '_' + index;
+		var name = section + '_' + deep + '_' + index;
 		//Если в редакторе указан тип для текущего элемента
 		if (obj['type']){
 			//выбираем компонент из словаря компонентов
@@ -189,16 +202,32 @@ App.examination.QuestionnaireTicketEditor = Ext.extend(Ext.form.FormPanel, {
 			obj_conf['name'] = name;
 			//Заполняем items для checkboxgroup или radiogroup
 			if (obj_conf['data']){
-				obj_conf['items'] = [];
-				var id = 0;
-				Ext.each(obj_conf['data'],function(item){
-					obj_conf['items'].push({
-						name:name+'_'+ obj_conf['type']=='checkbox' ? id : 'el',
-						boxLabel:item,
-						inputValue:item
+				if (obj['type'] == 'combobox'){
+					obj_conf['store'] = new Ext.data.ArrayStore({
+				        fields: [
+				            'item'
+				        ],
+				        data: obj_conf['data']
+				    });
+				    if(!this.data){
+					    obj_conf['listeners'] = {
+					    	afterrender:function(combo){
+					    		 combo.setValue(combo.getStore().getAt(0).data.item)
+					    	}
+					    }
+				    }
+				} else {
+					obj_conf['items'] = [];
+					var id = 0;
+					Ext.each(obj_conf['data'],function(item){
+						obj_conf['items'].push({
+							name:name+'_'+ obj_conf['type']=='checkbox' ? id : 'el',
+							boxLabel:item,
+							inputValue:item
+						});
+						id++;
 					});
-					id++;
-				});
+				}
 			};
 			if (comp['constructor']){
 				//объединяем пользовательскую и преднастроенную конфигурацию. 
