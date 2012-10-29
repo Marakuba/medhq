@@ -152,6 +152,14 @@ App.examination.TmpGrid = Ext.extend(Ext.grid.EditorGridPanel, {
 				}
 			}),
 			tbar:this.tbar,
+			bbar: new Ext.PagingToolbar({
+	            pageSize: 150,
+	            store: this.store,
+	            displayInfo: true,
+	            displayMsg: 'Записи {0} - {1} из {2}',
+	            emptyMsg: "Нет записей"
+	        }),
+
             viewConfig: {
             	emptyText:'нет шаблонов',
                 forceFit: true

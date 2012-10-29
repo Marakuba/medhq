@@ -56,6 +56,8 @@ class Command(BaseCommand):
                             ExamAssistant.objects.create(assistant =  obj.assistant, card = new_obj)
                         if hasattr(obj,'created'):
                             new_obj.created = attributes['created']
+                            if hasattr(obj,'modified'):
+                                new_obj.modified = attributes['modified']
                             new_obj.save()
                         added_count += 1
                     except Exception, err:

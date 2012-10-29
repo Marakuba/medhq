@@ -126,7 +126,7 @@ def get_history_tree(request):
         for excard in exams:
             exam_node = {
                 "id":"exam_%s" % (excard.id),
-                "text":excard.print_name,
+                "text":excard.name,
                 "date":excard.created,
                 "staff":order.staff and order.staff.short_name() or '',
                 "singleClickExpand":True,
