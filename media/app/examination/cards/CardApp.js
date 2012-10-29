@@ -118,8 +118,8 @@ App.examination.CardApp = Ext.extend(Ext.Panel, {
 		App.examination.CardApp.superclass.initComponent.apply(this, arguments);
 		
 		this.on('afterrender',function(){
-			if (this.cardId){
-				this.editCard('card',this.cardId)
+			if (this.record){
+				this.editCard('card',this.record.data.id)
 			}
 			else {
 				this.startPanel = this.newStartPanel({
@@ -226,9 +226,11 @@ App.examination.CardApp = Ext.extend(Ext.Panel, {
 		} else {
 			var decodedData = {}
 		}
+		this.mask.hide();
 		this.cardBody = new App.examination.CardTicketTab({
 			data:decodedData,
 			cardId : this.cardId,
+			record: this.record,
 			patientName: this.patientName,
 			orderRecord:this.orderRecord,
 			patientId:this.patientId,

@@ -292,6 +292,7 @@ App.examination.TicketTab = Ext.extend(Ext.Panel, {
 			ticketConfig['data'] = ticket_data;
 		}
 		ticketConfig['orderRecord'] = this.orderRecord;
+		ticketConfig['record'] = this.record;
 		ticketConfig['cardId'] = this.cardId;
 		ticketConfig.data['cardId'] = this.cardId;
 		ticketConfig['tplId'] = this.tplId;

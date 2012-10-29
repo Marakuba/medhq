@@ -1147,6 +1147,7 @@ class OrderedServiceResource(ExtBatchResource):
         always_return_data = True
         limit = 100
         filtering = {
+            'id':ALL,
             'order': ALL_WITH_RELATIONS,
             'sampling': ALL_WITH_RELATIONS,
             'execution_place' : ALL_WITH_RELATIONS,
@@ -1356,6 +1357,7 @@ class ExamServiceResource(ExtResource):
         authorization = DjangoAuthorization()
         always_return_data = True
         filtering = {
+            'id':ALL,
             'order': ALL_WITH_RELATIONS,
             'sampling': ALL_WITH_RELATIONS,
             'staff': ALL_WITH_RELATIONS,

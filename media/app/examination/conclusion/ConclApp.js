@@ -3,20 +3,16 @@ Ext.ns('App.examination');
 App.examination.ConclApp = Ext.extend(Ext.Panel, {
 	initComponent : function() {
 		
-		this.fieldSetStore = new Ext.data.RESTStore({
+		this.orderStore = new Ext.data.RESTStore({
 			autoSave: false,
-			autoLoad : true,
-			apiUrl : get_api_url('examfieldset'),
-			model: App.models.FieldSet
+			autoLoad : false,
+			apiUrl : get_api_url('examservice'),
+			baseParams:{
+				format:'json'
+			},
+			model: App.models.ExamService
 		});
-		
-		this.subSectionStore = new Ext.data.RESTStore({
-			autoSave: false,
-			autoLoad : true,
-			apiUrl : get_api_url('examsubsection'),
-			model: App.models.SubSection
-		});
-		
+				
 		this.contentPanel = new Ext.Panel({
 			region:'center',
  			border:true,
@@ -115,20 +111,33 @@ App.examination.ConclApp = Ext.extend(Ext.Panel, {
 	},
 	
 	editCard: function(record){
+		if (!record.data.executed) {
+			var orderId = App.uriToId(record.data.ordered_service);
+			this.orderStore.setBaseParam('id',orderId);
+			this.orderStore.load({callback: function(records){
+				if (!records[0]){
+					console.log('ordered_service не найден ', orderId);
+					return false;
+				} else {
+					var orderRecord = records[0];
+					config = {
+						closable:true,
+			    		patientId:record.data.patient_id,
+			    		patientName: record.data.patient_name,
+			    		orderId:orderId,
+			    		orderRecord: orderRecord,
+						title: record.data.patient_name +  ': ' + record.data.name,
+						baseServiceId:App.uriToId(orderRecord.data.service),
+						print_name:record.data.service_name,
+						record:record
+					};
+					
+					App.eventManager.fireEvent('launchapp', 'cardapp',config);
+				}
+			},scope:this})
+			
+        }
 		
-		config = {
-			closable:true,
-			cardId : record.data.id
-//    		patient:record.data.patient_id,
-//    		patient_name: record.data.patient_name,
-//    		ordered_service:record.data.ordered_service,
-//			title: 'Пациент ' + record.data.patient_name,
-//			print_name:record.data.service_name,
-//			record:record,
-//			staff:this.staff
-		};
-		
-		App.eventManager.fireEvent('launchapp', 'cardapp',config);
 		
 	}
 });
