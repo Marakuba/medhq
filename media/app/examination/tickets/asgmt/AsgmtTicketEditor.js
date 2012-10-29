@@ -96,7 +96,8 @@ App.examination.AsgmtTicketEditor = Ext.extend(Ext.Panel, {
 	    });	
 	    
 	    this.okBtn = new Ext.Button({
-	    	text:'Ок',
+			iconCls:'silk-resultset-previous',
+	    	text:'Вернуться к карте',
 	    	handler:this.onOkBtnClick.createDelegate(this,[]),
 	    	scope:this
 	    });

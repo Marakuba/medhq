@@ -97,20 +97,21 @@ App.examination.QuestionnaireTicketEditor = Ext.extend(Ext.form.FormPanel, {
 		};
 			
 		this.okBtn = new Ext.Button({
-			text:'Ok',
+			iconCls:'silk-resultset-previous',
+	    	text:'Вернуться к карте',
 			handler:this.onSave.createDelegate(this),
 			scope:this
 		});
 		
     	this.ttb = new Ext.Toolbar({
-			items: ['-',this.okBtn]
+			items: [this.okBtn]
 		});
 		
     	var config = {
     		autoScroll:true,
 			layout: 'auto',
-			padding:3,
-			labelWidth:10,
+			padding:0,
+			labelWidth:200,
 			items:[this.buildPanel(this.code)],
 			tbar:this.ttb
         };
@@ -199,18 +200,18 @@ App.examination.QuestionnaireTicketEditor = Ext.extend(Ext.form.FormPanel, {
 			//выбираем компонент из словаря компонентов
 			var comp = this.questComponents[obj['type']];
 			var obj_conf = Ext.apply({},obj);
-			obj_conf['name'] = name;
+			obj_conf['name'] = obj['name'] ? obj['name'] : name;
 			//Заполняем items для checkboxgroup или radiogroup
 			if (obj_conf['data']){
 				if (obj['type'] == 'combobox'){
 					obj_conf['store'] = new Ext.data.ArrayStore({
-				        fields: [
-				            'item'
-				        ],
-				        data: obj_conf['data']
+				        fields: ['item'],
+				        data: _.map(obj_conf['data'], function(d){
+				        	return [d]
+				        })
 				    });
 				    if(!this.data){
-					    obj_conf['listeners'] = {
+						    obj_conf['listeners'] = {
 					    	afterrender:function(combo){
 					    		 combo.setValue(combo.getStore().getAt(0).data.item)
 					    	}

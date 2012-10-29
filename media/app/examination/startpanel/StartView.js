@@ -47,7 +47,7 @@ App.examination.StaffTemplatePlugin = function(config, order){
 					this.results.objects.push({
 						action:'copy',
 						type:'tpl',
-						title:rec.data.print_name,
+						title:rec.data.name,
 						objectId:rec.data.id
 					});
 				}, this);
@@ -87,7 +87,7 @@ App.examination.StateTemplatePlugin = function(config, order){
 					this.results.objects.push({
 						action:'copy',
 						type:'tpl',
-						title:rec.data.print_name,
+						title:rec.data.name,
 						objectId:rec.data.id
 					});
 				}, this);

@@ -141,7 +141,7 @@ def convert_data(obj):
     if hasattr(obj, 'equipment') and getattr(obj, 'equipment'):
         rend = [u"<strong>Выполнено на оборудовании:</strong> %s" % obj.equipment.name, ]
         if obj.area:
-            rend.append(u"<strong>Область исследованияя:</strong> %s" % obj.area)
+            rend.append(u"<strong>Область исследования:</strong> %s" % obj.area)
         if obj.scan_mode:
             rend.append(u"<strong>Режим сканирования:</strong> %s" % obj.scan_mode)
         if obj.thickness:
@@ -159,9 +159,7 @@ def convert_data(obj):
                         'width': obj.width,
                         'contrast_enhancement': obj.contrast_enhancement
                     },
-                    '_code': {
-
-                    },
+                    '_code': None,
                     '_rendered': "<br>".join(rend)
                  }
         ticket = make_ticket(

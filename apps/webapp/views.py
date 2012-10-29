@@ -46,8 +46,7 @@ def get_apps(request):
     if request.user.has_perm('lab.change_laborder') or request.user.is_superuser:
         apps.append([u'Лаборатория',u'/webapp/laboratory/'])
     if request.user.has_perm('examination.add_examinationcard') or request.user.is_superuser:
-        apps.append([u'Обследования',u'/webapp/oldexam/'])
-        apps.append([u'Обследования (новая версия)',u'/webapp/examination/'])
+        apps.append([u'Обследования',u'/webapp/examination/'])
     if request.user.is_superuser:
         apps.append([u'Отчеты',u'/webapp/reporting/'])
     apps.append([u'Штрих-коды',u'/webapp/barcoding/'])
@@ -201,6 +200,7 @@ def examination(request):
                 'xtype':subsec.widget,
                 'value':'',
                 'printable':True,
+                'title_print':True,
                 'private':False,
                 'section':sec.name,
                 'fixed':getattr(widget,'fixed', False),
