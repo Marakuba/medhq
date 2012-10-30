@@ -149,6 +149,7 @@ INSTALLED_APPS = [
     'tagging',
     'raven.contrib.django',
     'djangocodemirror',
+    'test_utils',
 ]
 
 APPSERVER_ADMIN_TITLE = u'Главная панель'

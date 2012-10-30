@@ -2100,6 +2100,7 @@ class ExtPreorderResource(ExtBatchResource):
             'id':ALL
         }
         limit = 500
+        allowed_methods = ['get','post','put']
         
 class VisitPreorderResource(ExtPreorderResource):
     """
@@ -2142,7 +2143,9 @@ class VisitPreorderResource(ExtPreorderResource):
             'payment_type':ALL
         }
         limit = 500
-        
+        allowed_methods = ['get', 'post', 'put']
+
+
 class EventResource(ExtResource):
     staff = fields.ForeignKey(PositionResource, 'staff', null=True)
     #preord = fields.ToOneField('apps.api.registry.PreorderResource', 'preord', null=True)
@@ -2159,17 +2162,18 @@ class EventResource(ExtResource):
         authorization = DjangoAuthorization()
         always_return_data = True
         filtering = {
-            'title':ALL,
-            'id':ALL,
-            'cid':ALL,
-            'start':ALL,
-            'end':ALL,
-            'timeslot':ALL,
-            'status':ALL,
-            'preord':ALL
+            'title': ALL,
+            'id': ALL,
+            'cid': ALL,
+            'start': ALL,
+            'end': ALL,
+            'timeslot': ALL,
+            'status': ALL,
+            'preord': ALL
             
-        }       
+        }
         limit = 1000
+        allowed_methods = ['get','post','put']
 
 
 

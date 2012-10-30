@@ -74,7 +74,7 @@ class WidgetManager(object):
                             t['value'], 
                             t['printable'],
                             t['private'],
-                            t['title_print'],
+                            'title_print' in t and t['title_print'] or True,
                             **self.opts)
     
     def add_widget(self, request, xtype, title, value, printable=True, private=False, title_print=True, **kwargs):

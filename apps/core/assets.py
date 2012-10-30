@@ -436,8 +436,6 @@ js_calendar = Bundle(
     filters='rjsmin', output='assets/calendar.js',)
 
 js_examination = Bundle(
-    'libs/tiny_mce/tiny_mce.js',
-    'libs/Ext.ux.TinyMCE.min.js',
     'extjs/ux/printer/Printer-all.js',
     
     
