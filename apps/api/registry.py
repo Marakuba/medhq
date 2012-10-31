@@ -2660,7 +2660,7 @@ class AccountingContractResource(ExtResource):
 
 class AccountingInvoiceResource(ExtResource):
 
-    contract = fields.ForeignKey(AccountResourceResource, 'contract')
+    contract = fields.ForeignKey(AccountResource, 'contract')
 
     class Meta:
         queryset = AccInvoice.objects.all()
