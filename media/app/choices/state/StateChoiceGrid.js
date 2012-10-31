@@ -3,8 +3,8 @@ Ext.ns('App','App.choices');
 App.choices.StateChoiceGrid = Ext.extend(Ext.grid.GridPanel, {
 
 	initComponent : function() {
-		
-		this.store = new Ext.data.RESTStore({
+
+		this.store = this.store || new Ext.data.RESTStore({
 			autoLoad : true,
 			apiUrl : get_api_url('state'),
 			model: [
@@ -13,15 +13,15 @@ App.choices.StateChoiceGrid = Ext.extend(Ext.grid.GridPanel, {
 				    {name: 'name'}
 				]
 		});
-		
+
 		this.columns =  [
 		    {
-		    	header: "Организация", 
-		    	sortable: true, 
+		    	header: "Организация",
+		    	sortable: true,
 		    	dataIndex: 'name'
 		    }
-		];		
-		
+		];
+
 		this.choiceButton = new Ext.Button({
 			iconCls:'silk-accept',
 			disabled:true,
@@ -29,7 +29,7 @@ App.choices.StateChoiceGrid = Ext.extend(Ext.grid.GridPanel, {
 			handler:this.onChoice.createDelegate(this, []),
 			scope:this
 		});
-		
+
 		var config = {
 			loadMask : {
 				msg : 'Подождите, идет загрузка...'
@@ -68,7 +68,7 @@ App.choices.StateChoiceGrid = Ext.extend(Ext.grid.GridPanel, {
 			viewConfig : {
 				forceFit : true
 				//getRowClass : this.applyRowClass
-			},	
+			},
 			listeners: {
 				rowdblclick:this.onChoice.createDelegate(this, []),
 				scope:this
@@ -85,26 +85,26 @@ App.choices.StateChoiceGrid = Ext.extend(Ext.grid.GridPanel, {
 		this.on('stateselect', this.onStateSelect, this);
 		//this.store.on('write', this.onStoreWrite, this);
 	},
-	
+
 	btnSetDisabled: function(status) {
         this.choiceButton.setDisabled(status);
 	},
-	
+
 	onStateSelect: function(){
 //		this.btnSetDisable(false);
 	},
-	
+
 	getSelected: function() {
 		return this.getSelectionModel().getSelected()
 	},
-	
+
 	onGlobalSearch: function(v){
 		var s = this.store;
 		s.baseParams = { format:'json' };
 		s.setBaseParam('name__istartswith', v);
 		s.load();
 	},
-	
+
 	onStoreWrite: function(store, action, result, res, rs) {
 		if( res.success && this.win ) {
 			store.filter('id',rs.data.id);
@@ -115,13 +115,13 @@ App.choices.StateChoiceGrid = Ext.extend(Ext.grid.GridPanel, {
 //			App.eventManager.fireEvent('patientcreate',rs);
 //		}
 	},
-	
+
 	onChoice: function() {
         var record = this.getSelectionModel().getSelected();
         if (record) {
         	Ext.callback(this.fn, this.scope || window, [record]);
         };
     }
-	
+
 });
 
