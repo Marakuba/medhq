@@ -26,9 +26,9 @@ App.choices.PatientChoiceWindow = Ext.extend(Ext.Window, {
 		App.choices.PatientChoiceWindow.superclass.initComponent.apply(this, arguments);
 		
 		this.on('beforeclose',function(){
-			if (!this.sended){
-				Ext.callback(this.fn, this.scope || window, []);
-			}
+			// if (!this.sended){
+			// 	Ext.callback(this.fn, this.scope || window, []);
+			// }
 		},this)
 		
 	}

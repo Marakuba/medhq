@@ -26,6 +26,9 @@ Ext.onReady(function(){
     });
 
     centralPanel.launchApp('accounting');
+    // centralPanel.launchApp('accinvoiceapp', {
+    //     contractId: 1
+    // }, true);
 
     
 });

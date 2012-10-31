@@ -800,6 +800,20 @@ js_accounting = Bundle(
     'app/ux/GSearchField.js',
     'app/ux/InputTextMask.js',
 
+    'extjs/ux/treegrid/TreeGridSorter.js',
+    'extjs/ux/treegrid/TreeGridColumnResizer.js',
+    'extjs/ux/treegrid/TreeGridNodeUI.js',
+    'extjs/ux/treegrid/TreeGridLoader.js',
+    'extjs/ux/treegrid/TreeGridColumns.js',
+    'extjs/ux/treegrid/TreeGrid.js',
+
+    'app/data/RestStore.js',
+
+    'app/service/ServiceTreeGrid.js',
+
+    'app/choices/patient/PatientChoiceGrid.js',
+    'app/choices/patient/PatientChoiceWindow.js',
+
     'app/accounting/invoice/PatientGrid.js',
     'app/accounting/invoice/InvoiceItemGrid.js',
     'app/accounting/invoice/InvoiceForm.js',
