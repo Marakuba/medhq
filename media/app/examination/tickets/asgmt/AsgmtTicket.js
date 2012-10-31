@@ -54,17 +54,6 @@ App.examination.AsgmtTicket = Ext.extend(App.examination.Ticket,{
 		    		this.fireEvent('basketexception')
 		    	},
 		    	scope:this
-		    },
-		    doTransaction : function(action, rs, batch) {
-		        function transaction(records) {
-		            try{
-		                this.execute(action, records, undefined, batch);
-		            }catch (e){
-		                this.handleException(e);
-		            }
-		        }
-		        this.batch=true;
-		        transaction.call(this, rs);
 		    }
 		});
 		
