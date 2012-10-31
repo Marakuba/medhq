@@ -13,8 +13,21 @@ App.accounting.InvoiceItemGrid = Ext.extend(Ext.grid.GridPanel, {
         });
 
         this.columns = [{
-            header: "Пациент",
-            dataIndex: 'patient_name'
+            header: "Услуга",
+            dataIndex: 'service_name',
+            width:100
+        }, {
+            header: "Цена",
+            dataIndex: 'price',
+            width:20
+        }, {
+            header: "Количество",
+            dataIndex: 'count',
+            width:15
+        }, {
+            header: "Сумма",
+            dataIndex: 'total_price',
+            width:20
         }];
 
         config = {
