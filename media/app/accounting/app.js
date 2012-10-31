@@ -6,7 +6,7 @@ Ext.onReady(function(){
     
     Ext.Ajax.defaultHeaders = {Accept:'application/json'};
     
-    //medstateStore - Список организаций. Передаётся во все компоненты, где это необходимо. 
+    //medstateStore - Список организаций. Передаётся во все компоненты, где это необходимо.
     // Вынесен в app для исключения множественной загрузки идентичных данных
 
     var medstateStore = new Ext.data.RESTStore({
@@ -27,7 +27,8 @@ Ext.onReady(function(){
 
     centralPanel.launchApp('accounting');
     // centralPanel.launchApp('accinvoiceapp', {
-    //     contractId: 1
+    //     // contractId: 1
+    //     invoiceId: 17
     // }, true);
 
     

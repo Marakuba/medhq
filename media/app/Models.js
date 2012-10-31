@@ -28,6 +28,7 @@ App.models.AccountingInvoiceItem = new Ext.data.Record.create([
     {name: 'id'},
     {name: 'resource_uri'},
     {name: 'created', type:'date'},
+    {name: 'counter'},
     {name: 'invoice'},
     {name: 'patient'},
     {name: 'patient_name'},

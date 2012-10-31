@@ -2638,6 +2638,11 @@ class AccountingContractResource(ExtResource):
     branch = fields.ForeignKey(StateResource, 'branch')
     state = fields.ForeignKey(StateResource, 'state')
 
+    def obj_create(self, bundle, request=None, **kwargs):
+        kwargs['operator']=request.user
+        result = super(AccountingContractResource, self).obj_create(bundle=bundle, request=request, **kwargs)
+        return result
+
     def dehydrate(self, bundle):
         bundle.data['branch_name'] = bundle.obj.branch
         bundle.data['state_name'] = bundle.obj.state
@@ -2660,7 +2665,12 @@ class AccountingContractResource(ExtResource):
 
 class AccountingInvoiceResource(ExtResource):
 
-    contract = fields.ForeignKey(AccountResource, 'contract')
+    contract = fields.ForeignKey(AccountingContractResource, 'contract')
+
+    def obj_create(self, bundle, request=None, **kwargs):
+        kwargs['operator']=request.user
+        result = super(AccountingInvoiceResource, self).obj_create(bundle=bundle, request=request, **kwargs)
+        return result
 
     class Meta:
         queryset = AccInvoice.objects.all()
@@ -2683,8 +2693,13 @@ class AccountingInvoiceItemResource(ExtResource):
     service = fields.ForeignKey(BaseServiceResource, 'service')
     execution_place = fields.ForeignKey(StateResource, 'execution_place')
 
+    def obj_create(self, bundle, request=None, **kwargs):
+        kwargs['operator']=request.user
+        result = super(AccountingInvoiceItemResource, self).obj_create(bundle=bundle, request=request, **kwargs)
+        return result
+
     def dehydrate(self, bundle):
-        bundle.data['patient_name'] = bundle.obj.patient
+        bundle.data['patient_name'] = bundle.obj.patient.full_name()
         bundle.data['service_name'] = bundle.obj.service
         return bundle
 
