@@ -10,7 +10,10 @@ App.accounting.PatientGrid = Ext.extend(Ext.grid.GridPanel, {
             fields: [
                 {name:'id'},
                 {name:'patient_name'}
-            ]
+            ],
+            listeners:{
+                remove:this.onStoreRemove.createDelegate(this)
+            }
         });
 
         this.columns = [{
@@ -57,8 +60,8 @@ App.accounting.PatientGrid = Ext.extend(Ext.grid.GridPanel, {
     onAddPatient : function(btn){
         var win = new App.choices.PatientChoiceWindow({
             fn: function(rec){
-                var patient = { 
-                    id:rec.data.id, 
+                var patient = {
+                    id:rec.data.id,
                     patient_name: String.format('{0} {1} {2}', rec.data.last_name, rec.data.first_name, rec.data.mid_name)
                 };
                 var model = new this.store.recordType(patient);
@@ -74,8 +77,24 @@ App.accounting.PatientGrid = Ext.extend(Ext.grid.GridPanel, {
     onRemovePatient : function(){
         var rec = this.getSelectionModel().getSelected();
         if(rec){
-            this.store.remove(rec);
+            Ext.MessageBox.confirm('Потверждение','Удалить пациента из списка и всего его услуги?', function(btn){
+                if(btn=='yes'){
+                    this.store.remove(rec);
+                }
+            }, this);
         }
+    },
+
+    onStoreRemove : function(store, rec, idx) {
+        this.getSelectionModel().selectFirstRow();
+        
+        // var c = store.getCount() - 1;
+        // if (idx>=c) {
+        //     this.getSelectionModel().selectRow(idx);
+        // } else {
+        //     this.getSelectionModel().selectLastRow();
+        // }
+        // console.info('ifx of removed:',idx, 'recs count', store.getCount());
     }
 
 });

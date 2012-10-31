@@ -30,7 +30,7 @@ class Invoice(make_operator_object('acc_invoice')):
     contract = models.ForeignKey(Contract)
     number = models.CharField(u'Номер', max_length=20)
     on_date = models.DateField(u'Дата')
-    total_price = models.DecimalField(u'Сумма', max_digits=10, decimal_places=2)
+    total_price = models.DecimalField(u'Сумма', max_digits=10, decimal_places=2, default=0.0)
     modified = models.DateTimeField(auto_now=True)
 
     class Meta:
@@ -47,10 +47,10 @@ class InvoiceItem(make_operator_object('acc_invoice_item')):
     patient = models.ForeignKey(Patient)
     service = models.ForeignKey(BaseService)
     execution_place = models.ForeignKey(State)
-    price = models.DecimalField(u'Цена', max_digits=10, decimal_places=2)
-    count = models.IntegerField(u'Количество')
-    total_price = models.DecimalField(u'Сумма', max_digits=10, decimal_places=2)
-    preorder = models.OneToOneField(Preorder)
+    price = models.DecimalField(u'Цена', max_digits=10, decimal_places=2, default=0.0)
+    count = models.IntegerField(u'Количество', default=1)
+    total_price = models.DecimalField(u'Сумма', max_digits=10, decimal_places=2, default=0.0)
+    preorder = models.OneToOneField(Preorder, null=True, blank=True)
     modified = models.DateTimeField(auto_now=True)
 
     class Meta:

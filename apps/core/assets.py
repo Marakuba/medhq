@@ -811,6 +811,9 @@ js_accounting = Bundle(
 
     'app/service/ServiceTreeGrid.js',
 
+    'extjs/ux/Spinner.js',
+    'extjs/ux/SpinnerField.js',
+
     'app/choices/patient/PatientChoiceGrid.js',
     'app/choices/patient/PatientChoiceWindow.js',
 
