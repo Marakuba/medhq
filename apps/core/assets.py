@@ -791,6 +791,31 @@ js_barcoding = Bundle(
     'app/barcoding/app.js',
     filters='rjsmin', output='assets/barcoding.js',)
 
+js_accounting = Bundle(
+    'app/App.js',
+    'app/Models.js',
+    'app/data/RestStore.js',
+    'app/form/ClearableComboBox.js',
+    'app/form/LazyComboBox.js',
+    'app/ux/GSearchField.js',
+    'app/ux/InputTextMask.js',
+
+    'app/accounting/invoice/PatientGrid.js',
+    'app/accounting/invoice/InvoiceItemGrid.js',
+    'app/accounting/invoice/InvoiceForm.js',
+    'app/accounting/invoice/InvoiceGrid.js',
+    'app/accounting/invoice/InvoiceApp.js',
+
+    'app/accounting/contract/ContractForm.js',
+    'app/accounting/contract/ContractGrid.js',
+    'app/accounting/contract/ContractApp.js',
+    
+    'app/accounting/EventManager.js',
+    'app/accounting/CentralPanel.js',
+    'app/accounting/MainPanel.js',
+    'app/accounting/app.js',
+    filters='rjsmin', output='assets/accounting.js',)
+
 js_service = Bundle(
     'app/service/ServicePanel.js',
     'app/service/MainPanel.js',
@@ -825,6 +850,7 @@ register('js_helpdesk', js_helpdesk)
 register('js_laboratory', js_laboratory)
 register('js_reporting', js_reporting)
 register('js_barcoding', js_barcoding)
+register('js_accounting', js_accounting)
 register('js_service', js_service)
 register('js_treatmentroom', js_treatmentroom)
 ##################################################

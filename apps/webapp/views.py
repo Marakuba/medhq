@@ -180,6 +180,13 @@ def laboratory(request):
     }
 
 @login_required
+@render_to('webapp/accounting/index.html')
+def accounting(request):
+    return {
+        'apps':simplejson.dumps(get_apps(request))
+    }
+
+@login_required
 @render_to('webapp/examination/index.html')
 def examination(request):
     section_scheme = OrderedDict()
