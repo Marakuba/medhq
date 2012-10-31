@@ -2634,10 +2634,15 @@ from accounting.models import Contract as AccContract, \
     Invoice as AccInvoice, InvoiceItem as AccInvoiceItem
 
 
-class AccountingContract(ExtResource):
+class AccountingContractResource(ExtResource):
 
     branch = fields.ForeignKey(StateResource, 'branch')
     state = fields.ForeignKey(StateResource, 'state')
+
+    def dehydrate(self, bundle):
+        bundle.data['branch_name'] = bundle.obj.branch
+        bundle.data['state_name'] = bundle.obj.state
+        return bundle
 
     class Meta:
         queryset = AccContract.objects.all()
@@ -2654,9 +2659,9 @@ class AccountingContract(ExtResource):
         }
 
 
-class AccountingInvoice(ExtResource):
+class AccountingInvoiceResource(ExtResource):
 
-    contract = fields.ForeignKey(AccountResource, 'contract')
+    contract = fields.ForeignKey(AccountResourceResource, 'contract')
 
     class Meta:
         queryset = AccInvoice.objects.all()
@@ -2672,7 +2677,17 @@ class AccountingInvoice(ExtResource):
         }
 
 
-class AccountingInvoiceItem(ExtResource):
+class AccountingInvoiceItemResource(ExtResource):
+
+    invoice = fields.ForeignKey(AccountingInvoiceResource, 'invoice')
+    patient = fields.ForeignKey(PatientResource, 'patient')
+    service = fields.ForeignKey(BaseServiceResource, 'service')
+    execution_place = fields.ForeignKey(StateResource, 'execution_place')
+
+    def dehydrate(self, bundle):
+        bundle.data['patient_name'] = bundle.obj.patient
+        bundle.data['service_name'] = bundle.obj.service
+        return bundle
 
     class Meta:
         queryset = AccInvoiceItem.objects.all()
@@ -2830,6 +2845,6 @@ api.register(ReportTreeResource())
 api.register(ReportResource())
 
 #accounting
-api.register(AccountingContract())
-api.register(AccountingInvoice())
-api.register(AccountingInvoiceItem())
+api.register(AccountingContractResource())
+api.register(AccountingInvoiceResource())
+api.register(AccountingInvoiceItemResource())
