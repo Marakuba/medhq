@@ -2,19 +2,34 @@ Ext.ns('App.accounting');
 
 
 App.accounting.InvoiceGrid = Ext.extend(Ext.grid.GridPanel, {
-    
+
     initComponent: function() {
-        
+
+        this.addInvoiceBtn = new Ext.Button({
+            iconCls:'silk-add',
+            text:'Добавить счет',
+            handler:this.onAddInvoice.createDelegate(this),
+            scope:this
+        });
+
+        this.editInvoiceBtn = new Ext.Button({
+            iconCls:'silk-add',
+            text:'Изменить счет',
+            handler:this.onEditInvoice.createDelegate(this),
+            scope:this
+        });
+
         this.store = new Ext.data.RESTStore({
             autoSave : false,
             autoLoad : false,
-            apiUrl : get_api_url('acc_contract'),
+            apiUrl : get_api_url('acc_invoice'),
             model: App.models.AccountingContract
         });
 
         this.columns = [{
             header: "Дата",
-            dataIndex: 'date',
+            dataIndex: 'on_date',
+            renderer:Ext.util.Format.dateRenderer('d.m.Y'),
             width:20
         },{
             header: "Номер",
@@ -34,12 +49,14 @@ App.accounting.InvoiceGrid = Ext.extend(Ext.grid.GridPanel, {
                 singleSelect : true,
                 listeners: {
                     rowselect: function(sm, row, rec) {
+
                     },
                     rowdeselect: function(sm, row, rec) {
                     },
                     scope:this
                 }
             }),
+            tbar:[this.addInvoiceBtn,this.editInvoiceBtn],
             viewConfig : {
                 forceFit : true
                 //getRowClass : this.applyRowClass
@@ -53,6 +70,28 @@ App.accounting.InvoiceGrid = Ext.extend(Ext.grid.GridPanel, {
         App.accounting.InvoiceGrid.superclass.initComponent.apply(this, arguments);
 
     },
+
+    setContract: function(record){
+        this.store.setBaseParam('contract',record.data.id);
+        this.store.load();
+        this.contract = record
+    },
+
+    onAddInvoice: function(){
+        if (this.contract){
+            // centralPanel.launchApp('accinvoiceapp', {
+        // // contractId: 1
+        //     invoiceId: rec.data.id
+        // }, true);
+        }
+    },
+    onEditInvoice: function(){
+        var rec = this.getSelectionModel().getSelected();
+        // centralPanel.launchApp('accinvoiceapp', {
+        // // contractId: 1
+        //     invoiceId: rec.data.id
+        // }, true);
+    }
 
 });
 

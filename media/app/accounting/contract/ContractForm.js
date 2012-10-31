@@ -101,7 +101,7 @@ App.accounting.ContractForm = Ext.extend(Ext.form.FormPanel, {
                             width:90,
                             labelWidth:30,
                             fieldLabel:'от',
-                            name:'date',
+                            name:'on_date',
                             format:'d.m.Y',
                             allowBlank:false
                         }]

@@ -11,6 +11,10 @@ App.accounting.ContractApp = Ext.extend(Ext.Panel, {
             border:true,
             style:{
                 borderLeft:"solid 1px #99BBE8"
+            },
+            listeners:{
+                scope:this,
+                rowselect:this.onContractSelect
             }
     	});
 
@@ -21,14 +25,7 @@ App.accounting.ContractApp = Ext.extend(Ext.Panel, {
         config = {
             title:'Договоры',
             layout:'border',
-            items:[this.contractGrid,this.invoiceGrid],
-            tbar:[{
-                xtype:'button',
-                iconCls:'silk-add',
-                text:'Добавить договор',
-                handler:this.onAddContract.createDelegate(this),
-                scope:this
-            }]
+            items:[this.contractGrid,this.invoiceGrid]
         }
         Ext.apply(this, Ext.apply(this.initialConfig, config));
         App.accounting.ContractApp.superclass.initComponent.apply(this, arguments);
@@ -36,22 +33,8 @@ App.accounting.ContractApp = Ext.extend(Ext.Panel, {
     },
 
 
-    onAddContract: function(){
-        var contractWin = new App.accounting.ContractWindow({
-            store:this.contractGrid.store,
-            fn:function(record){
-                if(!record){
-                    contractWin.close();
-                    return false;
-                };
-                this.contractGrid.store.add(record);
-                this.contractGrid.store.save();
-                contractWin.close();
-            },
-            scope:this
-        });
-
-        contractWin.show();
+    onContractSelect: function(record){
+        this.invoiceGrid.setContract(record)
     }
 
 });
