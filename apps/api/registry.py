@@ -55,6 +55,7 @@ class UserResource(ModelResource):
         queryset = User.objects.select_related().all()
         limit = 1000
         resource_name = 'user'
+        list_allowed_methods = ['get', 'post', 'put']
 
 
 class ICD10Resource(ModelResource):
@@ -93,6 +94,7 @@ class ICD10Resource(ModelResource):
             'code':('istartswith',),
             'parent': ALL_WITH_RELATIONS
         }
+        list_allowed_methods = ['get', 'post', 'put']
 
 
 class DiscountResource(ModelResource):
@@ -109,6 +111,8 @@ class DiscountResource(ModelResource):
             'id': ALL,
             'name':('istartswith',)
         }
+        list_allowed_methods = ['get', 'post', 'put']
+
 
 class ClientItemResource(ExtResource):
     client = fields.OneToOneField('apps.api.registry.PatientResource', 'client')
@@ -123,6 +127,8 @@ class ClientItemResource(ExtResource):
         filtering = {
             'client': ALL_WITH_RELATIONS,
         }
+        list_allowed_methods = ['get', 'post', 'put']
+
         
 class AdSourceResource(ExtResource):
     
@@ -138,6 +144,8 @@ class AdSourceResource(ExtResource):
             'id': ALL,
             'name': ALL,
         }
+        list_allowed_methods = ['get', 'post', 'put']
+
         
 class PatientResource(ExtResource):
     
@@ -214,6 +222,8 @@ class PatientResource(ExtResource):
             'discount': ALL_WITH_RELATIONS,
             'state': ALL_WITH_RELATIONS
         }
+        list_allowed_methods = ['get', 'post', 'put']
+
 
 class ContractTypeResource(ExtResource):
     class Meta:
@@ -223,11 +233,12 @@ class ContractTypeResource(ExtResource):
         authorization = DjangoAuthorization()
         always_return_data = True
         filtering = {
-            'type':('istartswith',),
+            'type': ('istartswith',),
             'title': ALL,
             'validity': ALL,
             'id': ALL
         }
+        list_allowed_methods = ['get', 'post', 'put']
     
         
 class ContractResource(ExtResource):
@@ -255,6 +266,7 @@ class ContractResource(ExtResource):
             'active': ALL,
             'id': ALL
         }
+        list_allowed_methods = ['get', 'post', 'put']
         
 class DebtorResource(ExtResource):
     
@@ -289,6 +301,8 @@ class DebtorResource(ExtResource):
             'discount': ALL_WITH_RELATIONS,
             'hid_card': ALL
         }
+        list_allowed_methods = ['get', 'post', 'put']
+
         
 class DepositorResource(ExtResource):
     
@@ -323,28 +337,31 @@ class DepositorResource(ExtResource):
             'discount': ALL_WITH_RELATIONS,
             'hid_card': ALL
         }
+        list_allowed_methods = ['get', 'post', 'put']
+
         
 class ReferralResource(ExtResource):
 
     def obj_create(self, bundle, request=None, **kwargs):
-        kwargs['operator']=request.user
+        kwargs['operator'] = request.user
         result = super(ReferralResource, self).obj_create(bundle=bundle, request=request, **kwargs)
         return result
+
     def dehydrate(self, bundle):
         bundle.data['referral_type_name'] = bundle.obj.get_referral_type_display()
         return bundle
 
     class Meta:
-        queryset = Referral.objects.all() #@UndefinedVariable
+        queryset = Referral.objects.all()
         resource_name = 'referral'
         always_return_data = True
         limit = 200
         authorization = DjangoAuthorization()
         filtering = {
-            'name':('istartswith',),
+            'name': ('istartswith',),
             'id': ALL
         }
-        
+        list_allowed_methods = ['get', 'post', 'put']
 
         
 class LabResource(ModelResource):
@@ -355,9 +372,10 @@ class LabResource(ModelResource):
         limit = 10
         filtering = {
             'id': ALL,
-            'name':('istartswith',)
+            'name': ('istartswith',)
         }
-        
+        list_allowed_methods = ['get', 'post', 'put']
+
 
 class MedStateResource(ModelResource):
 
@@ -368,9 +386,10 @@ class MedStateResource(ModelResource):
         limit = 20
         filtering = {
             'id': ALL,
-            'name':('istartswith',)
+            'name': ('istartswith',)
         }
-        
+        list_allowed_methods = ['get', 'post', 'put']
+
 
 class OwnStateResource(ModelResource):
 
@@ -383,6 +402,8 @@ class OwnStateResource(ModelResource):
             'id': ALL,
             'name':('istartswith',)
         }
+        list_allowed_methods = ['get', 'post', 'put']
+
 
 class RemoteStateResource(ModelResource):
     
@@ -394,6 +415,8 @@ class RemoteStateResource(ModelResource):
         filtering = {
             'id': ALL
         }
+        list_allowed_methods = ['get', 'post', 'put']
+
 
 class StateResource(ModelResource):
     
@@ -412,7 +435,8 @@ class StateResource(ModelResource):
             'uuid': ALL,
             'remotestate': ALL_WITH_RELATIONS
         }
-        
+        list_allowed_methods = ['get', 'post', 'put']
+
         
 class GenericStateResource(ExtResource):
     
@@ -428,6 +452,7 @@ class GenericStateResource(ExtResource):
             'name': ALL,
             'uuid': ALL
         }
+        list_allowed_methods = ['get', 'post', 'put']
         
         
 class LabServiceGroupResource(ModelResource):
@@ -439,6 +464,7 @@ class LabServiceGroupResource(ModelResource):
         filtering = {
             'name':('istartswith',)
         }
+        list_allowed_methods = ['get', 'post', 'put']
         
         
 class InsuranceStateResource(ExtResource):
@@ -459,6 +485,8 @@ class InsuranceStateResource(ExtResource):
         filtering = {
             'name':('istartswith',)
         }
+        list_allowed_methods = ['get', 'post', 'put']
+
         
 class InsurancePolicyResource(ExtResource):
     
@@ -486,6 +514,7 @@ class InsurancePolicyResource(ExtResource):
             'patient': ALL_WITH_RELATIONS,
             'insurance_state': ALL_WITH_RELATIONS
         }
+        list_allowed_methods = ['get', 'post', 'put']
         
 
 class BarcodeResource(ModelResource):
@@ -516,6 +545,7 @@ class BarcodeResource(ModelResource):
             'visit': ALL_WITH_RELATIONS,
             'id': ALL
         }
+        list_allowed_methods = ['get', 'post', 'put']
 
 
 class VisitResource(ExtResource):
@@ -584,6 +614,8 @@ class VisitResource(ExtResource):
             'created': ALL,
             'office': ALL_WITH_RELATIONS
         }
+        list_allowed_methods = ['get', 'post', 'put']
+
         
 class RefundResource(ExtResource):
     patient = fields.ToOneField(PatientResource, 'patient', null=True)
@@ -620,6 +652,7 @@ class RefundResource(ExtResource):
             'id': ALL,
             'created': ALL
         }
+        list_allowed_methods = ['get', 'post', 'put']
         
 
 class LabOrderResource(ExtResource):
@@ -701,6 +734,8 @@ class LabOrderResource(ExtResource):
             'is_printed': ALL,
             'is_manual': ALL
         }
+        list_allowed_methods = ['get', 'post', 'put']
+
         
 class LSResource(ExtResource):
     
@@ -711,6 +746,8 @@ class LSResource(ExtResource):
         filtering = {
             'is_manual': ALL,
         }
+        list_allowed_methods = ['get', 'post', 'put']
+
         
 class BaseServiceResource(ExtResource):
     """
@@ -729,9 +766,11 @@ class BaseServiceResource(ExtResource):
             'parent': ALL_WITH_RELATIONS,
             'labservice': ALL_WITH_RELATIONS
         }
+        list_allowed_methods = ['get', 'post', 'put']
+
 
 lookups = {}
-lookups[BaseService._meta.right_attr] = F(BaseService._meta.left_attr)+1
+lookups[BaseService._meta.right_attr] = F(BaseService._meta.left_attr) + 1
 
 
 class BaseServiceGroupResource(ExtResource):
@@ -754,6 +793,8 @@ class BaseServiceGroupResource(ExtResource):
             'parent': ALL_WITH_RELATIONS,
             'labservice': ALL_WITH_RELATIONS
         }
+        list_allowed_methods = ['get', 'post', 'put']
+
         
 class StaffResource(ModelResource):
     referral = fields.ForeignKey(ReferralResource, 'referral', null = True)
@@ -794,6 +835,8 @@ class StaffResource(ModelResource):
             'id': ALL,
             'status': ALL
         }
+        list_allowed_methods = ['get', 'post', 'put']
+
 
 class PositionResource(ModelResource):
     """
@@ -834,6 +877,8 @@ class PositionResource(ModelResource):
             'title':('istartswith',),
             'staff': ALL_WITH_RELATIONS,
         }
+        list_allowed_methods = ['get', 'post', 'put']
+
 
 class ExtendedServiceResource(ModelResource):
     """
@@ -878,7 +923,7 @@ class ExtendedServiceResource(ModelResource):
             'name': ALL,
             'is_active': ALL
         }
-
+        list_allowed_methods = ['get', 'post', 'put']
 
 
 class AnalysisResource(ModelResource):
@@ -893,6 +938,8 @@ class AnalysisResource(ModelResource):
         filtering = {
             'service': ALL_WITH_RELATIONS
         }
+        list_allowed_methods = ['get', 'post', 'put']
+
 
 class ResultResource(ExtResource):
     """
@@ -932,6 +979,7 @@ class ResultResource(ExtResource):
             'analysis': ALL_WITH_RELATIONS,
             'is_validated': ALL,
         }
+        list_allowed_methods = ['get', 'post', 'put']
         
 
 class InputListResource(ModelResource):
@@ -944,6 +992,7 @@ class InputListResource(ModelResource):
         filtering = {
             'name': ALL
         }
+        list_allowed_methods = ['get', 'post', 'put']
 
 
 class DoctorResource(ExtResource):
@@ -957,6 +1006,8 @@ class DoctorResource(ExtResource):
         filtering = {
             'id': ALL
         }
+        list_allowed_methods = ['get', 'post', 'put']
+
         
 class StaffSchedResource(ModelResource):
     """
@@ -985,6 +1036,8 @@ class StaffSchedResource(ModelResource):
             'last_name':('istartswith',),
             'id': ALL
         }
+        list_allowed_methods = ['get', 'post', 'put']
+
 
 class DepartmentResource(ExtResource):
     """
@@ -1003,6 +1056,8 @@ class DepartmentResource(ExtResource):
             'id': ALL,
             'name': ALL,
         }
+        list_allowed_methods = ['get', 'post', 'put']
+
         
 class PosSchedResource(ModelResource):
     """
@@ -1035,6 +1090,8 @@ class PosSchedResource(ModelResource):
             'is_active': ALL,
             'staff': ALL_WITH_RELATIONS
         }
+        list_allowed_methods = ['get', 'post', 'put']
+
 
 class TubeResource(ModelResource):
     """
@@ -1045,6 +1102,7 @@ class TubeResource(ModelResource):
         filtering = {
             'name': ALL
         }
+        list_allowed_methods = ['get', 'post', 'put']
 
 #class AnalysisResource(ModelResource):
 #    """
@@ -1065,6 +1123,7 @@ class NumeratorItemResource(ModelResource):
         resource_name = 'numerator'
         filtering = {
         }
+        list_allowed_methods = ['get', 'post', 'put']
 
 
 class SamplingResource(ExtResource):
@@ -1097,6 +1156,7 @@ class SamplingResource(ExtResource):
             'laboratory': ALL_WITH_RELATIONS,
             'number': ALL_WITH_RELATIONS
         }
+        list_allowed_methods = ['get', 'post', 'put']
 
 
 class BarcodedSamplingResource(ModelResource):
@@ -1122,6 +1182,7 @@ class BarcodedSamplingResource(ModelResource):
             'visit': ALL_WITH_RELATIONS,
             'laboratory': ALL_WITH_RELATIONS
         }
+        list_allowed_methods = ['get', 'post', 'put']
 
 
 class OrderedServiceResource(ExtBatchResource):
@@ -1170,7 +1231,8 @@ class OrderedServiceResource(ExtBatchResource):
             'execution_place': ALL_WITH_RELATIONS,
             'staff': ALL_WITH_RELATIONS
         }
-        
+        list_allowed_methods = ['get', 'post', 'put']
+
 
 class LabOrderedServiceResource(OrderedServiceResource):
     
@@ -1222,6 +1284,7 @@ class LabOrderedServiceResource(OrderedServiceResource):
             'created': ALL,
             'execution_place': ALL_WITH_RELATIONS
         }
+        list_allowed_methods = ['get', 'post', 'put']
 
 
 class LabServiceResource(ExtResource):
@@ -1273,7 +1336,8 @@ class LabServiceResource(ExtResource):
             'order': ALL_WITH_RELATIONS,
             'staff': ALL_WITH_RELATIONS,
         }
-        
+        list_allowed_methods = ['get', 'post', 'put']
+
         
 class LabTestResource(ExtResource):
     """
@@ -1328,7 +1392,8 @@ class LabTestResource(ExtResource):
             'created': ALL_WITH_RELATIONS
         }
         cache = SimpleCache()
-        
+        list_allowed_methods = ['get', 'post', 'put']
+
         
 class ExamServiceResource(ExtResource):
     """
@@ -1383,6 +1448,8 @@ class ExamServiceResource(ExtResource):
             'executed': ALL,
             'created': ALL
         }
+        list_allowed_methods = ['get', 'post', 'put']
+
 
 class SamplingServiceResource(ExtResource):
     """
@@ -1428,7 +1495,7 @@ class SamplingServiceResource(ExtResource):
             'order': ALL_WITH_RELATIONS,
             'sampling': ALL_WITH_RELATIONS
         }
-        
+        list_allowed_methods = ['get', 'post', 'put']
 
 
 class ServiceBasketResource(ExtBatchResource):
@@ -1465,7 +1532,8 @@ class ServiceBasketResource(ExtBatchResource):
         }
         limit = 500
         authorization = DjangoAuthorization()
-        
+        list_allowed_methods = ['get', 'post', 'put']
+
 
 class RefundBasketResource(ExtResource):
     """
@@ -1498,6 +1566,7 @@ class RefundBasketResource(ExtResource):
         }
         limit = 500
         authorization = DjangoAuthorization()
+        list_allowed_methods = ['get', 'post', 'put']
 
 
 class BCPackageResource(ExtResource):
@@ -1526,6 +1595,7 @@ class BCPackageResource(ExtResource):
         resource_name = 'barcodepackage'
         filtering = {
         }
+        list_allowed_methods = ['get', 'post', 'put']
 
 
 class ExamEquipmentResource(ExtResource):
@@ -1537,6 +1607,7 @@ class ExamEquipmentResource(ExtResource):
             'name': ALL,
             'id': ALL
         }
+        list_allowed_methods = ['get', 'post', 'put']
 
 
 class TemplateGroupResource(ExtResource):
@@ -1551,6 +1622,8 @@ class TemplateGroupResource(ExtResource):
             'name': ALL,
             'id': ALL
         }
+        list_allowed_methods = ['get', 'post', 'put']
+
 
 class CardTemplateResource(ExtResource):
 
@@ -1578,6 +1651,8 @@ class CardTemplateResource(ExtResource):
             'id': ALL
         }
         limit = 150
+        list_allowed_methods = ['get', 'post', 'put']
+
         
 class ExaminationCardResource(ExtResource):
     
@@ -1605,12 +1680,13 @@ class ExaminationCardResource(ExtResource):
             'id': ALL,
             'name': ALL
         }
-        #limit = 1000
+        list_allowed_methods = ['get', 'post', 'put']
+
         
 class CardResource(ExtResource):
     
     ordered_service = fields.ForeignKey(OrderedServiceResource, 'ordered_service', null=True)
-    assistant = fields.ForeignKey(PositionResource, 'assistant', null = True)
+    assistant = fields.ForeignKey(PositionResource, 'assistant', null=True)
     mkb_diag = fields.ForeignKey(ICD10Resource, 'mkb_diag', null=True)
     equipment = fields.ForeignKey(ExamEquipmentResource, 'equipment', null=True)
     
@@ -1622,9 +1698,9 @@ class CardResource(ExtResource):
 
         if "search" in filters:
             smart_filters = smartFilter(filters['search'], 'ordered_service__order__patient')
-            if len(smart_filters.keys())==1:
+            if len(smart_filters.keys()) == 1:
                 try:
-                    orm_filters = ComplexQuery( Q(**smart_filters), \
+                    orm_filters = ComplexQuery(Q(**smart_filters), \
                                       **orm_filters)
                 except:
                     orm_filters.update(**smart_filters)
@@ -1657,6 +1733,8 @@ class CardResource(ExtResource):
             'deleted': ALL,
             'name': ALL
         }
+        list_allowed_methods = ['get', 'post', 'put']
+
         
 class TemplateResource(ExtResource):
     
@@ -1683,6 +1761,8 @@ class TemplateResource(ExtResource):
             'staff': ALL_WITH_RELATIONS
         }
         limit = 150
+        list_allowed_methods = ['get', 'post', 'put']
+
         
 class FieldSetResource(ExtResource):
     
@@ -1695,6 +1775,8 @@ class FieldSetResource(ExtResource):
             'name': ALL,
             'order': ALL
         }
+        list_allowed_methods = ['get', 'post', 'put']
+
         
 class SubSectionResource(ExtResource):
     section = fields.ForeignKey(FieldSetResource, 'section')
@@ -1713,6 +1795,8 @@ class SubSectionResource(ExtResource):
             'section': ALL_WITH_RELATIONS,
             'order': ALL
         }
+        list_allowed_methods = ['get', 'post', 'put']
+
         
 class GlossaryResource(ExtResource):
     
@@ -1755,7 +1839,8 @@ class GlossaryResource(ExtResource):
             'section': ALL
         }
         limit = 1000
-        
+        list_allowed_methods = ['get', 'post', 'put']
+
         
 class RegExamCardResource(ExtResource):
     ordered_service = fields.ForeignKey(OrderedServiceResource, 'ordered_service', null=True)
@@ -1776,6 +1861,8 @@ class RegExamCardResource(ExtResource):
             'ordered_service': ALL_WITH_RELATIONS,
             'id': ALL
         }
+        list_allowed_methods = ['get', 'post', 'put']
+
 
 from sorl.thumbnail import get_thumbnail
 
@@ -1796,6 +1883,7 @@ class DicomResource(ExtResource):
             'examination_card': ALL_WITH_RELATIONS,
             'id': ALL
         }
+        list_allowed_methods = ['get', 'post', 'put']
 
 
 class EquipmentResource(ExtResource):
@@ -1809,6 +1897,8 @@ class EquipmentResource(ExtResource):
             'slug': ALL,
             'serial_number': ALL
         }        
+        list_allowed_methods = ['get', 'post', 'put']
+
 
 class EquipmentAssayResource(ExtResource):
     
@@ -1830,6 +1920,8 @@ class EquipmentAssayResource(ExtResource):
             'equipment': ALL_WITH_RELATIONS,
             'service': ALL_WITH_RELATIONS,
         }        
+        list_allowed_methods = ['get', 'post', 'put']
+
 
 class EquipmentTaskReadOnlyResource(ExtBatchResource):
     
@@ -1881,6 +1973,8 @@ class EquipmentTaskReadOnlyResource(ExtBatchResource):
             'service': ALL_WITH_RELATIONS,
             'status': ALL
         }        
+        list_allowed_methods = ['get', 'post', 'put']
+
 
 class EquipmentTaskResource(ExtBatchResource):
     
@@ -1922,6 +2016,7 @@ class EquipmentTaskResource(ExtBatchResource):
             'service': ALL_WITH_RELATIONS,
             'status': ALL
         }        
+        list_allowed_methods = ['get', 'post', 'put']
 
 
 class EquipmentResultResource(ExtBatchResource):
@@ -1937,7 +2032,9 @@ class EquipmentResultResource(ExtBatchResource):
             'order': ALL,
             'assay': ALL,
         }   
-        
+        list_allowed_methods = ['get', 'post', 'put']
+
+
 class EquipmentResultReadOnlyResource(ExtBatchResource):
 
     def dehydrate(self, bundle):
@@ -1951,7 +2048,9 @@ class EquipmentResultReadOnlyResource(ExtBatchResource):
             'order': ALL,
             'assay': ALL,
         }   
-        
+        list_allowed_methods = ['get', 'post', 'put']
+
+
 class PromotionResource(ExtResource):
     discount = fields.ForeignKey(DiscountResource, 'discount', null=True)
     class Meta:
@@ -1960,7 +2059,9 @@ class PromotionResource(ExtResource):
         authorization = DjangoAuthorization()
         filtering = {
         }   
-        
+        list_allowed_methods = ['get', 'post', 'put']
+
+
 class CalendarResource(ExtResource):
     
     class Meta:
@@ -1970,7 +2071,9 @@ class CalendarResource(ExtResource):
         filtering = {
             'title': ALL,
         }
-        
+        list_allowed_methods = ['get', 'post', 'put']
+
+
 class RejectionCauseResource(ExtResource):
     
     class Meta:
@@ -1980,6 +2083,7 @@ class RejectionCauseResource(ExtResource):
         filtering = {
             'name': ALL,
         }
+        list_allowed_methods = ['get', 'post', 'put']
 
         
 class PreorderResource(ExtBatchResource):
@@ -2036,6 +2140,7 @@ class PreorderResource(ExtBatchResource):
             'payment_type': ALL,
             'card': ALL_WITH_RELATIONS
         }
+        list_allowed_methods = ['get', 'post', 'put']
 
 
 class ExtPreorderResource(ExtResource):
@@ -2119,7 +2224,7 @@ class ExtPreorderResource(ExtResource):
             'id': ALL
         }
         limit = 500
-        allowed_methods = ['get', 'post', 'put']
+        list_allowed_methods = ['get', 'post', 'put']
 
 
 class VisitPreorderResource(ExtPreorderResource):
@@ -2163,7 +2268,7 @@ class VisitPreorderResource(ExtPreorderResource):
             'payment_type': ALL
         }
         limit = 500
-        allowed_methods = ['get', 'post', 'put']
+        list_allowed_methods = ['get', 'post', 'put']
 
 
 class EventResource(ExtResource):
@@ -2193,7 +2298,7 @@ class EventResource(ExtResource):
             
         }
         limit = 1000
-        allowed_methods = ['get', 'post', 'put']
+        list_allowed_methods = ['get', 'post', 'put']
 
 
 
@@ -2207,6 +2312,7 @@ class IssueTypeResource(ExtResource):
         filtering = {
             'name': ALL
         }        
+        list_allowed_methods = ['get', 'post', 'put']
 
 
 class IssueResource(ExtResource):
@@ -2237,7 +2343,8 @@ class IssueResource(ExtResource):
             'status': ALL,
             'operator': ALL_WITH_RELATIONS
         }        
-        
+        list_allowed_methods = ['get', 'post', 'put']
+
 
 class ContentTypeResource(ExtResource):
     class Meta:
@@ -2246,12 +2353,15 @@ class ContentTypeResource(ExtResource):
         authorization = DjangoAuthorization()
         allowed_methods = ['get']
 
+
 class AccountResource(ExtResource):
     
     class Meta:
         queryset = Account.objects.all()
         resource_name = 'account'
         authorization = DjangoAuthorization()
+        list_allowed_methods = ['get', 'post', 'put']
+
         
 class ClientAccountResource(ExtResource):
     client_item = fields.ForeignKey(ClientItemResource, 'client_item')
@@ -2273,7 +2383,9 @@ class ClientAccountResource(ExtResource):
             'id': ALL,
             'client_item': ALL_WITH_RELATIONS,
         }
-        
+        list_allowed_methods = ['get', 'post', 'put']
+
+
 class PaymentResource(ExtResource):
     client_account = fields.ForeignKey(ClientAccountResource, 'client_account')
     content_type = fields.ForeignKey(ContentTypeResource, 'content_type', null=True)
@@ -2321,7 +2433,8 @@ class PaymentResource(ExtResource):
             'client_account': ALL_WITH_RELATIONS,
             'direction': ALL
         }
-        
+        list_allowed_methods = ['get', 'post', 'put']
+
         
 class InvoiceResource(ExtResource):
     
@@ -2351,8 +2464,9 @@ class InvoiceResource(ExtResource):
             'state': ALL_WITH_RELATIONS,
             'office': ALL_WITH_RELATIONS
         }
-        
-        
+        list_allowed_methods = ['get', 'post', 'put']
+
+
 class InvoiceItemResource(ExtResource):
     
     invoice = fields.ForeignKey(InvoiceResource, 'invoice')
@@ -2383,7 +2497,9 @@ class InvoiceItemResource(ExtResource):
             'id': ALL,
             'invoice': ALL_WITH_RELATIONS
         }
-        
+        list_allowed_methods = ['get', 'post', 'put']
+
+
 ######### remoting
 
 
@@ -2416,6 +2532,7 @@ class ServiceToSend(ExtResource):
             'id': ALL,
             'state': ALL_WITH_RELATIONS
         }        
+        list_allowed_methods = ['get', 'post', 'put']
         
         
 class ReportTreeResource(ModelResource):
@@ -2471,6 +2588,8 @@ class ReportTreeResource(ModelResource):
             'is_active': ALL,
             'parent': ALL_WITH_RELATIONS
         }
+        list_allowed_methods = ['get', 'post', 'put']
+
 
 class QueryResource(ExtResource):
     """
@@ -2484,6 +2603,8 @@ class QueryResource(ExtResource):
         filtering = {
             'id': ALL,
         }
+        list_allowed_methods = ['get', 'post', 'put']
+
 
 class ReportResource(ExtResource):
     """
@@ -2503,6 +2624,7 @@ class ReportResource(ExtResource):
         filtering = {
             'id': ALL,
         }        
+        list_allowed_methods = ['get', 'post', 'put']
 
 
 class NosologicalFormResource(ExtResource):
@@ -2516,6 +2638,7 @@ class NosologicalFormResource(ExtResource):
         filtering = {
             'id': ALL,
         }
+        list_allowed_methods = ['get', 'post', 'put']
 
 
 class AgeCategoryResource(ExtResource):
@@ -2529,6 +2652,7 @@ class AgeCategoryResource(ExtResource):
         filtering = {
             'id': ALL,
         }
+        list_allowed_methods = ['get', 'post', 'put']
 
 
 class PhaseResource(ExtResource):
@@ -2541,7 +2665,9 @@ class PhaseResource(ExtResource):
         filtering = {
             'id': ALL,
         }
-        
+        list_allowed_methods = ['get', 'post', 'put']
+
+
 class StageResource(ExtResource):
     
     class Meta:
@@ -2553,6 +2679,7 @@ class StageResource(ExtResource):
         filtering = {
             'id': ALL,
         }
+        list_allowed_methods = ['get', 'post', 'put']
 
 
 class ComplicationsResource(ExtResource):
@@ -2566,6 +2693,7 @@ class ComplicationsResource(ExtResource):
         filtering = {
             'id': ALL,
         }
+        list_allowed_methods = ['get', 'post', 'put']
 
 
 class TermResource(ExtResource):
@@ -2579,6 +2707,7 @@ class TermResource(ExtResource):
         filtering = {
             'id': ALL,
         }
+        list_allowed_methods = ['get', 'post', 'put']
 
 
 class MedStandartResource(ExtResource):
@@ -2609,7 +2738,9 @@ class MedStandartResource(ExtResource):
             'id': ALL,
             'mkb10': ALL,
         }
-        
+        list_allowed_methods = ['get', 'post', 'put']
+
+
 class StandartItemResource(ExtResource):
     standart = fields.ForeignKey(MedStandartResource, 'standart')
     service = fields.ForeignKey(ExtendedServiceResource, 'service')
@@ -2630,7 +2761,8 @@ class StandartItemResource(ExtResource):
             'id': ALL,
             'standart': ALL
         }
-              
+        list_allowed_methods = ['get', 'post', 'put']
+
 
 class QuestionnaireResource(ExtResource):
     base_service = fields.ManyToManyField(BaseServiceResource, 'base_service')
@@ -2647,6 +2779,8 @@ class QuestionnaireResource(ExtResource):
             'staff': ALL_WITH_RELATIONS,
             'base_service': ALL_WITH_RELATIONS
         }
+        list_allowed_methods = ['get', 'post', 'put']
+
 
 from accounting.models import Contract as AccContract, \
     Invoice as AccInvoice, InvoiceItem as AccInvoiceItem
@@ -2658,7 +2792,7 @@ class AccountingContractResource(ExtResource):
     state = fields.ForeignKey(StateResource, 'state')
 
     def obj_create(self, bundle, request=None, **kwargs):
-        kwargs['operator']=request.user
+        kwargs['operator'] = request.user
         result = super(AccountingContractResource, self).obj_create(bundle=bundle, request=request, **kwargs)
         return result
 
@@ -2680,6 +2814,7 @@ class AccountingContractResource(ExtResource):
             'branch': ALL_WITH_RELATIONS,
             'state': ALL_WITH_RELATIONS,
         }
+        list_allowed_methods = ['get', 'post', 'put']
 
 
 class AccountingInvoiceResource(ExtResource):
@@ -2687,7 +2822,7 @@ class AccountingInvoiceResource(ExtResource):
     contract = fields.ForeignKey(AccountingContractResource, 'contract')
 
     def obj_create(self, bundle, request=None, **kwargs):
-        kwargs['operator']=request.user
+        kwargs['operator'] = request.user
         result = super(AccountingInvoiceResource, self).obj_create(bundle=bundle, request=request, **kwargs)
         return result
 
@@ -2703,6 +2838,7 @@ class AccountingInvoiceResource(ExtResource):
             'on_date': ALL,
             'contract': ALL_WITH_RELATIONS,
         }
+        list_allowed_methods = ['get', 'post', 'put']
 
 
 class AccountingInvoiceItemResource(ExtResource):
@@ -2713,7 +2849,7 @@ class AccountingInvoiceItemResource(ExtResource):
     execution_place = fields.ForeignKey(StateResource, 'execution_place')
 
     def obj_create(self, bundle, request=None, **kwargs):
-        kwargs['operator']=request.user
+        kwargs['operator'] = request.user
         result = super(AccountingInvoiceItemResource, self).obj_create(bundle=bundle, request=request, **kwargs)
         return result
 
@@ -2738,6 +2874,7 @@ class AccountingInvoiceItemResource(ExtResource):
             'execution_place': ALL_WITH_RELATIONS,
             'preorder': ALL_WITH_RELATIONS
         }
+        list_allowed_methods = ['get', 'post', 'put']
 
 
 api = Api(api_name=get_api_name('dashboard'))
