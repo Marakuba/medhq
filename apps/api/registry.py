@@ -2018,8 +2018,9 @@ class PreorderResource(ExtBatchResource):
             'payment_type':ALL,
             'card':ALL_WITH_RELATIONS
         }
-        
-class ExtPreorderResource(ExtBatchResource):
+
+
+class ExtPreorderResource(ExtResource):
     patient = fields.ForeignKey(PatientResource, 'patient', null=True)
     timeslot = fields.OneToOneField('apps.api.registry.EventResource','timeslot', null=True)
     visit = fields.OneToOneField(VisitResource,'visit',null=True)

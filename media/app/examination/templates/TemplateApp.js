@@ -232,6 +232,7 @@ App.examination.TemplateApp = Ext.extend(Ext.Panel, {
 		this.tplBody = new App.examination.TplTicketTab({
 			data:decodedData,
 			tplId : this.tplId,
+			record: this.record,
 			tplRecord : this.record,
 			fromArchive:!this.record.data.base_service,
 			listeners:{
@@ -258,12 +259,12 @@ App.examination.TemplateApp = Ext.extend(Ext.Panel, {
 	},
 	
 	deleteTpl: function(){
-		this.record.set('deleted',true);
+		this.record.set('deleted', true);
 		this.tplStore.save();
 	},
 	
 	moveToArchive: function(name){
-		this.record.set('base_service','');
+		this.record.set('base_service', '');
 //		this.record.set('name',name);
 		var count = this.tplStore.save();
 		if (count > -1){
