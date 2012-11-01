@@ -242,8 +242,8 @@ class Preorder(models.Model):
                     Preorder.objects.create(**args_list)
             if self.timeslot and self.service:
                 self.price = self.service.get_actual_price(self.timeslot.start,self.payment_type)
-            else:
-                self.price = 0    
+            # else:
+            #     self.price = 0    
         super(Preorder, self).save(*args, **kwargs) 
         
     def delete(self, *args, **kwargs):

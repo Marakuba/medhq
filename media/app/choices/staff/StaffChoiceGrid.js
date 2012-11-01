@@ -3,8 +3,8 @@ Ext.ns('App','App.choices');
 App.choices.StaffChoiceGrid = Ext.extend(Ext.grid.GridPanel, {
 
 	initComponent : function() {
-		
-		this.store = new Ext.data.RESTStore({
+
+		this.store = this.store || new Ext.data.RESTStore({
 			autoLoad : true,
 			apiUrl : get_api_url('position'),
 			model: [
@@ -24,26 +24,26 @@ App.choices.StaffChoiceGrid = Ext.extend(Ext.grid.GridPanel, {
 				    {name: 'department'}
 				]
 		});
-		
+
 		this.columns =  [
 		    {
-		    	header: "Врач", 
-		    	width: 45, 
-		    	sortable: true, 
+		    	header: "Врач",
+		    	width: 45,
+		    	sortable: true,
 		    	dataIndex: 'name'
 		    },{
-		    	header: "Должность", 
-		    	width: 45, 
-		    	sortable: true, 
+		    	header: "Должность",
+		    	width: 45,
+		    	sortable: true,
 		    	dataIndex: 'title'
 		    },{
-		    	header: "Отделение", 
-		    	width: 45, 
-		    	sortable: true, 
+		    	header: "Отделение",
+		    	width: 45,
+		    	sortable: true,
 		    	dataIndex: 'department'
 		    }
-		];		
-		
+		];
+
 		this.choiceButton = new Ext.Button({
 			iconCls:'silk-accept',
 			disabled:true,
@@ -51,7 +51,7 @@ App.choices.StaffChoiceGrid = Ext.extend(Ext.grid.GridPanel, {
 			handler:this.onChoice.createDelegate(this, []),
 			scope:this
 		});
-		
+
 		this.searchField = new App.SearchField({
 			stripCharsRe:new RegExp('[\;\?]'),
 			listeners:{
@@ -64,7 +64,7 @@ App.choices.StaffChoiceGrid = Ext.extend(Ext.grid.GridPanel, {
 				search:function(v){
 					this.onSearch(v)
 				}
-				
+
 			},
 			onTrigger1Click : function(){
 		        if(this.hasSearch){
@@ -88,7 +88,7 @@ App.choices.StaffChoiceGrid = Ext.extend(Ext.grid.GridPanel, {
 		    },
 		    scope:this
 		});
-		
+
 		var config = {
 			loadMask : {
 				msg : 'Подождите, идет загрузка...'
@@ -124,7 +124,7 @@ App.choices.StaffChoiceGrid = Ext.extend(Ext.grid.GridPanel, {
 			viewConfig : {
 				forceFit : true
 				//getRowClass : this.applyRowClass
-			},	
+			},
 			listeners: {
 				rowdblclick:this.onChoice.createDelegate(this, []),
 				scope:this
@@ -137,26 +137,26 @@ App.choices.StaffChoiceGrid = Ext.extend(Ext.grid.GridPanel, {
 		this.on('staffselect', this.onStaffSelect, this);
 		//this.store.on('write', this.onStoreWrite, this);
 	},
-	
+
 	btnSetDisabled: function(status) {
         this.choiceButton.setDisabled(status);
 	},
-	
+
 	onStaffSelect: function(){
 //		this.btnSetDisable(false);
 	},
-	
+
 	getSelected: function() {
 		return this.getSelectionModel().getSelected()
 	},
-	
+
 	onSearch: function(v){
 		var s = this.store;
 		s.baseParams = { format:'json' };
 		s.setBaseParam('search', v);
 		s.load();
 	},
-	
+
 	onStoreWrite: function(store, action, result, res, rs) {
 		if( res.success && this.win ) {
 			store.filter('id',rs.data.id);
@@ -167,13 +167,13 @@ App.choices.StaffChoiceGrid = Ext.extend(Ext.grid.GridPanel, {
 //			App.eventManager.fireEvent('patientcreate',rs);
 //		}
 	},
-	
+
 	onChoice: function() {
         var record = this.getSelectionModel().getSelected();
         if (record) {
         	Ext.callback(this.fn, this.scope || window, [record]);
         };
     }
-	
+
 });
 

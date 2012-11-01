@@ -241,7 +241,7 @@ App.choices.PatientChoiceGrid = Ext.extend(Ext.grid.GridPanel, {
 	
 	onChoice: function() {
         var record = this.getSelectionModel().getSelected();
-        if (record) {
+        if (record && this.fn) {
         	Ext.callback(this.fn, this.scope || window, [record]);
         };
     }

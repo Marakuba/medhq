@@ -1,7 +1,7 @@
 # -*- coding: utf-8 -*-
 
 from django_assets import Bundle, register
-from django.conf import settings 
+from django.conf import settings
 
 debug = settings.DEBUG and '-debug' or ''
 
@@ -15,7 +15,7 @@ js_ext = Bundle(
     'extjs/adapter/ext/ext-base.js',
     'extjs/ext-all'+debug+'.js',
     'extjs/src/locale/ext-lang-ru.js',
-    
+
     filters='rjsmin', output='assets/ext.js',)
 
 js_registry = Bundle(
@@ -28,9 +28,9 @@ js_registry = Bundle(
     'extjs/ux/SpinnerField.js',
     'extjs/ux/statusbar/StatusBar.js',
     'extjs/ux/SearchField.js',
-    'extjs/ux/CheckColumn.js', 
-    'app/ux/InputTextMask.js', 
-    
+    'extjs/ux/CheckColumn.js',
+    'app/ux/InputTextMask.js',
+
     'extjs/ux/treegrid/TreeGridSorter.js',
     'extjs/ux/treegrid/TreeGridColumnResizer.js',
     'extjs/ux/treegrid/TreeGridNodeUI.js',
@@ -48,23 +48,23 @@ js_registry = Bundle(
     'app/Models.js',
 
     'app/registry/EventManager.js',
-    
+
     'app/ux/GSearchField.js',
-    
+
     'app/calendar/EventManager.js',
     'app/calendar/src/Ext.calendar.js',
-    
+
     'app/calendar/src/templates/DayHeaderTemplate.js',
     'app/calendar/src/templates/DayBodyTemplate.js',
     'app/calendar/src/templates/DayViewTemplate.js',
     'app/calendar/src/templates/BoxLayoutTemplate.js',
     'app/calendar/src/templates/MonthViewTemplate.js',
-    
+
     'app/calendar/src/dd/CalendarScrollManager.js',
     'app/calendar/src/dd/StatusProxy.js',
     'app/calendar/src/dd/CalendarDD.js',
     'app/calendar/src/dd/DayViewDD.js',
-    
+
     'app/calendar/src/EventRecord.js',
     'app/calendar/src/views/MonthDayDetailView.js',
     'app/calendar/src/WeekEventRenderer.js',
@@ -77,16 +77,16 @@ js_registry = Bundle(
     'app/calendar/src/views/MonthView.js',
     'app/calendar/src/views/DayHeaderView.js',
     'app/calendar/src/views/WeekView.js',
-    
+
     'app/calendar/src/widgets/DateRangeField.js',
     'app/calendar/src/widgets/ReminderField.js',
-    
+
     'app/calendar/app/timeslot/ServiceGrid.js',
     'app/choices/patient/PatientChoiceGrid.js',
     'app/choices/patient/PatientChoiceWindow.js',
     'app/calendar/app/timeslot/VacantTimeslotGrid.js',
     'app/calendar/app/timeslot/PreorderedServiceInlineGrid.js',
-    
+
     'app/calendar/src/EventEditForm.js',
     'app/calendar/src/EventEditWindow.js',
     'app/calendar/app/timeslot/TimeslotInfoWindow.js',
@@ -94,7 +94,7 @@ js_registry = Bundle(
     'app/calendar/app/timeslot/TimeslotEditWindow.js',
     'app/calendar/src/CalendarPanel.js',
     'app/calendar/app/DoctorScheduler.js',
-    
+
     'app/orderedservice/ResultWindow.js',
     'app/orderedservice/RemoteOrderGrid.js',
     'app/orderedservice/LocalOrderGrid.js',
@@ -112,7 +112,7 @@ js_registry = Bundle(
     'app/choices/barcode/BarcodeChoiceGrid.js',
     'app/choices/barcode/BarcodeChoiceWindow.js',
     'app/choices/paymenttype/PaymentTypeChoiceWindow.js',
-    
+
     'app/registry/patient/ManualGrid.js',
     'app/registry/patient/LabGrid.js',
     'app/registry/patient/ExamCardGrid.js',
@@ -140,15 +140,15 @@ js_registry = Bundle(
     'app/registry/insurance/PolicyWindow.js',
     'app/registry/insurance/StateGrid.js',
     'app/registry/insurance/StateWindow.js',
-    
+
     'app/choices/staff/StaffChoiceGrid.js',
     'app/choices/staff/StaffChoiceWindow.js',
-    
+
     'app/registry/preorder/utils.js',
     'app/registry/preorder/PatientPreorderGrid.js',
     'app/registry/preorder/PreorderGrid.js',
     'app/registry/preorder/PreorderManager.js',
-    
+
     'app/registry/visit/VisitServicePanel.js',
     'app/service/ServiceTreeGrid.js',
     'app/registry/visit/StaffGrid.js',
@@ -156,22 +156,22 @@ js_registry = Bundle(
     'app/registry/visit/VisitForm.js',
     'app/registry/visit/OrderedServiceInlineGrid.js',
     'app/registry/visit/VisitTab.js',
-    
+
     'app/registry/asgmt/DeletePromptWindow.js',
     'app/registry/asgmt/PreorderInlineGrid.js',
     'app/registry/asgmt/AsgmtListWindow.js',
     'app/registry/asgmt/AsgmtForm.js',
     'app/registry/asgmt/AsgmtTab.js',
-    
+
     'app/registry/barcodepackage/Grid.js',
     'app/registry/barcodepackage/Form.js',
     'app/registry/barcodepackage/DuplicateWindow.js',
     'app/registry/barcodepackage/Window.js',
-    
+
     'app/registry/visit/VisitGrid.js',
-    
+
     'app/registry/Visits.js',
-    
+
     'app/registry/barcode/Grid.js',
     'app/registry/barcode/Window.js',
     'app/registry/Barcodes.js',
@@ -186,14 +186,14 @@ js_registry = Bundle(
     'app/registry/Results.js',
 
     'app/registry/Reports.js',
-    
+
     'app/registry/patient/clientaccount/backends.js',
     'app/registry/patient/clientaccount/ClientAccountGrid.js',
-    
+
     'app/registry/patient/billing/payment/PaymentForm.js',
     'app/registry/patient/billing/payment/PaymentGrid.js',
     'app/registry/patient/billing/payment/PaymentWindow.js',
-    
+
     'app/cashier/CashierTab.js',
     'app/cashier/DebtorGrid.js',
     'app/cashier/DepositorGrid.js',
@@ -213,16 +213,16 @@ js_oldexam = Bundle(
     'extjs/ux/RowEditor.js',
     'extjs/ux/CheckColumn.js',
     'extjs/ux/Spinner.js',
-    'extjs/ux/SpinnerField.js', 
+    'extjs/ux/SpinnerField.js',
 
-    'extjs/ux/PortalColumn.js', 
-    'extjs/ux/Portal.js', 
+    'extjs/ux/PortalColumn.js',
+    'extjs/ux/Portal.js',
 
-    'app/ux/InputTextMask.js', 
-    
+    'app/ux/InputTextMask.js',
+
     'app/ux/InputTextMask.js',
     'extjs/ux/progresscolumn/ProgressColumn.js',
-    
+
     'app/ux/GSearchField.js',
     'app/ux/StatusBar.js',
     'app/App.js',
@@ -234,18 +234,18 @@ js_oldexam = Bundle(
 
     'app/examination/backends.js',
     'app/Models.js',
-    
+
     'app/examination/examorder/Grid.js',
     'app/examination/examorder/OldGrid.js',
 
     'app/dict/mkb/MKBTree.js',
     'app/dict/mkb/MKBWindow.js',
-    
+
     'app/examination/EventManager.js',
     'app/examination/OldCentralPanel.js',
     'app/examination/MainPanel.js',
     'app/examination/OldApp.js',
-    
+
     'app/ux/remotetree/js/Ext.ux.form.ThemeCombo.js',
     'app/ux/remotetree/js/Ext.ux.HttpProvider.js',
     'app/ux/remotetree/js/Ext.ux.IconMenu.js',
@@ -255,19 +255,19 @@ js_oldexam = Bundle(
     'app/ux/remotetree/js/Ext.ux.tree.RemoteTreePanel.js',
     'app/ux/remotetree/js/Ext.ux.tree.TreeFilterX.js',
     'app/ux/remotetree/js/WebPage.js',
-    
+
     'app/ux/DropDownList.js',
-    
+
     'extjs/ux/treegrid/TreeGridSorter.js',
     'extjs/ux/treegrid/TreeGridColumnResizer.js',
     'extjs/ux/treegrid/TreeGridNodeUI.js',
     'extjs/ux/treegrid/TreeGridLoader.js',
     'extjs/ux/treegrid/TreeGridColumns.js',
     'extjs/ux/treegrid/TreeGrid.js',
-    
+
     'app/examination/templates/TmpGrid.js',
     'app/examination/cards/CardGrid.js',
-    
+
     'app/registry/ServicePanel.js',
     'app/service/ServiceTreeGrid.js',
     'app/dict/glossary/EditNodeWindow.js',
@@ -281,25 +281,25 @@ js_oldexam = Bundle(
     'app/examination/editor/TemplateBody.js',
     'app/examination/editor/StartPanel.js',
     'app/examination/editor/card.js',
-    
+
     'app/examination/patient/PatientHistoryTreeGrid.js',
     'app/examination/patient/PatientHistoryPanel.js',
     'app/examination/patient/PatientHistory.js',
-    
+
     'app/registry/asgmt/PreorderInlineGrid.js',
     'app/registry/asgmt/AsgmtForm.js',
     'app/registry/asgmt/AsgmtTab.js',
     'app/registry/patient/AsgmtGrid.js',
-    
+
     'app/examination/cards/CardApp.js',
     'app/examination/templates/TemplateApp.js',
-    
+
     'app/examination/conclusion/ConclApp.js',
-    
+
     'app/examination/templates/StaffTemplates.js',
-    
+
     'app/examination/trash/TrashApp.js',
-    
+
     'app/examination/templates/CardTemplateWindow.js',
     'app/examination/templates/CardTemplateForm.js',
     'app/examination/templates/TemplateGrid.js',
@@ -307,27 +307,27 @@ js_oldexam = Bundle(
     'app/examination/templates/TemplateBackend.js',
     'app/examination/templates/TemplatesWindow.js',
     'app/examination/templates/GroupGrid.js',
-    
-    
+
+
     'app/examination/patient/PatientGrid.js',
     'app/examination/patient/PatientGridPanel.js',
 
     'app/calendar/EventManager.js',
     'app/calendar/src/Ext.calendar.js',
 
-    
+
     'app/calendar/src/templates/DayHeaderTemplate.js',
     'app/calendar/src/templates/DayBodyTemplate.js',
     'app/calendar/src/templates/DayViewTemplate.js',
     'app/calendar/src/templates/BoxLayoutTemplate.js',
     'app/calendar/src/templates/MonthViewTemplate.js',
-    
+
     'app/calendar/src/dd/CalendarScrollManager.js',
 
     'app/calendar/src/dd/StatusProxy.js',
     'app/calendar/src/dd/CalendarDD.js',
     'app/calendar/src/dd/DayViewDD.js',
-    
+
     'app/calendar/src/EventRecord.js',
     'app/calendar/src/views/MonthDayDetailView.js',
     'app/calendar/src/WeekEventRenderer.js',
@@ -342,16 +342,16 @@ js_oldexam = Bundle(
     'app/calendar/src/views/MonthView.js',
     'app/calendar/src/views/DayHeaderView.js',
     'app/calendar/src/views/WeekView.js',
-    
+
     'app/calendar/src/widgets/DateRangeField.js',
     'app/calendar/src/widgets/ReminderField.js',
-    
+
     'app/calendar/app/timeslot/ServiceGrid.js',
 
     'app/calendar/app/timeslot/PatientGrid.js',
     'app/calendar/app/timeslot/VacantTimeslotGrid.js',
     'app/calendar/app/timeslot/PreorderedServiceInlineGrid.js',
-    
+
     'app/calendar/src/EventEditForm.js',
     'app/calendar/src/EventEditWindow.js',
     'app/calendar/app/timeslot/TimeslotInfoWindow.js',
@@ -361,7 +361,7 @@ js_oldexam = Bundle(
     'app/calendar/src/CalendarPanel.js',
     'app/calendar/app/DoctorScheduler.js',
     filters='rjsmin', output='assets/old_exam.js',)
-    
+
 js_calendar = Bundle(
     'extjs/ux/Spinner.js',
     'extjs/ux/SearchField.js',
@@ -371,8 +371,8 @@ js_calendar = Bundle(
     'app/ux/GSearchField.js',
 
     'extjs/ux/RowEditor.js',
-    'extjs/ux/CheckColumn.js', 
-    
+    'extjs/ux/CheckColumn.js',
+
     'app/ux/GSearchField.js',
     'app/App.js',
     'app/Backend.js',
@@ -381,18 +381,18 @@ js_calendar = Bundle(
     'app/calendar/EventManager.js',
 
     'app/calendar/src/Ext.calendar.js',
-    
+
     'app/calendar/src/templates/DayHeaderTemplate.js',
     'app/calendar/src/templates/DayBodyTemplate.js',
     'app/calendar/src/templates/DayViewTemplate.js',
     'app/calendar/src/templates/BoxLayoutTemplate.js',
     'app/calendar/src/templates/MonthViewTemplate.js',
-    
+
     'app/calendar/src/dd/CalendarScrollManager.js',
     'app/calendar/src/dd/StatusProxy.js',
     'app/calendar/src/dd/CalendarDD.js',
     'app/calendar/src/dd/DayViewDD.js',
-    
+
     'app/calendar/src/EventRecord.js',
     'app/calendar/src/views/MonthDayDetailView.js',
     'app/calendar/src/widgets/CalendarPicker.js',
@@ -405,10 +405,10 @@ js_calendar = Bundle(
     'app/calendar/src/views/DayBodyView.js',
     'app/calendar/src/views/DayView.js',
     'app/calendar/src/views/WeekView.js',
-    
+
     'app/calendar/src/widgets/DateRangeField.js',
     'app/calendar/src/widgets/ReminderField.js',
-    
+
     'app/data/RestStore.js',
     'app/registry/patient/clientaccount/backends.js',
     'app/registry/patient/clientaccount/ClientAccountGrid.js',
@@ -418,10 +418,10 @@ js_calendar = Bundle(
     'app/choices/patient/PatientChoiceWindow.js',
     'app/registry/patient/PatientWindow.js',
     'app/registry/patient/PatientForm.js',
-    
+
     'app/registry/visit/VisitServicePanel.js',
     'app/calendar/app/timeslot/PreorderedServiceInlineGrid.js',
-    
+
     'app/calendar/src/EventEditForm.js',
     'app/calendar/src/EventEditWindow.js',
     'app/calendar/app/timeslot/TimeslotInfoWindow.js',
@@ -429,7 +429,7 @@ js_calendar = Bundle(
     'app/calendar/app/timeslot/TimeslotEditWindow.js',
     'app/calendar/src/CalendarPanel.js',
     'app/calendar/app/DoctorScheduler.js',
-    
+
     'app/calendar/CentralPanel.js',
     'app/calendar/MainPanel.js',
     'app/calendar/app.js',
@@ -437,23 +437,23 @@ js_calendar = Bundle(
 
 js_examination = Bundle(
     'extjs/ux/printer/Printer-all.js',
-    
-    
+
+
 #    'libs/markdown.js',
     'extjs/ux/progresscolumn/ProgressColumn.js',
     'extjs/ux/RowEditor.js',
     'extjs/ux/CheckColumn.js',
     'extjs/ux/Spinner.js',
-    'extjs/ux/SpinnerField.js', 
+    'extjs/ux/SpinnerField.js',
 
-    'extjs/ux/PortalColumn.js', 
-    'extjs/ux/Portal.js', 
+    'extjs/ux/PortalColumn.js',
+    'extjs/ux/Portal.js',
 
-    'app/ux/InputTextMask.js', 
-    
+    'app/ux/InputTextMask.js',
+
     'app/ux/InputTextMask.js',
     'extjs/ux/progresscolumn/ProgressColumn.js',
-    
+
     'app/ux/GSearchField.js',
     'app/ux/StatusBar.js',
     'app/App.js',
@@ -466,32 +466,32 @@ js_examination = Bundle(
 
     'app/examination/backends.js',
     'app/Models.js',
-    
+
     'app/examination/startpanel/StartView.js',
     'app/examination/startpanel/StartPanel.js',
     'app/examination/startpanel/CardStartPanel.js',
     'app/examination/startpanel/TemplateStartPanel.js',
-    
+
     'app/examination/questionnaire/QuestEditor.js',
     'app/examination/questionnaire/QuestPreviewPanel.js',
     'app/examination/questionnaire/QuestApp.js',
-    
+
     'app/examination/examorder/Grid.js',
     'app/examination/examorder/OldGrid.js',
 
     'app/dict/mkb/MKBTree.js',
     'app/dict/mkb/MKBWindow.js',
-    
+
     'app/examination/medstandarts/MedStandartGrid.js',
     'app/examination/medstandarts/MedStandartServiceGrid.js',
     'app/examination/medstandarts/MedStandartChoiceForm.js',
     'app/examination/medstandarts/MedStandartChoiceWindow.js',
-    
+
     'app/examination/EventManager.js',
     'app/examination/CentralPanel.js',
     'app/examination/MainPanel.js',
     'app/examination/app.js',
-    
+
     'app/ux/remotetree/js/Ext.ux.form.ThemeCombo.js',
     'app/ux/remotetree/js/Ext.ux.HttpProvider.js',
     'app/ux/remotetree/js/Ext.ux.IconMenu.js',
@@ -501,24 +501,24 @@ js_examination = Bundle(
     'app/ux/remotetree/js/Ext.ux.tree.RemoteTreePanel.js',
     'app/ux/remotetree/js/Ext.ux.tree.TreeFilterX.js',
     'app/ux/remotetree/js/WebPage.js',
-    
+
     'app/ux/DropDownList.js',
-    
+
     'extjs/ux/treegrid/TreeGridSorter.js',
     'extjs/ux/treegrid/TreeGridColumnResizer.js',
     'extjs/ux/treegrid/TreeGridNodeUI.js',
     'extjs/ux/treegrid/TreeGridLoader.js',
     'extjs/ux/treegrid/TreeGridColumns.js',
     'extjs/ux/treegrid/TreeGrid.js',
-    
+
     'app/examination/templates/TmpGrid.js',
     'app/examination/cards/CardGrid.js',
-    
+
     'app/examination/tickets/icd/IcdTicketEditor.js',
     'app/examination/tickets/text/TextTicketEditor.js',
     'app/examination/tickets/asgmt/PreorderInlineGrid.js',
     'app/examination/tickets/asgmt/AsgmtTicketEditor.js',
-    
+
     'app/registry/ServicePanel.js',
     'app/service/ServiceTreeGrid.js',
     'app/dict/glossary/EditNodeWindow.js',
@@ -540,13 +540,13 @@ js_examination = Bundle(
     'app/examination/editor/SectionPanel.js',
     'app/examination/editor/DataTab.js',
     'app/examination/editor/TemplateBody.js',
-    
+
     'app/dict/glossary/GlossaryEditor.js',
-    
+
     'app/examination/patient/PatientHistoryTreeGrid.js',
     'app/examination/patient/PatientHistoryPanel.js',
     'app/examination/patient/PatientHistory.js',
-    
+
     'app/registry/asgmt/DeletePromptWindow.js',
     'app/registry/asgmt/AsgmtListWindow.js',
     'app/registry/asgmt/PreorderInlineGrid.js',
@@ -555,39 +555,39 @@ js_examination = Bundle(
     'app/registry/patient/AsgmtGrid.js',
     'app/registry/preorder/PreorderGrid.js',
     'app/registry/preorder/PreorderManager.js',
-    
+
     'app/registry/patient/ExamCardGrid.js',
     'app/registry/patient/OldExamCardGrid.js',
     'app/examination/gendoc/PatientCard.js',
     'app/examination/gendoc/GeneralDoctorPanel.js',
-    
+
     'app/examination/cards/CardApp.js',
     'app/examination/templates/TemplateApp.js',
-    
+
     'app/examination/conclusion/ConclApp.js',
-    
+
     'app/examination/templates/StaffTemplates.js',
-    
+
     'app/examination/trash/TrashApp.js',
-    
+
     'app/examination/patient/PatientGrid.js',
     'app/examination/patient/PatientGridPanel.js',
 
     'app/calendar/EventManager.js',
     'app/calendar/src/Ext.calendar.js',
-    
+
     'app/calendar/src/templates/DayHeaderTemplate.js',
     'app/calendar/src/templates/DayBodyTemplate.js',
     'app/calendar/src/templates/DayViewTemplate.js',
     'app/calendar/src/templates/BoxLayoutTemplate.js',
     'app/calendar/src/templates/MonthViewTemplate.js',
-    
+
     'app/calendar/src/dd/CalendarScrollManager.js',
 
     'app/calendar/src/dd/StatusProxy.js',
     'app/calendar/src/dd/CalendarDD.js',
     'app/calendar/src/dd/DayViewDD.js',
-    
+
     'app/calendar/src/EventRecord.js',
     'app/calendar/src/views/MonthDayDetailView.js',
     'app/calendar/src/WeekEventRenderer.js',
@@ -602,17 +602,17 @@ js_examination = Bundle(
     'app/calendar/src/views/MonthView.js',
     'app/calendar/src/views/DayHeaderView.js',
     'app/calendar/src/views/WeekView.js',
-    
+
     'app/calendar/src/widgets/DateRangeField.js',
     'app/calendar/src/widgets/ReminderField.js',
-    
+
     'app/calendar/app/timeslot/ServiceGrid.js',
 
     'app/choices/patient/PatientChoiceGrid.js',
     'app/choices/patient/PatientChoiceWindow.js',
     'app/calendar/app/timeslot/VacantTimeslotGrid.js',
     'app/calendar/app/timeslot/PreorderedServiceInlineGrid.js',
-    
+
     'app/calendar/src/EventEditForm.js',
     'app/calendar/src/EventEditWindow.js',
     'app/calendar/app/timeslot/TimeslotInfoWindow.js',
@@ -623,13 +623,13 @@ js_examination = Bundle(
     'app/calendar/app/DoctorScheduler.js',
 
     'app/locale/ru.js',
-    
+
     filters='rjsmin', output='assets/examination.js',)
 
 js_helpdesk = Bundle(
     'extjs/ux/RowEditor.js',
-    'extjs/ux/CheckColumn.js', 
-    
+    'extjs/ux/CheckColumn.js',
+
     'app/ux/GSearchField.js',
     'app/App.js',
     'app/Backend.js',
@@ -642,8 +642,8 @@ js_helpdesk = Bundle(
     'app/helpdesk/CentralPanel.js',
     'app/helpdesk/MainPanel.js',
     'app/helpdesk/app.js',
-    
-    
+
+
     'app/helpdesk/issue/IssueGrid.js',
     'app/helpdesk/issue/IssueForm.js',
     'app/helpdesk/issue/IssueWindow.js',
@@ -653,10 +653,10 @@ js_laboratory = Bundle(
     'libs/growl/js/ext/ux/Growl.js',
 
     'extjs/ux/RowEditor.js',
-    'extjs/ux/CheckColumn.js', 
+    'extjs/ux/CheckColumn.js',
 
-    'app/ux/InputTextMask.js', 
-    
+    'app/ux/InputTextMask.js',
+
     'app/data/RestStore.js',
 
     'app/ux/GSearchField.js',
@@ -687,7 +687,7 @@ js_laboratory = Bundle(
     'app/laboratory/manual/cards/ugsmear.js',
 
     'app/laboratory/manual/ManualGrid.js',
-    
+
     'app/laboratory/investigation/InvestigationGrid.js',
 
     'app/laboratory/laborder/LabBoard.js',
@@ -708,7 +708,7 @@ js_laboratory = Bundle(
     'app/laboratory/CentralPanel.js',
     'app/laboratory/MainPanel.js',
     'app/laboratory/app.js',
-    
+
     'app/registry/barcodepackage/DuplicateWindow.js',
 
     'resources/js/web-socket-js/swfobject.js',
@@ -725,7 +725,7 @@ js_reporting = Bundle(
     'app/form/LazyComboBox.js',
     'app/ux/GSearchField.js',
     'app/ux/InputTextMask.js',
-    
+
     'app/registry/patient/clientaccount/backends.js',
     'app/registry/patient/clientaccount/ClientAccountGrid.js',
     'app/registry/patient/IDCardForm.js',
@@ -735,28 +735,28 @@ js_reporting = Bundle(
     'app/registry/patient/PatientWindow.js',
     'app/choices/staff/StaffChoiceGrid.js',
     'app/choices/staff/StaffChoiceWindow.js',
-    
+
     'app/choices/referral/ReferralChoiceGrid.js',
     'app/choices/referral/ReferralChoiceWindow.js',
-    
+
     'app/choices/state/StateChoiceGrid.js',
     'app/choices/state/StateChoiceWindow.js',
-    
+
     'app/choices/patient/PatientChoiceGrid.js',
     'app/choices/patient/PatientChoiceWindow.js',
-    
+
     'app/choices/servicegroup/ServiceGroupChoiceGrid.js',
     'app/choices/servicegroup/ServiceGroupChoiceWindow.js',
-    
+
     'app/reporting/reports/PrintPanel.js',
     'app/reporting/reports/FilterPanel.js',
     'app/reporting/editor/field.js',
     'app/reporting/editor/ReportEditor.js',
     'app/reporting/reports/ReportPanel.js',
-    
+
     'app/dict/reports/ReportTree.js',
     'app/reporting/reports/ReportApp.js',
-    
+
     'app/reporting/EventManager.js',
     'app/reporting/CentralPanel.js',
     'app/reporting/MainPanel.js',
@@ -775,21 +775,69 @@ js_barcoding = Bundle(
     'app/form/LazyComboBox.js',
     'app/ux/GSearchField.js',
     'app/ux/InputTextMask.js',
-    
+
     'app/registry/barcode/Grid.js',
     'app/registry/barcode/Window.js',
-    
+
     'app/registry/barcodepackage/Grid.js',
     'app/registry/barcodepackage/Window.js',
     'app/registry/barcodepackage/PrintWindow.js',
     'app/registry/barcodepackage/Form.js',
     'app/registry/barcodepackage/DuplicateWindow.js',
-    
+
     'app/barcoding/EventManager.js',
     'app/barcoding/CentralPanel.js',
     'app/barcoding/MainPanel.js',
     'app/barcoding/app.js',
     filters='rjsmin', output='assets/barcoding.js',)
+
+js_accounting = Bundle(
+    'extjs/ux/SearchField.js',
+    'extjs/ux/RowEditor.js',
+
+    'app/App.js',
+    'app/Models.js',
+    'app/data/RestStore.js',
+    'app/form/ClearableComboBox.js',
+    'app/form/LazyComboBox.js',
+    'app/ux/GSearchField.js',
+    'app/ux/InputTextMask.js',
+
+    'extjs/ux/treegrid/TreeGridSorter.js',
+    'extjs/ux/treegrid/TreeGridColumnResizer.js',
+    'extjs/ux/treegrid/TreeGridNodeUI.js',
+    'extjs/ux/treegrid/TreeGridLoader.js',
+    'extjs/ux/treegrid/TreeGridColumns.js',
+    'extjs/ux/treegrid/TreeGrid.js',
+
+    'app/data/RestStore.js',
+
+    'app/service/ServiceTreeGrid.js',
+
+    'extjs/ux/Spinner.js',
+    'extjs/ux/SpinnerField.js',
+
+    'app/choices/patient/PatientChoiceGrid.js',
+    'app/choices/patient/PatientChoiceWindow.js',
+
+    'app/accounting/invoice/PatientGrid.js',
+    'app/accounting/invoice/InvoiceItemGrid.js',
+    'app/accounting/invoice/InvoiceForm.js',
+    'app/accounting/invoice/InvoiceGrid.js',
+    'app/accounting/invoice/InvoiceApp.js',
+
+    'app/choices/state/StateChoiceGrid.js',
+    'app/choices/state/StateChoiceWindow.js',
+    'app/accounting/contract/ContractForm.js',
+    'app/accounting/contract/ContractWindow.js',
+    'app/accounting/contract/ContractGrid.js',
+    'app/accounting/contract/ContractApp.js',
+
+    'app/accounting/EventManager.js',
+    'app/accounting/CentralPanel.js',
+    'app/accounting/MainPanel.js',
+    'app/accounting/app.js',
+    filters='rjsmin', output='assets/accounting.js',)
 
 js_service = Bundle(
     'app/service/ServicePanel.js',
@@ -801,7 +849,7 @@ js_service = Bundle(
 js_treatmentroom = Bundle(
     'libs/growl/js/ext/ux/Growl.js',
     'extjs/ux/RowEditor.js',
-    'extjs/ux/CheckColumn.js', 
+    'extjs/ux/CheckColumn.js',
     'app/data/RestStore.js',
     'app/ux/GSearchField.js',
     'app/App.js',
@@ -814,7 +862,7 @@ js_treatmentroom = Bundle(
     'app/treatmentroom/MainPanel.js',
     'app/treatmentroom/app.js',
     filters='rjsmin', output='assets/treatmentroom.js',)
-                     
+
 register('js_registry', js_registry)
 register('js_for_all', js_for_all)
 register('js_ext', js_ext)
@@ -825,6 +873,7 @@ register('js_helpdesk', js_helpdesk)
 register('js_laboratory', js_laboratory)
 register('js_reporting', js_reporting)
 register('js_barcoding', js_barcoding)
+register('js_accounting', js_accounting)
 register('js_service', js_service)
 register('js_treatmentroom', js_treatmentroom)
 ##################################################
@@ -836,13 +885,13 @@ css_ext = Bundle(
     'extjs/ux/treegrid/treegrid.css',
     'extjs/ux/statusbar/css/statusbar.css',
     'extjs/ux/progresscolumn/ProgressColumn.css',
-    filters=('cssrewrite','cssmin'), output='assets/ext.css',)
+    filters=('cssrewrite', 'cssmin'), output='assets/ext.css',)
 
 css_auth = Bundle(
     'extjs/resources/css/ext-all.css',
     'resources/css/app.css',
     'resources/css/silk.css',
-    filters=('cssrewrite','cssmin'), output='assets/auth.css',)
+    filters=('cssrewrite', 'cssmin'), output='assets/auth.css',)
 
 css_calendar = Bundle(
     'extjs/resources/css/ext-all.css',
@@ -854,11 +903,11 @@ css_calendar = Bundle(
     'resources/css/app.css',
     'app/calendar/resources/css/calendar.css',
     'app/calendar/resources/css/examples.css',
-    
+
     'resources/css/silk.css',
     'extjs/ux/css/Spinner.css',
     'extjs/ux/css/RowEditor.css',
-    filters=('cssrewrite','cssmin'), output='assets/calendar.css',)
+    filters=('cssrewrite', 'cssmin'), output='assets/calendar.css',)
 
 css_examination = Bundle(
     'extjs/resources/css/ext-all.css',
@@ -866,42 +915,42 @@ css_examination = Bundle(
     'resources/css/app.css',
     'app/calendar/resources/css/calendar.css',
     'app/calendar/resources/css/examples.css',
-    
+
     'resources/css/silk.css',
 
     'extjs/ux/css/Spinner.css',
     'extjs/ux/css/RowEditor.css',
     'extjs/ux/treegrid/treegrid.css',
     'extjs/ux/progresscolumn/ProgressColumn.css',
-    
+
     'app/ux/remotetree/css/empty.css',
     'app/ux/remotetree/css/icons.css',
     'app/ux/remotetree/css/remotetree.css',
     'app/ux/remotetree/css/webpage.css',
-    filters=('cssrewrite','cssmin'), output='assets/examination.css',)
+    filters=('cssrewrite', 'cssmin'), output='assets/examination.css',)
 
 css_helpdesk = Bundle(
     'extjs/resources/css/ext-all.css',
 
     'resources/css/app.css',
-    
+
     'resources/css/silk.css',
     'extjs/ux/css/Spinner.css',
     'extjs/ux/css/RowEditor.css',
-    filters=('cssrewrite','cssmin'), output='assets/helpdesk.css',)
+    filters=('cssrewrite', 'cssmin'), output='assets/helpdesk.css',)
 
 css_laboratory = Bundle(
     'extjs/resources/css/ext-all.css',
 
     'resources/css/app.css',
-    
+
     'resources/css/silk.css',
     'extjs/ux/css/Spinner.css',
     'extjs/ux/css/RowEditor.css',
-    
-    
+
+
     'libs/growl/css/ext/ux/Growl.css',
-    filters=('cssrewrite','cssmin'), output='assets/laboratory.css',)
+    filters=('cssrewrite', 'cssmin'), output='assets/laboratory.css',)
 
 css_oldexam = Bundle(
     'extjs/resources/css/ext-all.css',
@@ -916,12 +965,12 @@ css_oldexam = Bundle(
     'extjs/ux/css/RowEditor.css',
     'extjs/ux/treegrid/treegrid.css',
     'extjs/ux/progresscolumn/ProgressColumn.css',
-    
+
     'app/ux/remotetree/css/empty.css',
     'app/ux/remotetree/css/icons.css',
     'app/ux/remotetree/css/remotetree.css',
     'app/ux/remotetree/css/webpage.css',
-    filters=('cssrewrite','cssmin'), output='assets/oldexam.css',)
+    filters=('cssrewrite', 'cssmin'), output='assets/oldexam.css',)
 
 css_registry = Bundle(
     'resources/css/app.css',
@@ -930,58 +979,57 @@ css_registry = Bundle(
     'resources/css/silk.css',
     'extjs/ux/css/Spinner.css',
     'extjs/ux/css/RowEditor.css',
-    filters=('cssrewrite','cssmin'), output='assets/registry.css',)
+    filters=('cssrewrite', 'cssmin'), output='assets/registry.css',)
 
 css_reporting = Bundle(
     'extjs/resources/css/ext-all.css',
-    
+
     'resources/css/app.css',
-    
+
     'resources/css/silk.css',
     'extjs/ux/css/Spinner.css',
     'extjs/ux/css/RowEditor.css',
-    filters=('cssrewrite','cssmin'), output='assets/reporting.css',)
+    filters=('cssrewrite', 'cssmin'), output='assets/reporting.css',)
 
 css_barcoding = Bundle(
     'extjs/resources/css/ext-all.css',
-    
+
     'resources/css/app.css',
-    
+
     'resources/css/silk.css',
     'extjs/ux/css/Spinner.css',
     'extjs/ux/css/RowEditor.css',
-    filters=('cssrewrite','cssmin'), output='assets/barcoding.css',)
+    filters=('cssrewrite', 'cssmin'), output='assets/barcoding.css',)
 
 css_service = Bundle(
     'extjs/resources/css/ext-all.css',
-    
+
     'resources/css/app.css',
-    
+
     'resources/css/silk.css',
-    filters=('cssrewrite','cssmin'), output='assets/service.css',)
+    filters=('cssrewrite', 'cssmin'), output='assets/service.css',)
 
 css_testing = Bundle(
     'extjs/resources/css/ext-all.css',
-    
+
     'resources/css/app.css',
-    
+
     'resources/css/silk.css',
     'extjs/ux/css/Spinner.css',
     'extjs/ux/css/RowEditor.css',
-    filters=('cssrewrite','cssmin'), output='assets/testing.css',)
+    filters=('cssrewrite', 'cssmin'), output='assets/testing.css',)
 
 css_treatmentroom = Bundle(
     'extjs/resources/css/ext-all.css',
-    
+
     'resources/css/app.css',
-    
+
     'resources/css/silk.css',
     'extjs/ux/css/Spinner.css',
     'extjs/ux/css/RowEditor.css',
-    
-    'libs/growl/css/ext/ux/Growl.css',
-    filters=('cssrewrite','cssmin'), output='assets/treatmentroom.css',)
 
+    'libs/growl/css/ext/ux/Growl.css',
+    filters=('cssrewrite', 'cssmin'), output='assets/treatmentroom.css',)
 
 
 register('css_registry', css_registry)

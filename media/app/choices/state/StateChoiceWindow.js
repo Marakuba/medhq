@@ -4,12 +4,15 @@ App.choices.StateChoiceWindow = Ext.extend(Ext.Window, {
 
 	initComponent:function(){
 		this.grid = new App.choices.StateChoiceGrid({
+            addCompany:this.addCompany,
+            companyType:this.companyType,
+			store:this.store,
 			fn:function(record){
 				Ext.callback(this.fn, this.scope || window, [record]);
 			},
 			scope:this
 		});
-		
+
 		config = {
 			width:700,
 			height:500,
@@ -20,15 +23,15 @@ App.choices.StateChoiceWindow = Ext.extend(Ext.Window, {
 				this.grid
 			]
 		};
-		
+
 		Ext.apply(this, Ext.apply(this.initialConfig, config));
 		App.choices.StateChoiceWindow.superclass.initComponent.apply(this, arguments);
-		
+
 		this.on('beforeclose',function(){
-			if (!this.sended){
-				Ext.callback(this.fn, this.scope || window, []);
-			}
+			// if (!this.sended){
+			// 	Ext.callback(this.fn, this.scope || window, []);
+			// }
 		},this)
-		
+
 	}
 });

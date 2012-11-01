@@ -33,12 +33,20 @@ Ext.onReady(function(){
 		},{
             xtype:'button',
             text: 'Обследование',
-			scale: 'large',
-			hidden: !permissions['examination'],
-			handler: function(){
-				window.location.href = '/webapp/examination/';
-			}
-		},{
+            scale: 'large',
+            hidden: !permissions['examination'],
+            handler: function(){
+                window.location.href = '/webapp/examination/';
+            }
+        },{
+            xtype:'button',
+            text: 'Юридические лица',
+            scale: 'large',
+            hidden: !permissions['accounting'],
+            handler: function(){
+                window.location.href = '/webapp/accounting/';
+            }
+        },{
             xtype:'button',
             text: 'Отчеты',
 			scale: 'large',
