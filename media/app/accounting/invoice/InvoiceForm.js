@@ -6,13 +6,13 @@ App.accounting.InvoiceForm = Ext.extend(Ext.form.FormPanel, {
     initComponent: function() {
         config = {
             border:false,
-            baseCls:'x-plain',
+            // baseCls:'x-plain',
             layout:{
                 type:'hbox'
             },
             defaults:{
                 padding:10,
-                baseCls:'x-plain',
+                // baseCls:'x-plain',
                 height:50,
                 border:false
             },
@@ -46,20 +46,27 @@ App.accounting.InvoiceForm = Ext.extend(Ext.form.FormPanel, {
                     format:'0,000.00'
                 }]
             },{
-                layout:'form',
-                items:[{
-                    xtype:'button',
-                    text:'Сохранить',
-                    handler:this.onSave.createDelegate(this)
-                }]
-            },{
                 id:'invoice-form-info',
                 baseCls:'x-form-item',
                 flex:1,
                 style:{
                     padding:'11px',
-                    textAlign:'right'
+                    // textAlign:'right'
                 }
+            },{
+                layout:'form',
+                items:[{
+                    xtype:'button',
+                    text:'Сохранить и продолжить',
+                    handler:this.onSave.createDelegate(this, [false])
+                }]
+            },{
+                layout:'form',
+                items:[{
+                    xtype:'button',
+                    text:'Сохранить',
+                    handler:this.onSave.createDelegate(this, [true])
+                }]
             }]
         };
         Ext.apply(this, Ext.apply(this.initialConfig, config));
@@ -77,26 +84,26 @@ App.accounting.InvoiceForm = Ext.extend(Ext.form.FormPanel, {
         this.contractRecord = rec;
         var p = Ext.getCmp('invoice-form-info');
         this.infoTpl.overwrite(p.getEl(), rec.data);
-        console.info('conract record:',rec);
+        // console.info('conract record:',rec);
     },
 
     setInvoiceRecord : function(rec) {
         this.invoiceRecord = rec;
         this.getForm().loadRecord(rec);
-        console.info('invoice record:',rec);
+        // console.info('invoice record:',rec);
     },
 
     setTotalPrice : function(total_price) {
-        console.info(total_price);
+        // console.info(total_price);
         this.invoiceRecord.set('total_price',total_price);
         this.getForm().findField('total_price').setValue(total_price);
     },
 
-    onSave : function(){
+    onSave : function(cont){
         if(this.getForm().isValid()){
             this.getForm().updateRecord(this.invoiceRecord);
-            this.fireEvent('save', this.invoiceRecord);
-            console.info('updated record:', this.invoiceRecord);
+            this.fireEvent('save', this.invoiceRecord, cont);
+            // console.info('updated record:', this.invoiceRecord);
         } else {
 
         }

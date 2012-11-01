@@ -13,9 +13,9 @@ App.accounting.InvoiceGrid = Ext.extend(Ext.grid.GridPanel, {
         });
 
         this.editInvoiceBtn = new Ext.Button({
-            iconCls:'silk-add',
+            iconCls:'silk-pencil',
             text:'Изменить счет',
-            handler:this.onEditInvoice.createDelegate(this),
+            handler:this.onEditInvoice.createDelegate(this, []),
             scope:this
         });
 
@@ -23,22 +23,22 @@ App.accounting.InvoiceGrid = Ext.extend(Ext.grid.GridPanel, {
             autoSave : false,
             autoLoad : false,
             apiUrl : get_api_url('acc_invoice'),
-            model: App.models.AccountingContract
+            model: App.models.AccountingInvoice
         });
 
         this.columns = [{
+            header: "Номер",
+            dataIndex: 'number',
+            width:120
+        },{
             header: "Дата",
             dataIndex: 'on_date',
             renderer:Ext.util.Format.dateRenderer('d.m.Y'),
-            width:20
+            width:70
         },{
-            header: "Номер",
-            dataIndex: 'number',
-            width:15
-        },{
-            header: "Сумма",
+            header: "Сумма, руб.",
             dataIndex: 'total_price',
-            width:100
+            width:120
         }];
 
         config = {
@@ -56,12 +56,29 @@ App.accounting.InvoiceGrid = Ext.extend(Ext.grid.GridPanel, {
                     scope:this
                 }
             }),
-            tbar:[this.addInvoiceBtn,this.editInvoiceBtn],
+            tbar:[this.addInvoiceBtn,this.editInvoiceBtn,'-',{
+                iconCls:'silk-printer',
+                text:'Печать',
+                menu:[{
+                    text:'Реестр оказанных услуг',
+                    handler:this.onPrint.createDelegate(this, ['register'])
+                },{
+                    text:'Счет',
+                    handler:this.onPrint.createDelegate(this, ['invoice'])
+                }]
+            }],
             viewConfig : {
-                forceFit : true
+                // forceFit : true,
+                emptyText: 'По данному договору нет ни одного счета'
                 //getRowClass : this.applyRowClass
             },
             listeners: {
+                rowdblclick: function(grid, idx, e){
+                    var rec = this.store.getAt(idx);
+                    if(rec){
+                        this.onEditInvoice(rec);
+                    }
+                },
                 scope:this
             }
         };
@@ -72,25 +89,53 @@ App.accounting.InvoiceGrid = Ext.extend(Ext.grid.GridPanel, {
     },
 
     setContract: function(record){
+        this.contract = record;
         this.store.setBaseParam('contract',record.data.id);
-        this.store.load();
-        this.contract = record
+        this.store.load({
+            callback:function(rs, opts){
+                if(rs.length){
+                    this.getSelectionModel().selectFirstRow();
+                }
+            },
+            scope:this
+        });
     },
 
     onAddInvoice: function(){
         if (this.contract){
-            // centralPanel.launchApp('accinvoiceapp', {
-        // // contractId: 1
-        //     invoiceId: rec.data.id
-        // }, true);
+            App.eventManager.fireEvent('launchapp', 'accinvoiceapp', {
+                contractId: this.contract.data.id,
+                title:'Новый счет',
+                fn:function(record){
+                    this.store.load();
+                },
+                scope:this
+            }, true);
         }
     },
-    onEditInvoice: function(){
-        var rec = this.getSelectionModel().getSelected();
-        // centralPanel.launchApp('accinvoiceapp', {
-        // // contractId: 1
-        //     invoiceId: rec.data.id
-        // }, true);
+    onEditInvoice: function(record){
+        var rec = record || this.getSelectionModel().getSelected();
+        if(rec){
+            var title = String.format('Счет №{0} от {1}', rec.data.number, Ext.util.Format.date(rec.data.on_date));
+            App.eventManager.fireEvent('launchapp', 'accinvoiceapp', {
+                invoiceId: rec.data.id,
+                title:title,
+                fn:function(record){
+                    this.store.load();
+                },
+                scope:this
+            }, true);
+        }
+    },
+
+    onPrint : function(view, record){
+        var rec = record || this.getSelectionModel().getSelected();
+        if(!rec) { return; }
+        if(view=='register'){
+            var url = "/old/reporting/corp-pnt-service-register/print/?invoice_id={0}&order__patient=&staff__staff=&staff__department=&order__referral=&execution_place_office=&execution_place_filial=&order__payment_type=&price_type=&order__cls=&from_place_filial=&from_lab=&details=да";
+            url = String.format(url, rec.data.id);
+            window.open(url);
+        }
     }
 
 });

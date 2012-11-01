@@ -4,6 +4,7 @@ App.accounting.ContractWindow = Ext.extend(Ext.Window, {
 
     initComponent:function(){
         this.form = new App.accounting.ContractForm({
+            record:this.record,
             store:this.store,
             fn:function(record){
                 Ext.callback(this.fn, this.scope || window, [record]);
@@ -12,19 +13,20 @@ App.accounting.ContractWindow = Ext.extend(Ext.Window, {
         });
 
         config = {
-            width:300,
-            height:200,
+            width:400,
+            height:220,
             modal:true,
             layout:'fit',
             title:'Добавить договор',
+            buttonAlign:'right',
             items:[
                 this.form
             ],
-            bbar:[{
+            buttons:[{
                 text:'Сохранить',
                 handler:this.onSave.createDelegate(this)
             },{
-                text:'Отмена',
+                text:'Закрыть',
                 handler:this.onCancel.createDelegate(this)
             }]
         };

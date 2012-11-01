@@ -46,19 +46,38 @@ App.accounting.ContractGrid = Ext.extend(Ext.grid.GridPanel, {
                 singleSelect : true,
                 listeners: {
                     rowselect: function(sm, row, rec) {
-                        this.fireEvent('rowselect',rec)
+                        this.fireEvent('rowselect',rec);
                     },
                     rowdeselect: function(sm, row, rec) {
                     },
                     scope:this
                 }
             }),
-            tbar:[this.addContractBtn],
+            tbar:[this.addContractBtn, {
+                iconCls:'silk-pencil',
+                text:'Редактировать',
+                handler:this.onEditContract.createDelegate(this, []),
+                scope:this
+            }],
+            bbar: new Ext.PagingToolbar({
+                pageSize: 200,
+                store: this.store,
+                displayInfo: true,
+                displayMsg: 'Записи {0} - {1} из {2}',
+                emptyMsg: "Нет записей"
+            }),
             viewConfig : {
-                forceFit : true
+                forceFit : true,
+                emptyText: '<div class="start-help-text">Для начала работы добавьте новый договор</div>'
                 //getRowClass : this.applyRowClass
             },
             listeners: {
+                rowdblclick: function(grid, idx, e) {
+                    var rec = this.store.getAt(idx);
+                    if(rec){
+                        this.onEditContract(rec);
+                    }
+                },
                 scope:this
             }
         };
@@ -67,8 +86,13 @@ App.accounting.ContractGrid = Ext.extend(Ext.grid.GridPanel, {
         App.accounting.ContractGrid.superclass.initComponent.apply(this, arguments);
 
         this.on('afterrender',function(){
-            this.store.load();
-        },this)
+            this.store.load({
+                callback:function(){
+                    this.getSelectionModel().selectFirstRow();
+                },
+                scope:this
+            });
+        },this);
 
     },
 
@@ -76,18 +100,35 @@ App.accounting.ContractGrid = Ext.extend(Ext.grid.GridPanel, {
         var contractWin = new App.accounting.ContractWindow({
             store:this.store,
             fn:function(record){
-                if(!record){
-                    contractWin.close();
-                    return false;
-                };
-                this.store.add(record);
-                this.store.save();
+                if(record){
+                    this.store.add(record);
+                    this.store.save();
+                }
                 contractWin.close();
             },
             scope:this
         });
 
         contractWin.show();
+    },
+
+    onEditContract : function(rec){
+        var record = rec || this.getSelectionModel().getSelected();
+        if(!record) { return; }
+        var contractWin = new App.accounting.ContractWindow({
+            record:record,
+            store:this.store,
+            fn:function(record){
+                if(record){
+                    this.store.save();
+                }
+                contractWin.close();
+            },
+            scope:this
+        });
+
+        contractWin.show();
+
     }
 
 });

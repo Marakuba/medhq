@@ -402,13 +402,31 @@ class StateResource(ModelResource):
     class Meta:
         queryset = State.objects.all() 
         resource_name = 'state'
-        limit = 10
+        authorization = DjangoAuthorization()
+        always_return_data = True
+        limit = 50
         filtering = {
             'id': ALL,
             'type': ALL,
             'name': ALL,
             'uuid': ALL,
             'remotestate': ALL_WITH_RELATIONS
+        }
+        
+        
+class GenericStateResource(ExtResource):
+    
+    class Meta:
+        queryset = State.objects.all() 
+        resource_name = 'genericstate'
+        authorizaion = DjangoAuthorization()
+        always_return_data = True
+        limit = 50
+        filtering = {
+            'id': ALL,
+            'type': ALL,
+            'name': ALL,
+            'uuid': ALL
         }
         
         
@@ -2776,6 +2794,7 @@ api.register(StaffResource())
 api.register(StaffSchedResource())
 api.register(PosSchedResource())
 api.register(StateResource())
+api.register(GenericStateResource())
 api.register(DepartmentResource())
 api.register(MedStateResource())
 api.register(OwnStateResource())

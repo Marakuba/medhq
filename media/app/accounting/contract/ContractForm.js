@@ -24,42 +24,45 @@ App.accounting.ContractForm = Ext.extend(Ext.form.FormPanel, {
 
         this.stateStore = new Ext.data.RESTStore({
             apiUrl : get_api_url('state'),
-            autoLoad:true,
+            autoLoad : true,
+            autoSave : false,
             baseParams:{
                 format:'json',
                 type:'j'
             },
-            model: App.models.MedState
+            model: App.models.State
         });
 
-        this.branchCmb = new Ext.form.LazyComboBox({
+        this.branchField = new Ext.form.LazyComboBox({
             fieldLabel:'Филиал',
             allowBlank:false,
             displayField: 'name',
-            anchor:'98%',
+            anchor:'100%',
             store: this.branchStore,
             name:'branch',
-            listeners:
-            {
-                scope:this,
+            editable:false,
+            typeAhead:true,
+            selectOnFocus:false,
+            listeners:  {
                 'select':function(combo, record, index){
-                }
+                },
+                scope:this
             }
         });
 
-        this.stateCombo = new Ext.form.LazyComboBox({
+        this.stateField = new Ext.form.LazyComboBox({
             fieldLabel:'Организация',
             name: 'state',
-            anchor:'98%',
-            hideTrigger:true,
+            anchor:'100%',
+            // hideTrigger:false,
             allowBlank:false,
             autoSelect:false,
             store:this.stateStore,
             displayField: 'name',
             listeners:{
                 'render': function(f){
-                    var el = f.getEl()
-                    el.on('click',this.onStateChoice.createDelegate(this, []),this)
+                    var el = f.getEl();
+                    el.on('click',this.onStateChoice.createDelegate(this, []),this);
                 },
                 'select':function(combo,record,index){
                 },
@@ -68,64 +71,101 @@ App.accounting.ContractForm = Ext.extend(Ext.form.FormPanel, {
             onTriggerClick:this.onStateChoice.createDelegate(this, [])
         });
 
-        config={
+        config = {
             layout:'form',
             border:false,
-
+            padding:10,
             items:[{
-                    layout:'hbox',
+                    layout:{
+                        type:'hbox'
+                    },
                     border:false,
                     defaults:{
                         border:false,
-                        labelWidth:40,
-                        height:50,
-                        align:'center'
-                    },
-                    items:[{
+                        height:40,
+                        layout:'form',
                         defaults:{
                             border:false,
-                        },
-                        layout:'form',
+                            allowBlank:false
+                        }
+                    },
+                    items:[{
+                        // labelWidth:40,
                         items:[{
                             xtype:'textfield',
                             name: 'number',
+                            labelWidth:40,
                             fieldLabel:'Номер',
-                            padding:'2',
-                            width:100,
-                            allowBlank:true
+                            width:100
                         }]
                     },{
-                        layout:'form',
+                        xtype:'spacer',
+                        width:10
+                    },{
+                        labelWidth:20,
                         items:[{
                             xtype:'datefield',
                             width:90,
-                            labelWidth:30,
                             fieldLabel:'от',
                             name:'on_date',
                             format:'d.m.Y',
-                            allowBlank:false
+                            value:new Date()
                         }]
                     }]
                 },
 
-                this.branchCmb,
-                this.stateCombo
+                this.branchField,
+                this.stateField
             ]
         };
         Ext.apply(this, Ext.apply(this.initialConfig, config));
         App.accounting.ContractForm.superclass.initComponent.apply(this, arguments);
+
+        this.on('afterrender', function(){
+            if(this.contractId){
+                this.store.load({
+                    params:{
+                        id:this.contractId
+                    },
+                    callback: function(rs, opts){
+                        if(rs.length){
+                            this.setActiveRecord(rs[0]);
+                        } else {
+                            this.setEmptyRecord();
+                        }
+                    },
+                    scope:this
+                });
+            } else if (this.record) {
+                this.setActiveRecord(this.record);
+            } else {
+                this.setEmptyRecord();
+            }
+            this.getForm().findField('number').focus(false, 350);
+        }, this);
+    },
+
+    setActiveRecord : function(rec){
+        this.record = rec;
+        this.getForm().loadRecord(this.record);
+    },
+
+    setEmptyRecord : function(){
+        this.record = new this.store.recordType();
     },
 
     onStateChoice: function() {
         var stateWindow = new App.choices.StateChoiceWindow({
-            title:'организации',
+            title:'Организации',
             scope:this,
             store:this.stateStore,
+            addCompany:true,
+            companyType:'j',
             fn:function(record){
                 if (!record){
-                    return 0;
+                    return;
                 }
-                this.stateCombo.forceValue(record.data.resource_uri);
+                this.stateField.forceValue(record.data.resource_uri);
                 stateWindow.close();
             }
          });
@@ -133,10 +173,12 @@ App.accounting.ContractForm = Ext.extend(Ext.form.FormPanel, {
     },
 
     onSave: function(){
-        var record = new this.store.recordType();
-        this.getForm().updateRecord(record);
-        if(this.fn) {
-            Ext.callback(this.fn, this.scope || window, [record]);
-        };
+        if(this.getForm().isValid()){
+            // var record = new this.store.recordType();
+            this.getForm().updateRecord(this.record);
+            if(this.fn) {
+                Ext.callback(this.fn, this.scope || window, [this.record]);
+            }
+        }
     }
-})
+});

@@ -149,10 +149,9 @@ App.accounting.InvoiceItemGrid = Ext.extend(Ext.grid.EditorGridPanel, {
         var recs = this.store.queryBy(function(rec){
             return rec.data.patient==resource_uri;
         }, this);
-        console.info(this.store.snapshot);
         recs.each(function(rec){
             var r = this.store.getById(rec.data.id);
-            console.info(r, this.store.snapshot.indexOf(r));
+            // console.info(r, this.store.snapshot.indexOf(r));
             this.store.remove(rec);
             // this.updateStore();
         });

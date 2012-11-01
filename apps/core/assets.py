@@ -792,6 +792,9 @@ js_barcoding = Bundle(
     filters='rjsmin', output='assets/barcoding.js',)
 
 js_accounting = Bundle(
+    'extjs/ux/SearchField.js',
+    'extjs/ux/RowEditor.js',
+
     'app/App.js',
     'app/Models.js',
     'app/data/RestStore.js',

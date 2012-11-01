@@ -86,7 +86,7 @@ App.accounting.PatientGrid = Ext.extend(Ext.grid.GridPanel, {
     },
 
     onStoreRemove : function(store, rec, idx) {
-        this.getSelectionModel().selectFirstRow();
+        // this.getSelectionModel().selectFirstRow();
         
         // var c = store.getCount() - 1;
         // if (idx>=c) {
@@ -94,7 +94,7 @@ App.accounting.PatientGrid = Ext.extend(Ext.grid.GridPanel, {
         // } else {
         //     this.getSelectionModel().selectLastRow();
         // }
-        // console.info('ifx of removed:',idx, 'recs count', store.getCount());
+        // // console.info('ifx of removed:',idx, 'recs count', store.getCount());
     }
 
 });

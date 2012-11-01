@@ -604,6 +604,16 @@ App.models.StandartItemModel = new Ext.data.Record.create([
     {name: 'average'}
 ]);
 
+App.models.State = new Ext.data.Record.create([
+    {name: 'id'},
+    {name: 'resource_uri'},
+    {name: 'name'},
+    {name: 'print_name'},
+    {name: 'official_title'},
+    {name: 'type'},
+    {name: 'remotestate'}
+]);
+
 App.models.MedState = new Ext.data.Record.create([
     {name: 'id'},
     {name: 'resource_uri'},

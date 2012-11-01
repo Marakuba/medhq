@@ -21,6 +21,7 @@ places_office = StateGroup.objects.all()
 class ReportForm(forms.Form):
     """
     """
+    invoice_id = forms.CharField(required=False, widget=forms.HiddenInput())
     bill_type = forms.CharField(required=False, widget=forms.HiddenInput())
     start_date = forms.DateField(label=u'Дата с',
                                  required=False,

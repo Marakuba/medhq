@@ -3,6 +3,8 @@ Ext.ns('App.accounting');
 
 App.accounting.InvoiceApp = Ext.extend(Ext.Panel, {
     
+    title : 'Счет',
+
     initComponent: function() {
 
         this.contractStore = new Ext.data.RESTStore({
@@ -28,9 +30,10 @@ App.accounting.InvoiceApp = Ext.extend(Ext.Panel, {
                 borderBottom:"solid 1px #99BBE8"
             },
             listeners:{
-                save:this.onFormSave.createDelegate(this)
             }
         });
+
+        this.form.on('save', this.onFormSave, this);
 
         this.patientGrid = new App.accounting.PatientGrid({
             region:'west',
@@ -58,9 +61,10 @@ App.accounting.InvoiceApp = Ext.extend(Ext.Panel, {
 
         this.basket.on('totalpricechange', this.onTotalPriceChange, this);
         this.basket.on('patientlist', this.onPatientList, this);
+        this.basket.store.on('save', this.onBasketSave, this);
 
         config = {
-            title:'Счет',
+            closable:true,
             layout:'border',
             items:[this.form, this.patientGrid, this.basket, this.serviceTree]
         };
@@ -80,7 +84,7 @@ App.accounting.InvoiceApp = Ext.extend(Ext.Panel, {
     onPatientList : function(l){
         this.patientGrid.getStore().loadData(l);
         this.patientGrid.getSelectionModel().selectFirstRow();
-        console.info('patient list', l);
+        // console.info('patient list', l);
     },
 
     onPatientRemove : function(store, rec, idx) {
@@ -89,7 +93,7 @@ App.accounting.InvoiceApp = Ext.extend(Ext.Panel, {
 
     onPatientSelect : function(sm, row, rec) {
         this.basket.onPatientSelect(rec);
-        console.info('current patient', rec);
+        // console.info('current patient', rec);
     },
 
     loadInvoice : function(id){
@@ -164,14 +168,15 @@ App.accounting.InvoiceApp = Ext.extend(Ext.Panel, {
         };
 
         this.basket.addItem(fields);
-        // console.info(fields);
+        // // console.info(fields);
     },
 
     onTotalPriceChange : function(total_price) {
         this.form.setTotalPrice(total_price);
     },
 
-    onFormSave : function(rec){
+    onFormSave : function(rec, cont){
+        this.cont = cont;
         if(rec.phantom){
             this.invoiceStore.add(this.invoiceRecord);
         }
@@ -180,7 +185,25 @@ App.accounting.InvoiceApp = Ext.extend(Ext.Panel, {
 
     onInvoiceWrite : function(store, action, result, res, rs){
         if(res.success){
-            this.basket.onInvoiceWrite(rs);
+            this.setTitle(String.format('Счет №{0} от {1}', rs.data.number, Ext.util.Format.date(rs.data.on_date)));
+            if(this.basket.store.getModifiedRecords().length || this.basket.store.removed.length){
+                // console.info(this.basket.store.getModifiedRecords());
+                // console.info(this.basket.store.removed);
+                this.basket.onInvoiceWrite(rs);
+            } else {
+                // console.info('basket empty');
+                this.onBasketSave();
+            }
+        }
+    },
+
+    onBasketSave : function(){
+        // console.info('quit:', this.cont);
+        if(this.cont){
+            if(this.fn){
+                Ext.callback(this.fn, this.scope || window, [this.invoiceRecord]);
+            }
+            this.destroy();
         }
     }
 
