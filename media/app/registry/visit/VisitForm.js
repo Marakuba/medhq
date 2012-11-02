@@ -1174,18 +1174,19 @@ App.visit.VisitForm = Ext.extend(Ext.FormPanel, {
         var id_list = [] // передается на сервер для выборки цен
         //сервер возвращает услуги с id формата 'idУслуги_idМестаВыполнения' - содержимое переменной comp_id
         Ext.each(base_services,function(rec){
-            if(rec.data.preorder) continue
-            var id = []
-            id[0] = App.uriToId(rec.data.service);
-            id[1] = App.uriToId(rec.data.execution_place);
-            var comp_id = String.format('{0}_{1}',id[0],id[1])
-            bs_ids[comp_id] = {
-                'price': rec.data.price,
-                'name': rec.data.service_name,
-                'id':id[0],
-                'comp_id':comp_id
-            };
-            id_list.push(id)
+            if(!rec.data.preorder) { 
+                var id = []
+                id[0] = App.uriToId(rec.data.service);
+                id[1] = App.uriToId(rec.data.execution_place);
+                var comp_id = String.format('{0}_{1}',id[0],id[1])
+                bs_ids[comp_id] = {
+                    'price': rec.data.price,
+                    'name': rec.data.service_name,
+                    'id':id[0],
+                    'comp_id':comp_id
+                };
+                id_list.push(id)
+            }
         })
         var params = {}
         params['services'] = id_list;
