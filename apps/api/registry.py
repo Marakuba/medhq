@@ -21,9 +21,9 @@ from numeration.models import BarcodePackage, NumeratorItem, Barcode
 from django.shortcuts import get_object_or_404
 from django.core.exceptions import ObjectDoesNotExist
 from tastypie.exceptions import NotFound
-from examination.models import CardTemplate, ExaminationCard  #, TemplateGroup
+from examination.models import CardTemplate, ExaminationCard
 from helpdesk.models import Issue, IssueType
-from scheduler.models import Calendar, Event, Preorder, getToday
+from scheduler.models import Calendar, Event, Preorder
 from billing.models import Account, Payment, ClientAccount
 from interlayer.models import ClientItem
 from django.contrib.contenttypes.models import ContentType
@@ -59,9 +59,9 @@ class UserResource(ModelResource):
 
 
 class ICD10Resource(ModelResource):
-    
+
     parent = fields.ForeignKey('self', 'parent', null=True)
-    
+
     def dehydrate(self, bundle):
         bundle.data['text'] = "%s, %s" % (bundle.obj.code, bundle.obj.name)
         bundle.data['parent'] = bundle.obj.parent and bundle.obj.parent.id
@@ -81,9 +81,9 @@ class ICD10Resource(ModelResource):
                 orm_filters['parent__isnull'] = True
 
         return orm_filters
-    
+
     class Meta:
-        queryset = ICD10.objects.all() 
+        queryset = ICD10.objects.all()
         limit = 20000
         fields = ('id',)
         resource_name = 'icd10'
@@ -102,9 +102,9 @@ class DiscountResource(ModelResource):
     def dehydrate(self, bundle):
         bundle.data['name'] = "%s, %s" % (bundle.obj.name, bundle.obj.value)
         return bundle
-    
+
     class Meta:
-        queryset = Discount.objects.exclude(type=u'arc') 
+        queryset = Discount.objects.exclude(type=u'arc')
         resource_name = 'discount'
         limit = 100
         filtering = {
@@ -119,7 +119,7 @@ class ClientItemResource(ExtResource):
     def dehydrate(self, bundle):
         bundle.data['client_name'] = bundle.obj.client.full_name()
         return bundle
-    
+
     class Meta:
         queryset = ClientItem.objects.all()
         resource_name = 'clientitem'
@@ -129,12 +129,12 @@ class ClientItemResource(ExtResource):
         }
         list_allowed_methods = ['get', 'post', 'put']
 
-        
+
 class AdSourceResource(ExtResource):
-    
+
 #    def dehydrate(self, bundle):
 #        return bundle
-    
+
     class Meta:
         queryset = AdSource.objects.all()
         resource_name = 'adsource'
@@ -146,14 +146,14 @@ class AdSourceResource(ExtResource):
         }
         list_allowed_methods = ['get', 'post', 'put']
 
-        
+
 class PatientResource(ExtResource):
-    
+
     ad_source = fields.ForeignKey(AdSourceResource, 'ad_source', null=True)
     discount = fields.ForeignKey(DiscountResource, 'discount', null=True)
     state = fields.ForeignKey('api.registry.StateResource', 'state', null=True)
     client_item = fields.OneToOneField(ClientItemResource, 'client_item', null=True)
-    
+
     def hydrate_initial_account(self, bundle):
 #TODO: only for Python 2.6 trick. Will be remove later.
         try:
@@ -161,7 +161,7 @@ class PatientResource(ExtResource):
         except KeyError:
             pass
         return bundle
-    
+
     def hydrate_billed_account(self, bundle):
 #TODO: only for Python 2.6 trick. Will be remove later.
         try:
@@ -169,7 +169,7 @@ class PatientResource(ExtResource):
         except KeyError:
             pass
         return bundle
-    
+
     def dehydrate(self, bundle):
         active_state = bundle.request.active_profile.department.state
         bundle.data['accepted'] = bundle.obj.get_accepted_date(active_state)
@@ -203,7 +203,7 @@ class PatientResource(ExtResource):
                     orm_filters.update(**smart_filters)
             else:
                 orm_filters.update(**smart_filters)
-            
+
         return orm_filters
 
     class Meta:
@@ -239,20 +239,20 @@ class ContractTypeResource(ExtResource):
             'id': ALL
         }
         list_allowed_methods = ['get', 'post', 'put']
-    
-        
+
+
 class ContractResource(ExtResource):
     patient = fields.ForeignKey(PatientResource, 'patient')
     state = fields.ForeignKey('api.registry.OwnStateResource', 'state', null = True)
     contract_type = fields.ForeignKey(ContractTypeResource, 'contract_type', null = True)
-    
+
     def dehydrate(self, bundle):
         bundle.data['name'] = bundle.obj.__unicode__()
         bundle.data['state_name'] = bundle.obj.state and bundle.obj.state.name
         bundle.data['contract_type_name'] = bundle.obj.contract_type and bundle.obj.contract_type.title
         bundle.data['template'] = bundle.obj.contract_type and bundle.obj.contract_type.template
         return bundle
-    
+
     class Meta:
         queryset = Contract.objects.select_related().all().order_by('created')
         resource_name = 'contract'
@@ -267,12 +267,12 @@ class ContractResource(ExtResource):
             'id': ALL
         }
         list_allowed_methods = ['get', 'post', 'put']
-        
+
 class DebtorResource(ExtResource):
-    
+
     discount = fields.ForeignKey(DiscountResource, 'discount', null=True)
     client_item = fields.OneToOneField(ClientItemResource, 'client_item', null=True)
-    
+
     def build_filters(self, filters=None):
         if filters is None:
             filters = {}
@@ -283,13 +283,13 @@ class DebtorResource(ExtResource):
             visit = get_object_or_404(Visit, barcode__id=filters['visit_id'])
 
             orm_filters = {"pk__exact": visit.patient.id }
-            
+
         if "search" in filters:
 
             orm_filters.update(smartFilter(filters['search']))
 
         return orm_filters
-    
+
     class Meta:
         queryset = Patient.objects.filter(balance__lt = 0) #@UndefinedVariable
         resource_name = 'debtor'
@@ -303,12 +303,12 @@ class DebtorResource(ExtResource):
         }
         list_allowed_methods = ['get', 'post', 'put']
 
-        
+
 class DepositorResource(ExtResource):
-    
+
     discount = fields.ForeignKey(DiscountResource, 'discount', null=True)
     client_item = fields.OneToOneField(ClientItemResource, 'client_item', null=True)
-    
+
     def build_filters(self, filters=None):
         if filters is None:
             filters = {}
@@ -319,13 +319,13 @@ class DepositorResource(ExtResource):
             visit = get_object_or_404(Visit, barcode__id=filters['visit_id'])
 
             orm_filters = {"pk__exact": visit.patient.id }
-            
+
         if "search" in filters:
 
             orm_filters.update(smartFilter(filters['search']))
 
         return orm_filters
-    
+
     class Meta:
         queryset = Patient.objects.filter(balance__gt = 0) #@UndefinedVariable
         resource_name = 'depositor'
@@ -339,7 +339,7 @@ class DepositorResource(ExtResource):
         }
         list_allowed_methods = ['get', 'post', 'put']
 
-        
+
 class ReferralResource(ExtResource):
 
     def obj_create(self, bundle, request=None, **kwargs):
@@ -363,11 +363,11 @@ class ReferralResource(ExtResource):
         }
         list_allowed_methods = ['get', 'post', 'put']
 
-        
+
 class LabResource(ModelResource):
 
     class Meta:
-        queryset = State.objects.select_related().filter(type__in=('m', 'b', 'p')).exclude(id=config.MAIN_STATE_ID) 
+        queryset = State.objects.select_related().filter(type__in=('m', 'b', 'p')).exclude(id=config.MAIN_STATE_ID)
         resource_name = 'lab'
         limit = 10
         filtering = {
@@ -406,9 +406,9 @@ class OwnStateResource(ModelResource):
 
 
 class RemoteStateResource(ModelResource):
-    
+
     state = fields.ForeignKey('apps.api.registry.StateResource', 'state')
-    
+
     class Meta:
         queryset = RemoteState.objects.all()
         resource_name = 'remotestate'
@@ -419,11 +419,11 @@ class RemoteStateResource(ModelResource):
 
 
 class StateResource(ModelResource):
-    
+
     remotestate = fields.OneToOneField(RemoteStateResource, 'remotestate', null=True)
 
     class Meta:
-        queryset = State.objects.all() 
+        queryset = State.objects.all()
         resource_name = 'state'
         authorization = DjangoAuthorization()
         always_return_data = True
@@ -437,11 +437,11 @@ class StateResource(ModelResource):
         }
         list_allowed_methods = ['get', 'post', 'put']
 
-        
+
 class GenericStateResource(ExtResource):
-    
+
     class Meta:
-        queryset = State.objects.all() 
+        queryset = State.objects.all()
         resource_name = 'genericstate'
         authorizaion = DjangoAuthorization()
         always_return_data = True
@@ -453,20 +453,20 @@ class GenericStateResource(ExtResource):
             'uuid': ALL
         }
         list_allowed_methods = ['get', 'post', 'put']
-        
-        
+
+
 class LabServiceGroupResource(ModelResource):
-    
+
     class Meta:
-        queryset = LabServiceGroup.objects.all() 
+        queryset = LabServiceGroup.objects.all()
         resource_name = 'labgroup'
         limit = 10
         filtering = {
             'name':('istartswith',)
         }
         list_allowed_methods = ['get', 'post', 'put']
-        
-        
+
+
 class InsuranceStateResource(ExtResource):
 
     def obj_create(self, bundle, request=None, **kwargs):
@@ -477,7 +477,7 @@ class InsuranceStateResource(ExtResource):
         return result
 
     class Meta:
-        queryset = State.objects.filter(type='i') 
+        queryset = State.objects.filter(type='i')
         resource_name = 'insurance_state'
         authorization = DjangoAuthorization()
         always_return_data = True
@@ -487,9 +487,9 @@ class InsuranceStateResource(ExtResource):
         }
         list_allowed_methods = ['get', 'post', 'put']
 
-        
+
 class InsurancePolicyResource(ExtResource):
-    
+
     insurance_state = fields.ForeignKey(InsuranceStateResource, 'insurance_state')
     patient = fields.ForeignKey(PatientResource, 'patient')
 
@@ -502,9 +502,9 @@ class InsurancePolicyResource(ExtResource):
         bundle.data['state_name'] = bundle.obj.insurance_state
         bundle.data['name'] = bundle.obj
         return bundle
-    
+
     class Meta:
-        queryset = InsurancePolicy.objects.all() 
+        queryset = InsurancePolicy.objects.all()
         resource_name = 'insurance_policy'
         authorization = DjangoAuthorization()
         always_return_data = True
@@ -515,28 +515,28 @@ class InsurancePolicyResource(ExtResource):
             'insurance_state': ALL_WITH_RELATIONS
         }
         list_allowed_methods = ['get', 'post', 'put']
-        
+
 
 class BarcodeResource(ModelResource):
     """
     """
-    
+
     def build_filters(self, filters=None):
         if filters is None:
             filters = {}
 
         orm_filters = super(BarcodeResource, self).build_filters(filters)
-        
+
         if "patient" in filters:
             patient_id = filters['patient']
             visit_list = Visit.objects.filter(patient=patient_id)
             barcode_id_list = [visit.barcode.id for visit in visit_list]
             orm_filters['id__in'] = barcode_id_list
-            
-        
+
+
 
         return orm_filters
-    
+
     class Meta:
         queryset = Barcode.objects.all()
         resource_name = 'barcode'
@@ -571,12 +571,12 @@ class VisitResource(ExtResource):
         bundle.data['discount_value'] = bundle.obj.discount and int(bundle.obj.discount.value) or 0
         bundle.data['patient_name'] = bundle.obj.patient.short_name()
         bundle.data['office_name'] = bundle.obj.office
-        bundle.data['payer_name'] = bundle.obj.payer and bundle.obj.payer.name or '' 
+        bundle.data['payer_name'] = bundle.obj.payer and bundle.obj.payer.name or ''
         bundle.data['patient_id'] = bundle.obj.patient.id
         bundle.data['barcode_id'] = bundle.obj.barcode.id
-        
+
         return none_to_empty(bundle)
-    
+
     def build_filters(self, filters=None):
         if filters is None:
             filters = {}
@@ -598,7 +598,7 @@ class VisitResource(ExtResource):
 
 
         return orm_filters
-    
+
     class Meta:
         queryset = Visit.objects.select_related().filter(cls__in=(u'п',u'б'))
         resource_name = 'visit'
@@ -616,7 +616,7 @@ class VisitResource(ExtResource):
         }
         list_allowed_methods = ['get', 'post', 'put']
 
-        
+
 class RefundResource(ExtResource):
     patient = fields.ToOneField(PatientResource, 'patient', null=True)
     office = fields.ToOneField(StateResource, 'office', null=True)
@@ -641,7 +641,7 @@ class RefundResource(ExtResource):
         bundle.data['total_discount'] = -bundle.obj.total_discount
         bundle.data['patient_id'] = bundle.obj.patient.id
         return none_to_empty(bundle)
-    
+
     class Meta:
         queryset = Visit.objects.filter(cls__in=(u'в',))
         resource_name = 'refund'
@@ -653,7 +653,7 @@ class RefundResource(ExtResource):
             'created': ALL
         }
         list_allowed_methods = ['get', 'post', 'put']
-        
+
 
 class LabOrderResource(ExtResource):
     """
@@ -687,7 +687,7 @@ class LabOrderResource(ExtResource):
             bundle.data['office_name'] = v.office
         bundle.data['staff_name'] = laborder.staff and laborder.staff.staff.short_name() or ''
         return bundle
-    
+
     def build_filters(self, filters=None):
         if filters is None:
             filters = {}
@@ -703,7 +703,7 @@ class LabOrderResource(ExtResource):
                         cond |= Q(visit__specimen=filters['search'][1:])
                     else:
                         cond |= Q(visit__barcode__id=int(filters['search']))
-                        
+
                     orm_filters = ComplexQuery( cond , \
                                       **orm_filters)
                 except:
@@ -715,7 +715,7 @@ class LabOrderResource(ExtResource):
 
 
         return orm_filters
-    
+
     class Meta:
         queryset = LabOrder.objects.select_related().all()
         resource_name = 'laborder'
@@ -736,9 +736,9 @@ class LabOrderResource(ExtResource):
         }
         list_allowed_methods = ['get', 'post', 'put']
 
-        
+
 class LSResource(ExtResource):
-    
+
     class Meta:
         queryset = LabService.objects.all()
         authorization = DjangoAuthorization()
@@ -748,13 +748,13 @@ class LSResource(ExtResource):
         }
         list_allowed_methods = ['get', 'post', 'put']
 
-        
+
 class BaseServiceResource(ExtResource):
     """
     """
     parent = fields.ForeignKey('self', 'parent', null=True)
     labservice = fields.ForeignKey(LSResource, 'labservice', null=True)
-    
+
     class Meta:
         queryset = BaseService.objects.all()
         authorization = DjangoAuthorization()
@@ -776,12 +776,12 @@ lookups[BaseService._meta.right_attr] = F(BaseService._meta.left_attr) + 1
 class BaseServiceGroupResource(ExtResource):
     parent = fields.ForeignKey('self', 'parent', null=True)
     labservice = fields.ForeignKey(LSResource, 'labservice', null=True)
-    
+
     def dehydrate(self, bundle):
         service = bundle.obj
         bundle.data['name'] = '-'*service.level + service.name
         return bundle
-    
+
     class Meta:
         queryset = BaseService.objects.exclude(**lookups).order_by(BaseService._meta.tree_id_attr, BaseService._meta.left_attr, 'level')
         authorization = DjangoAuthorization()
@@ -795,17 +795,17 @@ class BaseServiceGroupResource(ExtResource):
         }
         list_allowed_methods = ['get', 'post', 'put']
 
-        
+
 class StaffResource(ModelResource):
     referral = fields.ForeignKey(ReferralResource, 'referral', null = True)
     """
     """
     def dehydrate(self, bundle):
         bundle.data['name'] = bundle.obj.short_name()
-        bundle.data['referral_type'] = bundle.obj.referral and bundle.obj.referral.referral_type 
+        bundle.data['referral_type'] = bundle.obj.referral and bundle.obj.referral.referral_type
         bundle.data['title'] = bundle.obj.short_name()
         return bundle
-    
+
     def build_filters(self, filters=None):
         if filters is None:
             filters = {}
@@ -822,9 +822,9 @@ class StaffResource(ModelResource):
                     orm_filters.update(**smart_filters)
             else:
                 orm_filters.update(**smart_filters)
-            
+
         return orm_filters
-    
+
     class Meta:
         queryset = Staff.objects.filter(status=u'д')
         resource_name = 'staff'
@@ -846,7 +846,7 @@ class PositionResource(ModelResource):
         bundle.data['text'] = bundle.obj.__unicode__()
         bundle.data['name'] = bundle.obj.__unicode__()
         return bundle
-    
+
     def build_filters(self, filters=None):
         if filters is None:
             filters = {}
@@ -863,9 +863,9 @@ class PositionResource(ModelResource):
                     orm_filters.update(**smart_filters)
             else:
                 orm_filters.update(**smart_filters)
-            
+
         return orm_filters
-    
+
     class Meta:
         queryset = Position.objects.select_related().all()
         resource_name = 'position'
@@ -886,7 +886,7 @@ class ExtendedServiceResource(ModelResource):
     base_service = fields.ForeignKey(BaseServiceResource, 'base_service')
     staff = fields.ManyToManyField(PositionResource, 'staff', null=True)
     state = fields.ForeignKey(StateResource, 'state')
-    
+
     def build_filters(self, filters=None):
         if filters is None:
             filters = {}
@@ -910,7 +910,7 @@ class ExtendedServiceResource(ModelResource):
         bundle.data['service_name'] = bundle.obj.base_service.name
         bundle.data['price'] = bundle.obj.get_actual_price(date=on_date,payment_type=ptype)
         return bundle
-    
+
     class Meta:
         queryset = ExtendedService.objects.filter(is_active=True).select_related()
         resource_name = 'extendedservice'
@@ -930,7 +930,7 @@ class AnalysisResource(ModelResource):
     """
     """
     service = fields.ForeignKey(BaseServiceResource, 'service')
-    
+
     class Meta:
         queryset = Analysis.objects.select_related().all()
         resource_name = 'analysis'
@@ -948,12 +948,12 @@ class ResultResource(ExtResource):
     analysis = fields.ForeignKey(AnalysisResource, 'analysis')
     modified_by = fields.ForeignKey(UserResource, 'modified_by', null=True)
     sample = fields.ForeignKey('api.registry.SamplingResource', 'sample', null=True)
-    
+
     def obj_update(self, bundle, request=None, **kwargs):
         kwargs['modified_by']=request.user
         result = super(ResultResource, self).obj_update(bundle=bundle, request=request, **kwargs)
         return result
-    
+
     def dehydrate(self, bundle):
         obj = bundle.obj
         bundle.data['barcode'] = obj.order.visit.barcode.id
@@ -967,7 +967,7 @@ class ResultResource(ExtResource):
         bundle.data['measurement'] = obj.analysis.measurement
         bundle.data['modified_by_name'] = obj.modified_by
         return bundle
-    
+
     class Meta:
         queryset = Result.objects.active().select_related()
         authorization = DjangoAuthorization()
@@ -980,12 +980,12 @@ class ResultResource(ExtResource):
             'is_validated': ALL,
         }
         list_allowed_methods = ['get', 'post', 'put']
-        
+
 
 class InputListResource(ModelResource):
     """
     """
-    
+
     class Meta:
         queryset = InputList.objects.all()
         resource_name = 'inputlist'
@@ -1008,12 +1008,12 @@ class DoctorResource(ExtResource):
         }
         list_allowed_methods = ['get', 'post', 'put']
 
-        
+
 class StaffSchedResource(ModelResource):
     """
     """
     #doctor = fields.ToOneField(DoctorResource, 'doctor', null=True)
-    
+
     def dehydrate(self, bundle):
         bundle.data['name'] = bundle.obj.short_name()
         bundle.data['title'] = bundle.obj.short_name()
@@ -1026,7 +1026,7 @@ class StaffSchedResource(ModelResource):
         bundle.data['work_days'] = bundle.obj.doctor.work_days
         bundle.data['room'] = bundle.obj.doctor.room
         return bundle
-    
+
     class Meta:
         queryset = Staff.objects.filter(doctor__isnull = False,status=u'д')
         resource_name = 'staffsched'
@@ -1043,11 +1043,11 @@ class DepartmentResource(ExtResource):
     """
     """
     state = fields.ToOneField(StateResource, 'state')
-    
+
     def dehydrate(self, bundle):
         bundle.data['title'] = bundle.obj.__unicode__()
         return bundle
-        
+
     class Meta:
         queryset = Department.objects.all()
         resource_name = 'department'
@@ -1058,14 +1058,14 @@ class DepartmentResource(ExtResource):
         }
         list_allowed_methods = ['get', 'post', 'put']
 
-        
+
 class PosSchedResource(ModelResource):
     """
     """
     #doctor = fields.ToOneField(DoctorResource, 'doctor', null=True)
     department = fields.ForeignKey(DepartmentResource, 'department', null=True)
     staff = fields.ForeignKey(StaffResource, 'staff', null=True)
-    
+
     def dehydrate(self, bundle):
         bundle.data['name'] = bundle.obj.staff.short_name()
         bundle.data['short_name'] = bundle.obj.staff.short_name()
@@ -1078,7 +1078,7 @@ class PosSchedResource(ModelResource):
         bundle.data['work_days'] = bundle.obj.staff.doctor.work_days
         bundle.data['room'] = bundle.obj.staff.doctor.room
         return bundle
-    
+
     class Meta:
         queryset = Position.objects.filter(staff__doctor__isnull = False)
         resource_name = 'possched'
@@ -1166,13 +1166,13 @@ class BarcodedSamplingResource(ModelResource):
     laboratory = fields.ForeignKey(StateResource, 'laboratory')
     tube = fields.ForeignKey(TubeResource, 'tube')
     number = fields.ForeignKey(NumeratorItemResource, 'number', null=True)
-    
+
     def dehydrate(self, bundle):
         bundle.data['tube_type'] = bundle.obj.tube
         bundle.data['bc_count'] = bundle.obj.tube.bc_count
         bundle.data['services'] = [item.service.__unicode__() for item in bundle.obj.get_services()]
         return bundle
-    
+
     class Meta:
         queryset = Sampling.objects.filter(number__isnull=True)
         resource_name = 'bc_sampling'
@@ -1203,7 +1203,7 @@ class OrderedServiceResource(ExtBatchResource):
     def obj_update(self, bundle, request=None, **kwargs):
         result = super(OrderedServiceResource, self).obj_update(bundle=bundle, request=request, **kwargs)
         return result
-    
+
     def dehydrate(self, bundle):
         service = bundle.obj.service
         bundle.data['service_name'] = service.short_name or service.name
@@ -1217,7 +1217,7 @@ class OrderedServiceResource(ExtBatchResource):
 #        bundle.data['laboratory'] = bundle.obj.execution_place
 #        bundle.data['sampling'] = bundle.obj.sampling and bundle.obj.sampling.short_title()
         return bundle
-    
+
     class Meta:
         queryset = OrderedService.objects.all()
         resource_name = 'orderedservice'
@@ -1235,7 +1235,7 @@ class OrderedServiceResource(ExtBatchResource):
 
 
 class LabOrderedServiceResource(OrderedServiceResource):
-    
+
     def dehydrate(self, bundle):
         o = bundle.obj
         service = o.service
@@ -1249,8 +1249,8 @@ class LabOrderedServiceResource(OrderedServiceResource):
         bundle.data['laboratory'] = bundle.obj.execution_place
         bundle.data['sampling'] = bundle.obj.sampling and bundle.obj.sampling.short_title()
 #        bundle.data['message'] = o.latest_transaction()
-        return bundle    
-    
+        return bundle
+
     def build_filters(self, filters=None):
         if filters is None:
             filters = {}
@@ -1267,7 +1267,7 @@ class LabOrderedServiceResource(OrderedServiceResource):
                     orm_filters.update(**smart_filters)
             else:
                 orm_filters.update(**smart_filters)
-            
+
         return orm_filters
 
     class Meta:
@@ -1305,7 +1305,7 @@ class LabServiceResource(ExtResource):
         bundle.data['laboratory'] = bundle.obj.execution_place
         bundle.data['barcode'] = bundle.obj.order.barcode.id
         return bundle
-    
+
     def build_filters(self, filters=None):
         if filters is None:
             filters = {}
@@ -1322,7 +1322,7 @@ class LabServiceResource(ExtResource):
                     orm_filters.update(**smart_filters)
             else:
                 orm_filters.update(**smart_filters)
-            
+
         return orm_filters
 
     class Meta:
@@ -1338,7 +1338,7 @@ class LabServiceResource(ExtResource):
         }
         list_allowed_methods = ['get', 'post', 'put']
 
-        
+
 class LabTestResource(ExtResource):
     """
     """
@@ -1362,22 +1362,22 @@ class LabTestResource(ExtResource):
         bundle.data['patient_age'] = patient.full_age()
         bundle.data['staff_name'] = bundle.obj.staff
         bundle.data['laboratory'] = bundle.obj.execution_place
-        bundle.data['key'] = u"%s_%s" % (order.id, bundle.obj.execution_place.id) 
+        bundle.data['key'] = u"%s_%s" % (order.id, bundle.obj.execution_place.id)
         return bundle
-    
+
     def build_filters(self, filters=None):
         if filters is None:
             filters = {}
 
         orm_filters = super(LabTestResource, self).build_filters(filters)
-            
+
         if "search" in filters:
 
             orm_filters.update(smartFilter(filters['search']), 'order__patient')
 
 
         return orm_filters
-    
+
     class Meta:
         queryset = OrderedService.objects.select_related().filter(service__lab_group__isnull=False).order_by('service', '-created') #all lab services
         resource_name = 'labtest'
@@ -1394,7 +1394,7 @@ class LabTestResource(ExtResource):
         cache = SimpleCache()
         list_allowed_methods = ['get', 'post', 'put']
 
-        
+
 class ExamServiceResource(ExtResource):
     """
     """
@@ -1418,9 +1418,9 @@ class ExamServiceResource(ExtResource):
         bundle.data['patient'] = bundle.obj.order.patient.id
         bundle.data['staff_name'] = bundle.obj.staff
         bundle.data['laboratory'] = bundle.obj.execution_place
-        bundle.data['key'] = u"%s_%s" % (bundle.obj.order.id, bundle.obj.execution_place.id) 
+        bundle.data['key'] = u"%s_%s" % (bundle.obj.order.id, bundle.obj.execution_place.id)
         return bundle
-    
+
     def build_filters(self, filters=None):
         if filters is None:
             filters = {}
@@ -1433,7 +1433,7 @@ class ExamServiceResource(ExtResource):
 
 
         return orm_filters
-    
+
     class Meta:
         queryset = OrderedService.objects.filter(service__lab_group__isnull=True)
         resource_name = 'examservice'
@@ -1462,7 +1462,7 @@ class SamplingServiceResource(ExtResource):
     def obj_update(self, bundle, request=None, **kwargs):
         result = super(SamplingServiceResource, self).obj_update(bundle=bundle, request=request, **kwargs)
         return result
-    
+
     def obj_delete(self, request=None, **kwargs):
         """
         """
@@ -1470,10 +1470,10 @@ class SamplingServiceResource(ExtResource):
             obj = self.get_object_list(request).get(**kwargs)
         except ObjectDoesNotExist:
             raise NotFound("A model instance matching the provided arguments could not be found.")
-        
+
         obj.sampling = None
         obj.save()
-    
+
     def dehydrate(self, bundle):
         service = bundle.obj.service
         bundle.data['service_name'] = service.short_name or service.name
@@ -1484,7 +1484,7 @@ class SamplingServiceResource(ExtResource):
         bundle.data['barcode'] = bundle.obj.order.barcode.id
         bundle.data['sampling'] = bundle.obj.sampling
         return bundle
-    
+
     class Meta:
         queryset = OrderedService.objects.all()
         limit = 100
@@ -1514,14 +1514,14 @@ class ServiceBasketResource(ExtBatchResource):
 
     def hydrate(self, bundle):
         return bundle
-    
+
     def dehydrate(self, bundle):
         obj = bundle.obj
         if obj.staff:
             bundle.data['staff_name'] = obj.staff.__unicode__()
         bundle.data['service_name'] = obj.service.short_name or obj.service.name
         return bundle
-    
+
     class Meta:
         queryset = OrderedService.objects.select_related().all()
         resource_name = 'servicebasket'
@@ -1556,9 +1556,9 @@ class RefundBasketResource(ExtResource):
         bundle.data['price'] = -bundle.obj.price
         bundle.data['total_price'] = -bundle.obj.price
         return bundle
-    
+
     class Meta:
-        queryset = OrderedService.objects.select_related().all() 
+        queryset = OrderedService.objects.select_related().all()
         resource_name = 'refundbasket'
         always_return_data = True
         filtering = {
@@ -1584,10 +1584,10 @@ class BCPackageResource(ExtResource):
         bundle.data['lab_name'] = obj.laboratory
         bundle.data['lat'] = obj.laboratory.translify()
         rng = obj.range()
-        bundle.data['range_from'] = rng[0] 
+        bundle.data['range_from'] = rng[0]
         bundle.data['range_to'] = rng[1]
         return bundle
-    
+
     class Meta:
         queryset = BarcodePackage.objects.all()
         always_return_data = True
@@ -1611,9 +1611,9 @@ class ExamEquipmentResource(ExtResource):
 
 
 class TemplateGroupResource(ExtResource):
-    
+
     equipment = fields.ForeignKey(ExamEquipmentResource, 'equipment', null=True)
-    
+
     class Meta:
         queryset = TemplateGroup.objects.all()
         authorization = DjangoAuthorization()
@@ -1631,14 +1631,14 @@ class CardTemplateResource(ExtResource):
     group = fields.ForeignKey(TemplateGroupResource, 'group', null=True)
     mbk_diag = fields.ForeignKey(ICD10Resource, 'mbk_diag', null=True)
     equipment = fields.ForeignKey(ExamEquipmentResource, 'equipment', null=True)
-    
+
     def dehydrate(self, bundle):
         obj = bundle.obj
         if obj.staff:
             bundle.data['staff_name'] = obj.staff.__unicode__()
         bundle.data['group_name'] = obj.group and obj.group.name or u'Без группы'
         return bundle
-    
+
     class Meta:
         queryset = CardTemplate.objects.all()
         always_return_data = True
@@ -1653,14 +1653,14 @@ class CardTemplateResource(ExtResource):
         limit = 150
         list_allowed_methods = ['get', 'post', 'put']
 
-        
+
 class ExaminationCardResource(ExtResource):
-    
+
     assistant = fields.ForeignKey(PositionResource, 'assistant', null=True)
     ordered_service = fields.ForeignKey(OrderedServiceResource, 'ordered_service', null=True)
     mbk_diag = fields.ForeignKey(ICD10Resource, 'mbk_diag', null=True)
     equipment = fields.ForeignKey(ExamEquipmentResource, 'equipment', null=True)
-    
+
     def dehydrate(self, bundle):
         obj = bundle.obj
         bundle.data['name'] = obj.print_name or obj.ordered_service.service
@@ -1668,7 +1668,7 @@ class ExaminationCardResource(ExtResource):
         bundle.data['view'] = obj.__unicode__()
         bundle.data['staff_id'] = obj.ordered_service.staff.id
         return bundle
-    
+
     class Meta:
         queryset = ExaminationCard.objects.all()
         resource_name = 'examcard'
@@ -1682,14 +1682,14 @@ class ExaminationCardResource(ExtResource):
         }
         list_allowed_methods = ['get', 'post', 'put']
 
-        
+
 class CardResource(ExtResource):
-    
+
     ordered_service = fields.ForeignKey(OrderedServiceResource, 'ordered_service', null=True)
     assistant = fields.ForeignKey(PositionResource, 'assistant', null=True)
     mkb_diag = fields.ForeignKey(ICD10Resource, 'mkb_diag', null=True)
     equipment = fields.ForeignKey(ExamEquipmentResource, 'equipment', null=True)
-    
+
     def build_filters(self, filters=None):
         if filters is None:
             filters = {}
@@ -1719,7 +1719,7 @@ class CardResource(ExtResource):
         bundle.data['executed'] = obj.ordered_service.executed and True or False
         bundle.data['assistant_name'] = obj.assistant and obj.assistant.staff.short_name() or ''
         return bundle
-    
+
     class Meta:
         queryset = Card.objects.all().select_related()
         resource_name = 'card'
@@ -1735,18 +1735,18 @@ class CardResource(ExtResource):
         }
         list_allowed_methods = ['get', 'post', 'put']
 
-        
+
 class TemplateResource(ExtResource):
-    
+
     base_service = fields.ForeignKey(BaseServiceResource, 'base_service', null=True)
     staff = fields.ForeignKey(StaffResource, 'staff', null=True)
     equipment = fields.ForeignKey(ExamEquipmentResource, 'equipment', null=True)
-    
+
     def dehydrate(self, bundle):
         obj = bundle.obj
         bundle.data['service_name'] = obj.base_service and obj.base_service.name
         return bundle
-    
+
     class Meta:
         queryset = Template.objects.all()
         resource_name = 'examtemplate'
@@ -1763,9 +1763,9 @@ class TemplateResource(ExtResource):
         limit = 150
         list_allowed_methods = ['get', 'post', 'put']
 
-        
+
 class FieldSetResource(ExtResource):
-    
+
     class Meta:
         queryset = FieldSet.objects.all().order_by('order')
         resource_name = 'examfieldset'
@@ -1777,15 +1777,15 @@ class FieldSetResource(ExtResource):
         }
         list_allowed_methods = ['get', 'post', 'put']
 
-        
+
 class SubSectionResource(ExtResource):
     section = fields.ForeignKey(FieldSetResource, 'section')
-    
+
     def dehydrate(self, bundle):
         obj = bundle.obj
         bundle.data['section_name'] = obj.section.name
         return bundle
-    
+
     class Meta:
         queryset = SubSection.objects.all().order_by('section')
         resource_name = 'examsubsection'
@@ -1797,19 +1797,19 @@ class SubSectionResource(ExtResource):
         }
         list_allowed_methods = ['get', 'post', 'put']
 
-        
+
 class GlossaryResource(ExtResource):
-    
+
     base_service = fields.ForeignKey(BaseServiceResource, 'base_service', null=True)
     staff = fields.ForeignKey(StaffResource, 'staff', null=True)
     parent = fields.ForeignKey('self', 'parent', null=True)
-    
+
     def dehydrate(self, bundle):
         bundle.data['parent'] =  bundle.obj.parent and bundle.obj.parent.id
         if bundle.obj.is_leaf_node():
             bundle.data['leaf'] = bundle.obj.is_leaf_node()
         return bundle
-    
+
 
     def build_filters(self, filters=None):
         if filters is None:
@@ -1823,7 +1823,7 @@ class GlossaryResource(ExtResource):
                 orm_filters['parent__isnull'] = True
 
         return orm_filters
-    
+
     class Meta:
         queryset = Glossary.objects.all()
         resource_name = 'glossary'
@@ -1841,16 +1841,16 @@ class GlossaryResource(ExtResource):
         limit = 1000
         list_allowed_methods = ['get', 'post', 'put']
 
-        
+
 class RegExamCardResource(ExtResource):
     ordered_service = fields.ForeignKey(OrderedServiceResource, 'ordered_service', null=True)
-    
+
     def dehydrate(self, bundle):
         obj = bundle.obj
         bundle.data['staff_name'] = obj.ordered_service.staff.__unicode__()
         bundle.data['ordered_service_id'] = obj.ordered_service.id
         return bundle
-    
+
     class Meta:
         queryset = ExaminationCard.objects.all()
         resource_name = 'regexamcard'
@@ -1867,11 +1867,11 @@ class RegExamCardResource(ExtResource):
 from sorl.thumbnail import get_thumbnail
 
 class DicomResource(ExtResource):
-    
+
     examination_card = fields.ForeignKey(ExaminationCardResource, 'examination_card')
 
     def dehydrate(self, bundle):
-        bundle.data['photo'] = bundle.obj.get_image_url() 
+        bundle.data['photo'] = bundle.obj.get_image_url()
         bundle.data['thumb'] = get_thumbnail(bundle.obj.get_image_url(),"100x100",crop="center").url
         return bundle
 
@@ -1887,7 +1887,7 @@ class DicomResource(ExtResource):
 
 
 class EquipmentResource(ExtResource):
-    
+
     class Meta:
         queryset = Equipment.objects.all()
         resource_name = 'equipment'
@@ -1896,20 +1896,20 @@ class EquipmentResource(ExtResource):
             'name': ALL,
             'slug': ALL,
             'serial_number': ALL
-        }        
+        }
         list_allowed_methods = ['get', 'post', 'put']
 
 
 class EquipmentAssayResource(ExtResource):
-    
+
     equipment = fields.ForeignKey(EquipmentResource, 'equipment')
     service = fields.ForeignKey(BaseServiceResource, 'service', null=True)
-    
+
     def dehydrate(self, bundle):
         bundle.data['equipment_name'] = bundle.obj.equipment
         bundle.data['service_name'] = bundle.obj.equipment_analysis
         return bundle
-    
+
     class Meta:
         queryset = EquipmentAssay.objects.select_related().all().order_by('service__name',)
         resource_name = 'equipmentassay'
@@ -1919,15 +1919,15 @@ class EquipmentAssayResource(ExtResource):
         filtering = {
             'equipment': ALL_WITH_RELATIONS,
             'service': ALL_WITH_RELATIONS,
-        }        
+        }
         list_allowed_methods = ['get', 'post', 'put']
 
 
 class EquipmentTaskReadOnlyResource(ExtBatchResource):
-    
+
     equipment_assay = fields.ForeignKey(EquipmentAssayResource, 'equipment_assay')
     ordered_service = fields.ForeignKey(OrderedServiceResource, 'ordered_service')
-    
+
     def dehydrate(self, bundle):
         bundle.data['assay_code'] = bundle.obj.equipment_assay.code
         bundle.data['assay_name'] = bundle.obj.equipment_assay.name
@@ -1939,7 +1939,7 @@ class EquipmentTaskReadOnlyResource(ExtBatchResource):
         bundle.data['order'] = bundle.obj.ordered_service.order.barcode.id
         bundle.data['result'] = bundle.obj.result and bundle.obj.result.get_full_result() or u''
         return bundle
-    
+
     def build_filters(self, filters=None):
         if filters is None:
             filters = {}
@@ -1972,15 +1972,15 @@ class EquipmentTaskReadOnlyResource(ExtBatchResource):
             'equipment_assay': ALL_WITH_RELATIONS,
             'service': ALL_WITH_RELATIONS,
             'status': ALL
-        }        
+        }
         list_allowed_methods = ['get', 'post', 'put']
 
 
 class EquipmentTaskResource(ExtBatchResource):
-    
+
     equipment_assay = fields.ForeignKey(EquipmentAssayResource, 'equipment_assay')
     ordered_service = fields.ForeignKey(OrderedServiceResource, 'ordered_service')
-    
+
     def dehydrate(self, bundle):
         bundle.data['assay_code'] = bundle.obj.equipment_assay.code
         bundle.data['assay_name'] = bundle.obj.equipment_assay.name
@@ -1992,8 +1992,8 @@ class EquipmentTaskResource(ExtBatchResource):
         bundle.data['order'] = bundle.obj.ordered_service.order.barcode.id
         bundle.data['result'] = bundle.obj.result and bundle.obj.result.get_full_result() or u''
         return bundle
-    
-    
+
+
     def build_filters(self, filters=None):
         if filters is None:
             filters = {}
@@ -2015,7 +2015,7 @@ class EquipmentTaskResource(ExtBatchResource):
             'equipment_assay': ALL_WITH_RELATIONS,
             'service': ALL_WITH_RELATIONS,
             'status': ALL
-        }        
+        }
         list_allowed_methods = ['get', 'post', 'put']
 
 
@@ -2023,7 +2023,7 @@ class EquipmentResultResource(ExtBatchResource):
 
     def dehydrate(self, bundle):
         return bundle
-        
+
     class Meta:
         queryset = EquipmentResult.objects.all()
         resource_name = 'equipmentresult'
@@ -2031,7 +2031,7 @@ class EquipmentResultResource(ExtBatchResource):
         filtering = {
             'order': ALL,
             'assay': ALL,
-        }   
+        }
         list_allowed_methods = ['get', 'post', 'put']
 
 
@@ -2039,7 +2039,7 @@ class EquipmentResultReadOnlyResource(ExtBatchResource):
 
     def dehydrate(self, bundle):
         return bundle
-        
+
     class Meta:
         queryset = EquipmentResult.objects.all()
         resource_name = 'equipmentresultro'
@@ -2047,7 +2047,7 @@ class EquipmentResultReadOnlyResource(ExtBatchResource):
         filtering = {
             'order': ALL,
             'assay': ALL,
-        }   
+        }
         list_allowed_methods = ['get', 'post', 'put']
 
 
@@ -2058,12 +2058,12 @@ class PromotionResource(ExtResource):
         resource_name = 'promotion'
         authorization = DjangoAuthorization()
         filtering = {
-        }   
+        }
         list_allowed_methods = ['get', 'post', 'put']
 
 
 class CalendarResource(ExtResource):
-    
+
     class Meta:
         queryset = Calendar.objects.all()
         resource_name = 'calendar'
@@ -2075,7 +2075,7 @@ class CalendarResource(ExtResource):
 
 
 class RejectionCauseResource(ExtResource):
-    
+
     class Meta:
         queryset = RejectionCause.objects.all()
         resource_name = 'rejection_cause'
@@ -2085,7 +2085,7 @@ class RejectionCauseResource(ExtResource):
         }
         list_allowed_methods = ['get', 'post', 'put']
 
-        
+
 class PreorderResource(ExtBatchResource):
     patient = fields.ForeignKey(PatientResource, 'patient', null=True)
     timeslot = fields.OneToOneField('apps.api.registry.EventResource', 'timeslot', null=True)
@@ -2095,7 +2095,7 @@ class PreorderResource(ExtBatchResource):
     card = fields.ForeignKey(CardResource, 'card', null = True)
     referral = fields.ForeignKey(ReferralResource, 'referral', null = True)
     who_deleted = fields.ForeignKey(UserResource, 'who_deleted', null=True)
-    
+
     def obj_create(self, bundle, request=None, **kwargs):
         kwargs['operator']=request.user
         referral = request and request.active_profile.staff.referral
@@ -2103,13 +2103,13 @@ class PreorderResource(ExtBatchResource):
             kwargs['referral']=referral
         result = super(PreorderResource, self).obj_create(bundle=bundle, request=request, **kwargs)
         return result
-    
+
     def obj_update(self, bundle, request=None, **kwargs):
         if bundle.data['deleted']:
             bundle.data['who_deleted']=request.user
         result = super(PreorderResource, self).obj_update(bundle=bundle, request=request, **kwargs)
         return result
-    
+
     def build_filters(self, filters=None):
         if filters is None:
             filters = {}
@@ -2127,7 +2127,7 @@ class PreorderResource(ExtBatchResource):
             else:
                 orm_filters.update(**smart_filters)
         return orm_filters
-    
+
     class Meta:
         queryset = Preorder.objects.filter(deleted = False)
         resource_name = 'preorder'
@@ -2152,7 +2152,7 @@ class ExtPreorderResource(ExtResource):
     card = fields.ForeignKey(CardResource, 'card', null=True)
     referral = fields.ForeignKey(ReferralResource, 'referral', null=True)
     who_deleted = fields.ForeignKey(UserResource, 'who_deleted', null=True)
-    
+
     def obj_create(self, bundle, request=None, **kwargs):
         kwargs['operator']=request.user
         referral = request and request.active_profile.staff.referral
@@ -2160,14 +2160,14 @@ class ExtPreorderResource(ExtResource):
             kwargs['referral']=referral
         result = super(ExtPreorderResource, self).obj_create(bundle=bundle, request=request, **kwargs)
         return result
-    
+
     def obj_update(self, bundle, request=None, **kwargs):
 #        import pdb; pdb.set_trace()
         if bundle.data['deleted']:
             bundle.data['who_deleted']=request.user
         result = super(ExtPreorderResource, self).obj_update(bundle=bundle, request=request, **kwargs)
         return result
-    
+
     def build_filters(self, filters=None):
         if filters is None:
             filters = {}
@@ -2185,7 +2185,7 @@ class ExtPreorderResource(ExtResource):
             else:
                 orm_filters.update(**smart_filters)
         return orm_filters
-    
+
     def dehydrate(self, bundle):
         obj = bundle.obj
         bundle.data['service_name'] = obj.service and obj.service.base_service.name
@@ -2206,7 +2206,7 @@ class ExtPreorderResource(ExtResource):
         bundle.data['branches'] = obj.service and bundle.obj.service.branches.all().values_list('id', flat=True)
         bundle.data['referral_name'] = obj.referral and obj.referral.__unicode__()
         return bundle
-    
+
     class Meta:
         queryset = Preorder.objects.filter(deleted=False).select_related().order_by('-timeslot__start')
         resource_name = 'extpreorder'
@@ -2232,7 +2232,7 @@ class VisitPreorderResource(ExtPreorderResource):
     Используется в форме визита при выборе предзаказа.
     Содержит неоформленные предзаказы начиная с сегодняшнего дня и направления
     """
-    
+
     def build_filters(self, filters=None):
         if filters is None:
             filters = {}
@@ -2250,7 +2250,7 @@ class VisitPreorderResource(ExtPreorderResource):
             else:
                 orm_filters.update(**smart_filters)
         return orm_filters
-    
+
     class Meta:
         queryset = Preorder.objects.filter(timeslot__isnull=True).order_by('-expiration')
         resource_name = 'visitpreorder'
@@ -2274,13 +2274,13 @@ class VisitPreorderResource(ExtPreorderResource):
 class EventResource(ExtResource):
     staff = fields.ForeignKey(PositionResource, 'staff', null=True)
     #preord = fields.ToOneField('apps.api.registry.PreorderResource', 'preord', null=True)
-    
+
     def dehydrate(self, bundle):
         bundle.data['start'] = bundle.obj.start.strftime('%a %b %d %Y %H:%M:%S')
         bundle.data['end'] = bundle.obj.end.strftime('%a %b %d %Y %H:%M:%S ')
         #bundle.data['preord'] = bundle.obj.preord and bundle.obj.preord.id
         return bundle
-    
+
     class Meta:
         queryset = Event.objects.all().select_related().order_by('start')
         resource_name = 'event'
@@ -2295,7 +2295,7 @@ class EventResource(ExtResource):
             'timeslot': ALL,
             'status': ALL,
             'preord': ALL
-            
+
         }
         limit = 1000
         list_allowed_methods = ['get', 'post', 'put']
@@ -2303,7 +2303,7 @@ class EventResource(ExtResource):
 
 
 class IssueTypeResource(ExtResource):
-    
+
     class Meta:
         queryset = IssueType.objects.all()
         resource_name = 'issuetype'
@@ -2311,14 +2311,14 @@ class IssueTypeResource(ExtResource):
         authorization = DjangoAuthorization()
         filtering = {
             'name': ALL
-        }        
+        }
         list_allowed_methods = ['get', 'post', 'put']
 
 
 class IssueResource(ExtResource):
-    
+
     type = fields.ForeignKey(IssueTypeResource, 'type')
-    
+
     def obj_create(self, bundle, request=None, **kwargs):
         kwargs['operator']=request.user
         result = super(IssueResource, self).obj_create(bundle=bundle, request=request, **kwargs)
@@ -2330,7 +2330,7 @@ class IssueResource(ExtResource):
         bundle.data['status_name'] = bundle.obj.get_status_display()
         bundle.data['operator_name'] = bundle.obj.operator
         return bundle
-    
+
     class Meta:
         queryset = Issue.objects.all()
         resource_name = 'issue'
@@ -2342,7 +2342,7 @@ class IssueResource(ExtResource):
             'level': ALL,
             'status': ALL,
             'operator': ALL_WITH_RELATIONS
-        }        
+        }
         list_allowed_methods = ['get', 'post', 'put']
 
 
@@ -2355,25 +2355,25 @@ class ContentTypeResource(ExtResource):
 
 
 class AccountResource(ExtResource):
-    
+
     class Meta:
         queryset = Account.objects.all()
         resource_name = 'account'
         authorization = DjangoAuthorization()
         list_allowed_methods = ['get', 'post', 'put']
 
-        
+
 class ClientAccountResource(ExtResource):
     client_item = fields.ForeignKey(ClientItemResource, 'client_item')
     account = fields.ForeignKey(AccountResource, 'account')
-    
+
     def dehydrate(self, bundle):
         bundle.data['client_name'] = bundle.obj.client_item.client
         bundle.data['client_balance'] = bundle.obj.client_item.client.balance
         bundle.data['account_id'] = bundle.obj.account.id
         bundle.data['amount'] = bundle.obj.account.amount
         return bundle
-    
+
     class Meta:
         queryset = ClientAccount.objects.all().select_related()
         resource_name = 'clientaccount'
@@ -2389,20 +2389,20 @@ class ClientAccountResource(ExtResource):
 class PaymentResource(ExtResource):
     client_account = fields.ForeignKey(ClientAccountResource, 'client_account')
     content_type = fields.ForeignKey(ContentTypeResource, 'content_type', null=True)
-    
+
     def dehydrate(self, bundle):
         bundle.data['client_name'] = bundle.obj.client_account.client_item.client.full_name()
         bundle.data['client'] = bundle.obj.client_account.client_item.client.id
         bundle.data['account_id'] = bundle.obj.client_account.account.id
         bundle.data['amount'] = abs(bundle.obj.amount)
         return bundle
-    
+
     def obj_create(self, bundle, request=None, **kwargs):
         kwargs['operator']=request.user
         kwargs['office']=request.active_profile.department.state
         result = super(PaymentResource, self).obj_create(bundle=bundle, request=request, **kwargs)
         return result
-    
+
     def build_filters(self, filters=None):
         if filters is None:
             filters = {}
@@ -2420,7 +2420,7 @@ class PaymentResource(ExtResource):
             else:
                 orm_filters.update(**smart_filters)
         return orm_filters
-    
+
     class Meta:
         queryset = Payment.objects.all()
         resource_name = 'payment'
@@ -2435,24 +2435,24 @@ class PaymentResource(ExtResource):
         }
         list_allowed_methods = ['get', 'post', 'put']
 
-        
+
 class InvoiceResource(ExtResource):
-    
+
     office = fields.ForeignKey(OwnStateResource, 'office')
     state = fields.ForeignKey(MedStateResource, 'state')
-    
+
     def dehydrate(self, bundle):
         bundle.data['state_name'] = bundle.obj.state
         bundle.data['office_name'] = bundle.obj.office
         bundle.data['operator_name'] = bundle.obj.operator
         return bundle
-    
+
     def obj_create(self, bundle, request=None, **kwargs):
         kwargs['operator']=request.user
         kwargs['office']=request.active_profile.department.state
         result = super(InvoiceResource, self).obj_create(bundle=bundle, request=request, **kwargs)
         return result
-    
+
     class Meta:
         queryset = Invoice.objects.all()
         resource_name = 'invoice'
@@ -2468,10 +2468,10 @@ class InvoiceResource(ExtResource):
 
 
 class InvoiceItemResource(ExtResource):
-    
+
     invoice = fields.ForeignKey(InvoiceResource, 'invoice')
     ordered_service = fields.ToOneField(SamplingServiceResource, 'ordered_service')
-    
+
     def dehydrate(self, bundle):
         s = bundle.obj.ordered_service
         bundle.data['created'] = s.order.created
@@ -2479,14 +2479,14 @@ class InvoiceItemResource(ExtResource):
         bundle.data['patient_name'] = s.order.patient.short_name()
         bundle.data['service_name'] = s.service
         bundle.data['sampling'] = s.sampling.tube
-        
+
         return bundle
-    
+
     def obj_create(self, bundle, request=None, **kwargs):
         kwargs['operator']=request.user
         result = super(InvoiceItemResource, self).obj_create(bundle=bundle, request=request, **kwargs)
         return result
-    
+
     class Meta:
         queryset = InvoiceItem.objects.all()
         resource_name = 'invoiceitem'
@@ -2521,7 +2521,7 @@ class ServiceToSend(ExtResource):
         bundle.data['patient_birthday'] = bundle.obj.order.patient.birth_day
         bundle.data['sku'] = bundle.obj.service.code
         return bundle
-    
+
     class Meta:
         queryset = OrderedService.objects.filter(service__lab_group__isnull=False)
         resource_name = 'servicetosend'
@@ -2531,14 +2531,14 @@ class ServiceToSend(ExtResource):
         filtering = {
             'id': ALL,
             'state': ALL_WITH_RELATIONS
-        }        
+        }
         list_allowed_methods = ['get', 'post', 'put']
-        
-        
+
+
 class ReportTreeResource(ModelResource):
-    
+
     parent = fields.ForeignKey('self', 'parent', null=True)
-    
+
     def dehydrate(self, bundle):
         bundle.data['text'] = bundle.obj.name
         bundle.data['slug'] = bundle.obj.slug
@@ -2547,7 +2547,7 @@ class ReportTreeResource(ModelResource):
         if bundle.obj.is_leaf_node():
             bundle.data['leaf'] = bundle.obj.is_leaf_node()
         return bundle
-    
+
 
     def build_filters(self, filters=None):
         if filters is None:
@@ -2561,7 +2561,7 @@ class ReportTreeResource(ModelResource):
                 orm_filters['parent__isnull'] = True
 
         return orm_filters
-    
+
     def get_object_list(self, request):
         """
         An ORM-specific implementation of ``get_object_list``.
@@ -2571,13 +2571,13 @@ class ReportTreeResource(ModelResource):
         qs = self._meta.queryset._clone()
         user = request.user
         groups = user.groups.get_query_set()
-        
+
         qs = qs.complex_filter(Q(groups__in=groups) | Q(users__in=[user]))
         return qs
 
-    
+
     class Meta:
-        queryset = Report.objects.filter(is_active=True) 
+        queryset = Report.objects.filter(is_active=True)
         limit = 20000
         fields = ('id',)
         resource_name = 'reporttree'
@@ -2614,7 +2614,7 @@ class ReportResource(ExtResource):
     def dehydrate(self, bundle):
         bundle.data['sql_query_text'] = bundle.obj.sql_query.sql
         return bundle
-    
+
     class Meta:
         queryset = Report.objects.all()
         resource_name = 'report'
@@ -2623,12 +2623,12 @@ class ReportResource(ExtResource):
         limit = 200
         filtering = {
             'id': ALL,
-        }        
+        }
         list_allowed_methods = ['get', 'post', 'put']
 
 
 class NosologicalFormResource(ExtResource):
-    
+
     class Meta:
         queryset = NosologicalForm.objects.all()
         resource_name = 'nosological_form'
@@ -2642,7 +2642,7 @@ class NosologicalFormResource(ExtResource):
 
 
 class AgeCategoryResource(ExtResource):
-    
+
     class Meta:
         queryset = AgeCategory.objects.all()
         resource_name = 'age_category'
@@ -2669,7 +2669,7 @@ class PhaseResource(ExtResource):
 
 
 class StageResource(ExtResource):
-    
+
     class Meta:
         queryset = Stage.objects.all()
         resource_name = 'stage'
@@ -2683,7 +2683,7 @@ class StageResource(ExtResource):
 
 
 class ComplicationsResource(ExtResource):
-    
+
     class Meta:
         queryset = Complications.objects.all()
         resource_name = 'complications'
@@ -2697,7 +2697,7 @@ class ComplicationsResource(ExtResource):
 
 
 class TermResource(ExtResource):
-    
+
     class Meta:
         queryset = Term.objects.all()
         resource_name = 'term'
@@ -2718,7 +2718,7 @@ class MedStandartResource(ExtResource):
     complications = fields.ForeignKey(ComplicationsResource, 'complications', null=True)
     terms = fields.ManyToManyField(TermResource, 'terms', null=True)
     mkb10 = fields.ForeignKey(ICD10Resource, 'mkb10')
-    
+
     def dehydrate(self, bundle):
         bundle.data['nosological_form_name'] = bundle.obj.nosological_form and bundle.obj.nosological_form.name or u'Не указано'
         bundle.data['age_category_name'] = bundle.obj.get_items_str('age_category') or u'Не указано'
@@ -2727,7 +2727,7 @@ class MedStandartResource(ExtResource):
         bundle.data['complications_name'] = bundle.obj.complications and bundle.obj.complications.name or u'Не указано'
         bundle.data['terms_name'] = bundle.obj.get_items_str('terms') or u'Не указано'
         return bundle
-    
+
     class Meta:
         queryset = Standart.objects.all()
         resource_name = 'medstandart'
@@ -2744,13 +2744,13 @@ class MedStandartResource(ExtResource):
 class StandartItemResource(ExtResource):
     standart = fields.ForeignKey(MedStandartResource, 'standart')
     service = fields.ForeignKey(ExtendedServiceResource, 'service')
-    
+
     def dehydrate(self, bundle):
         bundle.data['service_name'] = bundle.obj.service.base_service.name
         bundle.data['price'] = bundle.obj.service.get_actual_price()
         bundle.data['state'] = bundle.obj.service.state
         return bundle
-    
+
     class Meta:
         queryset = StandartItem.objects.all()
         resource_name = 'standartitem'
@@ -2906,7 +2906,6 @@ api.register(InputListResource())
 api.register(LabOrderResource())
 api.register(AnalysisResource())
 api.register(ResultResource())
-api.register(LabResource())
 api.register(SamplingResource())
 api.register(BarcodedSamplingResource())
 api.register(TubeResource())
@@ -2916,6 +2915,8 @@ api.register(EquipmentResultResource())
 api.register(EquipmentResultReadOnlyResource())
 api.register(EquipmentTaskResource())
 api.register(EquipmentTaskReadOnlyResource())
+api.register(InvoiceResource())
+api.register(InvoiceItemResource())
 
 #service
 api.register(LSResource())
@@ -2937,6 +2938,7 @@ api.register(MedStateResource())
 api.register(OwnStateResource())
 api.register(InsuranceStateResource())
 api.register(DoctorResource())
+api.register(LabResource())
 
 #remoting
 api.register(RemoteStateResource())
@@ -2948,9 +2950,9 @@ api.register(DiscountResource())
 api.register(BarcodeResource())
 api.register(BCPackageResource())
 api.register(NumeratorItemResource())
-api.register(RegExamCardResource())
 
 #examination
+api.register(RegExamCardResource())
 api.register(TemplateGroupResource())
 api.register(CardTemplateResource())
 api.register(ExaminationCardResource())
@@ -2986,11 +2988,7 @@ api.register(PaymentResource())
 api.register(DebtorResource())
 api.register(DepositorResource())
 
-
-api.register(InvoiceResource())
-api.register(InvoiceItemResource())
-
-
+#promotion
 api.register(PromotionResource())
 
 #crm
