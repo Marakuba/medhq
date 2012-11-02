@@ -136,6 +136,11 @@ App.accounting.InvoiceGrid = Ext.extend(Ext.grid.GridPanel, {
             url = String.format(url, rec.data.id);
             window.open(url);
         }
+        if(view=='invoice'){
+            var url = "/accounting/invoice/print/"+rec.data.id+'/';
+            url = String.format(url, rec.data.id);
+            window.open(url);
+        }
     }
 
 });

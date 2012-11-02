@@ -12,8 +12,8 @@ from django.http import HttpResponseRedirect
 
 handler500 = 'core.views.handler500'
 
-queryset = BaseService.objects.select_related().all().order_by(BaseService._meta.tree_id_attr, 
-                                                               BaseService._meta.left_attr, 
+queryset = BaseService.objects.select_related().all().order_by(BaseService._meta.tree_id_attr,
+                                                               BaseService._meta.left_attr,
                                                                'level')
 selection.register('service', queryset, 'tree', paginate_by=100, template_name="selection/bs_tree.html")
 
@@ -30,8 +30,8 @@ from autocomplete.views import autocomplete
 
 urlpatterns = patterns('',
     url(r'^$', lambda r: HttpResponseRedirect('/webapp/cpanel/')),
-    url(r'^webapp/',include('webapp.urls')),
-    url(r'^widget/',include('widget.urls')),
+    url(r'^webapp/', include('webapp.urls')),
+    url(r'^widget/', include('widget.urls')),
     url(r'^old/reporting/', include('oldreporting.urls')),
     url(r'^reporting/', include('reporting.urls')),
     url(r'^remoting/', include('remoting.urls')),
@@ -47,6 +47,7 @@ urlpatterns = patterns('',
     url(r'^numeration/', include('numeration.urls')),
     url(r'^autocomplete/', include(autocomplete.urls)),
     url(r'^patient/', include('patient.urls')),
+    url(r'^accounting/', include('accounting.urls')),
     url(r'^timeslot/haspreorder/(?P<id>\d+)/$', 'scheduler.views.hasPreorder'),
     url(r'^selection/(?P<slc_name>\w+)/$', selection, name='selection'),
 )

@@ -9,6 +9,7 @@ from patient.models import Patient
 from scheduler.models import Preorder
 from service.models import BaseService, ExtendedService
 from state.models import State
+from django.utils.encoding import smart_unicode
 
 
 class Contract(make_operator_object('acc_contract')):
@@ -47,7 +48,7 @@ class Invoice(make_operator_object('acc_invoice')):
         ordering = ('-id',)
 
     def __unicode__(self):
-        pass
+        smart_unicode(self.id)
 
 
 class InvoiceItem(make_operator_object('acc_invoice_item')):
@@ -68,12 +69,13 @@ class InvoiceItem(make_operator_object('acc_invoice_item')):
         ordering = ('-id',)
 
     def __unicode__(self):
-        pass
+        return smart_unicode(self.id)
 
 
 def update_total_price(sender, **kwargs):
     item = kwargs['instance']
     item.invoice.update_total_price()
+
 
 def update_preorder(sender, **kwargs):
     item = kwargs['instance']

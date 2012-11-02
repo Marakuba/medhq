@@ -13,7 +13,7 @@ Ext.calendar.DoctorScheduler = Ext.extend(Ext.Panel, {
     initComponent: function(){
     	this.startHour = App.settings.startHour; //эти настройки отвечают за количество часов, отображаемых
     	this.endHour = App.settings.endHour;//в дне или неделе. Обрабатывается в файле DayBodyTemplate и DayBodyView
-    	
+
         this.calendarStore = new Ext.data.JsonStore({
             storeId: 'calendarStore',
             root: 'objects',
@@ -56,7 +56,7 @@ Ext.calendar.DoctorScheduler = Ext.extend(Ext.Panel, {
                 direction: 'ASC'
             }
         });
-        
+
         this.staffStore = new Ext.data.JsonStore({
             storeId: 'staffStore',
             root: 'objects',
@@ -94,7 +94,7 @@ Ext.calendar.DoctorScheduler = Ext.extend(Ext.Panel, {
 
         // A sample event store that loads static JSON from a local file. Obviously a real
         // implementation would likely be loading remote data via an HttpProxy, but the
-        // underlying store functionality is the same.  Note that if you would like to 
+        // underlying store functionality is the same.  Note that if you would like to
         // provide custom data mappings for events, see EventRecord.js.
 	    this.eventStore = new Ext.data.Store({
 	        id: 'eventStore',
@@ -132,7 +132,7 @@ Ext.calendar.DoctorScheduler = Ext.extend(Ext.Panel, {
 	            direction: 'ASC'
 	        }
 	    });
-	    
+
 	    this.datePicker = new Ext.DatePicker ({
 	    	id: 'app-nav-picker',
 	        //region:'north',
@@ -148,7 +148,7 @@ Ext.calendar.DoctorScheduler = Ext.extend(Ext.Panel, {
                 }
             }
          });
-         
+
          this.staffGrid = new Ext.calendar.StaffGrid({
          	id: 'app-staff-picker',
             //region:'center',
@@ -172,11 +172,11 @@ Ext.calendar.DoctorScheduler = Ext.extend(Ext.Panel, {
     	                    this.calendarStore.load();
 	        	        },
                 	scope: this
-	            	}	
+	            	}
 				}
 			})
 		});
-        
+
         // This is the app UI layout code.  All of the calendar views are subcomponents of
         // CalendarPanel, but the app title bar and sidebar/navigation calendar are separate
         // pieces that are composed in app-specific layout code since they could be ommitted
@@ -202,14 +202,15 @@ Ext.calendar.DoctorScheduler = Ext.extend(Ext.Panel, {
                       border:false
                     },
                     items: [{
-                      region:'north',
-                      height:190,
+                      region:'center',
+                      // height:190,
                       items:this.datePicker
                     },{
-                      region:'center',
+                      region:'south',
                       autoScroll:true,
+                      height:200,
                       items:this.staffGrid
-                    }] 
+                    }]
                 },{
                     xtype: 'calendarpanel',
                     eventStore: this.eventStore,
@@ -221,9 +222,9 @@ Ext.calendar.DoctorScheduler = Ext.extend(Ext.Panel, {
                     id:'app-calendar',
                     region: 'center',
                     activeItem: 1, // week view
-                    
-                    // CalendarPanel supports view-specific configs that are passed through to the 
-                    // underlying views to make configuration possible without explicitly having to 
+
+                    // CalendarPanel supports view-specific configs that are passed through to the
+                    // underlying views to make configuration possible without explicitly having to
                     // create those views at this level:
                     monthViewCfg: {
                     	startDay:1,
@@ -231,7 +232,7 @@ Ext.calendar.DoctorScheduler = Ext.extend(Ext.Panel, {
                         showWeekLinks: true,
                         showWeekNumbers: true
                     },
-                    
+
                     // Some optional CalendarPanel configs to experiment with:
                     //showDayView: false,
                     //showWeekView: false,
@@ -240,14 +241,14 @@ Ext.calendar.DoctorScheduler = Ext.extend(Ext.Panel, {
                     //showTodayText: false,
                     //showTime: false,
                     //title: 'My Calendar', // the header of the calendar, could be a subtitle for the app
-                    
+
                     // Once this component inits it will set a reference to itself as an application
                     // member property for easy reference in other functions within App.
                     initComponent: function() {
                         App.calendarPanel = this;
                         this.constructor.prototype.initComponent.apply(this, arguments);
                     },
-                    
+
                     listeners: {
                         'eventclick': {
                             fn: function(vw, rec, el){
@@ -367,7 +368,7 @@ Ext.calendar.DoctorScheduler = Ext.extend(Ext.Panel, {
         Ext.apply(this, Ext.apply(this.initialConfig, config));
 		Ext.calendar.DoctorScheduler.superclass.initComponent.apply(this, arguments);
     },
-    
+
     // The edit popup window is not part of the CalendarPanel itself -- it is a separate component.
     // This makes it very easy to swap it out with a different type of window or custom view, or omit
     // it altogether. Because of this, it's up to the application code to tie the pieces together.
@@ -453,21 +454,21 @@ Ext.calendar.DoctorScheduler = Ext.extend(Ext.Panel, {
 	           	                win.close();
 	               	            App.calendarPanel.showEditForm(rec);
 	                   	    }
-	                    }	
+	                    }
 					}
 	    	    });
 	    	    this.timeslotWin.show(rec, animateTarget);
         	}
-        } 
+        }
 	},
-    
+
     // The CalendarPanel itself supports the standard Panel title config, but that title
     // only spans the calendar views.  For a title that spans the entire width of the app
     // we added a title to the layout's outer center region that is app-specific. This code
     // updates that outer title based on the currently-selected view range anytime the view changes.
     updateTitle: function(startDt, endDt){
         var p = Ext.getCmp('app-center');
-        
+
         if(startDt.clearTime().getTime() == endDt.clearTime().getTime()){
             p.setTitle(startDt.format('F j, Y'));
         }
@@ -483,18 +484,18 @@ Ext.calendar.DoctorScheduler = Ext.extend(Ext.Panel, {
             p.setTitle(startDt.format('F j, Y') + ' - ' + endDt.format('F j, Y'));
         }
     },
-    
+
     // This is an application-specific way to communicate CalendarPanel event messages back to the user.
     // This could be replaced with a function to do "toast" style messages, growl messages, etc. This will
     // vary based on application requirements, which is why it's not baked into the CalendarPanel.
     showMsg: function(msg){
       //  Ext.fly('app-msg').update(msg).removeClass('x-hidden');
     },
-    
+
     clearMsg: function(){
         //Ext.fly('app-msg').update('').addClass('x-hidden');
     },
-    
+
     setTimeToDate: function(value,dt) {
 		dt.setHours(value.substring ? value.substring(0,2) : value);
 		dt.setMinutes(value.substring ? value.substring(3,5) : 0);
@@ -502,7 +503,7 @@ Ext.calendar.DoctorScheduler = Ext.extend(Ext.Panel, {
         return dt;
     },
     confirmMsg: function(staff,start,end,el){
-    	Ext.Msg.confirm('Предупреждение',staff.data.Title + 
+    	Ext.Msg.confirm('Предупреждение',staff.data.Title +
         'в этот день не работает. Продолжить?',
           	function(btn){
 				if (btn=='yes') {
@@ -514,7 +515,7 @@ Ext.calendar.DoctorScheduler = Ext.extend(Ext.Panel, {
            	}
         );
     },
-    
+
     dayClickMW: function(vw, dt, ad, el){
     	var day = dt.getDay();
 		var date = dt.getDate();
@@ -524,7 +525,7 @@ Ext.calendar.DoctorScheduler = Ext.extend(Ext.Panel, {
         var routine = staff.data.Routine;
         var start;
         var end;
-                            	
+
         //Устанавливаем начальное и конечное время сегодняшней смены
         //Если у врача не указаны соответствующие поля, то берется рабочий день
         //из настроек в календаре
@@ -545,12 +546,12 @@ Ext.calendar.DoctorScheduler = Ext.extend(Ext.Panel, {
             	start = staff.data.PmSessionStarts;
                 end = staff.data.PmSessionEnds;
                 break;
-            default: 
+            default:
             	start = undefined;
                 end = undefined;
                 break;
         };
-            
+
         //Проверяем, работает ли сегодня врач
         //смотрим список дней в тэгах work_days
         var isWorking = true;
@@ -560,7 +561,7 @@ Ext.calendar.DoctorScheduler = Ext.extend(Ext.Panel, {
             	isWorking = false;
             }
         };
-            
+
         //смотрим четность/нечетность дня в routine
         //0 - любые дни
         //1 - четные
@@ -577,7 +578,7 @@ Ext.calendar.DoctorScheduler = Ext.extend(Ext.Panel, {
                 };
                 break;
             }
-                            	
+
         if (start) {
         	start = this.setTimeToDate(start,new Date(dt));
         } else {
@@ -588,7 +589,7 @@ Ext.calendar.DoctorScheduler = Ext.extend(Ext.Panel, {
         } else {
         	end = this.setTimeToDate(this.endHour,new Date(dt));
         };
-                       			
+
         if (isWorking) {
         	this.showEditWindow({
             	StartDate: start,
@@ -596,7 +597,7 @@ Ext.calendar.DoctorScheduler = Ext.extend(Ext.Panel, {
 	            IsAllDay: ad
     	    }, el,vw);
         } else {
-        Ext.Msg.confirm('Предупреждение',staff.data.Title + 
+        Ext.Msg.confirm('Предупреждение',staff.data.Title +
         				'в этот день не работает. Продолжить?',
 			function(btn){
 				if (btn=='yes') {

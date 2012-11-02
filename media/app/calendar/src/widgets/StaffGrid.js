@@ -2,11 +2,11 @@
 Ext.ns('Ext.calendar');
 Ext.calendar.StaffGrid = Ext.extend(Ext.grid.GridPanel, {
     initComponent : function() {
-		
+
 		this.proxy = new Ext.data.HttpProxy({
 		    url: get_api_url('possched')
 		});
-		
+
 		this.reader = new Ext.data.JsonReader({
 		    totalProperty: 'meta.total_count',
 		    successProperty: 'success',
@@ -38,40 +38,40 @@ Ext.calendar.StaffGrid = Ext.extend(Ext.grid.GridPanel, {
 		    proxy: this.proxy,
 		    reader: this.reader
 		});
-		
+
 		this.columns =  [{
-		    	header: "Врачи", 
+		    	header: "Врачи",
 		    	//width: 8,
 				//anchor:'100%',
-		    	sortable: true, 
+		    	sortable: true,
 		    	dataIndex: 'name'
 		    },{
-		    	header: " Должность", 
+		    	header: " Должность",
 		    	//width: 8,
 				//anchor:'100%',
-		    	sortable: true, 
+		    	sortable: true,
 		    	dataIndex: 'title'
 		    },{
-		    //	header: " Должность", 
+		    //	header: " Должность",
 		    	//width: 8,
 				//anchor:'100%',
 		    	hidden:true,
-		    	sortable: true, 
+		    	sortable: true,
 		    	dataIndex: 'department'
 		    }
-		];		
-		
+		];
+
 		this.store.on('load',function(){
 			this.getSelectionModel().selectFirstRow(0);
 		},this);
-		
+
 		this.on('afterrender',function(){
 			if (this.doctorMode){
 				this.store.setBaseParam('id',active_profile);
 			};
 			this.store.load();
 		});
-		
+
 		this.departmentStore = new Ext.data.RESTStore({
 			autoLoad : true,
 			apiUrl : get_api_url('department'),
@@ -82,7 +82,7 @@ Ext.calendar.StaffGrid = Ext.extend(Ext.grid.GridPanel, {
 				    {name: 'id'}
 				]
 		});
-		
+
 		this.departmentCB = new Ext.form.ClearableComboBox({
         	fieldLabel:'Отдел',
 			width:170,
@@ -114,7 +114,8 @@ Ext.calendar.StaffGrid = Ext.extend(Ext.grid.GridPanel, {
 			stripeRows:true,
 			border : false,
 			store:this.store,
-			//height:500,
+			autoScroll:true,
+			height:200,
 			columns:this.columns,
 			tbar: [this.departmentCB]
 			//sm : new Ext.grid.RowSelectionModel({
@@ -124,13 +125,13 @@ Ext.calendar.StaffGrid = Ext.extend(Ext.grid.GridPanel, {
 
 		Ext.apply(this, Ext.apply(this.initialConfig, config));
 		Ext.calendar.StaffGrid.superclass.initComponent.apply(this, arguments);
-		
+
 	},
-	
+
 	afterRender: function() {
 		this.getSelectionModel().selectFirstRow(0);
     }
-	
+
 });
 
 
@@ -152,6 +153,6 @@ Ext.calendar.StaffGrid = Ext.extend(Ext.grid.GridPanel, {
             }
         }
         }
-    }); 
+    });
 
 Ext.reg('staffgrid', Ext.calendar.StaffGrid);
