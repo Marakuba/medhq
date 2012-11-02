@@ -113,6 +113,7 @@ INSTALLED_APPS = [
     'patient',
     'pricelist',
     'promotion',
+    'pytils',
     'remoting',
     'reporting',
     'scheduler',
@@ -122,8 +123,8 @@ INSTALLED_APPS = [
     'taskmanager',
     'visit',
     'webapp',
-    
-        
+
+
     'django.contrib.admin',
     'django.contrib.auth',
     'django.contrib.contenttypes',
@@ -131,7 +132,7 @@ INSTALLED_APPS = [
     'django.contrib.sessions',
     'django.contrib.sites',
     'django.contrib.staticfiles',
-    
+
     'autocomplete',
     'constance',
     'dbtemplates',
