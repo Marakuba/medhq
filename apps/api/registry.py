@@ -2886,6 +2886,8 @@ api.register(PatientResource())
 api.register(InsurancePolicyResource())
 api.register(ContractResource())
 api.register(ContractTypeResource())
+api.register(DebtorResource())
+api.register(DepositorResource())
 
 #visit
 api.register(VisitResource())
@@ -2899,7 +2901,6 @@ api.register(RefundBasketResource())
 api.register(LabServiceResource())
 api.register(LabTestResource())
 api.register(ExamServiceResource())
-api.register(VisitPreorderResource())
 
 #lab
 api.register(InputListResource())
@@ -2926,18 +2927,20 @@ api.register(ExtendedServiceResource())
 api.register(LabServiceGroupResource())
 api.register(ICD10Resource())
 
-#state
+#staff
 api.register(PositionResource())
 api.register(StaffResource())
 api.register(StaffSchedResource())
 api.register(PosSchedResource())
+api.register(DoctorResource())
+
+#state
 api.register(StateResource())
 api.register(GenericStateResource())
 api.register(DepartmentResource())
 api.register(MedStateResource())
 api.register(OwnStateResource())
 api.register(InsuranceStateResource())
-api.register(DoctorResource())
 api.register(LabResource())
 
 #remoting
@@ -2975,6 +2978,7 @@ api.register(CalendarResource())
 api.register(PreorderResource())
 api.register(ExtPreorderResource())
 api.register(EventResource())
+api.register(VisitPreorderResource())
 
 #interlayer
 api.register(ClientItemResource())
@@ -2984,9 +2988,6 @@ api.register(AccountResource())
 api.register(ContentTypeResource())
 api.register(ClientAccountResource())
 api.register(PaymentResource())
-
-api.register(DebtorResource())
-api.register(DepositorResource())
 
 #promotion
 api.register(PromotionResource())
