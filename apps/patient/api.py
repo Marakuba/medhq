@@ -9,6 +9,7 @@ from api.resources import ExtResource, ComplexQuery
 from patient.models import Patient, InsurancePolicy, ContractType, Contract
 from django.db.models.query_utils import Q
 from tastypie.cache import SimpleCache
+from django.shortcuts import get_object_or_404
 
 
 class PatientResource(ExtResource):
@@ -162,9 +163,83 @@ class ContractResource(ExtResource):
         list_allowed_methods = ['get', 'post', 'put']
 
 
+class DebtorResource(ExtResource):
+
+    discount = fields.ForeignKey('pricelist.api.DiscountResource', 'discount', null=True)
+    client_item = fields.OneToOneField('interlayer.api.ClientItemResource', 'client_item', null=True)
+
+    def build_filters(self, filters=None):
+        if filters is None:
+            filters = {}
+
+        orm_filters = super(DebtorResource, self).build_filters(filters)
+
+        if "visit_id" in filters:
+            visit = get_object_or_404('visit.api.Visit', barcode__id=filters['visit_id'])
+
+            orm_filters = {"pk__exact": visit.patient.id}
+
+        if "search" in filters:
+
+            orm_filters.update(smartFilter(filters['search']))
+
+        return orm_filters
+
+    class Meta:
+        queryset = Patient.objects.filter(balance__lt=0)  # @UndefinedVariable
+        resource_name = 'debtor'
+        default_format = 'application/json'
+        authorization = DjangoAuthorization()
+        filtering = {
+            'last_name': ('istartswith',),
+            'id': ALL,
+            'discount': ALL_WITH_RELATIONS,
+            'hid_card': ALL
+        }
+        list_allowed_methods = ['get', 'post', 'put']
+
+
+class DepositorResource(ExtResource):
+
+    discount = fields.ForeignKey('pricelist.api.DiscountResource', 'discount', null=True)
+    client_item = fields.OneToOneField('interlayer.api.ClientItemResource', 'client_item', null=True)
+
+    def build_filters(self, filters=None):
+        if filters is None:
+            filters = {}
+
+        orm_filters = super(DepositorResource, self).build_filters(filters)
+
+        if "visit_id" in filters:
+            visit = get_object_or_404('visit.api.Visit', barcode__id=filters['visit_id'])
+
+            orm_filters = {"pk__exact": visit.patient.id}
+
+        if "search" in filters:
+
+            orm_filters.update(smartFilter(filters['search']))
+
+        return orm_filters
+
+    class Meta:
+        queryset = Patient.objects.filter(balance__gt=0)  # @UndefinedVariable
+        resource_name = 'depositor'
+        default_format = 'application/json'
+        authorization = DjangoAuthorization()
+        filtering = {
+            'last_name': ('istartswith',),
+            'id': ALL,
+            'discount': ALL_WITH_RELATIONS,
+            'hid_card': ALL
+        }
+        list_allowed_methods = ['get', 'post', 'put']
+
+
 api = Api(api_name='dashboard')
 
 api.register(PatientResource())
 api.register(InsurancePolicyResource())
 api.register(ContractResource())
 api.register(ContractTypeResource())
+api.register(DebtorResource())
+api.register(DepositorResource())
