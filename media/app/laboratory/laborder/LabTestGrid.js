@@ -3,87 +3,87 @@ Ext.ns('App.laborder');
 App.laborder.LabTestGrid = Ext.extend(Ext.grid.GridPanel, {
 
 	initComponent : function() {
-		
-		this.backend = App.getBackend('labtest');		
-		
+
+		this.backend = App.getBackend('labtest');
+
 		this.store = this.backend.store;
-		
+
 		this.columns =  [
 		    {
-		    	width: 8, 
+		    	width: 8,
 		    	hidden:true,
 		    	dataIndex: 'key'
 		    },{
-		    	width: 1, 
-		    	sortable: true, 
-		    	dataIndex: 'is_completed', 
+		    	width: 1,
+		    	sortable: true,
+		    	dataIndex: 'is_completed',
 		    	renderer: function(val,meta,record) {
 		    		flag = record.data.executed ? 'yes' : 'no';
 		    		return "<img src='"+MEDIA_URL+"admin/img/admin/icon-"+flag+".gif'>"
 		    	}
 		    },{
-		    	header: "№ заказа", 
-		    	width: 8, 
+		    	header: "№ заказа",
+		    	width: 8,
 //		    	hidden:true,
-		    	sortable: true, 
+		    	sortable: true,
 		    	dataIndex: 'barcode'
 		    },{
-		    	header: "Дата", 
-		    	width: 10, 
+		    	header: "Дата",
+		    	width: 10,
 //		    	hidden:true,
-		    	sortable: true, 
+		    	sortable: true,
 		    	dataIndex: 'created',
 		    	renderer:Ext.util.Format.dateRenderer('d.m.Y')
 		    },{
-		    	header: "Пациент", 
-		    	width: 50, 
+		    	header: "Пациент",
+		    	width: 50,
 //		    	hidden:true,
-		    	sortable: true, 
+		    	sortable: true,
 		    	dataIndex: 'patient'
 		    },{
-		    	header: "Лаборатория", 
+		    	header: "Лаборатория",
 		    	width: 23,
 		    	hidden:true,
 		    	dataIndex: 'laboratory'
 		    },{
-		    	header: "Исследование", 
-		    	width: 23, 
+		    	header: "Исследование",
+		    	width: 23,
 		    	hidden:true,
-		    	sortable: true, 
+		    	sortable: true,
 		    	dataIndex: 'service_name'
 		    },{
-		    	header: "Группа", 
-		    	width: 50, 
-		    	sortable: true, 
+		    	header: "Группа",
+		    	width: 50,
+		    	sortable: true,
 		    	hidden:true,
 		    	dataIndex: 'lab_group'
 		    },{
-		    	header: "Врач", 
+		    	header: "Врач",
 		    	width: 20,
 		    	dataIndex: 'staff_name'
 		    },/*{
-		    	width: 10, 
-		    	sortable: true, 
+		    	width: 10,
+		    	sortable: true,
 		    	header:'Напечатано',
-		    	dataIndex: 'is_printed', 
+		    	dataIndex: 'is_printed',
 		    	renderer: function(val, meta, record) {
 		    		flag = record.data.printed ? 'yes' : 'no';
 		    		return "<img src='"+MEDIA_URL+"admin/img/admin/icon-"+flag+".gif'>"
 		    	}
 		    },*/{
-		    	header: "Дата/время печати", 
-		    	width: 10, 
-		    	sortable: true, 
+		    	header: "Дата/время печати",
+		    	width: 10,
+		    	sortable: true,
 		    	dataIndex: 'printed',
 		    	renderer:function(val, meta, record) {
 		    		var p = record.data.printed;
 		    		var flag = p ? 'yes' : 'no';
 		    		var img = "<img src='"+MEDIA_URL+"admin/img/admin/icon-"+flag+".gif'>"
 		    		return String.format("{0} {1}", img, p ? Ext.util.Format.date(p, 'd.m.Y H:i') : "");
-		    	} 
+		    	}
 		    }
-		];		
-		
+		];
+
 		this.singleModeFunc = function(rec) {
 			return {
 				filtering: {
@@ -93,7 +93,7 @@ App.laborder.LabTestGrid = Ext.extend(Ext.grid.GridPanel, {
 				mode: 'single'
 			}
 		};
-		
+
 		this.orderModeFunc = function(rec) {
 			return {
 				filtering: {
@@ -102,7 +102,7 @@ App.laborder.LabTestGrid = Ext.extend(Ext.grid.GridPanel, {
 				mode: 'order'
 			}
 		};
-		
+
 		this.laborderModeFunc = function(rec) {
 			return {
 				filtering: {
@@ -112,8 +112,8 @@ App.laborder.LabTestGrid = Ext.extend(Ext.grid.GridPanel, {
 				mode: 'laborder'
 			}
 		};
-		
-		this.ttb = new Ext.Toolbar({ 
+
+		this.ttb = new Ext.Toolbar({
 			items:['Период',{
 				xtype:'datefield',
 				format:'d.m.Y',
@@ -185,8 +185,8 @@ App.laborder.LabTestGrid = Ext.extend(Ext.grid.GridPanel, {
 	            },
 	            scope:this
 	        })]
-		}); 
-		
+		});
+
 		var config = {
 			id:'lab-test-grid',
 			title:'Журнал заказов по услугам',
@@ -218,7 +218,7 @@ App.laborder.LabTestGrid = Ext.extend(Ext.grid.GridPanel, {
 //				" <span style='padding-left:10px; color:black;'>{[values.rs[0].data['patient']]}</span>" +
 //				" <span style='padding-left:10px; color:gray;font-variant:italic'>{[values.rs[0].data['laboratory']]}</span>"
 				//getRowClass : this.applyRowClass
-			})			
+			})
 		}
 
 		Ext.apply(this, Ext.apply(this.initialConfig, config));
@@ -232,34 +232,34 @@ App.laborder.LabTestGrid = Ext.extend(Ext.grid.GridPanel, {
 			this.storeFilter('created__lte', date.format('Y-m-d 23:59'), false);
 			this.store.load();
 		}, this);
-		
+
 		this.on('destroy', function(){
-		    App.eventManager.un('globalsearch', this.onGlobalSearch, this); 
+		    App.eventManager.un('globalsearch', this.onGlobalSearch, this);
 		},this);
 	},
-	
+
 	onContextMenu: function(grid, index, e) {
 		console.log(grid);
 		console.log(index);
 		console.log(e);
 	},
-	
+
 	onOpen: function(f){
 		var rec = this.getSelected();
 		if(rec && Ext.isFunction(f)) {
 			config = f(rec);
-			Ext.apply(config, { 
+			Ext.apply(config, {
 				orderRecord:rec,
 				orderModel:this.backend.getModel(),
 				scope:this,
 				fn:function(rec) {
-					
+
 				}
 			});
 			App.eventManager.fireEvent('launchapp', 'resultgrid', config);
 		}
 	},
-	
+
 	onGlobalSearch: function(v) {
 		if(v) {
 			var letter = v.charAt(0);
@@ -278,7 +278,7 @@ App.laborder.LabTestGrid = Ext.extend(Ext.grid.GridPanel, {
 			this.store.load();
 		}
 	},
-	
+
 	storeFilter: function(field, value, autoLoad){
 		var autoLoad = autoLoad==undefined ? true : autoLoad;
 		if(value==undefined) {
@@ -290,11 +290,11 @@ App.laborder.LabTestGrid = Ext.extend(Ext.grid.GridPanel, {
 			this.store.load();
 		}
 	},
-	
+
 	initToolbar: function(){
 		// laboratory
 		Ext.Ajax.request({
-			url:get_api_url('medstate'),
+			url:App.getApiUrl('medstate'),
 			method:'GET',
 			success:function(resp, opts) {
 				this.ttb.add({
@@ -326,11 +326,11 @@ App.laborder.LabTestGrid = Ext.extend(Ext.grid.GridPanel, {
 			},
 			scope:this
 		});
-		
+
 		//group
-		
+
 		/*Ext.Ajax.request({
-			url:get_api_url('labgroup'),
+			url:App.getApiUrl('labgroup'),
 			method:'GET',
 			success:function(resp, opts) {
 				this.ttb.add({
@@ -360,20 +360,20 @@ App.laborder.LabTestGrid = Ext.extend(Ext.grid.GridPanel, {
 			},
 			scope:this
 		});		*/
-		
+
 	},
-	
+
 	getSelected: function() {
 		return this.getSelectionModel().getSelected()
 	},
-	
+
 	onPrint: function() {
 		var id = this.getSelected().data.id;
 		var url = ['/lab/print/results',id,''].join('/');
 		window.open(url);
 	}
 
-	
+
 });
 
 

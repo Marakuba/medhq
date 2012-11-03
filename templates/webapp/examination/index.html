@@ -11,15 +11,15 @@
 	{% endassets %}
 
 	<style>
-    	body, button, input, select, textarea { 
-    		font-family: Arial,Helvetica,Helvetica Neue,Verdana,sans-serif; 
+    	body, button, input, select, textarea {
+    		font-family: Arial,Helvetica,Helvetica Neue,Verdana,sans-serif;
     		color: #222;
-    		background-color: #DDD; 
+    		background-color: #DDD;
     	}
-    	
+
     	#ct {
     	}
-    	
+
     	.placeholder {
     		background-color: white;
     		padding:10px;
@@ -28,80 +28,80 @@
     		-moz-user-select: none;
     		cursor: default;
     	}
-    	
+
     	.placeholder .section {
     		border:1px solid white;
     		padding:5px;
     	}
-    	
+
     	.placeholder .section.private {
     		background-color: #FFF9A8;
     	}
-    	
+
     	.placeholder .section.not-printable {
     		border:1px dotted gray;
     	}
-    	
+
     	.placeholder .section:hover {
     		border:1px dashed #879DFF;
     	}
-    	
+
     	.tpl-print-name, .placeholder .title span, .header-editor {
     		font-weight:bold;
     		font-size:20px;
     	}
-    	
+
     	.placeholder .content, .placeholder .content-title {
     		margin:10px 0;
     		min-height: 60px;
     		font-size:14px;
     	}
-    	
+
     	.placeholder .content-title {
     		min-height: 28px;
     		text-align:center;
     		font-size:18px;
     		font-weight:bold;
     	}
-    	
+
     	.placeholder .content.empty-body, .placeholder .content-title.empty-body {
     		color:#CCC;
     		font-size:14px;
     		font-style: italic;
     	}
-    	
+
     	.placeholder .content-title.empty-body {
     		font-size:20px;
     	}
-    	
+
     	.placeholder .content.selected {
     		background-color:#D8DFF8;
     	}
-    	
+
     	.placeholder .title.empty-header {
     		color:#CCC;
     		font-size:14pt;
     		font-style: italic;
     	}
-    	
+
     	.placeholder .content em {
     		font-style: italic;
     	}
-    	
+
     	.placeholder .content strong {
     		font-weight: bold;
     	}
-    	
+
     	.placeholder .content ol {
     		list-style-type: decimal;
     		list-style-position: inside;
     	}
-    	
+
     	.placeholder .content ul {
     		list-style-type: disc;
     		list-style-position: inside;
     	}
-    	
+
     	.text-editor {
     		font-size:10pt;
     	}
@@ -109,57 +109,57 @@
     	.help-node {
     		font-style: italic;
     	}
-    	
+
     	.tab-title {
     		font-size:15pt;
     		margin-bottom:5px;
     	}
-    	
+
     	.tab-subtitle {
     		font-size:11px;
     		color:#BBB;
     		margin-bottom:9px;
     	}
     </style>
-    
+
     {% include "webapp/includes/active_profile.html" %}
-    
+
     {% autoescape off %}
 	<script type="text/javascript">
 		var state = '{{ request.active_profile.state }}';
 		var MEDIA_URL = '{{ STATIC_URL }}';
 		var API_URL = '/api/v1';
-		function get_api_url(resource){
+		function App.getApiUrl(resource){
 			return [API_URL,'dashboard',resource].join("/");
 		};
-		
+
 		var apps = {{ apps }};
 		var section_scheme = {{ section_scheme }};
 		var quests = {{questionnaires}}
 		var required_tickets = {{required_tickets}}
 	</script>
-	
+
 	{% endautoescape %}
-	
+
     {% assets "js_ext" %}
 	 <script type="text/javascript" src="{{ ASSET_URL }}"></script>
 	{% endassets %}
-	
+
 	{% assets "js_for_all" %}
 	 <script type="text/javascript" src="{{ ASSET_URL }}"></script>
 	{% endassets %}
-	
+
 	<script type="text/javascript">
 		Raven.config("{{sentry_dsn}}");
 	</script>
-	
+
 	<script type="text/javascript" src="/webapp/settings/"></script>
 	<script src="/direct/provider.js/"></script>
-	
+
 	{% assets "js_examination" %}
 	    <script type="text/javascript" src="{{ ASSET_URL }}"></script>
 	{% endassets %}
-    
+
     {% include "webapp/examination/extra.html" %}
 
 {% endblock %}

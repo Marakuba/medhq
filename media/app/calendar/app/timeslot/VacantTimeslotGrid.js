@@ -3,11 +3,11 @@ Ext.ns('App','App.registry');
 App.calendar.VacantTimeslotGrid = Ext.extend(Ext.grid.GridPanel, {
 
 	initComponent : function() {
-		
+
 		this.store = this.store ? this.store : new Ext.data.RESTStore({
 			autoLoad : false,
 			autoSave : true,
-			apiUrl : get_api_url('event'),
+			apiUrl : App.getApiUrl('event'),
 			model: [
 				    {name: 'resource_uri'},
 				    {name: 'start',type:'date',format:'c'},
@@ -17,27 +17,27 @@ App.calendar.VacantTimeslotGrid = Ext.extend(Ext.grid.GridPanel, {
 				    {name: 'cid'},
 				    {name: 'staff'}
 				]
-		}); 
-		
+		});
+
 		this.start_date = new Date();
-		
+
 		this.columns =  [
 		    {
-		    	header: "С", 
-		    	width: 60, 
-		    	sortable: true, 
+		    	header: "С",
+		    	width: 60,
+		    	sortable: true,
 		    	dataIndex: 'start',
 		    	hide: this.patient ? true : false,
 		    	renderer:Ext.util.Format.dateRenderer('H:i d.m.Y')
 		    },{
-		    	header: "По", 
-		    	width: 60, 
-		    	sortable: true, 
+		    	header: "По",
+		    	width: 60,
+		    	sortable: true,
 		    	dataIndex: 'end',
 		    	renderer:Ext.util.Format.dateRenderer('H:i d.m.Y')
 		     }
-		];		
-		
+		];
+
 		this.choiceButton = new Ext.Button({
 			iconCls:'silk-accept',
 			disabled:true,
@@ -45,8 +45,8 @@ App.calendar.VacantTimeslotGrid = Ext.extend(Ext.grid.GridPanel, {
 			handler:this.onChoice.createDelegate(this, []),
 			scope:this
 		});
-		
-		
+
+
 		this.startDateField = new Ext.form.DateField({
 			plugins:[new Ext.ux.netbox.InputTextMask('99.99.9999')], // маска ввода __.__._____ - не надо точки ставить
 			minValue:new Date(1901,1,1),
@@ -60,7 +60,7 @@ App.calendar.VacantTimeslotGrid = Ext.extend(Ext.grid.GridPanel, {
 				scope:this
 			}
 		});
-		
+
 		var config = {
 			id:'preorder-grid',
 			loadMask : {
@@ -85,7 +85,7 @@ App.calendar.VacantTimeslotGrid = Ext.extend(Ext.grid.GridPanel, {
                     },
                     dblclick: function(e) {
                     	this.onChoice();
-                    }, 
+                    },
                     scope:this
                 }
 			}),
@@ -113,7 +113,7 @@ App.calendar.VacantTimeslotGrid = Ext.extend(Ext.grid.GridPanel, {
 				getRowClass: function(record, index, p, store) {
                		return 'preorder-actual-row-body';
         		}
-			},	
+			},
 			listeners: {
 //				rowdblclick:this.onVisit.createDelegate(this, []),
 //				scope:this
@@ -124,7 +124,7 @@ App.calendar.VacantTimeslotGrid = Ext.extend(Ext.grid.GridPanel, {
 		App.calendar.VacantTimeslotGrid.superclass.initComponent.apply(this, arguments);
 		App.eventManager.on('globalsearch', this.onGlobalSearch, this);
 		this.on('destroy', function(){
-		    App.eventManager.un('globalsearch', this.onGlobalSearch, this); 
+		    App.eventManager.un('globalsearch', this.onGlobalSearch, this);
 		},this);
 		this.store.on('write', function(){
 			var record = this.getSelected();
@@ -148,22 +148,22 @@ App.calendar.VacantTimeslotGrid = Ext.extend(Ext.grid.GridPanel, {
 			this.store.setBaseParam('start__year', year);
 			this.store.setBaseParam('start__month', month);
 			this.store.setBaseParam('start__day', day);
-			this.store.load()}, 
+			this.store.load()},
 		this);
 	},
-	
+
 	btnSetDisabled: function(status) {
         this.choiceButton.setDisabled(status);
 	},
-	
+
 	onTimeslotSelect: function(record){
         this.choiceButton.setDisabled(true);
 	},
-	
+
 	getSelected: function() {
 		return this.getSelectionModel().getSelected()
 	},
-	
+
 	onChoice: function() {
         var record = this.getSelected();
         if (record) {
@@ -172,7 +172,7 @@ App.calendar.VacantTimeslotGrid = Ext.extend(Ext.grid.GridPanel, {
         	Ext.Msg.alert('Уведомление','Ничего не выбрано')
         }
     },
-    
+
     storeFilter: function(field, value){
 		if(!value) {
 			delete this.store.baseParams[field]
@@ -189,7 +189,7 @@ App.calendar.VacantTimeslotGrid = Ext.extend(Ext.grid.GridPanel, {
 		},scope:this});
 		this.btnSetDisabled(true);
 	},
-	
+
 	storeDateFilter: function(field, value){
 		if(!value) {
 			delete this.store.baseParams[field+'__year'];
@@ -213,14 +213,14 @@ App.calendar.VacantTimeslotGrid = Ext.extend(Ext.grid.GridPanel, {
 		},scope:this});
 		this.btnSetDisabled(true);
 	},
-	
+
 	onPrevClick: function(){
 		this.start_date = this.start_date.add(Date.DAY,-1);
 		this.startDateField.setValue(this.start_date);
 		this.storeDateFilter('start',this.start_date);
 		this.btnSetDisabled(true);
 	},
-	
+
 	onNextClick: function(){
 		this.start_date = this.start_date.add(Date.DAY,1);
 		this.startDateField.setValue(this.start_date);

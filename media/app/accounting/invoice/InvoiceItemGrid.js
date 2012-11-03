@@ -2,13 +2,13 @@ Ext.ns('App.accounting');
 
 
 App.accounting.InvoiceItemGrid = Ext.extend(Ext.grid.EditorGridPanel, {
-    
+
     initComponent: function() {
-        
+
         this.store = new Ext.data.RESTStore({
             autoSave : false,
             autoLoad : false,
-            apiUrl : get_api_url('acc_invoice_item'),
+            apiUrl : App.getApiUrl('acc_invoice_item'),
             model: App.models.AccountingInvoiceItem
         });
 

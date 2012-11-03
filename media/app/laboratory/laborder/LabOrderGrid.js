@@ -3,11 +3,11 @@ Ext.ns('App.laboratory');
 App.laboratory.LabOrderGrid = Ext.extend(Ext.grid.GridPanel, {
 
 	initComponent : function() {
-		
+
 		this.store = new Ext.data.RESTStore({
 			autoSave : true,
 			autoLoad : false,
-			apiUrl : get_api_url('laborder'),
+			apiUrl : App.getApiUrl('laborder'),
 			model: App.models.LabOrder
 		});
 //		this.store.setBaseParam('is_manual',false);
@@ -21,67 +21,67 @@ App.laboratory.LabOrderGrid = Ext.extend(Ext.grid.GridPanel, {
   		    ['staff','staff','Врач'],
   		    ['patient','visit__patient','Пациент']
   		];
-		   		
+
 		this.columns =  [{
 				id: 'order',
-		    	header: "Заказ", 
-		    	width: 9, 
-		    	sortable: true, 
+		    	header: "Заказ",
+		    	width: 9,
+		    	sortable: true,
 		    	dataIndex: 'barcode',
 		    	renderer:function(v,opts,rec) {
-		    		return String.format("<div><b>{0}</b><span>{1}</span><br><span>{2}</span></div>", 
-		    				v, Ext.util.Format.date(rec.data.visit_created,'d.m.y'), Ext.util.Format.date(rec.data.visit_created,'H:i')) 
+		    		return String.format("<div><b>{0}</b><span>{1}</span><br><span>{2}</span></div>",
+		    				v, Ext.util.Format.date(rec.data.visit_created,'d.m.y'), Ext.util.Format.date(rec.data.visit_created,'H:i'))
 		    	}
 		    },{
-		    	header: "Дата", 
-		    	width: 10, 
-		    	sortable: true, 
+		    	header: "Дата",
+		    	width: 10,
+		    	sortable: true,
 		    	hidden:true,
 		    	dataIndex: 'visit_created',
 		    	renderer:Ext.util.Format.dateRenderer('d.m.Y')
 		    },{
-		    	header: "Пациент", 
-		    	width: 38, 
-		    	sortable: true, 
+		    	header: "Пациент",
+		    	width: 38,
+		    	sortable: true,
 		    	dataIndex: 'patient_name'
 		    },{
 		    	id:'laboratory',
-		    	header: "Офис / Оператор", 
+		    	header: "Офис / Оператор",
 		    	width: 18,
 		    	dataIndex: 'office_name',
 		    	renderer:function(v,opts,rec) {
-		    		return String.format('<div style="{2}"><b>{0}</b>{3}<p>{1}</p></div>', 
-		    				v, 
-		    				rec.data.operator_name, 
-		    				rec.data.is_manual ? 'background:#DDD;' : '', 
-		    				rec.data.payer_name==v ? '' : '<p><em>'+rec.data.payer_name+'</em></p>') 
+		    		return String.format('<div style="{2}"><b>{0}</b>{3}<p>{1}</p></div>',
+		    				v,
+		    				rec.data.operator_name,
+		    				rec.data.is_manual ? 'background:#DDD;' : '',
+		    				rec.data.payer_name==v ? '' : '<p><em>'+rec.data.payer_name+'</em></p>')
 		    	}
 		    },{
 		    	id:'staff',
-		    	header: "Лаб. / Врач", 
+		    	header: "Лаб. / Врач",
 		    	width: 16,
 		    	dataIndex: 'staff_name',
 		    	renderer:function(v,opts,rec) {
-		    		return String.format("<div><b>{0}</b><p>{1}</p><span>{2}</span></div>", 
-		    				rec.data.laboratory_name, v, Ext.util.Format.date(rec.data.executed,'d.m.y')) 
+		    		return String.format("<div><b>{0}</b><p>{1}</p><span>{2}</span></div>",
+		    				rec.data.laboratory_name, v, Ext.util.Format.date(rec.data.executed,'d.m.y'))
 		    	}
 		    },{
-		    	header: "Выполнено", 
-		    	width: 11, 
+		    	header: "Выполнено",
+		    	width: 11,
 		    	hidden:true,
-		    	sortable: true, 
+		    	sortable: true,
 		    	dataIndex: 'executed',
 		    	renderer:Ext.util.Format.dateRenderer('d.m.Y H:i')
 		    }
-		];		
-		
+		];
+
 		this.openBtn = new Ext.Button({
 			text:'Открыть заказ',
 			disabled:true,
 			handler:this.onOpen.createDelegate(this, [this.laborderModeFunc]),
 			scope:this
 		});
-		
+
 		this.labs = new Ext.CycleButton({
             showText: true,
             prependText: 'Лаборатория: ',
@@ -91,8 +91,8 @@ App.laboratory.LabOrderGrid = Ext.extend(Ext.grid.GridPanel, {
                 filterValue:undefined
             }]
 		});
-		
-		this.ttb = new Ext.Toolbar({ 
+
+		this.ttb = new Ext.Toolbar({
 			items:[{
 				text:'Фильтр',
 				handler:function(){
@@ -138,12 +138,12 @@ App.laboratory.LabOrderGrid = Ext.extend(Ext.grid.GridPanel, {
 	            },
 	            scope:this
 	        })]
-		}); 
-		
+		});
+
 		this.filterText = new Ext.Toolbar.TextItem({
 			text:'Фильтры не используются'
 		});
-		
+
 		var config = {
 			loadMask : {
 				msg : 'Подождите, идет загрузка...'
@@ -204,7 +204,7 @@ App.laboratory.LabOrderGrid = Ext.extend(Ext.grid.GridPanel, {
 			this.updateFilters(filters);
 		}, this);
 	},
-	
+
 	onServiceClick : function(grid,rowIndex,e){
 		var rec = grid.getStore().getAt(rowIndex);
 		var sel_rec = this.getSelectionModel().getSelected();
@@ -214,7 +214,7 @@ App.laboratory.LabOrderGrid = Ext.extend(Ext.grid.GridPanel, {
 			this.stopSelection = false;
 		}
 	},
-	
+
 	printBarcode : function(){
 		var rec = this.getSelected();
 		if(rec){
@@ -227,7 +227,7 @@ App.laboratory.LabOrderGrid = Ext.extend(Ext.grid.GridPanel, {
 			win.show();
 		}
 	},
-	
+
 	updateFilters : function(filters) {
 		this.fireEvent('updatefilters');
 		if(filters) {
@@ -242,7 +242,7 @@ App.laboratory.LabOrderGrid = Ext.extend(Ext.grid.GridPanel, {
 		}
 		this.store.load();
 	},
-	
+
 	updateFilterStatus : function(filters) {
 		var filtersText = [];
 		Ext.each(this.fields, function(field){
@@ -254,27 +254,27 @@ App.laboratory.LabOrderGrid = Ext.extend(Ext.grid.GridPanel, {
 		this.filterText.setText(filtersText.length ? String.format('{0}',filtersText.join(' ')) : 'Фильтры не используются');
 		this.getTopToolbar().items.itemAt(1).setVisible(filtersText.length>0);
 	},
-	
+
 	onOpen: function(f){
 		var rec = this.getSelected();
 		if(rec) {
-			config = { 
+			config = {
 				labOrderRecord:rec,
 				scope:this,
 				fn:function(rec) {
-					
+
 				}
 			}
 			App.eventManager.fireEvent('launchapp', 'resultgrid', config);
 		}
 	},
-	
+
 	onGlobalSearch: function(v){
 		var s = this.store;
 		s.setBaseParam('search', v);
 		s.load();
 	},
-	
+
 	storeFilter: function(field, value, autoLoad){
 		var autoLoad = autoLoad==undefined ? true : autoLoad;
 		if(value==undefined) {
@@ -286,11 +286,11 @@ App.laboratory.LabOrderGrid = Ext.extend(Ext.grid.GridPanel, {
 			this.store.load();
 		}
 	},
-	
+
 	initLabs: function(){
 		// laboratory
 		Ext.Ajax.request({
-			url:get_api_url('medstate'),
+			url:App.getApiUrl('medstate'),
 			method:'GET',
 			success:function(resp, opts) {
 				var jsonResponse = Ext.util.JSON.decode(resp.responseText);
@@ -318,20 +318,20 @@ App.laboratory.LabOrderGrid = Ext.extend(Ext.grid.GridPanel, {
 			},
 			scope:this
 		});
-		
+
 	},
-	
+
 	getSelected: function() {
 		return this.getSelectionModel().getSelected()
 	},
-	
+
 	onPrint: function() {
 		var id = this.getSelected().data.id;
 		var url = ['/lab/print/results',id,''].join('/');
 		window.open(url);
 	}
 
-	
+
 });
 
 

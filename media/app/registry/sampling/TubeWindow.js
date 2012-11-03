@@ -13,7 +13,7 @@ App.sampling.TubeWindow = Ext.extend(Ext.Window, {
 	        	name:'laboratory',
 			    store: new Ext.data.JsonStore({
 					proxy: new Ext.data.HttpProxy({
-						url:get_api_url('medstate'),
+						url:App.getApiUrl('medstate'),
 						method:'GET'
 					}),
 					root:'objects',
@@ -29,8 +29,8 @@ App.sampling.TubeWindow = Ext.extend(Ext.Window, {
 			    displayField: 'name',
 			    selectOnFocus:true
 			})
-		};		
-		
+		};
+
 		this.tube = {
 			layout:'form',
 			items:new Ext.form.ComboBox({
@@ -40,7 +40,7 @@ App.sampling.TubeWindow = Ext.extend(Ext.Window, {
 	        	name:'tube',
 			    store: new Ext.data.JsonStore({
 					proxy: new Ext.data.HttpProxy({
-						url:get_api_url('tube'),
+						url:App.getApiUrl('tube'),
 						method:'GET'
 					}),
 					root:'objects',
@@ -56,8 +56,8 @@ App.sampling.TubeWindow = Ext.extend(Ext.Window, {
 			    displayField: 'name',
 			    selectOnFocus:true
 			})
-		};		
-		
+		};
+
 		this.form = new Ext.form.FormPanel({
 			baseCls:'x-plain',
 			padding:10,
@@ -67,7 +67,7 @@ App.sampling.TubeWindow = Ext.extend(Ext.Window, {
 			},
 			items:[this.lab, this.tube]
 		});
-		
+
 		config = {
 			title:'Новая пробирка',
 			width:600,

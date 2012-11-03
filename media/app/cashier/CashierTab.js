@@ -13,17 +13,17 @@ function websocket_init() {
   App.ws.onopen = function() {
     Ext.MessageBox.alert("Web Socket","printserver connected");
   };
-  
+
   App.ws.onmessage = function(e) {
     // обрабатываем входящее сообщение от сервера
 	Ext.MessageBox.alert("Web Socket","printserver message: " + e.data);
   };
-  
+
   // функция при закрытии соединения
   App.ws.onclose = function() {
 	  Ext.MessageBox.alert("Web Socket","printserver disconnected");
   };
-  
+
   // при ошибке
   App.ws.onerror = function() {
 	  Ext.MessageBox.alert("Web Socket","printserver error");
@@ -32,17 +32,17 @@ function websocket_init() {
 }
 
 App.cashier.CashierTab = Ext.extend(Ext.Panel, {
-	
+
 	initComponent: function(){
-		
+
 		websocket_init();
-		
+
 		this.visitStore = new Ext.data.RESTStore({
 			autoLoad : true,
-			apiUrl : get_api_url('visit'),
+			apiUrl : App.getApiUrl('visit'),
 			model: App.models.visitModel
 		});
-		
+
 		this.visitField = new Ext.form.NumberField({ //Поле для ввода количества продуктов
             fieldLabel: 'Заказ №',
             width: 70,
@@ -58,8 +58,8 @@ App.cashier.CashierTab = Ext.extend(Ext.Panel, {
                 scope:this
             }
         });
-        
-    
+
+
         this.prompt = new Ext.Window({
             layout:'fit',
             title: 'Введите номер заказа',
@@ -67,11 +67,11 @@ App.cashier.CashierTab = Ext.extend(Ext.Panel, {
             height:180,
             closeAction:'hide',
             items: new Ext.FormPanel({
-                labelWidth: 80, 
+                labelWidth: 80,
                 bodyStyle: 'padding:5px 5px 0',
                 width: 100,
                 defaultType: 'textfield',
-        
+
                 items: [ this.visitField,
                 {
                 	xtype:'tbtext',
@@ -82,7 +82,7 @@ App.cashier.CashierTab = Ext.extend(Ext.Panel, {
                 	id:'sum-field',
                 	text:''
                 }],
-                
+
                 buttons: [{
                     text:'Найти',
                     scope: this,
@@ -122,7 +122,7 @@ App.cashier.CashierTab = Ext.extend(Ext.Panel, {
 			rec = s.getAt(0);
 			var a;
         },this);
-		
+
 		this.menuBar = new Ext.Panel({
 			region:'west',
 			//frame:true,
@@ -160,7 +160,7 @@ App.cashier.CashierTab = Ext.extend(Ext.Panel, {
 				scope:this
 			}]
 		});
-	
+
 		this.mainPanel = new Ext.TabPanel({
 			activeTab:0,
 			region:'center',
@@ -178,7 +178,7 @@ App.cashier.CashierTab = Ext.extend(Ext.Panel, {
 					xtype:'depositorgrid'
 				}]
 		});
-	
+
 		config = {
 			id:'cashier-tab',
 			closable:true,
@@ -187,12 +187,12 @@ App.cashier.CashierTab = Ext.extend(Ext.Panel, {
 			border:false,
 			layout:'border',
 			items:[this.menuBar,this.mainPanel]
-			
+
 		}
 		Ext.apply(this, Ext.apply(this.initialConfig, config));
 		App.cashier.CashierTab.superclass.initComponent.apply(this, arguments);
 	},
-	
+
 	onVisitSearch: function(v){
 		this.prompt.show();
 		/*if (this.visitStore){
@@ -210,9 +210,9 @@ App.cashier.CashierTab = Ext.extend(Ext.Panel, {
 			var a;
 		}*/
 	},
-	
+
 	onPay: function(){
-		
+
 			this.win = new App.billing.PaymentWindow({
 				is_income : true,
 				amount:Math.abs(this.amount),
@@ -221,7 +221,7 @@ App.cashier.CashierTab = Ext.extend(Ext.Panel, {
 			this.win.show();
 		this.prompt.hide();
 	},
-	
+
 	onVisitFinded: function(records,opt,success) {
 		if (records) {
 			var rec = records[0];
@@ -232,7 +232,7 @@ App.cashier.CashierTab = Ext.extend(Ext.Panel, {
             this.amount = rec.data.total_price;
 		}
 	}
-	
+
 });
 
 Ext.reg('cashiertab', App.cashier.CashierTab);

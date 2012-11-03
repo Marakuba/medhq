@@ -12,10 +12,10 @@ App.patient.ClientAccountGrid = Ext.extend(Ext.grid.GridPanel, {
 	        disabled: true,
 	        scope:this
 		});
-		
+
 		this.store = new Ext.data.Store({
 			//autoLoad:true,
-			
+
 			autoSave:false,
 		    baseParams: {
 		    	format:'json'
@@ -28,7 +28,7 @@ App.patient.ClientAccountGrid = Ext.extend(Ext.grid.GridPanel, {
 			},
 		    restful: true,
 		    proxy: new Ext.data.HttpProxy({
-			    url: get_api_url('clientaccount')
+			    url: App.getApiUrl('clientaccount')
 			}),
 		    reader: new Ext.data.JsonReader({
 			    totalProperty: 'meta.total_count',
@@ -57,7 +57,7 @@ App.patient.ClientAccountGrid = Ext.extend(Ext.grid.GridPanel, {
 		    	scope:this
 		    }
 		});
-		
+
 		if (this.record && this.record.data.client_item) {
 			try {
 				var client_item_id = App.uriToId(this.record.data.client_item);
@@ -66,7 +66,7 @@ App.patient.ClientAccountGrid = Ext.extend(Ext.grid.GridPanel, {
 			} catch(e) {
 			}
 		}
-		
+
 		this.columns =  [
 		    {
 		    	header: "Пациент",
@@ -77,21 +77,21 @@ App.patient.ClientAccountGrid = Ext.extend(Ext.grid.GridPanel, {
 		    },{
 		    	header: "Лицевой счет",
 		    	width:'25%',
-		    	sortable: true, 
+		    	sortable: true,
 		    	dataIndex: 'account_id'
 		    },{
-		    	header: "Баланс", 
+		    	header: "Баланс",
 		    	xtype:'numbercolumn',
-		    	width: '25%', 
-		    	sortable: true, 
+		    	width: '25%',
+		    	sortable: true,
 		    	dataIndex: 'amount'
 		    }
-		];		
-		
-		this.ttb = new Ext.Toolbar({ 
+		];
+
+		this.ttb = new Ext.Toolbar({
 			items:[this.addButton,'->']
-		}); 
-		
+		});
+
 		var config = {
 			title:'Лицевые счета',
 			//closable:true,
@@ -112,24 +112,24 @@ App.patient.ClientAccountGrid = Ext.extend(Ext.grid.GridPanel, {
 	            displayInfo: true,
 	            displayMsg: 'Показана запись {0} - {1} из {2}',
 	            emptyMsg: "Нет записей"
-	        }),			
+	        }),
 			view : new Ext.grid.GridView({
 				forceFit : true,
 				emptyText: 'Нет записей'
 				//getRowClass : this.applyRowClass
 			})
-			
+
 		}
 
 		Ext.apply(this, Ext.apply(this.initialConfig, config));
 		App.patient.ClientAccountGrid.superclass.initComponent.apply(this, arguments);
 		//App.eventManager.on('globalsearch', this.onGlobalSearch, this);
 	},
-	
+
 	onGlobalSearch: function(v) {
 		this.storeFilter('search', v);
 	},
-	
+
 	storeFilter: function(field, value){
 		if(value===undefined) {
 			delete this.store.baseParams[field]
@@ -138,17 +138,17 @@ App.patient.ClientAccountGrid = Ext.extend(Ext.grid.GridPanel, {
 		}
 		this.store.load();
 	},
-	
+
 	getSelected: function() {
 		return this.getSelectionModel().getSelected()
 	},
-	
+
 	onPrint: function() {
 //		var id = this.getSelected().data.id;
 //		var url = ['/lab/print/results',id,''].join('/');
 //		window.open(url);
 	},
-	
+
 	onCreate: function() {
 		this.fireEvent('newitem');
 		/*var data = {
@@ -161,7 +161,7 @@ App.patient.ClientAccountGrid = Ext.extend(Ext.grid.GridPanel, {
 		};
         App.eventManager.fireEvent('openform','clientaccountcreate',data)*/
 	},
-	
+
 	onChange: function(rowindex){
 	/*	var record = this.getSelected();
 		if(record) {
@@ -177,11 +177,11 @@ App.patient.ClientAccountGrid = Ext.extend(Ext.grid.GridPanel, {
         App.eventManager.fireEvent('openform','clientaccountcreate',data)
 		}*/
 	},
-	
+
 	onDelete: function() {
-		
+
 	},
-	
+
 	getSteps: function(){
 		var steps = 0;
 		var m = this.store.getModifiedRecords().length;
@@ -190,12 +190,12 @@ App.patient.ClientAccountGrid = Ext.extend(Ext.grid.GridPanel, {
 		steps+=d;
 		return steps;
 	},
-	
+
 	onPatientCreate: function(record) {
 		this.record = record;
 		this.onSave();
 	}
-	
+
 });
 
 

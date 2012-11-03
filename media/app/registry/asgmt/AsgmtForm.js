@@ -1,11 +1,11 @@
 Ext.ns('App.assignment');
 
 App.assignment.AsgmtForm = Ext.extend(Ext.FormPanel, {
-	
+
 	initComponent:function(){
 
 		this.inlines = new Ext.util.MixedCollection({});
-		
+
 		this.preorderStore = new Ext.data.RESTStore({
 			autoLoad : false,
 			autoSave : true,
@@ -13,7 +13,7 @@ App.assignment.AsgmtForm = Ext.extend(Ext.FormPanel, {
 					    encode: false,
 					    writeAllFields: false
 					}),
-			apiUrl : get_api_url('extpreorder'),
+			apiUrl : App.getApiUrl('extpreorder'),
 			model: App.models.preorderModel,
 		    doTransaction : function(action, rs, batch) {
 		        function transaction(records) {
@@ -27,7 +27,7 @@ App.assignment.AsgmtForm = Ext.extend(Ext.FormPanel, {
 		        transaction.call(this, rs);
 		    }
 		});
-		
+
 		this.preorderGrid = new App.assignment.PreorderInlineGrid({
 //			record:this.record,
 			type:this.type,
@@ -41,14 +41,14 @@ App.assignment.AsgmtForm = Ext.extend(Ext.FormPanel, {
 				}
 			}
 		});
-		
+
 		this.preorderGrid.store.on('write', function(){
 			this.fireEvent('popstep');
 		}, this);
 
 		this.inlines.add('preordergrid', this.preorderGrid);
-		
-		
+
+
 		this.servicePanel = new App.ServiceTreeGrid({
 	        region: 'east',
 		    margins:'5 5 5 0',
@@ -66,9 +66,9 @@ App.assignment.AsgmtForm = Ext.extend(Ext.FormPanel, {
 	        		}
 	        	}
 	        }
-	    });	
+	    });
 
-		
+
 		this.totalSum = new Ext.form.NumberField({
 			name:'total_sum_field',
 			fieldLabel:'К оплате с учетом скидки',
@@ -90,14 +90,14 @@ App.assignment.AsgmtForm = Ext.extend(Ext.FormPanel, {
 			items:[this.preorderGrid, this.servicePanel]
 
 		}
-		
+
 		Ext.apply(this, Ext.apply(this.initialConfig, config));
 		App.assignment.AsgmtForm.superclass.initComponent.apply(this, arguments);
 		this.preorderGrid.on('sumchange', this.updateTotalSum, this);
 		this.servicePanel.on('serviceclick', this.onServiceClick, this);
-		
+
 	},
-	
+
 	getRecord: function() {
 		if(!this.record) {
 			if(this.model) {
@@ -109,7 +109,7 @@ App.assignment.AsgmtForm = Ext.extend(Ext.FormPanel, {
 		}
 		return this.record;
 	},
-	
+
 	onSave: function() {
 		var f = this.getForm();
 		if(f.isValid()){
@@ -118,7 +118,7 @@ App.assignment.AsgmtForm = Ext.extend(Ext.FormPanel, {
 			Ext.MessageBox.alert('Предупреждение','Пожалуйста, заполните все поля формы!');
 		}
 	},
-	
+
 	getSteps : function() {
 		var steps = 0;
 		if(this.getForm().isDirty()) {
@@ -135,7 +135,7 @@ App.assignment.AsgmtForm = Ext.extend(Ext.FormPanel, {
 		});
 		return steps
 	},
-	
+
 	updateTotalSum:function(sum) {
 		if(this.type=='visit'){
 			var d = this.discountCmb;
@@ -146,11 +146,11 @@ App.assignment.AsgmtForm = Ext.extend(Ext.FormPanel, {
 			this.totalSum.originalValue = discount;
 		}
 	},
-	
+
 	addRow: function(attrs, cb, scope) {
 		this.preorderGrid.addRow.createDelegate(this.preorderGrid, [attrs, true, cb, scope])();
 	},
-	
+
 	onServiceClick : function(node) {
 		var a = node.attributes;
 		if (a.isComplex) {
@@ -169,12 +169,12 @@ App.assignment.AsgmtForm = Ext.extend(Ext.FormPanel, {
 			this.addRow(a);
 		}
 	},
-	
+
 	getSum : function() {
 		var sum = this.getForm().findField('total_sum_field').getValue();
 		return sum;
 	},
-	
+
 	onPreorderChoice : function(){
         this.preorderGrid = new App.registry.PatientPreorderGrid({
        		scope:this,
@@ -182,7 +182,7 @@ App.assignment.AsgmtForm = Ext.extend(Ext.FormPanel, {
        		store : this.preorderStore,
        		fn:this.addPreorderService
        	 });
-        	
+
        	this.preorderWindow = new Ext.Window ({
        		width:700,
 			height:500,
@@ -197,7 +197,7 @@ App.assignment.AsgmtForm = Ext.extend(Ext.FormPanel, {
     	this.preorderGrid.store.setBaseParam('patient',App.uriToId(this.patientRecord.data.resource_uri));
        	this.preorderWindow.show();
 	},
-	
+
 	addPreorderService : function(record) {
 		var p = new this.preorderGrid.store.recordType()
 		p.beginEdit();
@@ -217,7 +217,7 @@ App.assignment.AsgmtForm = Ext.extend(Ext.FormPanel, {
 			this.preorderWindow.close();
 		}
 	},
-	
+
 	onPaymentTypeChoice : function(rec){
 		if(App.settings.reloadPriceByPaymentType) {
 			var sp = this.servicePanel;
@@ -233,17 +233,17 @@ App.assignment.AsgmtForm = Ext.extend(Ext.FormPanel, {
 			this.policyBar.hide();
 		}
 	},
-	
+
 	setPatientRecord: function(record){
 		this.patientRecord = record;
 		this.preorderGrid.setPatientRecord(record)
 	},
-	
+
 	setAssigmentRecord: function(record){
 		this.record = record;
 		this.preorderGrid.setAssigmentRecord(record)
 	}
-	
+
 });
 
 Ext.reg('asgmtform', App.assignment.AsgmtForm);

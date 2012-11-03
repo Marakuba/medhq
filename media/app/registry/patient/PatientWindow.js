@@ -3,23 +3,23 @@ Ext.ns('App','App.patient', 'App.direct');
 App.patient.PatientWindow = Ext.extend(Ext.Window, {
 
 	initComponent:function(){
-		
+
 		//устанавливается, если было подписано соглашение пациентом
 		//при сохранении отправляется запрос на создание экземпляра модели Agreement
-		this.setAcceptedDate = false; 
-		
+		this.setAcceptedDate = false;
+
 		this.store = this.store || new Ext.data.RESTStore({
 			autoLoad : true,
-			apiUrl : get_api_url('patient'),
+			apiUrl : App.getApiUrl('patient'),
 			model: App.models.Patient,
 			listeners:{
 				scope:this,
 				exception:this.onException
 			}
 		});
-		
+
 		this.model = this.store.recordType;
-		
+
 		this.form = new App.patient.PatientForm({
 			model:this.model,
 			record:this.record,
@@ -32,9 +32,9 @@ App.patient.PatientWindow = Ext.extend(Ext.Window, {
 				scope:this,
 				exception:this.onException
 			},
-			scope:this			
+			scope:this
 		});
-		
+
 		this.postMaterialBtn = new Ext.Button({
 			iconCls:'med-testtubes',
 			text:'Сохранить и перейти к поступлению б/м',
@@ -42,7 +42,7 @@ App.patient.PatientWindow = Ext.extend(Ext.Window, {
 			disabled:this.fromVisit?true:false,//если окно открыто из визита, то новый визит создавать не надо
 			scope:this
 		});
-		
+
 		this.postVisitlBtn = new Ext.SplitButton({
 			iconCls:'med-usersetup',
 			text:'Сохранить и перейти к приему',
@@ -63,7 +63,7 @@ App.patient.PatientWindow = Ext.extend(Ext.Window, {
 			}],
 			scope:this
 		});
-		
+
 		config = {
 			title:'Пациент',
 			width:650,
@@ -92,7 +92,7 @@ App.patient.PatientWindow = Ext.extend(Ext.Window, {
 		},this);
 		this.form.on('accepted',this.onFormSave.createDelegate(this,[false]),this);
 	},
-	
+
 	onFormSave: function(post_visit, barcode) {
 		this.post_visit = post_visit;
 		this.post_barcode = barcode;
@@ -111,11 +111,11 @@ App.patient.PatientWindow = Ext.extend(Ext.Window, {
 			this.fireEvent('savecomplete');
 		}
 	},
-	
+
 	onClose: function(){
 		this.close();
 	},
-	
+
 	onStoreWrite: function(store, action, result, res, rs) {
 		console.log(rs)
 		if(action=='create') {
@@ -124,7 +124,7 @@ App.patient.PatientWindow = Ext.extend(Ext.Window, {
 		this.record = rs;
 		this.popStep();
 	},
-	
+
 	popStep: function() {
 		this.steps-=1;
 		if(this.msgBox) {
@@ -154,24 +154,24 @@ App.patient.PatientWindow = Ext.extend(Ext.Window, {
 			}
 		}
 	},
-	
+
 	acceptedUrlTpl: '/patient/acceptance/{0}/',
-	
+
 	onAccepted: function(){
-		
+
 		if (!this.record.data.accepted){
 			Ext.Msg.confirm('Подтверждение','Согласие подписано пациентом?',function(btn){
 				if (btn=='yes'){
 //					this.form.setAcceptedDate();
 					this.setAcceptedDate = true;
 				}
-			
+
 			},this);
 		}
 		var url = String.format(this.acceptedUrlTpl,this.record.data.id);
 		window.open(url);
 	},
-	
+
 	createAgreement: function(){
 		params = {}
 		params['patient'] = this.record.data.id;
@@ -183,12 +183,12 @@ App.patient.PatientWindow = Ext.extend(Ext.Window, {
 			this.popStep();
 		},this)
 	},
-	
+
 	onException: function(proxy,type,action,options,response,other){
 		status_text = {
-				0:'Нет связи с сервером.',	
-				404:'Путь сохранения не найден.',	
-				500:'Во время сохранения записи произошла ошибка на сервере.',	
+				0:'Нет связи с сервером.',
+				404:'Путь сохранения не найден.',
+				500:'Во время сохранения записи произошла ошибка на сервере.',
 		};
 		if(this.msgBox) {
 			this.msgBox.hide();

@@ -5,19 +5,19 @@ Ext.ns('App.visit');
 App.visit.VisitGrid = Ext.extend(Ext.grid.GridPanel, {
 
 	loadInstant: false,
-	
+
 	initComponent : function() {
-		
+
 		this.proxy = new Ext.data.HttpProxy({
-		    url: get_api_url('visit')
+		    url: App.getApiUrl('visit')
 		});
-		
+
 		this.reader = new Ext.data.JsonReader({
 		    totalProperty: 'meta.total_count',
 		    successProperty: 'success',
 		    idProperty: 'id',
 		    root: 'objects',
-		    messageProperty: 'message'  
+		    messageProperty: 'message'
 		}, [
 		    {name: 'id'},
 		    {name: 'created', allowBlank: false, type:'date'},
@@ -33,50 +33,50 @@ App.visit.VisitGrid = Ext.extend(Ext.grid.GridPanel, {
 		    {name: 'is_billed', allowBlank: false, type:'boolean'},
 		    {name: 'referral_name', allowBlank: false}
 		]);
-		
+
 		this.writer = new Ext.data.JsonWriter({
 		    encode: false   // <-- don't return encoded JSON -- causes Ext.Ajax#request to send data using jsonData config rather than HTTP params
 		});
 		this.baseParams = {
 		    	format:'json'
-		}; 
+		};
 		this.store = new Ext.data.Store({
 		    id: 'visit-store',
 		    baseParams: this.baseParams,
 		    paramNames: {
-			    start : 'offset', 
-			    limit : 'limit',  
-			    sort : 'sort',  
-			    dir : 'dir'  
+			    start : 'offset',
+			    limit : 'limit',
+			    sort : 'sort',
+			    dir : 'dir'
 			},
-		    restful: true,     
+		    restful: true,
 		    proxy: this.proxy,
 		    reader: this.reader,
 		    writer: this.writer
 		});
-		
-		
+
+
 		this.columns =  [
 		    {
-		    	width: 1, 
-		    	sortable: true, 
-		    	dataIndex: 'is_billed', 
+		    	width: 1,
+		    	sortable: true,
+		    	dataIndex: 'is_billed',
 		    	renderer: function(val) {
 		    		flag = val ? 'yes' : 'no';
 		    		return "<img src='"+MEDIA_URL+"admin/img/admin/icon-"+flag+".gif'>"
 		    	}
 		    },{
-		    	width: 1, 
-		    	sortable: false, 
-		    	dataIndex: 'cls', 
+		    	width: 1,
+		    	sortable: false,
+		    	dataIndex: 'cls',
 		    	renderer: function(val) {
 		    		var icon;
 		    		switch (val) {
-			    		case 'п': 
+			    		case 'п':
 			    				icon='UserSetup.png';
 			    				alt='Прием'
 			    				break
-			    		case 'б': 
+			    		case 'б':
 			    				icon='TestTubes.png'
 			    				alt='Поступление биоматериала'
 			    				break
@@ -84,9 +84,9 @@ App.visit.VisitGrid = Ext.extend(Ext.grid.GridPanel, {
 		    		return "<img src='"+MEDIA_URL+"resources/css/icons/"+icon+"' title='"+alt+"'>"
 		    	}
 		    },{
-		    	header: "№ заказа", 
-		    	width: 10, 
-		    	sortable: true, 
+		    	header: "№ заказа",
+		    	width: 10,
+		    	sortable: true,
 		    	dataIndex: 'id',
 		    	renderer:function (val){
 		    		width = val.length;
@@ -97,83 +97,83 @@ App.visit.VisitGrid = Ext.extend(Ext.grid.GridPanel, {
 		    		return val
 		    	}
 		    },{
-		    	header: "BC", 
-		    	width: 10, 
-		    	sortable: true, 
+		    	header: "BC",
+		    	width: 10,
+		    	sortable: true,
 		    	dataIndex: 'barcode'
 		    },{
-		    	header: "Дата", 
-		    	width: 15, 
-		    	sortable: true, 
+		    	header: "Дата",
+		    	width: 15,
+		    	sortable: true,
 		    	dataIndex: 'created',
 		    	renderer:Ext.util.Format.dateRenderer('d.m.Y H:i')
 		    },{
-		    	header: "Пациент", 
-		    	width: 50, 
-		    	sortable: true, 
+		    	header: "Пациент",
+		    	width: 50,
+		    	sortable: true,
 		    	dataIndex: 'patient_name'
 		    },{
-		    	header: "Сумма, руб.", 
-		    	width: 30, 
-		    	sortable: true, 
-		    	dataIndex: 'total_price', 
+		    	header: "Сумма, руб.",
+		    	width: 30,
+		    	sortable: true,
+		    	dataIndex: 'total_price',
 		    	renderer: function(v,params,rec){
 		    		if(rec.data.cls=='б'){
 		    			return "---"
-		    		} 
+		    		}
 		    		return v-(rec.data.discount_value*v/100)
 		    	}
 		    }/*,{
-		    	header: "Оплачено, руб.", 
-		    	width: 30, 
-		    	sortable: true, 
-		    	dataIndex: 'total_paid', 
+		    	header: "Оплачено, руб.",
+		    	width: 30,
+		    	sortable: true,
+		    	dataIndex: 'total_paid',
 		    	renderer: function(v,params,rec){
 		    		if(rec.data.cls=='б'){
 		    			return "---"
-		    		} 
+		    		}
 		    		return v
 		    	}
 		    }*/,{
-		    	header: "Скидка, %", 
-		    	width: 10, 
-		    	sortable: true, 
-		    	dataIndex: 'discount_value', 
+		    	header: "Скидка, %",
+		    	width: 10,
+		    	sortable: true,
+		    	dataIndex: 'discount_value',
 		    	renderer: function(v,params,rec){
 		    		if(rec.data.cls=='б'){
 		    			return "---"
-		    		} 
+		    		}
 		    		return v
 		    	}
 		    },{
-		    	header: "Сумма скидки, руб.", 
-		    	width: 10, 
-		    	sortable: true, 
-		    	dataIndex: 'discount_value', 
+		    	header: "Сумма скидки, руб.",
+		    	width: 10,
+		    	sortable: true,
+		    	dataIndex: 'discount_value',
 		    	renderer: function(val, params, rec) {
 		    		if(rec.data.cls=='б'){
 		    			return "---"
-		    		} 
+		    		}
 		    		return rec.data.total_price*val/100;
 		    	}
 		    },{
-		    	header: "Кто направил", 
-		    	width: 30, 
-		    	sortable: true, 
+		    	header: "Кто направил",
+		    	width: 30,
+		    	sortable: true,
 		    	dataIndex: 'referral_name'
 		    },{
-		    	header: "Офис", 
-		    	width: 20, 
-		    	sortable: true, 
-		    	dataIndex: 'office_name' 
+		    	header: "Офис",
+		    	width: 20,
+		    	sortable: true,
+		    	dataIndex: 'office_name'
 		    },{
-		    	header: "Оператор", 
-		    	width: 20, 
-		    	sortable: true, 
-		    	dataIndex: 'operator_name' 
+		    	header: "Оператор",
+		    	width: 20,
+		    	sortable: true,
+		    	dataIndex: 'operator_name'
 		    }
-		];		
-		
+		];
+
 		var config = {
 			loadMask : {
 				msg : 'Подождите, идет загрузка...'
@@ -265,15 +265,15 @@ App.visit.VisitGrid = Ext.extend(Ext.grid.GridPanel, {
 				forceFit : true
 				//getRowClass : this.applyRowClass
 			}
-			
+
 		}
 
 		Ext.apply(this, Ext.apply(this.initialConfig, config));
 		App.visit.VisitGrid.superclass.initComponent.apply(this, arguments);
 		App.eventManager.on('globalsearch', this.onGlobalSearch, this);
-		this.store.load();		
+		this.store.load();
 		this.on('destroy', function(){
-		    App.eventManager.un('globalsearch', this.onGlobalSearch, this); 
+		    App.eventManager.un('globalsearch', this.onGlobalSearch, this);
 		},this);
 	},
 
@@ -284,21 +284,21 @@ App.visit.VisitGrid = Ext.extend(Ext.grid.GridPanel, {
 			this.store.clearFilter();
 		}
 	},
-	
+
 	getSelected: function() {
 		return this.getSelectionModel().getSelected()
 	},
-	
+
 	getAbsoluteUrl: function(id) {
 		return "/visit/visit/"+id+"/";
 	},
-	
+
 	onPrint: function() {
 		var id = this.getSelected().data.id;
 		var url = ['/visit/print/visit',id,''].join('/');
 		window.open(url);
 	},
-	
+
 	goToSlug: function(slug) {
 		var s = this.getSelected().data.id;
 		var url = this.getAbsoluteUrl(s)+slug+"/";
@@ -316,7 +316,7 @@ App.visit.VisitGrid = Ext.extend(Ext.grid.GridPanel, {
 		}
 		s.reload();
 	}
-	
+
 });
 
 Ext.reg('visitgrid',App.visit.VisitGrid);

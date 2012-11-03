@@ -25,7 +25,7 @@ App.examination.TemplateServicePlugin = function(config, order){
 	this.store = new Ext.data.RESTStore({
 		autoSave: false,
 		autoLoad : false,
-		apiUrl : get_api_url('examtemplate'),
+		apiUrl : App.getApiUrl('examtemplate'),
 		model: App.models.Template
 	});
 	this.store.load({

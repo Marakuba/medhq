@@ -5,15 +5,15 @@ App.assignment.PreorderInlineGrid = Ext.extend(Ext.grid.EditorGridPanel, {
 
 	loadInstant: false,
 	initComponent : function() {
-		
+
 		var today = new Date();
-		
+
 		this.expiration = today.add(Date.DAY,30)
-		
+
 		this.proxy = new Ext.data.HttpProxy({
-		    url: get_api_url('extpreorder')
+		    url: App.getApiUrl('extpreorder')
 		});
-		
+
 		this.reader = new Ext.data.JsonReader({
 		    totalProperty: 'meta.total_count',
 		    successProperty: 'success',
@@ -21,22 +21,22 @@ App.assignment.PreorderInlineGrid = Ext.extend(Ext.grid.EditorGridPanel, {
 		    root: 'objects',
 		    messageProperty: 'message'
 		}, App.models.preorderModel);
-		
+
 		this.writer = new Ext.data.JsonWriter({
 		    encode: false,
 		    writeAllFields: true
 		});
-		
+
 		this.store = new Ext.data.Store({
 			autoSave:false,
 		    baseParams: {
 		    	format:'json'
 		    },
 		    paramNames: {
-			    start : 'offset',  
-			    limit : 'limit', 
-			    sort : 'sort', 
-			    dir : 'dir' 
+			    start : 'offset',
+			    limit : 'limit',
+			    sort : 'sort',
+			    dir : 'dir'
 			},
 		    restful: true,
 		    proxy: this.proxy,
@@ -52,11 +52,11 @@ App.assignment.PreorderInlineGrid = Ext.extend(Ext.grid.EditorGridPanel, {
 		    	scope:this
 		    }
 		});
-		
+
 		this.serviceStore = new Ext.data.Store({
 			autoDestroy:true,
 			proxy: new Ext.data.HttpProxy({
-			    url: get_api_url('extendedservice'),
+			    url: App.getApiUrl('extendedservice'),
 				method:'GET'
 			}),
 			reader: new Ext.data.JsonReader({
@@ -69,11 +69,11 @@ App.assignment.PreorderInlineGrid = Ext.extend(Ext.grid.EditorGridPanel, {
 			    {name: 'state'}
 			])
 		});
-		
+
 		this.staffStore = new Ext.data.Store({
 			autoDestroy:true,
 			proxy: new Ext.data.HttpProxy({
-			    url: get_api_url('position'),
+			    url: App.getApiUrl('position'),
 				method:'GET'
 			}),
 			reader: new Ext.data.JsonReader({
@@ -85,18 +85,18 @@ App.assignment.PreorderInlineGrid = Ext.extend(Ext.grid.EditorGridPanel, {
 			    {name: 'staff_name', mapping:'text'}
 			])
 		})
-		
-		
+
+
 		this.columns =  [new Ext.grid.RowNumberer({width: 30}),
 		    {
-		    	header: "Услуга", 
-		    	width: 50, 
-		    	sortable: true, 
-		    	dataIndex: 'service_name' 
+		    	header: "Услуга",
+		    	width: 50,
+		    	sortable: true,
+		    	dataIndex: 'service_name'
 		    },{
-		    	header: "Дата выполнения", 
-		    	width: 32, 
-		    	sortable: true, 
+		    	header: "Дата выполнения",
+		    	width: 32,
+		    	sortable: true,
 		    	dataIndex: 'expiration',
 		    	renderer:Ext.util.Format.dateRenderer('d.m.y'),
 		    	editor: new Ext.form.DateField({
@@ -105,24 +105,24 @@ App.assignment.PreorderInlineGrid = Ext.extend(Ext.grid.EditorGridPanel, {
 		    		format:'d.m.Y'
 		    	})
 		    },{
-		    	header: "Цена", 
-		    	width: 10, 
-		    	sortable: false, 
+		    	header: "Цена",
+		    	width: 10,
+		    	sortable: false,
 		    	hidden: this.shortMode,
-		    	dataIndex: 'price' 
+		    	dataIndex: 'price'
 		    },{
-		    	header: "Кол-во", 
-		    	width: 10, 
-		    	sortable: false, 
+		    	header: "Кол-во",
+		    	width: 10,
+		    	sortable: false,
 		    	hidden: this.shortMode,
-		    	dataIndex: 'count', 
+		    	dataIndex: 'count',
 		    	editor: new Ext.ux.form.SpinnerField({
 		    		minValue: 1,
             		maxValue: 20
             	})
 		    },{
-		    	header: "Сумма", 
-		    	width: 10, 
+		    	header: "Сумма",
+		    	width: 10,
 		    	sortable: false,
 		    	hidden: this.shortMode,
 		    	dataIndex: 'total',
@@ -130,8 +130,8 @@ App.assignment.PreorderInlineGrid = Ext.extend(Ext.grid.EditorGridPanel, {
 		    		return rec.data.count*rec.data.price
 		    	}
 		    }
-		];		
-		
+		];
+
 		var config = {
 			loadMask : {
 				msg : 'Подождите, идет загрузка...'
@@ -196,15 +196,15 @@ App.assignment.PreorderInlineGrid = Ext.extend(Ext.grid.EditorGridPanel, {
 			App.eventManager.un('assigmentcreate', this.onAssigmentCreate, this);
 		},this);
 	},
-	
+
 	applyRowClass: function() {
 		//TODO: сделать разные цвета для сохраненных, новых и отмененных записей
 	},
-	
+
 	saveBasket: function(){
 		this.store.save();
 	},
-	
+
 	onSumChange: function(){
 		var c = 0;
 		this.store.each(function(item){
@@ -212,7 +212,7 @@ App.assignment.PreorderInlineGrid = Ext.extend(Ext.grid.EditorGridPanel, {
 		});
 		this.fireEvent('sumchange',c);
 	},
-	
+
 	getPlace: function(ext_serv_id){
 		this.serviceStore.setBaseParam('id',ext_serv_id);
 		var state = this.serviceStore.load({callback:function(records){
@@ -228,7 +228,7 @@ App.assignment.PreorderInlineGrid = Ext.extend(Ext.grid.EditorGridPanel, {
 			return ''
 		}
 	},
-	
+
 	addRecord: function(attrs){
 //		var re = /(.*) \[\d+\]/;
 //		var res = re.exec(attrs.text);
@@ -241,7 +241,7 @@ App.assignment.PreorderInlineGrid = Ext.extend(Ext.grid.EditorGridPanel, {
 			var card_resource = App.getApiUrl('card') + '/' + this.card_id;
 		};
 		var s = new Preorder({
-			service:App.getApiUrl('extendedservice')+'/'+id, 
+			service:App.getApiUrl('extendedservice')+'/'+id,
 			service_name:text,
 			promotion: attrs.promotion ? App.getApiUrl('promotion')+'/'+attrs.promotion : '',
 			patient:this.patientRecord.data.resource_uri,
@@ -254,12 +254,12 @@ App.assignment.PreorderInlineGrid = Ext.extend(Ext.grid.EditorGridPanel, {
 		this.store.add(s);
 		this.getView().focusRow(this.store.getCount()-1);
 	},
-	
+
 	addRow: function(attrs, can_duplicate, callback, scope) {
 		if(!can_duplicate) {
 //			var re = /(.*) \[\d+\]/;
 //			res = re.exec(attrs.text);
-//			var text = res[res.length-1];	
+//			var text = res[res.length-1];
 			var id = attrs.id;
 			var has_record = false;
 			this.store.each(function(rec){
@@ -274,19 +274,19 @@ App.assignment.PreorderInlineGrid = Ext.extend(Ext.grid.EditorGridPanel, {
             	return false;
             };
 		}
-		
+
 		this.addRecord(attrs);
 		if(callback) {
 			Ext.callback(callback, scope);
 		}
-		
+
 	},
-	
+
 	hasNext: function(){
-		var sm = this.getSelectionModel();		
+		var sm = this.getSelectionModel();
 		return sm.last !== false && (sm.last+1) < this.store.getCount();
 	},
-	
+
 	delRow: function() {
 		var sm = this.getSelectionModel();
 		var rec = sm.getSelected();
@@ -306,11 +306,11 @@ App.assignment.PreorderInlineGrid = Ext.extend(Ext.grid.EditorGridPanel, {
             sm.selectFirstRow();
         };
 	},
-	
+
 	onSave: function() {
 		this.store.save();
 	},
-	
+
 	getSteps: function(){
 		var steps = 0;
 		var m = this.store.getModifiedRecords().length;
@@ -322,22 +322,22 @@ App.assignment.PreorderInlineGrid = Ext.extend(Ext.grid.EditorGridPanel, {
 		}
 		return steps;
 	},
-	
+
 	onAssigmentCreate: function(record) {
 		this.record = record;
 		this.onSave();
 	},
-	
+
 	setPatientRecord: function(record){
 		this.patientRecord = record
 	},
-	
+
 	setAssigmentRecord: function(record){
 		this.record = record;
 		this.store.setBaseParam('order',this.record.id);
 		this.store.load();
 	}
-	
+
 });
 
 

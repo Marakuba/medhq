@@ -2,7 +2,7 @@ Ext.ns('App.dict');
 
 
 App.dict.ReportTree = Ext.extend(Ext.tree.TreePanel, {
-	
+
 	initComponent: function(){
 
         config = {
@@ -16,7 +16,7 @@ App.dict.ReportTree = Ext.extend(Ext.tree.TreePanel, {
                 split:true,
                 loader: new Ext.tree.TreeLoader({
                 	nodeParameter:'parent',
-                	dataUrl: get_api_url('reporttree'),
+                	dataUrl: App.getApiUrl('reporttree'),
                 	requestMethod:'GET',
                 	processResponse : function(response, node, callback, scope){
 				        var json = response.responseText;
@@ -47,16 +47,16 @@ App.dict.ReportTree = Ext.extend(Ext.tree.TreePanel, {
 //                tbar: [' ', new Ext.form.TextField({
 //                    width:200,
  //               })]
- 
+
             }
-        
+
         this.on('click', function(node, e){
 //			this.fireEvent('nodeclick',node.id);
 			if (node.attributes.leaf) {
 				Ext.callback(this.fn, this.scope || window, [node]);
 			}
 		}, this);
-		
+
 		Ext.apply(this, Ext.apply(this.initialConfig, config));
 		App.dict.ReportTree.superclass.initComponent.apply(this, arguments);
 	}

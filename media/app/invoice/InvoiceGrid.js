@@ -3,51 +3,51 @@ Ext.ns('App.invoice');
 App.invoice.InvoiceGrid = Ext.extend(Ext.grid.GridPanel, {
 
 	initComponent : function() {
-		
+
 		this.store = new Ext.data.RESTStore({
 			autoLoad : false,
-			apiUrl : get_api_url('invoice'),
+			apiUrl : App.getApiUrl('invoice'),
 			model: App.models.Invoice
 		});
 
 		if(App.settings.strictMode) {
 			this.store.setBaseParam('office',active_state_id);
 		}
-		
-		this.store.load();		
-		
+
+		this.store.load();
+
 		this.columns =  [
 		    {
 		    	header: "№",
 		    	width:8,
-		    	sortable: true, 
+		    	sortable: true,
 		    	dataIndex: 'id',
 		    },{
 		    	header: "Дата",
 		    	width:20,
-		    	sortable: true, 
+		    	sortable: true,
 		    	dataIndex: 'created',
 		    	renderer:Ext.util.Format.dateRenderer('d.m.Y')
 		    },{
-		    	header: "Офис", 
-		    	width: 50, 
-		    	sortable: true, 
+		    	header: "Офис",
+		    	width: 50,
+		    	sortable: true,
 		    	dataIndex: 'office_name'
 		    },{
-		    	header: "Лаборатория", 
-		    	width: 50, 
-		    	sortable: true, 
+		    	header: "Лаборатория",
+		    	width: 50,
+		    	sortable: true,
 		    	dataIndex: 'state_name'
 		    },{
-		    	header: "Оператор", 
-		    	width: 25, 
-		    	sortable: true, 
+		    	header: "Оператор",
+		    	width: 25,
+		    	sortable: true,
 		    	dataIndex: 'operator_name'
 		    }
-		];		
-		
+		];
 
-		
+
+
 		var config = {
 			closable:true,
 			title:'Накладные',
@@ -99,27 +99,27 @@ App.invoice.InvoiceGrid = Ext.extend(Ext.grid.GridPanel, {
 				forceFit : true,
 				emptyText: 'Нет записей'
 			})
-			
+
 		}
 
 		Ext.apply(this, Ext.apply(this.initialConfig, config));
 		App.invoice.InvoiceGrid.superclass.initComponent.apply(this, arguments);
 		App.eventManager.on('invoicecreate', this.onInvoiceCreate, this);
 		this.store.on('write', this.onStoreWrite, this);
-		
+
 		this.on('destroy', function(){
-		    App.eventManager.un('invoicecreate',this.onInvoiceCreate, this); 
+		    App.eventManager.un('invoicecreate',this.onInvoiceCreate, this);
 		},this);
 	},
-	
+
 	onInvoiceCreate: function(){
 		this.store.load();
 	},
-	
+
 	onGlobalSearch: function(v) {
 		this.storeFilter('search', v);
 	},
-	
+
 	storeFilter: function(field, value){
 		if(value===undefined) {
 			delete this.store.baseParams[field]
@@ -128,17 +128,17 @@ App.invoice.InvoiceGrid = Ext.extend(Ext.grid.GridPanel, {
 		}
 		this.store.load();
 	},
-	
+
 	getSelected: function() {
 		return this.getSelectionModel().getSelected()
 	},
-	
+
 	onPrint: function() {
 		var id = this.getSelected().data.id;
 		var url = ['/lab/print/invoice',id,''].join('/');
 		window.open(url);
 	},
-	
+
 	onCreate: function() {
 //		this.win = new App.issue.IssueWindow({
 //			model:this.store.recordType,
@@ -151,7 +151,7 @@ App.invoice.InvoiceGrid = Ext.extend(Ext.grid.GridPanel, {
 		App.eventManager.fireEvent('launchapp','invoicetab',{
 		});
 	},
-	
+
 	onChange: function(rowindex){
 		var record = this.getSelected();
 		if(record) {
@@ -169,14 +169,14 @@ App.invoice.InvoiceGrid = Ext.extend(Ext.grid.GridPanel, {
 			});
 		}
 	},
-	
+
 	onDelete: function() {
-		
+
 	},
-	
+
 	onStoreWrite: function(store, action, result, res, rs) {
 	}
-	
+
 });
 
 

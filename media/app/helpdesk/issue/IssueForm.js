@@ -14,7 +14,7 @@ App.issue.IssueForm = Ext.extend(Ext.form.FormPanel, {
 			},
 			items:[{
 				xtype:'lazycombobox',
-				proxyUrl:get_api_url('issuetype'),
+				proxyUrl:App.getApiUrl('issuetype'),
 				fieldLabel:'Категория',
 				name:'type',
 				anchor:'50%'
@@ -53,7 +53,7 @@ App.issue.IssueForm = Ext.extend(Ext.form.FormPanel, {
 		Ext.apply(this, Ext.apply(this.initialConfig, config));
 		App.issue.IssueForm.superclass.initComponent.apply(this, arguments);
 	},
-	
+
 	getRecord: function() {
 		if(!this.record) {
 			if(this.model) {
@@ -65,7 +65,7 @@ App.issue.IssueForm = Ext.extend(Ext.form.FormPanel, {
 		}
 		return this.record;
 	},
-	
+
 	onSave: function() {
 		var f = this.getForm();
 		if(f.isValid()){

@@ -9,15 +9,15 @@ App.registry.PreorderGrid = Ext.extend(Ext.grid.GridPanel, {
 			boxLabel:'Автоматическое обновление',
 			handler:this.updatingCheckClick.createDelegate(this)
 		});
-		
+
 		this.start_date = new Date();
-		
-		this.emptyText = this.hasPatient ? 'Для данного пациента предзаказов нет':'На выбранную дату предзаказов нет'; 
-		
+
+		this.emptyText = this.hasPatient ? 'Для данного пациента предзаказов нет':'На выбранную дату предзаказов нет';
+
 		this.medstateStore = this.medstateStore || new Ext.data.RESTStore({
 			autoSave: true,
 			autoLoad : true,
-			apiUrl : get_api_url('medstate'),
+			apiUrl : App.getApiUrl('medstate'),
 			model: App.models.MedState
 		});
 
@@ -29,7 +29,7 @@ App.registry.PreorderGrid = Ext.extend(Ext.grid.GridPanel, {
 			handler:this.onVisitButtonClick.createDelegate(this, []),
 			scope:this
 		});
-		
+
 		this.pTypeButton = new Ext.CycleButton({
             showText: true,
             prependText: 'Оплата: ',
@@ -52,7 +52,7 @@ App.registry.PreorderGrid = Ext.extend(Ext.grid.GridPanel, {
             },
             scope:this
         });
-        
+
 		this.clearButton = new Ext.Button({
 			iconCls:'silk-cancel',
 			disabled:true,
@@ -61,11 +61,11 @@ App.registry.PreorderGrid = Ext.extend(Ext.grid.GridPanel, {
 			handler:this.onDelPreorderClick.createDelegate(this, []),
 			scope:this
 		});
-		
+
 		this.staffStore = new Ext.data.RESTStore({
 			autoLoad : false,
 			autoSave : true,
-			apiUrl : get_api_url('position'),
+			apiUrl : App.getApiUrl('position'),
 			model: [
 				    {name: 'id'},
 				    {name: 'resource_uri'},
@@ -83,7 +83,7 @@ App.registry.PreorderGrid = Ext.extend(Ext.grid.GridPanel, {
 				    {name: 'department'}
 				]
 		});
-		
+
 		this.StaffCombo = new Ext.form.LazyClearableComboBox({
         	fieldLabel:'Врач',
         	text:'Врач:',
@@ -108,7 +108,7 @@ App.registry.PreorderGrid = Ext.extend(Ext.grid.GridPanel, {
 		    },
 		    onTriggerClick:this.onChoice.createDelegate(this,['Staff'])
 		});
-		
+
 		this.ttb = new Ext.Toolbar({
 			items:[this.visitButton,this.clearButton,'-',{
 				text:'Реестр',
@@ -143,7 +143,7 @@ App.registry.PreorderGrid = Ext.extend(Ext.grid.GridPanel, {
 	            },
 	            scope:this
 	        });
-	        
+
 	        this.ttb.add(this.stateButton);
 	        this.ttb.add({
 	        	text:'Обновить',
@@ -154,7 +154,7 @@ App.registry.PreorderGrid = Ext.extend(Ext.grid.GridPanel, {
 	        });
 	        this.doLayout();
 		},this);
-		
+
 		this.store = new Ext.data.RESTStore({
 			autoLoad : false,
 			autoSave : true,
@@ -162,10 +162,10 @@ App.registry.PreorderGrid = Ext.extend(Ext.grid.GridPanel, {
 				format:'json',
 				'timeslot__isnull':false
 			},
-			apiUrl : get_api_url('extpreorder'),
+			apiUrl : App.getApiUrl('extpreorder'),
 			model: App.models.preorderModel
 		});
-		
+
 		this.eventModel = new Ext.data.Record.create([
 			{name: 'id'},
 		    {name: 'resource_uri'},
@@ -175,75 +175,75 @@ App.registry.PreorderGrid = Ext.extend(Ext.grid.GridPanel, {
 		this.eventStore = new Ext.data.RESTStore({
 			autoLoad : false,
 			autoSave : true,
-			apiUrl : get_api_url('event'),
+			apiUrl : App.getApiUrl('event'),
 			model: this.eventModel
 		});
 		this.patientStore = this.patientStore || new Ext.data.RESTStore({
 			autoLoad : false,
 			autoSave : false,
-			apiUrl : get_api_url('patient'),
+			apiUrl : App.getApiUrl('patient'),
 			model: App.models.patientModel
 		});
-		
+
 		this.columns =  [
 		    {
-		    	header: "Пациент", 
-		    	width: 100, 
-		    	sortable: true, 
+		    	header: "Пациент",
+		    	width: 100,
+		    	sortable: true,
 		    	dataIndex: 'patient_name',
 		    	hidden: this.hasPatient ? true : false
 		    },{
-		    	header: "Услуга", 
-		    	width: 250, 
-		    	sortable: true, 
+		    	header: "Услуга",
+		    	width: 250,
+		    	sortable: true,
 		    	dataIndex: 'service_name'
 		     },{
-		    	header: "Врач", 
-		    	width: 100, 
-		    	sortable: true, 
+		    	header: "Врач",
+		    	width: 100,
+		    	sortable: true,
 		    	dataIndex: 'staff_name'
 		    },{
-		    	header: "Цена", 
-		    	width: 50, 
-		    	sortable: true, 
+		    	header: "Цена",
+		    	width: 50,
+		    	sortable: true,
 		    	dataIndex: 'price'
 		    },{
-		    	header: "Место выполнения", 
-		    	width: 120, 
-		    	sortable: true, 
+		    	header: "Место выполнения",
+		    	width: 120,
+		    	sortable: true,
 		    	dataIndex: 'execution_place_name'
 		    },{
-		    	header: "Время", 
-		    	width: 50, 
-		    	sortable: true, 
+		    	header: "Время",
+		    	width: 50,
+		    	sortable: true,
 		    	dataIndex: 'start',
 		    	renderer:Ext.util.Format.dateRenderer('H:i / d.m.Y')
 		    },{
-		    	header: "Форма оплаты", 
-		    	width: 100, 
-		    	sortable: true, 
+		    	header: "Форма оплаты",
+		    	width: 100,
+		    	sortable: true,
 		    	dataIndex: 'ptype_name'
 		    },{
-		    	header: "Форма оплаты", 
-		    	width: 25, 
-		    	sortable: true, 
+		    	header: "Форма оплаты",
+		    	width: 25,
+		    	sortable: true,
 		    	hidden:true,
 		    	dataIndex: 'payment_type'
 		    },{
-		    	header: "Телефон", 
-		    	width: 100, 
-		    	sortable: false, 
+		    	header: "Телефон",
+		    	width: 100,
+		    	sortable: false,
 		    	dataIndex: 'patient_phone'
 		    },{
-		    	header: "Оператор", 
-		    	width: 90, 
-		    	sortable: true, 
+		    	header: "Оператор",
+		    	width: 90,
+		    	sortable: true,
 		    	dataIndex: 'operator_name'
 		    }
-		    
-		];		
-		
-		
+
+		];
+
+
 		this.startDateField = new Ext.form.DateField({
 			plugins:[new Ext.ux.netbox.InputTextMask('99.99.9999')], // маска ввода __.__._____ - не надо точки ставить
 			minValue:new Date(1901,1,1),
@@ -257,7 +257,7 @@ App.registry.PreorderGrid = Ext.extend(Ext.grid.GridPanel, {
 				scope:this
 			}
 		});
-		
+
 		var config = {
 //			id:'preorder-grid',
 //			title:'Предзаказы',
@@ -306,20 +306,20 @@ App.registry.PreorderGrid = Ext.extend(Ext.grid.GridPanel, {
 				emptyText :this.emptyText,
 				enableRowBody:true,
 				getRowClass: App.preorder.getRowClass
-			},	
+			},
 			listeners: {
 //				rowdblclick:this.onVisit.createDelegate(this, []),
 //				scope:this
 			}
 		};
-		
+
 		this.initToolbar();
 
 		Ext.apply(this, Ext.apply(this.initialConfig, config));
 		App.registry.PreorderGrid.superclass.initComponent.apply(this, arguments);
 		App.eventManager.on('globalsearch', this.onGlobalSearch, this);
 		App.eventManager.on('visitcreate', this.onVisitCreate, this);
-		
+
 		this.store.on('write', function(){
 			var record = this.getSelected();
 			if (record){
@@ -357,7 +357,7 @@ App.registry.PreorderGrid = Ext.extend(Ext.grid.GridPanel, {
 		},this);
 		//this.store.on('write', this.onStoreWrite, this);
 	},
-	
+
 	onVisitCreate: function(){
 		if(!this.hasPatient){
 			this.storeReload();
@@ -370,12 +370,12 @@ App.registry.PreorderGrid = Ext.extend(Ext.grid.GridPanel, {
 		s.setBaseParam('search', v);
 		s.load();
 	},
-	
+
 	btnSetDisabled: function(status) {
         this.visitButton.setDisabled(status);
         this.clearButton.setDisabled(status);
 	},
-	
+
 	onServiceSelect: function(record){
 //		this.btnSetDisable(false);
 //		var record = this.getSelectionModel().getSelected();
@@ -388,11 +388,11 @@ App.registry.PreorderGrid = Ext.extend(Ext.grid.GridPanel, {
         };
         this.clearButton.setDisabled(false);
 	},
-	
+
 	getSelected: function() {
 		return this.getSelectionModel().getSelected()
 	},
-	
+
 	onVisitButtonClick: function() {
 		var records = this.getSelectionModel().getSelections();
         if (records.length) {
@@ -406,11 +406,11 @@ App.registry.PreorderGrid = Ext.extend(Ext.grid.GridPanel, {
 	        	}
         	},this)
         }
-        	
-		
-		
-		
-//		
+
+
+
+
+//
 //        var record = this.getSelected();
 //        if (record) {
 //        	var today = new Date();
@@ -426,7 +426,7 @@ App.registry.PreorderGrid = Ext.extend(Ext.grid.GridPanel, {
 //        	Ext.Msg.alert('Уведомление','Не выбран ни один предзаказ');
 //        }
     },
-    
+
     onDelPreorderClick : function() {
     	var record = this.getSelected();
     	if (!record || record.data.visit) {
@@ -453,9 +453,9 @@ App.registry.PreorderGrid = Ext.extend(Ext.grid.GridPanel, {
     	});
     	causeWin.show();
 //    	this.store.remove(record)
-    	
+
     },
-    
+
     storeFilter: function(field, value){
 		if(!value) {
 			delete this.store.baseParams[field]
@@ -472,7 +472,7 @@ App.registry.PreorderGrid = Ext.extend(Ext.grid.GridPanel, {
 		},scope:this});
 		this.btnSetDisabled(true);
 	},
-	
+
 	storeDateFilter: function(field, value){
 		if(!value) {
 			delete this.store.baseParams[field+'__year'];
@@ -496,32 +496,32 @@ App.registry.PreorderGrid = Ext.extend(Ext.grid.GridPanel, {
 		},scope:this});
 //		this.btnSetDisabled(true);
 	},
-	
+
 	onPrevClick: function(){
 		this.start_date = this.start_date.add(Date.DAY,-1);
 		this.startDateField.setValue(this.start_date);
 		this.storeDateFilter('timeslot__start',this.start_date);
 		this.btnSetDisabled(true);
 	},
-	
+
 	onNextClick: function(){
 		this.start_date = this.start_date.add(Date.DAY,1);
 		this.startDateField.setValue(this.start_date);
 		this.storeDateFilter('timeslot__start',this.start_date);
 		this.btnSetDisabled(true);
 	},
-	
+
 	initToolbar: function(){
 		this.ttb.doLayout();
 	},
-	
+
 	storeReload: function(preorder){
 		//Не позволять грузить весь store без параметров
 		if ((this.store.baseParams['patient'] && (this.store.baseParams['patient'] == App.uriToId(preorder.data.patient))) || this.store.baseParams['timeslot__start__day']) {
 			this.store.load()
 		}
 	},
-	
+
 	onGlobalSearch: function(v){
 		if(this.hasPatient) return
 		var s = this.store;
@@ -532,7 +532,7 @@ App.registry.PreorderGrid = Ext.extend(Ext.grid.GridPanel, {
 		}
 		s.load();
 	},
-	
+
 	updateInfo: function(){
 		if(this.updatingStoreCheck.getValue()){
 	        this.store.load();
@@ -544,7 +544,7 @@ App.registry.PreorderGrid = Ext.extend(Ext.grid.GridPanel, {
 	updatingCheckClick: function(checkbox, checked){
 		this.fireEvent('setupdating',this,checked);
 	},
-	
+
 	onChoice: function(type,source) {
     	if (!type) return false;
     	if (!source) source = type;
@@ -563,7 +563,7 @@ App.registry.PreorderGrid = Ext.extend(Ext.grid.GridPanel, {
        	 });
        	win.show();
     }
-	
+
 });
 
 

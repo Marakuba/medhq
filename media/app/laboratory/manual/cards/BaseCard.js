@@ -1,26 +1,26 @@
 Ext.ns('App.cards');
 
 App.cards.BaseCard = Ext.extend(Ext.Window,{
-	
-	
+
+
 	/*
 	 * Разделитель в названиях. Используется когда применяется группировка по полям или разбивка по колонкам.
 	 */
 	delimiter : "::",
-	
-	
+
+
 	/*
 	 * Мэппинг названий групп и колонок
 	 */
 	mappings : {},
-	
-	
+
+
 	/*
 	 * Поле по которому осуществляется группировка
 	 */
 	groupField : "",
-	
-	
+
+
 	/*
 	 * Режим группировки данных.
 	 * Может принимать значения:
@@ -28,8 +28,8 @@ App.cards.BaseCard = Ext.extend(Ext.Window,{
 	 *  - column - группировка по названиям с использованием mappings и разбивкой на колонки
 	 */
 	mode : "",
-	
-	
+
+
 	revertMappings : function(){
 		this.reMappings = {};
 		for(k in this.mappings) {
@@ -37,20 +37,20 @@ App.cards.BaseCard = Ext.extend(Ext.Window,{
 		}
 	},
 
-	
+
 	initComponent : function(){
-		
+
 		this.labOrderStore = new Ext.data.RESTStore({
 			autoSave : true,
 			autoLoad : false,
-			apiUrl : get_api_url('laborder'),
+			apiUrl : App.getApiUrl('laborder'),
 			model: App.models.LabOrder
 		});
-		
+
 		this.proxy = new Ext.data.HttpProxy({
-		    url: get_api_url('result')
+		    url: App.getApiUrl('result')
 		});
-		
+
 		this.reader = new Ext.data.JsonReader({
 		    totalProperty: 'meta.total_count',
 		    successProperty: 'success',
@@ -77,7 +77,7 @@ App.cards.BaseCard = Ext.extend(Ext.Window,{
 		    {name: 'sample'},
 		    {name: 'is_validated', type:'bool'}
 		]);
-		
+
 		this.writer = new Ext.data.JsonWriter({
 		    encode: false,
 		    writeAllFields: true
@@ -104,8 +104,8 @@ App.cards.BaseCard = Ext.extend(Ext.Window,{
 		    	},
 		    	scope:this
 		    }
-		});		
-		
+		});
+
 		config = {
 			width:900,
 			height:550,
@@ -123,22 +123,22 @@ App.cards.BaseCard = Ext.extend(Ext.Window,{
 
 		Ext.apply(this, Ext.apply(this.initialConfig, config));
 		App.cards.BaseCard.superclass.initComponent.apply(this, arguments);
-		
+
 		this.revertMappings();
 		this.loadData();
-		
+
 	},
-	
+
 	processData : function(r, opts, success){
 		/*
 		 * Базовая имплементация
 		 */
-		
-		
+
+
 		var gs = this.grid.getStore();
 		var Result = gs.recordType;
 		gs.removeAll();
-		
+
 		if(r.length) {
 			var orderId = App.uriToId(r[0].data.order);
 			this.labOrderStore.load({
@@ -154,12 +154,12 @@ App.cards.BaseCard = Ext.extend(Ext.Window,{
 				scope:this
 			})
 		}
-		
+
 		/*
 		 * Обработка колоночного режима
 		 */
 		if(this.mode=='column'){
-			
+
 			Ext.each(r, function(rec){
 				var gCode = rec.get('analysis_code').split('_')[0];
 				var result = gs.find('code',gCode);
@@ -181,7 +181,7 @@ App.cards.BaseCard = Ext.extend(Ext.Window,{
 			}, this);
 
 		} else if(this.mode=='group') {
-			
+
 			Ext.each(r, function(rec){
 				var vals = rec.get('analysis_name').split(this.delimiter);
 				var params = {
@@ -195,10 +195,10 @@ App.cards.BaseCard = Ext.extend(Ext.Window,{
 				gs.add(new_rec);
 			}, this)
 		}
-		
+
 
 	},
-	
+
 	loadData : function() {
 		if(this.record && this.service) {
 			this.store.setBaseParam( 'order__visit', App.uriToId(this.record.data.order) );
@@ -209,7 +209,7 @@ App.cards.BaseCard = Ext.extend(Ext.Window,{
 			})
 		}
 	},
-	
+
 	onSave : function(){
 		var gs = this.grid.getStore();
 		if(this.mode=='column'){
@@ -237,9 +237,9 @@ App.cards.BaseCard = Ext.extend(Ext.Window,{
 			this.store.save();
 		}
 	},
-	
+
 	onClose : function(){
 		this.close();
 	}
-	
+
 });

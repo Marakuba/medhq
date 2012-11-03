@@ -2,17 +2,17 @@ Ext.ns('App.examination');
 
 App.examination.ConclApp = Ext.extend(Ext.Panel, {
 	initComponent : function() {
-		
+
 		this.orderStore = new Ext.data.RESTStore({
 			autoSave: false,
 			autoLoad : false,
-			apiUrl : get_api_url('examservice'),
+			apiUrl : App.getApiUrl('examservice'),
 			baseParams:{
 				format:'json'
 			},
 			model: App.models.ExamService
 		});
-				
+
 		this.contentPanel = new Ext.Panel({
 			region:'center',
  			border:true,
@@ -27,7 +27,7 @@ App.examination.ConclApp = Ext.extend(Ext.Panel, {
     		items: [
     		]
 		});
-		
+
 		this.examGrid = new App.examination.CardGrid({
 			staff:this.staff,
 			order:this.order,
@@ -58,7 +58,7 @@ App.examination.ConclApp = Ext.extend(Ext.Panel, {
 				scope:this
 			}
 		});
-		
+
 		this.conclPanel = new Ext.Panel({
 			region:'west',
  			border:false,
@@ -75,21 +75,21 @@ App.examination.ConclApp = Ext.extend(Ext.Panel, {
     			this.examGrid
     		]
 		});
-		
+
 		var config = {
 			id:'concl-app',
 			closable:true,
 			title: 'Архив заключений',
-			layout: 'border',	
+			layout: 'border',
      		items: [
 				this.conclPanel,
 				this.contentPanel
 			]
 		};
-		
+
 		Ext.apply(this, Ext.apply(this.initialConfig, config));
 		App.examination.ConclApp.superclass.initComponent.apply(this, arguments);
-		
+
 		this.on('afterrender',function(){
 			if (this.order_id){
 				this.examGrid.store.setBaseParam('ordered_service',this.order_id)
@@ -97,7 +97,7 @@ App.examination.ConclApp = Ext.extend(Ext.Panel, {
 			this.examGrid.store.load();
 		},this)
 	},
-	
+
 	onPreview: function(card_id){
 		var list = new Ext.Panel({
 			autoLoad:String.format('/widget/examination/card/{0}/',card_id),
@@ -109,7 +109,7 @@ App.examination.ConclApp = Ext.extend(Ext.Panel, {
 		this.contentPanel.doLayout();
 		this.doLayout();
 	},
-	
+
 	editCard: function(record){
 		if (!record.data.executed) {
 			var orderId = App.uriToId(record.data.ordered_service);
@@ -131,14 +131,14 @@ App.examination.ConclApp = Ext.extend(Ext.Panel, {
 						print_name:record.data.service_name,
 						record:record
 					};
-					
+
 					App.eventManager.fireEvent('launchapp', 'cardapp',config);
 				}
 			},scope:this})
-			
+
         }
-		
-		
+
+
 	}
 });
 

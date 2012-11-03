@@ -3,45 +3,45 @@ Ext.ns('App','App.registry', 'App.preorder');
 App.registry.PatientPreorderGrid = Ext.extend(Ext.grid.GridPanel, {
 
 	initComponent : function() {
-		
+
 		this.store = this.store || new Ext.data.RESTStore({
 			autoLoad : false,
 			autoSave : false,
-			apiUrl : get_api_url('extpreorder'),
+			apiUrl : App.getApiUrl('extpreorder'),
 			model: App.models.preorderModel
 		});
-		
+
 		this.columns =  [
 		    {
-		    	header: "Пациент", 
-		    	width: 45, 
-		    	sortable: true, 
+		    	header: "Пациент",
+		    	width: 45,
+		    	sortable: true,
 		    	dataIndex: 'patient_name',
 		    	hide: this.patient ? true : false
 		    },{
-		    	header: "Услуга", 
-		    	width: 70, 
-		    	sortable: true, 
+		    	header: "Услуга",
+		    	width: 70,
+		    	sortable: true,
 		    	dataIndex: 'service_name'
 		    },{
-		    	header: "Место выполнения", 
-		    	width: 40, 
-		    	sortable: true, 
+		    	header: "Место выполнения",
+		    	width: 40,
+		    	sortable: true,
 		    	dataIndex: 'execution_place_name'
 		    },{
-		    	header: "Цена", 
-		    	width: 30, 
-		    	sortable: true, 
+		    	header: "Цена",
+		    	width: 30,
+		    	sortable: true,
 		    	dataIndex: 'price'
 		    },{
-		    	header: "Время", 
-		    	width: 35, 
-		    	sortable: true, 
+		    	header: "Время",
+		    	width: 35,
+		    	sortable: true,
 		    	dataIndex: 'start',
 		    	renderer:Ext.util.Format.dateRenderer('H:i / d.m.Y')
 		    }
-		];		
-		
+		];
+
 		this.choiceButton = new Ext.Button({
 			iconCls:'silk-accept',
 			disabled:true,
@@ -49,7 +49,7 @@ App.registry.PatientPreorderGrid = Ext.extend(Ext.grid.GridPanel, {
 			handler:this.onChoice.createDelegate(this, []),
 			scope:this
 		});
-		
+
 		var config = {
 			loadMask : {
 				msg : 'Подождите, идет загрузка...'
@@ -84,7 +84,7 @@ App.registry.PatientPreorderGrid = Ext.extend(Ext.grid.GridPanel, {
 			viewConfig : {
 				forceFit : true,
 				getRowClass: App.preorder.getRowClass
-			},	
+			},
 			listeners: {
 				rowdblclick:this.onChoice.createDelegate(this, []),
 				scope:this
@@ -98,19 +98,19 @@ App.registry.PatientPreorderGrid = Ext.extend(Ext.grid.GridPanel, {
 		this.on('afterrender', function(){this.store.load()}, this);
 		//this.store.on('write', this.onStoreWrite, this);
 	},
-	
+
 	btnSetDisabled: function(status) {
         this.choiceButton.setDisabled(status);
 	},
-	
+
 	onServiceSelect: function(){
 //		this.btnSetDisable(false);
 	},
-	
+
 	getSelected: function() {
 		return this.getSelectionModel().getSelected()
 	},
-	
+
 	onChoice: function() {
         var records = this.getSelectionModel().getSelections();
         if (records.length) {
@@ -123,7 +123,7 @@ App.registry.PatientPreorderGrid = Ext.extend(Ext.grid.GridPanel, {
         	},this)
         }
     }
-	
+
 });
 
 

@@ -1,27 +1,27 @@
 Ext.ns('App.result');
 
 App.result.BaseColumn = Ext.extend(Ext.Panel,{
-	
-	
+
+
 	/*
 	 * Разделитель в названиях. Используется когда применяется группировка по полям или разбивка по колонкам.
 	 */
 	title_delimiter : "::",
 	code_delimiter : "_",
-	
-	
-	
-	
+
+
+
+
 	revertMappings : function(){
 		this.reMappings = {};
 		for(k in this.mappings) {
 			this.reMappings[this.mappings[k]] = k;
 		}
 	},
-	
+
 
 	initGrid : function(recs, opts, success){
-		
+
 		this.mappings = {};
 		var serviceTitle;
 		Ext.each(recs, function(rec){
@@ -30,24 +30,24 @@ App.result.BaseColumn = Ext.extend(Ext.Panel,{
 			var codes = rec.data.analysis_code.split(this.code_delimiter);
 			this.mappings[names[1]] = codes[1];
 		}, this);
-		
+
 		this.setTitle(serviceTitle);
-		
+
 		this.editor = new App.fields.InputList();
-		
+
 		this.fields = ['name','code'];
-		
+
 		this.columns = [{
 			header:'Тест',
 			dataIndex:'name',
 			width:55
 		}];
-		
+
 		for(k in this.mappings){
 			this.fields.push('inputlist'+this.mappings[k]);
 			var dataIndex = 'col'+this.mappings[k];
 			this.fields.push(dataIndex);
-			
+
 			this.columns.push({
 				header:k,
 				width:15,
@@ -55,11 +55,11 @@ App.result.BaseColumn = Ext.extend(Ext.Panel,{
 				editor:this.editor
 			});
 		}
-		
+
 		this.gs = new Ext.data.ArrayStore({
 			fields:this.fields
 		});
-		
+
 		this.grid = new Ext.grid.EditorGridPanel({
 			clicksToEdit:1,
 			flex:1,
@@ -100,7 +100,7 @@ App.result.BaseColumn = Ext.extend(Ext.Panel,{
 		this.add(this.grid);
 		this.doLayout();
 	},
-	
+
 	pullData : function(recs){
 		/*
 		 * Обработка колоночного режима
@@ -126,20 +126,20 @@ App.result.BaseColumn = Ext.extend(Ext.Panel,{
 			}
 		}, this);
 	},
-	
+
 	processRow : function(rec, vals){
 		var idx = String.format('inputlist{0}',this.mappings[vals[1]]);
 		var obj = {};
 		obj[idx] = rec.get('inputlist');
 		return obj
 	},
-	
+
 	initComponent : function(){
-		
+
 		this.proxy = new Ext.data.HttpProxy({
-		    url: get_api_url('result')
+		    url: App.getApiUrl('result')
 		});
-		
+
 		this.reader = new Ext.data.JsonReader({
 		    totalProperty: 'meta.total_count',
 		    successProperty: 'success',
@@ -166,7 +166,7 @@ App.result.BaseColumn = Ext.extend(Ext.Panel,{
 		    {name: 'sample'},
 		    {name: 'is_validated', type:'bool'}
 		]);
-		
+
 		this.writer = new Ext.data.JsonWriter({
 		    encode: false,
 		    writeAllFields: true
@@ -192,8 +192,8 @@ App.result.BaseColumn = Ext.extend(Ext.Panel,{
 		    	},
 		    	scope:this
 		    }
-		});		
-		
+		});
+
 		config = {
 			title:'Загрузка тестов...',
 			border:false,
@@ -204,9 +204,9 @@ App.result.BaseColumn = Ext.extend(Ext.Panel,{
 
 		Ext.apply(this, Ext.apply(this.initialConfig, config));
 		App.result.BaseColumn.superclass.initComponent.apply(this, arguments);
-		
+
 //		this.revertMappings();
-		
+
 	},
 
 	setActiveRecord: function(rec) {
@@ -217,7 +217,7 @@ App.result.BaseColumn = Ext.extend(Ext.Panel,{
 			scope:this
 		});
 	},
-	
+
 	onSave : function(){
 		var gs = this.grid.getStore();
 		gs.each(function(rec){
@@ -234,13 +234,13 @@ App.result.BaseColumn = Ext.extend(Ext.Panel,{
 		}, this);
 		this.store.save();
 	},
-	
+
 	onSubmit : function() {
 		App.direct.lab.confirmResults(this.labOrder.id, function(r, e){
 			if(r.success) {
 				this.labOrder.set('is_completed',true);
 				Ext.ux.Growl.notify({
-			        title: "Успешная операция!", 
+			        title: "Успешная операция!",
 			        message: r.message,
 			        iconCls: "x-growl-accept",
 			        alignment: "tr-tr",

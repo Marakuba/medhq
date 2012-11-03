@@ -3,10 +3,10 @@ Ext.ns('App','App.choices');
 App.choices.ReferralChoiceGrid = Ext.extend(Ext.grid.GridPanel, {
 
 	initComponent : function() {
-		
+
 		this.store = new Ext.data.RESTStore({
 			autoLoad : true,
-			apiUrl : get_api_url('referral'),
+			apiUrl : App.getApiUrl('referral'),
 			model: [
 				    {name: 'id'},
 				    {name: 'resource_uri'},
@@ -15,20 +15,20 @@ App.choices.ReferralChoiceGrid = Ext.extend(Ext.grid.GridPanel, {
 				    {name: 'name'}
 				]
 		});
-		
+
 		this.columns =  [
 		    {
 		    	header: "Реферрал",
-		    	sortable: true, 
+		    	sortable: true,
 		    	dataIndex: 'name'
 		    },
 		    {
 		    	header: "Тип реферрала",
-		    	sortable: true, 
+		    	sortable: true,
 		    	dataIndex: 'referral_type_name'
 		    }
-		];		
-		
+		];
+
 		this.choiceButton = new Ext.Button({
 			iconCls:'silk-accept',
 			disabled:true,
@@ -36,7 +36,7 @@ App.choices.ReferralChoiceGrid = Ext.extend(Ext.grid.GridPanel, {
 			handler:this.onChoice.createDelegate(this, []),
 			scope:this
 		});
-		
+
 		this.searchField = new App.SearchField({
 			stripCharsRe:new RegExp('[\;\?]'),
 			listeners:{
@@ -49,7 +49,7 @@ App.choices.ReferralChoiceGrid = Ext.extend(Ext.grid.GridPanel, {
 				search:function(v){
 					this.onSearch(v)
 				}
-				
+
 			},
 			onTrigger1Click : function(){
 		        if(this.hasSearch){
@@ -73,7 +73,7 @@ App.choices.ReferralChoiceGrid = Ext.extend(Ext.grid.GridPanel, {
 		    },
 		    scope:this
 		});
-		
+
 		var config = {
 			loadMask : {
 				msg : 'Подождите, идет загрузка...'
@@ -109,7 +109,7 @@ App.choices.ReferralChoiceGrid = Ext.extend(Ext.grid.GridPanel, {
 			viewConfig : {
 				forceFit : true
 				//getRowClass : this.applyRowClass
-			},	
+			},
 			listeners: {
 				rowdblclick:this.onChoice.createDelegate(this, []),
 				scope:this
@@ -122,26 +122,26 @@ App.choices.ReferralChoiceGrid = Ext.extend(Ext.grid.GridPanel, {
 		this.on('referralselect', this.onReferralSelect, this);
 		//this.store.on('write', this.onStoreWrite, this);
 	},
-	
+
 	btnSetDisabled: function(status) {
         this.choiceButton.setDisabled(status);
 	},
-	
+
 	onReferralSelect: function(){
 //		this.btnSetDisable(false);
 	},
-	
+
 	getSelected: function() {
 		return this.getSelectionModel().getSelected()
 	},
-	
+
 	onSearch: function(v){
 		var s = this.store;
 		s.baseParams = { format:'json' };
 		s.setBaseParam('name__istartswith', v);
 		s.load();
 	},
-	
+
 	onStoreWrite: function(store, action, result, res, rs) {
 		if( res.success && this.win ) {
 			store.filter('id',rs.data.id);
@@ -152,13 +152,13 @@ App.choices.ReferralChoiceGrid = Ext.extend(Ext.grid.GridPanel, {
 //			App.eventManager.fireEvent('patientcreate',rs);
 //		}
 	},
-	
+
 	onChoice: function() {
         var record = this.getSelectionModel().getSelected();
         if (record) {
         	Ext.callback(this.fn, this.scope || window, [record]);
         };
     }
-	
+
 });
 

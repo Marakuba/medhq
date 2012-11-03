@@ -24,9 +24,9 @@ App.laboratory.RegisterApp = Ext.extend(Ext.Panel, {
     		    ['is_completed','is_completed'],
     		    ['cito','visit__is_cito']
     		];
-		
+
 		this.singleDate = true;
-   		   		   		
+
    		this.form = new Ext.form.FormPanel({
    			border:false,
    			baseCls:'x-plain',
@@ -40,7 +40,7 @@ App.laboratory.RegisterApp = Ext.extend(Ext.Panel, {
 					toggle:function(btn,pressed){
 						this.singleDate = !pressed;
 						btn.setText(pressed ? "Дата" : "Период");
-						var startDate = this.form.getForm().findField('start_date'); 
+						var startDate = this.form.getForm().findField('start_date');
 						var endDate = this.form.getForm().findField('end_date');
 						setLabel(startDate, pressed ? "Дата с" : "На дату");
 						endDate.setVisible(pressed);
@@ -80,7 +80,7 @@ App.laboratory.RegisterApp = Ext.extend(Ext.Panel, {
    				valueField:'id',
    				store:new Ext.data.RESTStore({
    					autoLoad : true,
-   					apiUrl : get_api_url('medstate'),
+   					apiUrl : App.getApiUrl('medstate'),
    					model: ['id','name']
    				}),
    			    minChars:2,
@@ -97,7 +97,7 @@ App.laboratory.RegisterApp = Ext.extend(Ext.Panel, {
    				valueField:'id',
    				store:new Ext.data.RESTStore({
    					autoLoad : true,
-   					apiUrl : get_api_url('medstate'),
+   					apiUrl : App.getApiUrl('medstate'),
    					model: ['id','name']
    				}),
    			    minChars:2,
@@ -114,7 +114,7 @@ App.laboratory.RegisterApp = Ext.extend(Ext.Panel, {
    				valueField:'id',
    				store:new Ext.data.RESTStore({
    					autoLoad : true,
-   					apiUrl : get_api_url('medstate'),
+   					apiUrl : App.getApiUrl('medstate'),
    					model: ['id','name']
    				}),
    			    minChars:2,
@@ -132,7 +132,7 @@ App.laboratory.RegisterApp = Ext.extend(Ext.Panel, {
    				displayField:'full_name',
    				store:new Ext.data.RESTStore({
    					autoLoad : true,
-   					apiUrl : get_api_url('patient'),
+   					apiUrl : App.getApiUrl('patient'),
    					model: ['id','full_name']
    				}),
    			    minChars:2,
@@ -182,7 +182,7 @@ App.laboratory.RegisterApp = Ext.extend(Ext.Panel, {
 				scope:this
 			}]
    		});
-   		
+
    		this.panel = new Ext.Panel({
 			region:'center',
 			margins:'3 3 3 3',
@@ -223,7 +223,7 @@ App.laboratory.RegisterApp = Ext.extend(Ext.Panel, {
 				scope:this
 			}
 		});
-   		
+
 		config = {
 			id:'lab-register-app',
 			title:'Реестр тестов',
@@ -241,13 +241,13 @@ App.laboratory.RegisterApp = Ext.extend(Ext.Panel, {
 
 		Ext.apply(this, Ext.apply(this.initialConfig, config));
 		App.laboratory.RegisterApp.superclass.initComponent.apply(this, arguments);
-		
+
 		this.panel.on('afterrender', function(){
 			this.doReport();
 		}, this);
-		
+
 	},
-	
+
 	doReport: function(){
 		var f = this.form.getForm();
 		var o = {};

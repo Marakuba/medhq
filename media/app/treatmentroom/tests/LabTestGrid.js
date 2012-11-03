@@ -3,13 +3,13 @@ Ext.ns('App.treatment');
 App.treatment.LabTestGrid = Ext.extend(Ext.grid.GridPanel, {
 
 	initComponent : function() {
-		
+
 		this.store = new Ext.data.RESTStore({
 			autoLoad : true,
-			apiUrl : get_api_url('servicetosend'),
+			apiUrl : App.getApiUrl('servicetosend'),
 			model: App.models.ServiceToSend
 		});
-		
+
 		this.sm = new Ext.grid.CheckboxSelectionModel({
 			singleSelect : false,
 			listeners:{
@@ -20,40 +20,40 @@ App.treatment.LabTestGrid = Ext.extend(Ext.grid.GridPanel, {
 				scope:this
 			}
 		});
-		
+
 		this.columns =  [this.sm, {
 	    	header: "Дата",
 	    	width:10,
-	    	sortable: true, 
+	    	sortable: true,
 	    	dataIndex: 'created',
 	    	renderer:Ext.util.Format.dateRenderer('d.m.Y H:i')
 	    },{
-	    	header: "PID", 
-	    	width: 8, 
-	    	sortable: true, 
+	    	header: "PID",
+	    	width: 8,
+	    	sortable: true,
 	    	dataIndex: 'patient_id'
 	    },{
-	    	header: "SyncID", 
-	    	width: 8, 
-	    	sortable: true, 
+	    	header: "SyncID",
+	    	width: 8,
+	    	sortable: true,
 	    	dataIndex: 'patient_sync_id'
 	    },{
-	    	header: "Услуга", 
-	    	width: 25, 
-	    	sortable: true, 
+	    	header: "Услуга",
+	    	width: 25,
+	    	sortable: true,
 	    	dataIndex: 'service_name'
 	    },{
-	    	header: "Пациент", 
-	    	width: 20, 
-	    	sortable: true, 
+	    	header: "Пациент",
+	    	width: 20,
+	    	sortable: true,
 	    	dataIndex: 'patient_name'
 	    },{
-	    	header: "Оператор", 
-	    	width: 10, 
-	    	sortable: true, 
+	    	header: "Оператор",
+	    	width: 10,
+	    	sortable: true,
 	    	dataIndex: 'operator_name'
-	    }];		
-		
+	    }];
+
 		var config = {
 			closable:true,
 			title:'Лабораторные тесты',
@@ -70,7 +70,7 @@ App.treatment.LabTestGrid = Ext.extend(Ext.grid.GridPanel, {
 	        	name:'state',
 			    minChars:3,
 			    emptyText:'Выберите лабораторию...',
-			    proxyUrl:get_api_url('medstate')
+			    proxyUrl:App.getApiUrl('medstate')
 			}),{
 				text:'Передать в лабораторию',
 				handler:this.onSend.createDelegate(this)
@@ -99,7 +99,7 @@ App.treatment.LabTestGrid = Ext.extend(Ext.grid.GridPanel, {
 //	                return 'x-grid3-row-collapsed';
 //	            }
 			})
-			
+
 		}
 
 		Ext.apply(this, Ext.apply(this.initialConfig, config));
@@ -107,11 +107,11 @@ App.treatment.LabTestGrid = Ext.extend(Ext.grid.GridPanel, {
 //		App.eventManager.on('globalsearch', this.onGlobalSearch, this);
 //		this.store.on('write', this.onStoreWrite, this);
 	},
-	
+
 	onGlobalSearch: function(v) {
 		this.storeFilter('search', v);
 	},
-	
+
 	storeFilter: function(field, value){
 		if(value===undefined) {
 			delete this.store.baseParams[field]
@@ -120,11 +120,11 @@ App.treatment.LabTestGrid = Ext.extend(Ext.grid.GridPanel, {
 		}
 		this.store.load();
 	},
-	
+
 	getSelected: function() {
 		return this.getSelectionModel().getSelected()
 	},
-	
+
 	onSend : function(){
 		var records = this.getSelectionModel().getSelections();
 		if(records) {
@@ -135,13 +135,13 @@ App.treatment.LabTestGrid = Ext.extend(Ext.grid.GridPanel, {
 			Ext.MessageBox.alert('ids',ids.join(','));
 		}
 	},
-	
+
 	onPrint: function() {
 //		var id = this.getSelected().data.id;
 //		var url = ['/lab/print/results',id,''].join('/');
 //		window.open(url);
 	},
-	
+
 	onCreate: function() {
 		this.win = new App.issue.IssueWindow({
 			model:this.store.recordType,
@@ -152,7 +152,7 @@ App.treatment.LabTestGrid = Ext.extend(Ext.grid.GridPanel, {
 		});
 		this.win.show();
 	},
-	
+
 	onChange: function(rowindex){
 		var record = this.getSelected();
 		if(record) {
@@ -167,17 +167,17 @@ App.treatment.LabTestGrid = Ext.extend(Ext.grid.GridPanel, {
     		this.win.show();
 		}
 	},
-	
+
 	onDelete: function() {
-		
+
 	},
-	
+
 	onStoreWrite: function(store, action, result, res, rs) {
 		if( res.success && this.win ) {
 			this.win.close();
 		}
 	}
-	
+
 });
 
 

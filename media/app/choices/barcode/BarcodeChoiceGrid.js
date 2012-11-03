@@ -3,22 +3,22 @@ Ext.ns('App','App.choices');
 App.choices.BarcodeChoiceGrid = Ext.extend(Ext.grid.GridPanel, {
 
 	initComponent : function() {
-		
+
 		this.store = new Ext.data.RESTStore({
 			autoLoad : false,
-			apiUrl : get_api_url('barcode'),
+			apiUrl : App.getApiUrl('barcode'),
 			model: App.models.barcodeModel
 		});
-		
+
 		this.columns =  [
 		    {
-		    	header: "Номер", 
-		    	width: 45, 
-		    	sortable: true, 
+		    	header: "Номер",
+		    	width: 45,
+		    	sortable: true,
 		    	dataIndex: 'id'
 		    }
-		];		
-		
+		];
+
 		this.choiceButton = new Ext.Button({
 			iconCls:'silk-accept',
 			disabled:true,
@@ -26,7 +26,7 @@ App.choices.BarcodeChoiceGrid = Ext.extend(Ext.grid.GridPanel, {
 			handler:this.onChoice.createDelegate(this, []),
 			scope:this
 		});
-		
+
 		var config = {
 			loadMask : {
 				msg : 'Подождите, идет загрузка...'
@@ -61,7 +61,7 @@ App.choices.BarcodeChoiceGrid = Ext.extend(Ext.grid.GridPanel, {
 			viewConfig : {
 				forceFit : true
 				//getRowClass : this.applyRowClass
-			},	
+			},
 			listeners: {
 				rowdblclick:this.onChoice.createDelegate(this, []),
 				scope:this
@@ -84,37 +84,37 @@ App.choices.BarcodeChoiceGrid = Ext.extend(Ext.grid.GridPanel, {
 		this.on('barcodeselect', this.onBarcodeSelect, this);
 		//this.store.on('write', this.onStoreWrite, this);
 	},
-	
+
 	btnSetDisabled: function(status) {
         this.choiceButton.setDisabled(status);
 	},
-	
+
 	onBarcodeSelect: function(){
 		this.choiceButton.enable();
 	},
-	
+
 	getSelected: function() {
 		return this.getSelectionModel().getSelected()
 	},
-	
+
 	goToSlug: function(slug) {
 		var s = this.getSelected().data.id;
 		var url = this.getAbsoluteUrl(s)+slug+"/";
 		window.open(url);
 	},
-	
+
 	onGlobalSearch: function(v){
 		var s = this.store;
 		s.baseParams = { format:'json' };
 		s.setBaseParam('search', v);
 		s.load();
 	},
-	
+
 	onChoice: function() {
         var record = this.getSelectionModel().getSelected();
         if (record) {
         	Ext.callback(this.fn, this.scope || window, [record]);
         };
     }
-	
+
 });
