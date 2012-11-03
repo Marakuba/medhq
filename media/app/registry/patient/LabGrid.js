@@ -3,14 +3,14 @@ Ext.ns('App.patient');
 App.patient.LabGrid = Ext.extend(Ext.grid.GridPanel, {
 
 	loadInstant: false,
-	
+
 	initComponent : function() {
-		
+
 		// Create a standard HttpProxy instance.
 		this.proxy = new Ext.data.HttpProxy({
-		    url: get_api_url('laborder')
+		    url: App.getApiUrl('laborder')
 		});
-		
+
 		// Typical JsonReader.  Notice additional meta-data params for defining the core attributes of your json-response
 		this.reader = new Ext.data.JsonReader({
 		    totalProperty: 'meta.total_count',
@@ -30,12 +30,12 @@ App.patient.LabGrid = Ext.extend(Ext.grid.GridPanel, {
 		    {name: 'staff_name'},
 		    {name: 'payer_name'}
 		]);
-		
+
 		// The new DataWriter component.
 		this.writer = new Ext.data.JsonWriter({
 		    encode: false   // <-- don't return encoded JSON -- causes Ext.Ajax#request to send data using jsonData config rather than HTTP params
 		});
-		
+
 		this.store = new Ext.data.Store({
 		    id: 'laborder-store',
 		    baseParams: {
@@ -53,58 +53,58 @@ App.patient.LabGrid = Ext.extend(Ext.grid.GridPanel, {
 		    reader: this.reader,
 		    writer: this.writer    // <-- plug a DataWriter into the store just as you would a Reader
 		});
-		
-		
+
+
 		this.columns =  [{
-	    	header: "№ заказа", 
-	    	width: 90, 
-	    	sortable: false, 
-	    	dataIndex: 'is_completed', 
+	    	header: "№ заказа",
+	    	width: 90,
+	    	sortable: false,
+	    	dataIndex: 'is_completed',
 	    	renderer: function(val, opts, rec) {
 	    		var cls = val ? "cell-completed-icon" : "";
 	    		return String.format('<div class="{0}" style="pagging-left:18px;text-indent:16px;">{1}</div>',cls,rec.data.barcode);
 	    	}
 	    },{
-		    	header: "Дата", 
-		    	width: 70, 
-		    	sortable: true, 
+		    	header: "Дата",
+		    	width: 70,
+		    	sortable: true,
 		    	dataIndex: 'created',
-		    	renderer:Ext.util.Format.dateRenderer('d.m.y'), 
+		    	renderer:Ext.util.Format.dateRenderer('d.m.y'),
 		    	editor: new Ext.form.TextField({})
 		    },{
-		    	header: "Лаборатория", 
-		    	width: 130, 
-		    	sortable: true, 
+		    	header: "Лаборатория",
+		    	width: 130,
+		    	sortable: true,
 		    	dataIndex: 'laboratory_name'
 		    },{
-		    	header: "Исследование", 
-		    	width: 170, 
-		    	sortable: true, 
+		    	header: "Исследование",
+		    	width: 170,
+		    	sortable: true,
 		    	dataIndex: 'manual_service'
 		    },{
 		    	width: 130,
-		    	sortable: true, 
+		    	sortable: true,
 		    	header:'Напечатано',
-		    	dataIndex: 'is_printed', 
+		    	dataIndex: 'is_printed',
 		    	renderer: function(val,opts,rec) {
 		    		if(val){
 			    		time = Ext.util.Format.date(rec.data.print_date, 'd.m.y / H:i');
 			    		return String.format('{0}&nbsp;&nbsp;<img src="{1}admin/img/admin/icon-yes.gif">', time, MEDIA_URL)
-		    		}		    	
+		    		}
 		    	}
 		    },{
-		    	header: "Врач", 
-		    	width: 160, 
-		    	sortable: true, 
+		    	header: "Врач",
+		    	width: 160,
+		    	sortable: true,
 		    	dataIndex: 'staff_name'
 		    },{
-		    	header: "Плательщик", 
-		    	width: 130, 
-		    	sortable: true, 
+		    	header: "Плательщик",
+		    	width: 130,
+		    	sortable: true,
 		    	dataIndex: 'payer_name'
 		    }
-		];		
-		
+		];
+
 		var config = {
 			loadMask : {
 				msg : 'Подождите, идет загрузка...'
@@ -135,7 +135,7 @@ App.patient.LabGrid = Ext.extend(Ext.grid.GridPanel, {
 				emptyText: 'Нет записей',
 				getRowClass : this.applyRowClass
 			}
-			
+
 		}
 
 		Ext.apply(this, Ext.apply(this.initialConfig, config));
@@ -143,7 +143,7 @@ App.patient.LabGrid = Ext.extend(Ext.grid.GridPanel, {
 		this.ownerCt.on('patientselect', this.setActivePatient, this);
 		//App.eventManager.on('patientselect', this.onPatientSelect, this);
 	},
-	
+
 	applyRowClass : function(record, index){
 		// x-grid-row-normal
 		if(record.data.is_completed){
@@ -151,7 +151,7 @@ App.patient.LabGrid = Ext.extend(Ext.grid.GridPanel, {
 		}
 		return ""
 	},
-	
+
 	setActivePatient: function(rec) {
 		id = rec.id;
 		this.patientId = id;
@@ -159,7 +159,7 @@ App.patient.LabGrid = Ext.extend(Ext.grid.GridPanel, {
 		s.setBaseParam('visit__patient', id);
 		s.load();
 	},
-	
+
 	onPatientSelect: function(id) {
 		this.store.load({
 			params: {
@@ -171,24 +171,24 @@ App.patient.LabGrid = Ext.extend(Ext.grid.GridPanel, {
 	getSelected: function() {
 		return this.getSelectionModel().getSelected()
 	},
-	
+
 	getAbsoluteUrl: function(id) {
 		return "/lab/laborder/"+id+"/";
 	},
-	
+
 	onPrint: function() {
 		var id = this.getSelected().data.id;
 		var url = ['/lab/print/results',id,''].join('/');
 		window.open(url);
 	},
-	
+
 	goToSlug: function(slug) {
 		var s = this.getSelected().data.id;
 		var url = this.getAbsoluteUrl(s)+slug+"/";
 		window.open(url);
 	}
 
-	
+
 });
 
 

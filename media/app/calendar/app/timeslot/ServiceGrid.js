@@ -3,11 +3,11 @@ Ext.ns('App','App.calendar');
 App.calendar.ServiceChoiceGrid = Ext.extend(Ext.grid.GridPanel, {
 
 	initComponent : function() {
-		
+
 		this.serviceStore = new Ext.data.RESTStore({
 			autoLoad : false,
 			autoSave: false,
-			apiUrl : get_api_url('extendedservice'),
+			apiUrl : App.getApiUrl('extendedservice'),
 			model: [
 				    {name: 'id'},
 				    {name: 'resource_uri'},
@@ -18,22 +18,22 @@ App.calendar.ServiceChoiceGrid = Ext.extend(Ext.grid.GridPanel, {
 				    {name: 'price'}
 				]
 		});
-		
+
 		this.columns =  [
 		    {
-		    	header: "Наименование", 
-		    	width: 80, 
-		    	sortable: true, 
+		    	header: "Наименование",
+		    	width: 80,
+		    	sortable: true,
 		    	dataIndex: 'service_name'
 		    },{
-		    	header: "Место выполнения", 
-		    	width: 45, 
-		    	sortable: true, 
+		    	header: "Место выполнения",
+		    	width: 45,
+		    	sortable: true,
 		    	dataIndex: 'state_name'
 		    },{
-		    	header: "Цена", 
-		    	width: 45, 
-		    	sortable: true, 
+		    	header: "Цена",
+		    	width: 45,
+		    	sortable: true,
 		    	dataIndex: 'price',
 		    	renderer: function(val, meta, record) {
 		    		if (!record.data.is_active || val == 0){
@@ -43,9 +43,9 @@ App.calendar.ServiceChoiceGrid = Ext.extend(Ext.grid.GridPanel, {
 		    		}
 		    	}
 		    }
-		];		
-		
-		
+		];
+
+
 		this.choiceButton = new Ext.Button({
 			iconCls:'silk-accept',
 			disabled:true,
@@ -53,16 +53,16 @@ App.calendar.ServiceChoiceGrid = Ext.extend(Ext.grid.GridPanel, {
 			handler:this.onChoice.createDelegate(this, []),
 			scope:this
 		});
-		
+
 		this.searchField = new Ext.ux.form.SearchField({
             store: this.store ? this.store : this.serveceStore,
             paramName:'base_service__name__icontains'
         });
-        
+
         this.ttb = new Ext.Toolbar({
 			items:[this.choiceButton,this.searchField]
 		});
-		
+
 		var config = {
 			loadMask : {
 				msg : 'Подождите, идет загрузка...'
@@ -101,7 +101,7 @@ App.calendar.ServiceChoiceGrid = Ext.extend(Ext.grid.GridPanel, {
             		};
             		return 'preorder-actual-row-body';
         		}
-			},	
+			},
 			listeners: {
 				rowdblclick:this.onChoice.createDelegate(this, []),
 				scope:this
@@ -113,26 +113,26 @@ App.calendar.ServiceChoiceGrid = Ext.extend(Ext.grid.GridPanel, {
 		this.on('afterrender', function(){
 			this.store.load();
 		}, this);
-		
+
 		this.initToolbar();
-		
+
 	},
-	
+
 	btnSetDisabled: function(status) {
         this.choiceButton.setDisabled(status);
 	},
-	
+
 	getSelected: function() {
 		return this.getSelectionModel().getSelected()
 	},
-	
+
 	onChoice: function() {
         var record = this.getSelectionModel().getSelected();
         if (record) {
         	Ext.callback(this.fn, this.scope || window, [record]);
         };
     },
-    
+
     storeFilter: function(field, value){
 		if(!value) {
 			delete this.store.baseParams[field]
@@ -141,11 +141,11 @@ App.calendar.ServiceChoiceGrid = Ext.extend(Ext.grid.GridPanel, {
 		}
 		this.store.load();
 	},
-    
+
     initToolbar: function(){
 		// laboratory
 		Ext.Ajax.request({
-			url:get_api_url('medstate'),
+			url:App.getApiUrl('medstate'),
 			method:'GET',
 			success:function(resp, opts) {
 				this.ttb.add({
@@ -175,7 +175,7 @@ App.calendar.ServiceChoiceGrid = Ext.extend(Ext.grid.GridPanel, {
 			scope:this
 		});
 	}
-	
+
 });
 
 

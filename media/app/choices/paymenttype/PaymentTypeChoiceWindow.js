@@ -3,7 +3,7 @@ Ext.ns('App.choices');
 App.choices.PaymentTypeChoiceWindow = Ext.extend(Ext.Window, {
 
 	initComponent:function(){
-		
+
 		this.policyCmb = new Ext.form.LazyClearableComboBox({
 //			id:'visit-policy-cmb',
         	fieldLabel:'Полис ДМС',
@@ -11,7 +11,7 @@ App.choices.PaymentTypeChoiceWindow = Ext.extend(Ext.Window, {
         	name:'insurance_policy',
         	store:new Ext.data.JsonStore({
     			proxy: new Ext.data.HttpProxy({
-    				url:get_api_url('insurance_policy'),
+    				url:App.getApiUrl('insurance_policy'),
     				method:'GET'
     			}),
     			root:'objects',
@@ -32,7 +32,7 @@ App.choices.PaymentTypeChoiceWindow = Ext.extend(Ext.Window, {
 //		    )
 		});
 
-		
+
 		this.policyBar = new Ext.Panel({
 			layout:'hbox',
 			hidden: true,
@@ -67,10 +67,10 @@ App.choices.PaymentTypeChoiceWindow = Ext.extend(Ext.Window, {
 					},
 					scope:this
 				}
-			}]			
+			}]
 		});
-		
-		
+
+
 		this.payerCmb = new Ext.form.LazyComboBox({
 	        	fieldLabel:'Плательщик',
 	        	anchor:'98%',
@@ -78,7 +78,7 @@ App.choices.PaymentTypeChoiceWindow = Ext.extend(Ext.Window, {
 			    minChars:3,
 			    hidden:(App.settings.strictMode && this.types==='material'),
 			    emptyText:'Выберите плательщика...',
-			    proxyUrl:get_api_url('state'),
+			    proxyUrl:App.getApiUrl('state'),
 			    value:App.settings.strictMode ? App.getApiUrl('state',active_state_id) : '',
 			    listeners:{
 			    	select:function(combo,record){
@@ -86,8 +86,8 @@ App.choices.PaymentTypeChoiceWindow = Ext.extend(Ext.Window, {
 			    	scope:this
 			    }
 		})
-		
-		
+
+
 		this.payerBar = new Ext.Panel({
 			layout:'hbox',
 			hidden: true,
@@ -99,9 +99,9 @@ App.choices.PaymentTypeChoiceWindow = Ext.extend(Ext.Window, {
 				flex:1,
 				layout:'form',
 				items:this.payerCmb
-			}]			
+			}]
 		});
-		
+
 		this.paymentTypeCB = new Ext.form.ComboBox({
 			fieldLabel:'Форма оплаты',
 			name:'payment_type',
@@ -128,12 +128,12 @@ App.choices.PaymentTypeChoiceWindow = Ext.extend(Ext.Window, {
 					this.onPaymentTypeChoice(rec.data.id);
 				},
 				afterrender:function(){
-					
+
 				},
 				scope:this
 			}
 		});
-		
+
 		this.paymentFs = new Ext.form.FormPanel({
 //            layout: 'form',
             baseCls:'x-border-layout-ct',
@@ -144,7 +144,7 @@ App.choices.PaymentTypeChoiceWindow = Ext.extend(Ext.Window, {
 				this.payerBar
 			]
 		});
-		
+
 		config = {
 			width:500,
 			height:200,
@@ -161,10 +161,10 @@ App.choices.PaymentTypeChoiceWindow = Ext.extend(Ext.Window, {
 				scope:this
 			}]
 		};
-		
+
 		Ext.apply(this, Ext.apply(this.initialConfig, config));
 		App.choices.PaymentTypeChoiceWindow.superclass.initComponent.apply(this, arguments);
-		
+
 		this.on('afterrender',function(){
 			if (!this.record){
 				console.log('не передана запись визита!');
@@ -175,13 +175,13 @@ App.choices.PaymentTypeChoiceWindow = Ext.extend(Ext.Window, {
 			this.payerCmb.setValue(this.record.data.payer);
 			this.policyCmb.getStore().setBaseParam('patient',this.patientRecord.data.id);
 			this.policyCmb.setValue(this.record.data.insurance_policy)
-			
+
 		},this)
-		
+
 	},
-	
+
 	onPaymentTypeChoice : function(id){
-		
+
 		switch(id){
 			case 'д':
 				this.hidePaymentCmb('payer');
@@ -200,9 +200,9 @@ App.choices.PaymentTypeChoiceWindow = Ext.extend(Ext.Window, {
 				this.hidePaymentCmb('payer');
 				break
 		};
-		
+
 	},
-	
+
 	hidePaymentCmb: function(type){
 		if (!type) return false
 		this[type+'Cmb'].allowBlank = true;
@@ -212,13 +212,13 @@ App.choices.PaymentTypeChoiceWindow = Ext.extend(Ext.Window, {
 		this[type+'Cmb'].reset();
 		this[type+'Bar'].hide();
 	},
-	
+
 	showPaymentCmb: function(type){
 		if (!type) return false
 		this[type+'Cmb'].allowBlank = false;
 		this[type+'Bar'].show();
 	},
-	
+
 	setPtype: function(){
 		var f = this.paymentFs.getForm();
 		if (!f.isValid()){
@@ -235,7 +235,7 @@ App.choices.PaymentTypeChoiceWindow = Ext.extend(Ext.Window, {
 			console.log(res.data);
 			if(res.success){
 				this.fireEvent('ptypechoiced');
-				this.close();				
+				this.close();
 			}
 		},this)
 	}

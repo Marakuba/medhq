@@ -3,10 +3,10 @@ Ext.ns('App','App.calendar');
 App.calendar.PatientGrid = Ext.extend(Ext.grid.GridPanel, {
 
 	initComponent : function() {
-		
+
 		this.store = new Ext.data.RESTStore({
 			autoLoad : true,
-			apiUrl : get_api_url('patient'),
+			apiUrl : App.getApiUrl('patient'),
 			model: [
 				    {name: 'id'},
 				    {name: 'resource_uri'},
@@ -29,32 +29,32 @@ App.calendar.PatientGrid = Ext.extend(Ext.grid.GridPanel, {
 				    {name: 'hid_card'}
 				]
 		});
-		
+
 		this.columns =  [
 		    {
-		    	header: "Фамилия", 
-		    	width: 45, 
-		    	sortable: true, 
+		    	header: "Фамилия",
+		    	width: 45,
+		    	sortable: true,
 		    	dataIndex: 'last_name'
 		    },{
-		    	header: "Имя", 
-		    	width: 45, 
-		    	sortable: true, 
+		    	header: "Имя",
+		    	width: 45,
+		    	sortable: true,
 		    	dataIndex: 'first_name'
 		    },{
-		    	header: "Отчество", 
-		    	width: 45, 
-		    	sortable: true, 
+		    	header: "Отчество",
+		    	width: 45,
+		    	sortable: true,
 		    	dataIndex: 'mid_name'
 		    },{
-		    	header: "Д.р.", 
-		    	width: 35, 
-		    	sortable: true, 
+		    	header: "Д.р.",
+		    	width: 35,
+		    	sortable: true,
 		    	dataIndex: 'birth_day',
 		    	renderer:Ext.util.Format.dateRenderer('d.m.Y')
 		    }
-		];		
-		
+		];
+
 		this.editButton = new Ext.Button({
 			iconCls:'silk-pencil',
 			text:'Изменить',
@@ -62,7 +62,7 @@ App.calendar.PatientGrid = Ext.extend(Ext.grid.GridPanel, {
 			handler:this.onPatientEdit.createDelegate(this),
 			scope:this
 		});
-		
+
 		this.choiceButton = new Ext.Button({
 			iconCls:'silk-accept',
 			disabled:true,
@@ -70,7 +70,7 @@ App.calendar.PatientGrid = Ext.extend(Ext.grid.GridPanel, {
 			handler:this.onChoice.createDelegate(this, []),
 			scope:this
 		});
-		
+
 		this.searchField = new App.SearchField({
 			stripCharsRe:new RegExp('[\;\?]'),
 			onTrigger1Click : function(){
@@ -96,7 +96,7 @@ App.calendar.PatientGrid = Ext.extend(Ext.grid.GridPanel, {
 				f.focus();
 		    }
 		});
-		
+
 		var config = {
 			loadMask : {
 				msg : 'Подождите, идет загрузка...'
@@ -137,7 +137,7 @@ App.calendar.PatientGrid = Ext.extend(Ext.grid.GridPanel, {
 			viewConfig : {
 				forceFit : true
 				//getRowClass : this.applyRowClass
-			},	
+			},
 			listeners: {
 				rowdblclick:this.onChoice.createDelegate(this, []),
 				scope:this
@@ -154,37 +154,37 @@ App.calendar.PatientGrid = Ext.extend(Ext.grid.GridPanel, {
 		this.on('patientselect', this.onPatientSelect, this);
 		//this.store.on('write', this.onStoreWrite, this);
 	},
-	
+
 	btnSetDisabled: function(status) {
         this.editButton.setDisabled(status);
         this.choiceButton.setDisabled(status);
 	},
-	
+
 	onPatientSelect: function(){
 //		this.btnSetDisable(false);
 	},
-	
+
 	getSelected: function() {
 		return this.getSelectionModel().getSelected()
 	},
-	
+
 	getAbsoluteUrl: function(id) {
 		return "/admin/patient/patient/"+id+"/";
 	},
-	
+
 	goToSlug: function(slug) {
 		var s = this.getSelected().data.id;
 		var url = this.getAbsoluteUrl(s)+slug+"/";
 		window.open(url);
 	},
-	
+
 	onSearch: function(v){
 		var s = this.store;
 		s.baseParams = { format:'json' };
 		s.setBaseParam('search', v);
 		s.load();
 	},
-	
+
 	onPatientAdd: function() {
 		this.win = new App.patient.PatientWindow({
 			//store:this.store,
@@ -199,7 +199,7 @@ App.calendar.PatientGrid = Ext.extend(Ext.grid.GridPanel, {
 			this.win.close();
 		},this);
 	},
-	
+
 	onPatientEdit: function() {
 		var record = this.getSelected();
 		if(record) {
@@ -214,9 +214,9 @@ App.calendar.PatientGrid = Ext.extend(Ext.grid.GridPanel, {
     		this.win.on('savecomplete', function(){
     			this.win.close();
     		},this);
-		}	
+		}
 	},
-	
+
 	onStoreWrite: function(store, action, result, res, rs) {
 		if( res.success && this.win ) {
 			store.filter('id',rs.data.id);
@@ -227,14 +227,14 @@ App.calendar.PatientGrid = Ext.extend(Ext.grid.GridPanel, {
 //			App.eventManager.fireEvent('patientcreate',rs);
 //		}
 	},
-	
+
 	onChoice: function() {
         var record = this.getSelectionModel().getSelected();
         if (record) {
         	Ext.callback(this.fn, this.scope || window, [record]);
         };
     }
-	
+
 });
 
 

@@ -8,7 +8,7 @@ App.billing.PaymentForm = Ext.extend(Ext.form.FormPanel, {
     initComponent: function(){
 
         this.store = new Ext.data.RESTStore({
-            apiUrl : get_api_url('payment'),
+            apiUrl : App.getApiUrl('payment'),
             baseParams:{
                 format:'json'
             },
@@ -18,7 +18,7 @@ App.billing.PaymentForm = Ext.extend(Ext.form.FormPanel, {
         this.cl_acc_store = new Ext.data.JsonStore({
             autoLoad:false,
             proxy: new Ext.data.HttpProxy({
-                url:get_api_url('clientaccount'),
+                url:App.getApiUrl('clientaccount'),
                 method:'GET'
             }),
             root:'objects',
@@ -36,7 +36,7 @@ App.billing.PaymentForm = Ext.extend(Ext.form.FormPanel, {
         this.patient_store = new Ext.data.JsonStore({
             autoLoad:false,
             proxy: new Ext.data.HttpProxy({
-                url:get_api_url('patient'),
+                url:App.getApiUrl('patient'),
                 method:'GET'
             }),
             root:'objects',

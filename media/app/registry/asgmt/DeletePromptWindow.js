@@ -3,19 +3,19 @@ Ext.ns('App.assignment');
 App.assignment.DeletePromptWindow = Ext.extend(Ext.Window, {
 
 	initComponent:function(){
-		
-		
+
+
 		this.store = new Ext.data.RESTStore({
 			autoSave: true,
 			autoLoad : false,
-			apiUrl : get_api_url('rejection_cause'),
+			apiUrl : App.getApiUrl('rejection_cause'),
 			model: [{name:'resource_uri'},
 					{name:'id'},
 					{name:'name'}]
 		});
-		
-		this.infoText = this.manyRecords ? 'Внимание! Будут удалены все выделенные записи!':''; 
-		
+
+		this.infoText = this.manyRecords ? 'Внимание! Будут удалены все выделенные записи!':'';
+
 		this.causeCombo = new Ext.form.LazyComboBox({
         	fieldLabel:'Причина отказа',
 			anchor:'98%',
@@ -24,12 +24,12 @@ App.assignment.DeletePromptWindow = Ext.extend(Ext.Window, {
         	store:this.store,
 		    displayField: 'name'
 		});
-		
+
 		this.form = new Ext.form.FormPanel({
 			layout:'fit',
 			items:[this.causeCombo]
 		})
-		
+
 		config = {
 			title:'Удаление записи',
 			width:300,

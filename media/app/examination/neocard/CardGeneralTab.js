@@ -3,7 +3,7 @@ Ext.ns('Ext.ux');
 
 App.examination.CardGeneralTab = Ext.extend(Ext.form.FormPanel, {
 	initComponent : function() {
-		
+
 		this.printNameField = new Ext.form.TextField({
 			fieldLabel:'Заголовок для печати',
 			width: 300,
@@ -14,7 +14,7 @@ App.examination.CardGeneralTab = Ext.extend(Ext.form.FormPanel, {
 			scope:this
 			}
 		});
-		
+
 		this.mkb = new Ext.form.LazyComboBox({
 			fieldLabel:'Диагноз по МКБ',
 			hideTrigger:true,
@@ -24,7 +24,7 @@ App.examination.CardGeneralTab = Ext.extend(Ext.form.FormPanel, {
 			store: new Ext.data.JsonStore({
 				autoLoad:false,
 				proxy: new Ext.data.HttpProxy({
-					url:get_api_url('icd10'),
+					url:App.getApiUrl('icd10'),
 					method:'GET'
 				}),
 				root:'objects',
@@ -45,7 +45,7 @@ App.examination.CardGeneralTab = Ext.extend(Ext.form.FormPanel, {
 				scope:this
 			}
 		});
-		
+
 		this.assistant = new Ext.form.LazyClearableComboBox({
 			fieldLabel:'Лаборант',
 			name:'assistant',
@@ -54,7 +54,7 @@ App.examination.CardGeneralTab = Ext.extend(Ext.form.FormPanel, {
 			queryParam : 'staff__last_name__istartswith',
 			store:new Ext.data.RESTStore({
 				autoLoad : true,
-				apiUrl : get_api_url('position'),
+				apiUrl : App.getApiUrl('position'),
 				model: ['id','name','resource_uri']
 			}),
 		    minChars:2,
@@ -66,7 +66,7 @@ App.examination.CardGeneralTab = Ext.extend(Ext.form.FormPanel, {
 		    	scope:this
 		    }
 		});
-		
+
 		var cfg = {
             shadow: false,
             completeOnEnter: true,
@@ -74,7 +74,7 @@ App.examination.CardGeneralTab = Ext.extend(Ext.form.FormPanel, {
             updateEl: true,
             ignoreNoChange: true
         };
-        
+
         this.headerEditor = new Ext.Editor(Ext.apply({
             cls: 'x-large-editor',
             alignment: 'bl-bl?',
@@ -96,7 +96,7 @@ App.examination.CardGeneralTab = Ext.extend(Ext.form.FormPanel, {
                 selectOnFocus: true
             }
         }, cfg));
-		
+
 		this.asgmtBtn = new Ext.Button({
 			text: 'Направления',
 			handler:function(){
@@ -104,13 +104,13 @@ App.examination.CardGeneralTab = Ext.extend(Ext.form.FormPanel, {
 			},
 			scope:this
 		});
-		
+
 		this.headerElt = new Ext.BoxComponent({
 			html:this.print_name? this.print_name:'Нет заголовка',
 			cls:'tpl-print-name',
 			listeners:{
 				afterrender:function(){
-					var el = this.headerElt.el; 
+					var el = this.headerElt.el;
 					el.on('dblclick',function(e,t){
 						this.headerEditor.startEdit(t);
 					},this);
@@ -118,7 +118,7 @@ App.examination.CardGeneralTab = Ext.extend(Ext.form.FormPanel, {
 				scope:this
 			}
 		});
-		
+
 		this.titlePanel = new Ext.Panel({
 			region:'center',
 			layout:'anchor',
@@ -136,7 +136,7 @@ App.examination.CardGeneralTab = Ext.extend(Ext.form.FormPanel, {
 				cls:'tab-subtitle'
 			},this.headerElt]
 		});
-		
+
 		this.mkbPanel = new Ext.Panel({
 			region:'center',
 			layout:'anchor',
@@ -154,7 +154,7 @@ App.examination.CardGeneralTab = Ext.extend(Ext.form.FormPanel, {
 				cls:'tab-subtitle'
 			}*/,this.mkb]
 		});
-		
+
 		this.assistantPanel = new Ext.Panel({
 			region:'center',
 			layout:'anchor',
@@ -172,9 +172,9 @@ App.examination.CardGeneralTab = Ext.extend(Ext.form.FormPanel, {
 				cls:'tab-subtitle'
 			}*/,this.assistant]
 		});
-		
-		
-		
+
+
+
 		this.centralPanel = new Ext.Panel({
 			layout:'form',
 			region: 'center',
@@ -183,7 +183,7 @@ App.examination.CardGeneralTab = Ext.extend(Ext.form.FormPanel, {
 				this.mkbPanel,
 				this.assistantPanel]
 		});
-		
+
 		var config = {
 			title: 'Общая',
 			layout: 'border',
@@ -193,10 +193,10 @@ App.examination.CardGeneralTab = Ext.extend(Ext.form.FormPanel, {
 				this.centralPanel
      		]
 		}
-								
+
 		Ext.apply(this, Ext.apply(this.initialConfig, config));
 		App.examination.CardGeneralTab.superclass.initComponent.apply(this, arguments);
-		
+
 		this.on('afterrender',function(){
 			if (!this.record){
 				return false
@@ -204,17 +204,17 @@ App.examination.CardGeneralTab = Ext.extend(Ext.form.FormPanel, {
 			if (this.record.data.assistant){
 				this.assistant.setValue(this.record.data.assistant)
 			};
-			
+
 			if (this.record.data.mkb_diag){
 				this.mkb.setValue(this.record.data.mkb_diag)
 			}
 		});
 	},
-	
+
 	setPrintName: function (text){
 		this.printNameField.setValue(text);
 	},
-	
+
 	openTree : function(){
 		if (!this.mkbWin){
 			this.mkbWin = new App.dict.MKBWindow({
@@ -228,5 +228,5 @@ App.examination.CardGeneralTab = Ext.extend(Ext.form.FormPanel, {
 		}
 		this.mkbWin.show();
 	}
-	
+
 });

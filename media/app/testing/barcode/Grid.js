@@ -5,63 +5,63 @@ Ext.ns('App.barcode');
 App.barcode.Grid = Ext.extend(Ext.grid.EditorGridPanel, {
 
 	initComponent : function() {
-		
+
 		this.proxy = new Ext.data.HttpProxy({
-		    url: get_api_url('sampling')
+		    url: App.getApiUrl('sampling')
 		});
-		
+
 		this.reader = new Ext.data.JsonReader({
 		    totalProperty: 'meta.total_count',
 		    successProperty: 'success',
 		    idProperty: 'id',
 		    root: 'objects',
-		    messageProperty: 'message'  
+		    messageProperty: 'message'
 		}, [
 		    {name: 'id'},
 		    {name: 'tube_type'},
 		    {name: 'services'},
 		    {name: 'tube_count'}
 		]);
-		
+
 		this.writer = new Ext.data.JsonWriter({
-		    encode: false 
+		    encode: false
 		});
 		this.baseParams = {
 		    format:'json'
-		}; 
+		};
 		this.store = new Ext.data.Store({
 			autoLoad:true,
 		    baseParams: this.baseParams,
 		    paramNames: {
-			    start : 'offset', 
-			    limit : 'limit',  
-			    sort : 'sort',  
-			    dir : 'dir'  
+			    start : 'offset',
+			    limit : 'limit',
+			    sort : 'sort',
+			    dir : 'dir'
 			},
-		    restful: true,     
+		    restful: true,
 		    proxy: this.proxy,
 		    reader: this.reader,
 		    writer: this.writer
 		});
-		
-		
+
+
 		this.columns =  [
 		    {
-		    	header: "Пробирка", 
-		    	width: 30, 
-		    	sortable: true, 
+		    	header: "Пробирка",
+		    	width: 30,
+		    	sortable: true,
 		    	dataIndex: 'tube_type'
 		    },{
-		    	header: "Исследования", 
-		    	width: 60, 
-		    	sortable: true, 
+		    	header: "Исследования",
+		    	width: 60,
+		    	sortable: true,
 		    	dataIndex: 'services',
 		    	renderer:function(v){
 		    		return v.join('<br>');
 		    	}
 		    },{
-		    	header: "Количество", 
-		    	width: 15, 
+		    	header: "Количество",
+		    	width: 15,
 		    	sortable: true,
 		    	dataIndex: 'tube_count',
 		    	editor: new Ext.ux.form.SpinnerField({
@@ -69,8 +69,8 @@ App.barcode.Grid = Ext.extend(Ext.grid.EditorGridPanel, {
             		maxValue: 20
             	})
 		    }
-		];		
-		
+		];
+
 		var config = {
 			loadMask : {
 				msg : 'Подождите, идет загрузка...'
@@ -102,5 +102,5 @@ App.barcode.Grid = Ext.extend(Ext.grid.EditorGridPanel, {
 	}
 
 
-	
+
 });

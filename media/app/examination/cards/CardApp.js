@@ -13,38 +13,38 @@ App.examination.CardApp = Ext.extend(Ext.Panel, {
 		 *orderId - для поиска уже созданных карт осмотра для текущего заказа - для их редактирования
 		 *cardId - если карта редактируется
 		 *
-		 *Если передан cardId, то эта карта ищется в store, оттуда берется поле data и передается в 
-		 *редактор. 
+		 *Если передан cardId, то эта карта ищется в store, оттуда берется поле data и передается в
+		 *редактор.
 		 *Если данные изменились, редактор шлет событие с измененными данными - полем data
 		 *Менеджер заносит это поле в редактируемую запись карты осмотра и сохраняет store.
 		 *
 		 *  Если cardId не передан, то вызывается cardStartPanel, которая определяет источник данных,
 		 *  которые будут редактироваться.
-		 * 
+		 *
 		*/
-		
+
 		this.tplStore = new Ext.data.RESTStore({
 			autoSave: false,
 			autoLoad : false,
-			apiUrl : get_api_url('examtemplate'),
+			apiUrl : App.getApiUrl('examtemplate'),
 			baseParams:{
 				format:'json',
 				deleted:false
 			},
 			model: App.models.Template
 		});
-		
+
 		this.cardStore = new Ext.data.RESTStore({
 			autoSave : false,
 			autoLoad : false,
-			apiUrl : get_api_url('card'),
+			apiUrl : App.getApiUrl('card'),
 			baseParams:{
 				format:'json',
 				deleted:false
 			},
 			model: App.models.Card
 		});
-		
+
 		this.saveTask = {
 			run : function(){
 				console.info('trying to save store...');
@@ -53,7 +53,7 @@ App.examination.CardApp = Ext.extend(Ext.Panel, {
 			interval : 5000,
 			scope : this
 		}
-			
+
 		this.cardStore.on('write',function(store, action, result, res, rs){
 			if (action == 'create'){
 				this.cardId = rs.data.id;
@@ -64,11 +64,11 @@ App.examination.CardApp = Ext.extend(Ext.Panel, {
 			}
 			this.setIconClass('');
 		},this);
-		
+
 		this.cardStore.on('exception', function(){
-			
+
 			this.setIconClass('silk-error');
-			
+
 			if(!this.isDestroyed){
 				(function(){
 					this.cardStore.save();
@@ -76,16 +76,16 @@ App.examination.CardApp = Ext.extend(Ext.Panel, {
 			} else {
 				return
 			}
-			
+
 		}, this);
-		
+
 		this.tplStore.on('write',function(store, action, result, res, rs){
 			//карта перемещена в Мои шаблоны
 			if (action == 'create' && !rs.data.base_service){
 				this.destroy();
 			}
 		},this);
-		
+
 		this.contentPanel = new Ext.Panel({
 			region:'center',
  			border:false,
@@ -97,26 +97,26 @@ App.examination.CardApp = Ext.extend(Ext.Panel, {
     		items: [
     		]
 		});
-		
+
 		this.contentPanel.on('afterrender', function(panel){
 			this.mask = new Ext.LoadMask(panel.container, { msg: "Производится загрузка..." });
 			this.mask.show();
 		},this);
-	
+
 		var config = {
 			id:'card-app-'+this.orderId,
 			closable:true,
 //			title: 'Карта осмотра',
-			layout: 'border',	
+			layout: 'border',
      		items: [
 //				this.patientPanel,
 				this.contentPanel
 			]
 		};
-		
+
 		Ext.apply(this, Ext.apply(this.initialConfig, config));
 		App.examination.CardApp.superclass.initComponent.apply(this, arguments);
-		
+
 		this.on('afterrender',function(){
 			if (this.record){
 				this.editCard('card',this.record.data.id)
@@ -131,18 +131,18 @@ App.examination.CardApp = Ext.extend(Ext.Panel, {
 				this.contentPanel.add(this.startPanel);
 			}
 		},this);
-		
-		
+
+
 	},
-	
-	
+
+
 	newStartPanel: function(config){
 		var cardConfig = {
 			border:false
 		};
 		Ext.applyIf(config,cardConfig);
 		var startPanel = new App.examination.CardStartPanel(config);
-		
+
 		startPanel.on('copy',this.copyFromSource,this);
 		startPanel.on('edit',this.editCard,this);
 		startPanel.on('empty',this.createEmptyCard,this);
@@ -151,7 +151,7 @@ App.examination.CardApp = Ext.extend(Ext.Panel, {
 		}, this);
 		return startPanel
 	},
-	
+
 	createEmptyCard:function(){
 		this.record = new this.cardStore.recordType();
 		var emptyData = Ext.encode({'tickets':[]});
@@ -161,7 +161,7 @@ App.examination.CardApp = Ext.extend(Ext.Panel, {
 		this.cardStore.add(this.record);
 		this.cardStore.save();
 	},
-	
+
 	copyFromSource: function(sourceType,sourceId){
 		if (!sourceId){
 			this.createEmptyCard();
@@ -195,7 +195,7 @@ App.examination.CardApp = Ext.extend(Ext.Panel, {
 			},scope:this});
 		}
 	},
-	
+
 	editCard: function(sourceType,cardId){
 		if (sourceType !='card') {
 			console.log('На редактирование передана не карта');
@@ -219,7 +219,7 @@ App.examination.CardApp = Ext.extend(Ext.Panel, {
 			},scope:this});
 		}
 	},
-	
+
 	openTickets: function(data){
 		if (data) {
 			var decodedData = Ext.decode(data)
@@ -246,7 +246,7 @@ App.examination.CardApp = Ext.extend(Ext.Panel, {
 		this.contentPanel.add(this.cardBody);
 		this.contentPanel.doLayout();
 	},
-	
+
 	updateData: function(data){
 		var encodedData = Ext.encode(data);
 		this.record.set('data',encodedData);
@@ -255,12 +255,12 @@ App.examination.CardApp = Ext.extend(Ext.Panel, {
 		}
 		this.cardStore.save();
 	},
-	
+
 	deleteCard: function(){
 		this.record.set('deleted',true);
 		this.cardStore.save();
 	},
-	
+
 	moveToTpl: function(name){
 		var archiveRecord = new this.tplStore.model();
 		Ext.applyIf(archiveRecord.data,this.record.data);

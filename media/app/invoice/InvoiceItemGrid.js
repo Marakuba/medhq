@@ -3,11 +3,11 @@ Ext.ns('App.invoice');
 App.invoice.InvoiceItemGrid = Ext.extend(Ext.grid.GridPanel, {
 
 	initComponent : function() {
-		
+
 		this.store = new Ext.data.RESTStore({
 			autoLoad : false,
 			autoSave : true,
-			apiUrl : get_api_url('invoiceitem'),
+			apiUrl : App.getApiUrl('invoiceitem'),
 			model: [
 			    {name: 'id'},
 			    {name: 'resource_uri'},
@@ -20,7 +20,7 @@ App.invoice.InvoiceItemGrid = Ext.extend(Ext.grid.GridPanel, {
 			    {name: 'sampling'}
 			]
 		});
- 		
+
 		this.columns =  [
 		    {
 		    	header: "Дата",
@@ -28,26 +28,26 @@ App.invoice.InvoiceItemGrid = Ext.extend(Ext.grid.GridPanel, {
 		    	dataIndex: 'created',
 		    	renderer:Ext.util.Format.dateRenderer('d.m.Y')
 		    },{
-		    	header: "Заказ", 
-		    	width: 8, 
+		    	header: "Заказ",
+		    	width: 8,
 		    	dataIndex: 'barcode'
 		    },{
-		    	header: "Пациент", 
-		    	width: 40, 
+		    	header: "Пациент",
+		    	width: 40,
 		    	dataIndex: 'patient_name'
 		    },{
-		    	header: "Исследование", 
-		    	width: 65, 
+		    	header: "Исследование",
+		    	width: 65,
 		    	dataIndex: 'service_name'
 		    },{
-		    	header: "Пробирка", 
-		    	width: 55, 
+		    	header: "Пробирка",
+		    	width: 55,
 		    	dataIndex: 'sampling'
 		    }
-		];		
-		
+		];
 
-		
+
+
 		var config = {
 			loadMask : {
 				msg : 'Подождите, идет загрузка...'
@@ -86,7 +86,7 @@ App.invoice.InvoiceItemGrid = Ext.extend(Ext.grid.GridPanel, {
 				forceFit : true,
 				emptyText: 'Нет записей'
 			})
-			
+
 		}
 
 		Ext.apply(this, Ext.apply(this.initialConfig, config));
@@ -100,7 +100,7 @@ App.invoice.InvoiceItemGrid = Ext.extend(Ext.grid.GridPanel, {
 			}
 		}, this);
 	},
-	
+
 	pullItems: function(){
 		var s = this.store;
 		this.serviceStore.load({
@@ -121,13 +121,13 @@ App.invoice.InvoiceItemGrid = Ext.extend(Ext.grid.GridPanel, {
 			},
 			scope:this
 		})
-		
+
 	},
-	
+
 	onGlobalSearch: function(v) {
 		this.storeFilter('search', v);
 	},
-	
+
 	storeFilter: function(field, value){
 		if(value===undefined) {
 			delete this.store.baseParams[field]
@@ -136,7 +136,7 @@ App.invoice.InvoiceItemGrid = Ext.extend(Ext.grid.GridPanel, {
 		}
 		this.store.load();
 	},
-	
+
 	onRemove: function(){
 		var records = this.getSelectionModel().getSelections();
 		if(records) {
@@ -146,20 +146,20 @@ App.invoice.InvoiceItemGrid = Ext.extend(Ext.grid.GridPanel, {
 			this.store.autoSave=true;
 		}
 	},
-	
+
 	getSelected: function() {
 		return this.getSelectionModel().getSelected()
 	},
-	
+
 	onPrint: function() {
 //		var id = this.getSelected().data.id;
 //		var url = ['/lab/print/results',id,''].join('/');
 //		window.open(url);
 	},
-	
+
 	onStoreWrite: function(store, action, result, res, rs) {
 	}
-	
+
 });
 
 

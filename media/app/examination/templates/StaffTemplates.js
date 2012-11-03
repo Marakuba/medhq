@@ -2,23 +2,23 @@ Ext.ns('App.examination');
 
 App.examination.StaffTemplates = Ext.extend(Ext.Panel, {
 	initComponent : function() {
-		
+
 		this.staff = App.getApiUrl('staff')+ '/' + active_staff;
-		
+
 		this.fieldSetStore = new Ext.data.RESTStore({
 			autoSave: false,
 			autoLoad : true,
-			apiUrl : get_api_url('examfieldset'),
+			apiUrl : App.getApiUrl('examfieldset'),
 			model: App.models.FieldSet
 		});
-		
+
 		this.subSectionStore = new Ext.data.RESTStore({
 			autoSave: false,
 			autoLoad : true,
-			apiUrl : get_api_url('examsubsection'),
+			apiUrl : App.getApiUrl('examsubsection'),
 			model: App.models.SubSection
 		});
-		
+
 		this.contentPanel = new Ext.Panel({
 			region:'center',
  			border:false,
@@ -35,7 +35,7 @@ App.examination.StaffTemplates = Ext.extend(Ext.Panel, {
     		items: [
     		]
 		});
-		
+
 		this.archiveGrid = new App.examination.TmpGrid({
 			staff:this.staff,
 			border: false,
@@ -61,7 +61,7 @@ App.examination.StaffTemplates = Ext.extend(Ext.Panel, {
 				scope:this
 			}
 		});
-		
+
 		this.archivePanel = new Ext.Panel({
 			region:'west',
  			border:false,
@@ -77,41 +77,41 @@ App.examination.StaffTemplates = Ext.extend(Ext.Panel, {
     			this.archiveGrid
     		]
 		});
-		
+
 		var config = {
 			id:'archive-app',
 			closable:true,
 			title: 'Мои шаблоны',
-			layout: 'border',	
+			layout: 'border',
      		items: [
 				this.archivePanel,
 				this.contentPanel
 			]
 		};
-		
+
 		Ext.apply(this, Ext.apply(this.initialConfig, config));
 		App.examination.StaffTemplates.superclass.initComponent.apply(this, arguments);
-		
+
 		this.on('afterrender',function(){
 			this.archiveGrid.store.load();
 		},this)
 	},
-	
+
 	onPreview: function(tmp_id){
 		var url = String.format('/widget/examination/template/{0}/',tmp_id);
 		this.contentPanel.load({
 			url:url
 		});
 	},
-	
+
 	editTmp: function(record){
 		if(!record){
 			console.log('нет записи');
 			return false
 		}
-		
+
 		this.print_name = record.data.name;
-		
+
 		config = {
 			editMode: true,
 			tplId:record.data.id,
@@ -121,9 +121,9 @@ App.examination.StaffTemplates = Ext.extend(Ext.Panel, {
 //			record:record,
 			staff:this.staff
 		};
-		
+
 		App.eventManager.fireEvent('launchapp', 'templateapp',config);
-		
+
 	}
 });
 

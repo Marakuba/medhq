@@ -1,16 +1,16 @@
 Ext.ns('App.patient');
 
 App.patient.ContractGrid = Ext.extend(Ext.grid.EditorGridPanel, {
-	
+
 	showChoiceButton:false,
 
 	initComponent : function() {
-		
+
 		var today = new Date();
-		
+
 		this.store = this.store || new Ext.data.Store({
 			//autoLoad:true,
-			
+
 			autoSave:this.showChoiceButton || this.record ? true : false,
 		    baseParams: {
 		    	format:'json'
@@ -23,7 +23,7 @@ App.patient.ContractGrid = Ext.extend(Ext.grid.EditorGridPanel, {
 			},
 		    restful: true,
 		    proxy: new Ext.data.HttpProxy({
-			    url: get_api_url('contract')
+			    url: App.getApiUrl('contract')
 			}),
 		    reader: new Ext.data.JsonReader({
 			    totalProperty: 'meta.total_count',
@@ -49,13 +49,13 @@ App.patient.ContractGrid = Ext.extend(Ext.grid.EditorGridPanel, {
 		    },
 		    scope:this
 		});
-		
+
 		this.contractTypeStore = new Ext.data.RESTStore({
 			autoLoad : false,
-			apiUrl : get_api_url('contracttype'),
+			apiUrl : App.getApiUrl('contracttype'),
 			model: App.models.contractTypeModel
 		})
-		
+
 		this.contractTypeCB = new Ext.form.LazyClearableComboBox({
 			anchor:'50%',
 			valueField:'resource_uri',
@@ -65,50 +65,50 @@ App.patient.ContractGrid = Ext.extend(Ext.grid.EditorGridPanel, {
 		    minChars:2,
 		    scope:this
 		});
-		
+
 		Ext.util.Format.comboRenderer = function(combo,field){
             return function(value, meta, rec){
                 var record = combo.findRecord(combo.valueField, value);
                 return record ? record.get(combo.displayField) : (rec ? rec.get(field) : combo.valueNotFoundText);
             }
         };
-		
+
 		this.columns =  [{
 		    	header: "Организация",
 		    	width:'25%',
-		    	sortable: true, 
+		    	sortable: true,
 		    	dataIndex: 'state_name'
 		    },{
-		    	header: "Дата заключения", 
-		    	width: '25%', 
-		    	sortable: true, 
+		    	header: "Дата заключения",
+		    	width: '25%',
+		    	sortable: true,
 		    	dataIndex: 'created',
 		    	renderer:Ext.util.Format.dateRenderer('d.m.Y'),
 		    	editor: new Ext.form.DateField({
 		    		minValue: today,
-		    		plugins:[new Ext.ux.netbox.InputTextMask('99.99.9999')], 
+		    		plugins:[new Ext.ux.netbox.InputTextMask('99.99.9999')],
 		    		format:'d.m.Y'
 		    	})
 		    },{
-		    	header: "Заключен до", 
-		    	width: '25%', 
-		    	sortable: true, 
+		    	header: "Заключен до",
+		    	width: '25%',
+		    	sortable: true,
 		    	dataIndex: 'expire',
 		    	renderer:Ext.util.Format.dateRenderer('d.m.Y'),
 		    	editor: new Ext.form.DateField({
 		    		minValue: today,
-		    		plugins:[new Ext.ux.netbox.InputTextMask('99.99.9999')], 
+		    		plugins:[new Ext.ux.netbox.InputTextMask('99.99.9999')],
 		    		format:'d.m.Y'
 		    	})
 		    },{
-		    	header: "Тип контракта", 
+		    	header: "Тип контракта",
 		    	dataIndex: 'contract_type',
 		    	editor: this.contractTypeCB,
                 renderer: Ext.util.Format.comboRenderer(this.contractTypeCB,'contract_type_name')
 		    }
-		];		
-		
-		this.ttb = new Ext.Toolbar({ 
+		];
+
+		this.ttb = new Ext.Toolbar({
 			items:[{
 				xtype:'button',
 				iconCls:'silk-accept',
@@ -121,8 +121,8 @@ App.patient.ContractGrid = Ext.extend(Ext.grid.EditorGridPanel, {
 				text:'Печать',
 				handler:this.onPrint.createDelegate(this,[])
 			}]
-		}); 
-		
+		});
+
 		var config = {
 			title:'Договоры',
 			layout:'fit',
@@ -144,30 +144,30 @@ App.patient.ContractGrid = Ext.extend(Ext.grid.EditorGridPanel, {
 	            displayInfo: true,
 	            displayMsg: 'Показана запись {0} - {1} из {2}',
 	            emptyMsg: "Нет записей"
-	        }),			
+	        }),
 			view : new Ext.grid.GridView({
 				forceFit : true,
 				emptyText: 'Нет записей'
 				//getRowClass : this.applyRowClass
 			})
-			
+
 		}
 
 		Ext.apply(this, Ext.apply(this.initialConfig, config));
 		App.patient.ContractGrid.superclass.initComponent.apply(this, arguments);
 		App.eventManager.on('patientcreate', this.onPatientCreate, this);
-		
+
 		this.on('afterrender',function(){
 			if (!this.record) {
-				this.fillAddMenu()	
+				this.fillAddMenu()
 			}
 		},this)
 		this.on('destroy', function(){
 			App.eventManager.un('patientcreate', this.onPatientCreate, this);
 		},this);
 	},
-	
-	
+
+
 	storeFilter: function(field, value){
 		if(value===undefined) {
 			delete this.store.baseParams[field]
@@ -176,17 +176,17 @@ App.patient.ContractGrid = Ext.extend(Ext.grid.EditorGridPanel, {
 		}
 		this.store.load();
 	},
-	
+
 	getSelected: function() {
 		return this.getSelectionModel().getSelected()
 	},
-	
+
 	onPrint: function() {
 		var id = this.getSelected().id;
 		var url = String.format('/patient/contract/{0}/', id);
 		window.open(url);
 	},
-	
+
 	onCreate: function(contractTypeRecord) {
 		var today  = new Date();
 		var data = this.record ? { patient:this.record.data.resource_uri } : {};
@@ -212,11 +212,11 @@ App.patient.ContractGrid = Ext.extend(Ext.grid.EditorGridPanel, {
 			}
 			data['contract_type'] = contractTypeRecord.data.resource_uri;
 		};
-		
+
         var r = new this.store.recordType(data);
         this.store.add(r);
 	},
-	
+
 	onChange: function(rowindex){
 	/*	var record = this.getSelected();
 		if(record) {
@@ -232,11 +232,11 @@ App.patient.ContractGrid = Ext.extend(Ext.grid.EditorGridPanel, {
         App.eventManager.fireEvent('openform','clientaccountcreate',data)
 		}*/
 	},
-	
+
 	onDelete: function() {
-		
+
 	},
-	
+
 	getSteps: function(){
 		var steps = 0;
 		var m = this.store.getModifiedRecords().length;
@@ -245,12 +245,12 @@ App.patient.ContractGrid = Ext.extend(Ext.grid.EditorGridPanel, {
 		steps+=d;
 		return steps;
 	},
-	
+
 	onPatientCreate: function(record) {
 		this.record = record;
 		this.onSave();
 	},
-	
+
 	onSave: function() {
 		if(this.record) {
 			var records = this.store.queryBy(function(rec,id){
@@ -266,24 +266,24 @@ App.patient.ContractGrid = Ext.extend(Ext.grid.EditorGridPanel, {
 			Ext.MessageBox.alert('Ошибка','Не задана запись пациента!');
 		}
 	},
-	
+
 	onChoice: function(rec){
 		rec = rec || this.getSelectionModel().getSelected();
 		if (!rec) return false
 		Ext.callback(this.fn, this.scope || window, [rec]);
 	},
-	
+
 	onPatientCreate: function(record) {
 		this.record = record;
 		this.onSave();
 	},
-	
+
 	setPatientRecord: function(patient){
 		this.record = patient;
 		this.store.setBaseParam('patient',patient.data.id);
 		this.fillAddMenu();
 	},
-	
+
 	fillAddMenu: function(){
 		this.additionalMenu = [];
 		this.contractTypeStore.load({callback:function(records){
@@ -306,8 +306,8 @@ App.patient.ContractGrid = Ext.extend(Ext.grid.EditorGridPanel, {
 			this.doLayout();
 		},scope:this});
 	}
-	
-	
+
+
 });
 
 

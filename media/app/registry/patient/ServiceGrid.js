@@ -3,14 +3,14 @@ Ext.ns('App.patient');
 App.patient.ServiceGrid = Ext.extend(Ext.grid.GridPanel, {
 
 	loadInstant: false,
-	
+
 	initComponent : function() {
-		
+
 		// Create a standard HttpProxy instance.
 		this.proxy = new Ext.data.HttpProxy({
-		    url: get_api_url('orderedservice')
+		    url: App.getApiUrl('orderedservice')
 		});
-		
+
 		// Typical JsonReader.  Notice additional meta-data params for defining the core attributes of your json-response
 		this.reader = new Ext.data.JsonReader({
 		    totalProperty: 'meta.total_count',
@@ -30,12 +30,12 @@ App.patient.ServiceGrid = Ext.extend(Ext.grid.GridPanel, {
 		    	return v ? v.name : '---';
 		    }}
 		]);
-		
+
 		// The new DataWriter component.
 		this.writer = new Ext.data.JsonWriter({
 		    encode: false   // <-- don't return encoded JSON -- causes Ext.Ajax#request to send data using jsonData config rather than HTTP params
 		});
-		
+
 		this.store = new Ext.data.GroupingStore({
 		    id: 'orderedservice-store',
 		    baseParams: {
@@ -50,7 +50,7 @@ App.patient.ServiceGrid = Ext.extend(Ext.grid.GridPanel, {
 			groupField:'visit_id',
 			remoteSort: true,
 			sortInfo:{
-				field: 'laboratory', 
+				field: 'laboratory',
 				direction: "desc"
 			},
 		    restful: true,     // <-- This Store is RESTful
@@ -58,19 +58,19 @@ App.patient.ServiceGrid = Ext.extend(Ext.grid.GridPanel, {
 		    reader: this.reader,
 		    writer: this.writer    // <-- plug a DataWriter into the store just as you would a Reader
 		});
-		
-		
+
+
 		this.columns =  [
 		    {
-		    	header: "Визит", 
-		    	width: 50, 
-		    	sortable: true, 
+		    	header: "Визит",
+		    	width: 50,
+		    	sortable: true,
 		    	dataIndex: 'visit_id',
 		    	hidden:true
 		    },{
-		    	header: "BC", 
-		    	width: 15, 
-		    	sortable: true, 
+		    	header: "BC",
+		    	width: 15,
+		    	sortable: true,
 		    	dataIndex: 'barcode',
 		    	hidden:true
 		    },{
@@ -79,30 +79,30 @@ App.patient.ServiceGrid = Ext.extend(Ext.grid.GridPanel, {
 		    	sortable:true,
 		    	dataIndex:'laboratory'
 		    },{
-		    	header: "Дата", 
-		    	width: 50, 
-		    	sortable: true, 
+		    	header: "Дата",
+		    	width: 50,
+		    	sortable: true,
 		    	dataIndex: 'created',
 		    	renderer:Ext.util.Format.dateRenderer('d.m.Y')
 		    },{
-		    	header: "Услуга", 
-		    	width: 50, 
-		    	sortable: true, 
+		    	header: "Услуга",
+		    	width: 50,
+		    	sortable: true,
 		    	dataIndex: 'service_name'
 		    },{
-		    	header: "Врач", 
-		    	width: 50, 
-		    	sortable: true, 
+		    	header: "Врач",
+		    	width: 50,
+		    	sortable: true,
 		    	dataIndex: 'staff'
 		    },{
-		    	header: "Стоимость", 
-		    	width: 50, 
-		    	sortable: true, 
+		    	header: "Стоимость",
+		    	width: 50,
+		    	sortable: true,
 		    	hidden: App.settings.strictMode,
-		    	dataIndex: 'price' 
+		    	dataIndex: 'price'
 		    }
-		];		
-		
+		];
+
 		var config = {
 			loadMask : {
 				msg : 'Подождите, идет загрузка...'
@@ -134,19 +134,19 @@ App.patient.ServiceGrid = Ext.extend(Ext.grid.GridPanel, {
 	        }),
 			view: new Ext.grid.GroupingView({
 				forceFit : true,
-				
+
 				//getRowClass : this.applyRowClass
 			})
-			
+
 		}
 
 		Ext.apply(this, Ext.apply(this.initialConfig, config));
 		App.patient.ServiceGrid.superclass.initComponent.apply(this, arguments);
-		
+
 		//App.eventManager.on('patientselect', this.onPatientSelect, this);
 		this.ownerCt.on('patientselect', this.setActivePatient, this);
 	},
-	
+
 	setActivePatient: function(rec) {
 		id = rec.id;
 		this.patientId = id;
@@ -154,8 +154,8 @@ App.patient.ServiceGrid = Ext.extend(Ext.grid.GridPanel, {
 		s.baseParams = {format:'json','order__patient': id};
 		s.load();
 	}
-	
-	
+
+
 });
 
 

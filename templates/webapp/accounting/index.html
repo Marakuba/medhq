@@ -10,7 +10,7 @@
         var state = '{{ request.active_profile.state }}';
         var MEDIA_URL = '{{ STATIC_URL }}';
         var API_URL = '/api/v1';
-        function get_api_url(resource){
+        function App.getApiUrl(resource){
             return [API_URL,'dashboard',resource].join("/");
         }
         var apps = {{ apps }};
@@ -29,15 +29,15 @@
     {% assets "js_ext" %}
      <script type="text/javascript" src="{{ ASSET_URL }}"></script>
     {% endassets %}
-    
+
     {% assets "js_for_all" %}
      <script type="text/javascript" src="{{ ASSET_URL }}"></script>
     {% endassets %}
-    
+
     <script type="text/javascript">
         Raven.config("{{sentry_dsn}}");
     </script>
-    
+
     <script src="/direct/provider.js/"></script>
 
     {% assets "js_accounting" %}

@@ -3,36 +3,36 @@ Ext.ns('App','App.cashier');
 App.cashier.DebtorGrid = Ext.extend(Ext.grid.GridPanel, {
 
 	initComponent : function() {
-		
+
 		this.store = new Ext.data.RESTStore({
 			autoLoad : false,
-			apiUrl : get_api_url('debtor'),
+			apiUrl : App.getApiUrl('debtor'),
 			model: App.models.debtorModel
 		});
-		
+
 		this.columns =  [
 		    {
-		    	header: "Фамилия", 
-		    	width: 45, 
-		    	sortable: true, 
+		    	header: "Фамилия",
+		    	width: 45,
+		    	sortable: true,
 		    	dataIndex: 'last_name'
 		    },{
-		    	header: "Имя", 
-		    	width: 45, 
-		    	sortable: true, 
+		    	header: "Имя",
+		    	width: 45,
+		    	sortable: true,
 		    	dataIndex: 'first_name'
 		    },{
-		    	header: "Отчество", 
-		    	width: 45, 
-		    	sortable: true, 
+		    	header: "Отчество",
+		    	width: 45,
+		    	sortable: true,
 		    	dataIndex: 'mid_name'
 		    },{
-		    	header: "Баланс", 
-		    	width: 35, 
-		    	sortable: true, 
+		    	header: "Баланс",
+		    	width: 35,
+		    	sortable: true,
 		    	dataIndex: 'balance'
 		    }
-		];		
+		];
 		this.payButton = new Ext.Button({
 			iconCls:'silk-add',
 			text:'Погасить долг',
@@ -50,8 +50,8 @@ App.cashier.DebtorGrid = Ext.extend(Ext.grid.GridPanel, {
 		this.ttb = new Ext.Toolbar({
 			items:[this.payButton,this.refreshButton]
 		});
-		
-		
+
+
 		var config = {
 			loadMask : {
 				msg : 'Подождите, идет загрузка...'
@@ -90,7 +90,7 @@ App.cashier.DebtorGrid = Ext.extend(Ext.grid.GridPanel, {
 			viewConfig : {
 				forceFit : true
 				//getRowClass : this.applyRowClass
-			}	
+			}
 			//listeners: {
 			//	rowdblclick:this.onPatientEdit.createDelegate(this),
 			//	scope:this
@@ -112,31 +112,31 @@ App.cashier.DebtorGrid = Ext.extend(Ext.grid.GridPanel, {
 		this.on('destroy', function(){
 		    App.eventManager.un('paymentsave', this.reloadStore, this);
 		    App.eventManager.un('globalsearch', this.onGlobalSearch, this);
-			App.eventManager.un('visitcreate', this.reloadStore, this); 
+			App.eventManager.un('visitcreate', this.reloadStore, this);
 		},this);
 //		App.eventManager.on('patientwrite', this.onPatientWrite, this);
 		//this.on('patientselect', this.onPatientSelect, this);
 		//this.store.on('write', this.onStoreWrite, this);
 	},
-	
+
 	onPatientSelect: function(){
 //		this.btnSetDisable(false);
 	},
-	
+
 	getSelected: function() {
 		return this.getSelectionModel().getSelected()
 	},
-	
+
 	getAbsoluteUrl: function(id) {
 		return "/admin/patient/patient/"+id+"/";
 	},
-	
+
 	goToSlug: function(slug) {
 		var s = this.getSelected().data.id;
 		var url = this.getAbsoluteUrl(s)+slug+"/";
 		window.open(url);
 	},
-	
+
 	onGlobalSearch: function(v){
 		var s = this.store;
 		s.baseParams = { format:'json' };
@@ -144,7 +144,7 @@ App.cashier.DebtorGrid = Ext.extend(Ext.grid.GridPanel, {
 		s.setBaseParam('search', v);
 		s.load();
 	},
-	
+
 	onPay: function(){
 		var record = this.getSelected();
 		if (record) {
@@ -156,7 +156,7 @@ App.cashier.DebtorGrid = Ext.extend(Ext.grid.GridPanel, {
 			this.win.show();
 		}
 	},
-	
+
 	onPatientBalanceUpdate : function(){
 		var rec = this.getSelected();
 		if(rec){
@@ -176,21 +176,21 @@ App.cashier.DebtorGrid = Ext.extend(Ext.grid.GridPanel, {
 			}, this);
 		}
 	},
-	
+
 	reloadStore: function(record){
 		if (this.store) {
 			this.store.load();
 			this.btnSetDisabled(true);
 		}
 	},
-	
+
 	btnSetDisabled: function(status) {
         this.payButton.setDisabled(status);
         this.refreshButton.setDisabled(status);
         //this.cardButton.setDisabled(status);
         //this.contractButton.setDisabled(status);
 	}
-	
+
 });
 
 Ext.reg('debtorgrid', App.cashier.DebtorGrid);

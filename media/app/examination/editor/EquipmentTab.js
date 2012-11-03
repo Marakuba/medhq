@@ -3,9 +3,9 @@ Ext.ns('Ext.ux');
 
 App.examination.EquipmentTab = Ext.extend(Ext.form.FormPanel, {
 	initComponent : function() {
-		
+
 //		this.equipCB = new LazyComboBox({});
-		
+
 		this.equipStore = new Ext.data.Store({
 	        baseParams: {
 	    		format:'json'
@@ -34,11 +34,11 @@ App.examination.EquipmentTab = Ext.extend(Ext.form.FormPanel, {
 			    dir : 'dir'
 			},
 			proxy: new Ext.data.HttpProxy({
-		    	url: get_api_url('exam_equipment'),
+		    	url: App.getApiUrl('exam_equipment'),
 		    	method:'GET'
 			})
 	    });
-	    
+
 	    this.equipCB = new Ext.form.LazyComboBox({
 			fieldLabel:'Оборудование',
 			hideTrigger:false,
@@ -55,16 +55,16 @@ App.examination.EquipmentTab = Ext.extend(Ext.form.FormPanel, {
 			displayField: 'name',
 			selectOnFocus:true,
 			listeners:{
-				'select': function(combo,rec,ind){ 
+				'select': function(combo,rec,ind){
 					this.setData('equipment',rec.data.resource_uri)
 				},
 				scope:this
 			}
 		});
-		
-		
+
+
 		var config = {
-			
+
 //		    height: 636,
 //		    width: 771,
 		    padding: 10,
@@ -115,7 +115,7 @@ App.examination.EquipmentTab = Ext.extend(Ext.form.FormPanel, {
 		            layout: 'form',
 		            labelAlign: 'left',
 		            border: false,
-		            
+
 		            anchor: '',
 		            items: [
 		                {
@@ -164,26 +164,26 @@ App.examination.EquipmentTab = Ext.extend(Ext.form.FormPanel, {
 		        }
 		    ]
 		}
-								
+
 		Ext.apply(this, Ext.apply(this.initialConfig, config));
 		App.examination.EquipmentTab.superclass.initComponent.apply(this, arguments);
-		
+
 		this.on('afterrender',function(){
-			
+
 		});
 	},
-	
+
 	setData:function(field,value){
 		this.fireEvent('setdata',field,value);
 	},
-	
+
 	loadRecord:function(record){
 		this.getForm().loadRecord(record);
 		if (record.data.equipment){
 			this.equipCB.forceValue(record.data.equipment);
 		}
 	}
-	
-	
-	
+
+
+
 });

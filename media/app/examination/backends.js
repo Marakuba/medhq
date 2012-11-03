@@ -44,7 +44,7 @@ App.regBackend('examservice', new App.Backend({
 		    remoteSort: true,
 		    groupField:'key',
 		    proxy: new Ext.data.HttpProxy({
-			    url: get_api_url('examservice')
+			    url: App.getApiUrl('examservice')
 			}),
 		    reader: new Ext.data.JsonReader({
 			    totalProperty: 'meta.total_count',
@@ -67,6 +67,6 @@ App.regBackend('examservice', new App.Backend({
 		    	},
 		    	scope:this
 		    }
-		})	
-	
+		})
+
 }));

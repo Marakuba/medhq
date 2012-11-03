@@ -40,7 +40,7 @@ App.refund.StaffWindow = Ext.extend(Ext.Window, {
 			layout:'form',
 			items: this.staff
 		});
-		
+
 		config = {
 			title:'Выберите врача',
 			width:380,
@@ -67,13 +67,13 @@ App.refund.StaffWindow = Ext.extend(Ext.Window, {
 		}
 		Ext.apply(this, Ext.apply(this.initialConfig, config));
 		App.refund.StaffWindow.superclass.initComponent.apply(this, arguments);
-		
+
 		this.addEvents({
 			validstaff:true,
 			declinestaff:true
 		});
 	},
-	
+
 	onSubmit:function()
 	{
 		var staff = this.staff;
@@ -83,7 +83,7 @@ App.refund.StaffWindow = Ext.extend(Ext.Window, {
 			this.fireEvent('validstaff', this.index, id, name);
 			this.close();
 		}
-		
+
 	}
 });
 
@@ -91,13 +91,13 @@ App.refund.ServiceBasket = Ext.extend(Ext.grid.EditorGridPanel, {
 
 	loadInstant: false,
 	initComponent : function() {
-		
+
 		this.shortMode = this.type=='material';
-		
+
 		this.proxy = new Ext.data.HttpProxy({
-		    url: get_api_url('refundbasket')
+		    url: App.getApiUrl('refundbasket')
 		});
-		
+
 		this.reader = new Ext.data.JsonReader({
 		    totalProperty: 'meta.total_count',
 		    successProperty: 'success',
@@ -117,12 +117,12 @@ App.refund.ServiceBasket = Ext.extend(Ext.grid.EditorGridPanel, {
 		    {name: 'execution_place', allowBlank: false},
 		    {name: 'total', allowBlank: true}
 		]);
-		
+
 		this.writer = new Ext.data.JsonWriter({
 		    encode: false,
 		    writeAllFields: true
 		});
-		
+
 		this.store = new Ext.data.Store({
 		    id: Ext.id(),
 			autoDestroy:true,
@@ -131,10 +131,10 @@ App.refund.ServiceBasket = Ext.extend(Ext.grid.EditorGridPanel, {
 		    	format:'json'
 		    },
 		    paramNames: {
-			    start : 'offset',  
-			    limit : 'limit', 
-			    sort : 'sort', 
-			    dir : 'dir' 
+			    start : 'offset',
+			    limit : 'limit',
+			    sort : 'sort',
+			    dir : 'dir'
 			},
 		    restful: true,
 		    proxy: this.proxy,
@@ -175,7 +175,7 @@ App.refund.ServiceBasket = Ext.extend(Ext.grid.EditorGridPanel, {
 		this.staffStore = new Ext.data.Store({
 			autoDestroy:true,
 			proxy: new Ext.data.HttpProxy({
-			    url: get_api_url('position'),
+			    url: App.getApiUrl('position'),
 				method:'GET'
 			}),
 			reader: new Ext.data.JsonReader({
@@ -189,32 +189,32 @@ App.refund.ServiceBasket = Ext.extend(Ext.grid.EditorGridPanel, {
 		})
 		this.columns =  [new Ext.grid.RowNumberer({width: 30}),
 		    {
-		    	header: "vID", 
-		    	width: 50, 
-		    	sortable: true, 
+		    	header: "vID",
+		    	width: 50,
+		    	sortable: true,
 		    	dataIndex: 'order',
 		    	hidden:true
 		    },{
 		    	header: "МВ",
-		    	width: 5, 
-		    	dataIndex: 'execution_place', 
+		    	width: 5,
+		    	dataIndex: 'execution_place',
 		    	renderer: function(val) {
 		    		var s = val.split('/');
 		    		return "<img src='"+MEDIA_URL+"resources/images/state_"+s[s.length-1]+".png'>"
 		    	}
 		    },{
-		    	header: "Услуга", 
-		    	width: 50, 
-		    	sortable: true, 
-		    	dataIndex: 'service_name' 
+		    	header: "Услуга",
+		    	width: 50,
+		    	sortable: true,
+		    	dataIndex: 'service_name'
 		    },{
 		    	hidden:true,
-		    	dataIndex: 'staff_list' 
+		    	dataIndex: 'staff_list'
 		    },{
-		    	header: "Врач", 
-		    	width: 50, 
+		    	header: "Врач",
+		    	width: 50,
 		    	hidden: this.shortMode,
-		    	sortable: true, 
+		    	sortable: true,
 		    	dataIndex: 'staff_name',
 		    	renderer: function(val) {
 		    		return val //? val.staff_name : '';
@@ -231,7 +231,7 @@ App.refund.ServiceBasket = Ext.extend(Ext.grid.EditorGridPanel, {
 		    				var win = new App.patient.StaffWindow({index:i, staffList:sl});
 		    				win.on('validstaff', this.updateStaff, this);
 		    				win.show();
-		    				
+
 		    			}*/
 		    			//console.log(rec.data.staff_list);
 		    			//Ext.MessageBox.alert('Column clicked',i);
@@ -250,25 +250,25 @@ App.refund.ServiceBasket = Ext.extend(Ext.grid.EditorGridPanel, {
 				    //queryParam:'staff__last_name__istartswith'
 		    	})*/
 		    },{
-		    	header: "Количество", 
-		    	width: 50, 
-		    	sortable: false, 
+		    	header: "Количество",
+		    	width: 50,
+		    	sortable: false,
 		    	hidden: this.shortMode,
-		    	dataIndex: 'count', 
+		    	dataIndex: 'count',
 		    	editor: new Ext.ux.form.SpinnerField({
 		    		minValue: 1,
             		maxValue: 20
             	})
 		    },{
-		    	header: "Цена", 
-		    	width: 50, 
-		    	sortable: false, 
+		    	header: "Цена",
+		    	width: 50,
+		    	sortable: false,
 		    	hidden: this.shortMode,
-		    	dataIndex: 'price' 
+		    	dataIndex: 'price'
 		    	//editor: new Ext.form.TextField({})
 		    },{
-		    	header: "Сумма", 
-		    	width: 50, 
+		    	header: "Сумма",
+		    	width: 50,
 		    	sortable: false,
 		    	hidden: this.shortMode,
 		    	dataIndex: 'total',
@@ -277,8 +277,8 @@ App.refund.ServiceBasket = Ext.extend(Ext.grid.EditorGridPanel, {
 		    	}
 		    	//editor: new Ext.form.TextField({})
 		    }
-		];		
-		
+		];
+
 		var id = Ext.id();
 		var config = {
 			id:id,
@@ -314,18 +314,18 @@ App.refund.ServiceBasket = Ext.extend(Ext.grid.EditorGridPanel, {
 				},
 				scope:this
 			}
-			
+
 		}
 
 		Ext.apply(this, Ext.apply(this.initialConfig, config));
 		App.refund.ServiceBasket.superclass.initComponent.apply(this, arguments);
 		App.eventManager.on('servicedblclick', this.addRow, this);
-		
+
 		this.on('destroy', function(){
-		    App.eventManager.un('servicedblclick', this.addRow, this); 
+		    App.eventManager.un('servicedblclick', this.addRow, this);
 		},this);
 	},
-	
+
 	staffWindow: function(index, service){
 		var t = Ext.getCmp('service-panel');
 		var node = t.getNodeById(service);
@@ -335,11 +335,11 @@ App.refund.ServiceBasket = Ext.extend(Ext.grid.EditorGridPanel, {
 				var win = new App.visit.StaffWindow({index:index, staffList:sl});
 				win.on('validstaff', this.updateStaff, this);
 				win.show();
-				
+
 			}
 		}
 	},
-	
+
 	updateStaff: function(index, id, staff_name){
 		var rec = this.store.getAt(index);
 		rec.beginEdit();
@@ -347,11 +347,11 @@ App.refund.ServiceBasket = Ext.extend(Ext.grid.EditorGridPanel, {
 		rec.set('staff_name',staff_name);
 		rec.endEdit();
 	},
-	
+
 	saveBasket: function(){
 		this.store.save();
 	},
-	
+
 	getTotalSum: function(){
 		var c=0;
 		this.store.each(function(rec){
@@ -359,14 +359,14 @@ App.refund.ServiceBasket = Ext.extend(Ext.grid.EditorGridPanel, {
 			return true;
 		});
 		return c;
-		
+
 		//this.fireEvent('updatetotalsum',c);  ////R
-		
+
 		//var p = Ext.getCmp('total-count-panel');
 		//p.tpl.overwrite(p.body,{total:c});
 		//return c
 	},
-	
+
 	addRecord: function(attrs){
 		var Service = this.store.recordType;
 		var re = /(.*) \[\d+\]/;
@@ -386,11 +386,11 @@ App.refund.ServiceBasket = Ext.extend(Ext.grid.EditorGridPanel, {
 		this.store.add(s);
 		this.startEditing(0, 0);
 	},
-	
+
 	addRow: function(attrs) {
 		var re = /(.*) \[\d+\]/;
 		res = re.exec(attrs.text);
-		var text = res[res.length-1];		
+		var text = res[res.length-1];
 		if(!this.store.query('service_name',text).length){
 			if(attrs.staff){
 				this.addRecord(attrs);
@@ -401,12 +401,12 @@ App.refund.ServiceBasket = Ext.extend(Ext.grid.EditorGridPanel, {
 			}
 		}
 	},
-	
+
 	delRow: function() {
 		rec = this.getSelectionModel().getSelected();
 		this.store.remove(rec);
 	}
-	
+
 	/*onPatientSelect: function(rec) {
 		this.store.load({
 			params: {
@@ -414,8 +414,8 @@ App.refund.ServiceBasket = Ext.extend(Ext.grid.EditorGridPanel, {
 			}
 		});
 	}*/
-	
-	
+
+
 });
 
 

@@ -3,9 +3,9 @@ Ext.ns('App.equipment');
 App.equipment.EquipmentTaskGrid = Ext.extend(Ext.grid.EditorGridPanel, {
 
 	initComponent : function() {
-		
+
 		this.origTitle = 'Задания';
-		
+
 		this.model = new Ext.data.Record.create([
 			{name: 'id'},
 			{name: 'resource_uri'},
@@ -23,62 +23,62 @@ App.equipment.EquipmentTaskGrid = Ext.extend(Ext.grid.EditorGridPanel, {
 			{name: 'completed', type:'date', format:'c'},
 			{name: 'created', type:'date', format:'c'}
 		]);
-		
+
 		this.store = new Ext.data.RESTStore({
 			autoLoad : false,
 			autoSave : false,
 			apiUrl : App.getApiUrl('equipmenttaskro'),
 			model: this.model
 		});
-		
+
 		this.store.on('save',this.onStoreSave, this);
-		
+
 		this.store.on('load',this.onStoreLoad,this);
-		
+
 		this.columns =  [
 		    {
-		    	header: "Добавлено", 
+		    	header: "Добавлено",
 		    	width: 18,
 		    	dataIndex: 'created',
 		    	renderer: Ext.util.Format.dateRenderer('d.m.Y H:i')
 		    },{
-		    	header: "Заказ", 
+		    	header: "Заказ",
 		    	width: 10,
 		    	dataIndex: 'order'
 		    },{
-		    	header: "Пациент", 
-		    	width: 25, 
-		    	sortable: true, 
+		    	header: "Пациент",
+		    	width: 25,
+		    	sortable: true,
 		    	dataIndex: 'patient_name'
 		    },{
-		    	header: "Оборудование", 
-		    	width: 18, 
+		    	header: "Оборудование",
+		    	width: 18,
 		    	dataIndex: 'equipment_name'
 		    },{
-		    	header: "Исследование", 
-		    	width: 35, 
-		    	sortable: true, 
+		    	header: "Исследование",
+		    	width: 35,
+		    	sortable: true,
 		    	dataIndex: 'service_name'
 		    },{
-		    	header: "Тест", 
-		    	width: 30, 
-		    	sortable: true, 
+		    	header: "Тест",
+		    	width: 30,
+		    	sortable: true,
 		    	dataIndex: 'analysis_name'
 		    },{
-		    	header: "Результат", 
-		    	width: 18, 
+		    	header: "Результат",
+		    	width: 18,
 		    	dataIndex: 'result'
 		    },/*{
-		    	header: "Кол-во", 
-		    	width: 8, 
+		    	header: "Кол-во",
+		    	width: 8,
 		    	dataIndex: 'repeats'
 		    },*/{
-		    	header: "Статус", 
-		    	width: 10, 
+		    	header: "Статус",
+		    	width: 10,
 		    	dataIndex: 'status_name'
 		    }
-		];		
-		
+		];
+
 		this.restoreBtn = new Ext.Button({
 			text:'Сбросить статус',
 			hidden:true,
@@ -91,7 +91,7 @@ App.equipment.EquipmentTaskGrid = Ext.extend(Ext.grid.EditorGridPanel, {
 			},
 			scope:this
 		});
-		
+
 		this.statusBtn = new Ext.CycleButton({
             showText: true,
             prependText: 'Статус: ',
@@ -118,7 +118,7 @@ App.equipment.EquipmentTaskGrid = Ext.extend(Ext.grid.EditorGridPanel, {
             },
             scope:this
         });
-		
+
 		var config = {
 			id:'equipment-task-grid',
 			title:this.origTitle,
@@ -141,7 +141,7 @@ App.equipment.EquipmentTaskGrid = Ext.extend(Ext.grid.EditorGridPanel, {
 			    store: new Ext.data.JsonStore({
 					autoLoad:true,
 					proxy: new Ext.data.HttpProxy({
-						url:get_api_url('equipment'),
+						url:App.getApiUrl('equipment'),
 						method:'GET'
 					}),
 					root:'objects',
@@ -167,7 +167,7 @@ App.equipment.EquipmentTaskGrid = Ext.extend(Ext.grid.EditorGridPanel, {
 				},
 				scope:this
 			}],
-			
+
 			bbar: new Ext.PagingToolbar({
 	            pageSize: 50,
 	            store: this.store,
@@ -191,9 +191,9 @@ App.equipment.EquipmentTaskGrid = Ext.extend(Ext.grid.EditorGridPanel, {
 
 		Ext.apply(this, Ext.apply(this.initialConfig, config));
 		App.equipment.EquipmentTaskGrid.superclass.initComponent.apply(this, arguments);
-		
+
 		App.eventManager.on('globalsearch', this.onGlobalSearch, this);
-		
+
 		this.on('afterrender', function(){
 			if (this.searchValue){
 				this.onGlobalSearch(this.searchValue)
@@ -201,22 +201,22 @@ App.equipment.EquipmentTaskGrid = Ext.extend(Ext.grid.EditorGridPanel, {
 				this.store.load();
 			}
 		},this);
-		
+
 		this.on('beforedestroy', function(){
 			this.store.un('load',this.onStoreLoad,this);
 			this.store.un('save',this.onStoreSave, this);
 		},this);
-		
+
 		this.on('destroy', function(){
 			App.eventManager.un('globalsearch', this.onGlobalSearch, this);
 		},this);
-		
+
 	},
-	
+
 	onStoreSave : function(){
 		this.statusBtn.setActiveItem(1);
 	},
-	
+
 	onGlobalSearch: function(v){
 		this.changeTitle = v!==undefined;
 		if(!v){
@@ -225,7 +225,7 @@ App.equipment.EquipmentTaskGrid = Ext.extend(Ext.grid.EditorGridPanel, {
 			this.storeFilter('search', v);
 		}
 	},
-	
+
 	storeFilter: function(field, value){
 		if(!value) {
 			delete this.store.baseParams[field]
@@ -234,17 +234,17 @@ App.equipment.EquipmentTaskGrid = Ext.extend(Ext.grid.EditorGridPanel, {
 		}
 		this.store.load();
 	},
-	
+
 	getSelected: function() {
 		return this.getSelectionModel().getSelected()
 	},
-	
+
 	onStoreLoad : function(store,r,options){
 		if(this.changeTitle){
 			this.setTitle(String.format('{0} ({1})', this.origTitle, store.getTotalCount()));
 		}
 	}
-	
+
 });
 
 

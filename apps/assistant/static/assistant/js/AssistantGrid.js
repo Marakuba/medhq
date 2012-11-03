@@ -1,22 +1,22 @@
 Ext.ns('App.assistant');
 
 App.assistant.AssistantGrid = Ext.extend(Ext.grid.GridPanel, {
-	
+
 	pageSize : 20,
-	
+
 	nameColumnHeader : "Врач",
-	
+
 	titleColumnHeader: "Должность",
 
 	departmentColumnHeader: "Отделение",
-	
+
 	choiceButtonText : 'Выбрать',
 
 	initComponent : function() {
-		
+
 		this.store = new Ext.data.RESTStore({
 			autoLoad : true,
-			apiUrl : get_api_url('position'),
+			apiUrl : App.getApiUrl('position'),
 			model: [
 				    {name: 'id'},
 				    {name: 'resource_uri'},
@@ -34,26 +34,26 @@ App.assistant.AssistantGrid = Ext.extend(Ext.grid.GridPanel, {
 				    {name: 'department'}
 				]
 		});
-		
+
 		this.columns =  [
 		    {
-		    	header: this.nameColumnHeader, 
-		    	width: 45, 
-		    	sortable: true, 
+		    	header: this.nameColumnHeader,
+		    	width: 45,
+		    	sortable: true,
 		    	dataIndex: 'name'
 		    },{
-		    	header: this.titleColumnHeader, 
-		    	width: 45, 
-		    	sortable: true, 
+		    	header: this.titleColumnHeader,
+		    	width: 45,
+		    	sortable: true,
 		    	dataIndex: 'title'
 		    },{
-		    	header: this.departmentColumnHeader, 
-		    	width: 45, 
-		    	sortable: true, 
+		    	header: this.departmentColumnHeader,
+		    	width: 45,
+		    	sortable: true,
 		    	dataIndex: 'department'
 		    }
-		];		
-		
+		];
+
 		this.choiceButton = new Ext.Button({
 			iconCls:'silk-accept',
 			disabled:true,
@@ -61,7 +61,7 @@ App.assistant.AssistantGrid = Ext.extend(Ext.grid.GridPanel, {
 			handler:this.onChoice.createDelegate(this, []),
 			scope:this
 		});
-		
+
 		this.searchField = new App.SearchField({
 			stripCharsRe:new RegExp('[\;\?]'),
 			listeners:{
@@ -74,7 +74,7 @@ App.assistant.AssistantGrid = Ext.extend(Ext.grid.GridPanel, {
 				search:function(v){
 					this.onSearch(v)
 				}
-				
+
 			},
 			onTrigger1Click : function(){
 		        if(this.hasSearch){
@@ -98,7 +98,7 @@ App.assistant.AssistantGrid = Ext.extend(Ext.grid.GridPanel, {
 		    },
 		    scope:this
 		});
-		
+
 		var config = {
 			loadMask : {
 				msg : 'Подождите, идет загрузка...'
@@ -130,7 +130,7 @@ App.assistant.AssistantGrid = Ext.extend(Ext.grid.GridPanel, {
 	        }),
 			viewConfig : {
 				forceFit : true
-			},	
+			},
 			listeners: {
 				rowdblclick:this.onChoice.createDelegate(this, []),
 				scope:this
@@ -140,24 +140,24 @@ App.assistant.AssistantGrid = Ext.extend(Ext.grid.GridPanel, {
 		Ext.apply(this, Ext.apply(this.initialConfig, config));
 		App.assistant.AssistantGrid.superclass.initComponent.apply(this, arguments);
 	},
-	
+
 	btnSetDisabled: function(status) {
         this.choiceButton.setDisabled(status);
 	},
-	
+
 	onSearch: function(v){
 		var s = this.store;
 		s.baseParams = { format:'json' };
 		s.setBaseParam('search', v);
 		s.load();
 	},
-	
+
 	onChoice: function() {
         var record = this.getSelectionModel().getSelected();
         if (record && this.fn) {
         	Ext.callback(this.fn, this.scope || window, [record]);
         };
     }
-	
+
 });
 

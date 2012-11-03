@@ -3,26 +3,26 @@ Ext.ns('App.patient, App.choices');
 App.patient.VisitGrid = Ext.extend(Ext.grid.GridPanel, {
 
 	initComponent : function() {
-		
+
 		this.store = new Ext.data.RESTStore({
 			autoLoad : false,
-			apiUrl : get_api_url('visit'),
+			apiUrl : App.getApiUrl('visit'),
 			model: App.models.visitModel
 		});
-		
+
 		this.columns =  [
 		    {
-		    	width: 30, 
-		    	sortable: true, 
-		    	dataIndex: 'cls', 
+		    	width: 30,
+		    	sortable: true,
+		    	dataIndex: 'cls',
 		    	renderer: function(val) {
 		    		var icon;
 		    		switch (val) {
-			    		case 'п': 
+			    		case 'п':
 			    				icon='UserSetup.png';
 			    				alt='Прием'
 			    				break
-			    		case 'б': 
+			    		case 'б':
 			    				icon='TestTubes.png'
 			    				alt='Поступление биоматериала'
 			    				break
@@ -30,90 +30,90 @@ App.patient.VisitGrid = Ext.extend(Ext.grid.GridPanel, {
 		    		return "<img src='"+MEDIA_URL+"resources/css/icons/"+icon+"' title='"+alt+"'>"
 		    	}
 		    },{
-		    	header: "№ заказа", 
-		    	width: 65, 
-		    	sortable: true, 
+		    	header: "№ заказа",
+		    	width: 65,
+		    	sortable: true,
 		    	dataIndex: 'barcode_id'
 		    },{
-		    	header: "Дата", 
-		    	width: 100, 
-		    	sortable: true, 
+		    	header: "Дата",
+		    	width: 100,
+		    	sortable: true,
 		    	dataIndex: 'created',
 		    	renderer:Ext.util.Format.dateRenderer('d.m.Y H:i')
 		    },{
-		    	header: "Сумма, руб.", 
-		    	width: 80, 
-		    	sortable: true, 
-		    	dataIndex: 'total_price', 
+		    	header: "Сумма, руб.",
+		    	width: 80,
+		    	sortable: true,
+		    	dataIndex: 'total_price',
 		    	renderer: function(v,params,rec){
 		    		if(rec.data.cls=='б'){
 		    			return "---"
-		    		} 
+		    		}
 		    		return v-(rec.data.discount_value*v/100)
 		    	}
 		    },{
-		    	header: "Скидка, %", 
-		    	width: 70, 
-		    	sortable: true, 
-		    	dataIndex: 'discount_value', 
+		    	header: "Скидка, %",
+		    	width: 70,
+		    	sortable: true,
+		    	dataIndex: 'discount_value',
 		    	renderer: function(v,params,rec){
 		    		if(rec.data.cls=='б'){
 		    			return "---"
-		    		} 
+		    		}
 		    		return v
 		    	}
 		    },{
-		    	header: "Скидка, руб.", 
-		    	width: 80, 
-		    	sortable: true, 
-		    	dataIndex: 'discount_value', 
+		    	header: "Скидка, руб.",
+		    	width: 80,
+		    	sortable: true,
+		    	dataIndex: 'discount_value',
 		    	renderer: function(val, params, rec) {
 		    		if(rec.data.cls=='б'){
 		    			return "---"
-		    		} 
+		    		}
 		    		return rec.data.total_price*val/100;
 		    	}
 		    },{
-		    	header: "Кто направил", 
-		    	width: 180, 
-		    	sortable: true, 
-		    	dataIndex: 'referral_name', 
+		    	header: "Кто направил",
+		    	width: 180,
+		    	sortable: true,
+		    	dataIndex: 'referral_name',
 		    	editor: new Ext.form.TextField({})
 		    }/*,{
-		    	header: "*", 
-		    	width: 25, 
-		    	sortable: true, 
+		    	header: "*",
+		    	width: 25,
+		    	sortable: true,
 		    	dataIndex: 'payment_type'
 		    }*/,{
-		    	header: "Офис", 
-		    	width: 120, 
-		    	sortable: true, 
-		    	dataIndex: 'office_name' 
+		    	header: "Офис",
+		    	width: 120,
+		    	sortable: true,
+		    	dataIndex: 'office_name'
 		    },{
-		    	header: "Плательщик", 
-		    	width: 100, 
-		    	sortable: true, 
+		    	header: "Плательщик",
+		    	width: 100,
+		    	sortable: true,
 		    	dataIndex: 'payer_name'
 		    },{
-		    	header: "Оператор", 
-		    	width: 100, 
-		    	sortable: true, 
+		    	header: "Оператор",
+		    	width: 100,
+		    	sortable: true,
 		    	dataIndex: 'operator_name'
 		    }
-		];		
-		
+		];
+
 		this.materialBtn = {
 			text:'Поступление биоматериала',
 			iconCls:'med-testtubes',
 			handler:this.onCreate.createDelegate(this,['material',false])
 		};
-		
+
 		this.barcodeMaterialBtn = {
 			text:'Поступление биоматериала со штрихкодом',
 			iconCls:'med-testtubes',
 			handler:this.onCreate.createDelegate(this,['material',true])
 		};
-		
+
 		this.completeBtn = {
 			xtype:'splitbutton',
 			iconCls:'med-usersetup',
@@ -122,23 +122,23 @@ App.patient.VisitGrid = Ext.extend(Ext.grid.GridPanel, {
 			menu:{
 				items:[this.materialBtn,this.barcodeMaterialBtn]
 			}
-			
+
 		};
-		
+
 		this.barcodeEdtBtn = {
 			text:'Изменить штрих-код',
 			iconCls:'silk-pencil',
 			handler:this.onBarcodeEdit,
 			scope:this
 		};
-		
+
 		this.ptypeEdtBtn = {
 			text:'Изменить форму оплаты',
 			iconCls:'silk-pencil',
 			handler:this.onPtypeEdit,
 			scope:this
 		};
-		
+
 		this.editBtn = {
 			xtype:'splitbutton',
 			iconCls:'silk-pencil',
@@ -147,9 +147,9 @@ App.patient.VisitGrid = Ext.extend(Ext.grid.GridPanel, {
 			menu:{
 				items:[this.barcodeEdtBtn, this.ptypeEdtBtn]
 			}
-			
+
 		};
-		
+
 		var config = {
 			stripeRows:true,
 			loadMask : {
@@ -173,7 +173,7 @@ App.patient.VisitGrid = Ext.extend(Ext.grid.GridPanel, {
 			},
 			tbar:{
 				xtype:'toolbar',
-				items:[App.settings.strictMode ? this.materialBtn : this.completeBtn, 
+				items:[App.settings.strictMode ? this.materialBtn : this.completeBtn,
 				this.editBtn,'-',{
 					xtype:'button',
 					text:'Пробирки',
@@ -200,20 +200,20 @@ App.patient.VisitGrid = Ext.extend(Ext.grid.GridPanel, {
 				emptyText: '<div class="start-help-text">Для начала работы нажмите кнопку "Новый прием"</div>'
 				//getRowClass : this.applyRowClass
 			}
-			
+
 		}
 
 		Ext.apply(this, Ext.apply(this.initialConfig, config));
 		App.patient.VisitGrid.superclass.initComponent.apply(this, arguments);
-		
+
 		this.store.on('load',function(){
 			this.getSelectionModel().selectFirstRow();
 		},this);
-		
+
 		this.store.on('write',function(){
 		})
 	},
-	
+
 	onSamplingEdit: function(){
 		var rec = this.getSelected();
 		if(rec) {
@@ -230,17 +230,17 @@ App.patient.VisitGrid = Ext.extend(Ext.grid.GridPanel, {
 			win.show();
 		}
 	},
-	
+
 	onPrintAll: function(){
 		this.toPrint('sampling');
 		this.toPrint('visit');
 		this.printBarcode();
 	},
-	
+
 	printBarcode: function()
 	{
 		var bc_win;
-		var record = this.getSelected(); 
+		var record = this.getSelected();
 		var visitId = record.id;
 		bc_win = new App.barcode.PrintWindow({
 			visitId:visitId,
@@ -249,13 +249,13 @@ App.patient.VisitGrid = Ext.extend(Ext.grid.GridPanel, {
 		});
 		bc_win.show();
 	},
-	
+
 	toPrint:function(slug){
 		visitId = this.getSelected().id;
 		var url = ['/visit/print',slug,visitId,''].join('/');
 		window.open(url);
 	},
-	
+
 	setActivePatient: function(rec) {
 		id = rec.id;
 		this.patientRecord = rec;
@@ -264,7 +264,7 @@ App.patient.VisitGrid = Ext.extend(Ext.grid.GridPanel, {
 		s.baseParams = {format:'json','patient': id};
 		s.load();
 	},
-	
+
 	storeFilter: function(field, value){
 		if(!value) {
 			//console.log(this.store.baseParams[field]);
@@ -275,21 +275,21 @@ App.patient.VisitGrid = Ext.extend(Ext.grid.GridPanel, {
 		}
 		this.store.load();
 	},
-	
+
 	getSelected: function() {
 		return this.getSelectionModel().getSelected()
 	},
-	
+
 	getAbsoluteUrl: function(id) {
 		return "/visit/visit/"+id+"/";
 	},
-	
+
 	onPrint: function() {
 		var id = this.getSelected().data.id;
 		var url = ['/visit/print/visit',id,''].join('/');
 		window.open(url);
 	},
-	
+
 	goToSlug: function(slug) {
 		var s = this.getSelected().data.id;
 		var url = this.getAbsoluteUrl(s)+slug+"/";
@@ -309,7 +309,7 @@ App.patient.VisitGrid = Ext.extend(Ext.grid.GridPanel, {
 			});
 		}
 	},
-	
+
 	onChange: function(){
 		if (this.patientRecord) {
 			var rec = this.getSelected();
@@ -325,7 +325,7 @@ App.patient.VisitGrid = Ext.extend(Ext.grid.GridPanel, {
 			}
 		}
 	},
-	
+
 	onPatientSelect: function(id) {
 //		Ext.getCmp('patient-visit-tbl').enable();
 		this.patientId = id; //rec.data.id;
@@ -335,17 +335,17 @@ App.patient.VisitGrid = Ext.extend(Ext.grid.GridPanel, {
 			}
 		});
 	},
-	
+
 	addVisit: function(values) {
 		var Visit = this.store.recordType;
 		var v = new Visit(values);
 		this.store.insert(0,v);
 	},
-	
+
 	onBarcodeEdit: function(){
 		var visitRecord = this.getSelected();
 		if(!visitRecord) return false;
-		
+
 		this.barcodeWindow = new App.choices.BarcodeChoiceWindow({
 			patientId:this.patientId,
 			modal:true,
@@ -358,10 +358,10 @@ App.patient.VisitGrid = Ext.extend(Ext.grid.GridPanel, {
 			},
 			scope:this
 		});
-		
+
 		this.barcodeWindow.show();
 	},
-	
+
 	onPtypeEdit: function(){
 		var visitRecord = this.getSelected();
 		if(!visitRecord) return false
@@ -378,7 +378,7 @@ App.patient.VisitGrid = Ext.extend(Ext.grid.GridPanel, {
 		});
 		win.show();
 	},
-	
+
 	onPreview: function(){
 		var visit = this.getSelected();
 		var previewWindow = new Ext.Window({
@@ -405,10 +405,10 @@ App.patient.VisitGrid = Ext.extend(Ext.grid.GridPanel, {
 				autoLoad:String.format('/widget/visit/{0}/',visit.data.id)
 			}]
 		});
-		
+
 		previewWindow.show();
 	}
-	
+
 });
 
 

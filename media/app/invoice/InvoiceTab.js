@@ -3,16 +3,16 @@ Ext.ns('App.invoice');
 
 App.invoice.InvoiceTab = Ext.extend(Ext.Panel, {
 	initComponent : function() {
-		
+
 		this.store = this.store || new Ext.data.RESTStore({
 			autoLoad : true,
 			autoSave:true,
-			apiUrl : get_api_url('invoice'),
+			apiUrl : App.getApiUrl('invoice'),
 			model: App.models.Invoice
 		});
-		
+
 		this.model = this.store.recordType;
-		
+
 		this.form = new App.invoice.InvoiceForm({
 			model:this.store.recordType,
 			record:this.record,
@@ -23,14 +23,14 @@ App.invoice.InvoiceTab = Ext.extend(Ext.Panel, {
 			},
 			scope:this
 		});
-		
+
 		this.saveButton = new Ext.Button({
 			text:'Сохранить',
 			handler: this.onFormSave.createDelegate(this,[]),
 //			disabled:true,
 			scope:this
     	});
-		
+
 		config = {
 			title:'Накладная',
 			layout:'fit',
@@ -48,14 +48,14 @@ App.invoice.InvoiceTab = Ext.extend(Ext.Panel, {
 
 		Ext.apply(this, Ext.apply(this.initialConfig, config));
 		App.invoice.InvoiceTab.superclass.initComponent.apply(this, arguments);
-		
+
 		this.store.on('write', this.onStoreWrite, this);
 		this.on('destroy', function(){
 			this.store.un('write', this.onStoreWrite, this);
 		},this);
-		
+
 	},
-	
+
 
 	onFormSave: function() {
 		var f = this.form;
@@ -72,7 +72,7 @@ App.invoice.InvoiceTab = Ext.extend(Ext.Panel, {
 			}
 		}
 	},
-	
+
 	onClose: function(noConfirm){
 		var steps = this.form.getSteps();
 		if(noConfirm===undefined && steps>0) {
@@ -106,16 +106,16 @@ App.invoice.InvoiceTab = Ext.extend(Ext.Panel, {
 					patientRecord:this.patientRecord
 				});
 				this.win.show();
-			};	
+			};
 			this.close();
 		}
 	},
-	
+
 	close: function() {
 		App.eventManager.fireEvent('closeapp',this.id);
 		App.eventManager.fireEvent('invoiceclose');
 	},
-	
+
 	onStoreWrite: function(store, action, result, res, rs) {
 		if(action=='create') {
 			App.eventManager.fireEvent('invoicecreate',rs);
@@ -123,7 +123,7 @@ App.invoice.InvoiceTab = Ext.extend(Ext.Panel, {
 		this.record = rs;
 		this.popStep();
 	},
-	
+
 	popStep: function() {
 		this.steps-=1;
 		if(this.msgBox) {

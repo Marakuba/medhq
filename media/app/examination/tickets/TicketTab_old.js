@@ -29,9 +29,9 @@ App.examination.TicketPanel = Ext.extend(Ext.ux.Portal,{
  * |----data - содержит данные для загрузки в редактируемой анкеты
  * |----}
  * }
- * 
- * 
- * 
+ *
+ *
+ *
  * data : [] 						- перечисление всех типов имеющихся данных с данными
  * |--{type:'text', 				- Текстовое представление всех данных
  * |--data:[] 						- список текстовых тикетов, разбитых по секциям. Секции Задаются в модели FieldSet
@@ -44,7 +44,7 @@ App.examination.TicketPanel = Ext.extend(Ext.ux.Portal,{
  * |------private:false, 			- приватность тикета. Если true, то тикет виден только для создавшего карту осмотра врача
  * |------pos:10 					- непосредственная позиция тикета на панели,
  * |------type:'text','questionnaire',etc - указывает, к какому типу тикетов относится это текстовое представление для определения метода редактирования тикета.
- * |------name:'Анкета анамнеза' 	- имя компонента указанного типа, к которому относится это отображение. Необходимо для обновления текста после редактирования соответствующего типа 
+ * |------name:'Анкета анамнеза' 	- имя компонента указанного типа, к которому относится это отображение. Необходимо для обновления текста после редактирования соответствующего типа
  * |------}
  * |----}
  * |--},
@@ -55,41 +55,41 @@ App.examination.TicketPanel = Ext.extend(Ext.ux.Portal,{
  * |----data:[] 					- данные введенные в поля анкеты. эти данные вставляются в форму анкеты при редактировании
  * |------{title:'Подзаголовок' 	- заголовок одной из панелей формы анкеты. Вставляется в заголовок тикета в текстовом представлении панели
  * |------section:'anamnesis','diagnosis',etc. - секция, к которой принадлежит данный тикет. может быть несколько одинаковых. По этому имени ищется секция в модели FieldSet и берется оттуда order
- * |------rows:[] 					- массив, содержит список полей с данными внутри панели, принадлежащей одному тикету 
+ * |------rows:[] 					- массив, содержит список полей с данными внутри панели, принадлежащей одному тикету
  * |--------name:'anamnesis_1_2_el'	- имя поля панели. уникально внутри анкеты.
  * |--------values:'...' | []		- значение(я) поля. строка либо массив строк
  * |------}
  * |----}
  * |--},
- * 
+ *
  * Еще есть тип assignment - Направления. Может упоминаться в типах текстовых тикетов для указания способа редактирования тикета.
  * Данные типа assignment - записи модели sheduler.Preorder, у которых в поле card указана текущая карта осмотра. Данные генерируются каждый раз при открытии или просмотре карты осмотра.
  * order берется из таблицы examination.FieldSet запись с именем assignment или, если такого нет = 1000.
- * 
- * 
+ *
+ *
 */
 
 App.examination.TicketTab = Ext.extend(Ext.Panel, {
 	initComponent : function() {
-		
+
 		this.quests = {};
-		
+
 		this.ticketTypes = {'text':Ext.ux.form.Ticket,
 							'questionnaire':Ext.ux.form.QuestTicket}
-		
+
 		//Для создания направлений нужна запись текущего пациента
 		this.patientStore = new Ext.data.RESTStore({
 			autoSave: false,
 			autoLoad : false,
-			apiUrl : get_api_url('patient'),
+			apiUrl : App.getApiUrl('patient'),
 			model: App.models.Patient
 		});
-		
+
 		this.portalColumn = new Ext.ux.PortalColumn({
 			columnWidth:1,
 			anchor:'100%'
 		});
-		
+
 		this.ticketPanel = new App.examination.TicketPanel({
 			region:'center',
 			baseCls:'ticket',
@@ -116,7 +116,7 @@ App.examination.TicketTab = Ext.extend(Ext.Panel, {
 					};
 					data[item.section].tickets.push(itemData)
 				},this);
-				//по старой структуре data содержит массив списков секций. так было потому, 
+				//по старой структуре data содержит массив списков секций. так было потому,
 				//что были разные вкладки на каждую секцию
 				var dataArray = []
 				for (sec in data){
@@ -124,7 +124,7 @@ App.examination.TicketTab = Ext.extend(Ext.Panel, {
 				}
 				return dataArray
 			},
-			
+
 			listeners:{
 				'beforedrop':function(res,e,t){
 					var panel = res.panel;
@@ -134,9 +134,9 @@ App.examination.TicketTab = Ext.extend(Ext.Panel, {
 				scope:this
 			}
 		});
-		
+
 		var config = {
-			
+
 			layout:'border',
 		    labelAlign: 'top',
 		    autoSctoll:true,
@@ -146,15 +146,15 @@ App.examination.TicketTab = Ext.extend(Ext.Panel, {
 		       this.ticketPanel
 		    ]
 		}
-								
+
 		Ext.apply(this, Ext.apply(this.initialConfig, config));
 		App.examination.TicketTab.superclass.initComponent.apply(this, arguments);
-		
+
 //		App.eventManager.on('tmptabchange',this.closeEditor,this);
-//		
+//
 //		this.on('destroy', function(){
 //		    App.eventM
-//		
+//
 //		if (!(this.portalColumn.items && this.portalColumn.items.length)){
 //			this.portalColumn.add(ticket);
 //		} else {
@@ -177,11 +177,11 @@ App.examination.TicketTab = Ext.extend(Ext.Panel, {
 //					}
 //				}
 //			},this);
-//		};anager.un('tmptabchange',this.closeEditor,this); 
+//		};anager.un('tmptabchange',this.closeEditor,this);
 //		},this);
-		
+
 		this.on('afterrender',function(panel){
-			
+
 //			if(this.data){
 //				this.quests = data['quests'];
 //				Ext.each(this.data.tickets,function(ticket,i){
@@ -198,15 +198,15 @@ App.examination.TicketTab = Ext.extend(Ext.Panel, {
 //					});
 //					this.portalColumn.add(new_ticket);
 //				},this);
-//				
+//
 //			};
 			if (this.isCard){
 				this.openAsgmtPanel();
 			};
 			this.doLayout();
-			
+
 		},this);
-		
+
 		this.on('ticketbodyclick', function(panel,editor,pos){
 			if (this.ticket) {
 				this.ticket.body.removeClass('selected');
@@ -214,12 +214,12 @@ App.examination.TicketTab = Ext.extend(Ext.Panel, {
 			this.ticket = panel;
 			this.ticket.body.addClass('selected')
 		},this);
-		
+
 		this.on('ticketheadeeditstart',function(panel){
 			if (this.ticket){
 				this.ticket.body.removeClass('selected')
 			};
-			
+
 			this.ticket = panel;
 			this.ticket.body.addClass('selected')
 		},this)
@@ -230,13 +230,13 @@ App.examination.TicketTab = Ext.extend(Ext.Panel, {
 			};
 		},this);
 	},
-	
+
 	loadData: function(data,quests,sectionPlan){
 		this.sectionPlan = sectionPlan;
 		if(!data) return false;
-		
+
 		this.quests = quests;
-		
+
 		Ext.each(data,function(section){
 			Ext.each(section.tickets,function(ticket,i){
 				var config = {
@@ -254,8 +254,8 @@ App.examination.TicketTab = Ext.extend(Ext.Panel, {
 				//Добавляем оставшиеся настройки
 				Ext.applyIf(config,ticket)
 				this.addTicket(config);
-				
-				
+
+
 			},this);
 			this.doLayout();
 		},this);
@@ -264,7 +264,7 @@ App.examination.TicketTab = Ext.extend(Ext.Panel, {
 		};
 		this.doLayout();
 	},
-	
+
 	removeTab: function(){
 		var data = Ext.decode(this.record.data.data);
 		Ext.each(data,function(sec,i){
@@ -274,7 +274,7 @@ App.examination.TicketTab = Ext.extend(Ext.Panel, {
 		},this);
 		this.record.set('data',Ext.encode(data));
 	},
-	
+
 	addTicket:function(config){
 		var init_config = {
 			data:{title:config['title'],
@@ -290,7 +290,7 @@ App.examination.TicketTab = Ext.extend(Ext.Panel, {
 		var insertMethod = config['pos'] ? 'pos' : 'order';
 		this.insertTicketInPos(new_ticket,insertMethod);
 	},
-	
+
 	getLowInd:function(paramName,value){
 		//Возвращает последний индекс элемента, переданный параметр которого меньше указанного
 		var index = -1;
@@ -311,25 +311,25 @@ App.examination.TicketTab = Ext.extend(Ext.Panel, {
 		},this);
 		return index;
 	},
-	
+
 	insertTicketInPos: function(ticket,paramName){
 		//вставляем тикет в нужное место согласно порядку order
 		//порядок тикетов может быть определен либо по значению order (если добавляется новый тикет)
 		//либо по значению pos (если загружаются сохраненные тикеты)
-		
+
 		//если тикетов еще нет, то добавляем в конец
 		//тикет добавляется в конец секции
-		
+
 		var ind = this.getLowInd(paramName,ticket[paramName]);
 		this.portalColumn.insert(ind+1,ticket);
 		this.doLayout();
 	},
-	
+
 	getData: function(){
 		var data = this.ticketPanel.getData();
 		return [data,this.quests]
 	},
-	
+
 	newAsgmtPanel: function(){
 		var asgmt_panel = new App.patient.AsgmtGrid({
 			title:'Услуги',
@@ -361,11 +361,11 @@ App.examination.TicketTab = Ext.extend(Ext.Panel, {
 					this.doLayout()
 				}
 			}
-			
+
 		});
 		return asgmt_panel
 	},
-	
+
 	openAsgmtPanel: function(){
 		this.patientStore.setBaseParam('id',this.patient);
 		this.patientStore.load({callback:function(records){
@@ -379,7 +379,7 @@ App.examination.TicketTab = Ext.extend(Ext.Panel, {
 			this.insertTicketInPos(this.asgmtPanel,'order');
 		},scope:this});
 	},
-	
+
 	addStandartServices:function(records){
 		var today = new Date();
 		var s = this.asgmtPanel.store;
@@ -387,7 +387,7 @@ App.examination.TicketTab = Ext.extend(Ext.Panel, {
 		Ext.each(records,function(rec){
 			var asgmtType = s.recordType;
 			var asgmt = new asgmtType({
-				service:rec.data.service, 
+				service:rec.data.service,
 				service_name:rec.data.service_name,
 				price:rec.data.price || null,
 				execution_place : rec.data.state,
@@ -398,13 +398,13 @@ App.examination.TicketTab = Ext.extend(Ext.Panel, {
 			});
 			s.add(asgmt);
 		},this);
-		
+
 		this.asgmtPanel.store.save();
 		s.autoSave = true;
 		this.doLayout();
-		
+
 	},
-	
+
 	findTicket:function(paramName,value){
 		var ticket = undefined;
 		this.ticketPanel.items.itemAt(0).items.each(function(item,ind){
@@ -412,10 +412,10 @@ App.examination.TicketTab = Ext.extend(Ext.Panel, {
 				ticket = item;
 			}
 		},this);
-		
+
 		return ticket
 	},
-	
+
 	findByTitle:function(questName,title){
 		var ticket = undefined;
 		this.ticketPanel.items.itemAt(0).items.each(function(item,ind){
@@ -423,7 +423,7 @@ App.examination.TicketTab = Ext.extend(Ext.Panel, {
 				ticket = item;
 			}
 		},this);
-		
+
 		return ticket
 	}
 });

@@ -30,7 +30,7 @@ Ext.calendar.TimeslotInfoWindow = Ext.extend(Ext.Window, {
 
     	this.preorderStore = new Ext.data.RESTStore({
 			autoLoad : false,
-			apiUrl : get_api_url('extpreorder'),
+			apiUrl : App.getApiUrl('extpreorder'),
 			model: this.preorderModel,
 			listeners:{
 				load: function(store,records){
@@ -41,7 +41,7 @@ Ext.calendar.TimeslotInfoWindow = Ext.extend(Ext.Window, {
 				scope:this
 			}
     	});
-		
+
 		this.tpl = new Ext.XTemplate(
     		'<tpl for=".">',
 	        	'<font size = 5> Пациент: ','<span id="patient_name"> <b>{patient_name:this.nullFormatter}</b></span>',
@@ -50,11 +50,11 @@ Ext.calendar.TimeslotInfoWindow = Ext.extend(Ext.Window, {
 	        	'<br>',' Форма оплаты: ','<span id="ptype_name"> <b>{ptype_name:this.nullFormatter}</b></span>',
 	        	'<br>',' Время начала: ','<span id="start" class = "start">','<b>{start:date("H:i")}</b>','</span>',
 	    	'</tpl>',
-	    	{nullFormatter: function(v) 
+	    	{nullFormatter: function(v)
 	    		{ return v ? v : 'не указано'; }
 	    	}
 		);
-		
+
 	    this.preorderPanel = new Ext.Panel({
 	    	id : this.id + 'preorder-panel',
 	    	region:'south',
@@ -63,7 +63,7 @@ Ext.calendar.TimeslotInfoWindow = Ext.extend(Ext.Window, {
 	    	bodyBorder: false,
 	    	bodyStyle: 'background:transparent'
 	    })
-	    
+
     	this.formPanelCfg = new Ext.FormPanel({
         	layout:'fit',
 	        bodyStyle: 'background:transparent;padding:5px 10px 10px;',
@@ -72,11 +72,11 @@ Ext.calendar.TimeslotInfoWindow = Ext.extend(Ext.Window, {
         	height:300,
 	        items: [this.preorderPanel]
     	});
-    	
+
         this.formPanel = this.formPanelCfg;
-        
+
         if (this.calendarStore) {
-        	
+
         	this.calendarPicker = new Ext.calendar.CalendarPicker({
         		name: 'calendar',
         		hidden:true,
@@ -84,10 +84,10 @@ Ext.calendar.TimeslotInfoWindow = Ext.extend(Ext.Window, {
             	anchor: '100%',
 	            store: this.calendarStore
         	})
-    	    
+
         	this.fieldSet.add(this.calendarPicker);
     	};
-    	
+
 	    config = {
 	        width: 600,
 	        height:400,
@@ -98,7 +98,7 @@ Ext.calendar.TimeslotInfoWindow = Ext.extend(Ext.Window, {
     	    modal: true,
         	resizable: false,
 	        buttonAlign: 'left',
-        	
+
         	tbar: this.ttb,
 
 	        fbar: [
@@ -113,17 +113,17 @@ Ext.calendar.TimeslotInfoWindow = Ext.extend(Ext.Window, {
     	};
 		Ext.apply(this, Ext.apply(this.initialConfig, config));
         Ext.calendar.TimeslotInfoWindow.superclass.initComponent.apply(this, arguments);
-        
+
         this.on('afterrender',function(){
         	 var rec,
 	        f = this.formPanel.getForm();
-	        
+
 	        this.preorderStore.on('load',function(store,records,obj){
             	if (records.length){
             		this.tpl.overwrite(this.preorderPanel.body,records[0].data);
             	};
             },this,{single:true});
-	
+
 	        if (this.event) {
 	           	this.preorderStore.setBaseParam('timeslot',App.uriToId(this.event.data['ResourceURI']));
 	           	this.preorderStore.load();

@@ -3,12 +3,12 @@ Ext.ns('App.orderedservice');
 App.orderedservice.LocalOrderGrid = Ext.extend(Ext.grid.GridPanel, {
 
 	initComponent : function() {
-		
+
 		this.origTitle = 'Свои заказы';
-		
+
 		this.store = new Ext.data.RESTStore({
 			autoLoad : false,
-			apiUrl : get_api_url('laborderedservice'),
+			apiUrl : App.getApiUrl('laborderedservice'),
 			model: [
 			    {name: 'id'},
 			    {name: 'resource_uri'},
@@ -24,10 +24,10 @@ App.orderedservice.LocalOrderGrid = Ext.extend(Ext.grid.GridPanel, {
 			    {name: 'in_progress', type:'bool'}
 			]
 		});
-		
+
 		this.store.setBaseParam('execution_place__remotestate__isnull',true);
 		this.store.setBaseParam('service__labservice__isnull',false);
-		
+
 		this.sm = new Ext.grid.CheckboxSelectionModel({
 			singleSelect : false,
 			listeners:{
@@ -38,61 +38,61 @@ App.orderedservice.LocalOrderGrid = Ext.extend(Ext.grid.GridPanel, {
 				scope:this
 			}
 		});
-		
+
 		this.columns =  [this.sm, {
 	    	header: "Дата",
 	    	width:12,
-	    	sortable: true, 
+	    	sortable: true,
 	    	dataIndex: 'created',
 	    	renderer: Ext.util.Format.dateRenderer('d.m.Y / H:i')
 	    },{
 	    	header: "Заказ",
 	    	width:10,
-	    	sortable: true, 
+	    	sortable: true,
 	    	dataIndex: 'barcode'
 	    },{
-	    	header: "Лаборатория", 
-	    	width: 15, 
-	    	sortable: true, 
+	    	header: "Лаборатория",
+	    	width: 15,
+	    	sortable: true,
 	    	dataIndex: 'laboratory'
 	    },{
-	    	header: "Пациент", 
-	    	width: 20, 
-	    	sortable: true, 
+	    	header: "Пациент",
+	    	width: 20,
+	    	sortable: true,
 	    	dataIndex: 'patient_name'
 	    },{
-	    	header: "Исследование", 
-	    	width: 35, 
-	    	sortable: true, 
+	    	header: "Исследование",
+	    	width: 35,
+	    	sortable: true,
 	    	dataIndex: 'service_name'
 	    },{
-	    	header: "Тара", 
-	    	width: 25, 
-	    	sortable: true, 
+	    	header: "Тара",
+	    	width: 25,
+	    	sortable: true,
 	    	dataIndex: 'sampling'
 	    },{
-	    	header: "Статус", 
-	    	width: 10, 
-	    	sortable: true, 
+	    	header: "Статус",
+	    	width: 10,
+	    	sortable: true,
 	    	dataIndex: 'status',
 	    	renderer: function(val,opts,rec) {
 	    		var s = rec.data.status;
 	    		switch(s) {
-	    			case 'т' : 
+	    			case 'т' :
 	    				return '<div class="x-grid-row-error">Не проведен!</div>';
 	    				break;
-	    			case 'з' : 
+	    			case 'з' :
 	    				return 'Готово';
 	    				break;
 	    		}
 	    	}
 	    },{
-	    	header: "Оператор", 
-	    	width: 10, 
-	    	sortable: true, 
+	    	header: "Оператор",
+	    	width: 10,
+	    	sortable: true,
 	    	dataIndex: 'operator_name'
-	    }];		
-		
+	    }];
+
 		this.modeBtn = new Ext.CycleButton({
             showText: true,
             prependText: 'Показывать: ',
@@ -116,14 +116,14 @@ App.orderedservice.LocalOrderGrid = Ext.extend(Ext.grid.GridPanel, {
             },
             scope:this
         });
-		
+
 		this.toLabBtn = new Ext.Button({
 			text:'Провести',
 			hidden:true,
 			handler:this.onToLab.createDelegate(this),
 			scope:this
 		})
-		
+
 		var config = {
 			closable:false,
 			title:this.origTitle,
@@ -148,19 +148,19 @@ App.orderedservice.LocalOrderGrid = Ext.extend(Ext.grid.GridPanel, {
 	            getRowClass : function(record, rowIndex, p, store){
 	            	var s = record.data.status, cls;
 		    		switch(s) {
-		    			case 'т' : 
+		    			case 'т' :
 		    				cls = 'x-grid-row-warning';
 		    				break;
-		    			case 'з' : 
+		    			case 'з' :
 		    				cls = 'x-grid-row-normal';
 		    				break;
 		    		}
 		    		return cls
 	            }
 			})
-			
+
 		}
-		
+
 		this.on('afterrender',function(){
 			if (this.searchValue){
 				this.onGlobalSearch(this.searchValue)
@@ -168,7 +168,7 @@ App.orderedservice.LocalOrderGrid = Ext.extend(Ext.grid.GridPanel, {
 				this.store.load();
 			}
 		},this);
-		
+
 		this.on('destroy', function(){
 			App.eventManager.un('globalsearch', this.onGlobalSearch, this);
 		},this);
@@ -178,7 +178,7 @@ App.orderedservice.LocalOrderGrid = Ext.extend(Ext.grid.GridPanel, {
 
 		App.eventManager.on('globalsearch', this.onGlobalSearch, this);
 	},
-	
+
 	manageBtn : function(s) {
 		this.toLabBtn.hide();
 		switch(s) {
@@ -188,7 +188,7 @@ App.orderedservice.LocalOrderGrid = Ext.extend(Ext.grid.GridPanel, {
 				break;
 		}
 	},
-	
+
 	onGlobalSearch : function(v) {
 		this.changeTitle = v!==undefined;
 		this.storeFilter('search', v);
@@ -196,7 +196,7 @@ App.orderedservice.LocalOrderGrid = Ext.extend(Ext.grid.GridPanel, {
 			this.setTitle(this.origTitle);
 		}
 	},
-	
+
 	storeFilter : function(field, value){
 		if(value===undefined) {
 			delete this.store.baseParams[field]
@@ -212,28 +212,28 @@ App.orderedservice.LocalOrderGrid = Ext.extend(Ext.grid.GridPanel, {
 			scope:this
 		});
 	},
-	
+
 	getSelected : function() {
 		return this.getSelectionModel().getSelected()
 	},
-	
-	
+
+
 	getSelectedId : function(){
-		var records = this.getSelectionModel().getSelections(), 
+		var records = this.getSelectionModel().getSelections(),
 			ids = [];
 		Ext.each(records, function(rec) {
 			ids.push(rec.id);
 		});
 		return ids
 	},
-	
+
 	onToLab : function() {
 		var ids = this.getSelectedId();
 		App.direct.visit.toLab(ids,function(result,e){
 			this.modeBtn.setActiveItem(0);
 		}, this);
 	}
-	
+
 });
 
 

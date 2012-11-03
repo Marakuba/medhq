@@ -28,7 +28,7 @@ App.dict.XGlossaryTree = Ext.extend(Ext.ux.tree.RemoteTreePanel, {
 			autoLoad:false,
 			clearOnLoad:true,
         	nodeParameter:'parent',
-        	dataUrl: get_api_url('glossary'),
+        	dataUrl: App.getApiUrl('glossary'),
         	requestMethod:'GET',
         	baseParams:this.baseParams || {
         		format:'json',
@@ -262,7 +262,7 @@ App.dict.XGlossaryTree = Ext.extend(Ext.ux.tree.RemoteTreePanel, {
 
 		jsonData[this.paramNames.text] = newText;
 		jsonData['id'] = node.attributes.id;
-		jsonData['resource_uri'] = App.get_api_url('glossary') + '/' + node.attributes.id;
+		jsonData['resource_uri'] = App.App.getApiUrl('glossary',node.attributes.id);
 		jsonData['section'] = this.section;
 		jsonData['staff'] = this.staff;
 		jsonData['base_service'] = this.base_service;
@@ -275,7 +275,7 @@ App.dict.XGlossaryTree = Ext.extend(Ext.ux.tree.RemoteTreePanel, {
 			params:params,
 			method:'PUT',
 			jsonData:data,
-			url:App.get_api_url('glossary') + '/' + node.attributes.id,
+			url:App.App.getApiUrl('glossary', node.attributes.id),
 			headers:{
 				'Content-Type':'application/json'
 			},
@@ -319,7 +319,7 @@ App.dict.XGlossaryTree = Ext.extend(Ext.ux.tree.RemoteTreePanel, {
 				var o = Ext.apply(this.getOptions(), {
 					action:'removeNode',
 					node:node,
-					url: App.get_api_url('glossary')+'/'+node.attributes.id,
+					url: App.App.getApiUrl('glossary', node.attributes.id),
 					params:params,
 					method:'DELETE',
 					jsonData:data,
@@ -357,7 +357,7 @@ App.dict.XGlossaryTree = Ext.extend(Ext.ux.tree.RemoteTreePanel, {
 		var params = this.applyBaseParams();
 		var jsonData = {};
 		jsonData['id'] = movedNode.attributes.id;
-		jsonData['resource_uri'] = App.get_api_url('glossary') + '/' + movedNode.attributes.id;
+		jsonData['resource_uri'] = App.App.getApiUrl('glossary', movedNode.attributes.id);
 		jsonData['section'] = this.section;
 		jsonData['staff'] = this.staff;
 		jsonData['base_service'] = this.base_service;
@@ -370,7 +370,7 @@ App.dict.XGlossaryTree = Ext.extend(Ext.ux.tree.RemoteTreePanel, {
 			e:e,
 			node:e.dropNode,
 			params:params,
-			url:App.get_api_url('glossary') + '/' + movedNode.attributes.id,
+			url:App.App.getApiUrl('glossary',movedNode.attributes.id),
 			method:'PUT',
 			jsonData:data,
 			headers:{

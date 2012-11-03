@@ -17,11 +17,11 @@ App.Results = Ext.extend(Ext.Panel, {
 			region:'center',
 			xtype:'resultsgrid'
 		});
-		
+
 		this.origTitle = 'Результаты';
 
 		this.singleDate = true;
-		   		
+
 		this.fields = [
 		    ['start_date','visit__created__gte','Y-m-d 00:00'],
 		    ['end_date','visit__created__lte','Y-m-d 23:59'],
@@ -31,7 +31,7 @@ App.Results = Ext.extend(Ext.Panel, {
 		    ['is_completed','is_completed', {0:false,1:true}],
 		    ['is_printed','is_printed', {0:false,1:true}]
 		];
-				
+
    		this.form = new Ext.form.FormPanel({
    			border:false,
    			baseCls:'x-plain',
@@ -45,7 +45,7 @@ App.Results = Ext.extend(Ext.Panel, {
 					toggle:function(btn,pressed){
 						this.singleDate = !pressed;
 						btn.setText(pressed ? "Дата" : "Период");
-						var startDate = this.form.getForm().findField('start_date'); 
+						var startDate = this.form.getForm().findField('start_date');
 						var endDate = this.form.getForm().findField('end_date');
 						setLabel(startDate, pressed ? "Дата с" : "На дату");
 						endDate.setVisible(pressed);
@@ -85,7 +85,7 @@ App.Results = Ext.extend(Ext.Panel, {
    				valueField:'id',
    				store:new Ext.data.RESTStore({
    					autoLoad : false,
-   					apiUrl : get_api_url('medstate'),
+   					apiUrl : App.getApiUrl('medstate'),
    					model: ['id','name']
    				}),
    			    minChars:2,
@@ -102,7 +102,7 @@ App.Results = Ext.extend(Ext.Panel, {
    				valueField:'id',
    				store:new Ext.data.RESTStore({
    					autoLoad : false,
-   					apiUrl : get_api_url('medstate'),
+   					apiUrl : App.getApiUrl('medstate'),
    					model: ['id','name']
    				}),
    			    minChars:2,
@@ -119,7 +119,7 @@ App.Results = Ext.extend(Ext.Panel, {
    				valueField:'id',
    				store:new Ext.data.RESTStore({
    					autoLoad : false,
-   					apiUrl : get_api_url('medstate'),
+   					apiUrl : App.getApiUrl('medstate'),
    					model: ['id','name']
    				}),
    			    minChars:2,
@@ -218,20 +218,20 @@ App.Results = Ext.extend(Ext.Panel, {
 		},this);
 
 	},
-	
+
 	onGlobalSearch : function(v) {
 		this.changeTitle = v!==undefined;
 		if(!v){
 			this.setTitle(this.origTitle);
 		}
 	},
-	
+
 	onResultLoad : function(store,r,options){
 		if(this.changeTitle){
 			this.setTitle(String.format('{0} ({1})', this.origTitle, store.getTotalCount()));
 		}
 	},
-	
+
 	applyFilter: function(){
 		var f = this.form.getForm();
 		var o = {};
@@ -252,14 +252,14 @@ App.Results = Ext.extend(Ext.Panel, {
 		Ext.apply(s.baseParams, o);
 		s.load();
 	},
-	
+
 	clearFilter: function(){
 		var f = this.form.getForm().reset();
 		var s = this.resultGrid.getStore();
 		s.baseParams = {};
 		s.load();
 	}
-	
+
 });
 
 Ext.reg('results', App.Results);

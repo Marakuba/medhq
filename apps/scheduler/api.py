@@ -301,4 +301,3 @@ api.register(PreorderResource())
 api.register(ExtPreorderResource())
 api.register(EventResource())
 api.register(VisitPreorderResource())
-

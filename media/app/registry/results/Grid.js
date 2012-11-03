@@ -3,11 +3,11 @@ Ext.ns('App.results');
 App.results.Grid = Ext.extend(Ext.grid.GridPanel, {
 
 	initComponent : function() {
-		
+
 		this.proxy = new Ext.data.HttpProxy({
-		    url: get_api_url('laborder')
+		    url: App.getApiUrl('laborder')
 		});
-		
+
 		this.reader = new Ext.data.JsonReader({
 		    totalProperty: 'meta.total_count',
 		    successProperty: 'success',
@@ -28,13 +28,13 @@ App.results.Grid = Ext.extend(Ext.grid.GridPanel, {
 		    {name: 'staff_name'},
 		    {name: 'payer_name'}
 		]);
-		
+
 		this.writer = new Ext.data.JsonWriter({
-		    encode: false 
+		    encode: false
 		});
-		
+
 		this.baseParams = { format:'json' };
-		
+
 		this.store = new Ext.data.Store({
 			autoLoad:false,
 		    baseParams: this.baseParams,
@@ -49,59 +49,59 @@ App.results.Grid = Ext.extend(Ext.grid.GridPanel, {
 		    reader: this.reader,
 		    writer: this.writer    // <-- plug a DataWriter into the store just as you would a Reader
 		});
-		
+
 		if(App.settings.strictMode) {
 			this.store.setBaseParam('visit__office',active_state_id);
 		}
-		
-		this.store.load();		
+
+		this.store.load();
 
 		this.columns =  [{
-		    	header: "№ заказа", 
-		    	width: 70, 
-		    	sortable: false, 
-		    	dataIndex: 'is_completed', 
+		    	header: "№ заказа",
+		    	width: 70,
+		    	sortable: false,
+		    	dataIndex: 'is_completed',
 		    	renderer: function(val, opts, rec) {
 		    		var cls = val ? "cell-completed-icon" : "";
 		    		return String.format('<div class="{0}" style="pagging-left:18px;text-indent:16px;">{1}</div>',cls,rec.data.barcode);
 		    	}
 		    },{
-		    	header: "Дата", 
-		    	width: 70, 
-		    	sortable: true, 
+		    	header: "Дата",
+		    	width: 70,
+		    	sortable: true,
 		    	dataIndex: 'created',
-		    	renderer:Ext.util.Format.dateRenderer('d.m.y'), 
+		    	renderer:Ext.util.Format.dateRenderer('d.m.y'),
 		    	editor: new Ext.form.TextField({})
 		    },{
-		    	header: "Пациент", 
-		    	width: 220, 
-		    	sortable: true, 
+		    	header: "Пациент",
+		    	width: 220,
+		    	sortable: true,
 		    	dataIndex: 'patient_name'
 		    },{
-		    	header: "Офис", 
-		    	width: 135, 
-		    	sortable: true, 
+		    	header: "Офис",
+		    	width: 135,
+		    	sortable: true,
 		    	dataIndex: 'office_name'
 		    },{
-		    	header: "Лаборатория", 
-		    	width: 125, 
-		    	sortable: true, 
+		    	header: "Лаборатория",
+		    	width: 125,
+		    	sortable: true,
 		    	dataIndex: 'laboratory_name'
 		    },{
-		    	header: "Врач", 
-		    	width: 130, 
-		    	sortable: true, 
+		    	header: "Врач",
+		    	width: 130,
+		    	sortable: true,
 		    	dataIndex: 'staff_name'
 		    },{
-		    	header: "Плательщик", 
-		    	width: 110, 
-		    	sortable: true, 
+		    	header: "Плательщик",
+		    	width: 110,
+		    	sortable: true,
 		    	dataIndex: 'payer_name'
 		    },{
 		    	width: 115,
-		    	sortable: true, 
+		    	sortable: true,
 		    	header:'Напечатано',
-		    	dataIndex: 'is_printed', 
+		    	dataIndex: 'is_printed',
 		    	renderer: function(val,opts,rec) {
 		    		if(val){
 			    		time = Ext.util.Format.date(rec.data.print_date, 'd.m.y / H:i');
@@ -109,9 +109,9 @@ App.results.Grid = Ext.extend(Ext.grid.GridPanel, {
 		    		}
 		    	}
 		    }
-		];		
-		
-		this.ttb =  new Ext.Toolbar({ 
+		];
+
+		this.ttb =  new Ext.Toolbar({
 			items:[{
 				xtype:'button',
 				iconCls:'silk-printer',
@@ -150,7 +150,7 @@ App.results.Grid = Ext.extend(Ext.grid.GridPanel, {
 				scope:this
 			},'-'*/
 			]});
-		
+
 		var config = {
 			loadMask : {
 				msg : 'Подождите, идет загрузка...'
@@ -177,20 +177,20 @@ App.results.Grid = Ext.extend(Ext.grid.GridPanel, {
 				emptyText: 'Нет записей',
 				getRowClass : this.applyRowClass
 			}
-			
+
 		}
 
 		Ext.apply(this, Ext.apply(this.initialConfig, config));
 		App.results.Grid.superclass.initComponent.apply(this, arguments);
 		App.eventManager.on('globalsearch', this.onGlobalSearch, this);
-		
+
 		this.on('destroy', function(){
-		    App.eventManager.un('globalsearch', this.onGlobalSearch, this); 
+		    App.eventManager.un('globalsearch', this.onGlobalSearch, this);
 		},this);
-		
+
 //		this.initToolbar();
 	},
-	
+
 	applyRowClass : function(record, index){
 		// x-grid-row-normal
 		if(record.data.is_completed){
@@ -198,7 +198,7 @@ App.results.Grid = Ext.extend(Ext.grid.GridPanel, {
 		}
 		return ""
 	},
-	
+
 	storeFilter: function(field, value){
 		if(!value) {
 			delete this.store.baseParams[field]
@@ -207,11 +207,11 @@ App.results.Grid = Ext.extend(Ext.grid.GridPanel, {
 		}
 		this.store.load();
 	},
-	
+
 	getSelected: function() {
 		return this.getSelectionModel().getSelected()
 	},
-	
+
 	onPrint: function() {
 		var id = this.getSelected().data.id;
 		var url = ['/lab/print/results',id,''].join('/');
@@ -224,11 +224,11 @@ App.results.Grid = Ext.extend(Ext.grid.GridPanel, {
 		s.setBaseParam('search', v);
 		s.load();
 	},
-	
+
 	initToolbar: function(){
 		// laboratory
 		Ext.Ajax.request({
-			url:get_api_url('medstate'),
+			url:App.getApiUrl('medstate'),
 			method:'GET',
 			success:function(resp, opts) {
 				this.ttb.add({
@@ -261,7 +261,7 @@ App.results.Grid = Ext.extend(Ext.grid.GridPanel, {
 			scope:this
 		});
 	}
-	
+
 });
 
 

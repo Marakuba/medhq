@@ -7,7 +7,7 @@
 	{% assets "css_testing" %}
 	 <link rel="stylesheet" type="text/css" href="{{ ASSET_URL }}"></>
 	{% endassets %}
-	
+
 	<style>
 		#bd {
 			width:960px;
@@ -29,7 +29,7 @@
 		//var state = '{{ request.active_profile.state }}';
 		var STATIC_URL = '{{ STATIC_URL }}';
 		var API_URL = '/api/v1';
-		function get_api_url(resource){
+		function App.getApiUrl(resource){
 			return [API_URL,'dashboard',resource].join("/");
 		}
 	</script>

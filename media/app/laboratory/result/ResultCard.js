@@ -2,9 +2,9 @@ Ext.ns('App.result');
 
 
 App.result.ResultCard = Ext.extend(Ext.Panel, {
-	
+
 	initComponent: function(){
-		
+
 		this.infoTpl = new Ext.XTemplate(
 			'<h1>',
 				'<span id="last_name" class = "last_name">{last_name}</span>',
@@ -25,12 +25,12 @@ App.result.ResultCard = Ext.extend(Ext.Panel, {
 				parseDate : function(v){
 					return Ext.util.Format.date(v,'d.m.Y')
 				},
-				
-				nullFormatter: function(v) 
+
+				nullFormatter: function(v)
 		    		{ return v ? v : 'не указано'; }
 			}
 		);
-		
+
 		this.dateField = new Ext.form.DateField({
 			emptyText:'дата',
 			plugins:[new Ext.ux.netbox.InputTextMask('99.99.9999')], // маска ввода __.__._____ - не надо точки ставить
@@ -38,19 +38,19 @@ App.result.ResultCard = Ext.extend(Ext.Panel, {
 			format:'d.m.Y',
 			width:80
 		});
-		
+
 		this.timeField = new Ext.form.TimeField({
 			emptyText:'время',
 			width:55,
 			format:'H:i'
 		});
-		
+
 		this.staffField = new Ext.form.LazyComboBox({
 			emptyText:'врач',
 			store: new Ext.data.JsonStore({
 				autoLoad:true,
 				proxy: new Ext.data.HttpProxy({
-					url:get_api_url('position'),
+					url:App.getApiUrl('position'),
 					method:'GET'
 				}),
 				root:'objects',
@@ -60,7 +60,7 @@ App.result.ResultCard = Ext.extend(Ext.Panel, {
 			displayField:'name',
 			width:200
 		});
-		
+
 		this.printBtn = new Ext.Button({
 			iconCls:'silk-printer',
 //			disabled:true,
@@ -73,8 +73,8 @@ App.result.ResultCard = Ext.extend(Ext.Panel, {
 			},
 			scope:this
 		});
-		
-		this.ttb = new Ext.Toolbar({ 
+
+		this.ttb = new Ext.Toolbar({
 			items:[this.dateField, this.timeField, {
 //					text:'Сейчас',
 					iconCls:'silk-date-go',
@@ -82,7 +82,7 @@ App.result.ResultCard = Ext.extend(Ext.Panel, {
 					handler:this.setDateTime.createDelegate(this),
 					scope:this
 				},
-			
+
 				this.staffField, {
 //					text:'Текущий',
 					iconCls:'silk-user-go',
@@ -90,7 +90,7 @@ App.result.ResultCard = Ext.extend(Ext.Panel, {
 					handler:this.setStaff.createDelegate(this),
 					scope:this
 				},
-				
+
 			new Ext.Toolbar.Separator(), {
 					iconCls:'icon-save',
 //					text:'Сохранить черновик',
@@ -133,8 +133,8 @@ App.result.ResultCard = Ext.extend(Ext.Panel, {
 					},
 					scope:this
 				}]
-		}); 
-		
+		});
+
 		this.tab = new Ext.TabPanel({
 			border:false,
 			tabPosition:'bottom',
@@ -154,7 +154,7 @@ App.result.ResultCard = Ext.extend(Ext.Panel, {
 				scope:this
 			}
 		});
-		
+
 		config = {
 			border:false,
 			title:'Результаты',
@@ -168,12 +168,12 @@ App.result.ResultCard = Ext.extend(Ext.Panel, {
 			}],
 			items:this.tab
 		}
-		
+
 		Ext.apply(this, Ext.apply(this.initialConfig, config));
 		App.result.ResultCard.superclass.initComponent.apply(this, arguments);
 
 	},
-	
+
 	onSave : function(){
 		if(this.labOrderRecord){
 			this.saveSDT(this.labOrderRecord);
@@ -184,7 +184,7 @@ App.result.ResultCard = Ext.extend(Ext.Panel, {
 			}
 		});
 	},
-	
+
 	onSubmit : function(){
 		if(this.labOrderRecord){
 			this.saveSDT(this.labOrderRecord);
@@ -195,7 +195,7 @@ App.result.ResultCard = Ext.extend(Ext.Panel, {
 			}
 		});
 	},
-	
+
 	initCommentPanel : function(){
 		var commentField = new Ext.form.HtmlEditor({
 			name:'comment',
@@ -209,7 +209,7 @@ App.result.ResultCard = Ext.extend(Ext.Panel, {
 			items:[commentField]
 		});
 	},
-	
+
 	initLabOrder : function(){
 		var d = this.labOrderRecord.data;
 		if(d.staff) {
@@ -222,10 +222,10 @@ App.result.ResultCard = Ext.extend(Ext.Panel, {
 		}
 		this.dateField.setValue(d.executed);
 		this.timeField.setValue(d.executed);
-		this.setTitle(String.format('Результаты: {0}, {2} &nbsp;&nbsp;&nbsp; {1}', 
+		this.setTitle(String.format('Результаты: {0}, {2} &nbsp;&nbsp;&nbsp; {1}',
 				this.labOrderRecord.data.patient_name, this.labOrderRecord.data.info, this.labOrderRecord.data.patient_age));
 	},
-	
+
 	setActiveRecord: function(rec) {
 		this.tab.removeAll();
 		this.labOrderRecord = rec;
@@ -247,21 +247,21 @@ App.result.ResultCard = Ext.extend(Ext.Panel, {
 			}
 		});
 	},
-	
+
 	setDateTime : function() {
 		var now = new Date();
 		this.dateField.setValue(now);
 		this.timeField.setValue(now);
 		return now
 	},
-	
+
 	setStaff : function() {
 		var staff = App.getApiUrl('position',active_profile);
 		var sf = this.staffField;
 		sf.setValue(staff);
 		return staff
 	},
-	
+
 	saveSDT: function(rec) {
 		var d = this.dateField.getValue();
 		var t = this.timeField.getValue().split(':');
@@ -282,13 +282,13 @@ App.result.ResultCard = Ext.extend(Ext.Panel, {
 			rec.endEdit();
 		}
 	},
-	
+
 	onPrint: function() {
 		var id = this.getSelected().data.id;
 		var url = String.format('/lab/print/results/{0}/', id);
 		window.open(url);
 	},
-	
+
 	showPatientInfo: function(){
 		var rec = this.labOrderRecord;
 		App.direct.lab.getPatientInfo(rec.id, function(res,e){
@@ -318,8 +318,8 @@ App.result.ResultCard = Ext.extend(Ext.Panel, {
 			patientInfoWin.show();
 			this.infoTpl.overwrite(infoPanel.body,data);
 		},this)
-		
-		
+
+
 	}
 
 

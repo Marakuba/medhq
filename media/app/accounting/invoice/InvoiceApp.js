@@ -2,7 +2,7 @@ Ext.ns('App.accounting');
 
 
 App.accounting.InvoiceApp = Ext.extend(Ext.Panel, {
-    
+
     title : 'Счет',
 
     initComponent: function() {
@@ -10,14 +10,14 @@ App.accounting.InvoiceApp = Ext.extend(Ext.Panel, {
         this.contractStore = new Ext.data.RESTStore({
             autoSave : false,
             autoLoad : false,
-            apiUrl : get_api_url('acc_contract'),
+            apiUrl : App.getApiUrl('acc_contract'),
             model: App.models.AccountingContract
         });
 
         this.invoiceStore = new Ext.data.RESTStore({
             autoSave : false,
             autoLoad : false,
-            apiUrl : get_api_url('acc_invoice'),
+            apiUrl : App.getApiUrl('acc_invoice'),
             model: App.models.AccountingInvoice
         });
 

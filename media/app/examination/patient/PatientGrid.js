@@ -3,45 +3,45 @@ Ext.ns('App','App.examination');
 App.examination.PatientGrid = Ext.extend(Ext.grid.GridPanel, {
 
 	initComponent : function() {
-		
+
 		this.store = new Ext.data.RESTStore({
 			autoLoad : true,
-			apiUrl : get_api_url('patient'),
+			apiUrl : App.getApiUrl('patient'),
 			model: App.models.Patient
 		});
-		
+
 		this.historyBtn = new Ext.Button({
 			visible:this.isCard,
 			text: 'История пациента',
 			handler:this.onHistoryOpen.createDelegate(this),
 			scope:this
 		});
-		
+
 		this.columns =  [
 		    {
-		    	header: "Фамилия", 
-		    	width: 45, 
-		    	sortable: true, 
+		    	header: "Фамилия",
+		    	width: 45,
+		    	sortable: true,
 		    	dataIndex: 'last_name'
 		    },{
-		    	header: "Имя", 
-		    	width: 45, 
-		    	sortable: true, 
+		    	header: "Имя",
+		    	width: 45,
+		    	sortable: true,
 		    	dataIndex: 'first_name'
 		    },{
-		    	header: "Отчество", 
-		    	width: 45, 
-		    	sortable: true, 
+		    	header: "Отчество",
+		    	width: 45,
+		    	sortable: true,
 		    	dataIndex: 'mid_name'
 		    },{
-		    	header: "Д.р.", 
-		    	width: 35, 
-		    	sortable: true, 
+		    	header: "Д.р.",
+		    	width: 35,
+		    	sortable: true,
 		    	dataIndex: 'birth_day',
 		    	renderer:Ext.util.Format.dateRenderer('d.m.Y')
 		    }
-		];		
-		
+		];
+
 		var config = {
 			loadMask : {
 				msg : 'Подождите, идет загрузка...'
@@ -76,7 +76,7 @@ App.examination.PatientGrid = Ext.extend(Ext.grid.GridPanel, {
 			viewConfig : {
 				forceFit : true
 				//getRowClass : this.applyRowClass
-			},	
+			},
 			listeners: {
 				rowdblclick:this.onHistoryOpen.createDelegate(this),
 				scope:this
@@ -88,47 +88,47 @@ App.examination.PatientGrid = Ext.extend(Ext.grid.GridPanel, {
 		App.eventManager.on('globalsearch', this.onGlobalSearch, this);
 //		App.eventManager.on('patientwrite', this.onPatientWrite, this);
 		this.on('patientselect', this.onPatientSelect, this);
-		
+
 		this.on('destroy', function(){
-		    App.eventManager.un('globalsearch', this.onGlobalSearch, this); 
+		    App.eventManager.un('globalsearch', this.onGlobalSearch, this);
 		},this);
-		
+
 	},
-	
+
 	btnSetDisabled: function(status) {
 	},
-	
+
 	onPatientSelect: function(){
 //		this.btnSetDisable(false);
 	},
-	
+
 	getSelected: function() {
 		return this.getSelectionModel().getSelected()
 	},
-	
+
 	getAbsoluteUrl: function(id) {
 		return "/admin/patient/patient/"+id+"/";
 	},
-	
+
 	goToSlug: function(slug) {
 		var s = this.getSelected().data.id;
 		var url = this.getAbsoluteUrl(s)+slug+"/";
 		window.open(url);
 	},
-	
+
 	onGlobalSearch: function(v){
 		var s = this.store;
 			s.setBaseParam('search', v);
 //		}
 		s.load();
 	},
-	
+
 	onHistoryOpen: function(){
 		var patient = this.getSelected();
 		if (!patient){
 			return false
 		};
-		var name = patient.data.first_name + ' ' + patient.data.mid_name + ' ' + patient.data.last_name; 
+		var name = patient.data.first_name + ' ' + patient.data.mid_name + ' ' + patient.data.last_name;
 		var short_name = patient.data.short_name + ': История ';
 		config = {
 			closable:true,
@@ -139,7 +139,7 @@ App.examination.PatientGrid = Ext.extend(Ext.grid.GridPanel, {
 		}
 		App.eventManager.fireEvent('launchapp', 'patienthistory',config);
 	}
-	
+
 });
 
 

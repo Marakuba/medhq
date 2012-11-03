@@ -1,18 +1,18 @@
 Ext.ns('App.insurance');
 
 App.insurance.PolicyGrid = Ext.extend(Ext.grid.GridPanel, {
-	
+
 	showChoiceButton:false,
-	
+
 	initComponent : function() {
-		
+
 		this.deletedRecords = [];
-		
+
 		// Create a standard HttpProxy instance.
 		this.proxy = new Ext.data.HttpProxy({
-		    url: get_api_url('insurance_policy')
+		    url: App.getApiUrl('insurance_policy')
 		});
-		
+
 		// Typical JsonReader.  Notice additional meta-data params for defining the core attributes of your json-response
 		this.reader = new Ext.data.JsonReader({
 		    totalProperty: 'meta.total_count',
@@ -30,12 +30,12 @@ App.insurance.PolicyGrid = Ext.extend(Ext.grid.GridPanel, {
 		    {name: 'state_name'},
 		    {name: 'resource_uri'}
 		]);
-		
+
 		this.writer = new Ext.data.JsonWriter({
 		    encode: false,
 		    writeAllFields: true
 		});
-		
+
 		this.store = new Ext.data.Store({
 		    //id: 'laborder-store',
 			//autoLoad:true,
@@ -66,18 +66,18 @@ App.insurance.PolicyGrid = Ext.extend(Ext.grid.GridPanel, {
 		    	scope:this
 		    }
 		});
-		
+
 		if (this.record) {
 			this.store.setBaseParam('patient',this.record.id);
 			this.store.load();
 		}
-		
+
 		this.insState = new Ext.form.ComboBox({
 	        	name:'source_lab',
 			    store: new Ext.data.JsonStore({
 					autoLoad:true,
 					proxy: new Ext.data.HttpProxy({
-						url:get_api_url('insurance_state'),
+						url:App.getApiUrl('insurance_state'),
 						method:'GET'
 					}),
 					root:'objects',
@@ -99,38 +99,38 @@ App.insurance.PolicyGrid = Ext.extend(Ext.grid.GridPanel, {
 		        return record ? record.get(combo.displayField) : (rec ? rec.data.state_name : combo.valueNotFoundText);
 		    }
 		};
-				
+
 		this.columns =  [
 		    {
-		    	header: "№ полиса", 
-		    	width: 50, 
-		    	sortable: true, 
-		    	dataIndex: 'number', 
+		    	header: "№ полиса",
+		    	width: 50,
+		    	sortable: true,
+		    	dataIndex: 'number',
 		    	editor: new Ext.form.TextField({})
 		    },{
-		    	header: "Компания", 
-		    	width: 100, 
-		    	sortable: true, 
+		    	header: "Компания",
+		    	width: 100,
+		    	sortable: true,
 		    	dataIndex: 'insurance_state',
 		    	editor: this.insState,
 		    	renderer: this.itemRenderer(this.insState)
 		    },{
-		    	header: "Выдан", 
-		    	width: 80, 
-		    	sortable: true, 
+		    	header: "Выдан",
+		    	width: 80,
+		    	sortable: true,
 		    	dataIndex: 'start_date',
-		    	renderer:Ext.util.Format.dateRenderer('d.m.Y'), 
+		    	renderer:Ext.util.Format.dateRenderer('d.m.Y'),
 		    	editor: new Ext.form.DateField({
 		    		format:'d.m.Y',
 		    		plugins:[new Ext.ux.netbox.InputTextMask('99.99.9999')], // маска ввода __.__._____ - не надо точки ставить
 					minValue:new Date(1901,1,1)
 		    	})
 		    },{
-		    	header: "Заканчивается", 
-		    	width: 80, 
-		    	sortable: true, 
+		    	header: "Заканчивается",
+		    	width: 80,
+		    	sortable: true,
 		    	dataIndex: 'end_date',
-		    	renderer:Ext.util.Format.dateRenderer('d.m.Y'), 
+		    	renderer:Ext.util.Format.dateRenderer('d.m.Y'),
 		    	editor: new Ext.form.DateField({
 		    		format:'d.m.Y',
 		    		plugins:[new Ext.ux.netbox.InputTextMask('99.99.9999')], // маска ввода __.__._____ - не надо точки ставить
@@ -138,7 +138,7 @@ App.insurance.PolicyGrid = Ext.extend(Ext.grid.GridPanel, {
 		    	})
 		    }
 		];
-		
+
 		this.editor = new Ext.ux.grid.RowEditor({
        		saveText: 'Сохранить',
        		cancelText: 'Отменить',
@@ -171,11 +171,11 @@ App.insurance.PolicyGrid = Ext.extend(Ext.grid.GridPanel, {
        				if(this.showChoiceButton) {
        					this.store.save();
        				}
-       			}, 
+       			},
        			scope:this
        		}
     	});
-		
+
 		var config = {
 			loadMask : {
 				msg : 'Подождите, идет загрузка...'
@@ -216,7 +216,7 @@ App.insurance.PolicyGrid = Ext.extend(Ext.grid.GridPanel, {
 			listeners: {
 				scope:this
 			}
-			
+
 		}
 
 		Ext.apply(this, Ext.apply(this.initialConfig, config));
@@ -226,13 +226,13 @@ App.insurance.PolicyGrid = Ext.extend(Ext.grid.GridPanel, {
 			App.eventManager.un('patientcreate', this.onPatientCreate, this);
 		},this);
 	},
-	
+
 	onChoice: function(rec){
 		rec = rec || this.getSelectionModel().getSelected();
 		if (!rec) return false
 		Ext.callback(this.fn, this.scope || window, [rec.data.resource_uri]);
 	},
-	
+
 	onAddPolicy: function(){
 		var data = this.record ? { patient:this.record.data.resource_uri } : {};
         var r = new this.store.recordType(data);
@@ -240,19 +240,19 @@ App.insurance.PolicyGrid = Ext.extend(Ext.grid.GridPanel, {
         this.store.add(r);
         this.editor.startEditing(this.store.getCount()-1);
 	},
-	
+
 	onAddState: function(){
 		var win = new App.insurance.StateWindow({
 		});
 		win.show();
 	},
-	
+
 	onRemove: function(){
 		var rec = this.getSelectionModel().getSelected();
 		this.store.remove(rec);
 		this.deletedRecords.push(rec);
 	},
-	
+
 	onSave: function() {
 		if(this.record) {
 			var records = this.store.queryBy(function(rec,id){
@@ -268,7 +268,7 @@ App.insurance.PolicyGrid = Ext.extend(Ext.grid.GridPanel, {
 			Ext.MessageBox.alert('Ошибка','Не задана запись пациента!');
 		}
 	},
-	
+
 	getSteps: function(){
 		var steps = 0;
 		var m = this.store.getModifiedRecords().length;
@@ -278,16 +278,16 @@ App.insurance.PolicyGrid = Ext.extend(Ext.grid.GridPanel, {
 		console.log('steps ',steps)
 		return steps;
 	},
-	
+
 	onPatientCreate: function(record) {
 		this.record = record;
 		this.onSave();
 	},
-	
+
 	setPatientRecord: function(patient){
 		this.record = patient;
 		this.store.setBaseParam('patient',patient.data.id);
 		this.store.load();
 	}
-	
+
 });

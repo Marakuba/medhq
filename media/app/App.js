@@ -23,7 +23,7 @@ App.getApiUrl = function() {
 	return path.join("/");
 };
 
-App.get_api_url = App.getApiUrl; // backward compatibility
+App.App.getApiUrl = App.getApiUrl; // backward compatibility
 
 App.uriToId = function(uri) {
 	var paths = uri.split('/');

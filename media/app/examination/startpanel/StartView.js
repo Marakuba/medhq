@@ -1,20 +1,20 @@
 Ext.ns('App.examination');
 
 /*
- * 
+ *
  * plugin result:
- * 
- * { 
- * 		section:'section_name', 
- * 		objects:[{ 
+ *
+ * {
+ * 		section:'section_name',
+ * 		objects:[{
  * 			type:'empty|servicetpl|currentcard|card|stafftpl|statetpl|service|',
- * 			title:'title', 
- * 			modified:Date(), 
- * 			created:Date(), 
+ * 			title:'title',
+ * 			modified:Date(),
+ * 			created:Date(),
  * 			objectId:1
  * 		}]
  * 	}
- * 
+ *
  */
 
 
@@ -27,7 +27,7 @@ App.examination.StaffTemplatePlugin = function(config, order){
 	this.store = new Ext.data.RESTStore({
 		autoSave: false,
 		autoLoad : false,
-		apiUrl : get_api_url('examtemplate'),
+		apiUrl : App.getApiUrl('examtemplate'),
 		model: App.models.Template
 	});
 	this.store.load({
@@ -67,7 +67,7 @@ App.examination.StateTemplatePlugin = function(config, order){
 	this.store = new Ext.data.RESTStore({
 		autoSave: false,
 		autoLoad : false,
-		apiUrl : get_api_url('examtemplate'),
+		apiUrl : App.getApiUrl('examtemplate'),
 		model: App.models.Template
 	});
 	this.store.load({
@@ -102,7 +102,7 @@ App.examination.StateTemplatePlugin = function(config, order){
 App.examination.StartView = Ext.extend(Ext.grid.GridPanel, {
 
 	dataPlugins : this.dataPlugins,
-		           
+
 	plainResults : function(results){
 		var r = [], result_order = [];
 		for(idx in results){
@@ -120,7 +120,7 @@ App.examination.StartView = Ext.extend(Ext.grid.GridPanel, {
 		});
 		return r
 	},
-	
+
 	pluginCallback : function(d, order){
 		this.results[order] = d;
 		this.steps-=1;
@@ -131,7 +131,7 @@ App.examination.StartView = Ext.extend(Ext.grid.GridPanel, {
 			this.fireEvent('loadcomplete', this);
 		}
 	},
-	
+
 	runPlugins : function(config){
 		this.steps = this.dataPlugins.length;
 		config.callback = this.pluginCallback;
@@ -140,20 +140,20 @@ App.examination.StartView = Ext.extend(Ext.grid.GridPanel, {
 			plugin(config,order);
 		}, this)
 	},
-	
+
 	results : {},
 
     initComponent : function() {
-    	
+
     	/*
     	 * требуется запись из журнала заказов
-    	 * 
+    	 *
     	 * из неё обязательны поля: id, service
-    	 * 
+    	 *
     	 */
-    	
+
     	this.addEvents('preview','copy','edit','empty','loadcomplete');
-    	
+
     	this.store = new Ext.data.GroupingStore({
 			autoSave:false,
 			autoLoad:false,
@@ -164,7 +164,7 @@ App.examination.StartView = Ext.extend(Ext.grid.GridPanel, {
 		    remoteSort: true,
 		    groupField:'section_name'
     	});
-    	
+
 		var config = {
 			autoScroll:true,
 			store:this.store,
@@ -187,7 +187,7 @@ App.examination.StartView = Ext.extend(Ext.grid.GridPanel, {
 			        }
 
 			        this.rowNav = new Ext.KeyNav(this.grid.getGridEl(), {
-			            up: this.onKeyPress, 
+			            up: this.onKeyPress,
 			            down: this.onKeyPress,
 			            enter : function(e, name){
 			            	var rec = this.getSelected();
@@ -234,10 +234,10 @@ App.examination.StartView = Ext.extend(Ext.grid.GridPanel, {
 	        	scope:this
 	        }
 		};
-		
+
 		Ext.apply(this, Ext.apply(this.initialConfig, config));
 		App.examination.StartView.superclass.initComponent.apply(this, arguments);
-		
+
 		this.on('afterrender',function(){
 			this.runPlugins({
 				orderId:this.orderId,
@@ -246,6 +246,6 @@ App.examination.StartView = Ext.extend(Ext.grid.GridPanel, {
 			});
 		},this)
 	}
-	
+
 });
 

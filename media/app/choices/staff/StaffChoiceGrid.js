@@ -6,7 +6,7 @@ App.choices.StaffChoiceGrid = Ext.extend(Ext.grid.GridPanel, {
 
 		this.store = this.store || new Ext.data.RESTStore({
 			autoLoad : true,
-			apiUrl : get_api_url('position'),
+			apiUrl : App.getApiUrl('position'),
 			model: [
 				    {name: 'id'},
 				    {name: 'resource_uri'},

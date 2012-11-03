@@ -1,15 +1,15 @@
 Ext.ns('App.examination');
 
 App.examination.AsgmtTicketEditor = Ext.extend(Ext.Panel, {
-	
+
 	editor:'asgmtticketeditor',
-	
+
 	initComponent:function(){
-		
+
 		this.proxy = new Ext.data.HttpProxy({
-		    url: get_api_url('extpreorder')
+		    url: App.getApiUrl('extpreorder')
 		});
-		
+
 		this.reader = new Ext.data.JsonReader({
 		    totalProperty: 'meta.total_count',
 		    successProperty: 'success',
@@ -17,12 +17,12 @@ App.examination.AsgmtTicketEditor = Ext.extend(Ext.Panel, {
 		    root: 'objects',
 		    messageProperty: 'message'
 		}, App.models.preorderModel);
-		
+
 		this.writer = new Ext.data.JsonWriter({
 		    encode: false,
 		    writeAllFields: true
 		});
-		
+
 		this.preorderStore = this.store || new Ext.data.Store({
 			autoSave:false,
 			autoLoad:true,
@@ -32,10 +32,10 @@ App.examination.AsgmtTicketEditor = Ext.extend(Ext.Panel, {
 		    	card:this.data.cardId
 		    },
 		    paramNames: {
-			    start : 'offset',  
-			    limit : 'limit', 
-			    sort : 'sort', 
-			    dir : 'dir' 
+			    start : 'offset',
+			    limit : 'limit',
+			    sort : 'sort',
+			    dir : 'dir'
 			},
 		    restful: true,
 		    proxy: this.proxy,
@@ -48,7 +48,7 @@ App.examination.AsgmtTicketEditor = Ext.extend(Ext.Panel, {
 		    	scope:this
 		    }
 		});
-		
+
 		this.preorderGrid = new App.examination.PreorderInlineGrid({
 //			record:this.record,
 			type:this.type,
@@ -64,7 +64,7 @@ App.examination.AsgmtTicketEditor = Ext.extend(Ext.Panel, {
 				}
 			}
 		});
-		
+
 		this.servicePanel = new App.ServiceTreeGrid({
 	        region: 'east',
 		    margins:'5 5 5 0',
@@ -82,22 +82,22 @@ App.examination.AsgmtTicketEditor = Ext.extend(Ext.Panel, {
 	        		}
 	        	}
 	        }
-	    });	
-	    
+	    });
+
 	    this.okBtn = new Ext.Button({
 			iconCls:'silk-resultset-previous',
 	    	text:'Вернуться к карте',
 	    	handler:this.onOkBtnClick.createDelegate(this,[]),
 	    	scope:this
 	    });
-	    
+
 	    this.cancelBtn = new Ext.Button({
 	    	text:'Отмена',
 	    	handler:this.onCancelBtnClick.createDelegate(this,[]),
 	    	scope:this
 	    });
 
-		
+
 		config = {
 //			bodyStyle:'padding:5px',
 //			baseCls:'x-border-layout-ct',
@@ -105,18 +105,18 @@ App.examination.AsgmtTicketEditor = Ext.extend(Ext.Panel, {
 			border:false,
 			layout:'border',
 			items:[this.preorderGrid, this.servicePanel],
-			
+
 			tbar:[this.okBtn,this.cancelBtn]
 
 		}
-		
+
 		Ext.apply(this, Ext.apply(this.initialConfig, config));
 		App.examination.AsgmtTicketEditor.superclass.initComponent.apply(this, arguments);
 		this.servicePanel.on('serviceclick', this.onServiceClick, this);
-		
+
 	},
-	
-	
+
+
 	onOkBtnClick: function() {
 		this.preorderGrid.onSave();
 		if (this.fn){
@@ -124,16 +124,16 @@ App.examination.AsgmtTicketEditor = Ext.extend(Ext.Panel, {
 		};
 		this.destroy();
 	},
-	
+
 	onCancelBtnClick: function(){
 		this.fireEvent('cancel');
 		this.destroy();
 	},
-	
+
 	addRow: function(attrs, cb, scope) {
 		this.preorderGrid.addRow.createDelegate(this.preorderGrid, [attrs, true, cb, scope])();
 	},
-	
+
 	onServiceClick : function(node) {
 		var a = node.attributes;
 		if (a.isComplex) {
@@ -152,7 +152,7 @@ App.examination.AsgmtTicketEditor = Ext.extend(Ext.Panel, {
 			this.addRow(a);
 		}
 	},
-	
+
 	addPreorderService : function(record) {
 		var p = new this.preorderGrid.store.recordType()
 		p.beginEdit();
@@ -169,17 +169,17 @@ App.examination.AsgmtTicketEditor = Ext.extend(Ext.Panel, {
 		this.preorderGrid.store.add(p);
 		this.preorderGrid.preorder = record;
 	},
-	
+
 	setPatientRecord: function(record){
 		this.patientRecord = record;
 		this.preorderGrid.setPatientRecord(record)
 	},
-	
+
 	setAssignmentRecord: function(record){
 		this.record = record;
 		this.preorderGrid.setAssignmentRecord(record)
 	}
-	
+
 });
 
 Ext.reg('asgmtticketeditor', App.examination.AsgmtTicketEditor);

@@ -4,25 +4,25 @@ Ext.ns('App.assignment');
 
 App.assignment.AsgmtTab = Ext.extend(Ext.Panel, {
 	initComponent : function() {
-		
+
 		this.patientStore = this.patientStore || new Ext.data.RESTStore({
 			autoLoad : false,
-			apiUrl : get_api_url('patient'),
+			apiUrl : App.getApiUrl('patient'),
 			model: App.models.patientModel
 		});
-		
+
 		this.store = this.store || new Ext.data.RESTStore({
 			autoLoad : false,
-			apiUrl : get_api_url('preorder'),
+			apiUrl : App.getApiUrl('preorder'),
 			model: App.models.preorderModel,
 			listeners:{
 				scope:this,
 				exception:this.onException
 			}
 		});
-		
+
 		this.model = this.store.recordType;
-	    
+
 	    this.form = new App.assignment.AsgmtForm({
 	    	region:'center',
         	baseCls:'x-border-layout-ct',
@@ -40,23 +40,23 @@ App.assignment.AsgmtTab = Ext.extend(Ext.Panel, {
 				scope:this,
 				exception:this.onException
 			},
-			scope:this	
+			scope:this
 	    });
-	    
+
 		this.saveButton = new Ext.Button({
 			text:'Сохранить',
 			handler: this.onFormSave.createDelegate(this,[]),
 //			disabled:true,
 			scope:this
     	});
-    	
+
     	this.payButton = new Ext.Button({
 			text:'Сохранить и оплатить',
 			handler: this.onFormSave.createDelegate(this,[true]),
 //			disabled:true,
 			scope:this
     	});
-    	
+
     	this.patientButton = new Ext.Button({
 			text:'Пациент',
 			iconCls: 'silk-pencil',
@@ -64,7 +64,7 @@ App.assignment.AsgmtTab = Ext.extend(Ext.Panel, {
 			disabled:true,
 			scope:this
     	});
-		
+
 		config = {
 			layout:'fit',
 			border:false,
@@ -84,11 +84,11 @@ App.assignment.AsgmtTab = Ext.extend(Ext.Panel, {
 
 		Ext.apply(this, Ext.apply(this.initialConfig, config));
 		App.assignment.AsgmtTab.superclass.initComponent.apply(this, arguments);
-		
+
 //		this.setTitle(this.getTitleText()); //TODO: make correct title
-		
+
 		this.on('render', function(){
-			
+
 			if (!this.patientId){
 				return false
 			};
@@ -102,7 +102,7 @@ App.assignment.AsgmtTab = Ext.extend(Ext.Panel, {
 				this.getPatientTitle();
 				this.form.setPatientRecord(this.patientRecord);
 			},scope:this});
-			
+
 			//если направление уже существует
 			if (this.preorderId){
 				this.store.setBaseParam('id',this.preorderId);
@@ -115,14 +115,14 @@ App.assignment.AsgmtTab = Ext.extend(Ext.Panel, {
 				},scope:this});
 			};
 		},this);
-		
+
 		this.store.on('write', this.onStoreWrite, this);
 		this.on('destroy', function(){
 			this.store.un('write', this.onStoreWrite, this);
 		},this);
-		
+
 	},
-	
+
 
 	onFormSave: function(post_pay) {
 		if (post_pay){
@@ -142,7 +142,7 @@ App.assignment.AsgmtTab = Ext.extend(Ext.Panel, {
 			this.onClose(true);
 		}
 	},
-	
+
 	onClose: function(noConfirm){
 		var steps = this.form.getSteps();
 		if(noConfirm===undefined && steps>0) {
@@ -176,15 +176,15 @@ App.assignment.AsgmtTab = Ext.extend(Ext.Panel, {
 					patientRecord:this.patientRecord
 				});
 				this.win.show();
-			};	
+			};
 			this.close();
 		}
 	},
-	
+
 	close: function() {
 		App.eventManager.fireEvent('closeapp',this.id);
 	},
-	
+
 	onStoreWrite: function(store, action, result, res, rs) {
 		if(action=='create') {
 			if (this.hasPatient){
@@ -196,7 +196,7 @@ App.assignment.AsgmtTab = Ext.extend(Ext.Panel, {
 		this.record = rs;
 		this.popStep();
 	},
-	
+
 	popStep: function() {
 		this.steps-=1;
 		if(this.msgBox) {
@@ -226,7 +226,7 @@ App.assignment.AsgmtTab = Ext.extend(Ext.Panel, {
 		}
 		return text
 	},
-	
+
 	getTitleText: function() {
 		var title;
 		if(this.preorderId) {
@@ -236,7 +236,7 @@ App.assignment.AsgmtTab = Ext.extend(Ext.Panel, {
 		}
 		return title
 	},
-	
+
 	onPatientEdit: function(){
 		var rec = this.patientRecord;
 		if (!rec){
@@ -258,10 +258,10 @@ App.assignment.AsgmtTab = Ext.extend(Ext.Panel, {
 			record:this.patientRecord,
 			scope:this
 		});
-		
+
 		this.pWin.show();
 	},
-	
+
 	onException: function(){
 		if(this.msgBox) {
 			this.msgBox.hide();

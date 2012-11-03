@@ -9,22 +9,22 @@
 		var state = '{{ request.active_profile.state }}';
 		var MEDIA_URL = '{{ STATIC_URL }}';
 		var API_URL = '/api/v1';
-		function get_api_url(resource){
+		function App.getApiUrl(resource){
 			return [API_URL,'dashboard',resource].join("/");
 		}
 		var apps = {{ apps }};
 
 	</script>
 	{% endautoescape %}
-	
+
 	{% include "webapp/includes/active_profile.html" %}
 
 	<link rel="icon" type="image/ico" href="{{ STATIC_URL }}resources/favicon.ico" />
-	
+
 	{% assets "css_ext" %}
 	 <link rel="stylesheet" type="text/css" href="{{ ASSET_URL }}"></>
 	{% endassets %}
-	
+
 	{% assets "css_registry" %}
 	 <link rel="stylesheet" type="text/css" href="{{ ASSET_URL }}"></>
 	{% endassets %}
@@ -33,7 +33,7 @@
 	    .ext-cal-dayview .ext-cal-body-ct .ext-cal-bg-tbl {
 		    height: 504px;
 		}
-		
+
 		.ext-cal-day-col-gutter {
 		    height: 504px;
 		}
@@ -41,7 +41,7 @@
     	.x-tree-node-anchor {
     		white-space: normal;
     	}
-    	
+
     	.ext-cal-hd-ad-inner {
 			height:50px;
 		}
@@ -54,38 +54,38 @@
     <link rel="stylesheet" type="text/css" href="{{ STATIC_URL }}app/calendar/resources/images/default/page-next.gif"/>
  -->
 
-	
+
 	{% assets "js_ext" %}
 	 <script type="text/javascript" src="{{ ASSET_URL }}"></script>
 	{% endassets %}
-	
+
 	{% assets "js_for_all" %}
 	 <script type="text/javascript" src="{{ ASSET_URL }}"></script>
 	{% endassets %}
-	
+
 	<script type="text/javascript">
 		Raven.config("{{sentry_dsn}}");
 	</script>
-	
+
 	<script type="text/javascript" src="/webapp/settings/"></script>
-	
+
 	<script src="/direct/provider.js/"></script>
 	<!-- <script src="/direct/polling_provider.js/"></script> -->
-	
+
 	{% assets "js_registry" %}
 	    <script type="text/javascript" src="{{ ASSET_URL }}"></script>
 	{% endassets %}
-	
+
 	<script type="text/javascript">
-	    
+
 	    WEB_SOCKET_SUPPRESS_CROSS_DOMAIN_SWF_ERROR = true;
 		WEB_SOCKET_SWF_LOCATION = "{{ STATIC_URL }}resources/js/web-socket-js/WebSocketMain.swf";
 	    WEB_SOCKET_DEBUG = true;
-	    
+
 	</script>
 
-	
-	
+
+
 {% endblock %}
 
 {% block body %}
