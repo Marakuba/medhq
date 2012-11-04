@@ -6,7 +6,7 @@ App.cashier.DepositorGrid = Ext.extend(Ext.grid.GridPanel, {
 
 		this.store = new Ext.data.RESTStore({
 			autoLoad : false,
-			apiUrl : App.getApiUrl('depositor'),
+			apiUrl : App.getApiUrl('patient','depositor'),
 			model: App.models.depositorModel
 		});
 

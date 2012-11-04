@@ -5,7 +5,7 @@ App.billing.PaymentWindow = Ext.extend(Ext.Window, {
 	initComponent:function(){
 
 		this.store = this.store || new Ext.data.RESTStore({
-		    apiUrl : App.getApiUrl('payment'),
+		    apiUrl : App.getApiUrl('billing','payment'),
 		    model: App.models.paymentModel
 		});
 

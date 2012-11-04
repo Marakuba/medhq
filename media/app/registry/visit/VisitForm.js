@@ -95,7 +95,7 @@ App.visit.VisitForm = Ext.extend(Ext.FormPanel, {
 
         this.contractTypeStore = new Ext.data.RESTStore({
             autoLoad : false,
-            apiUrl : App.getApiUrl('contracttype'),
+            apiUrl : App.getApiUrl('patient','contracttype'),
             model: App.models.contractTypeModel
         }),
 
@@ -106,7 +106,7 @@ App.visit.VisitForm = Ext.extend(Ext.FormPanel, {
                         encode: false,
                         writeAllFields: false
                     }),
-            apiUrl : App.getApiUrl('extpreorder'),
+            apiUrl : App.getApiUrl('scheduler','extpreorder'),
             model: App.models.preorderModel,
             doTransaction : function(action, rs, batch) {
                 function transaction(records) {
@@ -174,7 +174,7 @@ App.visit.VisitForm = Ext.extend(Ext.FormPanel, {
             emptyText:'Выберите полис',
             store:new Ext.data.JsonStore({
                 proxy: new Ext.data.HttpProxy({
-                    url:App.getApiUrl('insurance_policy'),
+                    url:App.getApiUrl('patient','insurance_policy'),
                     method:'GET'
                 }),
                 root:'objects',
@@ -250,7 +250,7 @@ App.visit.VisitForm = Ext.extend(Ext.FormPanel, {
             store:new Ext.data.JsonStore({
                 autoSave:true,
                 proxy: new Ext.data.HttpProxy({
-                    url:App.getApiUrl('contract'),
+                    url:App.getApiUrl('patient','contract'),
                     method:'GET'
                 }),
                 root:'objects',
@@ -289,8 +289,8 @@ App.visit.VisitForm = Ext.extend(Ext.FormPanel, {
                 minChars:3,
                 hidden:(App.settings.strictMode && this.types==='material'),
                 emptyText:'Выберите плательщика...',
-                proxyUrl:App.getApiUrl('state'),
-                value:App.settings.strictMode ? App.getApiUrl('state',active_state_id) : '',
+                proxyUrl:App.getApiUrl('state','state'),
+                value:App.settings.strictMode ? App.getApiUrl('state','state',active_state_id) : '',
                 listeners:{
                     select:function(combo,record){
                         var sp = this.servicePanel;
@@ -312,8 +312,8 @@ App.visit.VisitForm = Ext.extend(Ext.FormPanel, {
                 minChars:3,
                 hidden:(App.settings.strictMode && this.types==='material'),
                 emptyText:'Выберите плательщика...',
-                proxyUrl:App.getApiUrl('state'),
-                value:App.settings.strictMode ? App.getApiUrl('state',active_state_id) : '',
+                proxyUrl:App.getApiUrl('state','state'),
+                value:App.settings.strictMode ? App.getApiUrl('state','state',active_state_id) : '',
                 listeners:{
                     select:function(combo,record){
                         var sp = this.servicePanel;
@@ -362,7 +362,7 @@ App.visit.VisitForm = Ext.extend(Ext.FormPanel, {
             fieldLabel:'Скидка',
             anchor:'100%',
             name:'discount',
-            proxyUrl:App.getApiUrl('discount'),
+            proxyUrl:App.getApiUrl('pricelist','discount'),
             listeners:{
                 select: function(){
                     this.orderedService.onSumChange();
@@ -387,7 +387,7 @@ App.visit.VisitForm = Ext.extend(Ext.FormPanel, {
             fieldLabel:'Кто направил',
             emptyText:'Выберите направившего врача...',
             name:'referral',
-            proxyUrl:App.getApiUrl('referral'),
+            proxyUrl:App.getApiUrl('visit','visit','referral'),
             tooltip:'Врач, который направил пациента'
         });
 
@@ -898,7 +898,7 @@ App.visit.VisitForm = Ext.extend(Ext.FormPanel, {
                     var dsc = this.discountCmb;
                     dsc.getStore().load({
                         callback:function(){
-                            var r = dsc.findRecord(dsc.valueField,App.getApiUrl('discount', discount));
+                            var r = dsc.findRecord(dsc.valueField,App.getApiUrl('pricelist','discount', discount));
                             if(r) {
                                 dsc.setValue(r.data.resource_uri);
                                 this.orderedService.onSumChange();
@@ -1026,7 +1026,7 @@ App.visit.VisitForm = Ext.extend(Ext.FormPanel, {
                 var dsc = this.discountCmb;
                 dsc.getStore().load({
                     callback:function(){
-                        var r = dsc.findRecord(dsc.valueField,App.getApiUrl('discount', a.discount);
+                        var r = dsc.findRecord(dsc.valueField,App.getApiUrl('pricelist','discount', a.discount);
                         if(r) {
                             dsc.setValue(r.data.resource_uri);
                             this.orderedService.onSumChange();
@@ -1102,12 +1102,12 @@ App.visit.VisitForm = Ext.extend(Ext.FormPanel, {
         p.set('price',record.data.price);
         p.set('assigment',record.data.resource_uri);
         p.set('service_name',record.data.service_name);
-        p.set('service',App.getApiUrl('baseservice',record.data.base_service));
+        p.set('service',App.getApiUrl('service','baseservice',record.data.base_service));
         if (record.data.staff){
-            p.set('staff',App.getApiUrl('position',record.data.staff));
+            p.set('staff',App.getApiUrl('staff','position',record.data.staff));
             p.set('staff_name',record.data.staff_name);
         }
-        p.set('execution_place',App.getApiUrl('state',record.data.execution_place));
+        p.set('execution_place',App.getApiUrl('state','state',record.data.execution_place));
         p.set('count',1);
         p.data['id'] = '';
         p.endEdit();
@@ -1201,7 +1201,7 @@ App.visit.VisitForm = Ext.extend(Ext.FormPanel, {
             for (serv in bs_ids){
                 var id = bs_ids[serv].id;
                 var comp_id = bs_ids[serv].comp_id;
-                var service = App.getApiUrl('baseservice',id)
+                var service = App.getApiUrl('service','baseservice',id)
                 ind = store.find("service",service);
                 if (new_prices[comp_id]==undefined || new_prices[comp_id] == 0){
                     if (ind > -1){
@@ -1625,7 +1625,7 @@ App.visit.VisitForm = Ext.extend(Ext.FormPanel, {
             App.direct.numeration.getBarcodePayer(value,function(res,e) {
                 if(res && res.success) {
                     var payer_id = res.data['payer_id'];
-                    var payer_uri = App.getApiUrl('state',payer_id)
+                    var payer_uri = App.getApiUrl('state','state',payer_id)
                     this.bioPayerCmb.forceValue(payer_uri);
                     //обновляются услуги
                     var sp = this.servicePanel;
@@ -1638,7 +1638,7 @@ App.visit.VisitForm = Ext.extend(Ext.FormPanel, {
                     this.barcodeId.setVisible(true);
                     this.barcodeId.setValue('Штрих-код:  '+res.data['barcode_id']);
                     this.doLayout();
-                    this.barcodeField.setValue(App.getApiUrl('barcode',res.data['barcode_id']));
+                    this.barcodeField.setValue(App.getApiUrl('numeration','barcode',res.data['barcode_id']));
                     this.barcodeWin.close();
                 } else {
                     Ext.Msg.alert('Ошибка!',res.data);

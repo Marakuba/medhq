@@ -235,7 +235,7 @@ class DepositorResource(ExtResource):
         list_allowed_methods = ['get', 'post', 'put']
 
 
-api = Api(api_name='dashboard')
+api = Api(api_name='patient')
 
 api.register(PatientResource())
 api.register(InsurancePolicyResource())

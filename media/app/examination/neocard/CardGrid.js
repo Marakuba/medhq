@@ -5,7 +5,7 @@ App.examination.CardGrid = Ext.extend(Ext.grid.EditorGridPanel, {
 	initComponent: function(){
 
 		this.proxy = new Ext.data.HttpProxy({
-        	url: App.getApiUrl('card')
+        	url: App.getApiUrl('examination','card')
         });
 		this.baseParams = Ext.apply({
             format:'json',
@@ -54,7 +54,7 @@ App.examination.CardGrid = Ext.extend(Ext.grid.EditorGridPanel, {
 			queryParam : 'staff__last_name__istartswith',
 			store:new Ext.data.RESTStore({
 				autoLoad : true,
-				apiUrl : App.getApiUrl('position'),
+				apiUrl : App.getApiUrl('staff','position'),
 				model: ['id','name','resource_uri']
 			}),
 		    minChars:2,

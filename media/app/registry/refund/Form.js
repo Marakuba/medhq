@@ -15,7 +15,7 @@ App.refund.Form = Ext.extend(Ext.FormPanel, {
 
 		this.policyStore = new Ext.data.JsonStore({
 			proxy: new Ext.data.HttpProxy({
-				url:App.getApiUrl('insurance_policy'),
+				url:App.getApiUrl('patient','insurance_policy'),
 				method:'GET'
 			}),
 			baseParams: {

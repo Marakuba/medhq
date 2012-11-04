@@ -81,7 +81,7 @@ App.examination.TicketTab = Ext.extend(Ext.Panel, {
 		this.patientStore = new Ext.data.RESTStore({
 			autoSave: false,
 			autoLoad : false,
-			apiUrl : App.getApiUrl('patient'),
+			apiUrl : App.getApiUrl('patient','patient'),
 			model: App.models.Patient
 		});
 
@@ -394,7 +394,7 @@ App.examination.TicketTab = Ext.extend(Ext.Panel, {
 				expiration: today.add(Date.DAY,30),
 				card:this.record.data.resource_uri || '',
 				count:rec.data.avarage || 1,
-				patient:App.getApiUrl('patient',this.patient)
+				patient:App.getApiUrl('patient','patient',this.patient)
 			});
 			s.add(asgmt);
 		},this);

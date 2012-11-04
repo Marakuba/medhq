@@ -23,7 +23,7 @@ App.patient.ContractGrid = Ext.extend(Ext.grid.EditorGridPanel, {
 			},
 		    restful: true,
 		    proxy: new Ext.data.HttpProxy({
-			    url: App.getApiUrl('contract')
+			    url: App.getApiUrl('patient','contract')
 			}),
 		    reader: new Ext.data.JsonReader({
 			    totalProperty: 'meta.total_count',
@@ -52,7 +52,7 @@ App.patient.ContractGrid = Ext.extend(Ext.grid.EditorGridPanel, {
 
 		this.contractTypeStore = new Ext.data.RESTStore({
 			autoLoad : false,
-			apiUrl : App.getApiUrl('contracttype'),
+			apiUrl : App.getApiUrl('patient','contracttype'),
 			model: App.models.contractTypeModel
 		})
 
@@ -191,7 +191,7 @@ App.patient.ContractGrid = Ext.extend(Ext.grid.EditorGridPanel, {
 		var today  = new Date();
 		var data = this.record ? { patient:this.record.data.resource_uri } : {};
 		data['created'] = today;
-		data['state'] = App.getApiUrl('ownstate',state);
+		data['state'] = App.getApiUrl('state','state','ownstate',state);
 		data['state_name'] = active_state;
 		if (contractTypeRecord){
 			switch(contractTypeRecord.data.type){

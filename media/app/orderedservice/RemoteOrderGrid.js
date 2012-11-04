@@ -8,7 +8,7 @@ App.orderedservice.RemoteOrderGrid = Ext.extend(Ext.grid.GridPanel, {
 
 		this.store = new Ext.data.RESTStore({
 			autoLoad : false,
-			apiUrl : App.getApiUrl('laborderedservice'),
+			apiUrl : App.getApiUrl('visit','laborderedservice'),
 			model: [
 			    {name: 'id'},
 			    {name: 'resource_uri'},

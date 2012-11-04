@@ -7,7 +7,7 @@ App.choices.StateChoiceGrid = Ext.extend(Ext.grid.GridPanel, {
         this.store = this.store || new Ext.data.RESTStore({
             autoLoad : true,
             autoSave : false,
-            apiUrl : App.getApiUrl('state'),
+            apiUrl : App.getApiUrl('state','state'),
             model: [
                     {name: 'id'},
                     {name: 'resource_uri'},

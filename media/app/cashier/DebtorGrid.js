@@ -6,7 +6,7 @@ App.cashier.DebtorGrid = Ext.extend(Ext.grid.GridPanel, {
 
 		this.store = new Ext.data.RESTStore({
 			autoLoad : false,
-			apiUrl : App.getApiUrl('debtor'),
+			apiUrl : App.getApiUrl('patient','debtor'),
 			model: App.models.debtorModel
 		});
 

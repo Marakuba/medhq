@@ -96,7 +96,7 @@ App.patient.ServiceBasket = Ext.extend(Ext.grid.EditorGridPanel, {
 
 		// Create a standard HttpProxy instance.
 		this.proxy = new Ext.data.HttpProxy({
-		    url: App.getApiUrl('servicebasket')
+		    url: App.getApiUrl('visit','servicebasket')
 		});
 
 		// Typical JsonReader.  Notice additional meta-data params for defining the core attributes of your json-response
@@ -178,7 +178,7 @@ App.patient.ServiceBasket = Ext.extend(Ext.grid.EditorGridPanel, {
 		this.staffStore = new Ext.data.Store({
 			autoDestroy:true,
 			proxy: new Ext.data.HttpProxy({
-			    url: App.getApiUrl('position'),
+			    url: App.getApiUrl('staff','position'),
 				method:'GET'
 			}),
 			reader: new Ext.data.JsonReader({

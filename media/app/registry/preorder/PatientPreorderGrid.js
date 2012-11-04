@@ -7,7 +7,7 @@ App.registry.PatientPreorderGrid = Ext.extend(Ext.grid.GridPanel, {
 		this.store = this.store || new Ext.data.RESTStore({
 			autoLoad : false,
 			autoSave : false,
-			apiUrl : App.getApiUrl('extpreorder'),
+			apiUrl : App.getApiUrl('scheduler','extpreorder'),
 			model: App.models.preorderModel
 		});
 

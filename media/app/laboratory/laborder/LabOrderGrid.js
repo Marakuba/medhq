@@ -7,7 +7,7 @@ App.laboratory.LabOrderGrid = Ext.extend(Ext.grid.GridPanel, {
 		this.store = new Ext.data.RESTStore({
 			autoSave : true,
 			autoLoad : false,
-			apiUrl : App.getApiUrl('laborder'),
+			apiUrl : App.getApiUrl('state','state','lab','laborder'),
 			model: App.models.LabOrder
 		});
 //		this.store.setBaseParam('is_manual',false);
@@ -290,7 +290,7 @@ App.laboratory.LabOrderGrid = Ext.extend(Ext.grid.GridPanel, {
 	initLabs: function(){
 		// laboratory
 		Ext.Ajax.request({
-			url:App.getApiUrl('medstate'),
+			url:App.getApiUrl('state','state','medstate'),
 			method:'GET',
 			success:function(resp, opts) {
 				var jsonResponse = Ext.util.JSON.decode(resp.responseText);

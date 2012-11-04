@@ -6,7 +6,7 @@ App.billing.PaymentGrid = Ext.extend(Ext.grid.GridPanel, {
 
 		this.store = new Ext.data.RESTStore({
 			autoLoad:false,
-		    apiUrl : App.getApiUrl('payment'),
+		    apiUrl : App.getApiUrl('billing','payment'),
 		    model: App.models.paymentModel
 		});
 

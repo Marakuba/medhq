@@ -6,7 +6,7 @@ App.choices.ServiceGroupChoiceGrid = Ext.extend(Ext.grid.GridPanel, {
 
 		this.store = new Ext.data.RESTStore({
 			autoLoad : true,
-			apiUrl : App.getApiUrl('baseservicegroup'),
+			apiUrl : App.getApiUrl('service','baseservicegroup'),
 			model: App.models.BaseService
 		});
 

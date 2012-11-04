@@ -7,7 +7,7 @@ App.invoice.InvoiceTab = Ext.extend(Ext.Panel, {
 		this.store = this.store || new Ext.data.RESTStore({
 			autoLoad : true,
 			autoSave:true,
-			apiUrl : App.getApiUrl('invoice'),
+			apiUrl : App.getApiUrl('state','state','lab','invoice'),
 			model: App.models.Invoice
 		});
 

@@ -249,50 +249,6 @@ class VisitPreorderResource(ExtPreorderResource):
         list_allowed_methods = ['get', 'post', 'put']
 
 
-class VisitPreorderResource(ExtPreorderResource):
-    """
-    Используется в форме визита при выборе предзаказа.
-    Содержит неоформленные предзаказы начиная с сегодняшнего дня и направления
-    """
-
-    def build_filters(self, filters=None):
-        if filters is None:
-            filters = {}
-
-        orm_filters = super(VisitPreorderResource, self).build_filters(filters)
-
-        if "search" in filters:
-            smart_filters = smartFilter(filters['search'], 'patient')
-            if len(smart_filters.keys()) == 1:
-                try:
-                    orm_filters = ComplexQuery(Q(barcode__id=int(\
-                        filters['search'])) | Q(**smart_filters), **orm_filters)
-                except:
-                    orm_filters.update(**smart_filters)
-            else:
-                orm_filters.update(**smart_filters)
-        return orm_filters
-
-    class Meta:
-        queryset = Preorder.objects.filter(timeslot__isnull=True).order_by('-expiration')
-        resource_name = 'visitpreorder'
-        authorization = DjangoAuthorization()
-        always_return_data = True
-        filtering = {
-            'deleted': ALL,
-            'patient': ALL,
-            'start': ALL,
-            'expiration': ALL,
-            'timeslot': ALL_WITH_RELATIONS,
-            'service': ALL_WITH_RELATIONS,
-            'visit': ALL_WITH_RELATIONS,
-            'card': ALL_WITH_RELATIONS,
-            'payment_type': ALL
-        }
-        limit = 500
-        list_allowed_methods = ['get', 'post', 'put']
-
-
 api = Api(api_name='scheduler')
 
 api.register(RejectionCauseResource())

@@ -7,7 +7,7 @@ App.patient.ManualGrid = Ext.extend(Ext.grid.GridPanel, {
 		this.store = new Ext.data.RESTStore({
 			autoSave : false,
 			autoLoad : false,
-			apiUrl : App.getApiUrl('labservice'),
+			apiUrl : App.getApiUrl('visit','labservice'),
 			model: App.models.LabService
 		});
 

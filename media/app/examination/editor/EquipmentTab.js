@@ -34,7 +34,7 @@ App.examination.EquipmentTab = Ext.extend(Ext.form.FormPanel, {
 			    dir : 'dir'
 			},
 			proxy: new Ext.data.HttpProxy({
-		    	url: App.getApiUrl('exam_equipment'),
+		    	url: App.getApiUrl('examination','exam_equipment'),
 		    	method:'GET'
 			})
 	    });

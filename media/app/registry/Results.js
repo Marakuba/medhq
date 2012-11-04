@@ -85,7 +85,7 @@ App.Results = Ext.extend(Ext.Panel, {
    				valueField:'id',
    				store:new Ext.data.RESTStore({
    					autoLoad : false,
-   					apiUrl : App.getApiUrl('medstate'),
+   					apiUrl : App.getApiUrl('state','state','medstate'),
    					model: ['id','name']
    				}),
    			    minChars:2,
@@ -102,7 +102,7 @@ App.Results = Ext.extend(Ext.Panel, {
    				valueField:'id',
    				store:new Ext.data.RESTStore({
    					autoLoad : false,
-   					apiUrl : App.getApiUrl('medstate'),
+   					apiUrl : App.getApiUrl('state','state','medstate'),
    					model: ['id','name']
    				}),
    			    minChars:2,
@@ -119,7 +119,7 @@ App.Results = Ext.extend(Ext.Panel, {
    				valueField:'id',
    				store:new Ext.data.RESTStore({
    					autoLoad : false,
-   					apiUrl : App.getApiUrl('medstate'),
+   					apiUrl : App.getApiUrl('state','state','medstate'),
    					model: ['id','name']
    				}),
    			    minChars:2,

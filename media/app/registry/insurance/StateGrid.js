@@ -6,7 +6,7 @@ App.insurance.StateGrid = Ext.extend(Ext.grid.GridPanel, {
 
 		// Create a standard HttpProxy instance.
 		this.proxy = new Ext.data.HttpProxy({
-		    url: App.getApiUrl('insurance_state')
+		    url: App.getApiUrl('state','insurance_state')
 		});
 
 		// Typical JsonReader.  Notice additional meta-data params for defining the core attributes of your json-response

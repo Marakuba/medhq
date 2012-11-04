@@ -22,7 +22,7 @@ App.accounting.InvoiceGrid = Ext.extend(Ext.grid.GridPanel, {
         this.store = new Ext.data.RESTStore({
             autoSave : false,
             autoLoad : false,
-            apiUrl : App.getApiUrl('acc_invoice'),
+            apiUrl : App.getApiUrl('accounting','acc_invoice'),
             model: App.models.AccountingInvoice
         });
 

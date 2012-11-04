@@ -7,13 +7,13 @@ App.assignment.AsgmtTab = Ext.extend(Ext.Panel, {
 
 		this.patientStore = this.patientStore || new Ext.data.RESTStore({
 			autoLoad : false,
-			apiUrl : App.getApiUrl('patient'),
+			apiUrl : App.getApiUrl('patient','patient'),
 			model: App.models.patientModel
 		});
 
 		this.store = this.store || new Ext.data.RESTStore({
 			autoLoad : false,
-			apiUrl : App.getApiUrl('preorder'),
+			apiUrl : App.getApiUrl('scheduler','preorder'),
 			model: App.models.preorderModel,
 			listeners:{
 				scope:this,

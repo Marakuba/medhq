@@ -10,7 +10,7 @@ App.patient.PatientWindow = Ext.extend(Ext.Window, {
 
 		this.store = this.store || new Ext.data.RESTStore({
 			autoLoad : true,
-			apiUrl : App.getApiUrl('patient'),
+			apiUrl : App.getApiUrl('patient','patient'),
 			model: App.models.Patient,
 			listeners:{
 				scope:this,

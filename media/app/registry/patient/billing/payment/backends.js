@@ -15,7 +15,7 @@ App.regBackend('payment', new App.Backend({
 			},
 		    restful: true,
 		    proxy: new Ext.data.HttpProxy({
-			    url: App.getApiUrl('payment')
+			    url: App.getApiUrl('billing','payment')
 			}),
 		    reader: new Ext.data.JsonReader({
 			    totalProperty: 'meta.total_count',

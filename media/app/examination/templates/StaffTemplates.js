@@ -3,19 +3,19 @@ Ext.ns('App.examination');
 App.examination.StaffTemplates = Ext.extend(Ext.Panel, {
 	initComponent : function() {
 
-		this.staff = App.getApiUrl('staff')+ '/' + active_staff;
+		this.staff = App.getApiUrl('staff','staff')+ '/' + active_staff;
 
 		this.fieldSetStore = new Ext.data.RESTStore({
 			autoSave: false,
 			autoLoad : true,
-			apiUrl : App.getApiUrl('examfieldset'),
+			apiUrl : App.getApiUrl('examination','examfieldset'),
 			model: App.models.FieldSet
 		});
 
 		this.subSectionStore = new Ext.data.RESTStore({
 			autoSave: false,
 			autoLoad : true,
-			apiUrl : App.getApiUrl('examsubsection'),
+			apiUrl : App.getApiUrl('examination','examsubsection'),
 			model: App.models.SubSection
 		});
 

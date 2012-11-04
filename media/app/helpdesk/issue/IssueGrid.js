@@ -6,7 +6,7 @@ App.issue.IssueGrid = Ext.extend(Ext.grid.GridPanel, {
 
 		this.store = new Ext.data.RESTStore({
 			autoLoad : true,
-			apiUrl : App.getApiUrl('issue'),
+			apiUrl : App.getApiUrl('helpdesk','issue'),
 			model: [
 			    {name: 'id'},
 			    {name: 'resource_uri'},

@@ -6,7 +6,7 @@ App.choices.PatientChoiceGrid = Ext.extend(Ext.grid.GridPanel, {
 
 		this.store = new Ext.data.RESTStore({
 			autoLoad : true,
-			apiUrl : App.getApiUrl('patient'),
+			apiUrl : App.getApiUrl('patient','patient'),
 			model: [
 				    {name: 'id'},
 				    {name: 'resource_uri'},

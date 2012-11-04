@@ -2345,8 +2345,7 @@ class IssueResource(ExtResource):
         }
         list_allowed_methods = ['get', 'post', 'put']
 
-
-class ContentTypeResource(ExtResource):
+tResource):
     class Meta:
         queryset = ContentType.objects.all()
         resource_name = 'contenttype'
@@ -2388,7 +2387,7 @@ class ClientAccountResource(ExtResource):
 
 class PaymentResource(ExtResource):
     client_account = fields.ForeignKey(ClientAccountResource, 'client_account')
-    content_type = fields.ForeignKey(ContentTypeResource, 'content_type', null=True)
+content_type', null=True)
 
     def dehydrate(self, bundle):
         bundle.data['client_name'] = bundle.obj.client_account.client_item.client.full_name()
@@ -2879,8 +2878,6 @@ class AccountingInvoiceItemResource(ExtResource):
 
 api = Api(api_name=get_api_name('dashboard'))
 
-api.register(UserResource())
-
 #patient
 api.register(PatientResource())
 api.register(InsurancePolicyResource())
@@ -2985,7 +2982,6 @@ api.register(ClientItemResource())
 
 #billing
 api.register(AccountResource())
-api.register(ContentTypeResource())
 api.register(ClientAccountResource())
 api.register(PaymentResource())
 
@@ -3018,3 +3014,7 @@ api.register(ReportResource())
 api.register(AccountingContractResource())
 api.register(AccountingInvoiceResource())
 api.register(AccountingInvoiceItemResource())
+
+#core
+api.register(ContentTypeResource())
+api.register(UserResource())

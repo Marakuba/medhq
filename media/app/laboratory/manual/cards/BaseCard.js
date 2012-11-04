@@ -43,12 +43,12 @@ App.cards.BaseCard = Ext.extend(Ext.Window,{
 		this.labOrderStore = new Ext.data.RESTStore({
 			autoSave : true,
 			autoLoad : false,
-			apiUrl : App.getApiUrl('laborder'),
+			apiUrl : App.getApiUrl('state','state','lab','laborder'),
 			model: App.models.LabOrder
 		});
 
 		this.proxy = new Ext.data.HttpProxy({
-		    url: App.getApiUrl('result')
+		    url: App.getApiUrl('state','state','lab','result')
 		});
 
 		this.reader = new Ext.data.JsonReader({

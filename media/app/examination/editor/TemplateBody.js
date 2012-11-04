@@ -13,7 +13,7 @@ App.examination.TemplateBody = Ext.extend(Ext.TabPanel, {
 		this.tmpStore = new Ext.data.RESTStore({
 			autoSave: true,
 			autoLoad : false,
-			apiUrl : App.getApiUrl('examtemplate'),
+			apiUrl : App.getApiUrl('examination','examtemplate'),
 			baseParams:{
 				format:'json',
 				deleted:false
@@ -24,7 +24,7 @@ App.examination.TemplateBody = Ext.extend(Ext.TabPanel, {
 		this.questStore = new Ext.data.RESTStore({
 			autoSave: true,
 			autoLoad : false,
-			apiUrl : App.getApiUrl('questionnaire'),
+			apiUrl : App.getApiUrl('examination','questionnaire'),
 			baseParams:{
 				format:'json',
 				deleted:false
@@ -241,14 +241,14 @@ App.examination.TemplateBody = Ext.extend(Ext.TabPanel, {
 			this.fieldSetStore = new Ext.data.RESTStore({
 				autoSave: false,
 				autoLoad : false,
-				apiUrl : App.getApiUrl('examfieldset'),
+				apiUrl : App.getApiUrl('examination','examfieldset'),
 				model: App.models.FieldSet
 			});
 
 			this.subSectionStore = new Ext.data.RESTStore({
 				autoSave: false,
 				autoLoad : false,
-				apiUrl : App.getApiUrl('examsubsection'),
+				apiUrl : App.getApiUrl('examination','examsubsection'),
 				model: App.models.SubSection
 			});
 

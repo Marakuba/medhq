@@ -6,7 +6,7 @@ App.patient.VisitGrid = Ext.extend(Ext.grid.GridPanel, {
 
 		this.store = new Ext.data.RESTStore({
 			autoLoad : false,
-			apiUrl : App.getApiUrl('visit'),
+			apiUrl : App.getApiUrl('visit','visit'),
 			model: App.models.visitModel
 		});
 

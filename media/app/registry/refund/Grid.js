@@ -9,7 +9,7 @@ App.visit.VisitGrid = Ext.extend(Ext.grid.GridPanel, {
 	initComponent : function() {
 
 		this.proxy = new Ext.data.HttpProxy({
-		    url: App.getApiUrl('visit')
+		    url: App.getApiUrl('visit','visit')
 		});
 
 		this.reader = new Ext.data.JsonReader({

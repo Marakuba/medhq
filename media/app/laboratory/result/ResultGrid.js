@@ -5,7 +5,7 @@ App.result.ResultGrid = Ext.extend(Ext.grid.EditorGridPanel, {
 	initComponent : function() {
 
 		this.proxy = new Ext.data.HttpProxy({
-		    url: App.getApiUrl('result')
+		    url: App.getApiUrl('state','state','lab','result')
 		});
 
 		this.reader = new Ext.data.JsonReader({

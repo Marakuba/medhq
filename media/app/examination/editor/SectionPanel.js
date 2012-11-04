@@ -41,7 +41,7 @@ App.examination.SectionPanel = Ext.extend(Ext.Panel, {
 			    dir : 'dir'
 			},
             proxy: new Ext.data.HttpProxy({
-	        	url: App.getApiUrl('glossary')
+	        	url: App.getApiUrl('examination','glossary')
 	        }),
             reader: new Ext.data.JsonReader({
 	            totalProperty: 'meta.total_count',
