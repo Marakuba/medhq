@@ -6,7 +6,7 @@ App.invoice.InvoiceGrid = Ext.extend(Ext.grid.GridPanel, {
 
 		this.store = new Ext.data.RESTStore({
 			autoLoad : false,
-			apiUrl : App.getApiUrl('invoice'),
+			apiUrl : App.getApiUrl('state','state','lab','invoice'),
 			model: App.models.Invoice
 		});
 

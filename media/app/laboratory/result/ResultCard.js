@@ -50,7 +50,7 @@ App.result.ResultCard = Ext.extend(Ext.Panel, {
 			store: new Ext.data.JsonStore({
 				autoLoad:true,
 				proxy: new Ext.data.HttpProxy({
-					url:App.getApiUrl('position'),
+					url:App.getApiUrl('staff','position'),
 					method:'GET'
 				}),
 				root:'objects',
@@ -256,7 +256,7 @@ App.result.ResultCard = Ext.extend(Ext.Panel, {
 	},
 
 	setStaff : function() {
-		var staff = App.getApiUrl('position',active_profile);
+		var staff = App.getApiUrl('staff','position',active_profile);
 		var sf = this.staffField;
 		sf.setValue(staff);
 		return staff

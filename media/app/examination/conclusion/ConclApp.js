@@ -6,7 +6,7 @@ App.examination.ConclApp = Ext.extend(Ext.Panel, {
 		this.orderStore = new Ext.data.RESTStore({
 			autoSave: false,
 			autoLoad : false,
-			apiUrl : App.getApiUrl('examservice'),
+			apiUrl : App.getApiUrl('visit','examservice'),
 			baseParams:{
 				format:'json'
 			},

@@ -263,7 +263,7 @@ App.laborder.LaborderGrid = Ext.extend(Ext.grid.GridPanel, {
 	initToolbar: function(){
 		// laboratory
 		Ext.Ajax.request({
-			url:App.getApiUrl('medstate'),
+			url:App.getApiUrl('state','state','medstate'),
 			method:'GET',
 			success:function(resp, opts) {
 				this.ttb.add({
@@ -299,7 +299,7 @@ App.laborder.LaborderGrid = Ext.extend(Ext.grid.GridPanel, {
 		//group
 
 		/*Ext.Ajax.request({
-			url:App.getApiUrl('labgroup'),
+			url:App.getApiUrl('service','labgroup'),
 			method:'GET',
 			success:function(resp, opts) {
 				this.ttb.add({

@@ -2,11 +2,11 @@ Ext.ns('App.examination');
 
 App.examination.TrashApp = Ext.extend(Ext.Panel, {
 	initComponent : function() {
-		
-		this.staff = App.getApiUrl('staff')+ '/' + active_staff;
-		
+
+		this.staff = App.getApiUrl('staff','staff')+ '/' + active_staff;
+
 		this.mode = 'template';
-		
+
 		this.contentPanel = new Ext.Panel({
 			region:'center',
 			autoScroll:true,
@@ -19,7 +19,7 @@ App.examination.TrashApp = Ext.extend(Ext.Panel, {
     		items: [
     		]
 		});
-		
+
 		this.templateBtn = new Ext.Button({
 			text:'Шаблоны',
 			toggled:true,
@@ -28,7 +28,7 @@ App.examination.TrashApp = Ext.extend(Ext.Panel, {
 			handler: this.switchPanel.createDelegate(this,['template',1]),
 			scope:this
 		});
-		
+
 		this.cardBtn = new Ext.Button({
 			text:'Карты осмотра',
 			enableToggle:true,
@@ -37,20 +37,20 @@ App.examination.TrashApp = Ext.extend(Ext.Panel, {
 			handler: this.switchPanel.createDelegate(this,['card',0]),
 			scope:this
 		});
-		
+
 		this.restoreBtn = new Ext.Button({
 			text:'Восстановить',
 			disabled:true,
 			handler:this.restoreRecord.createDelegate(this),
 			scope:this
 		});
-		
+
 		this.reloadBtn = new Ext.Button({
 			text:'Обновить',
 			handler:this.reloadStore.createDelegate(this),
 			scope:this
 		});
-		
+
 		this.templateGrid = new App.examination.TmpGrid({
 			baseParams:{
 				deleted:true,
@@ -75,7 +75,7 @@ App.examination.TrashApp = Ext.extend(Ext.Panel, {
 				scope:this
 			}
 		});
-		
+
 		this.cardGrid = new App.examination.CardGrid({
 			baseParams:{
 				deleted:true
@@ -100,17 +100,17 @@ App.examination.TrashApp = Ext.extend(Ext.Panel, {
 				scope:this
 			}
 		});
-		
+
 		this.cardGrid.store.on('load', function(){
 			//не устанавливать при загрузке курсор на первую строчку
 //			this.getSelectionModel().selectFirstRow();
 		}, this);
-		
+
 		this.templateGrid.store.on('load', function(){
 			//не устанавливать при загрузке курсор на первую строчку
 //			this.getSelectionModel().selectFirstRow();
 		}, this);
-		
+
 		this.trashPanel = new Ext.Panel({
 			region:'west',
  			border:false,
@@ -126,22 +126,22 @@ App.examination.TrashApp = Ext.extend(Ext.Panel, {
  			},
     		items: [ this.cardGrid, this.templateGrid ]
 		});
-		
+
 		var config = {
 			id:'trash-app',
 			closable:true,
 			title: 'Корзина',
-			layout: 'border',	
+			layout: 'border',
      		items: [ this.trashPanel, this.contentPanel ]
 		};
-		
+
 		Ext.apply(this, Ext.apply(this.initialConfig, config));
 		App.examination.TrashApp.superclass.initComponent.apply(this, arguments);
-		
+
 		this.on('afterrender',function(){
 		},this);
 	},
-	
+
 	switchPanel : function(mode, activeItem){
 		this.mode = mode;
 		this.contentPanel.removeAll();
@@ -150,7 +150,7 @@ App.examination.TrashApp = Ext.extend(Ext.Panel, {
 		var panel = l.activeItem;
 		panel.getSelectionModel().selectFirstRow();
 	},
-	
+
 	onPreview: function(id){
 		var list = new Ext.Panel({
 			autoScroll:true,
@@ -162,7 +162,7 @@ App.examination.TrashApp = Ext.extend(Ext.Panel, {
 		this.contentPanel.doLayout();
 		this.doLayout();
 	},
-	
+
 	restoreRecord: function(){
 		var gridName = this.mode+'Grid'
 		var grid = this[gridName];
@@ -180,7 +180,7 @@ App.examination.TrashApp = Ext.extend(Ext.Panel, {
 			}
 		},this);
 	},
-	
+
 	reloadStore: function(){
 		var gridName = this.mode+'Grid'
 		var grid = this[gridName];

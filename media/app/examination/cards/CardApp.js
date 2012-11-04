@@ -26,7 +26,7 @@ App.examination.CardApp = Ext.extend(Ext.Panel, {
 		this.tplStore = new Ext.data.RESTStore({
 			autoSave: false,
 			autoLoad : false,
-			apiUrl : App.getApiUrl('examtemplate'),
+			apiUrl : App.getApiUrl('examination','examtemplate'),
 			baseParams:{
 				format:'json',
 				deleted:false
@@ -37,7 +37,7 @@ App.examination.CardApp = Ext.extend(Ext.Panel, {
 		this.cardStore = new Ext.data.RESTStore({
 			autoSave : false,
 			autoLoad : false,
-			apiUrl : App.getApiUrl('card'),
+			apiUrl : App.getApiUrl('examination','card'),
 			baseParams:{
 				format:'json',
 				deleted:false
@@ -156,7 +156,7 @@ App.examination.CardApp = Ext.extend(Ext.Panel, {
 		this.record = new this.cardStore.recordType();
 		var emptyData = Ext.encode({'tickets':[]});
 		this.record.set('data',emptyData)
-		this.record.set('ordered_service',App.getApiUrl('orderedservice',this.orderId));
+		this.record.set('ordered_service',App.getApiUrl('visit','orderedservice',this.orderId));
 		this.record.set('name',this.orderRecord.data.service_name);
 		this.cardStore.add(this.record);
 		this.cardStore.save();
@@ -186,7 +186,7 @@ App.examination.CardApp = Ext.extend(Ext.Panel, {
 					});
 					Ext.applyIf(this.record.data,source.data);
 					delete this.record.data['id'];
-					this.record.set('ordered_service',App.getApiUrl('orderedservice',this.orderId));
+					this.record.set('ordered_service',App.getApiUrl('visit','orderedservice',this.orderId));
 					this.record.set('name',name);
 					this.cardStore.add(this.record);
 					this.cardStore.save();
@@ -264,7 +264,7 @@ App.examination.CardApp = Ext.extend(Ext.Panel, {
 	moveToTpl: function(name){
 		var archiveRecord = new this.tplStore.model();
 		Ext.applyIf(archiveRecord.data,this.record.data);
-		archiveRecord.set('staff',App.getApiUrl('staff',active_staff));
+		archiveRecord.set('staff',App.getApiUrl('staff','staff',active_staff));
 		archiveRecord.set('name',name);
 		delete archiveRecord.data['base_service']
 		delete archiveRecord.data['id'];

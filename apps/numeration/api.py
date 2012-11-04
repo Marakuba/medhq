@@ -5,7 +5,7 @@ from tastypie.authorization import DjangoAuthorization
 from tastypie.constants import ALL, ALL_WITH_RELATIONS
 from tastypie import fields
 from tastypie.api import Api
-from api.resources import ExtResource, ComplexQuery, ExtBatchResource
+from api.resources import ExtResource
 from numeration.models import BarcodePackage, NumeratorItem, Barcode
 from visit.models import Visit
 

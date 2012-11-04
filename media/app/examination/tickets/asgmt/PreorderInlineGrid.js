@@ -11,7 +11,7 @@ App.examination.PreorderInlineGrid = Ext.extend(Ext.grid.EditorGridPanel, {
 		this.expiration = today.add(Date.DAY,30)
 
 		this.proxy = new Ext.data.HttpProxy({
-		    url: App.getApiUrl('extpreorder')
+		    url: App.getApiUrl('scheduler','extpreorder')
 		});
 
 		this.reader = new Ext.data.JsonReader({
@@ -55,7 +55,7 @@ App.examination.PreorderInlineGrid = Ext.extend(Ext.grid.EditorGridPanel, {
 		this.serviceStore = new Ext.data.Store({
 			autoDestroy:true,
 			proxy: new Ext.data.HttpProxy({
-			    url: App.getApiUrl('extendedservice'),
+			    url: App.getApiUrl('service','extendedservice'),
 				method:'GET'
 			}),
 			reader: new Ext.data.JsonReader({
@@ -220,13 +220,13 @@ App.examination.PreorderInlineGrid = Ext.extend(Ext.grid.EditorGridPanel, {
 		var state = this.getPlace(id);
 		//Если направление создается из карты осмотра
 		if (this.cardId){
-			var card_resource = App.getApiUrl('card') + '/' + this.cardId;
+			var card_resource = App.getApiUrl('examination','card') + '/' + this.cardId;
 		};
 		var s = new Preorder({
-			service:App.getApiUrl('extendedservice')+'/'+id,
+			service:App.getApiUrl('service','extendedservice')+'/'+id,
 			service_name:text,
-			promotion: attrs.promotion ? App.getApiUrl('promotion')+'/'+attrs.promotion : '',
-			patient:App.getApiUrl('patient')+'/'+this.patientId,
+			promotion: attrs.promotion ? App.getApiUrl('promotion','promotion')+'/'+attrs.promotion : '',
+			patient:App.getApiUrl('patient','patient')+'/'+this.patientId,
 			price:attrs.price || null,
 			execution_place : state,
 			expiration: this.expiration,

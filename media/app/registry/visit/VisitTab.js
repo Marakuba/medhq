@@ -7,7 +7,7 @@ App.visit.VisitTab = Ext.extend(Ext.Panel, {
 
         this.store = this.store || new Ext.data.RESTStore({
             autoLoad : false,
-            apiUrl : App.getApiUrl('visit'),
+            apiUrl : App.getApiUrl('visit','visit'),
             model: App.models.visitModel,
             listeners:{
                 scope:this,
@@ -19,13 +19,13 @@ App.visit.VisitTab = Ext.extend(Ext.Panel, {
         this.preorderStore = new Ext.data.RESTStore({
             autoLoad : false,
             autoSave : true,
-            apiUrl : App.getApiUrl('extpreorder'),
+            apiUrl : App.getApiUrl('scheduler','extpreorder'),
             model: App.models.preorderModel
         });
 
         this.patientStore = this.patientStore || new Ext.data.RESTStore({
             autoLoad : false,
-            apiUrl : App.getApiUrl('patient'),
+            apiUrl : App.getApiUrl('patient','patient'),
             model: App.models.patientModel
         });
 

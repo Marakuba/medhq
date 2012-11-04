@@ -11,7 +11,7 @@ App.choices.PaymentTypeChoiceWindow = Ext.extend(Ext.Window, {
         	name:'insurance_policy',
         	store:new Ext.data.JsonStore({
     			proxy: new Ext.data.HttpProxy({
-    				url:App.getApiUrl('insurance_policy'),
+    				url:App.getApiUrl('patient','insurance_policy'),
     				method:'GET'
     			}),
     			root:'objects',
@@ -78,8 +78,8 @@ App.choices.PaymentTypeChoiceWindow = Ext.extend(Ext.Window, {
 			    minChars:3,
 			    hidden:(App.settings.strictMode && this.types==='material'),
 			    emptyText:'Выберите плательщика...',
-			    proxyUrl:App.getApiUrl('state'),
-			    value:App.settings.strictMode ? App.getApiUrl('state',active_state_id) : '',
+			    proxyUrl:App.getApiUrl('state','state'),
+			    value:App.settings.strictMode ? App.getApiUrl('state','state',active_state_id) : '',
 			    listeners:{
 			    	select:function(combo,record){
 			    	},

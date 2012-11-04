@@ -30,7 +30,7 @@ Ext.calendar.TimeslotInfoWindow = Ext.extend(Ext.Window, {
 
     	this.preorderStore = new Ext.data.RESTStore({
 			autoLoad : false,
-			apiUrl : App.getApiUrl('extpreorder'),
+			apiUrl : App.getApiUrl('scheduler','extpreorder'),
 			model: this.preorderModel,
 			listeners:{
 				load: function(store,records){

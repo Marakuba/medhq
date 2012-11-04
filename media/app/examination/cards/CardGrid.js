@@ -5,7 +5,7 @@ App.examination.CardGrid = Ext.extend(Ext.grid.EditorGridPanel, {
 	initComponent: function(){
 
 		this.proxy = new Ext.data.HttpProxy({
-        	url: App.getApiUrl('card')
+        	url: App.getApiUrl('examination','card')
         });
 		this.baseParams = Ext.apply({
             format:'json',

@@ -13,14 +13,14 @@ App.registry.PreorderManager = Ext.extend(Ext.TabPanel, {
 		this.medstateStore = this.medstateStore || new Ext.data.RESTStore({
 			autoSave: true,
 			autoLoad : true,
-			apiUrl : App.getApiUrl('medstate'),
+			apiUrl : App.getApiUrl('state','state','medstate'),
 			model: App.models.MedState
 		});
 
 		this.patientStore = new Ext.data.RESTStore({
 			autoLoad : false,
 			autoSave : false,
-			apiUrl : App.getApiUrl('patient'),
+			apiUrl : App.getApiUrl('patient','patient'),
 			model: App.models.patientModel
 		});
 

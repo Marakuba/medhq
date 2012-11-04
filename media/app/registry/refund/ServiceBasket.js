@@ -95,7 +95,7 @@ App.refund.ServiceBasket = Ext.extend(Ext.grid.EditorGridPanel, {
 		this.shortMode = this.type=='material';
 
 		this.proxy = new Ext.data.HttpProxy({
-		    url: App.getApiUrl('refundbasket')
+		    url: App.getApiUrl('visit','refundbasket')
 		});
 
 		this.reader = new Ext.data.JsonReader({
@@ -175,7 +175,7 @@ App.refund.ServiceBasket = Ext.extend(Ext.grid.EditorGridPanel, {
 		this.staffStore = new Ext.data.Store({
 			autoDestroy:true,
 			proxy: new Ext.data.HttpProxy({
-			    url: App.getApiUrl('position'),
+			    url: App.getApiUrl('staff','position'),
 				method:'GET'
 			}),
 			reader: new Ext.data.JsonReader({

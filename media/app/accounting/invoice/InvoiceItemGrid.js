@@ -8,7 +8,7 @@ App.accounting.InvoiceItemGrid = Ext.extend(Ext.grid.EditorGridPanel, {
         this.store = new Ext.data.RESTStore({
             autoSave : false,
             autoLoad : false,
-            apiUrl : App.getApiUrl('acc_invoice_item'),
+            apiUrl : App.getApiUrl('accounting','acc_invoice_item'),
             model: App.models.AccountingInvoiceItem
         });
 
@@ -145,7 +145,7 @@ App.accounting.InvoiceItemGrid = Ext.extend(Ext.grid.EditorGridPanel, {
     },
 
     onRemovePatient : function(id) {
-        var resource_uri = App.getApiUrl('patient', id);
+        var resource_uri = App.getApiUrl('patient','patient', id);
         var recs = this.store.queryBy(function(rec){
             return rec.data.patient==resource_uri;
         }, this);
@@ -174,7 +174,7 @@ App.accounting.InvoiceItemGrid = Ext.extend(Ext.grid.EditorGridPanel, {
     },
 
     onPatientSelect : function(rec){
-        this.currentPatient = App.getApiUrl('patient',rec.data.id);
+        this.currentPatient = App.getApiUrl('patient','patient',rec.data.id);
         this.store.filter('patient', this.currentPatient);
         this.updateStore();
     },

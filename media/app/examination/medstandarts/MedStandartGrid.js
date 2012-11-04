@@ -6,7 +6,7 @@ App.examination.MedStandartGrid = Ext.extend(Ext.grid.GridPanel, {
 
 		this.store = new Ext.data.RESTStore({
 			autoLoad : false,
-			apiUrl : App.getApiUrl('medstandart'),
+			apiUrl : App.getApiUrl('medstandart','medstandart'),
 			model: App.models.MedStandartModel
 		});
 

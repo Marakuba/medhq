@@ -22,7 +22,7 @@ App.Reports = Ext.extend(Ext.Panel, {
 				store:new Ext.data.JsonStore({
 			    	autoLoad:true,
 					proxy: new Ext.data.HttpProxy({
-						url:App.getApiUrl('staff'),
+						url:App.getApiUrl('staff','staff'),
 						method:'GET'
 					}),
 					root:'objects',
@@ -45,7 +45,7 @@ App.Reports = Ext.extend(Ext.Panel, {
 			    		type:'b'
 			    	},
 					proxy: new Ext.data.HttpProxy({
-						url:App.getApiUrl('state'),
+						url:App.getApiUrl('state','state'),
 						method:'GET'
 					}),
 					root:'objects',

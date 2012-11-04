@@ -6,7 +6,7 @@ App.examination.TmpGrid = Ext.extend(Ext.grid.EditorGridPanel, {
 
 //        this.Mess = new Ext.App({});
 		this.proxy = new Ext.data.HttpProxy({
-        	url: App.getApiUrl('examtemplate')
+        	url: App.getApiUrl('examination','examtemplate')
         });
 		this.baseParams = Ext.apply({
             format:'json',
@@ -216,7 +216,7 @@ App.examination.TmpGrid = Ext.extend(Ext.grid.EditorGridPanel, {
 		    	var emptyData = Ext.encode({'tickets':[]});
 				this.record = new this.store.recordType();
 				this.record.set('data',emptyData);
-				this.record.set('staff',App.getApiUrl('staff',active_staff));
+				this.record.set('staff',App.getApiUrl('staff','staff',active_staff));
 				this.record.set('name',text);
 				this.store.add(this.record);
 				this.store.save();

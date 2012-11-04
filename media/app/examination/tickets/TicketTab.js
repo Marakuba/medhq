@@ -36,9 +36,9 @@ App.examination.TicketPanel = Ext.extend(Ext.ux.Portal,{
  * |----data - содержит данные для загрузки в редактируемой анкеты
  * |----}
  * }
- * 
- * 
- * 
+ *
+ *
+ *
  * data : [] 						- перечисление всех типов имеющихся данных с данными
  * |--{type:'text', 				- Текстовое представление всех данных
  * |--data:[] 						- список текстовых тикетов, разбитых по секциям. Секции Задаются в модели FieldSet
@@ -51,7 +51,7 @@ App.examination.TicketPanel = Ext.extend(Ext.ux.Portal,{
  * |------private:false, 			- приватность тикета. Если true, то тикет виден только для создавшего карту осмотра врача
  * |------pos:10 					- непосредственная позиция тикета на панели,
  * |------type:'text','questionnaire',etc - указывает, к какому типу тикетов относится это текстовое представление для определения метода редактирования тикета.
- * |------name:'Анкета анамнеза' 	- имя компонента указанного типа, к которому относится это отображение. Необходимо для обновления текста после редактирования соответствующего типа 
+ * |------name:'Анкета анамнеза' 	- имя компонента указанного типа, к которому относится это отображение. Необходимо для обновления текста после редактирования соответствующего типа
  * |------}
  * |----}
  * |--},
@@ -62,26 +62,26 @@ App.examination.TicketPanel = Ext.extend(Ext.ux.Portal,{
  * |----data:[] 					- данные введенные в поля анкеты. эти данные вставляются в форму анкеты при редактировании
  * |------{title:'Подзаголовок' 	- заголовок одной из панелей формы анкеты. Вставляется в заголовок тикета в текстовом представлении панели
  * |------section:'anamnesis','diagnosis',etc. - секция, к которой принадлежит данный тикет. может быть несколько одинаковых. По этому имени ищется секция в модели FieldSet и берется оттуда order
- * |------rows:[] 					- массив, содержит список полей с данными внутри панели, принадлежащей одному тикету 
+ * |------rows:[] 					- массив, содержит список полей с данными внутри панели, принадлежащей одному тикету
  * |--------name:'anamnesis_1_2_el'	- имя поля панели. уникально внутри анкеты.
  * |--------values:'...' | []		- значение(я) поля. строка либо массив строк
  * |------}
  * |----}
  * |--},
- * 
+ *
  * Еще есть тип assignment - Направления. Может упоминаться в типах текстовых тикетов для указания способа редактирования тикета.
  * Данные типа assignment - записи модели sheduler.Preorder, у которых в поле card указана текущая карта осмотра. Данные генерируются каждый раз при открытии или просмотре карты осмотра.
  * order берется из таблицы examination.FieldSet запись с именем assignment или, если такого нет = 1000.
- * 
- * 
+ *
+ *
 */
 
 App.examination.TicketTab = Ext.extend(Ext.Panel, {
-	
+
 	addSubSecText : 'Добавить раздел',
-	
+
 	initComponent : function() {
-		
+
 		//Для создания направлений нужен id текущего пациента
 		this.portalColumn = new Ext.ux.PortalColumn({
 			columnWidth:1,
@@ -94,7 +94,7 @@ App.examination.TicketTab = Ext.extend(Ext.Panel, {
 				boxShadow:"3px 3px 3px #777"
 			}
 		});
-		
+
 		this.ticketPanel = new App.examination.TicketPanel({
 			region:'center',
 			baseCls:'ticket',
@@ -114,14 +114,14 @@ App.examination.TicketTab = Ext.extend(Ext.Panel, {
 				},this);
 				return(tickets)
 			},
-			
+
 			listeners:{
 				'beforedrop':function(res,e,t){
 					if (res.panel.fixed)
 						return false;
 					if (res.position == 0 && this.portalColumn.items.items[0].data.fixed)
 						return false;
-					
+
 					var panel = res.panel;
 					panel.data['dragged'] = true;
 					return true;
@@ -136,7 +136,7 @@ App.examination.TicketTab = Ext.extend(Ext.Panel, {
 						Ext.Msg.alert('Внимание!','Один редактор уже открыт!');
 						return false
 					}
-				
+
 				},
 				'ticketeditcomplete': function(){
 					this.editInProcess = false;
@@ -144,11 +144,11 @@ App.examination.TicketTab = Ext.extend(Ext.Panel, {
 				scope:this
 			}
 		});
-		
+
 		this.ttb = new Ext.Toolbar({
 			items: []
 		});
-		
+
 		var config = {
 			layout:'border',
 		    labelAlign: 'top',
@@ -158,12 +158,12 @@ App.examination.TicketTab = Ext.extend(Ext.Panel, {
 		    items: [ this.ticketPanel ],
 		    tbar:this.ttb
 		};
-		
+
 		this.fillMenu();
-								
+
 		Ext.apply(this, Ext.apply(this.initialConfig, config));
 		App.examination.TicketTab.superclass.initComponent.apply(this, arguments);
-		
+
 		this.on('afterrender',function(panel){
 			this.fillUserBody();
 			if (this.data && this.data.tickets.length){
@@ -171,9 +171,9 @@ App.examination.TicketTab = Ext.extend(Ext.Panel, {
 			} else {
 				this.loadRequiredTickets();
 			};
-			
+
 		},this);
-		
+
 		this.on('ticketbodyclick', function(panel,editor,pos){
 			if (this.ticket) {
 				this.ticket.body.removeClass('selected');
@@ -181,12 +181,12 @@ App.examination.TicketTab = Ext.extend(Ext.Panel, {
 			this.ticket = panel;
 			this.ticket.body.addClass('selected')
 		},this);
-		
+
 		this.on('ticketheadeeditstart',function(panel){
 			if (this.ticket){
 				this.ticket.body.removeClass('selected')
 			};
-			
+
 			this.ticket = panel;
 			this.ticket.body.addClass('selected')
 		},this)
@@ -197,11 +197,11 @@ App.examination.TicketTab = Ext.extend(Ext.Panel, {
 			};
 			this.updateData();
 		},this);
-		
+
 		this.on('drop', function(ticket, data){
 			this.updateData();
 		},this);
-		
+
 		this.on('beforeticketremove', function(ticket){
 			ticket.destroy();
 			this.updateData();
@@ -209,16 +209,16 @@ App.examination.TicketTab = Ext.extend(Ext.Panel, {
 			return false
 		},this);
 	},
-	
+
 	fillMenu:function(){
-		
+
 		//Добавляем обязательные элементы в toolbar
-		
+
 		//Кнопка с подразделами
 		this.fillSectionMenu();
 		//Кнопка с анкетами
 		this.fillQuestsMenu();
-		
+
 		this.editQuestBtn = new Ext.Button({
 			text:'Редактировать анкету',
 			hidden:true,
@@ -231,7 +231,7 @@ App.examination.TicketTab = Ext.extend(Ext.Panel, {
 			handler:this.deleteQuestClick,
 			scope:this
 		});
-		
+
 		this.printBtn = new Ext.Button({
 			iconCls:'silk-printer',
 			text: 'Печать',
@@ -239,7 +239,7 @@ App.examination.TicketTab = Ext.extend(Ext.Panel, {
 			handler:this.onPrint.createDelegate(this,[]),
 			scope:this
 		});
-		
+
 		this.ttb.add(this.editQuestBtn);
 		this.ttb.add(this.deleteQuestBtn);
 		this.ttb.add(this.printBtn);
@@ -253,21 +253,21 @@ App.examination.TicketTab = Ext.extend(Ext.Panel, {
 		}
 		this.doLayout();
 	},
-	
+
 	//Пользовательская функция добавления элементов в тулбар. выполняется после добавления обязательных кнопок
 	fillUsersMenu: function(){},
-	
+
 	//Пользовательская функция для добавления элементов в основную часть панели
 	fillUserBody: function(){},
-	
-	
+
+
 	loadData: function(data,quests,sectionPlan){
 		//есть глобальная переменная section_scheme, содержащая все секции
 		//Проходим по всем тикетам и вставляем их в панель в нужном порядке
 		this.dataLoading = true;
-		
+
 		if(!data) return false;
-		
+
 		Ext.each(data.tickets,function(ticket){
 			var currentSection = ticket.section || 'other'
 			//Каждому тикету присваиваем order из section_scheme, чтобы видеть, куда вставлять новые тикеты
@@ -280,12 +280,12 @@ App.examination.TicketTab = Ext.extend(Ext.Panel, {
 		this.checkUniqueTickets();
 		this.dataLoading = false;
 	},
-	
+
 	addTicket:function(ticketConfig, isNew){
 		//вставляем тикет в нужное место согласно порядку order
 		//порядок тикетов может быть определен либо по значению order (если добавляется новый тикет)
 		//либо по значению pos (если загружаются сохраненные тикеты)
-		
+
 		if (!ticketConfig.data){
 			var ticket_data = {}
 			Ext.apply(ticket_data,ticketConfig);
@@ -298,7 +298,7 @@ App.examination.TicketTab = Ext.extend(Ext.Panel, {
 		ticketConfig['tplId'] = this.tplId;
 		ticketConfig.data['tplId'] = this.tplId;
 		ticketConfig.data['patientId'] = this.patientId; // нужно для добавления направлений
-		
+
 		//если тикетов еще нет, то добавляем в конец
 		//тикет добавляется в конец секции
 		this.sectionItems.hide();
@@ -320,7 +320,7 @@ App.examination.TicketTab = Ext.extend(Ext.Panel, {
 			this.updateData();
 		}
 	},
-	
+
 	getLowInd:function(paramName,value){
 		//Возвращает последний индекс элемента, переданный параметр которого меньше указанного
 		var index = -1;
@@ -341,12 +341,12 @@ App.examination.TicketTab = Ext.extend(Ext.Panel, {
 		},this);
 		return index;
 	},
-	
+
 	getData: function(){
 		var data = this.ticketPanel.getData();
 		return [data,this.quests]
 	},
-	
+
 	addStandartServices:function(records){
 		var today = new Date();
 		var s = this.asgmtPanel.store;
@@ -354,24 +354,24 @@ App.examination.TicketTab = Ext.extend(Ext.Panel, {
 		Ext.each(records,function(rec){
 			var asgmtType = s.recordType;
 			var asgmt = new asgmtType({
-				service:rec.data.service, 
+				service:rec.data.service,
 				service_name:rec.data.service_name,
 				price:rec.data.price || null,
 				execution_place : rec.data.state,
 				expiration: today.add(Date.DAY,30),
 				card:this.record.data.resource_uri || '',
 				count:rec.data.avarage || 1,
-				patient:App.getApiUrl('patient',this.patient)
+				patient:App.getApiUrl('patient','patient',this.patient)
 			});
 			s.add(asgmt);
 		},this);
-		
+
 		this.asgmtPanel.store.save();
 		s.autoSave = true;
 		this.doLayout();
-		
+
 	},
-	
+
 	findTicket:function(paramName,value){
 		var ticket = undefined;
 		this.ticketPanel.items.itemAt(0).items.each(function(item,ind){
@@ -379,10 +379,10 @@ App.examination.TicketTab = Ext.extend(Ext.Panel, {
 				ticket = item;
 			}
 		},this);
-		
+
 		return ticket
 	},
-	
+
 	findByTitle:function(questName,title){
 		var ticket = undefined;
 		this.ticketPanel.items.itemAt(0).items.each(function(item,ind){
@@ -390,34 +390,34 @@ App.examination.TicketTab = Ext.extend(Ext.Panel, {
 				ticket = item;
 			}
 		},this);
-		
+
 		return ticket
 	},
-	
+
 	updateData: function(){
-		
+
 		this.data['tickets'] = this.ticketPanel.getData();
 		this.checkUniqueTickets();
 		this.fireEvent('dataupdate',this.data);
-		
+
 	},
-	
+
 	checkUniqueTickets : function(){
 		_.map(this.uniqueTickets, function(xtype){
 			Ext.getCmp('unique-ticket-'+xtype).enable();
 		});
-		
+
 		var uniques = _.filter(this.data['tickets'], function(ticket){
 			return ticket.unique===true
 		});
-		
+
 		_.map(uniques, function(ticket){
 			var cmp = Ext.getCmp('unique-ticket-'+ticket.xtype);
 			if (cmp)
 				cmp.disable();
 		});
 	},
-	
+
 	fillSectionMenu: function(){
 		this.uniqueTickets = [];
 		this.sectionItems = new Ext.menu.Menu({
@@ -439,9 +439,9 @@ App.examination.TicketTab = Ext.extend(Ext.Panel, {
 				items:[]
 		});
 		for (var section in section_scheme) {
-			
+
 			var items = [];
-			
+
 			if (section_scheme[section].items.length){
 				Ext.each(section_scheme[section].items,function(item){
 					var ticket_data = {}
@@ -465,28 +465,28 @@ App.examination.TicketTab = Ext.extend(Ext.Panel, {
 				})
 			};
 		};
-		
+
 		this.addSubSecBtn = new Ext.Button({
 			iconCls:'silk-page-white-add',
 			text:this.addSubSecText,
 			menu:this.sectionItems
 		});
-		
+
 		if (this.sectionItems.items.length){
 			this.addSubSecBtn.enable();
 		} else {
 			this.addSubSecBtn.disable();
 		};
-		
+
 		this.ttb.insert(0,this.addSubSecBtn);
 		this.doLayout();
 	},
-	
+
 	fillQuestsMenu: function(){
 		this.questItems = new Ext.menu.Menu({
 			items:[]
 		});
-		
+
 		Ext.each(quests,function(quest){
 			var questBtn = {
 				text:quest.name,
@@ -495,7 +495,7 @@ App.examination.TicketTab = Ext.extend(Ext.Panel, {
 			};
 			this.questItems.add(questBtn)
 		},this);
-		
+
 		this.questsBtn = new Ext.Button({
 			iconCls:'silk-page-white-add',
 			text:'Анкеты',
@@ -508,7 +508,7 @@ App.examination.TicketTab = Ext.extend(Ext.Panel, {
 			// console.log('Анкет нет')
 		}
 	},
-	
+
 	questBtnClick: function(quest){
 		// console.log('Открытие анкеты ',quest.name);
 		//потом этот код сохранится в this.data.questionnaire.code, если анкета будет сохранена
@@ -522,7 +522,7 @@ App.examination.TicketTab = Ext.extend(Ext.Panel, {
 			scope:this
 		})
 	},
-	
+
 	//Вызывается после нажатия на кнопку Ок в панели редактирования анкеты
 	saveQuestData: function(dataArr,panel){
 		var tickets = dataArr[0];
@@ -542,7 +542,7 @@ App.examination.TicketTab = Ext.extend(Ext.Panel, {
 						data:t
 					};
 					panel.addTicket(ticketConfig);
-				} 
+				}
 			},this);
 		} else {
 			panel.data.questionnaire = {
@@ -566,7 +566,7 @@ App.examination.TicketTab = Ext.extend(Ext.Panel, {
 		panel.editQuestBtn.show();
 		panel.deleteQuestBtn.show();
 	},
-	
+
 	editQuestClick: function(){
 		var quest = this.data.questionnaire;
 		App.eventManager.fireEvent('launchApp','questionnaireticketeditor',{
@@ -579,7 +579,7 @@ App.examination.TicketTab = Ext.extend(Ext.Panel, {
 			scope:this
 		})
 	},
-	
+
 	deleteQuestClick: function(){
 		var questName = this.data.questionnaire.name;
 		do {
@@ -594,7 +594,7 @@ App.examination.TicketTab = Ext.extend(Ext.Panel, {
 		this.editQuestBtn.hide();
 		this.deleteQuestBtn.hide();
 	},
-	
+
 	loadRequiredTickets: function(){
 		var tickets = required_tickets;
 		if (!tickets.length){
@@ -608,9 +608,9 @@ App.examination.TicketTab = Ext.extend(Ext.Panel, {
 			}
 		}
 	},
-	
+
 	printUrlTpl : "/examination/card/{0}/",
-	
+
 	onPrint: function(){
 		var url = String.format(this.printUrlTpl,this.cardId);
 		window.open(url);

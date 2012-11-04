@@ -17,7 +17,7 @@ App.clientaccount.Backend = Ext.extend(App.Backend, {
 			},
 		    restful: true,
 		    proxy: new Ext.data.HttpProxy({
-			    url: App.getApiUrl('clientaccount')
+			    url: App.getApiUrl('billing','clientaccount')
 			}),
 		    reader: new Ext.data.JsonReader({
 			    totalProperty: 'meta.total_count',

@@ -38,7 +38,7 @@ App.ExamCentralPanel = Ext.extend(Ext.Panel, {
 		this.staffStore = new Ext.data.RESTStore({
 			autoSave: false,
 			autoLoad : false,
-			apiUrl : App.getApiUrl('staff'),
+			apiUrl : App.getApiUrl('staff','staff'),
 			model: App.models.StaffModel
 		});
 
@@ -121,7 +121,7 @@ App.ExamCentralPanel = Ext.extend(Ext.Panel, {
                     scale:'medium',
                     iconAlign: 'top',
                     handler: function(){
-                    	this.launchApp('conclusion',{staff:App.getApiUrl('position')+'/'+active_profile});
+                    	this.launchApp('conclusion',{staff:App.getApiUrl('staff','position')+'/'+active_profile});
                     },
                     scope:this
                 }]

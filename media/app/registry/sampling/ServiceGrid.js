@@ -5,7 +5,7 @@ App.sampling.ServiceGrid = Ext.extend(Ext.grid.GridPanel, {
 	initComponent : function() {
 
 		this.proxy = new Ext.data.HttpProxy({
-		    url: App.getApiUrl('samplingservice')
+		    url: App.getApiUrl('visit','samplingservice')
 		});
 
 		this.reader = new Ext.data.JsonReader({

@@ -9,7 +9,7 @@ App.patient.AsgmtGrid = Ext.extend(Ext.grid.EditorGridPanel, {
 		this.refStore = new Ext.data.RESTStore({
 			autoSave: false,
 			autoLoad : false,
-			apiUrl : App.getApiUrl('referral'),
+			apiUrl : App.getApiUrl('visit','visit','referral'),
 			model: App.models.ReferralModel
 		});
 
@@ -41,14 +41,14 @@ App.patient.AsgmtGrid = Ext.extend(Ext.grid.EditorGridPanel, {
 		this.medstateStore = this.medstateStore || new Ext.data.RESTStore({
 			autoSave: true,
 			autoLoad : true,
-			apiUrl : App.getApiUrl('medstate'),
+			apiUrl : App.getApiUrl('state','state','medstate'),
 			model: App.models.MedState
 		});
 
 		this.patientStore = this.patientStore || new Ext.data.RESTStore({
 			autoLoad : false,
 			autoSave : false,
-			apiUrl : App.getApiUrl('patient'),
+			apiUrl : App.getApiUrl('patient','patient'),
 			model: App.models.patientModel
 		});
 
@@ -97,7 +97,7 @@ App.patient.AsgmtGrid = Ext.extend(Ext.grid.EditorGridPanel, {
 		this.staffStore = new Ext.data.RESTStore({
 			autoLoad : false,
 			autoSave : true,
-			apiUrl : App.getApiUrl('position'),
+			apiUrl : App.getApiUrl('staff','position'),
 			model: [
 				    {name: 'id'},
 				    {name: 'resource_uri'},
@@ -197,7 +197,7 @@ App.patient.AsgmtGrid = Ext.extend(Ext.grid.EditorGridPanel, {
 				visit__isnull:true,
 				deleted:false
 			},
-			apiUrl : App.getApiUrl('visitpreorder'),
+			apiUrl : App.getApiUrl('scheduler','visitpreorder'),
 			model: App.models.preorderModel
 		});
 
@@ -211,14 +211,14 @@ App.patient.AsgmtGrid = Ext.extend(Ext.grid.EditorGridPanel, {
 		this.eventStore = new Ext.data.RESTStore({
 			autoLoad : false,
 			autoSave : true,
-			apiUrl : App.getApiUrl('event'),
+			apiUrl : App.getApiUrl('scheduler','event'),
 			model: this.eventModel
 		});
 
 		this.freeTimeslotStore = new Ext.data.RESTStore({
 			autoLoad : false,
 			autoSave : true,
-			apiUrl : App.getApiUrl('event'),
+			apiUrl : App.getApiUrl('scheduler','event'),
 			model: [
 				    {name: 'resource_uri'},
 				    {name: 'start',type:'date',format:'c'},
@@ -233,7 +233,7 @@ App.patient.AsgmtGrid = Ext.extend(Ext.grid.EditorGridPanel, {
 		this.extServiceStore = new Ext.data.RESTStore({
 			autoLoad : false,
 			autoSave : false,
-			apiUrl : App.getApiUrl('extendedservice'),
+			apiUrl : App.getApiUrl('service','extendedservice'),
 			model: [
 				    {name: 'resource_uri'},
 				    {name: 'staff'},

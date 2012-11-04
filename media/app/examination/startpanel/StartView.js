@@ -27,7 +27,7 @@ App.examination.StaffTemplatePlugin = function(config, order){
 	this.store = new Ext.data.RESTStore({
 		autoSave: false,
 		autoLoad : false,
-		apiUrl : App.getApiUrl('examtemplate'),
+		apiUrl : App.getApiUrl('examination','examtemplate'),
 		model: App.models.Template
 	});
 	this.store.load({
@@ -67,7 +67,7 @@ App.examination.StateTemplatePlugin = function(config, order){
 	this.store = new Ext.data.RESTStore({
 		autoSave: false,
 		autoLoad : false,
-		apiUrl : App.getApiUrl('examtemplate'),
+		apiUrl : App.getApiUrl('examination','examtemplate'),
 		model: App.models.Template
 	});
 	this.store.load({

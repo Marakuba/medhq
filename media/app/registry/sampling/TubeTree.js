@@ -5,7 +5,7 @@ App.sampling.TubeTree = Ext.extend(Ext.tree.TreePanel,{
 	initComponent: function(){
 
 		this.proxy = new Ext.data.HttpProxy({
-		    url: App.getApiUrl('sampling')
+		    url: App.getApiUrl('state','state','lab','sampling')
 		});
 
 		this.reader = new Ext.data.JsonReader({

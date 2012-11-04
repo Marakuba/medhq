@@ -15,7 +15,7 @@ App.examination.AsgmtTicket = Ext.extend(App.examination.Ticket,{
 	initComponent: function(){
 
 		this.proxy = new Ext.data.HttpProxy({
-		    url: App.getApiUrl('extpreorder')
+		    url: App.getApiUrl('scheduler','extpreorder')
 		});
 
 		this.reader = new Ext.data.JsonReader({

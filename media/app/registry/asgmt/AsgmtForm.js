@@ -13,7 +13,7 @@ App.assignment.AsgmtForm = Ext.extend(Ext.FormPanel, {
 					    encode: false,
 					    writeAllFields: false
 					}),
-			apiUrl : App.getApiUrl('extpreorder'),
+			apiUrl : App.getApiUrl('scheduler','extpreorder'),
 			model: App.models.preorderModel,
 		    doTransaction : function(action, rs, batch) {
 		        function transaction(records) {
@@ -205,9 +205,9 @@ App.assignment.AsgmtForm = Ext.extend(Ext.FormPanel, {
 		p.set('price',record.data.price);
 		p.set('staff_name',record.data.staff_name);
 		p.set('service_name',record.data.service_name);
-		p.set('service',App.getApiUrl('baseservice',record.data.base_service));
-		p.set('staff',App.getApiUrl('position',record.data.staff));
-		p.set('execution_place',App.getApiUrl('state',record.data.execution_place));
+		p.set('service',App.getApiUrl('service','baseservice',record.data.base_service));
+		p.set('staff',App.getApiUrl('staff','position',record.data.staff));
+		p.set('execution_place',App.getApiUrl('state','state',record.data.execution_place));
 		p.set('count',1);
 		p.data['id'] = '';
 		p.beginEdit();

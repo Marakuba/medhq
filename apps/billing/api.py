@@ -1,11 +1,13 @@
 # -*- coding: utf-8 -*-
 from tastypie.api import Api
 from tastypie import fields
-from contrib.ext.resources import ExtResource
+from contrib.ext.resources import ExtResource, ComplexQuery
 from tastypie.authorization import DjangoAuthorization
 from tastypie.constants import ALL_WITH_RELATIONS, ALL
 from billing.models import Account, Payment, ClientAccount
 from interlayer.api import ClientItemResource
+from patient.utils import smartFilter
+from django.db.models.query_utils import Q
 
 
 class AccountResource(ExtResource):
@@ -52,8 +54,8 @@ class PaymentResource(ExtResource):
         return bundle
 
     def obj_create(self, bundle, request=None, **kwargs):
-        kwargs['operator']=request.user
-        kwargs['office']=request.active_profile.department.state
+        kwargs['operator'] = request.user
+        kwargs['office'] = request.active_profile.department.state
         result = super(PaymentResource, self).obj_create(bundle=bundle, request=request, **kwargs)
         return result
 
@@ -65,7 +67,7 @@ class PaymentResource(ExtResource):
 
         if "search" in filters:
             smart_filters = smartFilter(filters['search'], 'client_account__client_item__client')
-            if len(smart_filters.keys())==1:
+            if len(smart_filters.keys()) == 1:
                 try:
                     orm_filters = ComplexQuery(Q(**smart_filters), \
                                       **orm_filters)
@@ -89,8 +91,9 @@ class PaymentResource(ExtResource):
         }
         list_allowed_methods = ['get', 'post', 'put']
 
-api = Api(api_name = 'billing')
+
+api = Api(api_name='billing')
+
 api.register(AccountResource())
-api.register(ContentTypeResource())
 api.register(ClientAccountResource())
 api.register(PaymentResource())

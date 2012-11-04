@@ -80,7 +80,7 @@ App.reporting.FilterPanel = Ext.extend(Ext.form.FormPanel, {
     	this.patientStore = new Ext.data.RESTStore({
 			autoLoad : false,
 			autoSave : true,
-			apiUrl : App.getApiUrl('patient'),
+			apiUrl : App.getApiUrl('patient','patient'),
 			model: [
 					{name: 'id'},
 				    {name: 'resource_uri'},
@@ -115,7 +115,7 @@ App.reporting.FilterPanel = Ext.extend(Ext.form.FormPanel, {
 		this.staffStore = new Ext.data.RESTStore({
 			autoLoad : false,
 			autoSave : true,
-			apiUrl : App.getApiUrl('position'),
+			apiUrl : App.getApiUrl('staff','position'),
 			model: [
 				    {name: 'id'},
 				    {name: 'resource_uri'},
@@ -157,7 +157,7 @@ App.reporting.FilterPanel = Ext.extend(Ext.form.FormPanel, {
 		this.ServiceGroupStore = new Ext.data.RESTStore({
 			autoLoad : false,
 			autoSave : true,
-			apiUrl : App.getApiUrl('baseservicegroup'),
+			apiUrl : App.getApiUrl('service','baseservicegroup'),
 			model: [
 				    {name: 'id'},
 				    {name: 'resource_uri'},
@@ -190,7 +190,7 @@ App.reporting.FilterPanel = Ext.extend(Ext.form.FormPanel, {
 		this.departmentStore = new Ext.data.RESTStore({
 			autoLoad : false,
 			autoSave : true,
-			apiUrl : App.getApiUrl('department'),
+			apiUrl : App.getApiUrl('state','department'),
 			model: [
 				    {name: 'id'},
 				    {name: 'resource_uri'},
@@ -213,7 +213,7 @@ App.reporting.FilterPanel = Ext.extend(Ext.form.FormPanel, {
 		this.referralStore = new Ext.data.RESTStore({
 			autoLoad : false,
 			autoSave : true,
-			apiUrl : App.getApiUrl('referral'),
+			apiUrl : App.getApiUrl('visit','visit','referral'),
 			model: [
 				    {name: 'id'},
 				    {name: 'resource_uri'},
@@ -250,7 +250,7 @@ App.reporting.FilterPanel = Ext.extend(Ext.form.FormPanel, {
         	store: new Ext.data.RESTStore({
 				autoLoad : false,
 				autoSave : true,
-				apiUrl : App.getApiUrl('state'),
+				apiUrl : App.getApiUrl('state','state'),
 				model: [
 					    {name: 'id'},
 					    {name: 'resource_uri'},
@@ -278,7 +278,7 @@ App.reporting.FilterPanel = Ext.extend(Ext.form.FormPanel, {
         	store: new Ext.data.RESTStore({
 				autoLoad : false,
 				autoSave : true,
-				apiUrl : App.getApiUrl('state'),
+				apiUrl : App.getApiUrl('state','state'),
 				model: [
 					    {name: 'id'},
 					    {name: 'resource_uri'},
@@ -306,7 +306,7 @@ App.reporting.FilterPanel = Ext.extend(Ext.form.FormPanel, {
         	store: new Ext.data.RESTStore({
 				autoLoad : false,
 				autoSave : true,
-				apiUrl : App.getApiUrl('state'),
+				apiUrl : App.getApiUrl('state','state'),
 				model: [
 					    {name: 'id'},
 					    {name: 'resource_uri'},
@@ -334,7 +334,7 @@ App.reporting.FilterPanel = Ext.extend(Ext.form.FormPanel, {
         	store: new Ext.data.RESTStore({
 				autoLoad : false,
 				autoSave : true,
-				apiUrl : App.getApiUrl('state'),
+				apiUrl : App.getApiUrl('state','state'),
 				model: [
 					    {name: 'id'},
 					    {name: 'resource_uri'},

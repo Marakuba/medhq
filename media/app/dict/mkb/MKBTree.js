@@ -13,7 +13,7 @@ App.dict.MKBTree = Ext.extend(Ext.tree.TreePanel, {
                 }),
                 loader : new Ext.tree.TreeLoader({
                 	nodeParameter:'parent',
-                	dataUrl: App.getApiUrl('icd10'),
+                	dataUrl: App.getApiUrl('service','icd10'),
                 	requestMethod:'GET',
                 	baseAttrs : {
                 		singleClickExpand : true

@@ -6,7 +6,7 @@ App.choices.BarcodeChoiceGrid = Ext.extend(Ext.grid.GridPanel, {
 
 		this.store = new Ext.data.RESTStore({
 			autoLoad : false,
-			apiUrl : App.getApiUrl('barcode'),
+			apiUrl : App.getApiUrl('numeration','barcode'),
 			model: App.models.barcodeModel
 		});
 

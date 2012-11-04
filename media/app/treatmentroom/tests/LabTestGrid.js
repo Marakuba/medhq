@@ -70,7 +70,7 @@ App.treatment.LabTestGrid = Ext.extend(Ext.grid.GridPanel, {
 	        	name:'state',
 			    minChars:3,
 			    emptyText:'Выберите лабораторию...',
-			    proxyUrl:App.getApiUrl('medstate')
+			    proxyUrl:App.getApiUrl('state','state','medstate')
 			}),{
 				text:'Передать в лабораторию',
 				handler:this.onSend.createDelegate(this)

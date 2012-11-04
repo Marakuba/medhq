@@ -17,7 +17,7 @@ App.registry.PreorderGrid = Ext.extend(Ext.grid.GridPanel, {
 		this.medstateStore = this.medstateStore || new Ext.data.RESTStore({
 			autoSave: true,
 			autoLoad : true,
-			apiUrl : App.getApiUrl('medstate'),
+			apiUrl : App.getApiUrl('state','state','medstate'),
 			model: App.models.MedState
 		});
 
@@ -65,7 +65,7 @@ App.registry.PreorderGrid = Ext.extend(Ext.grid.GridPanel, {
 		this.staffStore = new Ext.data.RESTStore({
 			autoLoad : false,
 			autoSave : true,
-			apiUrl : App.getApiUrl('position'),
+			apiUrl : App.getApiUrl('staff','position'),
 			model: [
 				    {name: 'id'},
 				    {name: 'resource_uri'},
@@ -162,7 +162,7 @@ App.registry.PreorderGrid = Ext.extend(Ext.grid.GridPanel, {
 				format:'json',
 				'timeslot__isnull':false
 			},
-			apiUrl : App.getApiUrl('extpreorder'),
+			apiUrl : App.getApiUrl('scheduler','extpreorder'),
 			model: App.models.preorderModel
 		});
 
@@ -175,13 +175,13 @@ App.registry.PreorderGrid = Ext.extend(Ext.grid.GridPanel, {
 		this.eventStore = new Ext.data.RESTStore({
 			autoLoad : false,
 			autoSave : true,
-			apiUrl : App.getApiUrl('event'),
+			apiUrl : App.getApiUrl('scheduler','event'),
 			model: this.eventModel
 		});
 		this.patientStore = this.patientStore || new Ext.data.RESTStore({
 			autoLoad : false,
 			autoSave : false,
-			apiUrl : App.getApiUrl('patient'),
+			apiUrl : App.getApiUrl('patient','patient'),
 			model: App.models.patientModel
 		});
 

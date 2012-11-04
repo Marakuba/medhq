@@ -20,7 +20,7 @@ App.examination.TemplateApp = Ext.extend(Ext.Panel, {
 		this.tplStore = new Ext.data.RESTStore({
 			autoSave: false,
 			autoLoad : false,
-			apiUrl : App.getApiUrl('examtemplate'),
+			apiUrl : App.getApiUrl('examination','examtemplate'),
 			model: App.models.Template,
 			baseParams:{
 				format:'json',
@@ -146,11 +146,11 @@ App.examination.TemplateApp = Ext.extend(Ext.Panel, {
 		var emptyData = Ext.encode({'tickets':[]});
 		this.record = new this.tplStore.recordType();
 		this.record.set('data',emptyData);
-		this.record.set('staff',App.getApiUrl('staff',active_staff));
+		this.record.set('staff',App.getApiUrl('staff','staff',active_staff));
 		if (this.baseServiceName){
 			this.record.set('name',this.baseServiceName);
 		};
-		this.record.set('base_service',App.getApiUrl('baseservice',this.baseServiceId));
+		this.record.set('base_service',App.getApiUrl('service','baseservice',this.baseServiceId));
 		this.tplStore.add(this.record);
 		this.tplStore.save();
 	},
@@ -185,8 +185,8 @@ App.examination.TemplateApp = Ext.extend(Ext.Panel, {
 							deleted:false
 						};
 						this.record.set('name',this.baseServiceName);
-						this.record.set('staff',App.getApiUrl('staff',active_staff));
-						this.record.set('base_service',App.getApiUrl('baseservice',this.baseServiceId));
+						this.record.set('staff',App.getApiUrl('staff','staff',active_staff));
+						this.record.set('base_service',App.getApiUrl('service','baseservice',this.baseServiceId));
 						this.tplStore.add(this.record);
 						this.tplStore.save();
 						this.openEditor(this.record.data.data)

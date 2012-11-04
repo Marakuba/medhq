@@ -8,7 +8,7 @@ App.assignment.DeletePromptWindow = Ext.extend(Ext.Window, {
 		this.store = new Ext.data.RESTStore({
 			autoSave: true,
 			autoLoad : false,
-			apiUrl : App.getApiUrl('rejection_cause'),
+			apiUrl : App.getApiUrl('scheduler','rejection_cause'),
 			model: [{name:'resource_uri'},
 					{name:'id'},
 					{name:'name'}]

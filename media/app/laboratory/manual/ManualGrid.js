@@ -22,7 +22,7 @@ App.manual.ManualGrid = Ext.extend(Ext.grid.GridPanel, {
 		this.store = new Ext.data.RESTStore({
 			autoSave : true,
 			autoLoad : false,
-			apiUrl : App.getApiUrl('labservice'),
+			apiUrl : App.getApiUrl('visit','labservice'),
 			model: App.models.LabService
 		});
 
@@ -50,7 +50,7 @@ App.manual.ManualGrid = Ext.extend(Ext.grid.GridPanel, {
 			store: new Ext.data.JsonStore({
 				autoLoad:true,
 				proxy: new Ext.data.HttpProxy({
-					url:App.getApiUrl('position'),
+					url:App.getApiUrl('staff','position'),
 					method:'GET'
 				}),
 				root:'objects',
@@ -267,7 +267,7 @@ App.manual.ManualGrid = Ext.extend(Ext.grid.GridPanel, {
 	},
 
 	setStaff : function() {
-		var staff = App.getApiUrl('position',active_profile);
+		var staff = App.getApiUrl('staff','position',active_profile);
 		var sf = this.staffField;
 		sf.setValue(staff);
 		return staff

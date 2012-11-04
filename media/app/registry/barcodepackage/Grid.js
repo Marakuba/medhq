@@ -9,7 +9,7 @@ App.barcodepackage.Grid = Ext.extend(Ext.grid.GridPanel, {
 	initComponent : function() {
 
 		this.proxy = new Ext.data.HttpProxy({
-		    url: App.getApiUrl('barcodepackage')
+		    url: App.getApiUrl('numeration','barcodepackage')
 		});
 
 		this.printer = Ext.state.Manager.getProvider().get('lab_printer');

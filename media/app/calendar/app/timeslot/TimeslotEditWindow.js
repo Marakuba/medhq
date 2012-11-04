@@ -39,7 +39,7 @@ Ext.calendar.TimeslotEditWindow = Ext.extend(Ext.Window, {
 		this.serviceStore = new Ext.data.RESTStore({
 			autoLoad : false,
 			autoSave: false,
-			apiUrl : App.getApiUrl('extendedservice'),
+			apiUrl : App.getApiUrl('service','extendedservice'),
 			model: [
 				    {name: 'id'},
 				    {name: 'resource_uri'},
@@ -54,7 +54,7 @@ Ext.calendar.TimeslotEditWindow = Ext.extend(Ext.Window, {
 		this.patientStore = new Ext.data.RESTStore({
 			autoLoad : false,
 			autoSave : true,
-			apiUrl : App.getApiUrl('patient'),
+			apiUrl : App.getApiUrl('patient','patient'),
 			model: [
 				    {name: 'resource_uri'},
 				    {name: 'short_name'},
@@ -68,7 +68,7 @@ Ext.calendar.TimeslotEditWindow = Ext.extend(Ext.Window, {
 		this.patientSelectedStore = new Ext.data.RESTStore({
 			autoLoad : false,
 			autoSave : true,
-			apiUrl : App.getApiUrl('patient'),
+			apiUrl : App.getApiUrl('patient','patient'),
 			model: [
 				    {name: 'resource_uri'},
 				    {name: 'short_name'},
@@ -82,7 +82,7 @@ Ext.calendar.TimeslotEditWindow = Ext.extend(Ext.Window, {
 		this.freeTimeslotStore = new Ext.data.RESTStore({
 			autoLoad : false,
 			autoSave : true,
-			apiUrl : App.getApiUrl('event'),
+			apiUrl : App.getApiUrl('scheduler','event'),
 			model: [
 				    {name: 'resource_uri'},
 				    {name: 'start',type:'date',format:'c'},
@@ -149,7 +149,7 @@ Ext.calendar.TimeslotEditWindow = Ext.extend(Ext.Window, {
 
     	this.preorderStore = new Ext.data.RESTStore({
 			autoLoad : false,
-			apiUrl : App.getApiUrl('preorder'),
+			apiUrl : App.getApiUrl('scheduler','preorder'),
 			model: this.preorderModel
 		});
 

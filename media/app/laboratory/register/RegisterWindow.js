@@ -50,7 +50,7 @@ App.laboratory.RegisterWindow = Ext.extend(Ext.Window, {
 				valueField:'id',
 				store:new Ext.data.RESTStore({
 					autoLoad : true,
-					apiUrl : App.getApiUrl('medstate'),
+					apiUrl : App.getApiUrl('state','state','medstate'),
 					model: ['id','name']
 				}),
 			    minChars:2,
@@ -67,7 +67,7 @@ App.laboratory.RegisterWindow = Ext.extend(Ext.Window, {
 				valueField:'id',
 				store:new Ext.data.RESTStore({
 					autoLoad : true,
-					apiUrl : App.getApiUrl('medstate'),
+					apiUrl : App.getApiUrl('state','state','medstate'),
 					model: ['id','name']
 				}),
 			    minChars:2,
@@ -85,7 +85,7 @@ App.laboratory.RegisterWindow = Ext.extend(Ext.Window, {
 				displayField:'full_name',
 				store:new Ext.data.RESTStore({
 					autoLoad : true,
-					apiUrl : App.getApiUrl('patient'),
+					apiUrl : App.getApiUrl('patient','patient'),
 					model: ['id','full_name']
 				}),
 			    minChars:2,
