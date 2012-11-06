@@ -4,7 +4,7 @@ from tastypie.authorization import DjangoAuthorization
 from tastypie.constants import ALL, ALL_WITH_RELATIONS
 from tastypie import fields
 from tastypie.api import Api
-from api.resources import ExtResource
+from apiutils.resources import ExtResource
 from accounting.models import Contract as AccContract, \
     Invoice as AccInvoice, InvoiceItem as AccInvoiceItem
 

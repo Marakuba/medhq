@@ -1,6 +1,6 @@
 # -*- coding: utf-8 -*-
 from tastypie.api import Api
-from contrib.ext.resources import ExtResource
+from apiutils.resources import ExtResource
 from tastypie.authorization import DjangoAuthorization
 from interlayer.models import ClientItem
 from tastypie.constants import ALL_WITH_RELATIONS

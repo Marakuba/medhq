@@ -13,7 +13,7 @@ App.sampling.TubeWindow = Ext.extend(Ext.Window, {
 	        	name:'laboratory',
 			    store: new Ext.data.JsonStore({
 					proxy: new Ext.data.HttpProxy({
-						url:App.getApiUrl('state','state','medstate'),
+						url:App.getApiUrl('state','medstate'),
 						method:'GET'
 					}),
 					root:'objects',
@@ -40,7 +40,7 @@ App.sampling.TubeWindow = Ext.extend(Ext.Window, {
 	        	name:'tube',
 			    store: new Ext.data.JsonStore({
 					proxy: new Ext.data.HttpProxy({
-						url:App.getApiUrl('state','state','lab','tube'),
+						url:App.getApiUrl('lab','tube'),
 						method:'GET'
 					}),
 					root:'objects',

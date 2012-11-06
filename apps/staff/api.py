@@ -4,7 +4,7 @@ from tastypie.resources import ModelResource
 from tastypie.constants import ALL, ALL_WITH_RELATIONS
 from tastypie import fields
 from tastypie.api import Api
-from api.resources import ExtResource, ComplexQuery
+from apiutils.resources import ExtResource, ComplexQuery
 from staff.models import Position, Staff, Doctor
 from patient.utils import smartFilter
 from django.db.models.query_utils import Q

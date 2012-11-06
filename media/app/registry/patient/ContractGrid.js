@@ -191,7 +191,7 @@ App.patient.ContractGrid = Ext.extend(Ext.grid.EditorGridPanel, {
 		var today  = new Date();
 		var data = this.record ? { patient:this.record.data.resource_uri } : {};
 		data['created'] = today;
-		data['state'] = App.getApiUrl('state','state','ownstate',state);
+		data['state'] = App.getApiUrl('state','ownstate',state);
 		data['state_name'] = active_state;
 		if (contractTypeRecord){
 			switch(contractTypeRecord.data.type){

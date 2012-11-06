@@ -256,7 +256,7 @@ App.laborder.LabServiceGrid = Ext.extend(Ext.grid.GridPanel, {
 	initToolbar: function(){
 		// laboratory
 		Ext.Ajax.request({
-			url:App.getApiUrl('state','state','medstate'),
+			url:App.getApiUrl('state','medstate'),
 			method:'GET',
 			success:function(resp, opts) {
 				this.ttb.add({

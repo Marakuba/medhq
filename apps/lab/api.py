@@ -5,7 +5,7 @@ from tastypie.authorization import DjangoAuthorization
 from tastypie.constants import ALL, ALL_WITH_RELATIONS
 from tastypie import fields
 from tastypie.api import Api
-from api.resources import ExtResource, ComplexQuery, ExtBatchResource
+from apiutils.resources import ExtResource, ComplexQuery, ExtBatchResource
 from lab.models import LabOrder, Sampling, Tube, Result, Analysis, InputList,\
     Equipment, EquipmentAssay, EquipmentResult, EquipmentTask, Invoice,\
     InvoiceItem
@@ -13,7 +13,7 @@ from patient.utils import smartFilter
 from django.db.models.query_utils import Q
 from tastypie.cache import SimpleCache
 from visit.models import OrderedService
-from api.authorization import LocalAuthorization
+from apiutils.authorization import LocalAuthorization
 
 
 class TubeResource(ModelResource):
@@ -43,47 +43,6 @@ class AnalysisResource(ModelResource):
         list_allowed_methods = ['get', 'post', 'put']
 
 
-class ResultResource(ExtResource):
-    """
-    """
-    order = fields.ForeignKey('lab.api.LabOrderResource', 'order')
-    analysis = fields.ForeignKey(AnalysisResource, 'analysis')
-    modified_by = fields.ForeignKey('core.api.UserResource', 'modified_by', null=True)
-    sample = fields.ForeignKey('api.registry.SamplingResource', 'sample', null=True)
-
-    def obj_update(self, bundle, request=None, **kwargs):
-        kwargs['modified_by'] = request.user
-        result = super(ResultResource, self).obj_update(bundle=bundle, request=request, **kwargs)
-        return result
-
-    def dehydrate(self, bundle):
-        obj = bundle.obj
-        bundle.data['barcode'] = obj.order.visit.barcode.id
-        bundle.data['patient'] = obj.order.visit.patient.full_name()
-        bundle.data['service_name'] = obj.analysis.service
-        bundle.data['laboratory'] = obj.order.laboratory
-        bundle.data['is_group'] = obj.is_group()
-        bundle.data['analysis_name'] = obj.__unicode__()
-        bundle.data['analysis_code'] = obj.analysis.code
-        bundle.data['inputlist'] = [[input.name] for input in obj.analysis.input_list.all()]
-        bundle.data['measurement'] = obj.analysis.measurement
-        bundle.data['modified_by_name'] = obj.modified_by
-        return bundle
-
-    class Meta:
-        queryset = Result.objects.active().select_related()
-        authorization = DjangoAuthorization()
-        resource_name = 'result'
-        always_return_data = True
-        limit = 100
-        filtering = {
-            'order': ALL_WITH_RELATIONS,
-            'analysis': ALL_WITH_RELATIONS,
-            'is_validated': ALL,
-        }
-        list_allowed_methods = ['get', 'post', 'put']
-
-
 class InputListResource(ModelResource):
     """
     """
@@ -103,7 +62,7 @@ class LabOrderResource(ExtResource):
     visit = fields.ToOneField('visit.api.VisitResource', 'visit', null=True)
     laboratory = fields.ForeignKey('state.api.MedStateResource', 'laboratory', null=True)
 #    lab_group = fields.ForeignKey(LabServiceGroupResource, 'lab_group', null=True)
-    staff = fields.ForeignKey('api.registry.PositionResource', 'staff', null=True)
+    staff = fields.ForeignKey('staff.api.PositionResource', 'staff', null=True)
 
     def dehydrate(self, bundle):
         laborder = bundle.obj
@@ -233,6 +192,47 @@ class BarcodedSamplingResource(ModelResource):
         filtering = {
             'visit': ALL_WITH_RELATIONS,
             'laboratory': ALL_WITH_RELATIONS
+        }
+        list_allowed_methods = ['get', 'post', 'put']
+
+
+class ResultResource(ExtResource):
+    """
+    """
+    order = fields.ForeignKey('lab.api.LabOrderResource', 'order')
+    analysis = fields.ForeignKey(AnalysisResource, 'analysis')
+    modified_by = fields.ForeignKey('core.api.UserResource', 'modified_by', null=True)
+    sample = fields.ForeignKey(SamplingResource, 'sample', null=True)
+
+    def obj_update(self, bundle, request=None, **kwargs):
+        kwargs['modified_by'] = request.user
+        result = super(ResultResource, self).obj_update(bundle=bundle, request=request, **kwargs)
+        return result
+
+    def dehydrate(self, bundle):
+        obj = bundle.obj
+        bundle.data['barcode'] = obj.order.visit.barcode.id
+        bundle.data['patient'] = obj.order.visit.patient.full_name()
+        bundle.data['service_name'] = obj.analysis.service
+        bundle.data['laboratory'] = obj.order.laboratory
+        bundle.data['is_group'] = obj.is_group()
+        bundle.data['analysis_name'] = obj.__unicode__()
+        bundle.data['analysis_code'] = obj.analysis.code
+        bundle.data['inputlist'] = [[input.name] for input in obj.analysis.input_list.all()]
+        bundle.data['measurement'] = obj.analysis.measurement
+        bundle.data['modified_by_name'] = obj.modified_by
+        return bundle
+
+    class Meta:
+        queryset = Result.objects.active().select_related()
+        authorization = DjangoAuthorization()
+        resource_name = 'result'
+        always_return_data = True
+        limit = 100
+        filtering = {
+            'order': ALL_WITH_RELATIONS,
+            'analysis': ALL_WITH_RELATIONS,
+            'is_validated': ALL,
         }
         list_allowed_methods = ['get', 'post', 'put']
 

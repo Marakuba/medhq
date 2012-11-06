@@ -4,9 +4,9 @@ from tastypie.api import Api
 from tastypie import fields
 from tastypie.authorization import DjangoAuthorization
 from visit.models import Visit, Referral, OrderedService
-from api.resources import ExtResource, ComplexQuery, ExtBatchResource
+from apiutils.resources import ExtResource, ComplexQuery, ExtBatchResource
 from tastypie.constants import ALL, ALL_WITH_RELATIONS
-from api.utils import none_to_empty
+from apiutils.utils import none_to_empty
 from patient.utils import smartFilter
 from django.db.models.query_utils import Q
 from tastypie.cache import SimpleCache
@@ -39,7 +39,7 @@ class ReferralResource(ExtResource):
 
 
 class VisitResource(ExtResource):
-    patient = fields.ToOneField('state.api.PatientResource', 'patient', null=True)
+    patient = fields.ToOneField('patient.api.PatientResource', 'patient', null=True)
     office = fields.ToOneField('state.api.StateResource', 'office', null=True)
     referral = fields.ToOneField(ReferralResource, 'referral', null=True)
     source_lab = fields.ToOneField('state.api.LabResource', 'source_lab', null=True)
@@ -153,7 +153,7 @@ class OrderedServiceResource(ExtBatchResource):
     staff = fields.ToOneField('staff.api.PositionResource', 'staff', full=True, null=True)
     sampling = fields.ForeignKey('lab.api.SamplingResource', 'sampling', null=True)
     execution_place = fields.ForeignKey('state.api.StateResource', 'execution_place')
-    assigment = fields.ForeignKey('apps.api.registry.PreorderResource', 'assigment', null=True)
+    assigment = fields.ForeignKey('scheduler.api.PreorderResource', 'assigment', null=True)
 
     def obj_create(self, bundle, request=None, **kwargs):
         kwargs['operator'] = request.user
@@ -458,7 +458,7 @@ class ServiceBasketResource(ExtBatchResource):
     service = fields.ToOneField('service.api.BaseServiceResource', 'service', null=True)
     staff = fields.ToOneField('staff.api.PositionResource', 'staff', null=True)
     execution_place = fields.ToOneField('state.api.StateResource', 'execution_place')
-    assigment = fields.ForeignKey('apps.api.registry.PreorderResource', 'assigment', null=True)
+    assigment = fields.ForeignKey('scheduler.api.PreorderResource', 'assigment', null=True)
 
     def obj_create(self, bundle, request=None, **kwargs):
         kwargs['operator'] = request.user
@@ -522,6 +522,38 @@ class RefundBasketResource(ExtResource):
         list_allowed_methods = ['get', 'post', 'put']
 
 
+class ServiceToSend(ExtResource):
+    """
+    """
+
+    order = fields.ToOneField(VisitResource, 'order')
+    service = fields.ToOneField('service.api.BaseServiceResource', 'service')
+    staff = fields.ToOneField('staff.api.PositionResource', 'staff', full=True, null=True)
+    execution_place = fields.ForeignKey('state.api.StateResource', 'execution_place')
+    sampling = fields.ForeignKey('lab.api.SamplingResource', 'sampling', null=True)
+
+    def dehydrate(self, bundle):
+        bundle.data['operator_name'] = bundle.obj.operator
+        bundle.data['service_name'] = bundle.obj.service
+        bundle.data['patient_id'] = bundle.obj.order.patient.id
+        bundle.data['patient_name'] = bundle.obj.order.patient.full_name()
+        bundle.data['patient_birthday'] = bundle.obj.order.patient.birth_day
+        bundle.data['sku'] = bundle.obj.service.code
+        return bundle
+
+    class Meta:
+        queryset = OrderedService.objects.filter(service__lab_group__isnull=False)
+        resource_name = 'servicetosend'
+        authorization = DjangoAuthorization()
+        always_return_data = True
+        limit = 200
+        filtering = {
+            'id': ALL,
+            'state': ALL_WITH_RELATIONS
+        }
+        list_allowed_methods = ['get', 'post', 'put']
+
+
 api = Api(api_name='visit')
 
 api.register(VisitResource())
@@ -535,3 +567,4 @@ api.register(RefundBasketResource())
 api.register(LabServiceResource())
 api.register(LabTestResource())
 api.register(ExamServiceResource())
+api.register(ServiceToSend())

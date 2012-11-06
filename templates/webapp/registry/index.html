@@ -8,10 +8,7 @@
 	<script type="text/javascript">
 		var state = '{{ request.active_profile.state }}';
 		var MEDIA_URL = '{{ STATIC_URL }}';
-		var API_URL = '/api/v1';
-		function App.getApiUrl(resource){
-			return [API_URL,'dashboard',resource].join("/");
-		}
+		var API_URL = '/api';
 		var apps = {{ apps }};
 
 	</script>

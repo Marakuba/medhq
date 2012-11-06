@@ -2,7 +2,7 @@
 
 from tastypie.authorization import DjangoAuthorization
 from tastypie.api import Api
-from api.resources import ExtResource
+from apiutils.resources import ExtResource
 from django.contrib.contenttypes.models import ContentType
 from django.contrib.auth.models import User
 from tastypie.resources import ModelResource

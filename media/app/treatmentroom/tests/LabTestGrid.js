@@ -6,7 +6,7 @@ App.treatment.LabTestGrid = Ext.extend(Ext.grid.GridPanel, {
 
 		this.store = new Ext.data.RESTStore({
 			autoLoad : true,
-			apiUrl : App.getApiUrl('servicetosend'),
+			apiUrl : App.getApiUrl('visit','servicetosend'),
 			model: App.models.ServiceToSend
 		});
 
@@ -70,7 +70,7 @@ App.treatment.LabTestGrid = Ext.extend(Ext.grid.GridPanel, {
 	        	name:'state',
 			    minChars:3,
 			    emptyText:'Выберите лабораторию...',
-			    proxyUrl:App.getApiUrl('state','state','medstate')
+			    proxyUrl:App.getApiUrl('state','medstate')
 			}),{
 				text:'Передать в лабораторию',
 				handler:this.onSend.createDelegate(this)

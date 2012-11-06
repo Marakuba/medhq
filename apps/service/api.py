@@ -5,7 +5,7 @@ from tastypie.authorization import DjangoAuthorization
 from tastypie.constants import ALL, ALL_WITH_RELATIONS
 from service.models import BaseService, LabServiceGroup,\
      ExtendedService, ICD10
-from api.resources import ExtResource
+from apiutils.resources import ExtResource
 from tastypie.api import Api
 from tastypie import fields
 from lab.models import LabService

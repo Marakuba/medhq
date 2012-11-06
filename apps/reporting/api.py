@@ -5,7 +5,7 @@ from tastypie.authorization import DjangoAuthorization
 from tastypie.constants import ALL, ALL_WITH_RELATIONS
 from tastypie import fields
 from tastypie.api import Api
-from api.resources import ExtResource
+from apiutils.resources import ExtResource
 from reporting.models import Report, Query
 from django.db.models.query_utils import Q
 

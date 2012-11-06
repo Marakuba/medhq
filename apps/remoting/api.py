@@ -9,7 +9,7 @@ from tastypie.constants import ALL
 
 class RemoteStateResource(ModelResource):
 
-    state = fields.ForeignKey('apps.api.registry.StateResource', 'state')
+    state = fields.ForeignKey('state.api.StateResource', 'state')
 
     class Meta:
         queryset = RemoteState.objects.all()
@@ -18,6 +18,7 @@ class RemoteStateResource(ModelResource):
             'id': ALL
         }
         list_allowed_methods = ['get', 'post', 'put']
+
 
 api = Api(api_name='remoting')
 

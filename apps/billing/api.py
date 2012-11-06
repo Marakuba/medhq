@@ -1,13 +1,13 @@
 # -*- coding: utf-8 -*-
 from tastypie.api import Api
 from tastypie import fields
-from contrib.ext.resources import ExtResource, ComplexQuery
 from tastypie.authorization import DjangoAuthorization
 from tastypie.constants import ALL_WITH_RELATIONS, ALL
 from billing.models import Account, Payment, ClientAccount
 from interlayer.api import ClientItemResource
 from patient.utils import smartFilter
 from django.db.models.query_utils import Q
+from apiutils.resources import ExtResource, ComplexQuery
 
 
 class AccountResource(ExtResource):

@@ -5,7 +5,7 @@ from tastypie.authorization import DjangoAuthorization
 from tastypie.constants import ALL, ALL_WITH_RELATIONS
 from tastypie import fields
 from tastypie.api import Api
-from api.resources import ExtResource, ComplexQuery
+from apiutils.resources import ExtResource, ComplexQuery
 from patient.models import Patient, InsurancePolicy, ContractType, Contract
 from django.db.models.query_utils import Q
 from tastypie.cache import SimpleCache
@@ -16,7 +16,7 @@ class PatientResource(ExtResource):
 
     ad_source = fields.ForeignKey('crm.api.AdSourceResource', 'ad_source', null=True)
     discount = fields.ForeignKey('pricelist.api.DiscountResource', 'discount', null=True)
-    state = fields.ForeignKey('api.registry.StateResource', 'state', null=True)
+    state = fields.ForeignKey('state.api.StateResource', 'state', null=True)
     client_item = fields.OneToOneField('interlayer.api.ClientItemResource', 'client_item', null=True)
 
     def hydrate_initial_account(self, bundle):
@@ -137,7 +137,7 @@ class ContractTypeResource(ExtResource):
 
 class ContractResource(ExtResource):
     patient = fields.ForeignKey(PatientResource, 'patient')
-    state = fields.ForeignKey('api.registry.OwnStateResource', 'state', null=True)
+    state = fields.ForeignKey('state.api.OwnStateResource', 'state', null=True)
     contract_type = fields.ForeignKey(ContractTypeResource, 'contract_type', null=True)
 
     def dehydrate(self, bundle):

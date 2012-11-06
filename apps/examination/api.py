@@ -1,6 +1,6 @@
 # -*- coding: utf-8 -*-
 from tastypie.authorization import DjangoAuthorization
-from api.resources import ExtResource, ComplexQuery
+from apiutils.resources import ExtResource, ComplexQuery
 from tastypie.constants import ALL, ALL_WITH_RELATIONS
 from tastypie.api import Api
 from examination.models import CardTemplate, ExaminationCard, TemplateGroup, DICOM, Card, Template, FieldSet,\
@@ -70,7 +70,7 @@ class CardTemplateResource(ExtResource):
 class ExaminationCardResource(ExtResource):
 
     assistant = fields.ForeignKey('staff.api.PositionResource', 'assistant', null=True)
-    ordered_service = fields.ForeignKey('service.api.OrderedServiceResource', 'ordered_service', null=True)
+    ordered_service = fields.ForeignKey('visit.api.OrderedServiceResource', 'ordered_service', null=True)
     mbk_diag = fields.ForeignKey('service.api.ICD10Resource', 'mbk_diag', null=True)
     equipment = fields.ForeignKey(ExamEquipmentResource, 'equipment', null=True)
 
@@ -98,7 +98,7 @@ class ExaminationCardResource(ExtResource):
 
 class CardResource(ExtResource):
 
-    ordered_service = fields.ForeignKey('service.api.OrderedServiceResource', 'ordered_service', null=True)
+    ordered_service = fields.ForeignKey('visit.api.OrderedServiceResource', 'ordered_service', null=True)
     assistant = fields.ForeignKey('staff.api.PositionResource', 'assistant', null=True)
     mkb_diag = fields.ForeignKey('service.api.ICD10Resource', 'mkb_diag', null=True)
     equipment = fields.ForeignKey(ExamEquipmentResource, 'equipment', null=True)
@@ -255,7 +255,7 @@ class GlossaryResource(ExtResource):
 
 
 class RegExamCardResource(ExtResource):
-    ordered_service = fields.ForeignKey('service.api.OrderedServiceResource', 'ordered_service', null=True)
+    ordered_service = fields.ForeignKey('visit.api.OrderedServiceResource', 'ordered_service', null=True)
 
     def dehydrate(self, bundle):
         obj = bundle.obj

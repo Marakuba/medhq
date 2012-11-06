@@ -80,7 +80,7 @@ App.laboratory.RegisterApp = Ext.extend(Ext.Panel, {
    				valueField:'id',
    				store:new Ext.data.RESTStore({
    					autoLoad : true,
-   					apiUrl : App.getApiUrl('state','state','medstate'),
+   					apiUrl : App.getApiUrl('state','medstate'),
    					model: ['id','name']
    				}),
    			    minChars:2,
@@ -97,7 +97,7 @@ App.laboratory.RegisterApp = Ext.extend(Ext.Panel, {
    				valueField:'id',
    				store:new Ext.data.RESTStore({
    					autoLoad : true,
-   					apiUrl : App.getApiUrl('state','state','medstate'),
+   					apiUrl : App.getApiUrl('state','medstate'),
    					model: ['id','name']
    				}),
    			    minChars:2,
@@ -114,7 +114,7 @@ App.laboratory.RegisterApp = Ext.extend(Ext.Panel, {
    				valueField:'id',
    				store:new Ext.data.RESTStore({
    					autoLoad : true,
-   					apiUrl : App.getApiUrl('state','state','medstate'),
+   					apiUrl : App.getApiUrl('state','medstate'),
    					model: ['id','name']
    				}),
    			    minChars:2,
