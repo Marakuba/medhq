@@ -4,7 +4,7 @@
 production.py
 local_urls.py
 settings/development*
-manage.py
+manage*.py
 medhq_main
 media/cache
 media/dicom
