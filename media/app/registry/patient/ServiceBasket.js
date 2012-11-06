@@ -342,7 +342,7 @@ App.patient.ServiceBasket = Ext.extend(Ext.grid.EditorGridPanel, {
 	updateStaff: function(index, id, staff_name){
 		var rec = this.store.getAt(index);
 		rec.beginEdit();
-		rec.set('staff',"/api/v1/dashboard/position/"+id);
+		rec.set('staff',App.getApiUrl('staff', 'position', id);
 		rec.set('staff_name',staff_name);
 		rec.endEdit();
 	},
@@ -373,11 +373,11 @@ App.patient.ServiceBasket = Ext.extend(Ext.grid.EditorGridPanel, {
 		console.log(res);
 		var text = res[res.length-1];
 		var s = new Service({
-			service:"/api/v1/dashboard/baseservice/"+attrs.id,
+			service: App.getApiUrl('service', 'baseservice', attrs.id),
 			service_name:text,
 			price:attrs.price,
 			count:1,
-			execution_place:"/api/v1/dashboard/state/"+attrs.place
+			execution_place: App.getApiUrl('state', 'state', attrs.place)
 		});
 		this.stopEditing();
 		this.store.add(s);

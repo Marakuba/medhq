@@ -3,9 +3,9 @@ from django.utils import unittest
 from django.test.client import Client
 
 
-class InterlayerApiTest(unittest.TestCase):
+class RemotingApiTest(unittest.TestCase):
 
-    def test_interlayer_clientitem(self):
+    def test_remoting_remotestate(self):
         client = Client()
-        response = client.get('/api/interlayer/clientitem')
+        response = client.get('/api/remoting/remotestate')
         self.assertEqual(response.status_code, 200)

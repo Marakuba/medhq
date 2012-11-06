@@ -6,7 +6,7 @@ App.barcodepackage.Form = Ext.extend(Ext.form.FormPanel, {
 		this.labStore = new Ext.data.JsonStore({
 			autoLoad:false,
 			proxy: new Ext.data.HttpProxy({
-				url:'/api/v1/dashboard/state',
+				url: App.getApiUrl('state', 'state'),
 				method:'GET'
 			}),
 			root:'objects',
@@ -32,7 +32,7 @@ App.barcodepackage.Form = Ext.extend(Ext.form.FormPanel, {
 			    displayField: 'name',
 			    selectOnFocus:true
 			})
-		};		
+		};
 		config = {
 			//defaultType:'numberfield',
 			defaults:{
@@ -40,7 +40,7 @@ App.barcodepackage.Form = Ext.extend(Ext.form.FormPanel, {
 			},
 			border:false,
 			autoHeight:true,
-			items: [this.lab, 
+			items: [this.lab,
 			{
 				layout:'form',
 				labelWidth:50,

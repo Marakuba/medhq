@@ -6,9 +6,9 @@ App.refund.AddTab = Ext.extend(Ext.Panel, {
 	initComponent : function() {
 
 		this.proxy = new Ext.data.HttpProxy({
-		    url: '/api/v1/dashboard/refund'
+		    url: App.getApiUrl('visit', 'refund')
 		});
-		
+
 		this.reader = new Ext.data.JsonReader({
 		    totalProperty: 'meta.total_count',
 		    successProperty: 'success',
@@ -38,11 +38,11 @@ App.refund.AddTab = Ext.extend(Ext.Panel, {
 		    {name: 'is_billed', allowBlank: true, type:'boolean'},
 		    {name: 'referral_name', allowBlank: true}
 		]);
-		
+
 		this.writer = new Ext.data.JsonWriter({
 		    encode: false
 		});
-		
+
 		this.store = new Ext.data.Store({
 		    baseParams: {
 		    	format:'json'
@@ -73,7 +73,7 @@ App.refund.AddTab = Ext.extend(Ext.Panel, {
 		    	scope:this
 		    }
 		});
-		
+
 		this.servicePanel = new App.ServicePanel.Tree({
 			id:'service-panel',
 	        region: 'east',
@@ -83,8 +83,8 @@ App.refund.AddTab = Ext.extend(Ext.Panel, {
 	        //margins : '0 0 5 5',
 	        width: 300,
 	        split: true
-	    });		
-	    
+	    });
+
 	    this.form = new App.refund.Form({
         	region:'north',
         	baseCls:'x-border-layout-ct',
@@ -116,8 +116,8 @@ App.refund.AddTab = Ext.extend(Ext.Panel, {
 
 		Ext.apply(this, Ext.apply(this.initialConfig, config));
 		App.refund.AddTab.superclass.initComponent.apply(this, arguments);
-		
-		
+
+
 		this.form.on('refundsubmit', this.onSubmit, this);
 
 		if (this.refundId) {
@@ -131,7 +131,7 @@ App.refund.AddTab = Ext.extend(Ext.Panel, {
 		this.setTitle(this.getTitleText());
 		this.preventSave = false;
 		//this.basket.store.on('load', this.updateTotalSum, this);
-		
+
 /*		this.on('afterlayout', function(){
 			if (!this.record) {
 				this.loadMask = new Ext.LoadMask(this.body, {msg:'Подождите, данные загружаются...'});
@@ -139,8 +139,8 @@ App.refund.AddTab = Ext.extend(Ext.Panel, {
 			}
 		}, this);
 */	},
-	
-	
+
+
 	onSubmit: function(modified){
 		if(this.record){
 			if(this.record.id){
@@ -157,7 +157,7 @@ App.refund.AddTab = Ext.extend(Ext.Panel, {
 		} else {
 		}
 	},
-	
+
 	onRefundSave: function(rec) {
 		var id = rec.id;
 		this.form.visitId = id;
@@ -167,7 +167,7 @@ App.refund.AddTab = Ext.extend(Ext.Panel, {
 			this.saveBasket(id);
 		}
 	},
-	
+
 	getTitleText: function() {
 		var title;
 		if(this.record && this.record.data.id) {
@@ -177,11 +177,11 @@ App.refund.AddTab = Ext.extend(Ext.Panel, {
 		}
 		return title
 	},
-	
+
 	addToBasket:function(attrs){
 		this.basket.addRow(attrs);
 	},
-	
+
 	setVisitId: function(rec) {
 		var f = this.items.itemAt(0).items.itemAt(0);
 		f.isNew = false;
@@ -190,20 +190,20 @@ App.refund.AddTab = Ext.extend(Ext.Panel, {
 		Ext.getCmp('visit-print-btn').enable();
 		Ext.getCmp('visit-submit-btn').enable();
 	},
-	
+
 	saveBasket:function(orderId){
 		var b = this.basket;
 		b.store.each(function(rec){
 			if (!rec.data.order) {
 				rec.beginEdit();
-				rec.set('order',"/api/v1/dashboard/refund/"+orderId);
+				rec.set('order',App.getApiUrl('visit', 'refund', orderId));
 				rec.endEdit();
 			}
 		});
-		b.startModified = b.store.getModifiedRecords().length; 
+		b.startModified = b.store.getModifiedRecords().length;
 		b.store.save();
 	},
-	
+
 	updateTotalSum:function() {
 		if(this.type=='visit'){
 			var c = this.basket.getTotalSum();

@@ -98,7 +98,7 @@ App.refund.Form = Ext.extend(Ext.FormPanel, {
 
 		this.discountsStore = new Ext.data.JsonStore({
 			proxy: new Ext.data.HttpProxy({
-				url:'/api/v1/dashboard/discount',
+				url: App.getApiUrl('pricelist', 'discount'),
 				method:'GET'
 			}),
 			baseParams: {
@@ -143,7 +143,7 @@ App.refund.Form = Ext.extend(Ext.FormPanel, {
 		this.labStore = new Ext.data.JsonStore({
 			autoLoad:true,
 			proxy: new Ext.data.HttpProxy({
-				url:'/api/v1/dashboard/lab',
+				url:App.getApiUrl('state', 'lab'),
 				method:'GET'
 			}),
 			root:'objects',
@@ -170,7 +170,7 @@ App.refund.Form = Ext.extend(Ext.FormPanel, {
 
 		this.referralStore = new Ext.data.JsonStore({
 			proxy: new Ext.data.HttpProxy({
-				url:'/api/v1/dashboard/referral',
+				url:App.getApiUrl('visit', 'referral'),
 				method:'GET'
 			}),
 			root:'objects',
@@ -397,7 +397,7 @@ App.refund.Form = Ext.extend(Ext.FormPanel, {
 		this.defaultItems = [{
     			xtype:'hidden',
     			name:'patient',
-    			value:"/api/v1/dashboard/patient/"+this.patientId || null
+    			value: App.getApiUrl('patient', 'patient', this.patientId || null)
         }];
 
 		this.types = {

@@ -149,10 +149,10 @@ Ext.calendar.PreorderedServiceInlineGrid = Ext.extend(Ext.grid.EditorGridPanel, 
 		var place = ids[1];
 		var Service = this.store.recordType;
 		var s = new Service({
-			service:"/api/v1/dashboard/baseservice/"+id, //TODO: replace to App.getApiUrl
+			service: App.getApiUrl('service', 'baseservice', id),
 			service_name:text,
 			count:1,
-			execution_place:"/api/v1/dashboard/state/"+place
+			execution_place: App.getApiUrl('state', 'state', place)
 		});
 		this.stopEditing();
 		this.store.add(s);
