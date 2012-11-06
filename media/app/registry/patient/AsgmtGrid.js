@@ -9,7 +9,7 @@ App.patient.AsgmtGrid = Ext.extend(Ext.grid.EditorGridPanel, {
 		this.refStore = new Ext.data.RESTStore({
 			autoSave: false,
 			autoLoad : false,
-			apiUrl : App.getApiUrl('visit','visit','referral'),
+			apiUrl : App.getApiUrl('visit', 'referral'),
 			model: App.models.ReferralModel
 		});
 
@@ -41,7 +41,7 @@ App.patient.AsgmtGrid = Ext.extend(Ext.grid.EditorGridPanel, {
 		this.medstateStore = this.medstateStore || new Ext.data.RESTStore({
 			autoSave: true,
 			autoLoad : true,
-			apiUrl : App.getApiUrl('state','state','medstate'),
+			apiUrl : App.getApiUrl('state','medstate'),
 			model: App.models.MedState
 		});
 

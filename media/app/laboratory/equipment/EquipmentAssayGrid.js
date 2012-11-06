@@ -20,7 +20,7 @@ App.equipment.EquipmentAssayGrid = Ext.extend(Ext.grid.EditorGridPanel, {
 		this.store = new Ext.data.RESTStore({
 			autoLoad:false,
 			model:this.model,
-			apiUrl:App.getApiUrl('state','state','lab','equipmentassay')
+			apiUrl:App.getApiUrl('lab','equipmentassay')
 		});
 
 		this.comboRenderer = function(combo, field){
@@ -97,7 +97,7 @@ App.equipment.EquipmentAssayGrid = Ext.extend(Ext.grid.EditorGridPanel, {
 			    store: new Ext.data.JsonStore({
 					autoLoad:true,
 					proxy: new Ext.data.HttpProxy({
-						url:App.getApiUrl('state','state','lab','equipment'),
+						url:App.getApiUrl('lab', 'equipment'),
 						method:'GET'
 					}),
 					root:'objects',

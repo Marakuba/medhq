@@ -4,7 +4,7 @@ from tastypie.authorization import DjangoAuthorization
 from tastypie.constants import ALL
 from tastypie import fields
 from tastypie.api import Api
-from api.resources import ExtResource
+from apiutils.resources import ExtResource
 from medstandart.models import Standart, StandartItem, Term,\
     Complications, Stage, Phase, NosologicalForm, AgeCategory
 

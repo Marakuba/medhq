@@ -213,7 +213,7 @@ App.reporting.FilterPanel = Ext.extend(Ext.form.FormPanel, {
 		this.referralStore = new Ext.data.RESTStore({
 			autoLoad : false,
 			autoSave : true,
-			apiUrl : App.getApiUrl('visit','visit','referral'),
+			apiUrl : App.getApiUrl('visit', 'referral'),
 			model: [
 				    {name: 'id'},
 				    {name: 'resource_uri'},

@@ -2,7 +2,7 @@
 
 from tastypie.authorization import DjangoAuthorization
 from tastypie.api import Api
-from api.resources import ExtResource
+from apiutils.resources import ExtResource
 from promotion.models import Promotion
 from tastypie import fields
 

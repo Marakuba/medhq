@@ -387,7 +387,7 @@ App.visit.VisitForm = Ext.extend(Ext.FormPanel, {
             fieldLabel:'Кто направил',
             emptyText:'Выберите направившего врача...',
             name:'referral',
-            proxyUrl:App.getApiUrl('visit','visit','referral'),
+            proxyUrl:App.getApiUrl('visit', 'referral'),
             tooltip:'Врач, который направил пациента'
         });
 
@@ -1026,7 +1026,7 @@ App.visit.VisitForm = Ext.extend(Ext.FormPanel, {
                 var dsc = this.discountCmb;
                 dsc.getStore().load({
                     callback:function(){
-                        var r = dsc.findRecord(dsc.valueField,App.getApiUrl('pricelist','discount', a.discount);
+                        var r = dsc.findRecord(dsc.valueField,App.getApiUrl('pricelist','discount', a.discount));
                         if(r) {
                             dsc.setValue(r.data.resource_uri);
                             this.orderedService.onSumChange();

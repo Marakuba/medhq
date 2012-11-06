@@ -30,7 +30,7 @@ App.result.BasePlain = Ext.extend(Ext.grid.EditorGridPanel, {
 		);
 
 		this.proxy = new Ext.data.HttpProxy({
-		    url: App.getApiUrl('state','state','lab','result')
+		    url: App.getApiUrl('lab','result')
 		});
 
 		this.reader = new Ext.data.JsonReader({

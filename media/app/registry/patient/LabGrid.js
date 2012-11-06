@@ -8,7 +8,7 @@ App.patient.LabGrid = Ext.extend(Ext.grid.GridPanel, {
 
 		// Create a standard HttpProxy instance.
 		this.proxy = new Ext.data.HttpProxy({
-		    url: App.getApiUrl('state','state','lab','laborder')
+		    url: App.getApiUrl('lab','laborder')
 		});
 
 		// Typical JsonReader.  Notice additional meta-data params for defining the core attributes of your json-response

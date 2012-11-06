@@ -145,7 +145,7 @@ App.regBackend('equipmentresult', new App.Backend({
 			},
 		    restful: true,
 		    proxy: new Ext.data.HttpProxy({
-			    url: App.getApiUrl('state','state','lab','equipmentresultro')
+			    url: App.getApiUrl('lab', 'equipmentresultro')
 			}),
 		    reader: new Ext.data.JsonReader({
 			    totalProperty: 'meta.total_count',
@@ -201,7 +201,7 @@ App.regBackend('equipment', new App.Backend({
 			},
 		    restful: true,
 		    proxy: new Ext.data.HttpProxy({
-			    url: App.getApiUrl('state','state','lab','equipment')
+			    url: App.getApiUrl('lab', 'equipment')
 			}),
 		    reader: new Ext.data.JsonReader({
 			    totalProperty: 'meta.total_count',

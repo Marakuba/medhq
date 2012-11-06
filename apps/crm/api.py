@@ -1,6 +1,6 @@
 # -*- coding: utf-8 -*-
 from tastypie.authorization import DjangoAuthorization
-from api.resources import ExtResource
+from apiutils.resources import ExtResource
 from tastypie.constants import ALL
 from crm.models import AdSource
 from tastypie.api import Api

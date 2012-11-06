@@ -4,7 +4,7 @@ from tastypie.authorization import DjangoAuthorization
 from tastypie.constants import ALL, ALL_WITH_RELATIONS
 from tastypie import fields
 from tastypie.api import Api
-from api.resources import ExtResource, ComplexQuery, ExtBatchResource
+from apiutils.resources import ExtResource, ComplexQuery, ExtBatchResource
 from scheduler.models import RejectionCause, Calendar, Event, Preorder
 from patient.utils import smartFilter
 from django.db.models.query_utils import Q
@@ -36,7 +36,7 @@ class RejectionCauseResource(ExtResource):
 
 class EventResource(ExtResource):
     staff = fields.ForeignKey('staff.api.PositionResource', 'staff', null=True)
-    #preord = fields.ToOneField('apps.api.registry.PreorderResource', 'preord', null=True)
+    #preord = fields.ToOneField(PreorderResource, 'preord', null=True)
 
     def dehydrate(self, bundle):
         bundle.data['start'] = bundle.obj.start.strftime('%a %b %d %Y %H:%M:%S')

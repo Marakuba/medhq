@@ -27,7 +27,7 @@ App.equipment.EquipmentTaskGrid = Ext.extend(Ext.grid.EditorGridPanel, {
 		this.store = new Ext.data.RESTStore({
 			autoLoad : false,
 			autoSave : false,
-			apiUrl : App.getApiUrl('state','state','lab','equipmenttaskro'),
+			apiUrl : App.getApiUrl('lab', 'equipmenttaskro'),
 			model: this.model
 		});
 
@@ -141,7 +141,7 @@ App.equipment.EquipmentTaskGrid = Ext.extend(Ext.grid.EditorGridPanel, {
 			    store: new Ext.data.JsonStore({
 					autoLoad:true,
 					proxy: new Ext.data.HttpProxy({
-						url:App.getApiUrl('state','state','lab','equipment'),
+						url:App.getApiUrl('lab', 'equipment'),
 						method:'GET'
 					}),
 					root:'objects',

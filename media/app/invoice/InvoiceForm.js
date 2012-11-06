@@ -62,7 +62,7 @@ App.invoice.InvoiceForm = Ext.extend(Ext.FormPanel, {
 			        	name:'office',
 					    minChars:3,
 					    emptyText:'Выберите офис...',
-					    proxyUrl:App.getApiUrl('state','state','ownstate'),
+					    proxyUrl:App.getApiUrl('state', 'ownstate'),
 					    allowBlank:false
 					})]
 				},{
@@ -72,7 +72,7 @@ App.invoice.InvoiceForm = Ext.extend(Ext.FormPanel, {
 			        	name:'state',
 					    minChars:3,
 					    emptyText:'Выберите лабораторию...',
-					    proxyUrl:App.getApiUrl('state','state','medstate'),
+					    proxyUrl:App.getApiUrl('state', 'medstate'),
 					    allowBlank:false
 					})]
 				},{
@@ -121,8 +121,8 @@ App.invoice.InvoiceForm = Ext.extend(Ext.FormPanel, {
 			if(this.record) {
 				this.getForm().loadRecord(this.record);
 			} else {
-				console.info(App.getApiUrl('state','state','ownstate',active_state_id));
-				this.getForm().findField('office').setValue(App.getApiUrl('state','state','ownstate',active_state_id));
+				console.info(App.getApiUrl('state', 'ownstate',active_state_id));
+				this.getForm().findField('office').setValue(App.getApiUrl('state', 'ownstate',active_state_id));
 			}
 		},this);
 
