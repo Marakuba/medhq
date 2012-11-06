@@ -51,7 +51,7 @@ class IssueResource(ExtResource):
         list_allowed_methods = ['get', 'post', 'put']
 
 
-api = Api(api_name='examination')
+api = Api(api_name='helpdesk')
 
 api.register(IssueTypeResource())
 api.register(IssueResource())

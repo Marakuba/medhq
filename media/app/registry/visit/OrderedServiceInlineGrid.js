@@ -267,7 +267,7 @@ App.visit.OrderedServiceInlineGrid = Ext.extend(Ext.grid.EditorGridPanel, {
 
 	updateStaff: function(rec, id, staff_name){
 		rec.beginEdit();
-		rec.set('staff',"/api/v1/dashboard/position/"+id);
+		rec.set('staff', App.getApiUrl('staff', 'position', id));
 		rec.set('staff_name',staff_name);
 		rec.endEdit();
 	},

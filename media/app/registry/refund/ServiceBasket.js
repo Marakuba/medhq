@@ -343,7 +343,7 @@ App.refund.ServiceBasket = Ext.extend(Ext.grid.EditorGridPanel, {
 	updateStaff: function(index, id, staff_name){
 		var rec = this.store.getAt(index);
 		rec.beginEdit();
-		rec.set('staff',"/api/v1/dashboard/position/"+id);
+		rec.set('staff',App.getApiUrl('staff', 'position', id));
 		rec.set('staff_name',staff_name);
 		rec.endEdit();
 	},
@@ -376,11 +376,11 @@ App.refund.ServiceBasket = Ext.extend(Ext.grid.EditorGridPanel, {
 		var id = ids[0];
 		var place = ids[1];
 		var s = new Service({
-			service:"/api/v1/dashboard/baseservice/"+id,
+			service:App.getApiUrl('service', 'baseservice', id),
 			service_name:text,
 			price:attrs.price,
 			count:1,
-			execution_place:"/api/v1/dashboard/state/"+place
+			execution_place:App.getApiUrl('state', 'state', place)
 		});
 		this.stopEditing();
 		this.store.add(s);

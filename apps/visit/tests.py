@@ -1,23 +1,66 @@
-"""
-This file demonstrates two different styles of tests (one doctest and one
-unittest). These will both pass when you run "manage.py test".
+# -*- coding: utf-8 -*-
+from django.utils import unittest
+from django.test.client import Client
 
-Replace these with more appropriate tests for your application.
-"""
 
-from django.test import TestCase
+class VisitApiTest(unittest.TestCase):
 
-class SimpleTest(TestCase):
-    def test_basic_addition(self):
-        """
-        Tests that 1 + 1 always equals 2.
-        """
-        self.failUnlessEqual(1 + 1, 2)
+    def test_visit_referral(self):
+        client = Client()
+        response = client.get('/api/visit/referral')
+        self.assertEqual(response.status_code, 200)
 
-__test__ = {"doctest": """
-Another way to test that 1 + 1 is equal to 2.
+    def test_visit_visit(self):
+        client = Client()
+        response = client.get('/api/visit/visit')
+        self.assertEqual(response.status_code, 200)
 
->>> 1 + 1 == 2
-True
-"""}
+    def test_visit_refund(self):
+        client = Client()
+        response = client.get('/api/visit/refund')
+        self.assertEqual(response.status_code, 200)
 
+    def test_visit_orderedservice(self):
+        client = Client()
+        response = client.get('/api/visit/orderedservice')
+        self.assertEqual(response.status_code, 200)
+
+    def test_visit_laborderedservice(self):
+        client = Client()
+        response = client.get('/api/visit/laborderedservice')
+        self.assertEqual(response.status_code, 200)
+
+    def test_visit_labservice(self):
+        client = Client()
+        response = client.get('/api/visit/labservice')
+        self.assertEqual(response.status_code, 200)
+
+    def test_visit_labtest(self):
+        client = Client()
+        response = client.get('/api/visit/labtest')
+        self.assertEqual(response.status_code, 200)
+
+    def test_visit_examservice(self):
+        client = Client()
+        response = client.get('/api/visit/examservice')
+        self.assertEqual(response.status_code, 200)
+
+    def test_visit_samplingservice(self):
+        client = Client()
+        response = client.get('/api/visit/samplingservice')
+        self.assertEqual(response.status_code, 200)
+
+    def test_visit_servicebasket(self):
+        client = Client()
+        response = client.get('/api/visit/servicebasket')
+        self.assertEqual(response.status_code, 200)
+
+    def test_visit_refundbasket(self):
+        client = Client()
+        response = client.get('/api/visit/refundbasket')
+        self.assertEqual(response.status_code, 200)
+
+    def test_visit_servicetosend(self):
+        client = Client()
+        response = client.get('/api/visit/servicetosend')
+        self.assertEqual(response.status_code, 200)

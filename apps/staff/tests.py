@@ -1,23 +1,31 @@
-"""
-This file demonstrates two different styles of tests (one doctest and one
-unittest). These will both pass when you run "manage.py test".
+# -*- coding: utf-8 -*-
+from django.utils import unittest
+from django.test.client import Client
 
-Replace these with more appropriate tests for your application.
-"""
 
-from django.test import TestCase
+class StaffApiTest(unittest.TestCase):
 
-class SimpleTest(TestCase):
-    def test_basic_addition(self):
-        """
-        Tests that 1 + 1 always equals 2.
-        """
-        self.failUnlessEqual(1 + 1, 2)
+    def test_staff_staff(self):
+        client = Client()
+        response = client.get('/api/staff/staff')
+        self.assertEqual(response.status_code, 200)
 
-__test__ = {"doctest": """
-Another way to test that 1 + 1 is equal to 2.
+    def test_staff_position(self):
+        client = Client()
+        response = client.get('/api/staff/position')
+        self.assertEqual(response.status_code, 200)
 
->>> 1 + 1 == 2
-True
-"""}
+    def test_staff_staffsched(self):
+        client = Client()
+        response = client.get('/api/staff/staffsched')
+        self.assertEqual(response.status_code, 200)
 
+    def test_staff_possched(self):
+        client = Client()
+        response = client.get('/api/staff/possched')
+        self.assertEqual(response.status_code, 200)
+
+    def test_staff_doctor(self):
+        client = Client()
+        response = client.get('/api/staff/doctor')
+        self.assertEqual(response.status_code, 200)

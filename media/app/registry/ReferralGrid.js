@@ -2,12 +2,12 @@ Ext.ns('App');
 
 App.ReferralGrid = Ext.extend(Ext.grid.GridPanel, {
 
-	initComponent : function() {		
+	initComponent : function() {
 
 		this.proxy = new Ext.data.HttpProxy({
-		    url: '/api/v1/dashboard/referral'
+		    url: App.getApiUrl('visit', 'referral')
 		});
-		
+
 		this.reader = new Ext.data.JsonReader({
 		    totalProperty: 'meta.total_count',
 		    successProperty: 'success',
@@ -20,13 +20,13 @@ App.ReferralGrid = Ext.extend(Ext.grid.GridPanel, {
 		    {name: 'name', allowBlank: false},
 		    {name: 'referral_type', allowBlank: false}
 		]);
-		
+
 		this.writer = new Ext.data.JsonWriter({
 		    encode: false
 		});
 		this.baseParams = {
 		    format:'json'
-		}; 
+		};
 		this.store = new Ext.data.Store({
 		    id: 'referral-store',
 		    autoLoad:true,
@@ -40,7 +40,7 @@ App.ReferralGrid = Ext.extend(Ext.grid.GridPanel, {
 		    restful: true,
 		    proxy: this.proxy,
 		    reader: this.reader,
-		    writer: this.writer,    
+		    writer: this.writer,
 		    listeners: {
 		    	write: function(store, action, result, res, rs) {
 		    		if (action == 'create'){
@@ -50,14 +50,14 @@ App.ReferralGrid = Ext.extend(Ext.grid.GridPanel, {
 		    	scope:this
 		    }
 		});
-		
+
 		Ext.util.Format.comboRenderer = function(combo,field){
             return function(value, meta, rec){
                 var record = combo.findRecord(combo.valueField, value);
                 return record ? record.get(combo.displayField) : (rec ? rec.get(field) : combo.valueNotFoundText);
             }
         };
-		
+
 		this.referralTypeCB = new Ext.form.ComboBox({
 			store:new Ext.data.ArrayStore({
 				fields:['id','title'],
@@ -83,21 +83,21 @@ App.ReferralGrid = Ext.extend(Ext.grid.GridPanel, {
 				scope:this
 			}
 		});
-		
+
 		this.columns =  [
 		    {
-		    	header: "Наименование/Имя", 
-		    	sortable: true, 
-		    	dataIndex: 'name', 
+		    	header: "Наименование/Имя",
+		    	sortable: true,
+		    	dataIndex: 'name',
 		    	editor: new Ext.form.TextField({})
 		    },{
-		    	header: "Тип", 
-		    	sortable: true, 
-		    	dataIndex: 'referral_type', 
+		    	header: "Тип",
+		    	sortable: true,
+		    	dataIndex: 'referral_type',
 		    	editor: this.referralTypeCB,
                 renderer: Ext.util.Format.comboRenderer(this.referralTypeCB,'title')
 		    }
-		];		
+		];
 		this.editor = new Ext.ux.grid.RowEditor({
        		saveText: 'Сохранить',
        		cancelText: 'Отменить',
@@ -109,7 +109,7 @@ App.ReferralGrid = Ext.extend(Ext.grid.GridPanel, {
        			}
        		}
     	});
-    	
+
     	this.searchField = new App.SearchField({
 			stripCharsRe:new RegExp('[\;\?]'),
 			listeners:{
@@ -122,7 +122,7 @@ App.ReferralGrid = Ext.extend(Ext.grid.GridPanel, {
 				search:function(v){
 					this.onSearch(v)
 				}
-				
+
 			},
 			onTrigger1Click : function(){
 		        if(this.hasSearch){
@@ -146,7 +146,7 @@ App.ReferralGrid = Ext.extend(Ext.grid.GridPanel, {
 		    },
 		    scope:this
 		});
-		
+
 		var config = {
 			loadMask : {
 				msg : 'Подождите, идет загрузка...'
@@ -184,7 +184,7 @@ App.ReferralGrid = Ext.extend(Ext.grid.GridPanel, {
 		Ext.apply(this, Ext.apply(this.initialConfig, config));
 		App.ReferralGrid.superclass.initComponent.apply(this, arguments);
 	},
-	
+
 	onAdd: function(btn,ev){
         var r = new this.store.recordType({
             name : '',
@@ -194,21 +194,21 @@ App.ReferralGrid = Ext.extend(Ext.grid.GridPanel, {
         this.store.insert(0, r);
         this.editor.startEditing(0);
 	},
-	
+
 	onChoice: function(btn,ev){
 		var record = this.getSelectionModel().getSelected();
         if (record) {
         	Ext.callback(this.fn, this.scope || window, [record]);
         };
 	},
-	
+
 	onSearch: function(v){
 		var s = this.store;
 		s.baseParams = { format:'json' };
 		s.setBaseParam('name__istartswith', v);
 		s.load();
 	}
-    
+
     /*onDelete: function() {
         var rec = this.getSelectionModel().getSelected();
         if (!rec) {
@@ -216,8 +216,8 @@ App.ReferralGrid = Ext.extend(Ext.grid.GridPanel, {
         }
         this.store.remove(rec);
     }	*/
-	
-	
+
+
 });
 
 

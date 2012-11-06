@@ -159,7 +159,7 @@ App.sampling.TubeTree = Ext.extend(Ext.tree.TreePanel,{
 		var s = this.store;
 		var Sampling = s.recordType;
 		Ext.apply(values,{
-			visit:'/api/v1/dashboard/visit/'+this.visitId
+			visit:App.getApiUrl('visit', 'visit', this.visitId)
 		});
 		console.log(values);
 		var new_sampling = new Sampling(values);
