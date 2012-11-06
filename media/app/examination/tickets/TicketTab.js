@@ -404,7 +404,10 @@ App.examination.TicketTab = Ext.extend(Ext.Panel, {
 	
 	checkUniqueTickets : function(){
 		_.map(this.uniqueTickets, function(xtype){
-			Ext.getCmp('unique-ticket-'+xtype).enable();
+			var cmp = Ext.getCmp('unique-ticket-'+xtype);
+			if(cmp) {
+				cmp.enable();
+			}
 		});
 		
 		var uniques = _.filter(this.data['tickets'], function(ticket){
@@ -413,8 +416,9 @@ App.examination.TicketTab = Ext.extend(Ext.Panel, {
 		
 		_.map(uniques, function(ticket){
 			var cmp = Ext.getCmp('unique-ticket-'+ticket.xtype);
-			if (cmp)
+			if (cmp) {
 				cmp.disable();
+			}
 		});
 	},
 	
