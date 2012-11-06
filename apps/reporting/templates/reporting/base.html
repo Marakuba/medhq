@@ -1,5 +1,5 @@
 {% extends "print/off_blank.html" %}
-
+{% load report_tags %}
 {% block title %}{{ name }} | Отчеты{% endblock %}
 
 {% block extra_head %}
@@ -30,11 +30,32 @@
 	            
 	<br><br>
 	            
-	<table class="data" class="data">
-	    <tbody>
-	    {% block data %}{% endblock %}
-	    </tbody>
-	</table>
+    {% block data %}
+    	{% get_report_as_list report False as results %}
+	    <table class="data">
+	    {% if results|length == 1 %}
+	    <tr><td><div class="empty">Нет данных по заданным условиям</div></td></tr>
+	    {% else %}
+	    {% for row in results %}
+	        <tr class="row-{{ row.type }} {% if row.type == 'data' %}{% cycle 'row1' 'row2' %}{% endif %} {{ row.cssCls }}">
+	            {% for cell in row.data %}
+	                {% if row.type == 'header' %}
+	                    <th colspan="{{ cell.colspan }}">{{cell.value}}</th>
+	                {% else %}
+	                    <td {% if cell.cssCls %}class="{{ cell.cssCls }}"{% endif %} colspan="{{ cell.colspan }}">
+	                    	{% if not cell.value %}
+	                    		<div class="empty">{{cell.default|default:'Не указано'}}</div>
+	                    	{% else %}
+	                    		{{cell.value}}
+	                    	{% endif %}
+	                    </td>
+	                {% endif %}
+	            {% endfor %}
+	        </tr>
+	    {% endfor %}
+	    {% endif %}
+	    </table>
+    {% endblock %}
 	
 	
 	{% block footer %}{% endblock %}

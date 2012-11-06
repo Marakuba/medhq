@@ -37,7 +37,7 @@ App.reporting.PrintPanel = Ext.extend(Ext.Panel, {
     },
     
     onPrint:function(){
-    	var url = String.format('/reporting/{0}/test_print/?{1}',this.slug,this.params);
+    	var url = String.format('/reporting/{0}/print/?{1}',this.slug,this.params);
 		window.open(url);
     }
     
