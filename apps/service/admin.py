@@ -45,12 +45,12 @@ class PriceInlineAdmin(admin.TabularInline):
 
 
 class AnalysisInlineAdminForm(forms.ModelForm):
-    
+
     code = forms.CharField(label=u'Код', required=False,
                            widget=forms.TextInput(attrs={'size':15}))
     ref_range_text = forms.CharField(label=u'Реф.интервалы', required=False,
                                      widget=forms.Textarea(attrs={'cols':30,'rows':3}))
-    
+
     class Meta:
         model = Analysis
 
@@ -59,7 +59,7 @@ class AnalysisInlineAdmin(admin.TabularInline):
     form = AnalysisInlineAdminForm
     extra = 0
     exclude = ('input_list','input_mask','equipment_assay','tube','by_age','by_gender','by_pregnancy')
-    
+
 
 
 def is_leaf(obj):
@@ -105,9 +105,9 @@ def iterate_service(service):
         tube
         ref_range_text
         order
-    
+
     item sample dump:
-    
+
     [{
         'name':'abc',
         ....
@@ -124,20 +124,20 @@ def iterate_service(service):
         },...],
         children:[{....},...]
     },...]
-    
-    
-    
+
+
+
     ************
     For loading:
     ************
-    
+
     Required params:
         initial parent (root e.q. None),
         initial branch and/or ex.service state (by name or uuid),
-        
+
     Options:
         make top service object (name,short_name) - wraps all items into new group
-        
+
     """
     data = {
         'name':service.name,
@@ -168,7 +168,7 @@ def iterate_service(service):
             }
     except:
         pass
-    
+
     analysis = service.analysis_set.all()
     if analysis:
         data['analysis'] = []
@@ -181,16 +181,16 @@ def iterate_service(service):
                 'ref_range_text':a.ref_range_text,
                 'order':a.order
             })
-    
+
     children = service.get_children()
     if children:
         data['children'] = []
         for child in children:
             data['children'].append(iterate_service(child))
-    
+
     return data
-    
-    
+
+
 
 def dump_for_load(modeladmin, request, queryset):
     result = [iterate_service(s) for s in queryset]
@@ -202,12 +202,12 @@ def dump_for_load(modeladmin, request, queryset):
     return response
 
 class ExecutionPlaceAdmin(admin.TabularInline):
-    
+
     model = ExecutionPlace
     extra = 1
 
 def copy_ext_service(modeladmin, request, queryset):
-    
+
     if 'apply' in request.POST:
         # do proccess
         form = ExtServiceCopierForm(request.POST)
@@ -223,11 +223,11 @@ def copy_ext_service(modeladmin, request, queryset):
                                        'branches':branches
                                     }
                                   })
-        
+
         return HttpResponseRedirect(request.get_full_path())
-    
+
     form = ExtServiceCopierForm(initial={'_selected_action': request.POST.getlist(admin.ACTION_CHECKBOX_NAME)})
-    
+
     ctx = {
         'form':form
     }
@@ -236,8 +236,8 @@ def copy_ext_service(modeladmin, request, queryset):
                               ctx,
                               context_instance=RequestContext(request))
 
-copy_ext_service.short_description = u'Копировать расширенные услуги' 
-    
+copy_ext_service.short_description = u'Копировать расширенные услуги'
+
 class ExtendedServiceAdmin(admin.ModelAdmin):
     """
     """
@@ -248,10 +248,10 @@ class ExtendedServiceAdmin(admin.ModelAdmin):
     list_filter = ('tube','state','is_manual')
     inlines = [PriceInlineAdmin]
     actions = [copy_ext_service]
-    
+
 
 class ExtendedServiceInlineAdmin(admin.StackedInline):
-    
+
 #    template = "admin/service/tabular.html"
     model = ExtendedService
     extra = 0
@@ -263,44 +263,44 @@ lookups = {}
 lookups[BaseService._meta.right_attr] = F(BaseService._meta.left_attr)+1
 
 class BaseServiceForm(forms.ModelForm):
-    
-    name = forms.CharField(label=u'Полное наименование', required=True, max_length=300, 
+
+    name = forms.CharField(label=u'Полное наименование', required=True, max_length=300,
                            widget=forms.TextInput(attrs={'size':100}))
-    short_name = forms.CharField(label=u'Краткое наименование', required=False, max_length=300, 
+    short_name = forms.CharField(label=u'Краткое наименование', required=False, max_length=300,
                                  widget=forms.TextInput(attrs={'size':100}))
-    parent = TreeNodeChoiceField(label=u'Группа', 
-                                 queryset=BaseService.objects.exclude(base_group__isnull=True, **lookups).order_by(BaseService._meta.tree_id_attr, BaseService._meta.left_attr, 'level'), 
+    parent = TreeNodeChoiceField(label=u'Группа',
+                                 queryset=BaseService.objects.exclude(base_group__isnull=True, **lookups).order_by(BaseService._meta.tree_id_attr, BaseService._meta.left_attr, 'level'),
                                  required=False)
-    
+
     class Meta:
         model = BaseService
 
 class BaseServiceAdmin(TreeEditor, TabbedAdmin):
     """
     """
-    
+
     form = BaseServiceForm
 
-    
+
     list_per_page = 2000
     list_display = ('name','short_name','code','execution_time','type')
     list_editable = ('code','execution_time','type')
-    
+
     inlines = [ExtendedServiceInlineAdmin,AnalysisInlineAdmin,LabServiceInline]
     save_as = True
     exclude = ('standard_service',)
     search_fields = ['name','short_name','code']
     actions = [make_inactive_action,dump_for_load]
-    
+
     def tree_loader(self, request):
-        
+
         def handle_uploaded_file(f, name):
                 destination = open(name, 'w')
                 for chunk in f.chunks():
                     destination.write(chunk)
                 f.close()
                 destination.close()
-        
+
         if request.method=='POST':
             """
             """
@@ -313,11 +313,11 @@ class BaseServiceAdmin(TreeEditor, TabbedAdmin):
                 ServiceTreeLoader(tmp_name,d['branches'],d['state'],d['root'],d['top'])
         else:
             form = TreeLoaderForm()
-        
+
         ec = {
             'form':form
         }
-        
+
         return render_to_response('admin/service/tree_loader.html', ec,
                                   context_instance=RequestContext(request))
 
@@ -325,7 +325,7 @@ class BaseServiceAdmin(TreeEditor, TabbedAdmin):
         form = PriceForm({'date':datetime.date.today()})
         extra_context = {'form' : form}
         return direct_to_template(request, "admin/service/pricelist.html", extra_context=extra_context)
-        
+
     def pricelist_print(self, request):
         date = request.GET.get('date')
         if not date:
@@ -334,37 +334,37 @@ class BaseServiceAdmin(TreeEditor, TabbedAdmin):
             date = datetime.datetime.strptime(date, "%d.%m.%Y")
         print date
         services = BaseService.objects.actual().order_by(BaseService._meta.tree_id_attr, #@UndefinedVariable
-                                                      'level', 
+                                                      'level',
                                                       "-"+BaseService._meta.left_attr) #@UndefinedVariable
-        
+
         extra_context = {
                             'services':services,
                             'date':date
                         }
         return direct_to_template(request, "print/service/pricelist.html", extra_context=extra_context)
-        
+
     def export_csv(self, request):
         response =  HttpResponse(mimetype='text/csv')
         writer = csv.writer(response)
         qs = self.queryset(request).order_by(self.model._meta.tree_id_attr, self.model._meta.left_attr)
         for obj in qs:
-            row = [obj.id, 
-                   obj.parent_id, 
-                   obj.name.encode("utf-8"), 
+            row = [obj.id,
+                   obj.parent_id,
+                   obj.name.encode("utf-8"),
                    obj.short_name.encode("utf-8")
                    ]
             writer.writerow(row)
         response['Content-Disposition'] = 'attachment; filename=services_%s.csv' % datetime.datetime.today()
         return response
-    
+
     def clear_cache(self, request):
-        
+
         _clear_cache()
         messages.info(request, u'Кэш услуг был успешно очищен!')
         back_url = request.META['HTTP_REFERER'] or '/admin/'
-        
+
         return HttpResponseRedirect(back_url)
-    
+
     def get_urls(self):
         urls = super(BaseServiceAdmin, self).get_urls()
         my_urls = patterns('',
@@ -382,7 +382,7 @@ class BaseServiceAdmin(TreeEditor, TabbedAdmin):
             settings.STATIC_URL + "resources/js/inlines.js",
         ]
 
-    
+
 
 admin.site.register(BaseService, BaseServiceAdmin)
 admin.site.register(ExtendedService, ExtendedServiceAdmin)
