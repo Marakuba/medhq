@@ -48,7 +48,7 @@ class Invoice(make_operator_object('acc_invoice')):
         ordering = ('-id',)
 
     def __unicode__(self):
-        smart_unicode(self.id)
+        return u"№%s от %s" % (self.number, self.on_date.strftime('%d.%m.%Y'))
 
 
 class InvoiceItem(make_operator_object('acc_invoice_item')):
@@ -69,7 +69,7 @@ class InvoiceItem(make_operator_object('acc_invoice_item')):
         ordering = ('-id',)
 
     def __unicode__(self):
-        return smart_unicode(self.id)
+        return smart_unicode(u"<<%s>>" % self.id)
 
 
 def update_total_price(sender, **kwargs):
