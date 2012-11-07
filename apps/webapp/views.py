@@ -56,11 +56,11 @@ def get_apps(request):
         apps.append([u'Администрирование',u'/admin/'])
 
     return apps
-    
+
 
 
 def auth(request, authentication_form=AuthenticationForm):
-    
+
 #    if request.user.is_authenticated():
 #        return HttpResponseRedirect('/webapp/cpanel/')
 
@@ -91,9 +91,9 @@ def auth(request, authentication_form=AuthenticationForm):
             response = {
                 'success':True
             }
-            
+
             active_profile = getattr(request, 'active_profile', None)
-            
+
             if active_profile:
                 next_url = request.POST.get('next',None)
                 response['redirect_to'] = u'/webapp/setactiveprofile/%d/%s' % (active_profile.id, next_url and u'?redirect_to=%s' % next_url or u'')
@@ -102,14 +102,14 @@ def auth(request, authentication_form=AuthenticationForm):
                     'success':False,
                     'message':u'Ошибка авторизации: не задан профиль пользователя'
                 }
-                
-            
+
+
         else:
             response = {
                 'success':False,
                 'message':u'Ошибка авторизации'
             }
-        
+
         return HttpResponse(simplejson.dumps(response), mimetype="application/json")
 
     else:
@@ -117,7 +117,7 @@ def auth(request, authentication_form=AuthenticationForm):
         return direct_to_template(request, template='webapp/auth/index.html')
 
 
-@login_required    
+@login_required
 def set_active_profile(request, position_id):
     request.session['ACTIVE_PROFILE'] = position_id
     redirect_to = request.GET.get('redirect_to','/webapp/cpanel/')
@@ -139,26 +139,26 @@ def cpanel(request):
         'perms':simplejson.dumps(perms)
     }
 
-    
+
 @login_required
 @render_to('webapp/registry/index.html')
 def registry(request):
     return {
         'apps':simplejson.dumps(get_apps(request))
     }
-    
+
 
 @login_required
 @render_to('webapp/service/index.html')
 def service(request):
     return {}
-    
+
 
 @login_required
 @render_to('webapp/testing/index.html')
 def testing(request):
     return {}
-    
+
 
 @login_required
 @render_to('webapp/reporting/index.html')
@@ -166,14 +166,14 @@ def reporting(request):
     return {
         'apps':simplejson.dumps(get_apps(request))
     }
-    
+
 @login_required
 @render_to('webapp/barcoding/index.html')
 def barcoding(request):
     return {
         'apps':simplejson.dumps(get_apps(request))
     }
-    
+
 
 @login_required
 @render_to('webapp/laboratory/index.html')
@@ -219,7 +219,7 @@ def examination(request):
             }
             if ticket['required']:
                 required_tickets.append(ticket)
-            else: 
+            else:
                 section_scheme[sec.name]['items'].append(ticket)
     quests = Questionnaire.objects.all()
     questionnaires = [{'name':quest.name,
@@ -241,40 +241,40 @@ def oldexam(request):
 @render_to('webapp/calendar/index.html')
 def calendar(request):
     return {}
-    
+
 
 @login_required
 @render_to('webapp/helpdesk/index.html')
 def helpdesk(request):
     return {}
-    
+
 
 @login_required
 @render_to('webapp/treatmentroom/index.html')
 def treatmentroom(request):
     return {}
-    
+
 
 def get_service_tree(request):
 
     import sys
-    
+
     sys.setrecursionlimit(3000)
 
     """
     Генерирует дерево в json-формате.
-    
+
     Ключ кэша:
-    
+
     service_list_-stateId или *-_-способ оплаты-
-    
+
     service_list_*_н - любая организация, способ оплаты - наличный платеж
-    service_list_2_д - организация #2, способ оплаты - ДМС 
+    service_list_2_д - организация #2, способ оплаты - ДМС
     и т.д.
     """
 
     def promo_dict(obj):
-        
+
         def node_dict(obj):
             try:
                 bs = promotions_bs[obj.base_service_id]
@@ -297,7 +297,7 @@ def get_service_tree(request):
             except Exception, err:
                 logger.error(u"NODE DICT: %s" % err.__unicode__())
                 return None
-            
+
         return {
             'id':obj['id'],#u'%s_%s' % (obj.base_service.id, obj.execution_place.id),
             'text':obj['name'],#obj.base_service.short_name or obj.base_service.name,
@@ -307,7 +307,7 @@ def get_service_tree(request):
             'price':obj['total_price'],
             'isComplex':True
         }
-                
+
     def clear_tree(tree=[],child_list=[]):
         '''
         Рекурсивно очищает список, содержащий дерево, от пустых групп;
@@ -321,10 +321,10 @@ def get_service_tree(request):
         else:
             node = tree[-1]
             parent = node.get_parent()
-            
+
             bro = []
             childs = []
-            
+
             for item in child_list:
                 #Если список детей <> [] и либо item[0] и текущий node - корни дерева, либо относятся к одному родителю
                 if item and ((not item[0]['parent'] and not parent) or (parent and item[0]['parent'] == parent)):
@@ -333,13 +333,13 @@ def get_service_tree(request):
                 if item and not node.is_leaf_node() and item[0]['parent']==node.id:
                     childs = item
 #            if node.name == 'Gr1':
-#                import pdb; pdb.set_trace()                    
+#                import pdb; pdb.set_trace()
             tree_nodes = []
             if not node.is_leaf_node() and not childs:
                 #удаляем текущий элемент
                 node = None
             else:
-                
+
                 if node.is_leaf_node():
                     for service in result[node.id]:
                         tree_node = {
@@ -353,9 +353,9 @@ def get_service_tree(request):
                                 "leaf":True}
                         if not ext:
                             tree_node['staff'] = node.id in staff_all and sorted(staff_all[node.id], key=lambda staff: staff[1])
-                        tree_nodes.append(tree_node)    
+                        tree_nodes.append(tree_node)
                         #nodes.append(tree_node)
-                else: 
+                else:
                     tree_node = {
                             "id":ext and 'group-%s' % node.id or node.id,
                             "leaf":False,
@@ -366,25 +366,25 @@ def get_service_tree(request):
                             }
                 #Если есть братья, добавляем текущий элемент к списку братьев
                 #Иначе создаём новый список братьев, в котором текущий элемент будет первым братом
-                    tree_nodes.append(tree_node) 
-                
+                    tree_nodes.append(tree_node)
+
                 if bro:
                     for tr in tree_nodes:
                         bro.insert(0,tr)
-                else: 
+                else:
                     child_list.insert(0,tree_nodes)
-                
+
                 #Если есть список дочерних элементов и текущий элемент - их родитель,
-                #то удаляем этот список из общего списка детей, за ненадобностью    
+                #то удаляем этот список из общего списка детей, за ненадобностью
                 if childs and tree_nodes[0]['leaf'] == False:
                     child_list.remove(childs)
-                    
+
             tree = clear_tree(tree[:-1],child_list) or []
-            
+
 #            if node:
 #                tree.append(node)
-            return tree 
-    
+            return tree
+
     payment_type = request.GET.get('payment_type',u'н')
     staff = request.GET.get('staff')
     nocache = request.GET.get('nocache')
@@ -403,7 +403,7 @@ def get_service_tree(request):
             nocache = True
         except:
             on_date = TODAY
-    
+
     state = None
     ap = request.active_profile
     if (settings.SERVICETREE_ONLY_OWN or ap.department.state.type=='p') and ap and not all:
@@ -413,22 +413,22 @@ def get_service_tree(request):
         cache = get_cache('service')
     except:
         raise "Service cache must be defined!"
-            
+
     if payer:
         try:
             payer = State.objects.get(id=payer)
         except:
             payer = None
-            
+
     if staff:
         try:
             staff = Position.objects.get(id=staff)
         except:
             staff = None
     p_type_id = get_actual_ptype()
-        
+
     _cache_key = u'%sservice_list_%s_%s_%s_%s' % (ext and 'ext_' or '', state and state.id or u'*', payment_type, payer and payer.id or '*', p_type_id or '*')
-    
+
     # запрос с параметром recache удаляет ВСЕ записи в нём
     if recache:
         cache.clear()
@@ -438,13 +438,13 @@ def get_service_tree(request):
         _cached_tree = None
     else:
         _cached_tree = cache.get(_cache_key)
-        
-        
-    # если отсутствует кэш, то начинаем построение дерева услуг  
-    _cached_tree = None  
+
+
+    # если отсутствует кэш, то начинаем построение дерева услуг
+    _cached_tree = None
     if not _cached_tree:
 
-        price_args = dict(extended_service__is_active=True, 
+        price_args = dict(extended_service__is_active=True,
                     payment_type=payment_type,
                     price_type='r',
                     on_date__lte=on_date)
@@ -457,7 +457,7 @@ def get_service_tree(request):
         else:
             price_args['payer__isnull'] = True
         price_args['type'] = p_type_id
-    
+
         nodes = []
         values = Price.objects.filter(**price_args).\
             order_by('extended_service__id','on_date').\
@@ -468,21 +468,21 @@ def get_service_tree(request):
             if not result.has_key(val['extended_service__base_service__id']):
                 result[val['extended_service__base_service__id']] = {}
             result[val['extended_service__base_service__id']][val['extended_service__id']] = val
-        
+
         BaseService.cache_parents()
-        
+
         staff_all = ExtendedService.get_all_staff()
-        
+
         for base_service in BaseService.objects.select_related().all().order_by(BaseService._meta.tree_id_attr, BaseService._meta.left_attr, 'level'): #@UndefinedVariable
             if base_service.is_leaf_node():
                 if result.has_key(base_service.id):
                     nodes.append(base_service)
             else:
                 nodes.append(base_service)
-        
-        
+
+
         tree = []
-        
+
         # если передан параметр promotions, добавляем их в дерево услуг
         if not nocache or promotion:
             promotions = Promotion.objects.actual(ap.department.state)
@@ -491,10 +491,10 @@ def get_service_tree(request):
             promotions_bs = {}
             for item in promotions_items.values('base_service__id','base_service__name','base_service__short_name'):
                 promotions_bs[item['base_service__id']] = item
-            
+
             for p in promotions_items:
                 promotions_dict[p.promotion_id].append(p)
-            
+
             if promotions.count():
                 tree_node = {
                     'id':'promotions',
@@ -512,7 +512,7 @@ def get_service_tree(request):
         s = clear_tree(nodes,[])
         tree.extend(s)
         _cached_tree = simplejson.dumps(tree, cls=DjangoJSONEncoder)
-        
+
         # кэш не обновляется, если есть параметр nocache
         if not nocache:
             cache.set(_cache_key, _cached_tree, 24*60*60*30)
@@ -545,17 +545,17 @@ def sampling_tree(request, visit_id):
             'children':children
         }
         tree.append(node)
-    
+
     json = simplejson.dumps(tree)
-        
-    return HttpResponse(json, mimetype="application/json") 
+
+    return HttpResponse(json, mimetype="application/json")
 
 
 def get_discounts(patient_id):
     """
     Возвращает список доступных скидок. Первой идет накопительная скидка, если она есть у клиента.
     """
-    
+
     lookups = Q(accumulation=None)
     p = get_object_or_404(Patient, id=patient_id)
     if p.discount:
@@ -579,8 +579,8 @@ from StringIO import StringIO
 def barcodeimg(request):
     codetype = 'code39'
     codestring = str(request.GET.get('codestring'))
-    bc = barcode(codetype, 
-             codestring=codestring, 
+    bc = barcode(codetype,
+             codestring=codestring,
              options={
                 'height':0.5,
                 'includetext':True,
@@ -589,7 +589,7 @@ def barcodeimg(request):
             })
     tmp_file = StringIO()
     bc.save(tmp_file,'PNG')
-    
+
     return HttpResponse(tmp_file.getvalue(),'image/png')
 
 
@@ -608,7 +608,7 @@ def get_groups(request):
                 children = tree_iterate(item.get_children())
                 if children:
                     node['leaf'] = False
-                    node['children'] = children 
+                    node['children'] = children
                     node['singleClickExpand'] = True
                 nodes.append(node)
         return nodes
@@ -616,17 +616,17 @@ def get_groups(request):
     if not _cached_tree:
         _cached_tree = simplejson.dumps(tree_iterate(BaseService.tree.root_nodes()))
         #cache.set('ancestors_list', _cached_tree, 60*60)
-    
+
     return _cached_tree
 
 @gzip_page
 def groups(request):
-    
+
     resp = get_groups(request)
     cb = request.GET.get('cb')
     if cb:
         resp = u'%s(%s)' % (cb,resp)
-    
+
     return HttpResponse(resp,'application/json')
 
 
@@ -650,9 +650,9 @@ def children(request, parent_id=None):
         children = BaseService.tree.root_nodes()
     if children:
         tree_iterate(children)
-        
+
     _cached_children = None
-    
+
     if not _cached_children:
         _cached_children = simplejson.dumps(nodes)
 
