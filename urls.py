@@ -22,6 +22,7 @@ selection.register('referral', queryset, 'list', paginate_by=50)
 
 import reporting
 import oldreporting
+
 admin.autodiscover()
 reporting.autodiscover()
 oldreporting.autodiscover()
@@ -47,7 +48,7 @@ urlpatterns = patterns('',
     url(r'^numeration/', include('numeration.urls')),
     url(r'^autocomplete/', include(autocomplete.urls)),
     url(r'^patient/', include('patient.urls')),
-    url(r'^accounting/', include('accounting.urls')),
+    # url(r'^accounting/', include('accounting.urls')),
     url(r'^timeslot/haspreorder/(?P<id>\d+)/$', 'scheduler.views.hasPreorder'),
     url(r'^selection/(?P<slc_name>\w+)/$', selection, name='selection'),
 )
