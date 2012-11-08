@@ -32,12 +32,12 @@ def utf_8_encoder(unicode_csv_data):
 def make_analysis(obj, analysises):
 
     from lab.models import Analysis, InputMask, Measurement
-    
+
     for analysis in analysises:
         new_analysis, created = Analysis.objects.get_or_create(service=obj, name=unicode(analysis[0],'utf-8'))
         if analysis[1]:
             new_measurement, created = Measurement.objects.get_or_create(name=unicode(analysis[1],'utf-8'))
-            new_analysis.measurement = new_measurement 
+            new_analysis.measurement = new_measurement
         if analysis[3]:
             new_input_mask, created = InputMask.objects.get_or_create(value=unicode(analysis[3],'utf-8'))
             new_analysis.input_mask = new_input_mask
@@ -51,7 +51,7 @@ def revert_tree_objects(obj):
         child.move_to(obj, position='first-child')
         revert_tree_objects(child)
 
-def get_service_tree(state=None,payer=None,payment_type=None,price_type=None, date=datetime.datetime.today()):
+def get_service_tree(state=None,payer=None,payment_type=None,price_type=None, date=None):
     """
     Генерирует дерево в json-формате.
     """
@@ -76,14 +76,15 @@ def get_service_tree(state=None,payer=None,payment_type=None,price_type=None, da
                 node = None
             if node:
                 tree.append(node)
-            return tree 
-    
+            return tree
+
+    date = date or datetime.datetime.today()
     ignored = None
     args = {}
     if state:
         ignored = State.objects.filter(type='b').exclude(id=state.id)
         args['extended_service__branches']=state
-    
+
     if payment_type:
         args['payment_type'] = payment_type
         if payer and payment_type in [u'б',u'к']:
@@ -100,21 +101,21 @@ def get_service_tree(state=None,payer=None,payment_type=None,price_type=None, da
     result = {}
     for val in values:
         result[val['extended_service__base_service__id']] = val
-    for base_service in BaseService.objects.all().order_by(BaseService._meta.tree_id_attr, BaseService._meta.left_attr, 'level'): 
+    for base_service in BaseService.objects.all().order_by(BaseService._meta.tree_id_attr, BaseService._meta.left_attr, 'level'):
         if base_service.is_leaf_node():
             if result.has_key(base_service.id):
                 nodes.append(base_service)
         else:
             nodes.append(base_service)
-            
-    mass = []        
+
+    mass = []
     nodes = clear_tree(nodes,True)
     for node in nodes:
         if result.has_key(node.id):
             k = [node,result[node.id]['value'] or None]
         else:
             k = [node,None]
-        mass.append(k)   
+        mass.append(k)
     #import pdb; pdb.set_trace()
     return mass
 
@@ -156,8 +157,8 @@ def pricelist_dump(on_date=None, file_handler=None):
     services = BaseService.objects.select_related().all().order_by(BaseService._meta.tree_id_attr, BaseService._meta.left_attr, 'level')
     for service in services:
         if not service.is_leaf_node():
-            rows.append([str(service.id), 
-                         u'', 
+            rows.append([str(service.id),
+                         u'',
                          service.parent and str(service.parent.id) or u'.',
                          service.parent and service.parent.name or u'.',
                          service.name,
@@ -168,8 +169,8 @@ def pricelist_dump(on_date=None, file_handler=None):
         else:
             for item in service.extendedservice_set.all():
                 price = item.get_actual_price(date=on_date)
-                rows.append([str(service.id), 
-                             str(item.id), 
+                rows.append([str(service.id),
+                             str(item.id),
                              service.parent and str(service.parent.id) or u'.',
                              service.parent and service.parent.name or u'.',
                              service.name,
@@ -177,12 +178,12 @@ def pricelist_dump(on_date=None, file_handler=None):
                              item.state.name,
                              item.is_active and "+" or "-",
                              price and str(price) or u''])
-    
+
     table.writerows(rows)
 
 
 class ServiceTreeLoader():
-    
+
     def __init__(self, f, branches, state, root=None, top=None, data_format='medhqjson'):
         self.root = root
         self.branches = branches
@@ -190,8 +191,8 @@ class ServiceTreeLoader():
         self.top = top
         self.format = data_format
         if self.top:
-            self.top, created = BaseService.objects.get_or_create(parent=self.root, 
-                                                                  name=self.top, 
+            self.top, created = BaseService.objects.get_or_create(parent=self.root,
+                                                                  name=self.top,
                                                                   short_name=self.top)
             self.root = self.top
         self.load_data(f)
@@ -210,10 +211,10 @@ class ServiceTreeLoader():
         else:
             pass
         data_file.close()
-        
+
     def make_indent(self, indent):
         return ( (indent-1)*"\t", indent*"\t" )
-    
+
     @transaction.commit_on_success
     def build_service(self, node, root=None, indent=1):
         service, created = BaseService.objects.get_or_create(parent=root,
@@ -224,7 +225,7 @@ class ServiceTreeLoader():
                                                              gen_ref_interval=node['gen_ref_interval'],
                                                              is_group=node['is_group'])
         ti,di = self.make_indent(indent)
-        
+
         if node.has_key('lab_service'):
             ls = node['lab_service']
             try:
@@ -236,7 +237,7 @@ class ServiceTreeLoader():
                 LabService.objects.create(base_service=service,
                                           is_manual=ls['is_manual'],
                                           code=ls['code'])
-        
+
         if node.has_key('extended_service'):
             es_list = node['extended_service']
             for es in es_list:
@@ -251,10 +252,10 @@ class ServiceTreeLoader():
                                                                                       is_manual=es['is_manual'])
                 except Exception, err:
                     pass
-                    
+
                 if self.branches:
                     extended_service.branches.add(*self.branches)
-        
+
         if node.has_key('analysis'):
             anl_list = node['analysis']
             for anl in anl_list:
@@ -267,11 +268,11 @@ class ServiceTreeLoader():
                         except MultipleObjectsReturned:
                             obj = InputList.objects.filter(name=il)[0]
                         il_cache.append(obj)
-                
+
                 measurement = None
                 if anl.has_key('measurement') and anl['measurement']:
                     measurement, created = Measurement.objects.get_or_create(name=anl['measurement'])
-                
+
                 analysis = Analysis.objects.create(service=service,
                                                           name=anl['name'],
                                                           code=anl['code'],
@@ -280,9 +281,9 @@ class ServiceTreeLoader():
                                                           order=anl['order'])
 #                if len(il_cache):
 #                    analysis.input_list.add(*il_cache)
-        
+
         if node.has_key('children'):
             for child in node['children']:
                 self.build_service(child, service, indent+1)
-    
-    
+
+
