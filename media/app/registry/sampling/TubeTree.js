@@ -72,7 +72,7 @@ App.sampling.TubeTree = Ext.extend(Ext.tree.TreePanel,{
 	        enableDrop:true,
 	        ddGroup:'GridDDGroup',
 	        root: new Ext.tree.AsyncTreeNode('Лаборатории'),
-	        dataUrl:'/webapp/sampling_tree/'+this.visitId+'/',
+	        dataUrl:'/lab/sampling_tree/'+this.visitId+'/',
 	        collapseFirst:false,
 	        tbar: [{
 	            iconCls:'silk-add',

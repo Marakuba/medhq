@@ -24,8 +24,6 @@ def invoice(request, invoice_id):
         'total_sum': float(total_sum)
     }
 
-    # print "print/visit/visit_state_%s.html" % visit.office.id
-
     return render_to_response("print/accounting/invoice.html",
                               extra_context,
                               context_instance=RequestContext(request))

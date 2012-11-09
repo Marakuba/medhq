@@ -4,14 +4,14 @@
 from core.app import BaseApp
 
 
-class AccountingApp(BaseApp):
+class WebApp(BaseApp):
 
-    urls_conf = 'accounting.urls'
+    urls_conf = 'webapp.urls'
 
     def callback(self, *args, **kwargs):
-        print "callback inside accounting"
+        print "callback inside webapp"
 
-application = AccountingApp
+application = WebApp
 
 
 # from core.app.signals import app_load

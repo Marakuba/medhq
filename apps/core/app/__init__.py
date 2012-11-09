@@ -15,22 +15,31 @@ class BaseApp(object):
     urls_conf = None
 
     def __init__(self, *args, **kwargs):
-        if self.urls:
-            print self.urls
+        pass
+        # if self.urls_conf:
+        #     print self.urls_conf
+
+    def callback(self, *args, **kwargs):
+        # must be implemented in subclass
+        pass
 
 
 def import_urls():
     from django.conf.urls.defaults import include, url
-    import urls as root_urls
-
+    app_urls = []
     for app, cls in app_pool.iteritems():
         urls_conf = cls.urls_conf
         urls_path = cls.urls_path or app
-        root_urls.urlpatterns.append(url(r'^%s/' % urls_path, include(urls_conf)))
+        app_urls.append(url(r'^%s/' % urls_path, include(urls_conf)))
+
+    # print 'urls:', app_urls
+    return app_urls
 
 
 def autodiscover():
     from django.conf import settings
+    from .signals import app_load
+
     APP_SOURCE_FILE = getattr(settings, 'APP_SOURCE_FILE', 'app')
     for app in settings.INSTALLED_APPS:
         try:
@@ -46,10 +55,12 @@ def autodiscover():
 
         try:
             application = app_source_file.app.application
-            app_pool[app] = application()
+            instance = application()
+            app_pool[app] = instance
+            instance.callback()
+            app_load.send(sender=application, app_label=app)
         except AttributeError:
             continue
 
-    print app_pool
-    import_urls()
-    
+
+urls = import_urls

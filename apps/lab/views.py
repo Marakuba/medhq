@@ -521,3 +521,23 @@ def result_loader(request):
     }
 
 
+def sampling_tree(request, visit_id):
+    states = defaultdict(list)
+    tree = []
+    samplings = Sampling.objects.filter(visit__id=visit_id).order_by('laboratory__id',)
+    for sampling in samplings:
+        states[sampling.laboratory.__unicode__()].append(sampling)
+    for k, v in states.iteritems():
+        children = [{'id': item.id, 'text': item.tube.name, 'leaf': True} for item in v]
+        node = {
+            'id': k,
+            'text': k,
+            'leaf': False,
+            'expanded': True,
+            'children': children
+        }
+        tree.append(node)
+
+    json = simplejson.dumps(tree)
+
+    return HttpResponse(json, mimetype="application/json")
