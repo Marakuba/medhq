@@ -16,13 +16,13 @@ class Command(BaseCommand):
     def handle(self, *args, **options):
         """
         """
-        serv = OrderedService.objects.all()
-        print "Выбираем уникальные старые новые карты осмотра..."
-        orders_without_ecard = []  # #[p for p in serv if len(p.card_set.all()) > len(p.examinationcard_set.all())]
+        #serv = OrderedService.objects.all()
+        #print "Выбираем уникальные старые новые карты осмотра..."
+        #orders_without_ecard = []  # #[p for p in serv if len(p.card_set.all()) > len(p.examinationcard_set.all())]
         
-        new_cards = []
-        for o in orders_without_ecard:
-            new_cards += o.card_set.all()
+        new_cards = Card.objects.all()
+        #for o in orders_without_ecard:
+        #    new_cards += o.card_set.all()
         print "Было %s уникальных старых новых карт осмотра " % len(new_cards)
             
         new_tpls = Template.objects.all()
@@ -75,21 +75,35 @@ class Command(BaseCommand):
         print 'Converted %s template(s)' % (count[1])
         
         print "Создаем недостающие новые карты осмотра..."
-        for attrs in attrs_from_newcard:
-            try:
-                card = Card.objects.create(**attrs)
-                if hasattr(card,'assistant') and getattr(card,'assistant'):
-                        ExamAssistant.objects.create(assistant =  card.assistant, card = card)
-            except Exception, err:
-                print "Не удалось сконвертировать старую новую карту %s order %s" % (attrs['name'],attrs['ordered_service'])
-                print err
+        with transaction.commit_manually():
+            for attrs in attrs_from_newcard:
+                try:
+                    card = Card.objects.create(**attrs)
+                    card.created = attrs['created']
+                    card.modified = attrs['modified']
+                    card.save()
+                    if hasattr(card,'assistant') and getattr(card,'assistant'):
+                            ExamAssistant.objects.create(assistant =  card.assistant, card = card)
+                except Exception, err:
+                    transaction.rollback()
+                    print "Не удалось сконвертировать старую новую карту %s order %s" % (attrs['name'],attrs['ordered_service'])
+                    print err
+                else:
+                    transaction.commit()
                 
         print "Создаем старые новые шаблоны"
-        for attrs in attrs_from_newtpl:
-            try:
-                tpl = Template.objects.create(**attrs)
-            except:
-                print "Не удалось сконвертировать старый новый шаблон %s" % (attrs['name'])
+        with transaction.commit_manually():
+            for attrs in attrs_from_newtpl:
+                try:
+                    tpl = Template.objects.create(**attrs)
+                    tpl.created = attrs['created']
+                    tpl.modified = attrs['modified']
+                    tpl.save()
+                except:
+                    transaction.rollback()
+                    print "Не удалось сконвертировать старый новый шаблон %s" % (attrs['name'])
+                else:
+                    transaction.commit()
                 
         print "Конвертация завершена."
                 
