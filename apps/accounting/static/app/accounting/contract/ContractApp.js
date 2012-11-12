@@ -40,3 +40,8 @@ App.accounting.ContractApp = Ext.extend(Ext.Panel, {
 
 
 Ext.reg('accounting', App.accounting.ContractApp);
+
+
+App.webapp.actions.add('accounting', new Ext.Action({
+    text: 'Договоры'
+}));

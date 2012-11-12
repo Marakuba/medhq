@@ -2,6 +2,7 @@
 
 
 from core.app import BaseApp
+from oldreporting import autodiscover
 
 
 class OldReportingApp(BaseApp):
@@ -10,6 +11,6 @@ class OldReportingApp(BaseApp):
     urls_conf = 'oldreporting.urls'
 
     def callback(self, *args, **kwargs):
-        print "callback inside oldreporting"
+        autodiscover()
 
 application = OldReportingApp

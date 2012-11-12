@@ -24,12 +24,16 @@ from django.views.generic.simple import direct_to_template
 from service.forms import PriceForm, TreeLoaderForm, ExtServiceCopierForm
 from core.admin import TabbedAdmin
 from django.conf import settings
-from annoying.decorators import render_to
 from django.shortcuts import render_to_response
 from django.template.context import RequestContext
-from django.core.files.uploadedfile import InMemoryUploadedFile
 from service.utils import ServiceTreeLoader
 from core.utils import copy_model_object
+from selection.views import selection
+
+
+queryset = BaseService.objects.select_related().all().\
+            order_by(BaseService._meta.tree_id_attr, BaseService._meta.left_attr, 'level')
+selection.register('service', queryset, 'tree', paginate_by=100, template_name="selection/bs_tree.html")
 
 
 class StandardServiceAdmin(TreeEditor):

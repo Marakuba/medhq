@@ -1,0 +1,37 @@
+{% extends "box.html" %}
+
+{% load assets %}
+
+{% block title %}{{ vp.name }} | {{ config.BRAND }}{% endblock %}
+
+{% block head %}
+
+{% assets css_assets %}
+    <link rel="stylesheet" type="text/css" href="{{ ASSET_URL }}" />
+{% endassets %}
+
+{% assets js_assets %}
+    <script type="text/javascript" src="{{ ASSET_URL }}"></script>
+{% endassets %}
+
+{% autoescape off %}
+    <script type="text/javascript">
+        var WebApp;
+        Ext.onReady(function(){
+
+            Ext.QuickTips.init();
+            
+            Ext.Ajax.defaultHeaders = {
+                Accept : 'application/json'
+            };
+
+            WebApp = new App.webapp.WebApp({
+                {{ options }}
+            });
+
+            WebApp.init();
+
+        });
+    </script>
+{% endautoescape %}
+{% endblock %}

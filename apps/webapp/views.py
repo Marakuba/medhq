@@ -1,5 +1,6 @@
 # -*- coding: utf-8 -*-
-from django.utils import simplejson
+
+import simplejson
 from django.http import HttpResponse, HttpResponseRedirect
 from service.models import BaseService, ExtendedService
 from django.db import connection
@@ -31,26 +32,53 @@ try:
 except:
     from ordereddict import OrderedDict
 
+from .models import Viewport
+
+
 logger = logging.getLogger('general')
 
 
 def get_apps(request):
     apps = []
-    if request.user.has_perm('visit.add_visit') or request.user.is_superuser:
-        apps.append([u'Регистратура',u'/webapp/registry/'])
-    if request.user.has_perm('lab.change_laborder') or request.user.is_superuser:
-        apps.append([u'Лаборатория',u'/webapp/laboratory/'])
-    if request.user.has_perm('examination.add_examinationcard') or request.user.is_superuser:
-        apps.append([u'Обследования',u'/webapp/examination/'])
-    if request.user.has_perm('accounting.add_contract') or request.user.is_superuser:
-        apps.append([u'Юридические лица',u'/webapp/accounting/'])
-    if request.user.is_superuser:
-        apps.append([u'Отчеты',u'/webapp/reporting/'])
-    apps.append([u'Штрих-коды',u'/webapp/barcoding/'])
-    if request.user.is_staff or request.user.is_superuser:
-        apps.append([u'Администрирование',u'/admin/'])
+    # if request.user.has_perm('visit.add_visit') or request.user.is_superuser:
+    #     apps.append([u'Регистратура',u'/webapp/registry/'])
+    # if request.user.has_perm('lab.change_laborder') or request.user.is_superuser:
+    #     apps.append([u'Лаборатория',u'/webapp/laboratory/'])
+    # if request.user.has_perm('examination.add_examinationcard') or request.user.is_superuser:
+    #     apps.append([u'Обследования',u'/webapp/examination/'])
+    # if request.user.has_perm('accounting.add_contract') or request.user.is_superuser:
+    #     apps.append([u'Юридические лица',u'/webapp/accounting/'])
+    # if request.user.is_superuser:
+    #     apps.append([u'Отчеты',u'/webapp/reporting/'])
+    # apps.append([u'Штрих-коды',u'/webapp/barcoding/'])
+    # if request.user.is_staff or request.user.is_superuser:
+    #     apps.append([u'Администрирование',u'/admin/'])
 
     return apps
+
+
+from .utils import get_app_list, build_static
+
+
+@login_required
+@render_to('webapp/viewport/index.html')
+def viewport(request, slug):
+
+    vp = get_object_or_404(Viewport, slug=slug)
+    js_assets, css_assets, options = build_static(request, vp)
+    opts = ",\n".join(["%s : %s" % (k, v) for k, v in options.iteritems()])
+    print opts
+    ctx = {
+        'vp': vp,
+        # 'app_pool': get_app_list(request, to_json=True),
+        # 'apps': simplejson.dumps(apps),
+        # 'default_apps': simplejson.dumps(default_apps),
+        'css_assets': css_assets,
+        'js_assets': js_assets,
+        'options': opts
+    }
+
+    return ctx
 
 
 def auth(request, authentication_form=AuthenticationForm):
@@ -90,7 +118,7 @@ def auth(request, authentication_form=AuthenticationForm):
 @login_required
 def set_active_profile(request, position_id):
     request.session['ACTIVE_PROFILE'] = position_id
-    redirect_to = request.GET.get('redirect_to', '/webapp/cpanel/')
+    redirect_to = request.GET.get('redirect_to', request.META['HTTP_REFERER'])
     return HttpResponseRedirect(redirect_to=redirect_to)
 
 

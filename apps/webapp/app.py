@@ -2,6 +2,7 @@
 
 
 from core.app import BaseApp
+from .base import autodiscover
 
 
 class WebApp(BaseApp):
@@ -9,7 +10,7 @@ class WebApp(BaseApp):
     urls_conf = 'webapp.urls'
 
     def callback(self, *args, **kwargs):
-        print "callback inside webapp"
+        autodiscover()
 
 application = WebApp
 
