@@ -9,16 +9,4 @@ urlpatterns = patterns('webapp.views',
     (r'^logout/$', logout, {'next_page': '/webapp/auth/'}),
     (r'^cpanel/$', 'cpanel'),
     (r'^(?P<slug>.*)/$', 'viewport'),
-
-    # (r'^registry/$', 'webapp.views.registry'),
-    # (r'^barcoding/$', 'webapp.views.barcoding'),
-    # (r'^testing/$', 'webapp.views.testing'),
-    # (r'^reporting/$', 'webapp.views.reporting'),
-    # (r'^laboratory/$', 'webapp.views.laboratory'),
-    # (r'^examination/$', 'webapp.views.examination'),
-    # (r'^accounting/$', 'webapp.views.accounting'),
-    # (r'^helpdesk/$', 'webapp.views.helpdesk'),
-
-    # (r'^settings/$', 'webapp.views.js_settings'),
-
 )

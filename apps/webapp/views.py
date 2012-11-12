@@ -2,83 +2,45 @@
 
 import simplejson
 from django.http import HttpResponse, HttpResponseRedirect
-from service.models import BaseService, ExtendedService
-from django.db import connection
-
-from patient.models import Patient
-from django.shortcuts import get_object_or_404, render_to_response
-from pricelist.models import Discount
-from django.db.models import Q
-from django.contrib.auth import login
 
 from annoying.decorators import render_to
+from django.shortcuts import get_object_or_404, render_to_response
+from django.contrib.auth import login
 from django.contrib.auth.forms import AuthenticationForm
-
 from django.views.generic.simple import direct_to_template
 from django.contrib.auth.decorators import login_required
-from lab.models import Sampling
-from django.views.decorators.gzip import gzip_page
-from state.models import State
-
-
-import logging
-
-from staff.models import Staff
-from examination.models import FieldSet, SubSection, Questionnaire
-from examination.widgets import get_widget
+from django.template import RequestContext
 
 try:
     from collections import OrderedDict
 except:
     from ordereddict import OrderedDict
 
+from examination.models import FieldSet, SubSection, Questionnaire
+from examination.widgets import get_widget
+
 from .models import Viewport
-
-
-logger = logging.getLogger('general')
-
-
-def get_apps(request):
-    apps = []
-    # if request.user.has_perm('visit.add_visit') or request.user.is_superuser:
-    #     apps.append([u'Регистратура',u'/webapp/registry/'])
-    # if request.user.has_perm('lab.change_laborder') or request.user.is_superuser:
-    #     apps.append([u'Лаборатория',u'/webapp/laboratory/'])
-    # if request.user.has_perm('examination.add_examinationcard') or request.user.is_superuser:
-    #     apps.append([u'Обследования',u'/webapp/examination/'])
-    # if request.user.has_perm('accounting.add_contract') or request.user.is_superuser:
-    #     apps.append([u'Юридические лица',u'/webapp/accounting/'])
-    # if request.user.is_superuser:
-    #     apps.append([u'Отчеты',u'/webapp/reporting/'])
-    # apps.append([u'Штрих-коды',u'/webapp/barcoding/'])
-    # if request.user.is_staff or request.user.is_superuser:
-    #     apps.append([u'Администрирование',u'/admin/'])
-
-    return apps
-
-
-from .utils import get_app_list, build_static
+from .utils import build_static, get_app_list
+from .decorators import has_vp_perm
 
 
 @login_required
-@render_to('webapp/viewport/index.html')
+@has_vp_perm
+@render_to('webapp/viewport/base.html')
 def viewport(request, slug):
 
     vp = get_object_or_404(Viewport, slug=slug)
     js_assets, css_assets, options = build_static(request, vp)
     opts = ",\n".join(["%s : %s" % (k, v) for k, v in options.iteritems()])
-    print opts
     ctx = {
         'vp': vp,
-        # 'app_pool': get_app_list(request, to_json=True),
-        # 'apps': simplejson.dumps(apps),
-        # 'default_apps': simplejson.dumps(default_apps),
         'css_assets': css_assets,
         'js_assets': js_assets,
         'options': opts
     }
-
-    return ctx
+    tmpl = vp.template or 'webapp/viewport/base.html'
+    return render_to_response(tmpl, ctx, \
+                        context_instance=RequestContext(request))
 
 
 def auth(request, authentication_form=AuthenticationForm):
@@ -125,66 +87,8 @@ def set_active_profile(request, position_id):
 @login_required
 @render_to('webapp/cpanel/index.html')
 def cpanel(request):
-    perms = {
-        'registry':request.user.has_perm('visit.add_visit') or request.user.is_superuser,
-        'laboratory':request.user.has_perm('lab.change_laborder') or request.user.is_superuser,
-        'examination':request.user.has_perm('examination.add_examinationcard') or request.user.is_superuser,
-        'accounting':request.user.has_perm('accounting.add_contract') or request.user.is_superuser,
-        'reporting':request.user.is_superuser,
-        'admin':request.user.is_staff or request.user.is_superuser,
-    }
     return {
-        'perms':simplejson.dumps(perms)
-    }
-
-
-@login_required
-@render_to('webapp/registry/index.html')
-def registry(request):
-    return {
-        'apps':simplejson.dumps(get_apps(request))
-    }
-
-
-@login_required
-@render_to('webapp/service/index.html')
-def service(request):
-    return {}
-
-
-@login_required
-@render_to('webapp/testing/index.html')
-def testing(request):
-    return {}
-
-
-@login_required
-@render_to('webapp/reporting/index.html')
-def reporting(request):
-    return {
-        'apps':simplejson.dumps(get_apps(request))
-    }
-
-@login_required
-@render_to('webapp/barcoding/index.html')
-def barcoding(request):
-    return {
-        'apps':simplejson.dumps(get_apps(request))
-    }
-
-
-@login_required
-@render_to('webapp/laboratory/index.html')
-def laboratory(request):
-    return {
-        'apps':simplejson.dumps(get_apps(request))
-    }
-
-@login_required
-@render_to('webapp/accounting/index.html')
-def accounting(request):
-    return {
-        'apps':simplejson.dumps(get_apps(request))
+        'apps': get_app_list(request, to_json=True)
     }
 
 @login_required
@@ -229,25 +133,3 @@ def examination(request):
         'required_tickets':simplejson.dumps(required_tickets),
         'apps':simplejson.dumps(get_apps(request))
     }
-
-@login_required
-@render_to('webapp/oldexam/index.html')
-def oldexam(request):
-    return {}
-
-@login_required
-@render_to('webapp/calendar/index.html')
-def calendar(request):
-    return {}
-
-
-@login_required
-@render_to('webapp/helpdesk/index.html')
-def helpdesk(request):
-    return {}
-
-# переносим в настройки внутри JS-объекта
-
-@render_to('webapp/settings/app.js')
-def js_settings(request):
-    return {}

@@ -4,8 +4,6 @@
 from django.db import models
 from django.contrib.auth.models import Group, User
 
-from webapp.base import all_webapps_choices
-
 
 class Viewport(models.Model):
 
@@ -14,6 +12,7 @@ class Viewport(models.Model):
     groups = models.ManyToManyField(Group, blank=True, null=True)
     users = models.ManyToManyField(User, blank=True, null=True)
     is_active = models.BooleanField(default=True)
+    template = models.CharField(u'Шаблон', max_length=200, blank=True)
 
     class Meta:
         verbose_name = u'интерфейс'
@@ -33,7 +32,7 @@ SPLITTER_CHOICES = (
 class ViewportApp(models.Model):
 
     viewport = models.ForeignKey(Viewport)
-    xtype = models.CharField(u'Приложение', max_length=50)  # choices
+    xtype = models.CharField(u'Приложение', max_length=50)
     is_default = models.BooleanField(default=False)
     tbar_group = models.CharField(u'Группа кнопок', max_length=50, blank=True)
     splitter = models.CharField(u'Разделитель', max_length=3, blank=True, choices=SPLITTER_CHOICES)
@@ -44,6 +43,7 @@ class ViewportApp(models.Model):
     class Meta:
         verbose_name = u'приложение интерфейса'
         verbose_name_plural = u'приложения интерфейсов'
+        ordering = ('order',)
 
     def __unicode__(self):
         return u"%s [%s]" % (self.xtype, self.viewport, )

@@ -1,0 +1,32 @@
+{% extends "webapp/viewport/base.html" %}
+
+{% block extra_head %}
+    <style>
+        #bd {
+            width:960px;
+            margin:5px auto;
+            zoom:1;
+            font-family: 'Arial';
+        }
+        #bd .left-column {
+            width:738px;
+            float:left;
+        }
+        #bd .right-column {
+            width:200px;
+            float:left;
+            margin-left:20px;
+        }
+    </style>
+{% endblock %}
+
+{% block body %}
+<div id="bd">
+    <div class="left-column">
+        <div id="sample-spacer" style="height:500px;background:url({{ config.MAIN_LOGO }}) no-repeat;">
+        Ваш профиль: <div id="active-profile-box"></div>
+        </div> 
+    </div>
+    <div class="right-column"><div id="side-box-inner"></div></div>
+</div>
+{% endblock %}

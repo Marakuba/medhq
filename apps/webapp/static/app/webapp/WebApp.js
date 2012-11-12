@@ -8,7 +8,8 @@ App.webapp.WebApp = Ext.extend(Ext.util.Observable, {
 
         this.addEvents(
             'launchapp',
-            'closeapp'
+            'closeapp',
+            'globalsearch'
         );
     },
 

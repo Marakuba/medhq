@@ -4,6 +4,7 @@ import simplejson
 from webapp.base import BaseWebApp, register, get_webapp
 from webapp.utils import get_app_list
 from django.conf import settings
+from constance import config
 
 from api.registry import MedStateResource
 
@@ -99,12 +100,15 @@ class WebApp3(BaseWebApp):
         request = kwargs['request']
         vp = kwargs['vp']
         apps = map(get_app_opts, vp.viewportapp_set.all())
-        # default_apps = list(vp.viewportapp_set.filter(is_default=True).values_list('xtype', flat=True))
         profiles = [(p.id, p.profile) for p in request.user.get_profile().position_set.active()]
+        extra_settings = {
+            'startHour': config.START_HOUR,
+            'endHour': config.END_HOUR,
+            'showAlerts': config.REGISTRY_SHOW_ALERTS,
+        }
         return {
             'appPool': get_app_list(request, to_json=True),
             'apps': simplejson.dumps(apps),
-            # 'defaultApps': simplejson.dumps(default_apps),
             'MedStates': get_states(),
             'active_profile': request.active_profile.id,
             'active_state': "'%s'" % request.active_profile.department.state,
@@ -115,6 +119,7 @@ class WebApp3(BaseWebApp):
             'MEDIA_URL': "'%s'" % settings.STATIC_URL,
             'API_URL': "'%s'" % '/api/v1',  # откуда брать?
             'profiles': simplejson.dumps(profiles),
+            'settings': simplejson.dumps(extra_settings)
 
         }
 

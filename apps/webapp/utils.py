@@ -2,10 +2,18 @@
 
 import simplejson
 from django_assets import Bundle, register
+from django.db.models import Q
 from webassets.env import RegisterError
 from .models import Viewport
 from .base import get_webapp
 from collections import OrderedDict
+
+
+def get_vp_for_user(user):
+    qs = Viewport.objects.filter(is_active=True)
+    groups = user.groups.get_query_set()
+    qs = qs.complex_filter(Q(groups__in=groups) | Q(users__in=[user]))
+    return qs
 
 
 def get_app_list(request, to_json=False):
