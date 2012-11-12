@@ -5,21 +5,21 @@ Ext.ns('App.barcodepackage');
 App.barcodepackage.Grid = Ext.extend(Ext.grid.GridPanel, {
 
 	loadInstant: false,
-	
+
 	initComponent : function() {
-		
+
 		this.proxy = new Ext.data.HttpProxy({
-		    url: get_api_url('barcodepackage')
+		    url: App.getApiUrl('numeration','barcodepackage')
 		});
-		
+
 		this.printer = Ext.state.Manager.getProvider().get('lab_printer');
-		
+
 		this.reader = new Ext.data.JsonReader({
 		    totalProperty: 'meta.total_count',
 		    successProperty: 'success',
 		    idProperty: 'id',
 		    root: 'objects',
-		    messageProperty: 'message'  
+		    messageProperty: 'message'
 		}, [
 		    {name: 'id'},
 		    {name: 'created', allowBlank: true, type:'date'},
@@ -37,29 +37,29 @@ App.barcodepackage.Grid = Ext.extend(Ext.grid.GridPanel, {
 		    {name: 'x7', allowBlank: true},
 		    {name: 'x8', allowBlank: true}
 		]);
-		
+
 		this.writer = new Ext.data.JsonWriter({
 		    encode: false
 		});
 		this.baseParams = {
 		    format:'json'
-		}; 
+		};
 		this.store = new Ext.data.Store({
 			//autoLoad:true,
 		    baseParams: this.baseParams,
 		    paramNames: {
-			    start : 'offset', 
-			    limit : 'limit',  
-			    sort : 'sort',  
-			    dir : 'dir'  
+			    start : 'offset',
+			    limit : 'limit',
+			    sort : 'sort',
+			    dir : 'dir'
 			},
-		    restful: true,     
+		    restful: true,
 		    proxy: this.proxy,
 		    reader: this.reader,
 		    writer: this.writer,
 		    listeners:{
 		    	load:function(){
-		    		
+
 		    	}
 		    	,scope:this
 		    }
@@ -67,21 +67,21 @@ App.barcodepackage.Grid = Ext.extend(Ext.grid.GridPanel, {
 		this.store.load();
 		this.columns =  [
 		    {
-		    	header: "Дата", 
-		    	width: 15, 
-		    	sortable: true, 
+		    	header: "Дата",
+		    	width: 15,
+		    	sortable: true,
 		    	dataIndex: 'created',
 		    	renderer:Ext.util.Format.dateRenderer('d.m.Y H:i')
 		    },{
-		    	header: "Распечатано", 
-		    	width: 15, 
-		    	sortable: true, 
+		    	header: "Распечатано",
+		    	width: 15,
+		    	sortable: true,
 		    	dataIndex: 'print_date',
 		    	renderer:Ext.util.Format.dateRenderer('d.m.Y H:i')
 		    },{
-		    	header: "Лаборатория", 
-		    	width: 50, 
-		    	sortable: true, 
+		    	header: "Лаборатория",
+		    	width: 50,
+		    	sortable: true,
 		    	dataIndex: 'lab_name'
 		    },{
 		    	header:'x2',
@@ -112,18 +112,18 @@ App.barcodepackage.Grid = Ext.extend(Ext.grid.GridPanel, {
 		    	width:10,
 		    	dataIndex:'x8'
 		    },{
-		    	header: "Начальный номер", 
-		    	width: 20, 
-		    	sortable: true, 
-		    	dataIndex: 'range_from' 
+		    	header: "Начальный номер",
+		    	width: 20,
+		    	sortable: true,
+		    	dataIndex: 'range_from'
 		    },{
-		    	header: "Конечный номер", 
-		    	width: 20, 
-		    	sortable: true, 
-		    	dataIndex: 'range_to' 
+		    	header: "Конечный номер",
+		    	width: 20,
+		    	sortable: true,
+		    	dataIndex: 'range_to'
 		    }
-		];		
-		
+		];
+
 		var config = {
 			id:'barcode-packages',
 			closable:true,
@@ -165,18 +165,18 @@ App.barcodepackage.Grid = Ext.extend(Ext.grid.GridPanel, {
 			viewConfig : {
 				forceFit : true
 			}
-			
+
 		}
 
 		Ext.apply(this, Ext.apply(this.initialConfig, config));
 		App.barcodepackage.Grid.superclass.initComponent.apply(this, arguments);
-		
+
 		this.on('render', function(){
 			//this.store.load();
 			this.getSelectionModel().selectFirstRow();
 		}, this);
 	},
-	
+
 	onAdd: function(){
 		var win;
 		win = new App.barcodepackage.Window({
@@ -184,7 +184,7 @@ App.barcodepackage.Grid = Ext.extend(Ext.grid.GridPanel, {
 		});
 		win.show();
 	},
-	
+
 	onChange: function(){
 		var win;
 		var record = this.getSelectionModel().getSelected();
@@ -196,7 +196,7 @@ App.barcodepackage.Grid = Ext.extend(Ext.grid.GridPanel, {
 			win.show();
 		}
 	},
-	
+
 	onPrint: function(){
 		var record = this.getSelectionModel().getSelected();
 		if (record) {
@@ -206,16 +206,16 @@ App.barcodepackage.Grid = Ext.extend(Ext.grid.GridPanel, {
 			win.show();
 		}
 	},
-	
+
 	onPrintDuplicate: function(){
 		var win;
 		win = new App.barcodepackage.DuplicateWindow({
 		});
 		win.show();
 	}
-	
 
-	
+
+
 });
 
 Ext.reg('barcodepackagegrid',App.barcodepackage.Grid);

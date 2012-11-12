@@ -3,9 +3,9 @@ Ext.ns('App.laboratory');
 
 App.laboratory.SearchWindow = Ext.extend(Ext.Window, {
 	initComponent: function(){
-		
+
 		this.filterKey = this.filterKey || 'filters'
-		
+
 		this.form = new Ext.form.FormPanel({
 			border:false,
 			baseCls:'x-plain',
@@ -60,7 +60,7 @@ App.laboratory.SearchWindow = Ext.extend(Ext.Window, {
 				valueField:'id',
 				store:new Ext.data.RESTStore({
 					autoLoad : true,
-					apiUrl : get_api_url('medstate'),
+					apiUrl : App.getApiUrl('state','medstate'),
 					model: ['id','name']
 				}),
 			    minChars:2,
@@ -77,7 +77,7 @@ App.laboratory.SearchWindow = Ext.extend(Ext.Window, {
 				valueField:'id',
 				store:new Ext.data.RESTStore({
 					autoLoad : true,
-					apiUrl : get_api_url('medstate'),
+					apiUrl : App.getApiUrl('state','medstate'),
 					model: ['id','name']
 				}),
 			    minChars:2,
@@ -94,7 +94,7 @@ App.laboratory.SearchWindow = Ext.extend(Ext.Window, {
 				valueField:'id',
 				store:new Ext.data.RESTStore({
 					autoLoad : true,
-					apiUrl : get_api_url('medstate'),
+					apiUrl : App.getApiUrl('state','medstate'),
 					model: ['id','name']
 				}),
 			    minChars:2,
@@ -112,7 +112,7 @@ App.laboratory.SearchWindow = Ext.extend(Ext.Window, {
 				displayField:'full_name',
 				store:new Ext.data.RESTStore({
 					autoLoad : true,
-					apiUrl : get_api_url('patient'),
+					apiUrl : App.getApiUrl('patient','patient'),
 					model: ['id','full_name']
 				}),
 			    minChars:2,
@@ -131,7 +131,7 @@ App.laboratory.SearchWindow = Ext.extend(Ext.Window, {
 				queryParam : 'staff__last_name__istartswith',
 				store:new Ext.data.RESTStore({
 					autoLoad : true,
-					apiUrl : get_api_url('position'),
+					apiUrl : App.getApiUrl('staff','position'),
 					model: ['id','name']
 				}),
 			    minChars:2,
@@ -143,7 +143,7 @@ App.laboratory.SearchWindow = Ext.extend(Ext.Window, {
 			    }
 			})]
 		});
-		
+
 		config = {
 			title:'Поиск',
 			width:400,
@@ -170,7 +170,7 @@ App.laboratory.SearchWindow = Ext.extend(Ext.Window, {
 		}
 		Ext.apply(this, Ext.apply(this.initialConfig, config));
 		App.laboratory.SearchWindow.superclass.initComponent.apply(this, arguments);
-		
+
 		this.on('afterrender', function(){
 			var v = Ext.state.Manager.getProvider().get(this.filterKey);
 			this.filtersConfig = v || {};
@@ -187,10 +187,10 @@ App.laboratory.SearchWindow = Ext.extend(Ext.Window, {
 			}
 
 		}, this);
-		
+
 //		this.form.getForm().findField('laboratory').forceValue(1);
 	},
-	
+
 	doSearch: function(){
 		var f = this.form.getForm();
 		Ext.each(this.fields, function(field){
@@ -223,12 +223,12 @@ App.laboratory.SearchWindow = Ext.extend(Ext.Window, {
 			scope:this
 		});
 	},
-	
+
 	cancelSearch: function(){
 		Ext.each(this.fields, function(field){
 			delete this.store.baseParams[field[1]];
 		}, this);
-		this.store.load();		
+		this.store.load();
 		this.filtersConfig = {};
 		Ext.state.Manager.getProvider().set(this.filterKey, this.filtersConfig);
 		this.fireEvent('updatefilters', this.filtersConfig);

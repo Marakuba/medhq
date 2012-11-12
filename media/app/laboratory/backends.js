@@ -43,7 +43,7 @@ App.regBackend('labservice', new App.Backend({
 		    remoteSort: true,
 		    groupField:'key',
 		    proxy: new Ext.data.HttpProxy({
-			    url: get_api_url('labservice')
+			    url: App.getApiUrl('visit','labservice')
 			}),
 		    reader: new Ext.data.JsonReader({
 			    totalProperty: 'meta.total_count',
@@ -66,8 +66,8 @@ App.regBackend('labservice', new App.Backend({
 		    	},
 		    	scope:this
 		    }
-		})	
-	
+		})
+
 }));
 
 
@@ -91,7 +91,7 @@ App.regBackend('labtest', new App.Backend({
 		    remoteSort: true,
 		    groupField:'service_name',
 		    proxy: new Ext.data.HttpProxy({
-			    url: get_api_url('labtest')
+			    url: App.getApiUrl('visit','labtest')
 			}),
 		    reader: new Ext.data.JsonReader({
 			    totalProperty: 'meta.total_count',
@@ -114,8 +114,8 @@ App.regBackend('labtest', new App.Backend({
 		    	},
 		    	scope:this
 		    }
-		})	
-	
+		})
+
 }));
 
 
@@ -145,7 +145,7 @@ App.regBackend('equipmentresult', new App.Backend({
 			},
 		    restful: true,
 		    proxy: new Ext.data.HttpProxy({
-			    url: get_api_url('equipmentresultro')
+			    url: App.getApiUrl('lab', 'equipmentresultro')
 			}),
 		    reader: new Ext.data.JsonReader({
 			    totalProperty: 'meta.total_count',
@@ -168,8 +168,8 @@ App.regBackend('equipmentresult', new App.Backend({
 		    	},
 		    	scope:this
 		    }
-		})	
-	
+		})
+
 }));
 
 
@@ -201,7 +201,7 @@ App.regBackend('equipment', new App.Backend({
 			},
 		    restful: true,
 		    proxy: new Ext.data.HttpProxy({
-			    url: get_api_url('equipment')
+			    url: App.getApiUrl('lab', 'equipment')
 			}),
 		    reader: new Ext.data.JsonReader({
 			    totalProperty: 'meta.total_count',
@@ -224,6 +224,6 @@ App.regBackend('equipment', new App.Backend({
 		    	},
 		    	scope:this
 		    }
-		})	
-	
+		})
+
 }));

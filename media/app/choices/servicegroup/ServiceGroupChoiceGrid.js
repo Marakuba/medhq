@@ -3,26 +3,26 @@ Ext.ns('App','App.choices');
 App.choices.ServiceGroupChoiceGrid = Ext.extend(Ext.grid.GridPanel, {
 
 	initComponent : function() {
-		
+
 		this.store = new Ext.data.RESTStore({
 			autoLoad : true,
-			apiUrl : get_api_url('baseservicegroup'),
+			apiUrl : App.getApiUrl('service','baseservicegroup'),
 			model: App.models.BaseService
 		});
-		
+
 		this.columns =  [
 		    {
-		    	header: "Наименование", 
-		    	sortable: true, 
+		    	header: "Наименование",
+		    	sortable: true,
 		    	dataIndex: 'name'
 		    },{
-		    	header: "Код", 
-		    	width: 30, 
-		    	sortable: true, 
+		    	header: "Код",
+		    	width: 30,
+		    	sortable: true,
 		    	dataIndex: 'code'
 		    }
-		];		
-		
+		];
+
 		this.choiceButton = new Ext.Button({
 			iconCls:'silk-accept',
 			disabled:true,
@@ -30,7 +30,7 @@ App.choices.ServiceGroupChoiceGrid = Ext.extend(Ext.grid.GridPanel, {
 			handler:this.onChoice.createDelegate(this, []),
 			scope:this
 		});
-		
+
 		var config = {
 			loadMask : {
 				msg : 'Подождите, идет загрузка...'
@@ -69,7 +69,7 @@ App.choices.ServiceGroupChoiceGrid = Ext.extend(Ext.grid.GridPanel, {
 			viewConfig : {
 				forceFit : true
 				//getRowClass : this.applyRowClass
-			},	
+			},
 			listeners: {
 				rowdblclick:this.onChoice.createDelegate(this, []),
 				scope:this
@@ -86,26 +86,26 @@ App.choices.ServiceGroupChoiceGrid = Ext.extend(Ext.grid.GridPanel, {
 		this.on('servicegroupselect', this.onServiceGroupSelect, this);
 		//this.store.on('write', this.onStoreWrite, this);
 	},
-	
+
 	btnSetDisabled: function(status) {
         this.choiceButton.setDisabled(status);
 	},
-	
+
 	onServiceGroupSelect: function(){
 //		this.btnSetDisable(false);
 	},
-	
+
 	getSelected: function() {
 		return this.getSelectionModel().getSelected()
 	},
-	
+
 	onGlobalSearch: function(v){
 		var s = this.store;
 		s.baseParams = { format:'json' };
 		s.setBaseParam('name__icontains', v);
 		s.load();
 	},
-	
+
 	onStoreWrite: function(store, action, result, res, rs) {
 		if( res.success && this.win ) {
 			store.filter('id',rs.data.id);
@@ -116,13 +116,13 @@ App.choices.ServiceGroupChoiceGrid = Ext.extend(Ext.grid.GridPanel, {
 //			App.eventManager.fireEvent('patientcreate',rs);
 //		}
 	},
-	
+
 	onChoice: function() {
         var record = this.getSelectionModel().getSelected();
         if (record) {
         	Ext.callback(this.fn, this.scope || window, [record]);
         };
     }
-	
+
 });
 

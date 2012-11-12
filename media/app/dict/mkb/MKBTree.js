@@ -2,7 +2,7 @@ Ext.ns('App.dict');
 
 
 App.dict.MKBTree = Ext.extend(Ext.tree.TreePanel, {
-	
+
 	initComponent: function(){
 
         config = {
@@ -13,7 +13,7 @@ App.dict.MKBTree = Ext.extend(Ext.tree.TreePanel, {
                 }),
                 loader : new Ext.tree.TreeLoader({
                 	nodeParameter:'parent',
-                	dataUrl: get_api_url('icd10'),
+                	dataUrl: App.getApiUrl('service','icd10'),
                 	requestMethod:'GET',
                 	baseAttrs : {
                 		singleClickExpand : true
@@ -45,9 +45,9 @@ App.dict.MKBTree = Ext.extend(Ext.tree.TreePanel, {
                 header: false,
                 requestMethod:'GET',
                 border:false
- 
+
             }
-        
+
 		Ext.apply(this, Ext.apply(this.initialConfig, config));
 		App.dict.MKBTree.superclass.initComponent.apply(this, arguments);
 
@@ -61,7 +61,7 @@ App.dict.MKBTree = Ext.extend(Ext.tree.TreePanel, {
 	        return node.isLeaf();
 	    });
 	},
-	
+
 	/*
 	 * Shortcut for getting selected node
 	 */

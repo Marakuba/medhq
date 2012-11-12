@@ -1,9 +1,9 @@
 Ext.ns('App.reporting');
 
 App.reporting.FilterPanel = Ext.extend(Ext.form.FormPanel, {
-	
+
     initComponent: function() {
-    	
+
     	this.startDateField = new Ext.form.DateField({
 			name:'start_date',
 			format:'Y-m-d',
@@ -13,7 +13,7 @@ App.reporting.FilterPanel = Ext.extend(Ext.form.FormPanel, {
         	fieldLabel: 'Дата с',
         	allowBlank:false
 		}),
-    	this.endDateField = new Ext.form.DateField({		
+    	this.endDateField = new Ext.form.DateField({
 			name:'end_date',
 			format:'Y-m-d',
 			allowBlank: false,
@@ -22,7 +22,7 @@ App.reporting.FilterPanel = Ext.extend(Ext.form.FormPanel, {
         	fieldLabel: 'Дата по',
         	allowBlank:false
 		}),
-    	
+
     	this.clsCmb = new Ext.form.ClearableComboBox({
 		    fieldLabel:'Форма обслуживания',
 		    name:'order__cls',
@@ -40,7 +40,7 @@ App.reporting.FilterPanel = Ext.extend(Ext.form.FormPanel, {
 		            'displayText'
 		        ],
 		        data: [
-		            ['п','Посещение'], 
+		            ['п','Посещение'],
 		        	['б','Прием биоматериала'],
 //		        	['н','Внутреннее направление'],
 //		        	['з','Предварительная запись'],
@@ -50,7 +50,7 @@ App.reporting.FilterPanel = Ext.extend(Ext.form.FormPanel, {
 		    valueField: 'id',
 		    displayField: 'displayText'
 		});
-		
+
 		this.ptypeCmb = new Ext.form.ClearableComboBox({
 		    fieldLabel:'Способ оплаты',
 		    name:'cash_type',
@@ -68,7 +68,7 @@ App.reporting.FilterPanel = Ext.extend(Ext.form.FormPanel, {
 		            'displayText'
 		        ],
 		        data: [
-		            ['cash','Наличные'], 
+		            ['cash','Наличные'],
 		        	['non_cash','Безналичный расчет'],
 		        	['card','Банковская карта']
 		        ]
@@ -76,11 +76,11 @@ App.reporting.FilterPanel = Ext.extend(Ext.form.FormPanel, {
 		    valueField: 'id',
 		    displayField: 'displayText'
 		});
-    	
+
     	this.patientStore = new Ext.data.RESTStore({
 			autoLoad : false,
 			autoSave : true,
-			apiUrl : get_api_url('patient'),
+			apiUrl : App.getApiUrl('patient','patient'),
 			model: [
 					{name: 'id'},
 				    {name: 'resource_uri'},
@@ -91,7 +91,7 @@ App.reporting.FilterPanel = Ext.extend(Ext.form.FormPanel, {
 				    {name: 'birth_day',type:'date',format:'d.m.Y'}
 				]
 		});
-		
+
 		this.PatientCombo = new Ext.form.LazyClearableComboBox({
         	fieldLabel:'Пациент',
         	name: 'order__patient',
@@ -111,11 +111,11 @@ App.reporting.FilterPanel = Ext.extend(Ext.form.FormPanel, {
 		    },
 		    onTriggerClick:this.onChoice.createDelegate(this,['Patient'])
 		});
-		
+
 		this.staffStore = new Ext.data.RESTStore({
 			autoLoad : false,
 			autoSave : true,
-			apiUrl : get_api_url('position'),
+			apiUrl : App.getApiUrl('staff','position'),
 			model: [
 				    {name: 'id'},
 				    {name: 'resource_uri'},
@@ -133,7 +133,7 @@ App.reporting.FilterPanel = Ext.extend(Ext.form.FormPanel, {
 				    {name: 'department'}
 				]
 		});
-		
+
 		this.StaffCombo = new Ext.form.LazyClearableComboBox({
         	fieldLabel:'Врач',
         	name: 'staff__staff',
@@ -153,11 +153,11 @@ App.reporting.FilterPanel = Ext.extend(Ext.form.FormPanel, {
 		    },
 		    onTriggerClick:this.onChoice.createDelegate(this,['Staff'])
 		});
-		
+
 		this.ServiceGroupStore = new Ext.data.RESTStore({
 			autoLoad : false,
 			autoSave : true,
-			apiUrl : get_api_url('baseservicegroup'),
+			apiUrl : App.getApiUrl('service','baseservicegroup'),
 			model: [
 				    {name: 'id'},
 				    {name: 'resource_uri'},
@@ -166,7 +166,7 @@ App.reporting.FilterPanel = Ext.extend(Ext.form.FormPanel, {
 				    {name: 'short_name'}
 				]
 		});
-		
+
 		this.ServiceGroupCombo = new Ext.form.LazyClearableComboBox({
         	fieldLabel:'Группа услуг',
         	name: 'service_group',
@@ -186,11 +186,11 @@ App.reporting.FilterPanel = Ext.extend(Ext.form.FormPanel, {
 		    },
 		    onTriggerClick:this.onChoice.createDelegate(this,['ServiceGroup'])
 		});
-		
+
 		this.departmentStore = new Ext.data.RESTStore({
 			autoLoad : false,
 			autoSave : true,
-			apiUrl : get_api_url('department'),
+			apiUrl : App.getApiUrl('state','department'),
 			model: [
 				    {name: 'id'},
 				    {name: 'resource_uri'},
@@ -198,7 +198,7 @@ App.reporting.FilterPanel = Ext.extend(Ext.form.FormPanel, {
 				    {name: 'name'}
 				]
 		});
-		
+
 		this.DepartmentCombo = new Ext.form.LazyClearableComboBox({
         	fieldLabel:'Отделение',
         	name: 'staff__department',
@@ -207,13 +207,13 @@ App.reporting.FilterPanel = Ext.extend(Ext.form.FormPanel, {
         	store:this.departmentStore,
 		    displayField: 'name',
 		    valueField: 'id'
-		    
+
 		});
-		
+
 		this.referralStore = new Ext.data.RESTStore({
 			autoLoad : false,
 			autoSave : true,
-			apiUrl : get_api_url('referral'),
+			apiUrl : App.getApiUrl('visit', 'referral'),
 			model: [
 				    {name: 'id'},
 				    {name: 'resource_uri'},
@@ -221,7 +221,7 @@ App.reporting.FilterPanel = Ext.extend(Ext.form.FormPanel, {
 				    {name: 'name'}
 				]
 		});
-		
+
 		this.ReferralCombo = new Ext.form.LazyClearableComboBox({
         	fieldLabel:'Кто направил',
         	name: 'order__referral',
@@ -241,7 +241,7 @@ App.reporting.FilterPanel = Ext.extend(Ext.form.FormPanel, {
 		    },
 		    onTriggerClick:this.onChoice.createDelegate(this,['Referral'])
 		});
-		
+
 		this.fromPlaceCombo = new Ext.form.LazyClearableComboBox({
         	fieldLabel:'Филиал',
         	name: 'from_place_filial',
@@ -250,7 +250,7 @@ App.reporting.FilterPanel = Ext.extend(Ext.form.FormPanel, {
         	store: new Ext.data.RESTStore({
 				autoLoad : false,
 				autoSave : true,
-				apiUrl : get_api_url('state'),
+				apiUrl : App.getApiUrl('state','state'),
 				model: [
 					    {name: 'id'},
 					    {name: 'resource_uri'},
@@ -270,7 +270,7 @@ App.reporting.FilterPanel = Ext.extend(Ext.form.FormPanel, {
 		    },
 		    onTriggerClick:this.onChoice.createDelegate(this,['State','fromPlace'])
 		});
-    	
+
 		this.fromLabCombo = new Ext.form.LazyClearableComboBox({
         	fieldLabel:'Плательщик / Лаборатория',
         	name: 'from_lab',
@@ -278,7 +278,7 @@ App.reporting.FilterPanel = Ext.extend(Ext.form.FormPanel, {
         	store: new Ext.data.RESTStore({
 				autoLoad : false,
 				autoSave : true,
-				apiUrl : get_api_url('state'),
+				apiUrl : App.getApiUrl('state','state'),
 				model: [
 					    {name: 'id'},
 					    {name: 'resource_uri'},
@@ -298,7 +298,7 @@ App.reporting.FilterPanel = Ext.extend(Ext.form.FormPanel, {
 		    },
 		    onTriggerClick:this.onChoice.createDelegate(this,['State','fromLab'])
 		});
-		
+
 		this.exPlOfficeCombo = new Ext.form.LazyClearableComboBox({
         	fieldLabel:'Место выполнения',
         	name: 'execution_place_office',
@@ -306,7 +306,7 @@ App.reporting.FilterPanel = Ext.extend(Ext.form.FormPanel, {
         	store: new Ext.data.RESTStore({
 				autoLoad : false,
 				autoSave : true,
-				apiUrl : get_api_url('state'),
+				apiUrl : App.getApiUrl('state','state'),
 				model: [
 					    {name: 'id'},
 					    {name: 'resource_uri'},
@@ -326,7 +326,7 @@ App.reporting.FilterPanel = Ext.extend(Ext.form.FormPanel, {
 		    },
 		    onTriggerClick:this.onChoice.createDelegate(this,['State','exPlOffice'])
 		});
-		
+
 		this.exPlFilialCombo = new Ext.form.LazyClearableComboBox({
         	fieldLabel:'Место выполнения',
         	name: 'execution_place_filial',
@@ -334,7 +334,7 @@ App.reporting.FilterPanel = Ext.extend(Ext.form.FormPanel, {
         	store: new Ext.data.RESTStore({
 				autoLoad : false,
 				autoSave : true,
-				apiUrl : get_api_url('state'),
+				apiUrl : App.getApiUrl('state','state'),
 				model: [
 					    {name: 'id'},
 					    {name: 'resource_uri'},
@@ -353,7 +353,7 @@ App.reporting.FilterPanel = Ext.extend(Ext.form.FormPanel, {
 		    	scope:this
 		    }
 		});
-		
+
 		this.paymentTypeCB = new Ext.form.ClearableComboBox({
 			fieldLabel:'Форма оплаты',
 			name:'order__payment_type',
@@ -375,7 +375,7 @@ App.reporting.FilterPanel = Ext.extend(Ext.form.FormPanel, {
 			editable:false,
 			anchor:'50%'
 		});
-		
+
 		this.priceTypeCB = new Ext.form.ClearableComboBox({
 			fieldLabel:'Тип цены',
 			name:'price_type',
@@ -396,7 +396,7 @@ App.reporting.FilterPanel = Ext.extend(Ext.form.FormPanel, {
 			editable:false,
 			anchor:'50%'
 		});
-		
+
     	var config = {
 			layout: 'form',
 			padding:8,
@@ -419,17 +419,17 @@ App.reporting.FilterPanel = Ext.extend(Ext.form.FormPanel, {
             	this.priceTypeCB
             ]
         };
-        
+
 		Ext.apply(this, Ext.apply(this.initialConfig, config));
         App.reporting.FilterPanel.superclass.initComponent.call(this);
-        
+
         this.on('afterrender',function(){
         	this.today = new Date();
         	this.startDateField.setValue(this.today);
         	this.endDateField.setValue(this.today);
 		},this)
     },
-    
+
     onPrint:function(node){
     	var rec = this.getSelected();
 		if(rec){
@@ -437,11 +437,11 @@ App.reporting.FilterPanel = Ext.extend(Ext.form.FormPanel, {
 			window.open(url);
 		}
     },
-    
+
     toPrint:function(slug){
-		
+
 	},
-    
+
     onClearForm: function(){
     	Ext.each(this.items.items,function(item){
     		if (item.name == 'start_date' || item.name == 'end_date'){
@@ -451,7 +451,7 @@ App.reporting.FilterPanel = Ext.extend(Ext.form.FormPanel, {
     		}
     	},this)
     },
-    
+
     onChoice: function(type,source) {
     	if (!type) return false;
     	if (!source) source = type;
@@ -468,7 +468,7 @@ App.reporting.FilterPanel = Ext.extend(Ext.form.FormPanel, {
        	 });
        	win.show();
     },
-    
+
     makeParamStr: function(fields){
     	if (fields.length){
     		this.showFields(fields);
@@ -489,9 +489,9 @@ App.reporting.FilterPanel = Ext.extend(Ext.form.FormPanel, {
     		}
     	},this);
     	return paramStr
-    	
+
     },
-    
+
     contains: function (arr, obj) {
 	    for(var i=0; i<arr.length; i++) {
 	        if (arr[i] == obj) return true;
@@ -499,14 +499,14 @@ App.reporting.FilterPanel = Ext.extend(Ext.form.FormPanel, {
 	    return false
 	},
 
-    
+
     showFields: function(fields){
     	Ext.each(this.items.items,function(item){
    			item.setVisible(this.contains(fields,item.name));
     	},this);
     	this.doLayout();
     }
-    
+
 });
 
 Ext.reg('reportfilters', App.reporting.FilterPanel);

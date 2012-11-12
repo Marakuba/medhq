@@ -3,14 +3,14 @@ Ext.ns('Ext.ux');
 
 App.examination.TextTicketEditor = Ext.extend(Ext.Panel, {
     initComponent: function(){
-        
-        this.clearFilterList = [Ext.EventObject.ESC, Ext.EventObject.RIGHT, Ext.EventObject.LEFT, 
-                                Ext.EventObject.TAB, 
+
+        this.clearFilterList = [Ext.EventObject.ESC, Ext.EventObject.RIGHT, Ext.EventObject.LEFT,
+                                Ext.EventObject.TAB,
                                 Ext.EventObject.DELETE, 44, 59, 63];
-        
+
         this.glossStore = new Ext.data.Store({
-            restful: true,    
-            autoLoad: true, 
+            restful: true,
+            autoLoad: true,
             autoDestroy:true,
             baseParams:{
                 format:'json',
@@ -23,7 +23,7 @@ App.examination.TextTicketEditor = Ext.extend(Ext.Panel, {
                 dir : 'dir'
             },
             proxy: new Ext.data.HttpProxy({
-                url: get_api_url('glossary')
+                url: App.getApiUrl('examination','glossary')
             }),
             reader: new Ext.data.JsonReader({
                 totalProperty: 'meta.total_count',
@@ -38,7 +38,7 @@ App.examination.TextTicketEditor = Ext.extend(Ext.Panel, {
                 {name: 'section'}
             ])
         });
-        
+
         this.glossDropDown = new Ext.ux.DropDownList({
             tpl: '<tpl for="."><div class="x-combo-list-item">{text}</div></tpl>',
             store: this.glossStore,
@@ -48,7 +48,7 @@ App.examination.TextTicketEditor = Ext.extend(Ext.Panel, {
             clearFilterList: this.clearFilterList,
             listeners: {
                 processquery: function(list, options, e) {
-                    
+
                     /*var txt = Ext.getCmp(list.currentEl.id);
                     var parsedAddresses = this.parseMailAddressesOnCurrentPosition(txt);
 
@@ -56,11 +56,11 @@ App.examination.TextTicketEditor = Ext.extend(Ext.Panel, {
                 },
 
                 itemselected: this.glossDDItemSelected,
-                
+
                 scope:this
             }
         });
-        
+
         this.glossPanel = new App.dict.XGlossaryTree({
             section:this.section,
             base_service:this.base_service,
@@ -75,8 +75,8 @@ App.examination.TextTicketEditor = Ext.extend(Ext.Panel, {
                 'nodeclick': this.onGlossNodeClick
             }
         });
-        
-        
+
+
         this.glossPanel.on('afterrender',function(){
             if (this.ctxEditor){
                 var textarea = this.ctxEditor.field.getEl().dom;
@@ -84,22 +84,22 @@ App.examination.TextTicketEditor = Ext.extend(Ext.Panel, {
                 this.ticket.setCaretTo(textarea,pos);
             }
         });
-        
+
         this.glossPanel.on('beforeclose',function(){
             if (this.ctxEditor){
                 this.ctxEditor.field.focus('',10);
             }
         });
-        
+
         this.glossPanel.on('beforeexpand',function(panel){
         });
-        
+
         this.headerField = new Ext.form.TextField({
             layout:'fit',
             region:'north',
             border:false
         });
-        
+
         this.bodyField = new Ext.ux.TinyMCE({
             layout:'fit',
             region:'center',
@@ -139,7 +139,7 @@ App.examination.TextTicketEditor = Ext.extend(Ext.Panel, {
 //                      var pos = this.getPos();
 //                      el.dom.setSelectionRange(pos, pos);
                     }, this);
-                    
+
                     c.ed.onKeyPress.add(function(ed, e) {
                         if(e.charCode==10 && e.ctrlKey){
                             this.editComplete();
@@ -149,7 +149,7 @@ App.examination.TextTicketEditor = Ext.extend(Ext.Panel, {
                 scope:this
             }
         })
-        
+
         this.ticketPanel = new Ext.Panel({
             layout:'border',
             border:false,
@@ -160,19 +160,19 @@ App.examination.TextTicketEditor = Ext.extend(Ext.Panel, {
             border:false,
             region:'center'
         });
-        
+
         this.okBtn = new Ext.Button({
             iconCls:'silk-resultset-previous',
             text:'Вернуться к карте',
             handler:this.editComplete,
             scope:this
         })
-        
+
         this.ttb = new Ext.Toolbar({
             items:[this.okBtn]
         })
-        
-        
+
+
         config = {
             layout:'border',
             type:'ticket-edit-panel',
@@ -182,7 +182,7 @@ App.examination.TextTicketEditor = Ext.extend(Ext.Panel, {
             ],
             tbar:this.ttb
         };
-        
+
         Ext.apply(this, Ext.apply(this.initialConfig, config));
         App.examination.TextTicketEditor.superclass.initComponent.apply(this, arguments);
         this.on('afterrender',function(){
@@ -193,17 +193,17 @@ App.examination.TextTicketEditor = Ext.extend(Ext.Panel, {
 //          console.log(this.bodyField.getEl())
 //          this.glossDropDown.bindElement(this.bodyField.getEl(), this.glossDropDown);
         });
-        
+
         this.on('search',function(e,text){
             this.glossDropDown.currentElKeyUp(e,text);
         },this);
-        
+
         this.on('editorclick', function(){
             this.glossDropDown.clearBuffer();
         },this)
-        
+
     },
-    
+
     loadTicket: function(ticket){
         var title = ticket.title || '';
         this.headerField.setValue(title);
@@ -217,17 +217,17 @@ App.examination.TextTicketEditor = Ext.extend(Ext.Panel, {
         this.glossPanel.loader.baseParams['staff'] = active_staff;
 //      this.glossPanel.loader.load(rootNode);
     },
-    
+
     onGlossNodeClick: function(attrs){
         var pos = this.getPos() || 0;
         var oldText = this.bodyField.getValue();
         var pastedText = attrs.text;
         if (oldText[pos] && oldText[pos] != ' '){
             pastedText += ' ';
-        }; 
+        };
         var beforePasted = oldText.substring(0,pos);
         var afterPasted = oldText.substr(pos);
-        
+
         if (pos>0 && oldText[pos-1] && oldText[pos-1] != ' '){
             pastedText = ' ' + pastedText;
         }
@@ -235,11 +235,11 @@ App.examination.TextTicketEditor = Ext.extend(Ext.Panel, {
         this.bodyField.setValue(newText);
         pos = pos + pastedText.length;
         var textarea = this.bodyField.getEl().dom;
-        textarea.setSelectionRange(pos, pos); 
+        textarea.setSelectionRange(pos, pos);
         this.setCaretTo.defer(300,this,[textarea,pos]);
         this.fireEvent('ticketdataupdate');
     },
-    
+
     glossDDItemSelected:function(list, record, index) {
         var val = this.bodyField.getValue();
         var curPos = this.getPos();
@@ -263,7 +263,7 @@ App.examination.TextTicketEditor = Ext.extend(Ext.Panel, {
         this.setCaretTo.defer(200,this,[textarea,newPos]);
         this.glossDropDown.clearBuffer();
     },
-    
+
     doGetCaretPosition: function (ctrl) {
         var CaretPos = 0;   // IE Support
         if (document.selection) {
@@ -277,20 +277,20 @@ App.examination.TextTicketEditor = Ext.extend(Ext.Panel, {
             CaretPos = ctrl.selectionStart;
         return (CaretPos);
     },
-    
+
     setCaretTo: function(obj, pos) {
         this.setPos(pos);
 //      pos = pos - 1;
-        if(obj.createTextRange) { 
-            var range = obj.createTextRange(); 
-            range.move("character", pos); 
-            range.select(); 
+        if(obj.createTextRange) {
+            var range = obj.createTextRange();
+            range.move("character", pos);
+            range.select();
         } else if(obj.selectionStart) {
-            obj.focus(false,300); 
-            obj.setSelectionRange(pos, pos); 
+            obj.focus(false,300);
+            obj.setSelectionRange(pos, pos);
         };
     },
-    
+
     getCaretPos: function(el) {
         var rng, ii=0;
         if(typeof el.selectionStart=="number") {
@@ -304,24 +304,24 @@ App.examination.TextTicketEditor = Ext.extend(Ext.Panel, {
         this.setPos(ii);
         return ii;
     },
-    
+
     setPos: function(pos){
         this.curPos = pos;
     },
-    
+
     getPos: function(){
         return this.curPos;
     },
-    
+
     getText: function(){
         return this.data.text;
     },
-    
+
     setText: function(text){
         this.data.text = text;
         this.updateData();
     },
-    
+
     editComplete: function(){
         var data = {};
         data['title'] = this.headerField.getValue();

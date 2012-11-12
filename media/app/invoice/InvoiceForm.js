@@ -1,23 +1,23 @@
 Ext.ns('App.invoice');
 
 App.invoice.InvoiceForm = Ext.extend(Ext.FormPanel, {
-	
+
 	initComponent:function(){
 
 		this.inlines = new Ext.util.MixedCollection({});
-		
+
 		this.invoiceItem = new App.invoice.InvoiceItemGrid({
 			record:this.record,
 			flex:1,
 			border:true
 		});
-		
+
 //		this.invoiceItem.store.on('write', function(){
 //			this.fireEvent('popstep');
 //		}, this);
 //
 //		this.inlines.add('invoiceitem', this.invoiceItem);
-		
+
 		config = {
 			layout:{
 				type:'vbox',
@@ -62,7 +62,7 @@ App.invoice.InvoiceForm = Ext.extend(Ext.FormPanel, {
 			        	name:'office',
 					    minChars:3,
 					    emptyText:'Выберите офис...',
-					    proxyUrl:get_api_url('ownstate'),
+					    proxyUrl:App.getApiUrl('state', 'ownstate'),
 					    allowBlank:false
 					})]
 				},{
@@ -72,7 +72,7 @@ App.invoice.InvoiceForm = Ext.extend(Ext.FormPanel, {
 			        	name:'state',
 					    minChars:3,
 					    emptyText:'Выберите лабораторию...',
-					    proxyUrl:get_api_url('medstate'),
+					    proxyUrl:App.getApiUrl('state', 'medstate'),
 					    allowBlank:false
 					})]
 				},{
@@ -113,7 +113,7 @@ App.invoice.InvoiceForm = Ext.extend(Ext.FormPanel, {
 				items:this.invoiceItem
 			}]
 		}
-		
+
 		Ext.apply(this, Ext.apply(this.initialConfig, config));
 		App.invoice.InvoiceForm.superclass.initComponent.apply(this, arguments);
 		App.eventManager.on('invoicecreate',this.onInvoiceCreate, this);
@@ -121,16 +121,16 @@ App.invoice.InvoiceForm = Ext.extend(Ext.FormPanel, {
 			if(this.record) {
 				this.getForm().loadRecord(this.record);
 			} else {
-				console.info(App.getApiUrl('ownstate',active_state_id));
-				this.getForm().findField('office').setValue(App.getApiUrl('ownstate',active_state_id));
+				console.info(App.getApiUrl('state', 'ownstate',active_state_id));
+				this.getForm().findField('office').setValue(App.getApiUrl('state', 'ownstate',active_state_id));
 			}
 		},this);
-		
+
 		this.on('destroy', function(){
-		    App.eventManager.un('invoicecreate',this.onInvoiceCreate, this); 
+		    App.eventManager.un('invoicecreate',this.onInvoiceCreate, this);
 		},this);
 	},
-	
+
 	onInvoiceCreate: function(rec){
 		this.record = rec;
 		this.getForm().loadRecord(this.record);
@@ -139,7 +139,7 @@ App.invoice.InvoiceForm = Ext.extend(Ext.FormPanel, {
 			this._pullDefer = false;
 		}
 	},
-	
+
 	pullItems: function(){
 		Ext.Ajax.request({
 			url:'/lab/pull_invoice/',
@@ -162,7 +162,7 @@ App.invoice.InvoiceForm = Ext.extend(Ext.FormPanel, {
 			scope:this
 		})
 	},
-	
+
 	getRecord: function() {
 		if(!this.record) {
 			if(this.model) {
@@ -174,7 +174,7 @@ App.invoice.InvoiceForm = Ext.extend(Ext.FormPanel, {
 		}
 		return this.record;
 	},
-	
+
 	onSave: function() {
 		var f = this.getForm();
 		if(f.isValid()){
@@ -192,7 +192,7 @@ App.invoice.InvoiceForm = Ext.extend(Ext.FormPanel, {
 			Ext.MessageBox.alert('Предупреждение','Пожалуйста, заполните все поля формы!');
 		}
 	},
-	
+
 	getSteps : function() {
 		var steps = 0;
 		if(this.getForm().isDirty()) {
@@ -209,8 +209,8 @@ App.invoice.InvoiceForm = Ext.extend(Ext.FormPanel, {
 		});
 		return steps
 	}
-	
-	
+
+
 });
 
 Ext.reg('invoiceform', App.invoice.InvoiceForm);

@@ -3,10 +3,10 @@ Ext.ns('App.issue');
 App.issue.IssueGrid = Ext.extend(Ext.grid.GridPanel, {
 
 	initComponent : function() {
-		
+
 		this.store = new Ext.data.RESTStore({
 			autoLoad : true,
-			apiUrl : get_api_url('issue'),
+			apiUrl : App.getApiUrl('helpdesk','issue'),
 			model: [
 			    {name: 'id'},
 			    {name: 'resource_uri'},
@@ -21,12 +21,12 @@ App.issue.IssueGrid = Ext.extend(Ext.grid.GridPanel, {
 			    {name: 'description'}
 			]
 		});
-		
+
 		this.columns =  [
 		    {
 		    	header: "Тикет",
 		    	width:60,
-		    	sortable: true, 
+		    	sortable: true,
 		    	dataIndex: 'title',
 		    	renderer: function(val,meta,rec) {
 		    		return String.format("<div><b>{0}</b><br>{1}</div>", rec.data.title, rec.data.type_name);
@@ -34,23 +34,23 @@ App.issue.IssueGrid = Ext.extend(Ext.grid.GridPanel, {
 		    },{
 		    	header: "Важность",
 		    	width:20,
-		    	sortable: true, 
+		    	sortable: true,
 		    	dataIndex: 'level_name'
 		    },{
-		    	header: "Статус", 
-		    	width: 20, 
-		    	sortable: true, 
+		    	header: "Статус",
+		    	width: 20,
+		    	sortable: true,
 		    	dataIndex: 'status_name'
 		    },{
-		    	header: "Оператор", 
-		    	width: 20, 
-		    	sortable: true, 
+		    	header: "Оператор",
+		    	width: 20,
+		    	sortable: true,
 		    	dataIndex: 'operator_name'
 		    }
-		];		
-		
+		];
 
-		
+
+
 		var config = {
 			closable:true,
 			title:'Тикеты',
@@ -106,7 +106,7 @@ App.issue.IssueGrid = Ext.extend(Ext.grid.GridPanel, {
 	                return 'x-grid3-row-collapsed';
 	            }
 			})
-			
+
 		}
 
 		Ext.apply(this, Ext.apply(this.initialConfig, config));
@@ -114,11 +114,11 @@ App.issue.IssueGrid = Ext.extend(Ext.grid.GridPanel, {
 //		App.eventManager.on('globalsearch', this.onGlobalSearch, this);
 		this.store.on('write', this.onStoreWrite, this);
 	},
-	
+
 	onGlobalSearch: function(v) {
 		this.storeFilter('search', v);
 	},
-	
+
 	storeFilter: function(field, value){
 		if(value===undefined) {
 			delete this.store.baseParams[field]
@@ -127,17 +127,17 @@ App.issue.IssueGrid = Ext.extend(Ext.grid.GridPanel, {
 		}
 		this.store.load();
 	},
-	
+
 	getSelected: function() {
 		return this.getSelectionModel().getSelected()
 	},
-	
+
 	onPrint: function() {
 //		var id = this.getSelected().data.id;
 //		var url = ['/lab/print/results',id,''].join('/');
 //		window.open(url);
 	},
-	
+
 	onCreate: function() {
 		this.win = new App.issue.IssueWindow({
 			model:this.store.recordType,
@@ -148,7 +148,7 @@ App.issue.IssueGrid = Ext.extend(Ext.grid.GridPanel, {
 		});
 		this.win.show();
 	},
-	
+
 	onChange: function(rowindex){
 		var record = this.getSelected();
 		if(record) {
@@ -163,17 +163,17 @@ App.issue.IssueGrid = Ext.extend(Ext.grid.GridPanel, {
     		this.win.show();
 		}
 	},
-	
+
 	onDelete: function() {
-		
+
 	},
-	
+
 	onStoreWrite: function(store, action, result, res, rs) {
 		if( res.success && this.win ) {
 			this.win.close();
 		}
 	}
-	
+
 });
 
 

@@ -9,9 +9,6 @@
 		var state = '{{ request.active_profile.state }}';
 		var MEDIA_URL = '{{ STATIC_URL }}';
 		var API_URL = '/api/v1';
-		function get_api_url(resource){
-			return [API_URL,'dashboard',resource].join("/");
-		}
 		var apps = {{ apps }};
 	</script>
 	{% endautoescape %}
@@ -22,7 +19,7 @@
 {% assets "css_barcoding" %}
 	 <link rel="stylesheet" type="text/css" href="{{ ASSET_URL }}" />
 {% endassets %}
-	
+
 	<style>
 		#bd {
 			width:960px;
@@ -44,15 +41,15 @@
     {% assets "js_ext" %}
 	 <script type="text/javascript" src="{{ ASSET_URL }}"></script>
 	{% endassets %}
-	
+
 	{% assets "js_for_all" %}
 	 <script type="text/javascript" src="{{ ASSET_URL }}"></script>
 	{% endassets %}
-	
+
 	<script type="text/javascript">
 		Raven.config("{{sentry_dsn}}");
 	</script>
-	
+
 	<script src="/direct/provider.js/"></script>
 
 	{% assets "js_barcoding" %}
@@ -62,11 +59,11 @@
 	 <script type="text/javascript" src="{{ STATIC_URL }}resources/js/web-socket-js/swfobject.js"></script>
 	 <script type="text/javascript" src="{{ STATIC_URL }}resources/js/web-socket-js/web_socket.js"></script>
 	<script type="text/javascript">
-	    
+
 	    WEB_SOCKET_SUPPRESS_CROSS_DOMAIN_SWF_ERROR = true;
 		WEB_SOCKET_SWF_LOCATION = "{{ STATIC_URL }}resources/js/web-socket-js/WebSocketMain.swf";
 	    WEB_SOCKET_DEBUG = true;
-	    
+
 	</script>
 
 {% endblock %}

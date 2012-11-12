@@ -12,7 +12,7 @@ App.laboratory.RegisterWindow = Ext.extend(Ext.Window, {
  		    ['is_completed','is_completed'],
  		    ['cito','visit__is_cito']
  		];
-		   		   		
+
 		this.form = new Ext.form.FormPanel({
 			border:false,
 			baseCls:'x-plain',
@@ -50,7 +50,7 @@ App.laboratory.RegisterWindow = Ext.extend(Ext.Window, {
 				valueField:'id',
 				store:new Ext.data.RESTStore({
 					autoLoad : true,
-					apiUrl : get_api_url('medstate'),
+					apiUrl : App.getApiUrl('state','medstate'),
 					model: ['id','name']
 				}),
 			    minChars:2,
@@ -67,7 +67,7 @@ App.laboratory.RegisterWindow = Ext.extend(Ext.Window, {
 				valueField:'id',
 				store:new Ext.data.RESTStore({
 					autoLoad : true,
-					apiUrl : get_api_url('medstate'),
+					apiUrl : App.getApiUrl('state','medstate'),
 					model: ['id','name']
 				}),
 			    minChars:2,
@@ -85,7 +85,7 @@ App.laboratory.RegisterWindow = Ext.extend(Ext.Window, {
 				displayField:'full_name',
 				store:new Ext.data.RESTStore({
 					autoLoad : true,
-					apiUrl : get_api_url('patient'),
+					apiUrl : App.getApiUrl('patient','patient'),
 					model: ['id','full_name']
 				}),
 			    minChars:2,
@@ -125,7 +125,7 @@ App.laboratory.RegisterWindow = Ext.extend(Ext.Window, {
 				name:'cito'
 			})]
 		});
-		
+
 		config = {
 			title:'Реестр тестов',
 			width:400,
@@ -145,13 +145,13 @@ App.laboratory.RegisterWindow = Ext.extend(Ext.Window, {
 		}
 		Ext.apply(this, Ext.apply(this.initialConfig, config));
 		App.laboratory.RegisterWindow.superclass.initComponent.apply(this, arguments);
-		
+
 		this.on('afterrender', function(){
 
 		}, this);
-		
+
 	},
-	
+
 	doReport: function(){
 		var f = this.form.getForm();
 		var o = {};

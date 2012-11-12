@@ -1,21 +1,21 @@
 Ext.ns('App.refund');
 
 App.refund.Form = Ext.extend(Ext.FormPanel, {
-	
-	// 
-	
+
+	//
+
 	initComponent:function(){
-		
+
 		this.isNew = true;
 
 		this.refundId = undefined;
 		this.refundRec = undefined;
 
 ///
-		
+
 		this.policyStore = new Ext.data.JsonStore({
 			proxy: new Ext.data.HttpProxy({
-				url:get_api_url('insurance_policy'),
+				url:App.getApiUrl('patient','insurance_policy'),
 				method:'GET'
 			}),
 			baseParams: {
@@ -91,14 +91,14 @@ App.refund.Form = Ext.extend(Ext.FormPanel, {
 					},
 					scope:this
 				}
-			}]			
+			}]
 		};
 
 ///
-		
+
 		this.discountsStore = new Ext.data.JsonStore({
 			proxy: new Ext.data.HttpProxy({
-				url:'/api/v1/dashboard/discount',
+				url: App.getApiUrl('pricelist', 'discount'),
 				method:'GET'
 			}),
 			baseParams: {
@@ -143,7 +143,7 @@ App.refund.Form = Ext.extend(Ext.FormPanel, {
 		this.labStore = new Ext.data.JsonStore({
 			autoLoad:true,
 			proxy: new Ext.data.HttpProxy({
-				url:'/api/v1/dashboard/lab',
+				url:App.getApiUrl('state', 'lab'),
 				method:'GET'
 			}),
 			root:'objects',
@@ -170,7 +170,7 @@ App.refund.Form = Ext.extend(Ext.FormPanel, {
 
 		this.referralStore = new Ext.data.JsonStore({
 			proxy: new Ext.data.HttpProxy({
-				url:'/api/v1/dashboard/referral',
+				url:App.getApiUrl('visit', 'referral'),
 				method:'GET'
 			}),
 			root:'objects',
@@ -217,7 +217,7 @@ App.refund.Form = Ext.extend(Ext.FormPanel, {
 						}
 					}
 				}
-			}]			
+			}]
 		};
 		this.sample = {
             layout: 'form',
@@ -275,7 +275,7 @@ App.refund.Form = Ext.extend(Ext.FormPanel, {
 				name:'menopause'
 			}]
 		};
-		this.diagnosis = { 
+		this.diagnosis = {
             layout: 'form',
             border:false,
 			items:{
@@ -285,7 +285,7 @@ App.refund.Form = Ext.extend(Ext.FormPanel, {
         		anchor:'98%'
 			}
 		};
-		this.comment = { 
+		this.comment = {
             layout: 'form',
             border:false,
 			items:{
@@ -301,7 +301,7 @@ App.refund.Form = Ext.extend(Ext.FormPanel, {
 					['н','Наличная оплата'],
 					['б','Безналичный перевод'],
 					['д','ДМС']]
-		}); 
+		});
 		this.paymentTypeCB = new Ext.form.ComboBox({
 			id:'payment-type-cb',
 			fieldLabel:'Форма оплаты',
@@ -327,7 +327,7 @@ App.refund.Form = Ext.extend(Ext.FormPanel, {
 						vpc.allowBlank = true;
 						pb.hide();
 					}
-					
+
 				},
 				scope:this
 			}
@@ -375,13 +375,13 @@ App.refund.Form = Ext.extend(Ext.FormPanel, {
 	            	baseCls:'x-border-layout-ct',
 	            	border:false
 	            },
-				items:[this.discounts, 
+				items:[this.discounts,
 					this.paymentTypeCB,
 					this.policyBar,
 					this.totalSum
 				]
 			}
-		};		
+		};
 		this.paymentTpl = new Ext.Template(
 			'<div class="total-sum">',
 			'<div class="">Сумма без скидки: <strong>{total} руб.</strong></div>',
@@ -389,17 +389,17 @@ App.refund.Form = Ext.extend(Ext.FormPanel, {
 			'<div class="">Скидка: <strong>{discount} руб.</strong></div>',
 			'</div>'
 		);
-		
+
 		this.paymentPanel = new Ext.Panel({
 			//baseCls:'x-panel-body'
 		});
-		
+
 		this.defaultItems = [{
     			xtype:'hidden',
     			name:'patient',
-    			value:"/api/v1/dashboard/patient/"+this.patientId || null
+    			value: App.getApiUrl('patient', 'patient', this.patientId || null)
         }];
-		
+
 		this.types = {
 			visit:[{
         			xtype:'hidden',
@@ -412,7 +412,7 @@ App.refund.Form = Ext.extend(Ext.FormPanel, {
 						border:false
 					},
         			items:[
-        				this.referralBar,  
+        				this.referralBar,
 	        			{
 	        				layout:'column',
 							defaults:{
@@ -449,7 +449,7 @@ App.refund.Form = Ext.extend(Ext.FormPanel, {
 					},
         			items:[
         				this.lab,
-        				this.referralBar,  
+        				this.referralBar,
 	        			this.sample,
 	        			{
 	        				layout:'column',
@@ -462,13 +462,13 @@ App.refund.Form = Ext.extend(Ext.FormPanel, {
 	        			this.diagnosis,
 	        			this.comment
 	        		]
-        		}]       	
+        		}]
 		}
 
 		if(this.type){
 			var items = this.defaultItems.concat(this.types[this.type]);
 		}
-		
+
 
 		config = {
 			bodyStyle:'padding:5px',
@@ -496,18 +496,18 @@ App.refund.Form = Ext.extend(Ext.FormPanel, {
 				handler: this.onSubmit.createDelegate(this,[])
         	}]
 		}
-		
+
 		Ext.apply(this, Ext.apply(this.initialConfig, config));
 		App.refund.Form.superclass.initComponent.apply(this, arguments);
-		
-	
+
+
 	},
-	
+
 	getTotalField: function()
 	{
 		return this.totalPaid.items.itemAt(0);
 	},
-	
+
 	getPatientTitle : function(id){
 		//var p = Ext.getCmp('patient-grid');
 		var rec = this.patientRecord; //p.store.getById(id);
@@ -521,16 +521,16 @@ App.refund.Form = Ext.extend(Ext.FormPanel, {
 		);
 		return tpl.apply(v);
 	},
-	
+
 	toPrint:function(slug){
 		var url = ['/visit/print',slug,this.visitId,''].join('/');
 		window.open(url);
 	},
-	
+
 	onCancel:function(){
         App.eventManager.fireEvent('refundclose', this.visitId);
 	},
-	
+
 	onSubmit:function(){
 		if(this.getForm().isValid()){
 			var sb = Ext.getCmp('global-status-bar');
@@ -545,16 +545,16 @@ App.refund.Form = Ext.extend(Ext.FormPanel, {
 			Ext.MessageBox.alert('Ошибка формы','Пожалуйста, заполните все обязательные поля, которые подчеркнуты красной линией!');
 		}
 	},
-	
+
 	enablePrintBtn: function(){
 		Ext.getCmp('visit-print-btn').enable();
 		Ext.getCmp('sampling-print-btn').enable();
 		Ext.getCmp('barcode-print-btn').enable();
 	}
-	
+
 });
 
-Ext.reg('visitform', App.visit.Form);	
+Ext.reg('visitform', App.visit.Form);
 
 
 

@@ -3,9 +3,9 @@ Ext.ns('App.patient');
 App.patient.PatientForm = Ext.extend(Ext.form.FormPanel, {
 
 	initComponent: function(){
-		
+
 		this.inlines = new Ext.util.MixedCollection({});
-		
+
 		this.insPolicy = new App.insurance.PolicyGrid({
 			record:this.record,
 			listeners:{
@@ -15,7 +15,7 @@ App.patient.PatientForm = Ext.extend(Ext.form.FormPanel, {
 				}
 			}
 		});
-		
+
 		this.contractGrid = new App.patient.ContractGrid({
 			record:this.record,
 			listeners:{
@@ -25,30 +25,30 @@ App.patient.PatientForm = Ext.extend(Ext.form.FormPanel, {
 				}
 			}
 		});
-		
+
 //		this.idCard = new App.patient.IDCardForm({
 //			record:this.record
 //		});
-//		
+//
 //		this.notifyForm = new App.patient.NotifyForm({
 //			record:this.record
 //		});
-		
+
 		this.inlines.add('inspolicy', this.insPolicy);
 //		this.inlines.add('idcard', this.idCard);
 		this.inlines.add('contracts', this.contractGrid);
-		
+
 		this.cl_acc_grid = new App.patient.ClientAccountGrid({
 			clientHidden : true	,
 			record:this.record
 		});
-		
+
 		this.cl_acc_grid.on('newitem', function(){
 			this.newAccount();
 		},this)
-		
+
 		this.cl_acc_backend = App.getBackend('clientaccount');
-		
+
 		this.acc_store = new Ext.data.Store({
 			autoLoad:true,
 		    baseParams: {
@@ -62,7 +62,7 @@ App.patient.PatientForm = Ext.extend(Ext.form.FormPanel, {
 			},
 		    restful: true,
 		    proxy: new Ext.data.HttpProxy({
-			    url: get_api_url('account')
+			    url: App.getApiUrl('billing','account')
 			}),
 		    reader: new Ext.data.JsonReader({
 			    totalProperty: 'meta.total_count',
@@ -92,12 +92,12 @@ App.patient.PatientForm = Ext.extend(Ext.form.FormPanel, {
 		    	scope:this
 		    }
 		});
-		
+
 		this.bottom = new Ext.TabPanel({
 			activeTab:0,
 			height:200,
 			plain:false,
-			
+
 			defaults:{
 				border:false
 			},
@@ -116,7 +116,7 @@ App.patient.PatientForm = Ext.extend(Ext.form.FormPanel, {
 						xtype:'textfield',
 						name:'id_card_series',
 						width:50,
-						maxLength:6, 
+						maxLength:6,
 		            	fieldLabel: 'Серия',
 		            	allowBlank:true,
 		            	autoCreate: {tag: 'input', type: 'text', size: '6', autocomplete: 'off', maxlength: '6'},
@@ -203,10 +203,10 @@ App.patient.PatientForm = Ext.extend(Ext.form.FormPanel, {
 					value:'0'
 				})]
 			}
-			
+
 			]
 		});
-		
+
 		config = {
 			baseCls:'x-plain',
 			border:false,
@@ -259,7 +259,7 @@ App.patient.PatientForm = Ext.extend(Ext.form.FormPanel, {
 			        	width:170,
 //						anchor:'80%',
 			        	name:'ad_source',
-			        	proxyUrl:get_api_url('adsource')
+			        	proxyUrl:App.getApiUrl('crm','adsource')
 					})]
 				},{
 					columnWidth:.5,
@@ -281,7 +281,7 @@ App.patient.PatientForm = Ext.extend(Ext.form.FormPanel, {
 //						plugins:[new Ext.ux.netbox.InputTextMask('(999)999-99-99')],
 					     maxLength: 15, // for validation
 					     autoCreate: {tag: 'input', type: 'text', size: '20', autocomplete:
-						'off', maxlength: '15',value:''} 
+						'off', maxlength: '15',value:''}
 					},{
 						xtype:'radiogroup',
 						fieldLabel: 'Пол',
@@ -303,7 +303,7 @@ App.patient.PatientForm = Ext.extend(Ext.form.FormPanel, {
 			        	fieldLabel:'Скидка',
 						anchor:'80%',
 			        	name:'discount',
-			        	proxyUrl:get_api_url('discount')
+			        	proxyUrl:App.getApiUrl('pricelist','discount')
 					}),{
 						xtype:'textfield',
 						name:'doc',
@@ -321,7 +321,7 @@ App.patient.PatientForm = Ext.extend(Ext.form.FormPanel, {
 		}
 		Ext.apply(this, Ext.apply(this.initialConfig, config));
 		App.patient.PatientForm.superclass.initComponent.apply(this, arguments);
-		
+
 		this.contractGrid.store.on('write', this.popStep, this);
 		this.insPolicy.store.on('write', this.popStep, this);
 		this.on('afterrender', function(){
@@ -335,11 +335,11 @@ App.patient.PatientForm = Ext.extend(Ext.form.FormPanel, {
 			};
 		},this);
 	},
-	
+
 	popStep: function(){
 		this.fireEvent('popstep');
 	},
-	
+
 	getRecord: function() {
 		if(!this.record) {
 			if(this.model) {
@@ -351,7 +351,7 @@ App.patient.PatientForm = Ext.extend(Ext.form.FormPanel, {
 		}
 		return this.record;
 	},
-	
+
 	onSave: function() {
 		var f = this.getForm();
 		if(f.isValid()){
@@ -369,7 +369,7 @@ App.patient.PatientForm = Ext.extend(Ext.form.FormPanel, {
 			Ext.MessageBox.alert('Предупреждение','Пожалуйста, заполните все поля формы!');
 		}
 	},
-	
+
 	getSteps : function() {
 		var steps = 0;
 		if(this.getForm().isDirty()) {
@@ -381,7 +381,7 @@ App.patient.PatientForm = Ext.extend(Ext.form.FormPanel, {
 		});
 		return steps
 	},
-	
+
 	setAcceptedTime: function(){
 		var acceptedField = this.getForm().findField('accepted');
 		var today = new Date();

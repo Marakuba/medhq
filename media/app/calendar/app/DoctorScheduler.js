@@ -35,7 +35,7 @@ Ext.calendar.DoctorScheduler = Ext.extend(Ext.Panel, {
 			},
             //data: calendarList, // defined in calendar-list.js
             proxy: new Ext.data.HttpProxy({
-		    	url: get_api_url('possched'),
+		    	url: App.getApiUrl('staff','possched'),
 		    	method:'GET'
 			}),
             autoLoad: true,
@@ -78,7 +78,7 @@ Ext.calendar.DoctorScheduler = Ext.extend(Ext.Panel, {
 			},
             //data: calendarList, // defined in calendar-list.js
             proxy: new Ext.data.HttpProxy({
-		    	url: get_api_url('staff'),
+		    	url: App.getApiUrl('staff','staff'),
 		    	method:'GET'
 			}),
             autoLoad: true,
@@ -123,7 +123,7 @@ Ext.calendar.DoctorScheduler = Ext.extend(Ext.Panel, {
 			},
 	        //data: eventList, // defined in event-list.js
 			proxy: new Ext.data.HttpProxy({
-		    	url: get_api_url('event'),
+		    	url: App.getApiUrl('scheduler','event'),
 		    	method:'GET'
 			}),
 //		        fields: Ext.calendar.EventRecord.prototype.fields.getRange(),

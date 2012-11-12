@@ -1,11 +1,8 @@
-"""
-This file demonstrates two different styles of tests (one doctest and one
-unittest). These will both pass when you run "manage.py test".
-
-Replace these with more appropriate tests for your application.
-"""
-
+# -*- coding: utf-8 -*-
+from django.utils import unittest
+from django.test.client import Client
 from django.test import TestCase
+
 
 class SimpleTest(TestCase):
     def test_basic_addition(self):
@@ -21,3 +18,20 @@ Another way to test that 1 + 1 is equal to 2.
 True
 """}
 
+
+class BillingApiTest(unittest.TestCase):
+
+    def test_billing_account(self):
+        client = Client()
+        response = client.get('/api/billing/account')
+        self.assertEqual(response.status_code, 200)
+
+    def test_billing_clientaccount(self):
+        client = Client()
+        response = client.get('/api/billing/clientaccount')
+        self.assertEqual(response.status_code, 200)
+
+    def test_billing_payment(self):
+        client = Client()
+        response = client.get('/api/billing/payment')
+        self.assertEqual(response.status_code, 200)

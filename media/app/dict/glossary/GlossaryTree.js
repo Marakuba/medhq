@@ -2,9 +2,9 @@ Ext.ns('App.dict');
 
 
 App.dict.GlossaryTree = Ext.extend(Ext.tree.TreePanel, {
-	
+
 	initComponent: function(){
-		
+
 		this.treeEditor = new Ext.tree.TreeEditor(this, {}, {
 		    cancelOnEsc: true,
 		    completeOnEnter: true,
@@ -28,7 +28,7 @@ App.dict.GlossaryTree = Ext.extend(Ext.tree.TreePanel, {
                 split:true,
                 loader: new Ext.tree.TreeLoader({
                 	nodeParameter:'parent',
-                	dataUrl: get_api_url('glossary'),
+                	dataUrl: App.getApiUrl('examination','glossary'),
                 	requestMethod:'GET',
                 	processResponse : function(response, node, callback, scope){
 				        var json = response.responseText;
@@ -59,30 +59,30 @@ App.dict.GlossaryTree = Ext.extend(Ext.tree.TreePanel, {
 //                tbar: [' ', new Ext.form.TextField({
 //                    width:200,
  //               })]
- 
+
             }
-        
+
         this.on('click', function(node, e){
 			this.fireEvent('nodeclick',node.attributes);
 			if (node.attributes.leaf) {
 				Ext.callback(this.fn, this.scope || window, [node]);
 			}
 		}, this);
-		
+
 		this.on('dblclick',this.onTreeNodeDblClick,this);
-		
-		
+
+
 
 		Ext.apply(this, Ext.apply(this.initialConfig, config));
 		App.dict.GlossaryTree.superclass.initComponent.apply(this, arguments);
 	},
-	
+
 	onTreeNodeDblClick: function(n) {
 	    this.treeEditor.editNode = n;
 	    this.treeEditor.startEdit(n.ui.textNode);
 	},
 
-	
+
 	onTreeEditComplete: function(treeEditor, o, n){
 		//o - oldValue
    		//n - newValue

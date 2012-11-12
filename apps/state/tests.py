@@ -1,23 +1,41 @@
-"""
-This file demonstrates two different styles of tests (one doctest and one
-unittest). These will both pass when you run "manage.py test".
+# -*- coding: utf-8 -*-
+from django.utils import unittest
+from django.test.client import Client
 
-Replace these with more appropriate tests for your application.
-"""
 
-from django.test import TestCase
+class StateApiTest(unittest.TestCase):
 
-class SimpleTest(TestCase):
-    def test_basic_addition(self):
-        """
-        Tests that 1 + 1 always equals 2.
-        """
-        self.failUnlessEqual(1 + 1, 2)
+    def test_state_lab(self):
+        client = Client()
+        response = client.get('/api/state/lab')
+        self.assertEqual(response.status_code, 200)
 
-__test__ = {"doctest": """
-Another way to test that 1 + 1 is equal to 2.
+    def test_state_medstate(self):
+        client = Client()
+        response = client.get('/api/state/medstate')
+        self.assertEqual(response.status_code, 200)
 
->>> 1 + 1 == 2
-True
-"""}
+    def test_state_ownstate(self):
+        client = Client()
+        response = client.get('/api/state/ownstate')
+        self.assertEqual(response.status_code, 200)
 
+    def test_state_state(self):
+        client = Client()
+        response = client.get('/api/state/state')
+        self.assertEqual(response.status_code, 200)
+
+    def test_state_genericstate(self):
+        client = Client()
+        response = client.get('/api/state/genericstate')
+        self.assertEqual(response.status_code, 200)
+
+    def test_state_insurance_state(self):
+        client = Client()
+        response = client.get('/api/state/insurance_state')
+        self.assertEqual(response.status_code, 200)
+
+    def test_state_department(self):
+        client = Client()
+        response = client.get('/api/state/department')
+        self.assertEqual(response.status_code, 200)

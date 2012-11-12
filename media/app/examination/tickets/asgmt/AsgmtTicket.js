@@ -13,11 +13,11 @@ Ext.ns('App.examination');
 App.examination.AsgmtTicket = Ext.extend(App.examination.Ticket,{
 	data : {},
 	initComponent: function(){
-		
+
 		this.proxy = new Ext.data.HttpProxy({
-		    url: get_api_url('extpreorder')
+		    url: App.getApiUrl('scheduler','extpreorder')
 		});
-		
+
 		this.reader = new Ext.data.JsonReader({
 		    totalProperty: 'meta.total_count',
 		    successProperty: 'success',
@@ -25,12 +25,12 @@ App.examination.AsgmtTicket = Ext.extend(App.examination.Ticket,{
 		    root: 'objects',
 		    messageProperty: 'message'
 		}, App.models.preorderModel);
-		
+
 		this.writer = new Ext.data.JsonWriter({
 		    encode: false,
 		    writeAllFields: true
 		});
-		
+
 		this.store = new Ext.data.Store({
 			autoSave:false,
 			autoLoad:false,
@@ -40,10 +40,10 @@ App.examination.AsgmtTicket = Ext.extend(App.examination.Ticket,{
 		    	card:this.data.cardId
 		    },
 		    paramNames: {
-			    start : 'offset',  
-			    limit : 'limit', 
-			    sort : 'sort', 
-			    dir : 'dir' 
+			    start : 'offset',
+			    limit : 'limit',
+			    sort : 'sort',
+			    dir : 'dir'
 			},
 		    restful: true,
 		    proxy: this.proxy,
@@ -56,23 +56,23 @@ App.examination.AsgmtTicket = Ext.extend(App.examination.Ticket,{
 		    	scope:this
 		    }
 		});
-		
+
 		config = {
 			editor:'asgmtticketeditor'
 		};
-		
+
 		Ext.apply(this, Ext.apply(this.initialConfig, config));
 		App.examination.AsgmtTicket.superclass.initComponent.apply(this, arguments);
-		
+
 	},
-	
+
 	afterEdit: function(records,panel){
 		panel.records = records;
 //		panel.data.value = '';
 		panel.updateData();
 //		panel.fireEvent('ticketdataupdate',this,this.data)
 	},
-	
+
 	setData : function(data) {
 		Ext.apply(this.data,data);
 		this.data.value = '';
@@ -84,7 +84,7 @@ App.examination.AsgmtTicket = Ext.extend(App.examination.Ticket,{
 			},scope:this})
 		}
 	},
-	
+
 	setCardId: function(cardId){
 		if (this.data.cardId) return false
 		this.data.cardId = cardId;
@@ -94,7 +94,7 @@ App.examination.AsgmtTicket = Ext.extend(App.examination.Ticket,{
 			this.updateData();
 		},scope:this})
 	},
-	
+
 	getEditorConfig : function(panel){
 		var editorConfig = {
 			store:this.store,
@@ -111,7 +111,7 @@ App.examination.AsgmtTicket = Ext.extend(App.examination.Ticket,{
 		}
 		return editorConfig
 	},
-	
+
 	dataTpl : new Ext.XTemplate(
 		'<table width="100%" cellpadding="0" cellspacing="0" border="0">',
 			'<tpl for=".">',
@@ -124,7 +124,7 @@ App.examination.AsgmtTicket = Ext.extend(App.examination.Ticket,{
 			'</tpl>',
 		'</table>'
 	),
-	
+
 	updateValueData : function(d) {
 		if (this.records && this.records.length) {
 			this.body.removeClass('empty-body');
@@ -132,10 +132,10 @@ App.examination.AsgmtTicket = Ext.extend(App.examination.Ticket,{
 			var text = this.dataTpl.apply(recs);
 			this.body.update(text);
 		} else {
-			d['value'] = '' 
-		}; 
+			d['value'] = ''
+		};
 	},
-	
+
 });
 
 Ext.reg('asgmtticket', App.examination.AsgmtTicket);

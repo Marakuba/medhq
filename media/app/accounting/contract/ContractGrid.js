@@ -15,7 +15,7 @@ App.accounting.ContractGrid = Ext.extend(Ext.grid.GridPanel, {
         this.store = new Ext.data.RESTStore({
             autoSave : false,
             autoLoad : false,
-            apiUrl : get_api_url('acc_contract'),
+            apiUrl : App.getApiUrl('accounting','acc_contract'),
             model: App.models.AccountingContract
         });
 

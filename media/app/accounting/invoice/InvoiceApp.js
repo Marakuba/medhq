@@ -2,7 +2,7 @@ Ext.ns('App.accounting');
 
 
 App.accounting.InvoiceApp = Ext.extend(Ext.Panel, {
-    
+
     title : 'Счет',
 
     initComponent: function() {
@@ -10,14 +10,14 @@ App.accounting.InvoiceApp = Ext.extend(Ext.Panel, {
         this.contractStore = new Ext.data.RESTStore({
             autoSave : false,
             autoLoad : false,
-            apiUrl : get_api_url('acc_contract'),
+            apiUrl : App.getApiUrl('accounting','acc_contract'),
             model: App.models.AccountingContract
         });
 
         this.invoiceStore = new Ext.data.RESTStore({
             autoSave : false,
             autoLoad : false,
-            apiUrl : get_api_url('acc_invoice'),
+            apiUrl : App.getApiUrl('accounting','acc_invoice'),
             model: App.models.AccountingInvoice
         });
 
@@ -157,11 +157,11 @@ App.accounting.InvoiceApp = Ext.extend(Ext.Panel, {
         var a = node.attributes;
         var id = a.id.split('-');
         var fields = {
-            patient: App.getApiUrl('patient', p.data.id),
+            patient: App.getApiUrl('patient','patient', p.data.id),
             // patient_name: p.data.patient_name,
-            service: App.getApiUrl('baseservice', id[0]),
+            service: App.getApiUrl('service','baseservice', id[0]),
             service_name: a.text,
-            execution_place: App.getApiUrl('state', id[1]),
+            execution_place: App.getApiUrl('state','state', id[1]),
             price:a.price,
             count:1,
             total_price:a.price

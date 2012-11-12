@@ -3,14 +3,14 @@ Ext.ns('App','App.patient');
 App.billing.PaymentWindow = Ext.extend(Ext.Window, {
 
 	initComponent:function(){
-		
+
 		this.store = this.store || new Ext.data.RESTStore({
-		    apiUrl : get_api_url('payment'),
+		    apiUrl : App.getApiUrl('billing','payment'),
 		    model: App.models.paymentModel
 		});
-		
+
 		this.model = this.store.recordType;
-		
+
 		this.form = new App.billing.PaymentForm({
 			model:this.model,
 			patientRecord:this.patientRecord,
@@ -23,9 +23,9 @@ App.billing.PaymentWindow = Ext.extend(Ext.Window, {
 				this.store.insertRecord(record);
 				Ext.callback(this.fn, this.scope || window, [this.record]);
 			},
-			scope:this			
+			scope:this
 		});
-		
+
 		this.statusbar = new Ext.ux.StatusBar({
                 defaultText: '',
                 items:[{
@@ -42,7 +42,7 @@ App.billing.PaymentWindow = Ext.extend(Ext.Window, {
 					scope:this
 				}]
 			})
-		
+
 		config = {
 			title:(this.is_income==true ? 'Приходный ордер: ' : 'Расходный ордер: ')+
 				(this.patientRecord? this.patientRecord.data.last_name:''),
@@ -61,16 +61,16 @@ App.billing.PaymentWindow = Ext.extend(Ext.Window, {
 			this.store.un('write', this.onStoreWrite, this);
 		},this);
 	},
-	
+
 	onClose: function(){
 		this.close();
 	},
-	
+
 	onPrintCheck: function(){
 		var f = this.form;
 		f.onPrintCheck();
 	},
-	
+
 	onStoreWrite: function(store, action, result, res, rs) {
 		if(action=='create') {
 			//App.eventManager.fireEvent('paymentcreate',rs);
@@ -84,7 +84,7 @@ App.billing.PaymentWindow = Ext.extend(Ext.Window, {
 //            iconCls: 'silk-status-accept'
 //        });
 	},
-	
+
 	onSave: function() {
 		var f = this.form;
 		f.onSave();

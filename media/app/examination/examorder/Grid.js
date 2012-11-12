@@ -3,49 +3,49 @@ Ext.ns('App.examorder');
 App.examorder.ExamOrderGrid = Ext.extend(Ext.grid.GridPanel, {
 
 	initComponent : function() {
-		
-		this.staff = App.getApiUrl('staff',active_staff);
-		
+
+		this.staff = App.getApiUrl('staff','staff',active_staff);
+
 		this.tmp_id = Ext.id();
-		
-		this.backend = App.getBackend('examservice');		
-		
+
+		this.backend = App.getBackend('examservice');
+
 		this.store = this.backend.store;
-		
+
 		this.columns =  [{
-		    	header: "№ заказа", 
-		    	width: 60, 
-		    	sortable: true, 
+		    	header: "№ заказа",
+		    	width: 60,
+		    	sortable: true,
 		    	dataIndex: 'barcode'
 		    },{
-		    	header: "Дата", 
-		    	width: 60, 
-		    	sortable: true, 
+		    	header: "Дата",
+		    	width: 60,
+		    	sortable: true,
 		    	dataIndex: 'created',
 		    	renderer:Ext.util.Format.dateRenderer('d.m.Y')
 		    },{
-		    	header: "Пациент", 
+		    	header: "Пациент",
 		    	width: 300,
 		    	dataIndex: 'patient_full'
 		    },{
-		    	header: "Исследование", 
-		    	width: 600, 
-		    	sortable: true, 
+		    	header: "Исследование",
+		    	width: 600,
+		    	sortable: true,
 		    	dataIndex: 'service_name'
 
 		    },{
-		    	header: "Выполнено", 
-		    	width: 120, 
-		    	sortable: true, 
+		    	header: "Выполнено",
+		    	width: 120,
+		    	sortable: true,
 		    	dataIndex: 'executed',
 		    	renderer:function(val, meta, record) {
 		    		var p = record.data.executed;
 		    		var flag = p ? 'yes' : 'no';
 		    		var img = "<img src='"+MEDIA_URL+"admin/img/admin/icon-"+flag+".gif'>"
 		    		return String.format("{0} {1}", img, p ? Ext.util.Format.date(p, 'd.m.Y H:i') : "");
-		    	} 
-		    }];		
-		
+		    	}
+		    }];
+
 		this.historyBtn = new Ext.Button({
 			text:'История пациента',
 			iconCls:'silk-package',
@@ -59,8 +59,8 @@ App.examorder.ExamOrderGrid = Ext.extend(Ext.grid.GridPanel, {
 			disabled:true,
 			handler:this.onAdd.createDelegate(this, [])
 		});
-		
-		this.ttb = new Ext.Toolbar({ 
+
+		this.ttb = new Ext.Toolbar({
 			items:[this.addBtn,{
 				text:'Подтвердить выполнение',
 				iconCls:'silk-accept',
@@ -74,7 +74,7 @@ App.examorder.ExamOrderGrid = Ext.extend(Ext.grid.GridPanel, {
             				if (btn=='yes') {
             					record.beginEdit();
 								record.set('executed', now);
-								record.endEdit();		
+								record.endEdit();
             				}
 			        	},this);
 					}
@@ -124,8 +124,8 @@ App.examorder.ExamOrderGrid = Ext.extend(Ext.grid.GridPanel, {
 					this.store.load()
 				}
 			}]
-		}); 
-		
+		});
+
 		var config = {
 			id:'examorder-grid',
 			title:'Журнал заказов',
@@ -146,7 +146,7 @@ App.examorder.ExamOrderGrid = Ext.extend(Ext.grid.GridPanel, {
 							this.addBtn.disable();
 						};
 						this.historyBtn.enable();
-						
+
 					},
 					rowdeselect: function() {
 						Ext.getCmp(this.tmp_id+'order-exec').disable();
@@ -171,23 +171,23 @@ App.examorder.ExamOrderGrid = Ext.extend(Ext.grid.GridPanel, {
 	            emptyMsg: "Нет записей"
 	        })
 		};
-		
+
 		Ext.apply(this, Ext.apply(this.initialConfig, config));
 		App.examorder.ExamOrderGrid.superclass.initComponent.apply(this, arguments);
 		App.eventManager.on('globalsearch', this.onGlobalSearch, this);
-		
+
 		this.on('destroy', function(){
-		    App.eventManager.un('globalsearch', this.onGlobalSearch, this); 
+		    App.eventManager.un('globalsearch', this.onGlobalSearch, this);
 		},this);
-		
+
 		this.on('afterrender',function(){
            	this.store.setBaseParam('staff',active_profile);
            	this.store.load();
         })
-		
+
 		//this.on('rowcontextmenu', this.onContextMenu, this);
 	},
-	
+
 	onAdd: function() {
 		var rec = this.getSelected();
 		if (!rec) return;
@@ -203,19 +203,19 @@ App.examorder.ExamOrderGrid = Ext.extend(Ext.grid.GridPanel, {
 				print_name:rec.data.service_name,
 				staff:this.staff
 			}
-			
+
 			App.eventManager.fireEvent('launchapp', 'cardapp',conf);
-			
+
         } else {
         	var conf = {
         		order_id:rec.data.id
         	}
         	App.eventManager.fireEvent('launchapp', 'conclusion',conf);
         }
-		
-		
+
+
 	},
-	
+
 	onGlobalSearch: function(v) {
 		if(v) {
 			var letter = v.charAt(0);
@@ -234,7 +234,7 @@ App.examorder.ExamOrderGrid = Ext.extend(Ext.grid.GridPanel, {
 			this.store.load();
 		}
 	},
-	
+
 	storeFilter: function(field, value){
 		if(!value) {
 			//console.log(this.store.baseParams[field]);
@@ -245,11 +245,11 @@ App.examorder.ExamOrderGrid = Ext.extend(Ext.grid.GridPanel, {
 		}
 		this.store.load();
 	},
-	
+
 	getSelected: function() {
 		return this.getSelectionModel().getSelected()
 	},
-	
+
 	onOpenHistory: function(){
 		var rec = this.getSelected();
 		if (rec) {
@@ -268,7 +268,7 @@ App.examorder.ExamOrderGrid = Ext.extend(Ext.grid.GridPanel, {
 		}
 	}
 
-	
+
 });
 
 

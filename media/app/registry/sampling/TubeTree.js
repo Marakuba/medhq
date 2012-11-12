@@ -1,13 +1,13 @@
 Ext.ns('App.sampling');
 
 App.sampling.TubeTree = Ext.extend(Ext.tree.TreePanel,{
-	
+
 	initComponent: function(){
-		
+
 		this.proxy = new Ext.data.HttpProxy({
-		    url: get_api_url('sampling')
+		    url: App.getApiUrl('lab','sampling')
 		});
-		
+
 		this.reader = new Ext.data.JsonReader({
 		    totalProperty: 'meta.total_count',
 		    successProperty: 'success',
@@ -21,12 +21,12 @@ App.sampling.TubeTree = Ext.extend(Ext.tree.TreePanel,{
 		    {name: 'tube', allowBlank:false},
 		    {name: 'tube_count', allowBlank:true}
 		]);
-		
+
 		this.writer = new Ext.data.JsonWriter({
 		    encode: false,
 		    writeAllFields: true
 		});
-		
+
 		this.store = new Ext.data.Store({
 			autoLoad:true,
 			autoSave:false,
@@ -54,7 +54,7 @@ App.sampling.TubeTree = Ext.extend(Ext.tree.TreePanel,{
 		    	scope:this
 		    }
 		});
-		
+
 		config = {
 	        id:'tube-tree',
 	        region:'west',
@@ -105,7 +105,7 @@ App.sampling.TubeTree = Ext.extend(Ext.tree.TreePanel,{
 
 		Ext.apply(this, Ext.apply(this.initialConfig, config));
 		App.sampling.TubeTree.superclass.initComponent.apply(this, arguments);
-		
+
 		this.on('contextmenu', this.onContextMenu, this);
 
 		this.getSelectionModel().on({
@@ -119,13 +119,13 @@ App.sampling.TubeTree = Ext.extend(Ext.tree.TreePanel,{
 	            this.getTopToolbar().items.get('delete').setDisabled(!node);
 	            var node_rec = this.store.getById(node.id);
 	            this.getTopToolbar().items.get('tube_count').setValue(node_rec.data.tube_count);
-	            
+
 	        },
 	        scope:this
 	    });
 
 	},
-	
+
 	changeCount: function(){
 		var node = this.getSelectionModel().getSelectedNode();
 		var rec = this.store.getById(node.id);
@@ -137,15 +137,15 @@ App.sampling.TubeTree = Ext.extend(Ext.tree.TreePanel,{
 			this.store.save();
 		}
 	},
-	
+
 	showWindow: function(){
 		var win = new App.sampling.TubeWindow({
-			
+
 		});
 		win.on('tubesubmit', this.onTubeSubmit, this);
 		win.show();
 	},
-	
+
 	deleteTube: function(id){
 		var s = this.store;
 		var tube = s.getById(id);
@@ -154,19 +154,19 @@ App.sampling.TubeTree = Ext.extend(Ext.tree.TreePanel,{
 		s.save();
 		this.fireEvent('tubedelete');
 	},
-	
+
 	onTubeSubmit: function(values) {
 		var s = this.store;
 		var Sampling = s.recordType;
 		Ext.apply(values,{
-			visit:'/api/v1/dashboard/visit/'+this.visitId
+			visit:App.getApiUrl('visit', 'visit', this.visitId)
 		});
 		console.log(values);
 		var new_sampling = new Sampling(values);
 		s.add(new_sampling);
 		s.save();
 	},
-	
+
 	reloadTree: function() {
 		this.getLoader().load(this.getRootNode());
 	},
@@ -225,5 +225,5 @@ App.sampling.TubeTree = Ext.extend(Ext.tree.TreePanel,{
         this.el.on('contextmenu', function(e){
             e.preventDefault();
         });
-    }	
+    }
 });
