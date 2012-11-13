@@ -6,7 +6,7 @@ App.patient.VisitGrid = Ext.extend(Ext.grid.GridPanel, {
 
 		this.store = new Ext.data.RESTStore({
 			autoLoad : false,
-			apiUrl : App.getApiUrl('visit','visit'),
+			apiUrl : App.utils.getApiUrl('visit','visit'),
 			model: App.models.visitModel
 		});
 
@@ -301,7 +301,7 @@ App.patient.VisitGrid = Ext.extend(Ext.grid.GridPanel, {
 			barcode = false
 		}
 		if (this.patientRecord) {
-			App.eventManager.fireEvent('launchapp','visittab',{
+			WebApp.fireEvent('launchapp','visittab',{
 				patientId:this.patientRecord.data.id,
 				hasPatient:true,
 				type:type,
@@ -315,7 +315,7 @@ App.patient.VisitGrid = Ext.extend(Ext.grid.GridPanel, {
 			var rec = this.getSelected();
 			if (rec) {
 				var type = rec.data.cls=='п' ? 'visit' : 'material'; /// TODO: тип формы надо определять как-то иначе
-				App.eventManager.fireEvent('launchapp','visittab',{
+				WebApp.fireEvent('launchapp','visittab',{
 //					store:this.store,
 					visitId:rec.data.id,
 					hasPatient:true,
@@ -372,7 +372,7 @@ App.patient.VisitGrid = Ext.extend(Ext.grid.GridPanel, {
 			listeners:{
 				scope:this,
 				ptypechoiced:function(){
-					App.eventManager.fireEvent('patientcardupdate',this.patientId)
+					WebApp.fireEvent('patientcardupdate',this.patientId)
 				}
 			}
 		});

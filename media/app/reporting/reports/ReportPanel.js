@@ -15,7 +15,7 @@ App.reporting.ReportPanel = Ext.extend(Ext.TabPanel, {
     	this.reportStore = new Ext.data.RESTStore({
 			autoLoad : false,
 			autoSave : true,
-			apiUrl : App.getApiUrl('reporting','report'),
+			apiUrl : App.utils.getApiUrl('reporting','report'),
 			model: [
 				{name: 'id'},
 			    {name: 'resource_uri'},

@@ -10,7 +10,7 @@ App.insurance.PolicyGrid = Ext.extend(Ext.grid.GridPanel, {
 
 		// Create a standard HttpProxy instance.
 		this.proxy = new Ext.data.HttpProxy({
-		    url: App.getApiUrl('patient','insurance_policy')
+		    url: App.utils.getApiUrl('patient','insurance_policy')
 		});
 
 		// Typical JsonReader.  Notice additional meta-data params for defining the core attributes of your json-response
@@ -77,7 +77,7 @@ App.insurance.PolicyGrid = Ext.extend(Ext.grid.GridPanel, {
 			    store: new Ext.data.JsonStore({
 					autoLoad:true,
 					proxy: new Ext.data.HttpProxy({
-						url:App.getApiUrl('state','insurance_state'),
+						url:App.utils.getApiUrl('state','insurance_state'),
 						method:'GET'
 					}),
 					root:'objects',
@@ -221,9 +221,9 @@ App.insurance.PolicyGrid = Ext.extend(Ext.grid.GridPanel, {
 
 		Ext.apply(this, Ext.apply(this.initialConfig, config));
 		App.insurance.PolicyGrid.superclass.initComponent.apply(this, arguments);
-		App.eventManager.on('patientcreate', this.onPatientCreate, this);
+		WebApp.on('patientcreate', this.onPatientCreate, this);
 		this.on('destroy', function(){
-			App.eventManager.un('patientcreate', this.onPatientCreate, this);
+			WebApp.un('patientcreate', this.onPatientCreate, this);
 		},this);
 	},
 

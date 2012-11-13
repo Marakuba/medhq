@@ -43,7 +43,7 @@ App.regBackend('labservice', new App.Backend({
 		    remoteSort: true,
 		    groupField:'key',
 		    proxy: new Ext.data.HttpProxy({
-			    url: App.getApiUrl('visit','labservice')
+			    url: App.utils.getApiUrl('visit','labservice')
 			}),
 		    reader: new Ext.data.JsonReader({
 			    totalProperty: 'meta.total_count',
@@ -61,7 +61,7 @@ App.regBackend('labservice', new App.Backend({
 		    	},
 		    	write:function(store, action, result, res, rs){
 		    		if(action=='create') {
-			    		App.eventManager.fireEvent('labservicecreate', rs);
+			    		WebApp.fireEvent('labservicecreate', rs);
 		    		}
 		    	},
 		    	scope:this
@@ -91,7 +91,7 @@ App.regBackend('labtest', new App.Backend({
 		    remoteSort: true,
 		    groupField:'service_name',
 		    proxy: new Ext.data.HttpProxy({
-			    url: App.getApiUrl('visit','labtest')
+			    url: App.utils.getApiUrl('visit','labtest')
 			}),
 		    reader: new Ext.data.JsonReader({
 			    totalProperty: 'meta.total_count',
@@ -109,7 +109,7 @@ App.regBackend('labtest', new App.Backend({
 		    	},
 		    	write:function(store, action, result, res, rs){
 		    		if(action=='create') {
-			    		App.eventManager.fireEvent('labservicecreate', rs);
+			    		WebApp.fireEvent('labservicecreate', rs);
 		    		}
 		    	},
 		    	scope:this
@@ -145,7 +145,7 @@ App.regBackend('equipmentresult', new App.Backend({
 			},
 		    restful: true,
 		    proxy: new Ext.data.HttpProxy({
-			    url: App.getApiUrl('lab', 'equipmentresultro')
+			    url: App.utils.getApiUrl('lab', 'equipmentresultro')
 			}),
 		    reader: new Ext.data.JsonReader({
 			    totalProperty: 'meta.total_count',
@@ -163,7 +163,7 @@ App.regBackend('equipmentresult', new App.Backend({
 		    	},
 		    	write:function(store, action, result, res, rs){
 		    		if(action=='create') {
-			    		App.eventManager.fireEvent('equipmentresultcreate', rs);
+			    		WebApp.fireEvent('equipmentresultcreate', rs);
 		    		}
 		    	},
 		    	scope:this
@@ -201,7 +201,7 @@ App.regBackend('equipment', new App.Backend({
 			},
 		    restful: true,
 		    proxy: new Ext.data.HttpProxy({
-			    url: App.getApiUrl('lab', 'equipment')
+			    url: App.utils.getApiUrl('lab', 'equipment')
 			}),
 		    reader: new Ext.data.JsonReader({
 			    totalProperty: 'meta.total_count',
@@ -219,7 +219,7 @@ App.regBackend('equipment', new App.Backend({
 		    	},
 		    	write:function(store, action, result, res, rs){
 		    		if(action=='create') {
-			    		App.eventManager.fireEvent('equipmentcreate', rs);
+			    		WebApp.fireEvent('equipmentcreate', rs);
 		    		}
 		    	},
 		    	scope:this

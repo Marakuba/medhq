@@ -11,7 +11,7 @@ App.choices.PaymentTypeChoiceWindow = Ext.extend(Ext.Window, {
         	name:'insurance_policy',
         	store:new Ext.data.JsonStore({
     			proxy: new Ext.data.HttpProxy({
-    				url:App.getApiUrl('patient','insurance_policy'),
+    				url:App.utils.getApiUrl('patient','insurance_policy'),
     				method:'GET'
     			}),
     			root:'objects',
@@ -78,8 +78,8 @@ App.choices.PaymentTypeChoiceWindow = Ext.extend(Ext.Window, {
 			    minChars:3,
 			    hidden:(App.settings.strictMode && this.types==='material'),
 			    emptyText:'Выберите плательщика...',
-			    proxyUrl:App.getApiUrl('state','state'),
-			    value:App.settings.strictMode ? App.getApiUrl('state','state',active_state_id) : '',
+			    proxyUrl:App.utils.getApiUrl('state','state'),
+			    value:App.settings.strictMode ? App.utils.getApiUrl('state','state',active_state_id) : '',
 			    listeners:{
 			    	select:function(combo,record){
 			    	},
@@ -228,8 +228,8 @@ App.choices.PaymentTypeChoiceWindow = Ext.extend(Ext.Window, {
 		params = {};
 		params['id'] = this.record.data.id;
 		params['ptype'] = this.paymentTypeCB.getValue();
-		params['payer'] = App.uriToId(this.payerCmb.getValue());
-		params['insurance_policy'] = App.uriToId(this.policyCmb.getValue());
+		params['payer'] = App.utils.uriToId(this.payerCmb.getValue());
+		params['insurance_policy'] = App.utils.uriToId(this.policyCmb.getValue());
 		App.direct.visit.setPaymentType(params,function(res){
 			//НЕ УДАЛЯТЬ console.log(res.data) !!!
 			console.log(res.data);

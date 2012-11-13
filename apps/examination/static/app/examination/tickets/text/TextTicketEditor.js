@@ -14,7 +14,7 @@ App.examination.TextTicketEditor = Ext.extend(Ext.Panel, {
             autoDestroy:true,
             baseParams:{
                 format:'json',
-                staff:active_staff
+                staff:WebApp.active_staff
             },
             paramNames: {
                 start : 'offset',
@@ -23,7 +23,7 @@ App.examination.TextTicketEditor = Ext.extend(Ext.Panel, {
                 dir : 'dir'
             },
             proxy: new Ext.data.HttpProxy({
-                url: App.getApiUrl('examination','glossary')
+                url: App.utils.getApiUrl('examination','glossary')
             }),
             reader: new Ext.data.JsonReader({
                 totalProperty: 'meta.total_count',
@@ -214,7 +214,7 @@ App.examination.TextTicketEditor = Ext.extend(Ext.Panel, {
         this.glossStore.setBaseParam('section',ticket.section);
         this.glossStore.load();
         this.glossPanel.loader.baseParams['section'] = ticket.section;
-        this.glossPanel.loader.baseParams['staff'] = active_staff;
+        this.glossPanel.loader.baseParams['staff'] = WebApp.active_staff;
 //      this.glossPanel.loader.load(rootNode);
     },
 

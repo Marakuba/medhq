@@ -62,7 +62,7 @@ App.invoice.InvoiceForm = Ext.extend(Ext.FormPanel, {
 			        	name:'office',
 					    minChars:3,
 					    emptyText:'Выберите офис...',
-					    proxyUrl:App.getApiUrl('state', 'ownstate'),
+					    proxyUrl:App.utils.getApiUrl('state', 'ownstate'),
 					    allowBlank:false
 					})]
 				},{
@@ -72,7 +72,7 @@ App.invoice.InvoiceForm = Ext.extend(Ext.FormPanel, {
 			        	name:'state',
 					    minChars:3,
 					    emptyText:'Выберите лабораторию...',
-					    proxyUrl:App.getApiUrl('state', 'medstate'),
+					    proxyUrl:App.utils.getApiUrl('state', 'medstate'),
 					    allowBlank:false
 					})]
 				},{
@@ -116,18 +116,18 @@ App.invoice.InvoiceForm = Ext.extend(Ext.FormPanel, {
 
 		Ext.apply(this, Ext.apply(this.initialConfig, config));
 		App.invoice.InvoiceForm.superclass.initComponent.apply(this, arguments);
-		App.eventManager.on('invoicecreate',this.onInvoiceCreate, this);
+		WebApp.on('invoicecreate',this.onInvoiceCreate, this);
 		this.on('afterrender', function(){
 			if(this.record) {
 				this.getForm().loadRecord(this.record);
 			} else {
-				console.info(App.getApiUrl('state', 'ownstate',active_state_id));
-				this.getForm().findField('office').setValue(App.getApiUrl('state', 'ownstate',active_state_id));
+				console.info(App.utils.getApiUrl('state', 'ownstate',active_state_id));
+				this.getForm().findField('office').setValue(App.utils.getApiUrl('state', 'ownstate',active_state_id));
 			}
 		},this);
 
 		this.on('destroy', function(){
-		    App.eventManager.un('invoicecreate',this.onInvoiceCreate, this);
+		    WebApp.un('invoicecreate',this.onInvoiceCreate, this);
 		},this);
 	},
 
@@ -146,8 +146,8 @@ App.invoice.InvoiceForm = Ext.extend(Ext.FormPanel, {
 			method:'POST',
 			params:{
 				invoice:this.record.id,
-				office:App.uriToId(this.record.data.office),
-				state:App.uriToId(this.record.data.state)
+				office:App.utils.uriToId(this.record.data.office),
+				state:App.utils.uriToId(this.record.data.state)
 			},
 			success:function(response, opts){
 				var s = this.invoiceItem.getStore();

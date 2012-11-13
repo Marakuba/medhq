@@ -38,7 +38,7 @@ App.ExamCentralPanel = Ext.extend(Ext.Panel, {
 		this.staffStore = new Ext.data.RESTStore({
 			autoSave: false,
 			autoLoad : false,
-			apiUrl : App.getApiUrl('staff','staff'),
+			apiUrl : App.utils.getApiUrl('staff','staff'),
 			model: App.models.StaffModel
 		});
 
@@ -121,7 +121,7 @@ App.ExamCentralPanel = Ext.extend(Ext.Panel, {
                     scale:'medium',
                     iconAlign: 'top',
                     handler: function(){
-                    	this.launchApp('conclusion',{staff:App.getApiUrl('staff','position')+'/'+active_profile});
+                    	this.launchApp('conclusion',{staff:App.utils.getApiUrl('staff','position')+'/'+active_profile});
                     },
                     scope:this
                 }]
@@ -252,13 +252,13 @@ App.ExamCentralPanel = Ext.extend(Ext.Panel, {
 		}
 		Ext.apply(this, Ext.apply(this.initialConfig, config));
 		App.ExamCentralPanel.superclass.initComponent.apply(this, arguments);
-		App.eventManager.on('launchapp', this.launchApp, this);
-		App.eventManager.on('opentab', this.openTab, this);
-		App.eventManager.on('closeapp', this.closeApp, this);
+		WebApp.on('launchapp', this.launchApp, this);
+		WebApp.on('opentab', this.openTab, this);
+		WebApp.on('closeapp', this.closeApp, this);
 
 		this.on('afterrender', function(){
 			//Показать кнопку лечащего врача
-			this.staffStore.load({params:{format:'json',id:active_staff},callback:function(records){
+			this.staffStore.load({params:{format:'json',id:WebApp.active_staff},callback:function(records){
 				if (records.length){
 					this.referral = records[0].data.referral;
 					this.referral_type = records[0].data.referral_type;
@@ -274,9 +274,9 @@ App.ExamCentralPanel = Ext.extend(Ext.Panel, {
 		},this);
 
 		this.on('destroy', function(){
-		    App.eventManager.un('launchapp', this.launchApp, this);
-			App.eventManager.un('closeapp', this.closeApp, this);
-			App.eventManager.un('opentab', this.openTab, this);
+		    WebApp.un('launchapp', this.launchApp, this);
+			WebApp.un('closeapp', this.closeApp, this);
+			WebApp.un('opentab', this.openTab, this);
 		},this);
 	},
 

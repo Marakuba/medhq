@@ -7,7 +7,7 @@ App.visit.VisitTab = Ext.extend(Ext.Panel, {
 
         this.store = this.store || new Ext.data.RESTStore({
             autoLoad : false,
-            apiUrl : App.getApiUrl('visit','visit'),
+            apiUrl : App.utils.getApiUrl('visit','visit'),
             model: App.models.visitModel,
             listeners:{
                 scope:this,
@@ -19,13 +19,13 @@ App.visit.VisitTab = Ext.extend(Ext.Panel, {
         this.preorderStore = new Ext.data.RESTStore({
             autoLoad : false,
             autoSave : true,
-            apiUrl : App.getApiUrl('scheduler','extpreorder'),
+            apiUrl : App.utils.getApiUrl('scheduler','extpreorder'),
             model: App.models.preorderModel
         });
 
         this.patientStore = this.patientStore || new Ext.data.RESTStore({
             autoLoad : false,
-            apiUrl : App.getApiUrl('patient','patient'),
+            apiUrl : App.utils.getApiUrl('patient','patient'),
             model: App.models.patientModel
         });
 
@@ -222,9 +222,9 @@ App.visit.VisitTab = Ext.extend(Ext.Panel, {
     },
 
     close: function() {
-        App.eventManager.fireEvent('closeapp',this.id);
-        App.eventManager.fireEvent('patientcardupdate',this.patientId);
-//      App.eventManager.fireEvent('balanceupdate');
+        WebApp.fireEvent('closeapp',this.id);
+        WebApp.fireEvent('patientcardupdate',this.patientId);
+//      WebApp.fireEvent('balanceupdate');
     },
 
     onStoreWrite: function(store, action, result, res, rs) {
@@ -233,9 +233,9 @@ App.visit.VisitTab = Ext.extend(Ext.Panel, {
             //перегрузится visitStore в таблице визитов в карте пациента
             //иначе в таблице пациентов выберется текущий пациент и загрузятся его данные
             if (this.hasPatient){
-                App.eventManager.fireEvent('visitcreate',rs);
+                WebApp.fireEvent('visitcreate',rs);
             } else {
-                App.eventManager.fireEvent('visitcreate',rs,this.patientId);
+                WebApp.fireEvent('visitcreate',rs,this.patientId);
             }
         }
         this.record = rs;

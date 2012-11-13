@@ -1,7 +1,7 @@
 Ext.ns('App');
 
-App.eventManager = new Ext.util.Observable();
-App.eventManager.addEvents('globalsearch',
+WebApp = new Ext.util.Observable();
+WebApp.addEvents('globalsearch',
 	'patientselect',
 	'visitcreate',
 	'visitclose',
@@ -12,9 +12,9 @@ App.eventManager.addEvents('globalsearch',
 	'patientwrite',
 	'sumchange');
 	
-App.eventManager.addEvents('nodeclick');
-App.eventManager.addEvents('addform');
-App.eventManager.addEvents('clientcreate');
-App.eventManager.addEvents('globalsearch');
-App.eventManager.addEvents('openform');
-//App.eventManager.addEvents('paymentsave');
+WebApp.addEvents('nodeclick');
+WebApp.addEvents('addform');
+WebApp.addEvents('clientcreate');
+WebApp.addEvents('globalsearch');
+WebApp.addEvents('openform');
+//WebApp.addEvents('paymentsave');

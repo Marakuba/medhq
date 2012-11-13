@@ -3,7 +3,7 @@ Ext.ns('App.examination');
 App.examination.TrashApp = Ext.extend(Ext.Panel, {
 	initComponent : function() {
 
-		this.staff = App.getApiUrl('staff','staff')+ '/' + active_staff;
+		this.staff = App.utils.getApiUrl('staff','staff', WebApp.active_staff);
 
 		this.mode = 'template';
 
@@ -188,4 +188,12 @@ App.examination.TrashApp = Ext.extend(Ext.Panel, {
 	}
 });
 
-Ext.reg('extrash', App.examination.TrashApp);
+Ext.reg('trashapp', App.examination.TrashApp);
+
+App.webapp.actions.add('trashapp', new Ext.Action({
+    text: 'Корзина',
+    scale: 'medium',
+    handler: function(){
+        WebApp.fireEvent('launchapp','trashapp');
+    }
+}));

@@ -5,7 +5,7 @@ App.billing.PaymentWindow = Ext.extend(Ext.Window, {
 	initComponent:function(){
 
 		this.store = this.store || new Ext.data.RESTStore({
-		    apiUrl : App.getApiUrl('billing','payment'),
+		    apiUrl : App.utils.getApiUrl('billing','payment'),
 		    model: App.models.paymentModel
 		});
 
@@ -73,9 +73,9 @@ App.billing.PaymentWindow = Ext.extend(Ext.Window, {
 
 	onStoreWrite: function(store, action, result, res, rs) {
 		if(action=='create') {
-			//App.eventManager.fireEvent('paymentcreate',rs);
+			//WebApp.fireEvent('paymentcreate',rs);
 		}
-		App.eventManager.fireEvent('paymentsave',rs);
+		WebApp.fireEvent('paymentsave',rs);
 		this.record = rs;
 		this.onClose();
 		//Убрал статус бар, т.к. возникала ошибка при автоматическом закрытии окна(закрывалось раньше чем установится статус)

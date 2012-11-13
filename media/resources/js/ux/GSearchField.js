@@ -23,7 +23,7 @@ App.SearchField = Ext.extend(Ext.form.TwinTriggerField, {
 
     onTrigger1Click : function(){
         if(this.hasSearch){
-        	App.eventManager.fireEvent('globalsearch',undefined);
+        	WebApp.fireEvent('globalsearch',undefined);
 			this.el.dom.value = '';
             this.triggers[0].hide();
             this.hasSearch = false;
@@ -37,7 +37,7 @@ App.SearchField = Ext.extend(Ext.form.TwinTriggerField, {
             this.onTrigger1Click();
             return;
         }
-		App.eventManager.fireEvent('globalsearch', v);
+		WebApp.fireEvent('globalsearch', v);
         this.hasSearch = true;
         this.triggers[0].show();
 		this.focus();

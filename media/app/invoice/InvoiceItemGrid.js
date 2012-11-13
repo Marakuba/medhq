@@ -7,7 +7,7 @@ App.invoice.InvoiceItemGrid = Ext.extend(Ext.grid.GridPanel, {
 		this.store = new Ext.data.RESTStore({
 			autoLoad : false,
 			autoSave : true,
-			apiUrl : App.getApiUrl('lab','invoiceitem'),
+			apiUrl : App.utils.getApiUrl('lab','invoiceitem'),
 			model: [
 			    {name: 'id'},
 			    {name: 'resource_uri'},
@@ -91,7 +91,7 @@ App.invoice.InvoiceItemGrid = Ext.extend(Ext.grid.GridPanel, {
 
 		Ext.apply(this, Ext.apply(this.initialConfig, config));
 		App.invoice.InvoiceItemGrid.superclass.initComponent.apply(this, arguments);
-//		App.eventManager.on('globalsearch', this.onGlobalSearch, this);
+//		WebApp.on('globalsearch', this.onGlobalSearch, this);
 		this.store.on('write', this.onStoreWrite, this);
 		this.on('afterrender', function(){
 			if(this.record) {

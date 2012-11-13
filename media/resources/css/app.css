@@ -337,6 +337,10 @@ button.icon-main-button {
 	border-top:2px solid #edf4ff;
 	background-color:#cee1ff;
 }
+.disabled-groups .x-grid-group-title {
+	background: transparent!important;
+	padding-left: 6px!important;
+}
 .cell-completed-icon {
 	background: url('../images/icon-yes.gif') no-repeat;
 }

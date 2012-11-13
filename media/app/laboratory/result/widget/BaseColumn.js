@@ -137,7 +137,7 @@ App.result.BaseColumn = Ext.extend(Ext.Panel,{
 	initComponent : function(){
 
 		this.proxy = new Ext.data.HttpProxy({
-		    url: App.getApiUrl('lab','result')
+		    url: App.utils.getApiUrl('lab','result')
 		});
 
 		this.reader = new Ext.data.JsonReader({

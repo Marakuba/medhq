@@ -95,7 +95,7 @@ App.refund.ServiceBasket = Ext.extend(Ext.grid.EditorGridPanel, {
 		this.shortMode = this.type=='material';
 
 		this.proxy = new Ext.data.HttpProxy({
-		    url: App.getApiUrl('visit','refundbasket')
+		    url: App.utils.getApiUrl('visit','refundbasket')
 		});
 
 		this.reader = new Ext.data.JsonReader({
@@ -157,17 +157,17 @@ App.refund.ServiceBasket = Ext.extend(Ext.grid.EditorGridPanel, {
 //						Ext.getCmp('sampling-print-btn').enable();
 						Ext.getCmp('visit-submit-btn').enable();
 						pb.hide();
-						App.eventManager.fireEvent('refundclose');
+						WebApp.fireEvent('refundclose');
 		    		}
 		    	},
 		    	add:function(){
-		    		App.eventManager.fireEvent('sumchange');
+		    		WebApp.fireEvent('sumchange');
 		    	},
 		    	remove:function(){
-		    		App.eventManager.fireEvent('sumchange');
+		    		WebApp.fireEvent('sumchange');
 		    	},
 		    	load:function(){
-		    		App.eventManager.fireEvent('sumchange');
+		    		WebApp.fireEvent('sumchange');
 		    	},
 		    	scope:this
 		    }
@@ -175,7 +175,7 @@ App.refund.ServiceBasket = Ext.extend(Ext.grid.EditorGridPanel, {
 		this.staffStore = new Ext.data.Store({
 			autoDestroy:true,
 			proxy: new Ext.data.HttpProxy({
-			    url: App.getApiUrl('staff','position'),
+			    url: App.utils.getApiUrl('staff','position'),
 				method:'GET'
 			}),
 			reader: new Ext.data.JsonReader({
@@ -310,7 +310,7 @@ App.refund.ServiceBasket = Ext.extend(Ext.grid.EditorGridPanel, {
 			},
 			listeners:{
 				afteredit:function(){
-					App.eventManager.fireEvent('sumchange');
+					WebApp.fireEvent('sumchange');
 				},
 				scope:this
 			}
@@ -319,10 +319,10 @@ App.refund.ServiceBasket = Ext.extend(Ext.grid.EditorGridPanel, {
 
 		Ext.apply(this, Ext.apply(this.initialConfig, config));
 		App.refund.ServiceBasket.superclass.initComponent.apply(this, arguments);
-		App.eventManager.on('servicedblclick', this.addRow, this);
+		WebApp.on('servicedblclick', this.addRow, this);
 
 		this.on('destroy', function(){
-		    App.eventManager.un('servicedblclick', this.addRow, this);
+		    WebApp.un('servicedblclick', this.addRow, this);
 		},this);
 	},
 
@@ -343,7 +343,7 @@ App.refund.ServiceBasket = Ext.extend(Ext.grid.EditorGridPanel, {
 	updateStaff: function(index, id, staff_name){
 		var rec = this.store.getAt(index);
 		rec.beginEdit();
-		rec.set('staff',App.getApiUrl('staff', 'position', id));
+		rec.set('staff',App.utils.getApiUrl('staff', 'position', id));
 		rec.set('staff_name',staff_name);
 		rec.endEdit();
 	},
@@ -376,11 +376,11 @@ App.refund.ServiceBasket = Ext.extend(Ext.grid.EditorGridPanel, {
 		var id = ids[0];
 		var place = ids[1];
 		var s = new Service({
-			service:App.getApiUrl('service', 'baseservice', id),
+			service:App.utils.getApiUrl('service', 'baseservice', id),
 			service_name:text,
 			price:attrs.price,
 			count:1,
-			execution_place:App.getApiUrl('state', 'state', place)
+			execution_place:App.utils.getApiUrl('state', 'state', place)
 		});
 		this.stopEditing();
 		this.store.add(s);

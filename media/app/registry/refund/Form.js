@@ -15,7 +15,7 @@ App.refund.Form = Ext.extend(Ext.FormPanel, {
 
 		this.policyStore = new Ext.data.JsonStore({
 			proxy: new Ext.data.HttpProxy({
-				url:App.getApiUrl('patient','insurance_policy'),
+				url:App.utils.getApiUrl('patient','insurance_policy'),
 				method:'GET'
 			}),
 			baseParams: {
@@ -98,7 +98,7 @@ App.refund.Form = Ext.extend(Ext.FormPanel, {
 
 		this.discountsStore = new Ext.data.JsonStore({
 			proxy: new Ext.data.HttpProxy({
-				url: App.getApiUrl('pricelist', 'discount'),
+				url: App.utils.getApiUrl('pricelist', 'discount'),
 				method:'GET'
 			}),
 			baseParams: {
@@ -133,7 +133,7 @@ App.refund.Form = Ext.extend(Ext.FormPanel, {
 				editable:false,
 				listeners:{
 					select: function(){
-						App.eventManager.fireEvent('sumchange');
+						WebApp.fireEvent('sumchange');
 					},
 					scope:this
 				}
@@ -143,7 +143,7 @@ App.refund.Form = Ext.extend(Ext.FormPanel, {
 		this.labStore = new Ext.data.JsonStore({
 			autoLoad:true,
 			proxy: new Ext.data.HttpProxy({
-				url:App.getApiUrl('state', 'lab'),
+				url:App.utils.getApiUrl('state', 'lab'),
 				method:'GET'
 			}),
 			root:'objects',
@@ -170,7 +170,7 @@ App.refund.Form = Ext.extend(Ext.FormPanel, {
 
 		this.referralStore = new Ext.data.JsonStore({
 			proxy: new Ext.data.HttpProxy({
-				url:App.getApiUrl('visit', 'referral'),
+				url:App.utils.getApiUrl('visit', 'referral'),
 				method:'GET'
 			}),
 			root:'objects',
@@ -397,7 +397,7 @@ App.refund.Form = Ext.extend(Ext.FormPanel, {
 		this.defaultItems = [{
     			xtype:'hidden',
     			name:'patient',
-    			value: App.getApiUrl('patient', 'patient', this.patientId || null)
+    			value: App.utils.getApiUrl('patient', 'patient', this.patientId || null)
         }];
 
 		this.types = {
@@ -487,7 +487,7 @@ App.refund.Form = Ext.extend(Ext.FormPanel, {
         	tbar:[this.getPatientTitle(this.patientId),'->',{
         		text:'Закрыть',
 				handler:function(){
-					App.eventManager.fireEvent('refundclose', this.refundId);
+					WebApp.fireEvent('refundclose', this.refundId);
 				}
 			},{
 				id:'visit-submit-btn',
@@ -528,7 +528,7 @@ App.refund.Form = Ext.extend(Ext.FormPanel, {
 	},
 
 	onCancel:function(){
-        App.eventManager.fireEvent('refundclose', this.visitId);
+        WebApp.fireEvent('refundclose', this.visitId);
 	},
 
 	onSubmit:function(){

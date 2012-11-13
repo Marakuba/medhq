@@ -1,4 +1,4 @@
 Ext.ns('App');
 
-App.eventManager = new Ext.util.Observable();
-App.eventManager.addEvents('editretail');
+WebApp = new Ext.util.Observable();
+WebApp.addEvents('editretail');

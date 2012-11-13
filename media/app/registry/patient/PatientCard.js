@@ -75,12 +75,12 @@ App.patient.PatientCard = Ext.extend(Ext.TabPanel, {
 		Ext.apply(this, Ext.apply(this.initialConfig, config));
 		App.patient.PatientCard.superclass.initComponent.apply(this, arguments);
 		
-		App.eventManager.on('globalsearch', this.onGlobalSearch, this); //
+		WebApp.on('globalsearch', this.onGlobalSearch, this); //
 		this.on('afterrender',function(){
 			this.doRefresh();
 		},this);
 		this.on('destroy', function(){
-			App.eventManager.un('globalsearch', this.onGlobalSearch, this); //
+			WebApp.un('globalsearch', this.onGlobalSearch, this); //
 		},this);
 	},
 	

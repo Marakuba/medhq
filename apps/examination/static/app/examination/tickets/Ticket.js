@@ -305,7 +305,7 @@ App.examination.Ticket = Ext.extend(Ext.Panel,{
     onEdit: function(panel){
 		if(panel.fireEvent('ticketbeforeedit', panel)===true){
 			var editorConfig = panel.getEditorConfig(panel);
-			App.eventManager.fireEvent('launchapp',panel.editor,editorConfig);
+			WebApp.fireEvent('launchapp',panel.editor,editorConfig);
 		}
 
 	},

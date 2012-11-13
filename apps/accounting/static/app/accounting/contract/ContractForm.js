@@ -9,12 +9,12 @@ App.accounting.ContractForm = Ext.extend(Ext.form.FormPanel, {
         this.store = this.store || new Ext.data.RESTStore({
             autoSave : false,
             autoLoad : false,
-            apiUrl : App.getApiUrl('accounting','acc_contract'),
+            apiUrl : App.utils.getApiUrl('accounting','acc_contract'),
             model: App.models.AccountingContract
         });
 
         this.branchStore = new Ext.data.RESTStore({
-            apiUrl : App.getApiUrl('state','state'),
+            apiUrl : App.utils.getApiUrl('state','state'),
             baseParams:{
                 format:'json',
                 type:'b'
@@ -23,7 +23,7 @@ App.accounting.ContractForm = Ext.extend(Ext.form.FormPanel, {
         });
 
         this.stateStore = new Ext.data.RESTStore({
-            apiUrl : App.getApiUrl('state','state'),
+            apiUrl : App.utils.getApiUrl('state','state'),
             autoLoad : true,
             autoSave : false,
             baseParams:{

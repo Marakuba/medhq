@@ -108,7 +108,7 @@ App.examination.StartPanel = Ext.extend(Ext.Panel, {
             				this.previewPanel.hide();
             			};
         				this.tmpStore.setBaseParam('base_service__isnull',true);
-        				this.tmpStore.setBaseParam('staff',App.uriToId(this.staff));
+        				this.tmpStore.setBaseParam('staff',App.utils.uriToId(this.staff));
         				delete this.tmpStore.baseParams['staff__isnull'];
         				this.printName = true;
         				this.tmpStore.load({callback:function(){
@@ -135,7 +135,7 @@ App.examination.StartPanel = Ext.extend(Ext.Panel, {
             			if (!this.previewPanel.hidden){
             				this.previewPanel.hide();
             			};
-        				this.tmpStore.setBaseParam('staff',App.uriToId(this.staff));
+        				this.tmpStore.setBaseParam('staff',App.utils.uriToId(this.staff));
         				this.tmpStore.setBaseParam('base_service__isnull',false);
         				delete this.tmpStore.baseParams['staff__isnull'];
         				this.printName = false;
@@ -284,7 +284,7 @@ App.examination.StartPanel = Ext.extend(Ext.Panel, {
 		if (!record) {
 			return false
 		}
-		App.eventManager.fireEvent('launchapp','panel',{
+		WebApp.fireEvent('launchapp','panel',{
 			title:'Просмотр: ' + record.data.print_name,
 			closable:true,
 			autoLoad:String.format('/widget/examination/template/{0}/',record.data.id)

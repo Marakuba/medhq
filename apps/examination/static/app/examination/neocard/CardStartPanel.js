@@ -25,7 +25,7 @@ App.examination.CardStartPanel = Ext.extend(Ext.Panel, {
         	emptyTbar:true,
         	
         	baseParams:{
-        		ordered_service:App.uriToId(this.ordered_service)
+        		ordered_service:App.utils.uriToId(this.ordered_service)
         	},
 			printName:this.printName,
 			listeners: {
@@ -77,8 +77,8 @@ App.examination.CardStartPanel = Ext.extend(Ext.Panel, {
             			if(!this.gridPanel.hidden){
             				this.gridPanel.hide();
             			};
-        				this.tmpStore.setBaseParam('staff',App.uriToId(this.staff));
-        				this.tmpStore.setBaseParam('base_service',App.uriToId(this.service));
+        				this.tmpStore.setBaseParam('staff',App.utils.uriToId(this.staff));
+        				this.tmpStore.setBaseParam('base_service',App.utils.uriToId(this.service));
         				delete this.tmpStore.baseParams['base_service__isnull'];
         				delete this.tmpStore.baseParams['staff__isnull'];
 //                				this.printName = false;
@@ -105,7 +105,7 @@ App.examination.CardStartPanel = Ext.extend(Ext.Panel, {
             			this.gridPanel.layout.setActiveItem(0);
         				delete this.cardStore.baseParams['ordered_service__order__patient'];
         				delete this.cardStore.baseParams['ordered_service__staff__staff'];
-        				this.cardStore.setBaseParam('ordered_service',App.uriToId(this.ordered_service));
+        				this.cardStore.setBaseParam('ordered_service',App.utils.uriToId(this.ordered_service));
         				this.cardStore.load({callback:function(records){
         					if (!records.length){
         						this.previewPanel.hide();
@@ -133,7 +133,7 @@ App.examination.CardStartPanel = Ext.extend(Ext.Panel, {
             			this.gridPanel.layout.setActiveItem(0);
         				delete this.cardStore.baseParams['ordered_service'];
         				this.cardStore.setBaseParam('ordered_service__order__patient',this.patient);
-        				this.cardStore.setBaseParam('ordered_service__staff__staff',active_staff);
+        				this.cardStore.setBaseParam('ordered_service__staff__staff',WebApp.active_staff);
         				this.cardStore.load({callback:function(records){
         					if (!records.length){
         						this.previewPanel.hide();
@@ -213,7 +213,7 @@ App.examination.CardStartPanel = Ext.extend(Ext.Panel, {
             			if (this.gridPanel.hidden) this.gridPanel.show();
             			this.gridPanel.layout.setActiveItem(1);
         				this.tmpStore.setBaseParam('base_service__isnull',true);
-        				this.tmpStore.setBaseParam('staff',App.uriToId(this.staff));
+        				this.tmpStore.setBaseParam('staff',App.utils.uriToId(this.staff));
         				delete this.tmpStore.baseParams['staff__isnull'];
         				delete this.tmpStore.baseParams['base_service'];
         				this.printName = true;
@@ -323,7 +323,7 @@ App.examination.CardStartPanel = Ext.extend(Ext.Panel, {
         this.on('afterrender',function(){
         	this.cardStore = this.cardGrid.store;
         	this.tmpStore = this.tmpGrid.store;
-            this.tmpStore.setBaseParam('base_service',App.uriToId(this.service));
+            this.tmpStore.setBaseParam('base_service',App.utils.uriToId(this.service));
 			this.cardStore.load({callback:function(records){
 				if (records.length){
 					this.continueCardRadio.setValue(true);
@@ -449,7 +449,7 @@ App.examination.CardStartPanel = Ext.extend(Ext.Panel, {
 		if (!record) {
 			return false
 		}
-		App.eventManager.fireEvent('launchapp','panel',{
+		WebApp.fireEvent('launchapp','panel',{
 			title:'Просмотр: ' + record.data.print_name,
 			closable:true,
 			autoLoad:String.format('/widget/examination/{0}/{1}/',source,record.data.id)

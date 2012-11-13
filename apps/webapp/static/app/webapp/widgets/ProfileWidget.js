@@ -34,9 +34,10 @@ App.webapp.ProfileWidget = Ext.extend(Ext.Button, {
         }, this);
 
         config = {
-            iconCls:'silk-cog',
-            iconAlign:'right',
-            text:String.format('{0}, {1}', WebApp.active_user, WebApp.active_state),
+            iconCls: 'silk-cog',
+            iconAlign: 'right',
+            text: String.format('{0}, {1}', WebApp.active_user, WebApp.active_state),
+            scale: 'medium',
             menu:new Ext.menu.Menu({
                 items:[{
                     text:'Приложения',

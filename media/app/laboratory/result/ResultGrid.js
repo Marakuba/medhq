@@ -5,7 +5,7 @@ App.result.ResultGrid = Ext.extend(Ext.grid.EditorGridPanel, {
 	initComponent : function() {
 
 		this.proxy = new Ext.data.HttpProxy({
-		    url: App.getApiUrl('lab','result')
+		    url: App.utils.getApiUrl('lab','result')
 		});
 
 		this.reader = new Ext.data.JsonReader({
@@ -287,7 +287,7 @@ App.result.ResultGrid = Ext.extend(Ext.grid.EditorGridPanel, {
 
 		Ext.apply(this, Ext.apply(this.initialConfig, config));
 		App.result.ResultGrid.superclass.initComponent.apply(this, arguments);
-		App.eventManager.on('globalsearch', this.onGlobalSearch, this);
+		WebApp.on('globalsearch', this.onGlobalSearch, this);
 
 		this.on('afterrender', function(){
 			new Ext.KeyMap(this.getEl(), {
@@ -304,7 +304,7 @@ App.result.ResultGrid = Ext.extend(Ext.grid.EditorGridPanel, {
 		}, this);
 
 		this.on('destroy', function(){
-		    App.eventManager.un('globalsearch', this.onGlobalSearch, this);
+		    WebApp.un('globalsearch', this.onGlobalSearch, this);
 		},this);
 
 		if(this.labOrderRecord) {

@@ -7,7 +7,7 @@ App.laboratory.LabOrderGrid = Ext.extend(Ext.grid.GridPanel, {
 		this.store = new Ext.data.RESTStore({
 			autoSave : true,
 			autoLoad : false,
-			apiUrl : App.getApiUrl('lab', 'laborder'),
+			apiUrl : App.utils.getApiUrl('lab', 'laborder'),
 			model: App.models.LabOrder
 		});
 //		this.store.setBaseParam('is_manual',false);
@@ -197,7 +197,7 @@ App.laboratory.LabOrderGrid = Ext.extend(Ext.grid.GridPanel, {
 
 		Ext.apply(this, Ext.apply(this.initialConfig, config));
 		App.laboratory.LabOrderGrid.superclass.initComponent.apply(this, arguments);
-		App.eventManager.on('globalsearch', this.onGlobalSearch, this);
+		WebApp.on('globalsearch', this.onGlobalSearch, this);
 //		this.initLabs();
 		this.on('afterrender', function() {
 			var filters = Ext.state.Manager.getProvider().get('lab-order-filters');
@@ -265,7 +265,7 @@ App.laboratory.LabOrderGrid = Ext.extend(Ext.grid.GridPanel, {
 
 				}
 			}
-			App.eventManager.fireEvent('launchapp', 'resultgrid', config);
+			WebApp.fireEvent('launchapp', 'resultgrid', config);
 		}
 	},
 
@@ -290,7 +290,7 @@ App.laboratory.LabOrderGrid = Ext.extend(Ext.grid.GridPanel, {
 	initLabs: function(){
 		// laboratory
 		Ext.Ajax.request({
-			url:App.getApiUrl('state','medstate'),
+			url:App.utils.getApiUrl('state','medstate'),
 			method:'GET',
 			success:function(resp, opts) {
 				var jsonResponse = Ext.util.JSON.decode(resp.responseText);

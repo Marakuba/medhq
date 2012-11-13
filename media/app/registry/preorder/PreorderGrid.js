@@ -17,7 +17,7 @@ App.registry.PreorderGrid = Ext.extend(Ext.grid.GridPanel, {
 		this.medstateStore = this.medstateStore || new Ext.data.RESTStore({
 			autoSave: true,
 			autoLoad : true,
-			apiUrl : App.getApiUrl('state','medstate'),
+			apiUrl : App.utils.getApiUrl('state','medstate'),
 			model: App.models.MedState
 		});
 
@@ -65,7 +65,7 @@ App.registry.PreorderGrid = Ext.extend(Ext.grid.GridPanel, {
 		this.staffStore = new Ext.data.RESTStore({
 			autoLoad : false,
 			autoSave : true,
-			apiUrl : App.getApiUrl('staff','position'),
+			apiUrl : App.utils.getApiUrl('staff','position'),
 			model: [
 				    {name: 'id'},
 				    {name: 'resource_uri'},
@@ -162,7 +162,7 @@ App.registry.PreorderGrid = Ext.extend(Ext.grid.GridPanel, {
 				format:'json',
 				'timeslot__isnull':false
 			},
-			apiUrl : App.getApiUrl('scheduler','extpreorder'),
+			apiUrl : App.utils.getApiUrl('scheduler','extpreorder'),
 			model: App.models.preorderModel
 		});
 
@@ -175,13 +175,13 @@ App.registry.PreorderGrid = Ext.extend(Ext.grid.GridPanel, {
 		this.eventStore = new Ext.data.RESTStore({
 			autoLoad : false,
 			autoSave : true,
-			apiUrl : App.getApiUrl('scheduler','event'),
+			apiUrl : App.utils.getApiUrl('scheduler','event'),
 			model: this.eventModel
 		});
 		this.patientStore = this.patientStore || new Ext.data.RESTStore({
 			autoLoad : false,
 			autoSave : false,
-			apiUrl : App.getApiUrl('patient','patient'),
+			apiUrl : App.utils.getApiUrl('patient','patient'),
 			model: App.models.patientModel
 		});
 
@@ -317,8 +317,8 @@ App.registry.PreorderGrid = Ext.extend(Ext.grid.GridPanel, {
 
 		Ext.apply(this, Ext.apply(this.initialConfig, config));
 		App.registry.PreorderGrid.superclass.initComponent.apply(this, arguments);
-		App.eventManager.on('globalsearch', this.onGlobalSearch, this);
-		App.eventManager.on('visitcreate', this.onVisitCreate, this);
+		WebApp.on('globalsearch', this.onGlobalSearch, this);
+		WebApp.on('visitcreate', this.onVisitCreate, this);
 
 		this.store.on('write', function(){
 			var record = this.getSelected();
@@ -352,8 +352,8 @@ App.registry.PreorderGrid = Ext.extend(Ext.grid.GridPanel, {
 		App.calendar.eventManager.on('preorderwrite', this.storeReload,this);
 		this.on('destroy', function(){
 		    App.calendar.eventManager.un('preorderwrite', this.storeReload,this);
-		    App.eventManager.un('globalsearch', this.onGlobalSearch, this);
-		    App.eventManager.un('visitcreate', this.onVisitCreate, this);
+		    WebApp.un('globalsearch', this.onGlobalSearch, this);
+		    WebApp.un('visitcreate', this.onVisitCreate, this);
 		},this);
 		//this.store.on('write', this.onStoreWrite, this);
 	},
@@ -398,9 +398,9 @@ App.registry.PreorderGrid = Ext.extend(Ext.grid.GridPanel, {
         if (records.length) {
         	App.preorder.accessCheck(records,function(recs){
         		if (recs.length){
-		    		App.eventManager.fireEvent('launchapp','visittab',{
+		    		WebApp.fireEvent('launchapp','visittab',{
 						preorderRecord:recs,
-						patientId:App.uriToId(recs[0].data.patient),
+						patientId:App.utils.uriToId(recs[0].data.patient),
 						type:'visit'
 					});
 	        	}
@@ -432,7 +432,7 @@ App.registry.PreorderGrid = Ext.extend(Ext.grid.GridPanel, {
     	if (!record || record.data.visit) {
     		return false
     	};
-//    	this.eventStore.setBaseParam('preord',App.uriToId(record.data.id))
+//    	this.eventStore.setBaseParam('preord',App.utils.uriToId(record.data.id))
 //    	this.eventStore.load({calback:function(records){
 //    		if (records[0]){
 //    			records[0]['vacancy'] = true
@@ -517,7 +517,7 @@ App.registry.PreorderGrid = Ext.extend(Ext.grid.GridPanel, {
 
 	storeReload: function(preorder){
 		//Не позволять грузить весь store без параметров
-		if ((this.store.baseParams['patient'] && (this.store.baseParams['patient'] == App.uriToId(preorder.data.patient))) || this.store.baseParams['timeslot__start__day']) {
+		if ((this.store.baseParams['patient'] && (this.store.baseParams['patient'] == App.utils.uriToId(preorder.data.patient))) || this.store.baseParams['timeslot__start__day']) {
 			this.store.load()
 		}
 	},

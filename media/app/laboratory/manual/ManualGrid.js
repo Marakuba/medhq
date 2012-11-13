@@ -22,7 +22,7 @@ App.manual.ManualGrid = Ext.extend(Ext.grid.GridPanel, {
 		this.store = new Ext.data.RESTStore({
 			autoSave : true,
 			autoLoad : false,
-			apiUrl : App.getApiUrl('visit','labservice'),
+			apiUrl : App.utils.getApiUrl('visit','labservice'),
 			model: App.models.LabService
 		});
 
@@ -50,7 +50,7 @@ App.manual.ManualGrid = Ext.extend(Ext.grid.GridPanel, {
 			store: new Ext.data.JsonStore({
 				autoLoad:true,
 				proxy: new Ext.data.HttpProxy({
-					url:App.getApiUrl('staff','position'),
+					url:App.utils.getApiUrl('staff','position'),
 					method:'GET'
 				}),
 				root:'objects',
@@ -207,7 +207,7 @@ App.manual.ManualGrid = Ext.extend(Ext.grid.GridPanel, {
 						var cmp = Ext.ComponentMgr.types[serviceCode];
 						var win = new cmp({
 							record:rec,
-							service:App.uriToId(rec.data.service)
+							service:App.utils.uriToId(rec.data.service)
 						});
 						win.show();
 					} else {
@@ -226,7 +226,7 @@ App.manual.ManualGrid = Ext.extend(Ext.grid.GridPanel, {
 
 		Ext.apply(this, Ext.apply(this.initialConfig, config));
 		App.manual.ManualGrid.superclass.initComponent.apply(this, arguments);
-		App.eventManager.on('globalsearch', this.onGlobalSearch, this);
+		WebApp.on('globalsearch', this.onGlobalSearch, this);
 
 		this.store.on('load',this.onStoreLoad,this);
 
@@ -240,7 +240,7 @@ App.manual.ManualGrid = Ext.extend(Ext.grid.GridPanel, {
 		},this);
 
 		this.on('destroy', function(){
-		    App.eventManager.un('globalsearch', this.onGlobalSearch, this);
+		    WebApp.un('globalsearch', this.onGlobalSearch, this);
 		},this);
 
 	},
@@ -267,7 +267,7 @@ App.manual.ManualGrid = Ext.extend(Ext.grid.GridPanel, {
 	},
 
 	setStaff : function() {
-		var staff = App.getApiUrl('staff','position',active_profile);
+		var staff = App.utils.getApiUrl('staff','position',active_profile);
 		var sf = this.staffField;
 		sf.setValue(staff);
 		return staff
@@ -298,7 +298,7 @@ App.manual.ManualGrid = Ext.extend(Ext.grid.GridPanel, {
 /*	setActiveRecord: function(rec) {
 		this.labOrderRecord = rec;
 
-		this.store.setBaseParam('order',App.uriToId(this.labOrderRecord.data.visit));
+		this.store.setBaseParam('order',App.utils.uriToId(this.labOrderRecord.data.visit));
 		this.store.load();
 
 		this.enable();

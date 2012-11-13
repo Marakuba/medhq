@@ -61,7 +61,7 @@ App.examination.GlossaryTree = Ext.extend(Ext.tree.TreePanel,{
 	        listeners:{
 	        	click:function(node,e){
 	        		if(node.isLeaf()) {
-	        			App.eventManager.fireEvent('glossaryclick', node.attributes);
+	        			WebApp.fireEvent('glossaryclick', node.attributes);
 	        		}
 	        	}
 	        },

@@ -9,9 +9,9 @@ App.examorder.ExamOrderGrid = Ext.extend(Ext.grid.GridPanel, {
         this.tmp_id = Ext.id();
         
         this.store = new Ext.data.RESTStore({
-            autoSave : false,
+            autoSave : true,
             autoLoad : false,
-            apiUrl : App.utils.getApiUrl('examservice'),
+            apiUrl : App.utils.getApiUrl('visit','examservice'),
             model: App.models.ExamService
         });
         
@@ -44,7 +44,7 @@ App.examorder.ExamOrderGrid = Ext.extend(Ext.grid.GridPanel, {
                 renderer:function(val, meta, record) {
                     var p = record.data.executed;
                     var flag = p ? 'yes' : 'no';
-                    var img = "<img src='"+App.MEDIA_URL+"admin/img/admin/icon-"+flag+".gif'>";
+                    var img = "<img src='"+WebApp.MEDIA_URL+"admin/img/admin/icon-"+flag+".gif'>";
                     return String.format("{0} {1}", img, p ? Ext.util.Format.date(p, 'd.m.Y H:i') : "");
                 }
             }];
@@ -63,21 +63,21 @@ App.examorder.ExamOrderGrid = Ext.extend(Ext.grid.GridPanel, {
             handler:this.onAdd.createDelegate(this, [])
         });
         
-        this.ttb = new Ext.Toolbar({ 
-            items:[this.addBtn,{
+        this.ttb = new Ext.Toolbar({
+            items:[this.addBtn, {
                 text:'Подтвердить выполнение',
                 iconCls:'silk-accept',
                 id: this.tmp_id + 'order-exec',
                 disabled:true,
                 handler:function(){
-                    var record = this.getSelected()
+                    var record = this.getSelected();
                     if (record && !record.data.executed) {
                         var now = new Date();
                         Ext.Msg.confirm('Заказ выполнен','Подтвердить выполнение?',function(btn){
                             if (btn=='yes') {
                                 record.beginEdit();
                                 record.set('executed', now);
-                                record.endEdit();       
+                                record.endEdit();
                             }
                         },this);
                     }
@@ -180,7 +180,7 @@ App.examorder.ExamOrderGrid = Ext.extend(Ext.grid.GridPanel, {
         WebApp.on('globalsearch', this.onGlobalSearch, this);
         
         this.on('destroy', function(){
-            WebApp.un('globalsearch', this.onGlobalSearch, this); 
+            WebApp.un('globalsearch', this.onGlobalSearch, this);
         },this);
         
         this.on('afterrender',function(){
@@ -202,7 +202,7 @@ App.examorder.ExamOrderGrid = Ext.extend(Ext.grid.GridPanel, {
                 orderId:rec.data.id,
                 orderRecord:rec,
                 title: rec.data.patient_name +  ': ' + rec.data.service_name,
-                baseServiceId:App.uriToId(rec.data.service),
+                baseServiceId:App.utils.uriToId(rec.data.service),
                 print_name:rec.data.service_name,
                 staff:this.staff
             }
@@ -280,5 +280,9 @@ Ext.reg('examordergrid', App.examorder.ExamOrderGrid);
 
 
 App.webapp.actions.add('examordergrid', new Ext.Action({
-    text: 'Заказы'
+    text: 'Заказы',
+    scale: 'medium',
+    handler: function(){
+        WebApp.fireEvent('launchapp','examordergrid');
+    }
 }));

@@ -22,7 +22,7 @@ App.Reports = Ext.extend(Ext.Panel, {
 				store:new Ext.data.JsonStore({
 			    	autoLoad:true,
 					proxy: new Ext.data.HttpProxy({
-						url:App.getApiUrl('staff','staff'),
+						url:App.utils.getApiUrl('staff','staff'),
 						method:'GET'
 					}),
 					root:'objects',
@@ -45,7 +45,7 @@ App.Reports = Ext.extend(Ext.Panel, {
 			    		type:'b'
 			    	},
 					proxy: new Ext.data.HttpProxy({
-						url:App.getApiUrl('state','state'),
+						url:App.utils.getApiUrl('state','state'),
 						method:'GET'
 					}),
 					root:'objects',
@@ -65,7 +65,7 @@ App.Reports = Ext.extend(Ext.Panel, {
 				text:'Сформировать',
 				handler:function(){
 					var vals = this.form.getForm().getValues();
-					var staff = App.uriToId(this.form.getForm().findField('staff__staff').getValue());
+					var staff = App.utils.uriToId(this.form.getForm().findField('staff__staff').getValue());
 					var branch = this.form.getForm().findField('branch').getValue();
 					window.open(String.format('/old/reporting/staff-daily/print/?start_date={0}&end_date={1}&order__patient=&staff__staff={2}&staff__department=&order__referral=&execution_place_office=&execution_place_filial=&order__payment_type=&price_type=&order__cls=&from_lab=&from_place_filial={3}',
 							vals['start_date'], vals['end_date'], staff, branch));

@@ -77,7 +77,7 @@ App.laborder.LabServiceGrid = Ext.extend(Ext.grid.GridPanel, {
 		this.singleModeFunc = function(rec) {
 			return {
 				filtering: {
-					'analysis__service':App.uriToId(rec.data.service),
+					'analysis__service':App.utils.uriToId(rec.data.service),
 					'order__visit__barcode':rec.data.barcode
 				},
 				mode: 'single'
@@ -96,7 +96,7 @@ App.laborder.LabServiceGrid = Ext.extend(Ext.grid.GridPanel, {
 		this.laborderModeFunc = function(rec) {
 			return {
 				filtering: {
-					'order__laboratory':App.uriToId(rec.data.execution_place),
+					'order__laboratory':App.utils.uriToId(rec.data.execution_place),
 					'order__visit__barcode':rec.data.barcode
 				},
 				mode: 'laborder'
@@ -198,7 +198,7 @@ App.laborder.LabServiceGrid = Ext.extend(Ext.grid.GridPanel, {
 
 		Ext.apply(this, Ext.apply(this.initialConfig, config));
 		App.laborder.LabServiceGrid.superclass.initComponent.apply(this, arguments);
-		App.eventManager.on('globalsearch', this.onGlobalSearch, this);
+		WebApp.on('globalsearch', this.onGlobalSearch, this);
 		this.initToolbar();
 		//this.on('rowcontextmenu', this.onContextMenu, this);
 		this.on('afterrender', function() {
@@ -209,7 +209,7 @@ App.laborder.LabServiceGrid = Ext.extend(Ext.grid.GridPanel, {
 		}, this);
 
 		this.on('destroy', function(){
-		    App.eventManager.un('globalsearch', this.onGlobalSearch, this);
+		    WebApp.un('globalsearch', this.onGlobalSearch, this);
 		},this);
 	},
 
@@ -231,7 +231,7 @@ App.laborder.LabServiceGrid = Ext.extend(Ext.grid.GridPanel, {
 
 				}
 			});
-			App.eventManager.fireEvent('launchapp', 'resultgrid', config);
+			WebApp.fireEvent('launchapp', 'resultgrid', config);
 		}
 	},
 
@@ -256,7 +256,7 @@ App.laborder.LabServiceGrid = Ext.extend(Ext.grid.GridPanel, {
 	initToolbar: function(){
 		// laboratory
 		Ext.Ajax.request({
-			url:App.getApiUrl('state','medstate'),
+			url:App.utils.getApiUrl('state','medstate'),
 			method:'GET',
 			success:function(resp, opts) {
 				this.ttb.add({
@@ -292,7 +292,7 @@ App.laborder.LabServiceGrid = Ext.extend(Ext.grid.GridPanel, {
 		//group
 
 		/*Ext.Ajax.request({
-			url:App.getApiUrl('service','labgroup'),
+			url:App.utils.getApiUrl('service','labgroup'),
 			method:'GET',
 			success:function(resp, opts) {
 				this.ttb.add({

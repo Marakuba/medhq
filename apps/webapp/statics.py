@@ -6,7 +6,7 @@ from webapp.utils import get_app_list
 from django.conf import settings
 from constance import config
 
-from api.registry import MedStateResource
+from state.api import MedStateResource
 
 
 debug = settings.DEBUG and '-debug' or ''
@@ -31,6 +31,7 @@ class ExtJS3(BaseWebApp):
 class ExtJS3UX(BaseWebApp):
 
     js = [
+        'extjs/ux/CheckColumn.js',
         'extjs/ux/progresscolumn/ProgressColumn.js',
         'extjs/ux/RowEditor.js',
         'extjs/ux/SearchField.js',
@@ -42,6 +43,10 @@ class ExtJS3UX(BaseWebApp):
         'extjs/ux/treegrid/TreeGridLoader.js',
         'extjs/ux/treegrid/TreeGridNodeUI.js',
         'extjs/ux/treegrid/TreeGrid.js',
+        'extjs/ux/PortalColumn.js',
+        'extjs/ux/Portal.js',
+
+        'libs/underscore-min.js',
     ]
     css = {
         'all': [
@@ -117,7 +122,7 @@ class WebApp3(BaseWebApp):
             'active_staff': request.active_profile.staff.id,
             'state': request.active_profile.state,
             'MEDIA_URL': "'%s'" % settings.STATIC_URL,
-            'API_URL': "'%s'" % '/api/v1',  # откуда брать?
+            'API_URL': "'%s'" % '/api',  # откуда брать?
             'profiles': simplejson.dumps(profiles),
             'settings': simplejson.dumps(extra_settings)
 
@@ -130,5 +135,16 @@ class ProfileWidgetApp(BaseWebApp):
     cmp_type = 'widget'
     js = [
         'app/webapp/widgets/ProfileWidget.js',
+    ]
+    depends_on = ['webapp3', ]
+
+
+@register('globalsearchfield')
+class GlobalSearchFieldApp(BaseWebApp):
+
+    cmp_type = 'widget'
+    js = [
+        'app/ux/GSearchField.js',
+        'app/webapp/widgets/GlobalSearch.js',
     ]
     depends_on = ['webapp3', ]

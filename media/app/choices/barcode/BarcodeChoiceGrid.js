@@ -6,7 +6,7 @@ App.choices.BarcodeChoiceGrid = Ext.extend(Ext.grid.GridPanel, {
 
 		this.store = new Ext.data.RESTStore({
 			autoLoad : false,
-			apiUrl : App.getApiUrl('numeration','barcode'),
+			apiUrl : App.utils.getApiUrl('numeration','barcode'),
 			model: App.models.barcodeModel
 		});
 
@@ -70,9 +70,9 @@ App.choices.BarcodeChoiceGrid = Ext.extend(Ext.grid.GridPanel, {
 
 		Ext.apply(this, Ext.apply(this.initialConfig, config));
 		App.choices.BarcodeChoiceGrid.superclass.initComponent.apply(this, arguments);
-		App.eventManager.on('globalsearch', this.onGlobalSearch, this);
+		WebApp.on('globalsearch', this.onGlobalSearch, this);
 		this.on('destroy', function(){
-			App.eventManager.un('globalsearch', this.onGlobalSearch, this);
+			WebApp.un('globalsearch', this.onGlobalSearch, this);
 		},this);
 		this.on('afterrender', function(){
 			if(this.patientId){
@@ -80,7 +80,7 @@ App.choices.BarcodeChoiceGrid = Ext.extend(Ext.grid.GridPanel, {
 			};
 			this.store.load()
 		},this)
-//		App.eventManager.on('patientwrite', this.onPatientWrite, this);
+//		WebApp.on('patientwrite', this.onPatientWrite, this);
 		this.on('barcodeselect', this.onBarcodeSelect, this);
 		//this.store.on('write', this.onStoreWrite, this);
 	},

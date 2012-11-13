@@ -132,14 +132,14 @@ App.Patients = Ext.extend(Ext.Panel, {
 		
 		this.initEvents();
 		
-		App.eventManager.on('patientcardupdate', this.updatePatientInfo, this); //
-		App.eventManager.on('refundclose', this.updatePatientInfo, this); //
-		App.eventManager.on('globalsearch', this.onGlobalSearch, this);
+		WebApp.on('patientcardupdate', this.updatePatientInfo, this); //
+		WebApp.on('refundclose', this.updatePatientInfo, this); //
+		WebApp.on('globalsearch', this.onGlobalSearch, this);
 		this.patientGrid.getStore().on('load',this.onPatientLoad,this);
 		this.patientGrid.getStore().on('beforeload',this.onPatientBeforeLoad,this);
 		this.on('destroy', function(){
-			App.eventManager.un('refundclose', this.updatePatientInfo, this); //
-			App.eventManager.un('globalsearch', this.onGlobalSearch, this);
+			WebApp.un('refundclose', this.updatePatientInfo, this); //
+			WebApp.un('globalsearch', this.onGlobalSearch, this);
 			this.patientGrid.getStore().un('beforeload',this.onPatientBeforeLoad,this);
 		},this);
 

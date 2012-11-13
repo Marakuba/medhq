@@ -30,7 +30,7 @@ App.result.BasePlain = Ext.extend(Ext.grid.EditorGridPanel, {
 		);
 
 		this.proxy = new Ext.data.HttpProxy({
-		    url: App.getApiUrl('lab','result')
+		    url: App.utils.getApiUrl('lab','result')
 		});
 
 		this.reader = new Ext.data.JsonReader({
@@ -328,7 +328,7 @@ App.result.BasePlain = Ext.extend(Ext.grid.EditorGridPanel, {
 		}, this);
 
 		this.on('destroy', function(){
-		    App.eventManager.un('globalsearch', this.onGlobalSearch, this);
+		    WebApp.un('globalsearch', this.onGlobalSearch, this);
 		},this);
 
 		if(this.labOrderRecord) {

@@ -40,13 +40,13 @@ App.examination.ResumeCardPlugin = function(config, order){
 	this.store = new Ext.data.RESTStore({
 		autoSave: false,
 		autoLoad : false,
-		apiUrl : App.getApiUrl('examination','card'),
+		apiUrl : App.utils.getApiUrl('examination','card'),
 		model: App.models.Card
 	});
 	this.store.load({
 		params:{
 			deleted:false,
-			ordered_service__staff:active_profile,
+			ordered_service__staff:WebApp.active_profile,
 			ordered_service:this.config.orderId
 		},
 		callback:function(records, opts, success){
@@ -81,13 +81,13 @@ App.examination.PreviousCardPlugin = function(config, order){
 	this.store = new Ext.data.RESTStore({
 		autoSave: false,
 		autoLoad : false,
-		apiUrl : App.getApiUrl('examination','card'),
+		apiUrl : App.utils.getApiUrl('examination','card'),
 		model: App.models.Card
 	});
 	this.store.load({
 		params:{
 			deleted:false,
-			ordered_service__staff:active_profile,
+			ordered_service__staff:WebApp.active_profile,
 			ordered_service__order__patient:config.patientId
 		},
 		callback:function(records, opts, success){
@@ -98,7 +98,7 @@ App.examination.PreviousCardPlugin = function(config, order){
 					objects:[]
 				}
 				Ext.each(records, function(rec){
-					if(App.uriToId(rec.data.ordered_service)!=this.config.orderId){
+					if(App.utils.uriToId(rec.data.ordered_service)!=this.config.orderId){
 						this.results.objects.push({
 							action:'copy',
 							type:'card',

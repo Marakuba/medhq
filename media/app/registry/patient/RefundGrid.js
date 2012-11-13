@@ -145,7 +145,7 @@ App.patient.RefundGrid = Ext.extend(Ext.grid.GridPanel, {
 		Ext.apply(this, Ext.apply(this.initialConfig, config));
 		App.patient.RefundGrid.superclass.initComponent.apply(this, arguments);
 		
-		//App.eventManager.on('patientselect', this.onPatientSelect, this);
+		//WebApp.on('patientselect', this.onPatientSelect, this);
 		this.ownerCt.on('patientselect', this.setActivePatient, this);
 	},
 	
@@ -164,7 +164,7 @@ App.patient.RefundGrid = Ext.extend(Ext.grid.GridPanel, {
 
 	onCreate: function(type){
 		if (this.patientId) {
-			App.eventManager.fireEvent('refundcreate',this.patientId,type,false,this.patientRecord);
+			WebApp.fireEvent('refundcreate',this.patientId,type,false,this.patientRecord);
 		}
 	},
 	
@@ -172,7 +172,7 @@ App.patient.RefundGrid = Ext.extend(Ext.grid.GridPanel, {
 		var rec = this.getSelected();
 		if (rec) {
 			var type = rec.data.cls=='п' ? 'visit' : 'material'; /// TODO: тип формы надо определять как-то иначе
-			App.eventManager.fireEvent('refundcreate',this.patientId,type,rec.id,this.patientRecord);
+			WebApp.fireEvent('refundcreate',this.patientId,type,rec.id,this.patientRecord);
 		}
 	}
 	

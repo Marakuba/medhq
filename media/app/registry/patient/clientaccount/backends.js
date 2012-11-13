@@ -17,7 +17,7 @@ App.clientaccount.Backend = Ext.extend(App.Backend, {
 			},
 		    restful: true,
 		    proxy: new Ext.data.HttpProxy({
-			    url: App.getApiUrl('billing','clientaccount')
+			    url: App.utils.getApiUrl('billing','clientaccount')
 			}),
 		    reader: new Ext.data.JsonReader({
 			    totalProperty: 'meta.total_count',
@@ -56,7 +56,7 @@ App.clientaccount.Backend = Ext.extend(App.Backend, {
 		    		console.log(res);
 		    		console.log(rs);
 		    		if(action=='create') {
-			    		App.eventManager.fireEvent('clientaccountcreate', rs);
+			    		WebApp.fireEvent('clientaccountcreate', rs);
 		    		}
 		    	},
 		    	scope:this

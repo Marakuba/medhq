@@ -4,7 +4,7 @@ App.examorder.ExamOrderGrid = Ext.extend(Ext.grid.GridPanel, {
 
 	initComponent : function() {
 
-		this.staff = App.getApiUrl('staff','staff',active_staff);
+		this.staff = App.utils.getApiUrl('staff','staff',WebApp.active_staff);
 
 		this.tmp_id = Ext.id();
 
@@ -174,10 +174,10 @@ App.examorder.ExamOrderGrid = Ext.extend(Ext.grid.GridPanel, {
 
 		Ext.apply(this, Ext.apply(this.initialConfig, config));
 		App.examorder.ExamOrderGrid.superclass.initComponent.apply(this, arguments);
-		App.eventManager.on('globalsearch', this.onGlobalSearch, this);
+		WebApp.on('globalsearch', this.onGlobalSearch, this);
 
 		this.on('destroy', function(){
-		    App.eventManager.un('globalsearch', this.onGlobalSearch, this);
+		    WebApp.un('globalsearch', this.onGlobalSearch, this);
 		},this);
 
 		this.on('afterrender',function(){
@@ -199,18 +199,18 @@ App.examorder.ExamOrderGrid = Ext.extend(Ext.grid.GridPanel, {
         		orderId:rec.data.id,
         		orderRecord:rec,
 				title: rec.data.patient_name +  ': ' + rec.data.service_name,
-				baseServiceId:App.uriToId(rec.data.service),
+				baseServiceId:App.utils.uriToId(rec.data.service),
 				print_name:rec.data.service_name,
 				staff:this.staff
 			}
 
-			App.eventManager.fireEvent('launchapp', 'cardapp',conf);
+			WebApp.fireEvent('launchapp', 'cardapp',conf);
 
         } else {
         	var conf = {
         		order_id:rec.data.id
         	}
-        	App.eventManager.fireEvent('launchapp', 'conclusion',conf);
+        	WebApp.fireEvent('launchapp', 'conclusion',conf);
         }
 
 
@@ -264,7 +264,7 @@ App.examorder.ExamOrderGrid = Ext.extend(Ext.grid.GridPanel, {
 				staff:this.staff
 //				scope:this
 			}
-			App.eventManager.fireEvent('launchapp', 'patienthistory',config);
+			WebApp.fireEvent('launchapp', 'patienthistory',config);
 		}
 	}
 

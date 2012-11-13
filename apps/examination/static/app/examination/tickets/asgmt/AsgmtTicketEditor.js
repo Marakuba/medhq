@@ -7,7 +7,7 @@ App.examination.AsgmtTicketEditor = Ext.extend(Ext.Panel, {
 	initComponent:function(){
 
 		this.proxy = new Ext.data.HttpProxy({
-		    url: App.getApiUrl('scheduler','extpreorder')
+		    url: App.utils.getApiUrl('scheduler','extpreorder')
 		});
 
 		this.reader = new Ext.data.JsonReader({
@@ -160,9 +160,9 @@ App.examination.AsgmtTicketEditor = Ext.extend(Ext.Panel, {
 		p.set('price',record.data.price);
 		p.set('staff_name',record.data.staff_name);
 		p.set('service_name',record.data.service_name);
-		p.set('service',App.getApiUrl('service','baseservice',record.data.base_service));
-		p.set('staff',App.getApiUrl('staff','position',record.data.staff));
-		p.set('execution_place',App.getApiUrl('state','state',record.data.execution_place));
+		p.set('service',App.utils.getApiUrl('service','baseservice',record.data.base_service));
+		p.set('staff',App.utils.getApiUrl('staff','position',record.data.staff));
+		p.set('execution_place',App.utils.getApiUrl('state','state',record.data.execution_place));
 		p.set('count',1);
 		p.data['id'] = '';
 		p.endEdit();

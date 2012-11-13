@@ -14,7 +14,7 @@ Ext.onReady(function(){
 	var medstateStore = new Ext.data.RESTStore({
 		autoSave: true,
 		autoLoad : true,
-		apiUrl : App.getApiUrl('state','medstate'),
+		apiUrl : App.utils.getApiUrl('state','medstate'),
 		model: App.models.MedState
 	});
 

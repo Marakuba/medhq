@@ -6,7 +6,7 @@ App.cashier.DebtorGrid = Ext.extend(Ext.grid.GridPanel, {
 
 		this.store = new Ext.data.RESTStore({
 			autoLoad : false,
-			apiUrl : App.getApiUrl('patient','debtor'),
+			apiUrl : App.utils.getApiUrl('patient','debtor'),
 			model: App.models.debtorModel
 		});
 
@@ -99,9 +99,9 @@ App.cashier.DebtorGrid = Ext.extend(Ext.grid.GridPanel, {
 
 		Ext.apply(this, Ext.apply(this.initialConfig, config));
 		App.cashier.DebtorGrid.superclass.initComponent.apply(this, arguments);
-		App.eventManager.on('globalsearch', this.onGlobalSearch, this);
-		App.eventManager.on('paymentsave', this.reloadStore, this);
-		App.eventManager.on('visitcreate', this.reloadStore, this);
+		WebApp.on('globalsearch', this.onGlobalSearch, this);
+		WebApp.on('paymentsave', this.reloadStore, this);
+		WebApp.on('visitcreate', this.reloadStore, this);
 		this.on('afterrender', function(){
 			if (this.searchValue){
 				this.onGlobalSearch(this.searchValue)
@@ -110,11 +110,11 @@ App.cashier.DebtorGrid = Ext.extend(Ext.grid.GridPanel, {
 			}
 		},this);
 		this.on('destroy', function(){
-		    App.eventManager.un('paymentsave', this.reloadStore, this);
-		    App.eventManager.un('globalsearch', this.onGlobalSearch, this);
-			App.eventManager.un('visitcreate', this.reloadStore, this);
+		    WebApp.un('paymentsave', this.reloadStore, this);
+		    WebApp.un('globalsearch', this.onGlobalSearch, this);
+			WebApp.un('visitcreate', this.reloadStore, this);
 		},this);
-//		App.eventManager.on('patientwrite', this.onPatientWrite, this);
+//		WebApp.on('patientwrite', this.onPatientWrite, this);
 		//this.on('patientselect', this.onPatientSelect, this);
 		//this.store.on('write', this.onStoreWrite, this);
 	},

@@ -13,7 +13,7 @@ App.examination.TemplateBody = Ext.extend(Ext.TabPanel, {
 		this.tmpStore = new Ext.data.RESTStore({
 			autoSave: true,
 			autoLoad : false,
-			apiUrl : App.getApiUrl('examination','examtemplate'),
+			apiUrl : App.utils.getApiUrl('examination','examtemplate'),
 			baseParams:{
 				format:'json',
 				deleted:false
@@ -24,7 +24,7 @@ App.examination.TemplateBody = Ext.extend(Ext.TabPanel, {
 		this.questStore = new Ext.data.RESTStore({
 			autoSave: true,
 			autoLoad : false,
-			apiUrl : App.getApiUrl('examination','questionnaire'),
+			apiUrl : App.utils.getApiUrl('examination','questionnaire'),
 			baseParams:{
 				format:'json',
 				deleted:false
@@ -171,7 +171,7 @@ App.examination.TemplateBody = Ext.extend(Ext.TabPanel, {
 		this.on('tabchange',function(panel,tab){
 			if (tab){
 				this.showTtbItems(tab.type)
-				App.eventManager.fireEvent('tmptabchange');
+				WebApp.fireEvent('tmptabchange');
 			};
 		},this);
 
@@ -241,14 +241,14 @@ App.examination.TemplateBody = Ext.extend(Ext.TabPanel, {
 			this.fieldSetStore = new Ext.data.RESTStore({
 				autoSave: false,
 				autoLoad : false,
-				apiUrl : App.getApiUrl('examination','examfieldset'),
+				apiUrl : App.utils.getApiUrl('examination','examfieldset'),
 				model: App.models.FieldSet
 			});
 
 			this.subSectionStore = new Ext.data.RESTStore({
 				autoSave: false,
 				autoLoad : false,
-				apiUrl : App.getApiUrl('examination','examsubsection'),
+				apiUrl : App.utils.getApiUrl('examination','examsubsection'),
 				model: App.models.SubSection
 			});
 
@@ -327,7 +327,7 @@ App.examination.TemplateBody = Ext.extend(Ext.TabPanel, {
 
 	onPreview: function(isCard){
 		var essence = isCard?'card':'template';
-		App.eventManager.fireEvent('launchapp','panel',{
+		WebApp.fireEvent('launchapp','panel',{
 			title:'Просмотр: ' + this.record.data.print_name,
 			closable:true,
 			autoScroll:true,
@@ -390,7 +390,7 @@ App.examination.TemplateBody = Ext.extend(Ext.TabPanel, {
     		patient_name: this.patient_name,
 			staff:this.staff
 		}
-		App.eventManager.fireEvent('launchapp', 'patienthistory',config);
+		WebApp.fireEvent('launchapp', 'patienthistory',config);
 	},
 
 	newEquipTab : function(){
@@ -691,7 +691,7 @@ App.examination.TemplateBody = Ext.extend(Ext.TabPanel, {
 
 	openMedStandarts: function(mkb10){
 		var stWin = new App.examination.MedStandartChoiceWindow({
-			mkb10:App.uriToId(mkb10),
+			mkb10:App.utils.uriToId(mkb10),
 			listeners:{
 				scope:this,
 				pushservices:function(records){

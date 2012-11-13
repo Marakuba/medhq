@@ -6,7 +6,7 @@ App.examination.PatientGrid = Ext.extend(Ext.grid.GridPanel, {
 
 		this.store = new Ext.data.RESTStore({
 			autoLoad : true,
-			apiUrl : App.getApiUrl('patient','patient'),
+			apiUrl : App.utils.getApiUrl('patient','patient'),
 			model: App.models.Patient
 		});
 
@@ -85,12 +85,12 @@ App.examination.PatientGrid = Ext.extend(Ext.grid.GridPanel, {
 
 		Ext.apply(this, Ext.apply(this.initialConfig, config));
 		App.examination.PatientGrid.superclass.initComponent.apply(this, arguments);
-		App.eventManager.on('globalsearch', this.onGlobalSearch, this);
-//		App.eventManager.on('patientwrite', this.onPatientWrite, this);
+		WebApp.on('globalsearch', this.onGlobalSearch, this);
+//		WebApp.on('patientwrite', this.onPatientWrite, this);
 		this.on('patientselect', this.onPatientSelect, this);
 
 		this.on('destroy', function(){
-		    App.eventManager.un('globalsearch', this.onGlobalSearch, this);
+		    WebApp.un('globalsearch', this.onGlobalSearch, this);
 		},this);
 
 	},
@@ -137,7 +137,7 @@ App.examination.PatientGrid = Ext.extend(Ext.grid.GridPanel, {
     		title: short_name,
 			staff:this.staff
 		}
-		App.eventManager.fireEvent('launchapp', 'patienthistory',config);
+		WebApp.fireEvent('launchapp', 'patienthistory',config);
 	}
 
 });

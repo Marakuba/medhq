@@ -4,7 +4,7 @@ Ext.calendar.StaffGrid = Ext.extend(Ext.grid.GridPanel, {
     initComponent : function() {
 
 		this.proxy = new Ext.data.HttpProxy({
-		    url: App.getApiUrl('staff','possched')
+		    url: App.utils.getApiUrl('staff','possched')
 		});
 
 		this.reader = new Ext.data.JsonReader({
@@ -74,7 +74,7 @@ Ext.calendar.StaffGrid = Ext.extend(Ext.grid.GridPanel, {
 
 		this.departmentStore = new Ext.data.RESTStore({
 			autoLoad : true,
-			apiUrl : App.getApiUrl('state','department'),
+			apiUrl : App.utils.getApiUrl('state','department'),
 			model: [
 				    {name: 'resource_uri'},
 				    {name: 'name'},

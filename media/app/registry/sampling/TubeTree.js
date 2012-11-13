@@ -5,7 +5,7 @@ App.sampling.TubeTree = Ext.extend(Ext.tree.TreePanel,{
 	initComponent: function(){
 
 		this.proxy = new Ext.data.HttpProxy({
-		    url: App.getApiUrl('lab','sampling')
+		    url: App.utils.getApiUrl('lab','sampling')
 		});
 
 		this.reader = new Ext.data.JsonReader({
@@ -159,7 +159,7 @@ App.sampling.TubeTree = Ext.extend(Ext.tree.TreePanel,{
 		var s = this.store;
 		var Sampling = s.recordType;
 		Ext.apply(values,{
-			visit:App.getApiUrl('visit', 'visit', this.visitId)
+			visit:App.utils.getApiUrl('visit', 'visit', this.visitId)
 		});
 		console.log(values);
 		var new_sampling = new Sampling(values);

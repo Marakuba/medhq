@@ -39,7 +39,7 @@ App.cashier.CashierTab = Ext.extend(Ext.Panel, {
 
 		this.visitStore = new Ext.data.RESTStore({
 			autoLoad : true,
-			apiUrl : App.getApiUrl('visit','visit'),
+			apiUrl : App.utils.getApiUrl('visit','visit'),
 			model: App.models.visitModel
 		});
 

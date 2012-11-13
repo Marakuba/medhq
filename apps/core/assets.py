@@ -636,77 +636,6 @@ js_barcoding = Bundle(
     'app/barcoding/app.js',
     filters='rjsmin', output='assets/barcoding.js',)
 
-js_accounting = Bundle(
-    'extjs/ux/SearchField.js',
-    'extjs/ux/RowEditor.js',
-
-    'app/App.js',
-    'app/Models.js',
-    'app/data/RestStore.js',
-    'app/form/ClearableComboBox.js',
-    'app/form/LazyComboBox.js',
-    'app/ux/GSearchField.js',
-    'app/ux/InputTextMask.js',
-
-    'extjs/ux/treegrid/TreeGridSorter.js',
-    'extjs/ux/treegrid/TreeGridColumnResizer.js',
-    'extjs/ux/treegrid/TreeGridNodeUI.js',
-    'extjs/ux/treegrid/TreeGridLoader.js',
-    'extjs/ux/treegrid/TreeGridColumns.js',
-    'extjs/ux/treegrid/TreeGrid.js',
-
-    'app/data/RestStore.js',
-
-    'app/service/ServiceTreeGrid.js',
-
-    'extjs/ux/Spinner.js',
-    'extjs/ux/SpinnerField.js',
-
-    'app/choices/patient/PatientChoiceGrid.js',
-    'app/choices/patient/PatientChoiceWindow.js',
-
-    'app/accounting/invoice/PatientGrid.js',
-    'app/accounting/invoice/InvoiceItemGrid.js',
-    'app/accounting/invoice/InvoiceForm.js',
-    'app/accounting/invoice/InvoiceGrid.js',
-    'app/accounting/invoice/InvoiceApp.js',
-
-    'app/choices/state/StateChoiceGrid.js',
-    'app/choices/state/StateChoiceWindow.js',
-    'app/accounting/contract/ContractForm.js',
-    'app/accounting/contract/ContractWindow.js',
-    'app/accounting/contract/ContractGrid.js',
-    'app/accounting/contract/ContractApp.js',
-
-    'app/accounting/EventManager.js',
-    'app/accounting/CentralPanel.js',
-    'app/accounting/MainPanel.js',
-    'app/accounting/app.js',
-    filters='rjsmin', output='assets/accounting.js',)
-
-js_service = Bundle(
-    'app/service/ServicePanel.js',
-    'app/service/MainPanel.js',
-    'app/service/app.js',
-
-    filters='rjsmin', output='assets/service.js',)
-
-js_treatmentroom = Bundle(
-    'libs/growl/js/ext/ux/Growl.js',
-    'extjs/ux/RowEditor.js',
-    'extjs/ux/CheckColumn.js',
-    'app/data/RestStore.js',
-    'app/ux/GSearchField.js',
-    'app/App.js',
-    'app/form/ClearableComboBox.js',
-    'app/form/LazyComboBox.js',
-    'app/Models.js',
-    'app/treatmentroom/tests/LabTestGrid.js',
-    'app/treatmentroom/EventManager.js',
-    'app/treatmentroom/CentralPanel.js',
-    'app/treatmentroom/MainPanel.js',
-    'app/treatmentroom/app.js',
-    filters='rjsmin', output='assets/treatmentroom.js',)
 
 register('js_registry', js_registry)
 register('js_for_all', js_for_all)
@@ -717,9 +646,7 @@ register('js_helpdesk', js_helpdesk)
 register('js_laboratory', js_laboratory)
 register('js_reporting', js_reporting)
 register('js_barcoding', js_barcoding)
-register('js_accounting', js_accounting)
-register('js_service', js_service)
-register('js_treatmentroom', js_treatmentroom)
+
 ##################################################
 
 css_ext = Bundle(
@@ -796,26 +723,6 @@ css_laboratory = Bundle(
     'libs/growl/css/ext/ux/Growl.css',
     filters=('cssrewrite', 'cssmin'), output='assets/laboratory.css',)
 
-css_oldexam = Bundle(
-    'extjs/resources/css/ext-all.css',
-
-    'resources/css/app.css',
-    'app/calendar/resources/css/calendar.css',
-    'app/calendar/resources/css/examples.css',
-
-    'resources/css/silk.css',
-
-    'extjs/ux/css/Spinner.css',
-    'extjs/ux/css/RowEditor.css',
-    'extjs/ux/treegrid/treegrid.css',
-    'extjs/ux/progresscolumn/ProgressColumn.css',
-
-    'app/ux/remotetree/css/empty.css',
-    'app/ux/remotetree/css/icons.css',
-    'app/ux/remotetree/css/remotetree.css',
-    'app/ux/remotetree/css/webpage.css',
-    filters=('cssrewrite', 'cssmin'), output='assets/oldexam.css',)
-
 css_registry = Bundle(
     'resources/css/app.css',
     'app/calendar/resources/css/calendar.css',
@@ -845,14 +752,6 @@ css_barcoding = Bundle(
     'extjs/ux/css/RowEditor.css',
     filters=('cssrewrite', 'cssmin'), output='assets/barcoding.css',)
 
-css_service = Bundle(
-    'extjs/resources/css/ext-all.css',
-
-    'resources/css/app.css',
-
-    'resources/css/silk.css',
-    filters=('cssrewrite', 'cssmin'), output='assets/service.css',)
-
 css_testing = Bundle(
     'extjs/resources/css/ext-all.css',
 
@@ -863,29 +762,14 @@ css_testing = Bundle(
     'extjs/ux/css/RowEditor.css',
     filters=('cssrewrite', 'cssmin'), output='assets/testing.css',)
 
-css_treatmentroom = Bundle(
-    'extjs/resources/css/ext-all.css',
-
-    'resources/css/app.css',
-
-    'resources/css/silk.css',
-    'extjs/ux/css/Spinner.css',
-    'extjs/ux/css/RowEditor.css',
-
-    'libs/growl/css/ext/ux/Growl.css',
-    filters=('cssrewrite', 'cssmin'), output='assets/treatmentroom.css',)
-
 
 register('css_registry', css_registry)
 register('css_ext', css_ext)
 register('css_examination', css_examination)
-register('css_oldexam', css_oldexam)
 register('css_auth', css_auth)
 register('css_calendar', css_calendar)
 register('css_helpdesk', css_helpdesk)
 register('css_laboratory', css_laboratory)
 register('css_reporting', css_reporting)
 register('css_barcoding', css_reporting)
-register('css_service', css_service)
 register('css_testing', css_testing)
-register('css_treatmentroom', css_treatmentroom)

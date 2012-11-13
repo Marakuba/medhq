@@ -5,7 +5,7 @@ App.ReferralGrid = Ext.extend(Ext.grid.GridPanel, {
 	initComponent : function() {
 
 		this.proxy = new Ext.data.HttpProxy({
-		    url: App.getApiUrl('visit', 'referral')
+		    url: App.utils.getApiUrl('visit', 'referral')
 		});
 
 		this.reader = new Ext.data.JsonReader({

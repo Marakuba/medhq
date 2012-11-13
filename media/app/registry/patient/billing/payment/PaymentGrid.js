@@ -6,7 +6,7 @@ App.billing.PaymentGrid = Ext.extend(Ext.grid.GridPanel, {
 
 		this.store = new Ext.data.RESTStore({
 			autoLoad:false,
-		    apiUrl : App.getApiUrl('billing','payment'),
+		    apiUrl : App.utils.getApiUrl('billing','payment'),
 		    model: App.models.paymentModel
 		});
 
@@ -166,8 +166,8 @@ App.billing.PaymentGrid = Ext.extend(Ext.grid.GridPanel, {
 
 		Ext.apply(this, Ext.apply(this.initialConfig, config));
 		App.billing.PaymentGrid.superclass.initComponent.apply(this, arguments);
-		App.eventManager.on('paymentsave', this.onPaymentSave, this);
-		App.eventManager.on('globalsearch', this.onGlobalSearch, this);
+		WebApp.on('paymentsave', this.onPaymentSave, this);
+		WebApp.on('globalsearch', this.onGlobalSearch, this);
 
 
 		this.on('afterrender', function(){
@@ -185,8 +185,8 @@ App.billing.PaymentGrid = Ext.extend(Ext.grid.GridPanel, {
 		}, this);
 
 		this.on('destroy', function(){
-		    App.eventManager.un('paymentsave', this.onPaymentSave, this);
-		    App.eventManager.un('globalsearch', this.onGlobalSearch, this);
+		    WebApp.un('paymentsave', this.onPaymentSave, this);
+		    WebApp.un('globalsearch', this.onGlobalSearch, this);
 		},this);
 	},
 
@@ -255,7 +255,7 @@ App.billing.PaymentGrid = Ext.extend(Ext.grid.GridPanel, {
 
 	onPaymentSave: function(record){
 		if (this.hasPatient){
-			App.eventManager.fireEvent('patientcardupdate',this.patientId)
+			WebApp.fireEvent('patientcardupdate',this.patientId)
 		}
 		if (this.store) {
 			this.store.load();

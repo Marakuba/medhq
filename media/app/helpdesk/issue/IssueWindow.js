@@ -38,7 +38,7 @@ App.issue.IssueWindow = Ext.extend(Ext.Window, {
 		}
 		Ext.apply(this, Ext.apply(this.initialConfig, config));
 		App.issue.IssueWindow.superclass.initComponent.apply(this, arguments);
-//		App.eventManager.on('companycreate', this.onCompanyCreate, this);
+//		WebApp.on('companycreate', this.onCompanyCreate, this);
 	},
 	
 	onFormSave: function() {

@@ -8,7 +8,7 @@ App.patient.LabGrid = Ext.extend(Ext.grid.GridPanel, {
 
 		// Create a standard HttpProxy instance.
 		this.proxy = new Ext.data.HttpProxy({
-		    url: App.getApiUrl('lab','laborder')
+		    url: App.utils.getApiUrl('lab','laborder')
 		});
 
 		// Typical JsonReader.  Notice additional meta-data params for defining the core attributes of your json-response
@@ -141,7 +141,7 @@ App.patient.LabGrid = Ext.extend(Ext.grid.GridPanel, {
 		Ext.apply(this, Ext.apply(this.initialConfig, config));
 		App.patient.LabGrid.superclass.initComponent.apply(this, arguments);
 		this.ownerCt.on('patientselect', this.setActivePatient, this);
-		//App.eventManager.on('patientselect', this.onPatientSelect, this);
+		//WebApp.on('patientselect', this.onPatientSelect, this);
 	},
 
 	applyRowClass : function(record, index){

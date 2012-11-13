@@ -11,7 +11,7 @@ App.examination.PreorderInlineGrid = Ext.extend(Ext.grid.EditorGridPanel, {
 		this.expiration = today.add(Date.DAY,30)
 
 		this.proxy = new Ext.data.HttpProxy({
-		    url: App.getApiUrl('scheduler','extpreorder')
+		    url: App.utils.getApiUrl('scheduler','extpreorder')
 		});
 
 		this.reader = new Ext.data.JsonReader({
@@ -55,7 +55,7 @@ App.examination.PreorderInlineGrid = Ext.extend(Ext.grid.EditorGridPanel, {
 		this.serviceStore = new Ext.data.Store({
 			autoDestroy:true,
 			proxy: new Ext.data.HttpProxy({
-			    url: App.getApiUrl('service','extendedservice'),
+			    url: App.utils.getApiUrl('service','extendedservice'),
 				method:'GET'
 			}),
 			reader: new Ext.data.JsonReader({
@@ -173,9 +173,9 @@ App.examination.PreorderInlineGrid = Ext.extend(Ext.grid.EditorGridPanel, {
 
 		Ext.apply(this, Ext.apply(this.initialConfig, config));
 		App.examination.PreorderInlineGrid.superclass.initComponent.apply(this, arguments);
-		App.eventManager.on('assignmentcreate', this.onAssignmentCreate, this);
+		WebApp.on('assignmentcreate', this.onAssignmentCreate, this);
 		this.on('destroy', function(){
-			App.eventManager.un('assignmentcreate', this.onAssignmentCreate, this);
+			WebApp.un('assignmentcreate', this.onAssignmentCreate, this);
 		},this);
 	},
 
@@ -220,13 +220,13 @@ App.examination.PreorderInlineGrid = Ext.extend(Ext.grid.EditorGridPanel, {
 		var state = this.getPlace(id);
 		//Если направление создается из карты осмотра
 		if (this.cardId){
-			var card_resource = App.getApiUrl('examination','card') + '/' + this.cardId;
+			var card_resource = App.utils.getApiUrl('examination','card') + '/' + this.cardId;
 		};
 		var s = new Preorder({
-			service:App.getApiUrl('service','extendedservice')+'/'+id,
+			service:App.utils.getApiUrl('service','extendedservice')+'/'+id,
 			service_name:text,
-			promotion: attrs.promotion ? App.getApiUrl('promotion','promotion')+'/'+attrs.promotion : '',
-			patient:App.getApiUrl('patient','patient')+'/'+this.patientId,
+			promotion: attrs.promotion ? App.utils.getApiUrl('promotion','promotion')+'/'+attrs.promotion : '',
+			patient:App.utils.getApiUrl('patient','patient')+'/'+this.patientId,
 			price:attrs.price || null,
 			execution_place : state,
 			expiration: this.expiration,
@@ -245,7 +245,7 @@ App.examination.PreorderInlineGrid = Ext.extend(Ext.grid.EditorGridPanel, {
 			var id = attrs.id;
 			var has_record = false;
 			this.store.each(function(rec){
-				var serv_id = App.uriToId(rec.data.service);
+				var serv_id = App.utils.uriToId(rec.data.service);
                 if (serv_id == id) {
                 	rec.data.count += (attrs.c || 1);
                 	has_record = true;

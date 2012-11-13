@@ -7,7 +7,7 @@ App.invoice.InvoiceTab = Ext.extend(Ext.Panel, {
 		this.store = this.store || new Ext.data.RESTStore({
 			autoLoad : true,
 			autoSave:true,
-			apiUrl : App.getApiUrl('lab', 'invoice'),
+			apiUrl : App.utils.getApiUrl('lab', 'invoice'),
 			model: App.models.Invoice
 		});
 
@@ -112,13 +112,13 @@ App.invoice.InvoiceTab = Ext.extend(Ext.Panel, {
 	},
 
 	close: function() {
-		App.eventManager.fireEvent('closeapp',this.id);
-		App.eventManager.fireEvent('invoiceclose');
+		WebApp.fireEvent('closeapp',this.id);
+		WebApp.fireEvent('invoiceclose');
 	},
 
 	onStoreWrite: function(store, action, result, res, rs) {
 		if(action=='create') {
-			App.eventManager.fireEvent('invoicecreate',rs);
+			WebApp.fireEvent('invoicecreate',rs);
 		}
 		this.record = rs;
 		this.popStep();

@@ -28,7 +28,7 @@ App.patient.ClientAccountGrid = Ext.extend(Ext.grid.GridPanel, {
 			},
 		    restful: true,
 		    proxy: new Ext.data.HttpProxy({
-			    url: App.getApiUrl('billing','clientaccount')
+			    url: App.utils.getApiUrl('billing','clientaccount')
 			}),
 		    reader: new Ext.data.JsonReader({
 			    totalProperty: 'meta.total_count',
@@ -60,7 +60,7 @@ App.patient.ClientAccountGrid = Ext.extend(Ext.grid.GridPanel, {
 
 		if (this.record && this.record.data.client_item) {
 			try {
-				var client_item_id = App.uriToId(this.record.data.client_item);
+				var client_item_id = App.utils.uriToId(this.record.data.client_item);
 				this.store.setBaseParam('client_item',client_item_id);
 				this.store.load();
 			} catch(e) {
@@ -123,7 +123,7 @@ App.patient.ClientAccountGrid = Ext.extend(Ext.grid.GridPanel, {
 
 		Ext.apply(this, Ext.apply(this.initialConfig, config));
 		App.patient.ClientAccountGrid.superclass.initComponent.apply(this, arguments);
-		//App.eventManager.on('globalsearch', this.onGlobalSearch, this);
+		//WebApp.on('globalsearch', this.onGlobalSearch, this);
 	},
 
 	onGlobalSearch: function(v) {
@@ -159,7 +159,7 @@ App.patient.ClientAccountGrid = Ext.extend(Ext.grid.GridPanel, {
 				this.backend.saveRecord(record);
 			}
 		};
-        App.eventManager.fireEvent('openform','clientaccountcreate',data)*/
+        WebApp.fireEvent('openform','clientaccountcreate',data)*/
 	},
 
 	onChange: function(rowindex){
@@ -174,7 +174,7 @@ App.patient.ClientAccountGrid = Ext.extend(Ext.grid.GridPanel, {
     				this.backend.saveRecord(record);
     			}
     		};
-        App.eventManager.fireEvent('openform','clientaccountcreate',data)
+        WebApp.fireEvent('openform','clientaccountcreate',data)
 		}*/
 	},
 

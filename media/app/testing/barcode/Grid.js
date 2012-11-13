@@ -7,7 +7,7 @@ App.barcode.Grid = Ext.extend(Ext.grid.EditorGridPanel, {
 	initComponent : function() {
 
 		this.proxy = new Ext.data.HttpProxy({
-		    url: App.getApiUrl('lab','sampling')
+		    url: App.utils.getApiUrl('lab','sampling')
 		});
 
 		this.reader = new Ext.data.JsonReader({

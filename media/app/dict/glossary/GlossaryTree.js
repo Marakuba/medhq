@@ -28,7 +28,7 @@ App.dict.GlossaryTree = Ext.extend(Ext.tree.TreePanel, {
                 split:true,
                 loader: new Ext.tree.TreeLoader({
                 	nodeParameter:'parent',
-                	dataUrl: App.getApiUrl('examination','glossary'),
+                	dataUrl: App.utils.getApiUrl('examination','glossary'),
                 	requestMethod:'GET',
                 	processResponse : function(response, node, callback, scope){
 				        var json = response.responseText;

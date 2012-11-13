@@ -11,7 +11,7 @@ Ext.calendar.PreorderedServiceInlineGrid = Ext.extend(Ext.grid.EditorGridPanel, 
 		this.deletedRecords = [];
 
 		this.proxy = new Ext.data.HttpProxy({
-		    url: App.getApiUrl('preorderedservice')
+		    url: App.utils.getApiUrl('preorderedservice')
 		});
 
 		this.reader = new Ext.data.JsonReader({
@@ -125,9 +125,9 @@ Ext.calendar.PreorderedServiceInlineGrid = Ext.extend(Ext.grid.EditorGridPanel, 
 
 		Ext.apply(this, Ext.apply(this.initialConfig, config));
 		Ext.calendar.PreorderedServiceInlineGrid.superclass.initComponent.apply(this, arguments);
-		App.eventManager.on('preordercreate', this.onPreorderCreate, this);
+		WebApp.on('preordercreate', this.onPreorderCreate, this);
 		this.on('destroy', function(){
-			App.eventManager.un('preordercreate', this.onPreorderCreate, this);
+			WebApp.un('preordercreate', this.onPreorderCreate, this);
 		},this);
 	},
 
@@ -149,10 +149,10 @@ Ext.calendar.PreorderedServiceInlineGrid = Ext.extend(Ext.grid.EditorGridPanel, 
 		var place = ids[1];
 		var Service = this.store.recordType;
 		var s = new Service({
-			service: App.getApiUrl('service', 'baseservice', id),
+			service: App.utils.getApiUrl('service', 'baseservice', id),
 			service_name:text,
 			count:1,
-			execution_place: App.getApiUrl('state', 'state', place)
+			execution_place: App.utils.getApiUrl('state', 'state', place)
 		});
 		this.stopEditing();
 		this.store.add(s);

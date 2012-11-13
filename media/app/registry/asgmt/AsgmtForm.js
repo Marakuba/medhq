@@ -13,7 +13,7 @@ App.assignment.AsgmtForm = Ext.extend(Ext.FormPanel, {
 					    encode: false,
 					    writeAllFields: false
 					}),
-			apiUrl : App.getApiUrl('scheduler','extpreorder'),
+			apiUrl : App.utils.getApiUrl('scheduler','extpreorder'),
 			model: App.models.preorderModel,
 		    doTransaction : function(action, rs, batch) {
 		        function transaction(records) {
@@ -194,7 +194,7 @@ App.assignment.AsgmtForm = Ext.extend(Ext.FormPanel, {
     	});
     	var today = new Date();
     	this.preorderGrid.store.setBaseParam('timeslot__start__gte',today.format('Y-m-d 00:00'));
-    	this.preorderGrid.store.setBaseParam('patient',App.uriToId(this.patientRecord.data.resource_uri));
+    	this.preorderGrid.store.setBaseParam('patient',App.utils.uriToId(this.patientRecord.data.resource_uri));
        	this.preorderWindow.show();
 	},
 
@@ -205,9 +205,9 @@ App.assignment.AsgmtForm = Ext.extend(Ext.FormPanel, {
 		p.set('price',record.data.price);
 		p.set('staff_name',record.data.staff_name);
 		p.set('service_name',record.data.service_name);
-		p.set('service',App.getApiUrl('service','baseservice',record.data.base_service));
-		p.set('staff',App.getApiUrl('staff','position',record.data.staff));
-		p.set('execution_place',App.getApiUrl('state','state',record.data.execution_place));
+		p.set('service',App.utils.getApiUrl('service','baseservice',record.data.base_service));
+		p.set('staff',App.utils.getApiUrl('staff','position',record.data.staff));
+		p.set('execution_place',App.utils.getApiUrl('state','state',record.data.execution_place));
 		p.set('count',1);
 		p.data['id'] = '';
 		p.beginEdit();

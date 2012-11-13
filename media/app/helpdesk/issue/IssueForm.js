@@ -14,7 +14,7 @@ App.issue.IssueForm = Ext.extend(Ext.form.FormPanel, {
 			},
 			items:[{
 				xtype:'lazycombobox',
-				proxyUrl:App.getApiUrl('helpdesk','issuetype'),
+				proxyUrl:App.utils.getApiUrl('helpdesk','issuetype'),
 				fieldLabel:'Категория',
 				name:'type',
 				anchor:'50%'

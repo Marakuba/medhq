@@ -8,7 +8,7 @@ App.billing.PaymentForm = Ext.extend(Ext.form.FormPanel, {
     initComponent: function(){
 
         this.store = new Ext.data.RESTStore({
-            apiUrl : App.getApiUrl('billing','payment'),
+            apiUrl : App.utils.getApiUrl('billing','payment'),
             baseParams:{
                 format:'json'
             },
@@ -18,7 +18,7 @@ App.billing.PaymentForm = Ext.extend(Ext.form.FormPanel, {
         this.cl_acc_store = new Ext.data.JsonStore({
             autoLoad:false,
             proxy: new Ext.data.HttpProxy({
-                url:App.getApiUrl('billing','clientaccount'),
+                url:App.utils.getApiUrl('billing','clientaccount'),
                 method:'GET'
             }),
             root:'objects',
@@ -36,7 +36,7 @@ App.billing.PaymentForm = Ext.extend(Ext.form.FormPanel, {
         this.patient_store = new Ext.data.JsonStore({
             autoLoad:false,
             proxy: new Ext.data.HttpProxy({
-                url:App.getApiUrl('patient','patient'),
+                url:App.utils.getApiUrl('patient','patient'),
                 method:'GET'
             }),
             root:'objects',
@@ -65,7 +65,7 @@ App.billing.PaymentForm = Ext.extend(Ext.form.FormPanel, {
             {
                 scope:this,
                 'select':function(combo, record, index){
-                    var client_id = App.uriToId(record.data.resource_uri);
+                    var client_id = App.utils.uriToId(record.data.resource_uri);
                     this.cl_accCmb.store.setBaseParam('client_item__client',client_id);
                     this.cl_accCmb.store.load({callback:this.setAccount,scope:this});
                     this.cl_accCmb.enable();
@@ -219,14 +219,14 @@ App.billing.PaymentForm = Ext.extend(Ext.form.FormPanel, {
         }
         Ext.apply(this, Ext.apply(this.initialConfig, config));
         App.billing.PaymentForm.superclass.initComponent.apply(this, arguments);
-//        App.eventManager.on('paymentcreate', this.onPmCreate, this);
-        //App.eventManager.on('accountcreate', this.onAccountCreate, this);
-        //App.eventManager.on('clientaccountcreate', this.onClientAccountCreate, this);
+//        WebApp.on('paymentcreate', this.onPmCreate, this);
+        //WebApp.on('accountcreate', this.onAccountCreate, this);
+        //WebApp.on('clientaccountcreate', this.onClientAccountCreate, this);
 
 //        this.store.on('write', this.onStoreWrite, this);
 //        this.on('destroy', function(){
 //            this.store.un('write', this.onStoreWrite, this);
-////            App.eventManager.un('paymentcreate', this.onPmCreate, this);
+////            WebApp.un('paymentcreate', this.onPmCreate, this);
 //        },this);
 
 
@@ -243,7 +243,7 @@ App.billing.PaymentForm = Ext.extend(Ext.form.FormPanel, {
             }
             if(this.record) {
                 this.getForm().loadRecord(this.record);
-                var patient = App.getApiUrl('patient','patient') + '/' + this.record.data.client
+                var patient = App.utils.getApiUrl('patient','patient') + '/' + this.record.data.client
                 this.clientCmb.setValue(patient);
                 this.clientCmb.originalValue = patient;
             }
@@ -333,7 +333,7 @@ App.billing.PaymentForm = Ext.extend(Ext.form.FormPanel, {
     },
 
     onStoreWrite: function(store, action, result, res, rs) {
-//        App.eventManager.fireEvent('paymentsave',rs);
+//        WebApp.fireEvent('paymentsave',rs);
         this.record = rs;
     },
 

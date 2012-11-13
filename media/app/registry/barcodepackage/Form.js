@@ -6,7 +6,7 @@ App.barcodepackage.Form = Ext.extend(Ext.form.FormPanel, {
 		this.labStore = new Ext.data.JsonStore({
 			autoLoad:false,
 			proxy: new Ext.data.HttpProxy({
-				url: App.getApiUrl('state', 'state'),
+				url: App.utils.getApiUrl('state', 'state'),
 				method:'GET'
 			}),
 			root:'objects',

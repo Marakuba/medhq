@@ -9,7 +9,7 @@ App.visit.VisitGrid = Ext.extend(Ext.grid.GridPanel, {
 	initComponent : function() {
 
 		this.proxy = new Ext.data.HttpProxy({
-		    url: App.getApiUrl('visit','visit')
+		    url: App.utils.getApiUrl('visit','visit')
 		});
 
 		this.reader = new Ext.data.JsonReader({
@@ -272,10 +272,10 @@ App.visit.VisitGrid = Ext.extend(Ext.grid.GridPanel, {
 
 		Ext.apply(this, Ext.apply(this.initialConfig, config));
 		App.visit.VisitGrid.superclass.initComponent.apply(this, arguments);
-		App.eventManager.on('globalsearch', this.onGlobalSearch, this);
+		WebApp.on('globalsearch', this.onGlobalSearch, this);
 
 		this.on('destroy', function(){
-		    App.eventManager.un('globalsearch', this.onGlobalSearch, this);
+		    WebApp.un('globalsearch', this.onGlobalSearch, this);
 		},this);
 
 		this.on('render',function(){
@@ -291,7 +291,7 @@ App.visit.VisitGrid = Ext.extend(Ext.grid.GridPanel, {
 	initToolbar: function(){
 		// laboratory
 		Ext.Ajax.request({
-			url:App.getApiUrl('state','medstate'),
+			url:App.utils.getApiUrl('state','medstate'),
 			method:'GET',
 			success:function(resp, opts) {
 				this.ttb.add({

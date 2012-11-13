@@ -95,7 +95,7 @@ App.visit.VisitForm = Ext.extend(Ext.FormPanel, {
 
         this.contractTypeStore = new Ext.data.RESTStore({
             autoLoad : false,
-            apiUrl : App.getApiUrl('patient','contracttype'),
+            apiUrl : App.utils.getApiUrl('patient','contracttype'),
             model: App.models.contractTypeModel
         }),
 
@@ -106,7 +106,7 @@ App.visit.VisitForm = Ext.extend(Ext.FormPanel, {
                         encode: false,
                         writeAllFields: false
                     }),
-            apiUrl : App.getApiUrl('scheduler','extpreorder'),
+            apiUrl : App.utils.getApiUrl('scheduler','extpreorder'),
             model: App.models.preorderModel,
             doTransaction : function(action, rs, batch) {
                 function transaction(records) {
@@ -174,7 +174,7 @@ App.visit.VisitForm = Ext.extend(Ext.FormPanel, {
             emptyText:'Выберите полис',
             store:new Ext.data.JsonStore({
                 proxy: new Ext.data.HttpProxy({
-                    url:App.getApiUrl('patient','insurance_policy'),
+                    url:App.utils.getApiUrl('patient','insurance_policy'),
                     method:'GET'
                 }),
                 root:'objects',
@@ -250,7 +250,7 @@ App.visit.VisitForm = Ext.extend(Ext.FormPanel, {
             store:new Ext.data.JsonStore({
                 autoSave:true,
                 proxy: new Ext.data.HttpProxy({
-                    url:App.getApiUrl('patient','contract'),
+                    url:App.utils.getApiUrl('patient','contract'),
                     method:'GET'
                 }),
                 root:'objects',
@@ -289,14 +289,14 @@ App.visit.VisitForm = Ext.extend(Ext.FormPanel, {
                 minChars:3,
                 hidden:(App.settings.strictMode && this.types==='material'),
                 emptyText:'Выберите плательщика...',
-                proxyUrl:App.getApiUrl('state','state'),
-                value:App.settings.strictMode ? App.getApiUrl('state','state',active_state_id) : '',
+                proxyUrl:App.utils.getApiUrl('state','state'),
+                value:App.settings.strictMode ? App.utils.getApiUrl('state','state',active_state_id) : '',
                 listeners:{
                     select:function(combo,record){
                         var sp = this.servicePanel;
-                        sp.getLoader().baseParams['payer'] = App.uriToId(record.data.resource_uri);
+                        sp.getLoader().baseParams['payer'] = App.utils.uriToId(record.data.resource_uri);
                         sp.getLoader().load(sp.getRootNode());
-                        this.rePrice('б',App.uriToId(record.data.resource_uri));
+                        this.rePrice('б',App.utils.uriToId(record.data.resource_uri));
                     },
                     scope:this
                 }
@@ -312,16 +312,16 @@ App.visit.VisitForm = Ext.extend(Ext.FormPanel, {
                 minChars:3,
                 hidden:(App.settings.strictMode && this.types==='material'),
                 emptyText:'Выберите плательщика...',
-                proxyUrl:App.getApiUrl('state','state'),
-                value:App.settings.strictMode ? App.getApiUrl('state','state',active_state_id) : '',
+                proxyUrl:App.utils.getApiUrl('state','state'),
+                value:App.settings.strictMode ? App.utils.getApiUrl('state','state',active_state_id) : '',
                 listeners:{
                     select:function(combo,record){
                         var sp = this.servicePanel;
-                        sp.getLoader().baseParams['payer'] = App.uriToId(record.data.resource_uri);
+                        sp.getLoader().baseParams['payer'] = App.utils.uriToId(record.data.resource_uri);
                         sp.getLoader().baseParams['payment_type'] = 'к'; // корпоративный
                         sp.getLoader().load(sp.getRootNode());
                         this.paymentTypeField.setValue('к');
-                        this.rePrice('к',App.uriToId(record.data.resource_uri));
+                        this.rePrice('к',App.utils.uriToId(record.data.resource_uri));
                     },
                     clearclick:function(combo,record){
                         var sp = this.servicePanel;
@@ -362,11 +362,11 @@ App.visit.VisitForm = Ext.extend(Ext.FormPanel, {
             fieldLabel:'Скидка',
             anchor:'100%',
             name:'discount',
-            proxyUrl:App.getApiUrl('pricelist','discount'),
+            proxyUrl:App.utils.getApiUrl('pricelist','discount'),
             listeners:{
                 select: function(){
                     this.orderedService.onSumChange();
-//                  App.eventManager.fireEvent('sumchange');
+//                  WebApp.fireEvent('sumchange');
                 },
                 scope:this
             }
@@ -387,7 +387,7 @@ App.visit.VisitForm = Ext.extend(Ext.FormPanel, {
             fieldLabel:'Кто направил',
             emptyText:'Выберите направившего врача...',
             name:'referral',
-            proxyUrl:App.getApiUrl('visit', 'referral'),
+            proxyUrl:App.utils.getApiUrl('visit', 'referral'),
             tooltip:'Врач, который направил пациента'
         });
 
@@ -898,7 +898,7 @@ App.visit.VisitForm = Ext.extend(Ext.FormPanel, {
                     var dsc = this.discountCmb;
                     dsc.getStore().load({
                         callback:function(){
-                            var r = dsc.findRecord(dsc.valueField,App.getApiUrl('pricelist','discount', discount));
+                            var r = dsc.findRecord(dsc.valueField,App.utils.getApiUrl('pricelist','discount', discount));
                             if(r) {
                                 dsc.setValue(r.data.resource_uri);
                                 this.orderedService.onSumChange();
@@ -1026,7 +1026,7 @@ App.visit.VisitForm = Ext.extend(Ext.FormPanel, {
                 var dsc = this.discountCmb;
                 dsc.getStore().load({
                     callback:function(){
-                        var r = dsc.findRecord(dsc.valueField,App.getApiUrl('pricelist','discount', a.discount));
+                        var r = dsc.findRecord(dsc.valueField,App.utils.getApiUrl('pricelist','discount', a.discount));
                         if(r) {
                             dsc.setValue(r.data.resource_uri);
                             this.orderedService.onSumChange();
@@ -1052,7 +1052,7 @@ App.visit.VisitForm = Ext.extend(Ext.FormPanel, {
         //собираем уже выбранные предзаказы, чтобы в окне их уже не показывать
         var preorderList = []
         this.orderedService.store.each(function(record){
-            if (record.data.preorder) preorderList.push(App.uriToId(record.data.preorder));
+            if (record.data.preorder) preorderList.push(App.utils.uriToId(record.data.preorder));
         });
 
         this.preorderGrid = new App.registry.PatientPreorderGrid({
@@ -1077,7 +1077,7 @@ App.visit.VisitForm = Ext.extend(Ext.FormPanel, {
         today.setSeconds(0);
 //      this.preorderGrid.store.setBaseParam('timeslot__start__gte',today.format('Y-m-d 00:00'));
         this.preorderGrid.store.setBaseParam('visit__isnull',true);
-        this.preorderGrid.store.setBaseParam('patient',App.uriToId(this.patientRecord.data.resource_uri));
+        this.preorderGrid.store.setBaseParam('patient',App.utils.uriToId(this.patientRecord.data.resource_uri));
         this.preorderGrid.store.on('load',function(store,records){
             store.filterBy(function(record,id){
                 in_array = false;
@@ -1102,12 +1102,12 @@ App.visit.VisitForm = Ext.extend(Ext.FormPanel, {
         p.set('price',record.data.price);
         p.set('assigment',record.data.resource_uri);
         p.set('service_name',record.data.service_name);
-        p.set('service',App.getApiUrl('service','baseservice',record.data.base_service));
+        p.set('service',App.utils.getApiUrl('service','baseservice',record.data.base_service));
         if (record.data.staff){
-            p.set('staff',App.getApiUrl('staff','position',record.data.staff));
+            p.set('staff',App.utils.getApiUrl('staff','position',record.data.staff));
             p.set('staff_name',record.data.staff_name);
         }
-        p.set('execution_place',App.getApiUrl('state','state',record.data.execution_place));
+        p.set('execution_place',App.utils.getApiUrl('state','state',record.data.execution_place));
         p.set('count',1);
         p.data['id'] = '';
         p.endEdit();
@@ -1176,8 +1176,8 @@ App.visit.VisitForm = Ext.extend(Ext.FormPanel, {
         Ext.each(base_services,function(rec){
             if(!rec.data.preorder) { 
                 var id = []
-                id[0] = App.uriToId(rec.data.service);
-                id[1] = App.uriToId(rec.data.execution_place);
+                id[0] = App.utils.uriToId(rec.data.service);
+                id[1] = App.utils.uriToId(rec.data.execution_place);
                 var comp_id = String.format('{0}_{1}',id[0],id[1])
                 bs_ids[comp_id] = {
                     'price': rec.data.price,
@@ -1201,7 +1201,7 @@ App.visit.VisitForm = Ext.extend(Ext.FormPanel, {
             for (serv in bs_ids){
                 var id = bs_ids[serv].id;
                 var comp_id = bs_ids[serv].comp_id;
-                var service = App.getApiUrl('service','baseservice',id)
+                var service = App.utils.getApiUrl('service','baseservice',id)
                 ind = store.find("service",service);
                 if (new_prices[comp_id]==undefined || new_prices[comp_id] == 0){
                     if (ind > -1){
@@ -1305,7 +1305,7 @@ App.visit.VisitForm = Ext.extend(Ext.FormPanel, {
             this.paymentTypeGroup.disable();
             this.onPaymentTypeChoice(this.record.data.payment_type);
             if (this.record.data.payer){
-                this.reloadTree(this.record.data.payment_type,App.uriToId(this.record.data.payer));
+                this.reloadTree(this.record.data.payment_type,App.utils.uriToId(this.record.data.payer));
             }
             this.payerCmb.disable();
             this.bioPayerCmb.disable();
@@ -1431,12 +1431,12 @@ App.visit.VisitForm = Ext.extend(Ext.FormPanel, {
         var payer = actionItem['payer'];
         var biopayer = actionItem['biopayer'];
         if (payer) {
-            var payer_id = App.uriToId(payer);
+            var payer_id = App.utils.uriToId(payer);
         } else {
             payer_id = undefined
         }
         if (biopayer) {
-            var biopayer_id = App.uriToId(biopayer);
+            var biopayer_id = App.utils.uriToId(biopayer);
         } else {
             biopayer_id = undefined
         }
@@ -1614,7 +1614,7 @@ App.visit.VisitForm = Ext.extend(Ext.FormPanel, {
 
     contractPrint: function(){
         var id = this.contractCmb.getValue();
-        id = App.uriToId(id);
+        id = App.utils.uriToId(id);
         var url = String.format('/patient/contract/{0}/', id);
         window.open(url);
     },
@@ -1625,7 +1625,7 @@ App.visit.VisitForm = Ext.extend(Ext.FormPanel, {
             App.direct.numeration.getBarcodePayer(value,function(res,e) {
                 if(res && res.success) {
                     var payer_id = res.data['payer_id'];
-                    var payer_uri = App.getApiUrl('state','state',payer_id)
+                    var payer_uri = App.utils.getApiUrl('state','state',payer_id)
                     this.bioPayerCmb.forceValue(payer_uri);
                     //обновляются услуги
                     var sp = this.servicePanel;
@@ -1638,7 +1638,7 @@ App.visit.VisitForm = Ext.extend(Ext.FormPanel, {
                     this.barcodeId.setVisible(true);
                     this.barcodeId.setValue('Штрих-код:  '+res.data['barcode_id']);
                     this.doLayout();
-                    this.barcodeField.setValue(App.getApiUrl('numeration','barcode',res.data['barcode_id']));
+                    this.barcodeField.setValue(App.utils.getApiUrl('numeration','barcode',res.data['barcode_id']));
                     this.barcodeWin.close();
                 } else {
                     Ext.Msg.alert('Ошибка!',res.data);

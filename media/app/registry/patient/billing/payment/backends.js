@@ -15,7 +15,7 @@ App.regBackend('payment', new App.Backend({
 			},
 		    restful: true,
 		    proxy: new Ext.data.HttpProxy({
-			    url: App.getApiUrl('billing','payment')
+			    url: App.utils.getApiUrl('billing','payment')
 			}),
 		    reader: new Ext.data.JsonReader({
 			    totalProperty: 'meta.total_count',
@@ -57,7 +57,7 @@ App.regBackend('payment', new App.Backend({
 		    		console.log(res);
 		    		console.log(rs);
 		    		if(action=='create') {
-			    		App.eventManager.fireEvent('paymentcreate', rs);
+			    		WebApp.fireEvent('paymentcreate', rs);
 		    		}
 		    		//var clientBackend = App.getBackend('client');
 		    		//clientBackend.store.load();

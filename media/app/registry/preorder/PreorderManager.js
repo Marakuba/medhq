@@ -13,14 +13,14 @@ App.registry.PreorderManager = Ext.extend(Ext.TabPanel, {
 		this.medstateStore = this.medstateStore || new Ext.data.RESTStore({
 			autoSave: true,
 			autoLoad : true,
-			apiUrl : App.getApiUrl('state','medstate'),
+			apiUrl : App.utils.getApiUrl('state','medstate'),
 			model: App.models.MedState
 		});
 
 		this.patientStore = new Ext.data.RESTStore({
 			autoLoad : false,
 			autoSave : false,
-			apiUrl : App.getApiUrl('patient','patient'),
+			apiUrl : App.utils.getApiUrl('patient','patient'),
 			model: App.models.patientModel
 		});
 
@@ -103,9 +103,9 @@ App.registry.PreorderManager = Ext.extend(Ext.TabPanel, {
 //			this.assignmentTab.store.load();
 		},this);
 
-		App.eventManager.on('globalsearch', this.onGlobalSearch, this);
+		WebApp.on('globalsearch', this.onGlobalSearch, this);
 		this.on('destroy', function(){
-			App.eventManager.un('globalsearch', this.onGlobalSearch, this);
+			WebApp.un('globalsearch', this.onGlobalSearch, this);
 		},this);
 
 		this.on('beforedestroy',function(){

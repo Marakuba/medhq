@@ -44,7 +44,7 @@ App.laboratory.ResultLoaderApp = Ext.extend(Ext.Panel, {
    		   				valueField:'id',
    		   				store:new Ext.data.RESTStore({
    		   					autoLoad : true,
-   		   					apiUrl : App.getApiUrl('state','medstate'),
+   		   					apiUrl : App.utils.getApiUrl('state','medstate'),
    		   					model: ['id','name']
    		   				}),
    		   			    minChars:2,
@@ -102,7 +102,7 @@ App.laboratory.ResultLoaderApp = Ext.extend(Ext.Panel, {
    		   				valueField:'id',
    		   				store:new Ext.data.RESTStore({
    		   					autoLoad : true,
-   		   					apiUrl : App.getApiUrl('state','medstate'),
+   		   					apiUrl : App.utils.getApiUrl('state','medstate'),
    		   					model: ['id','name']
    		   				}),
    		   			    minChars:2,
@@ -126,7 +126,7 @@ App.laboratory.ResultLoaderApp = Ext.extend(Ext.Panel, {
 			},{
 				text:'Закрыть',
 				handler:function(){
-					App.eventManager.fireEvent('closeapp','lab-result-loader-app')
+					WebApp.fireEvent('closeapp','lab-result-loader-app')
 				},
 				scope:this
 			}]

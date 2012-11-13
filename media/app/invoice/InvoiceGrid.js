@@ -6,7 +6,7 @@ App.invoice.InvoiceGrid = Ext.extend(Ext.grid.GridPanel, {
 
 		this.store = new Ext.data.RESTStore({
 			autoLoad : false,
-			apiUrl : App.getApiUrl('lab','invoice'),
+			apiUrl : App.utils.getApiUrl('lab','invoice'),
 			model: App.models.Invoice
 		});
 
@@ -104,11 +104,11 @@ App.invoice.InvoiceGrid = Ext.extend(Ext.grid.GridPanel, {
 
 		Ext.apply(this, Ext.apply(this.initialConfig, config));
 		App.invoice.InvoiceGrid.superclass.initComponent.apply(this, arguments);
-		App.eventManager.on('invoicecreate', this.onInvoiceCreate, this);
+		WebApp.on('invoicecreate', this.onInvoiceCreate, this);
 		this.store.on('write', this.onStoreWrite, this);
 
 		this.on('destroy', function(){
-		    App.eventManager.un('invoicecreate',this.onInvoiceCreate, this);
+		    WebApp.un('invoicecreate',this.onInvoiceCreate, this);
 		},this);
 	},
 
@@ -148,7 +148,7 @@ App.invoice.InvoiceGrid = Ext.extend(Ext.grid.GridPanel, {
 //			}
 //		});
 //		this.win.show();
-		App.eventManager.fireEvent('launchapp','invoicetab',{
+		WebApp.fireEvent('launchapp','invoicetab',{
 		});
 	},
 
@@ -164,7 +164,7 @@ App.invoice.InvoiceGrid = Ext.extend(Ext.grid.GridPanel, {
 //    			}
 //    		});
 //    		this.win.show();
-			App.eventManager.fireEvent('launchapp','invoicetab',{
+			WebApp.fireEvent('launchapp','invoicetab',{
 				record:record
 			});
 		}

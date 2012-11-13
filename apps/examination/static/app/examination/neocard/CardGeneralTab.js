@@ -24,7 +24,7 @@ App.examination.CardGeneralTab = Ext.extend(Ext.form.FormPanel, {
 			store: new Ext.data.JsonStore({
 				autoLoad:false,
 				proxy: new Ext.data.HttpProxy({
-					url:App.getApiUrl('service','icd10'),
+					url:App.utils.getApiUrl('service','icd10'),
 					method:'GET'
 				}),
 				root:'objects',
@@ -54,7 +54,7 @@ App.examination.CardGeneralTab = Ext.extend(Ext.form.FormPanel, {
 			queryParam : 'staff__last_name__istartswith',
 			store:new Ext.data.RESTStore({
 				autoLoad : true,
-				apiUrl : App.getApiUrl('staff','position'),
+				apiUrl : App.utils.getApiUrl('staff','position'),
 				model: ['id','name','resource_uri']
 			}),
 		    minChars:2,

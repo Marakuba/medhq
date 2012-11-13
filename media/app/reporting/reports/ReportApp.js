@@ -132,7 +132,7 @@ App.reporting.ReportApp = Ext.extend(Ext.Panel, {
 				slug:slug,
 				params:params
 			}
-			App.eventManager.fireEvent('launchapp','printspanel',config)
+			WebApp.fireEvent('launchapp','printspanel',config)
 		}
 		
 		
@@ -157,7 +157,7 @@ App.reporting.ReportApp = Ext.extend(Ext.Panel, {
 			staff:this.staff
 		};
 		
-		App.eventManager.fireEvent('launchapp', 'neocard',config);
+		WebApp.fireEvent('launchapp', 'neocard',config);
 		
 	},
 	

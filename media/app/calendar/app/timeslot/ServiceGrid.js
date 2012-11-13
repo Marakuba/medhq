@@ -7,7 +7,7 @@ App.calendar.ServiceChoiceGrid = Ext.extend(Ext.grid.GridPanel, {
 		this.serviceStore = new Ext.data.RESTStore({
 			autoLoad : false,
 			autoSave: false,
-			apiUrl : App.getApiUrl('service','extendedservice'),
+			apiUrl : App.utils.getApiUrl('service','extendedservice'),
 			model: [
 				    {name: 'id'},
 				    {name: 'resource_uri'},
@@ -145,7 +145,7 @@ App.calendar.ServiceChoiceGrid = Ext.extend(Ext.grid.GridPanel, {
     initToolbar: function(){
 		// laboratory
 		Ext.Ajax.request({
-			url:App.getApiUrl('state', 'medstate'),
+			url:App.utils.getApiUrl('state', 'medstate'),
 			method:'GET',
 			success:function(resp, opts) {
 				this.ttb.add({

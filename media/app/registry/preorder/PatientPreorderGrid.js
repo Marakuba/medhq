@@ -7,7 +7,7 @@ App.registry.PatientPreorderGrid = Ext.extend(Ext.grid.GridPanel, {
 		this.store = this.store || new Ext.data.RESTStore({
 			autoLoad : false,
 			autoSave : false,
-			apiUrl : App.getApiUrl('scheduler','extpreorder'),
+			apiUrl : App.utils.getApiUrl('scheduler','extpreorder'),
 			model: App.models.preorderModel
 		});
 
@@ -93,7 +93,7 @@ App.registry.PatientPreorderGrid = Ext.extend(Ext.grid.GridPanel, {
 
 		Ext.apply(this, Ext.apply(this.initialConfig, config));
 		App.registry.PatientPreorderGrid.superclass.initComponent.apply(this, arguments);
-//		App.eventManager.on('patientwrite', this.onPatientWrite, this);
+//		WebApp.on('patientwrite', this.onPatientWrite, this);
 		this.on('serviceselect', this.onServiceSelect, this);
 		this.on('afterrender', function(){this.store.load()}, this);
 		//this.store.on('write', this.onStoreWrite, this);

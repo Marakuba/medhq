@@ -27,7 +27,7 @@ App.equipment.EquipmentTaskGrid = Ext.extend(Ext.grid.EditorGridPanel, {
 		this.store = new Ext.data.RESTStore({
 			autoLoad : false,
 			autoSave : false,
-			apiUrl : App.getApiUrl('lab', 'equipmenttaskro'),
+			apiUrl : App.utils.getApiUrl('lab', 'equipmenttaskro'),
 			model: this.model
 		});
 
@@ -141,7 +141,7 @@ App.equipment.EquipmentTaskGrid = Ext.extend(Ext.grid.EditorGridPanel, {
 			    store: new Ext.data.JsonStore({
 					autoLoad:true,
 					proxy: new Ext.data.HttpProxy({
-						url:App.getApiUrl('lab', 'equipment'),
+						url:App.utils.getApiUrl('lab', 'equipment'),
 						method:'GET'
 					}),
 					root:'objects',
@@ -192,7 +192,7 @@ App.equipment.EquipmentTaskGrid = Ext.extend(Ext.grid.EditorGridPanel, {
 		Ext.apply(this, Ext.apply(this.initialConfig, config));
 		App.equipment.EquipmentTaskGrid.superclass.initComponent.apply(this, arguments);
 
-		App.eventManager.on('globalsearch', this.onGlobalSearch, this);
+		WebApp.on('globalsearch', this.onGlobalSearch, this);
 
 		this.on('afterrender', function(){
 			if (this.searchValue){
@@ -208,7 +208,7 @@ App.equipment.EquipmentTaskGrid = Ext.extend(Ext.grid.EditorGridPanel, {
 		},this);
 
 		this.on('destroy', function(){
-			App.eventManager.un('globalsearch', this.onGlobalSearch, this);
+			WebApp.un('globalsearch', this.onGlobalSearch, this);
 		},this);
 
 	},

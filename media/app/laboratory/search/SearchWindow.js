@@ -60,7 +60,7 @@ App.laboratory.SearchWindow = Ext.extend(Ext.Window, {
 				valueField:'id',
 				store:new Ext.data.RESTStore({
 					autoLoad : true,
-					apiUrl : App.getApiUrl('state','medstate'),
+					apiUrl : App.utils.getApiUrl('state','medstate'),
 					model: ['id','name']
 				}),
 			    minChars:2,
@@ -77,7 +77,7 @@ App.laboratory.SearchWindow = Ext.extend(Ext.Window, {
 				valueField:'id',
 				store:new Ext.data.RESTStore({
 					autoLoad : true,
-					apiUrl : App.getApiUrl('state','medstate'),
+					apiUrl : App.utils.getApiUrl('state','medstate'),
 					model: ['id','name']
 				}),
 			    minChars:2,
@@ -94,7 +94,7 @@ App.laboratory.SearchWindow = Ext.extend(Ext.Window, {
 				valueField:'id',
 				store:new Ext.data.RESTStore({
 					autoLoad : true,
-					apiUrl : App.getApiUrl('state','medstate'),
+					apiUrl : App.utils.getApiUrl('state','medstate'),
 					model: ['id','name']
 				}),
 			    minChars:2,
@@ -112,7 +112,7 @@ App.laboratory.SearchWindow = Ext.extend(Ext.Window, {
 				displayField:'full_name',
 				store:new Ext.data.RESTStore({
 					autoLoad : true,
-					apiUrl : App.getApiUrl('patient','patient'),
+					apiUrl : App.utils.getApiUrl('patient','patient'),
 					model: ['id','full_name']
 				}),
 			    minChars:2,
@@ -131,7 +131,7 @@ App.laboratory.SearchWindow = Ext.extend(Ext.Window, {
 				queryParam : 'staff__last_name__istartswith',
 				store:new Ext.data.RESTStore({
 					autoLoad : true,
-					apiUrl : App.getApiUrl('staff','position'),
+					apiUrl : App.utils.getApiUrl('staff','position'),
 					model: ['id','name']
 				}),
 			    minChars:2,

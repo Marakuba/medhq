@@ -5,12 +5,12 @@ App.examination.CardGrid = Ext.extend(Ext.grid.EditorGridPanel, {
 	initComponent: function(){
 
 		this.proxy = new Ext.data.HttpProxy({
-        	url: App.getApiUrl('examination','card')
+        	url: App.utils.getApiUrl('examination','card')
         });
 		this.baseParams = Ext.apply({
             format:'json',
             deleted:false,
-            'ordered_service__staff': active_profile
+            'ordered_service__staff': WebApp.active_profile
         },this.baseParams);
 
         this.reader = new Ext.data.JsonReader({
@@ -103,7 +103,7 @@ App.examination.CardGrid = Ext.extend(Ext.grid.EditorGridPanel, {
                 renderer:function(val, meta, record) {
 		    		var p = record.data.executed;
 		    		var flag = p ? 'yes' : 'no';
-		    		var img = "<img src='"+MEDIA_URL+"admin/img/admin/icon-"+flag+".gif'>"
+		    		var img = "<img src='"+WebApp.MEDIA_URL+"admin/img/admin/icon-"+flag+".gif'>"
 		    		return String.format("{0}", img);
 		    	}
             },
@@ -167,10 +167,10 @@ App.examination.CardGrid = Ext.extend(Ext.grid.EditorGridPanel, {
         Ext.apply(this, Ext.apply(this.initialConfig, config));
 	    App.examination.CardGrid.superclass.initComponent.apply(this, arguments);
 
-	    App.eventManager.on('globalsearch', this.onGlobalSearch, this);
+	    WebApp.on('globalsearch', this.onGlobalSearch, this);
 
 		this.on('destroy', function(){
-		    App.eventManager.un('globalsearch', this.onGlobalSearch, this);
+		    WebApp.un('globalsearch', this.onGlobalSearch, this);
 		},this);
 
 		this.on('afterrender', function(){

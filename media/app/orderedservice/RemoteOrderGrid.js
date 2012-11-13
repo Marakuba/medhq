@@ -8,7 +8,7 @@ App.orderedservice.RemoteOrderGrid = Ext.extend(Ext.grid.GridPanel, {
 
 		this.store = new Ext.data.RESTStore({
 			autoLoad : false,
-			apiUrl : App.getApiUrl('visit','laborderedservice'),
+			apiUrl : App.utils.getApiUrl('visit','laborderedservice'),
 			model: [
 			    {name: 'id'},
 			    {name: 'resource_uri'},
@@ -208,12 +208,12 @@ App.orderedservice.RemoteOrderGrid = Ext.extend(Ext.grid.GridPanel, {
 		},this);
 
 		this.on('destroy', function(){
-			App.eventManager.un('globalsearch', this.onGlobalSearch, this);
+			WebApp.un('globalsearch', this.onGlobalSearch, this);
 		},this);
 
 		Ext.apply(this, Ext.apply(this.initialConfig, config));
 		App.orderedservice.RemoteOrderGrid.superclass.initComponent.apply(this, arguments);
-		App.eventManager.on('globalsearch', this.onGlobalSearch, this);
+		WebApp.on('globalsearch', this.onGlobalSearch, this);
 	},
 
 	manageBtn : function(s) {

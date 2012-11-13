@@ -189,14 +189,14 @@ App.CentralPanel = Ext.extend(Ext.Panel, {
 		}
 		Ext.apply(this, Ext.apply(this.initialConfig, config));
 		App.CentralPanel.superclass.initComponent.apply(this, arguments);
-		App.eventManager.on('launchapp', this.launchApp, this);
-		App.eventManager.on('closeapp', this.closeApp, this);
-		App.eventManager.on('globalsearch', this.onGlobalSearch, this);
+		WebApp.on('launchapp', this.launchApp, this);
+		WebApp.on('closeapp', this.closeApp, this);
+		WebApp.on('globalsearch', this.onGlobalSearch, this);
 		
 		this.on('destroy', function(){
-		    App.eventManager.un('launchapp', this.launchApp, this);
-			App.eventManager.un('closeapp', this.closeApp, this); 
-			App.eventManager.un('globalsearch', this.onGlobalSearch, this);
+		    WebApp.un('launchapp', this.launchApp, this);
+			WebApp.un('closeapp', this.closeApp, this); 
+			WebApp.un('globalsearch', this.onGlobalSearch, this);
 		},this);
 	},
 	

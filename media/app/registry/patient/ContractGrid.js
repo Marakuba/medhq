@@ -23,7 +23,7 @@ App.patient.ContractGrid = Ext.extend(Ext.grid.EditorGridPanel, {
 			},
 		    restful: true,
 		    proxy: new Ext.data.HttpProxy({
-			    url: App.getApiUrl('patient','contract')
+			    url: App.utils.getApiUrl('patient','contract')
 			}),
 		    reader: new Ext.data.JsonReader({
 			    totalProperty: 'meta.total_count',
@@ -52,7 +52,7 @@ App.patient.ContractGrid = Ext.extend(Ext.grid.EditorGridPanel, {
 
 		this.contractTypeStore = new Ext.data.RESTStore({
 			autoLoad : false,
-			apiUrl : App.getApiUrl('patient','contracttype'),
+			apiUrl : App.utils.getApiUrl('patient','contracttype'),
 			model: App.models.contractTypeModel
 		})
 
@@ -155,7 +155,7 @@ App.patient.ContractGrid = Ext.extend(Ext.grid.EditorGridPanel, {
 
 		Ext.apply(this, Ext.apply(this.initialConfig, config));
 		App.patient.ContractGrid.superclass.initComponent.apply(this, arguments);
-		App.eventManager.on('patientcreate', this.onPatientCreate, this);
+		WebApp.on('patientcreate', this.onPatientCreate, this);
 
 		this.on('afterrender',function(){
 			if (!this.record) {
@@ -163,7 +163,7 @@ App.patient.ContractGrid = Ext.extend(Ext.grid.EditorGridPanel, {
 			}
 		},this)
 		this.on('destroy', function(){
-			App.eventManager.un('patientcreate', this.onPatientCreate, this);
+			WebApp.un('patientcreate', this.onPatientCreate, this);
 		},this);
 	},
 
@@ -191,7 +191,7 @@ App.patient.ContractGrid = Ext.extend(Ext.grid.EditorGridPanel, {
 		var today  = new Date();
 		var data = this.record ? { patient:this.record.data.resource_uri } : {};
 		data['created'] = today;
-		data['state'] = App.getApiUrl('state','ownstate',state);
+		data['state'] = App.utils.getApiUrl('state','ownstate',state);
 		data['state_name'] = active_state;
 		if (contractTypeRecord){
 			switch(contractTypeRecord.data.type){
@@ -229,7 +229,7 @@ App.patient.ContractGrid = Ext.extend(Ext.grid.EditorGridPanel, {
     				this.backend.saveRecord(record);
     			}
     		};
-        App.eventManager.fireEvent('openform','clientaccountcreate',data)
+        WebApp.fireEvent('openform','clientaccountcreate',data)
 		}*/
 	},
 

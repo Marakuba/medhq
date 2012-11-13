@@ -15,7 +15,7 @@ App.registry.RefundBackend = Ext.extend(App.Backend, {
 		},
 	    restful: true,
 	    proxy: new Ext.data.HttpProxy({
-		    url: App.getApiUrl('visit','refund')
+		    url: App.utils.getApiUrl('visit','refund')
 		}),
 	    reader: new Ext.data.JsonReader({
 		    totalProperty: 'meta.total_count',

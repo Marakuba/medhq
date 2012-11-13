@@ -3,19 +3,19 @@ Ext.ns('App.examination');
 App.examination.StaffTemplates = Ext.extend(Ext.Panel, {
 	initComponent : function() {
 
-		this.staff = App.getApiUrl('staff','staff')+ '/' + active_staff;
+		this.staff = App.utils.getApiUrl('staff', 'staff', WebApp.active_staff);
 
 		this.fieldSetStore = new Ext.data.RESTStore({
 			autoSave: false,
 			autoLoad : true,
-			apiUrl : App.getApiUrl('examination','examfieldset'),
+			apiUrl : App.utils.getApiUrl('examination','examfieldset'),
 			model: App.models.FieldSet
 		});
 
 		this.subSectionStore = new Ext.data.RESTStore({
 			autoSave: false,
 			autoLoad : true,
-			apiUrl : App.getApiUrl('examination','examsubsection'),
+			apiUrl : App.utils.getApiUrl('examination','examsubsection'),
 			model: App.models.SubSection
 		});
 
@@ -122,9 +122,17 @@ App.examination.StaffTemplates = Ext.extend(Ext.Panel, {
 			staff:this.staff
 		};
 
-		App.eventManager.fireEvent('launchapp', 'templateapp',config);
+		WebApp.fireEvent('launchapp', 'templateapp',config);
 
 	}
 });
 
 Ext.reg('stafftemplates', App.examination.StaffTemplates);
+
+App.webapp.actions.add('stafftemplates', new Ext.Action({
+    text: 'Мои шаблоны',
+    scale: 'medium',
+    handler: function(){
+        WebApp.fireEvent('launchapp','stafftemplates');
+    }
+}));

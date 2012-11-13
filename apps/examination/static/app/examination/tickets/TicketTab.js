@@ -262,7 +262,7 @@ App.examination.TicketTab = Ext.extend(Ext.Panel, {
 
 
 	loadData: function(data,quests,sectionPlan){
-		//есть глобальная переменная section_scheme, содержащая все секции
+		//есть глобальная переменная WebApp.section_scheme, содержащая все секции
 		//Проходим по всем тикетам и вставляем их в панель в нужном порядке
 		this.dataLoading = true;
 
@@ -270,10 +270,10 @@ App.examination.TicketTab = Ext.extend(Ext.Panel, {
 
 		Ext.each(data.tickets,function(ticket){
 			var currentSection = ticket.section || 'other'
-			//Каждому тикету присваиваем order из section_scheme, чтобы видеть, куда вставлять новые тикеты
-			ticket['order'] = section_scheme[currentSection] && section_scheme[currentSection]['order'] || 10000
+			//Каждому тикету присваиваем order из WebApp.section_scheme, чтобы видеть, куда вставлять новые тикеты
+			ticket['order'] = WebApp.section_scheme[currentSection] && WebApp.section_scheme[currentSection]['order'] || 10000
 			if (!ticket.title){
-				ticket['title'] = section_scheme[currentSection]['title']
+				ticket['title'] = WebApp.section_scheme[currentSection]['title']
 			};
 			this.addTicket(ticket);
 		},this);
@@ -305,7 +305,7 @@ App.examination.TicketTab = Ext.extend(Ext.Panel, {
 		var insertMethod = ticketConfig['pos'] ? 'pos' : 'order';
 		var currentSection = ticketConfig['section'] || ticketConfig['data']['section'] || 'other';
 		if (!ticketConfig[insertMethod]){
-			ticketConfig[insertMethod] = section_scheme[currentSection] && section_scheme[currentSection][insertMethod]||10000;
+			ticketConfig[insertMethod] = WebApp.section_scheme[currentSection] && WebApp.section_scheme[currentSection][insertMethod]||10000;
 		}
 		var ind = this.getLowInd(insertMethod,ticketConfig[insertMethod]);
 		var newTicket = this.portalColumn.insert(ind+1,ticketConfig);
@@ -361,7 +361,7 @@ App.examination.TicketTab = Ext.extend(Ext.Panel, {
 				expiration: today.add(Date.DAY,30),
 				card:this.record.data.resource_uri || '',
 				count:rec.data.avarage || 1,
-				patient:App.getApiUrl('patient','patient',this.patient)
+				patient:App.utils.getApiUrl('patient','patient',this.patient)
 			});
 			s.add(asgmt);
 		},this);
@@ -442,12 +442,12 @@ App.examination.TicketTab = Ext.extend(Ext.Panel, {
 				},
 				items:[]
 		});
-		for (var section in section_scheme) {
+		for (var section in WebApp.section_scheme) {
 
 			var items = [];
 
-			if (section_scheme[section].items.length){
-				Ext.each(section_scheme[section].items,function(item){
+			if (WebApp.section_scheme[section].items.length){
+				Ext.each(WebApp.section_scheme[section].items,function(item){
 					var ticket_data = {}
 					Ext.apply(ticket_data,item);
 					ticket_data['data'] = item;
@@ -491,7 +491,7 @@ App.examination.TicketTab = Ext.extend(Ext.Panel, {
 			items:[]
 		});
 
-		Ext.each(quests,function(quest){
+		Ext.each(WebApp.quests,function(quest){
 			var questBtn = {
 				text:quest.name,
 				handler:this.questBtnClick.createDelegate(this,[quest]),
@@ -517,7 +517,7 @@ App.examination.TicketTab = Ext.extend(Ext.Panel, {
 		// console.log('Открытие анкеты ',quest.name);
 		//потом этот код сохранится в this.data.questionnaire.code, если анкета будет сохранена
 		this.questCode = quest.code;
-		App.eventManager.fireEvent('launchApp','questionnaireticketeditor',{
+		WebApp.fireEvent('launchApp','questionnaireticketeditor',{
 			title:'Анкета '+quest.name,
 			questName:quest.name,
 			code:Ext.decode(quest.code),
@@ -573,7 +573,7 @@ App.examination.TicketTab = Ext.extend(Ext.Panel, {
 
 	editQuestClick: function(){
 		var quest = this.data.questionnaire;
-		App.eventManager.fireEvent('launchApp','questionnaireticketeditor',{
+		WebApp.fireEvent('launchApp','questionnaireticketeditor',{
 			title:'Анкета '+quest.name,
 			questName:quest.name,
 			data:quest.data,
@@ -600,14 +600,13 @@ App.examination.TicketTab = Ext.extend(Ext.Panel, {
 	},
 
 	loadRequiredTickets: function(){
-		var tickets = required_tickets;
+		var tickets = WebApp.required_tickets;
 		if (!tickets.length){
 			return false
 		} else {
 			for (var i = 0; i < tickets.length; i++){
 				var ticket = {};
 				Ext.apply(ticket,tickets[i]);
-				console.info(ticket);
 				this.addTicket(ticket);
 			}
 		}

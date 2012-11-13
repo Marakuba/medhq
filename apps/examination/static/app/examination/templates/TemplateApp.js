@@ -20,11 +20,11 @@ App.examination.TemplateApp = Ext.extend(Ext.Panel, {
 		this.tplStore = new Ext.data.RESTStore({
 			autoSave: false,
 			autoLoad : false,
-			apiUrl : App.getApiUrl('examination','examtemplate'),
+			apiUrl : App.utils.getApiUrl('examination','examtemplate'),
 			model: App.models.Template,
 			baseParams:{
 				format:'json',
-				staff:active_staff,
+				staff:WebApp.active_staff,
 				deleted:false
 			}
 		});
@@ -45,7 +45,7 @@ App.examination.TemplateApp = Ext.extend(Ext.Panel, {
 			hidden:!!this.tplId,
 			baseParams:{
 				payment_type:'н',
-				staff : active_profile,
+				staff : WebApp.active_profile,
 				nocache : true
 			},
 			hidePrice: true,
@@ -106,7 +106,7 @@ App.examination.TemplateApp = Ext.extend(Ext.Panel, {
 		this.baseServiceId = id;
 
 		this.tplStore.setBaseParam('base_service',id);
-		this.tplStore.setBaseParam('staff',active_staff);
+		this.tplStore.setBaseParam('staff',WebApp.active_staff);
 		this.tplStore.setBaseParam('deleted',false);
 		this.tplStore.load({
 			callback:function(records,opts,success){
@@ -146,11 +146,11 @@ App.examination.TemplateApp = Ext.extend(Ext.Panel, {
 		var emptyData = Ext.encode({'tickets':[]});
 		this.record = new this.tplStore.recordType();
 		this.record.set('data',emptyData);
-		this.record.set('staff',App.getApiUrl('staff','staff',active_staff));
+		this.record.set('staff',App.utils.getApiUrl('staff','staff',WebApp.active_staff));
 		if (this.baseServiceName){
 			this.record.set('name',this.baseServiceName);
 		};
-		this.record.set('base_service',App.getApiUrl('service','baseservice',this.baseServiceId));
+		this.record.set('base_service',App.utils.getApiUrl('service','baseservice',this.baseServiceId));
 		this.tplStore.add(this.record);
 		this.tplStore.save();
 	},
@@ -181,12 +181,12 @@ App.examination.TemplateApp = Ext.extend(Ext.Panel, {
 						Ext.applyIf(this.record.data,source.data);
 						store.baseParams = {
 							format:'json',
-							staff:active_staff,
+							staff:WebApp.active_staff,
 							deleted:false
 						};
 						this.record.set('name',this.baseServiceName);
-						this.record.set('staff',App.getApiUrl('staff','staff',active_staff));
-						this.record.set('base_service',App.getApiUrl('service','baseservice',this.baseServiceId));
+						this.record.set('staff',App.utils.getApiUrl('staff','staff',WebApp.active_staff));
+						this.record.set('base_service',App.utils.getApiUrl('service','baseservice',this.baseServiceId));
 						this.tplStore.add(this.record);
 						this.tplStore.save();
 						this.openEditor(this.record.data.data)
@@ -276,3 +276,12 @@ App.examination.TemplateApp = Ext.extend(Ext.Panel, {
 
 
 Ext.reg('templateapp', App.examination.TemplateApp);
+
+
+App.webapp.actions.add('templateapp', new Ext.Action({
+    text: 'Шаблоны услуг',
+    scale: 'medium',
+    handler: function(){
+        WebApp.fireEvent('launchapp','templateapp');
+    }
+}));

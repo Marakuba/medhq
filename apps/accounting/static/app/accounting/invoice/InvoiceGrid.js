@@ -103,7 +103,7 @@ App.accounting.InvoiceGrid = Ext.extend(Ext.grid.GridPanel, {
 
     onAddInvoice: function(){
         if (this.contract){
-            App.eventManager.fireEvent('launchapp', 'accinvoiceapp', {
+            WebApp.fireEvent('launchapp', 'accinvoiceapp', {
                 contractId: this.contract.data.id,
                 title:'Новый счет',
                 fn:function(record){
@@ -117,7 +117,7 @@ App.accounting.InvoiceGrid = Ext.extend(Ext.grid.GridPanel, {
         var rec = record || this.getSelectionModel().getSelected();
         if(rec){
             var title = String.format('Счет №{0} от {1}', rec.data.number, Ext.util.Format.date(rec.data.on_date));
-            App.eventManager.fireEvent('launchapp', 'accinvoiceapp', {
+            WebApp.fireEvent('launchapp', 'accinvoiceapp', {
                 invoiceId: rec.data.id,
                 title:title,
                 fn:function(record){

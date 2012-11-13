@@ -142,7 +142,7 @@ Ext.onReady(function() {
     
     var newPanel;
     var newTab;
-	App.eventManager.on('visitcreate', function(patientId, type, visitId, patientRecord) {
+	WebApp.on('visitcreate', function(patientId, type, visitId, patientRecord) {
 		newTab = new App.visit.AddTab({
 			id:Ext.id(),
 			closable:true,
@@ -156,14 +156,14 @@ Ext.onReady(function() {
 		mainPanel.setActiveTab(newPanel);
 	});
 	
-	App.eventManager.on('visitclose', function(){
+	WebApp.on('visitclose', function(){
 		mainPanel.remove(newTab, true);
 	});
 
 
     var refundPanel;
     var refundTab;
-	App.eventManager.on('refundcreate', function(patientId, type, refundId, patientRecord) {
+	WebApp.on('refundcreate', function(patientId, type, refundId, patientRecord) {
 		refundTab = new App.refund.AddTab({
 			id:Ext.id(),
 			closable:true,
@@ -177,12 +177,12 @@ Ext.onReady(function() {
 		mainPanel.setActiveTab(refundPanel);
 	});
 	
-	App.eventManager.on('refundclose', function(){
+	WebApp.on('refundclose', function(){
 		mainPanel.remove(refundTab, true);
 	});
 	
 	
-	App.eventManager.on('servicedblclick', function(attrs){
+	WebApp.on('servicedblclick', function(attrs){
 		//tabPanel = Ext.getCmp('main-tab-panel');
 		//if((tab=mainPanel.getItem('visit-add-tab'))){
 		if(newTab) {
@@ -190,22 +190,22 @@ Ext.onReady(function() {
 		}
 	}, this);
     
-	App.eventManager.on('sumchange', function(){
+	WebApp.on('sumchange', function(){
 		if(newTab) {
 			newTab.updateTotalSum();
 		}
 	}, this);
 	
-	App.eventManager.on('visitwrite', function(rs){
+	WebApp.on('visitwrite', function(rs){
 		tabPanel = Ext.getCmp('main-tab-panel');
 		if((tab=tabPanel.getItem('visit-add-form'))){
 			tab.saveBasket(rs.id);
 			tab.setVisitId(rs);
-			App.eventManager.fireEvent('patientselect', rs.data.patient_id);
+			WebApp.fireEvent('patientselect', rs.data.patient_id);
 		}
 	}, this);
 	
-	App.eventManager.on('updatetotalsum', function(c){
+	WebApp.on('updatetotalsum', function(c){
 		tabPanel = Ext.getCmp('main-tab-panel');
 		if((tab=tabPanel.getItem('visit-add-form'))){
 			tab.updateTotalCount(c);
@@ -255,7 +255,7 @@ App.SearchField = Ext.extend(Ext.form.TwinTriggerField, {
 
     onTrigger1Click : function(){
         if(this.hasSearch){
-        	App.eventManager.fireEvent('globalsearch',undefined);
+        	WebApp.fireEvent('globalsearch',undefined);
 			this.el.dom.value = '';
             this.triggers[0].hide();
             this.hasSearch = false;
@@ -269,7 +269,7 @@ App.SearchField = Ext.extend(Ext.form.TwinTriggerField, {
             this.onTrigger1Click();
             return;
         }
-		App.eventManager.fireEvent('globalsearch', v);
+		WebApp.fireEvent('globalsearch', v);
         this.hasSearch = true;
         this.triggers[0].show();
 		this.focus();

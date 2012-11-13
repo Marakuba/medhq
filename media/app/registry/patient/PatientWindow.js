@@ -10,7 +10,7 @@ App.patient.PatientWindow = Ext.extend(Ext.Window, {
 
 		this.store = this.store || new Ext.data.RESTStore({
 			autoLoad : true,
-			apiUrl : App.getApiUrl('patient','patient'),
+			apiUrl : App.utils.getApiUrl('patient','patient'),
 			model: App.models.Patient,
 			listeners:{
 				scope:this,
@@ -119,7 +119,7 @@ App.patient.PatientWindow = Ext.extend(Ext.Window, {
 	onStoreWrite: function(store, action, result, res, rs) {
 		console.log(rs)
 		if(action=='create') {
-			App.eventManager.fireEvent('patientcreate',rs);
+			WebApp.fireEvent('patientcreate',rs);
 		}
 		this.record = rs;
 		this.popStep();
@@ -138,12 +138,12 @@ App.patient.PatientWindow = Ext.extend(Ext.Window, {
 			this.fireEvent('savecomplete');
 			Ext.callback(this.fn, this.scope || window, [this.record]);
 			if(this.inCard) {
-				App.eventManager.fireEvent('launchapp','patientcard',{
+				WebApp.fireEvent('launchapp','patientcard',{
 					record:this.record
 				});
 			}
 			if(this.post_visit) {
-				App.eventManager.fireEvent('launchapp','visittab',{
+				WebApp.fireEvent('launchapp','visittab',{
 					patientId:this.record.data.id,
 					type:this.post_visit,
 					hasBarcode:this.post_barcode

@@ -5,12 +5,12 @@ App.examination.CardGrid = Ext.extend(Ext.grid.EditorGridPanel, {
 	initComponent: function(){
 
 		this.proxy = new Ext.data.HttpProxy({
-        	url: App.getApiUrl('examination','card')
+        	url: App.utils.getApiUrl('examination','card')
         });
 		this.baseParams = Ext.apply({
             format:'json',
             deleted:false,
-            'ordered_service__staff': active_profile
+            'ordered_service__staff': WebApp.active_profile
         },this.baseParams);
 
         this.reader = new Ext.data.JsonReader({
@@ -54,7 +54,7 @@ App.examination.CardGrid = Ext.extend(Ext.grid.EditorGridPanel, {
 			queryParam : 'staff__last_name__istartswith',
 			store:new Ext.data.RESTStore({
 				autoLoad : true,
-				apiUrl : App.getApiUrl('staff','position'),
+				apiUrl : App.utils.getApiUrl('staff','position'),
 				model: ['id','name','resource_uri']
 			}),
 		    minChars:2,
@@ -207,10 +207,10 @@ App.examination.CardGrid = Ext.extend(Ext.grid.EditorGridPanel, {
         Ext.apply(this, Ext.apply(this.initialConfig, config));
 	    App.examination.CardGrid.superclass.initComponent.apply(this, arguments);
 
-	    App.eventManager.on('globalsearch', this.onGlobalSearch, this);
+	    WebApp.on('globalsearch', this.onGlobalSearch, this);
 
 		this.on('destroy', function(){
-		    App.eventManager.un('globalsearch', this.onGlobalSearch, this);
+		    WebApp.un('globalsearch', this.onGlobalSearch, this);
 		},this);
 
 		this.on('afterrender', function(){

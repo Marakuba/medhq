@@ -32,7 +32,7 @@ App.examination.SectionPanel = Ext.extend(Ext.Panel, {
             baseParams:{
         		format:'json',
         		section:this.section,
-				staff:App.uriToId(this.staff)
+				staff:App.utils.uriToId(this.staff)
         	},
 		    paramNames: {
 			    start : 'offset',
@@ -41,7 +41,7 @@ App.examination.SectionPanel = Ext.extend(Ext.Panel, {
 			    dir : 'dir'
 			},
             proxy: new Ext.data.HttpProxy({
-	        	url: App.getApiUrl('examination','glossary')
+	        	url: App.utils.getApiUrl('examination','glossary')
 	        }),
             reader: new Ext.data.JsonReader({
 	            totalProperty: 'meta.total_count',
@@ -173,10 +173,10 @@ App.examination.SectionPanel = Ext.extend(Ext.Panel, {
 		Ext.apply(this, Ext.apply(this.initialConfig, config));
 		App.examination.SectionPanel.superclass.initComponent.apply(this, arguments);
 
-		App.eventManager.on('tmptabchange',this.closeEditor,this);
+		WebApp.on('tmptabchange',this.closeEditor,this);
 
 		this.on('destroy', function(){
-		    App.eventManager.un('tmptabchange',this.closeEditor,this);
+		    WebApp.un('tmptabchange',this.closeEditor,this);
 		},this);
 
 		this.on('afterrender',function(panel){

@@ -27,13 +27,13 @@ App.examination.StaffTemplatePlugin = function(config, order){
 	this.store = new Ext.data.RESTStore({
 		autoSave: false,
 		autoLoad : false,
-		apiUrl : App.getApiUrl('examination','examtemplate'),
+		apiUrl : App.utils.getApiUrl('examination','examtemplate'),
 		model: App.models.Template
 	});
 	this.store.load({
 		params:{
 			deleted:false,
-            staff:active_staff,
+            staff:WebApp.active_staff,
             base_service__isnull:true
 		},
 		callback:function(records, opts, success){
@@ -67,7 +67,7 @@ App.examination.StateTemplatePlugin = function(config, order){
 	this.store = new Ext.data.RESTStore({
 		autoSave: false,
 		autoLoad : false,
-		apiUrl : App.getApiUrl('examination','examtemplate'),
+		apiUrl : App.utils.getApiUrl('examination','examtemplate'),
 		model: App.models.Template
 	});
 	this.store.load({
@@ -169,6 +169,7 @@ App.examination.StartView = Ext.extend(Ext.grid.GridPanel, {
 			autoScroll:true,
 			store:this.store,
 			border:false,
+			bodyCssClass:'disabled-groups',
 	        bubbleEvents:['preview','copy','edit','empty','loadcomplete'],
 	        columns:[{
 	        	dataIndex:'section_name',
@@ -221,7 +222,10 @@ App.examination.StartView = Ext.extend(Ext.grid.GridPanel, {
 			    enableRowBody:true,
 				getRowClass: function(record, index, p, store) {
 //					return record.data.action=='edit' ? 'x-grid-row-info' : ''
-		        }
+		        },
+		        processEvent: function(name, e){
+        			Ext.grid.GroupingView.superclass.processEvent.call(this, name, e);
+        		}
 			}),
 			listeners:{
 	        	rowdblclick:function(grid,i,e){

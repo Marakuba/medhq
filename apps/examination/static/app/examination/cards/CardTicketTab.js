@@ -107,7 +107,7 @@ App.examination.CardTicketTab = Ext.extend(App.examination.TicketTab, {
 			title:name[0] + ': История',
     		patientId:this.patientId
 		}
-		App.eventManager.fireEvent('launchapp', 'patienthistory',config);
+		WebApp.fireEvent('launchapp', 'patienthistory',config);
 	},
 	
 	onDelete: function(){

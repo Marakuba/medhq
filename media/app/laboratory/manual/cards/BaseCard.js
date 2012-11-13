@@ -43,12 +43,12 @@ App.cards.BaseCard = Ext.extend(Ext.Window,{
 		this.labOrderStore = new Ext.data.RESTStore({
 			autoSave : true,
 			autoLoad : false,
-			apiUrl : App.getApiUrl('lab','laborder'),
+			apiUrl : App.utils.getApiUrl('lab','laborder'),
 			model: App.models.LabOrder
 		});
 
 		this.proxy = new Ext.data.HttpProxy({
-		    url: App.getApiUrl('lab','result')
+		    url: App.utils.getApiUrl('lab','result')
 		});
 
 		this.reader = new Ext.data.JsonReader({
@@ -140,7 +140,7 @@ App.cards.BaseCard = Ext.extend(Ext.Window,{
 		gs.removeAll();
 
 		if(r.length) {
-			var orderId = App.uriToId(r[0].data.order);
+			var orderId = App.utils.uriToId(r[0].data.order);
 			this.labOrderStore.load({
 				params:{
 					id:orderId
@@ -201,7 +201,7 @@ App.cards.BaseCard = Ext.extend(Ext.Window,{
 
 	loadData : function() {
 		if(this.record && this.service) {
-			this.store.setBaseParam( 'order__visit', App.uriToId(this.record.data.order) );
+			this.store.setBaseParam( 'order__visit', App.utils.uriToId(this.record.data.order) );
 			this.store.setBaseParam( 'analysis__service', this.service );
 			this.store.load({
 				callback: this.processData.createDelegate(this),

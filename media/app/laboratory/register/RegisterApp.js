@@ -80,7 +80,7 @@ App.laboratory.RegisterApp = Ext.extend(Ext.Panel, {
    				valueField:'id',
    				store:new Ext.data.RESTStore({
    					autoLoad : true,
-   					apiUrl : App.getApiUrl('state','medstate'),
+   					apiUrl : App.utils.getApiUrl('state','medstate'),
    					model: ['id','name']
    				}),
    			    minChars:2,
@@ -97,7 +97,7 @@ App.laboratory.RegisterApp = Ext.extend(Ext.Panel, {
    				valueField:'id',
    				store:new Ext.data.RESTStore({
    					autoLoad : true,
-   					apiUrl : App.getApiUrl('state','medstate'),
+   					apiUrl : App.utils.getApiUrl('state','medstate'),
    					model: ['id','name']
    				}),
    			    minChars:2,
@@ -114,7 +114,7 @@ App.laboratory.RegisterApp = Ext.extend(Ext.Panel, {
    				valueField:'id',
    				store:new Ext.data.RESTStore({
    					autoLoad : true,
-   					apiUrl : App.getApiUrl('state','medstate'),
+   					apiUrl : App.utils.getApiUrl('state','medstate'),
    					model: ['id','name']
    				}),
    			    minChars:2,
@@ -132,7 +132,7 @@ App.laboratory.RegisterApp = Ext.extend(Ext.Panel, {
    				displayField:'full_name',
    				store:new Ext.data.RESTStore({
    					autoLoad : true,
-   					apiUrl : App.getApiUrl('patient','patient'),
+   					apiUrl : App.utils.getApiUrl('patient','patient'),
    					model: ['id','full_name']
    				}),
    			    minChars:2,
@@ -177,7 +177,7 @@ App.laboratory.RegisterApp = Ext.extend(Ext.Panel, {
 			},{
 				text:'Закрыть',
 				handler:function(){
-					App.eventManager.fireEvent('closeapp','lab-register-app')
+					WebApp.fireEvent('closeapp','lab-register-app')
 				},
 				scope:this
 			}]

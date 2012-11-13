@@ -96,7 +96,7 @@ App.patient.ServiceBasket = Ext.extend(Ext.grid.EditorGridPanel, {
 
 		// Create a standard HttpProxy instance.
 		this.proxy = new Ext.data.HttpProxy({
-		    url: App.getApiUrl('visit','servicebasket')
+		    url: App.utils.getApiUrl('visit','servicebasket')
 		});
 
 		// Typical JsonReader.  Notice additional meta-data params for defining the core attributes of your json-response
@@ -160,17 +160,17 @@ App.patient.ServiceBasket = Ext.extend(Ext.grid.EditorGridPanel, {
 //						Ext.getCmp('sampling-print-btn').enable();
 						Ext.getCmp('visit-submit-btn').enable();
 						pb.hide();
-						App.eventManager.fireEvent('visitclose');
+						WebApp.fireEvent('visitclose');
 		    		}
 		    	},
 		    	add:function(){
-		    		App.eventManager.fireEvent('sumchange');
+		    		WebApp.fireEvent('sumchange');
 		    	},
 		    	remove:function(){
-		    		App.eventManager.fireEvent('sumchange');
+		    		WebApp.fireEvent('sumchange');
 		    	},
 		    	load:function(){
-		    		App.eventManager.fireEvent('sumchange');
+		    		WebApp.fireEvent('sumchange');
 		    	},
 		    	scope:this
 		    }
@@ -178,7 +178,7 @@ App.patient.ServiceBasket = Ext.extend(Ext.grid.EditorGridPanel, {
 		this.staffStore = new Ext.data.Store({
 			autoDestroy:true,
 			proxy: new Ext.data.HttpProxy({
-			    url: App.getApiUrl('staff','position'),
+			    url: App.utils.getApiUrl('staff','position'),
 				method:'GET'
 			}),
 			reader: new Ext.data.JsonReader({
@@ -313,7 +313,7 @@ App.patient.ServiceBasket = Ext.extend(Ext.grid.EditorGridPanel, {
 			},
 			listeners:{
 				afteredit:function(){
-					App.eventManager.fireEvent('sumchange');
+					WebApp.fireEvent('sumchange');
 				},
 				scope:this
 			}
@@ -342,7 +342,7 @@ App.patient.ServiceBasket = Ext.extend(Ext.grid.EditorGridPanel, {
 	updateStaff: function(index, id, staff_name){
 		var rec = this.store.getAt(index);
 		rec.beginEdit();
-		rec.set('staff',App.getApiUrl('staff', 'position', id);
+		rec.set('staff',App.utils.getApiUrl('staff', 'position', id);
 		rec.set('staff_name',staff_name);
 		rec.endEdit();
 	},
@@ -373,11 +373,11 @@ App.patient.ServiceBasket = Ext.extend(Ext.grid.EditorGridPanel, {
 		console.log(res);
 		var text = res[res.length-1];
 		var s = new Service({
-			service: App.getApiUrl('service', 'baseservice', attrs.id),
+			service: App.utils.getApiUrl('service', 'baseservice', attrs.id),
 			service_name:text,
 			price:attrs.price,
 			count:1,
-			execution_place: App.getApiUrl('state', 'state', attrs.place)
+			execution_place: App.utils.getApiUrl('state', 'state', attrs.place)
 		});
 		this.stopEditing();
 		this.store.add(s);

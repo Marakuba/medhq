@@ -6,7 +6,7 @@ App.issue.IssueGrid = Ext.extend(Ext.grid.GridPanel, {
 
 		this.store = new Ext.data.RESTStore({
 			autoLoad : true,
-			apiUrl : App.getApiUrl('helpdesk','issue'),
+			apiUrl : App.utils.getApiUrl('helpdesk','issue'),
 			model: [
 			    {name: 'id'},
 			    {name: 'resource_uri'},
@@ -111,7 +111,7 @@ App.issue.IssueGrid = Ext.extend(Ext.grid.GridPanel, {
 
 		Ext.apply(this, Ext.apply(this.initialConfig, config));
 		App.issue.IssueGrid.superclass.initComponent.apply(this, arguments);
-//		App.eventManager.on('globalsearch', this.onGlobalSearch, this);
+//		WebApp.on('globalsearch', this.onGlobalSearch, this);
 		this.store.on('write', this.onStoreWrite, this);
 	},
 

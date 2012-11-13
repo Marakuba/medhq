@@ -30,7 +30,7 @@ Ext.calendar.TimeslotInfoWindow = Ext.extend(Ext.Window, {
 
     	this.preorderStore = new Ext.data.RESTStore({
 			autoLoad : false,
-			apiUrl : App.getApiUrl('scheduler','extpreorder'),
+			apiUrl : App.utils.getApiUrl('scheduler','extpreorder'),
 			model: this.preorderModel,
 			listeners:{
 				load: function(store,records){
@@ -125,7 +125,7 @@ Ext.calendar.TimeslotInfoWindow = Ext.extend(Ext.Window, {
             },this,{single:true});
 
 	        if (this.event) {
-	           	this.preorderStore.setBaseParam('timeslot',App.uriToId(this.event.data['ResourceURI']));
+	           	this.preorderStore.setBaseParam('timeslot',App.utils.uriToId(this.event.data['ResourceURI']));
 	           	this.preorderStore.load();
 	        };
         })

@@ -9,7 +9,7 @@ App.patient.AsgmtGrid = Ext.extend(Ext.grid.EditorGridPanel, {
 		this.refStore = new Ext.data.RESTStore({
 			autoSave: false,
 			autoLoad : false,
-			apiUrl : App.getApiUrl('visit', 'referral'),
+			apiUrl : App.utils.getApiUrl('visit', 'referral'),
 			model: App.models.ReferralModel
 		});
 
@@ -41,14 +41,14 @@ App.patient.AsgmtGrid = Ext.extend(Ext.grid.EditorGridPanel, {
 		this.medstateStore = this.medstateStore || new Ext.data.RESTStore({
 			autoSave: true,
 			autoLoad : true,
-			apiUrl : App.getApiUrl('state','medstate'),
+			apiUrl : App.utils.getApiUrl('state','medstate'),
 			model: App.models.MedState
 		});
 
 		this.patientStore = this.patientStore || new Ext.data.RESTStore({
 			autoLoad : false,
 			autoSave : false,
-			apiUrl : App.getApiUrl('patient','patient'),
+			apiUrl : App.utils.getApiUrl('patient','patient'),
 			model: App.models.patientModel
 		});
 
@@ -97,7 +97,7 @@ App.patient.AsgmtGrid = Ext.extend(Ext.grid.EditorGridPanel, {
 		this.staffStore = new Ext.data.RESTStore({
 			autoLoad : false,
 			autoSave : true,
-			apiUrl : App.getApiUrl('staff','position'),
+			apiUrl : App.utils.getApiUrl('staff','position'),
 			model: [
 				    {name: 'id'},
 				    {name: 'resource_uri'},
@@ -197,7 +197,7 @@ App.patient.AsgmtGrid = Ext.extend(Ext.grid.EditorGridPanel, {
 				visit__isnull:true,
 				deleted:false
 			},
-			apiUrl : App.getApiUrl('scheduler','visitpreorder'),
+			apiUrl : App.utils.getApiUrl('scheduler','visitpreorder'),
 			model: App.models.preorderModel
 		});
 
@@ -211,14 +211,14 @@ App.patient.AsgmtGrid = Ext.extend(Ext.grid.EditorGridPanel, {
 		this.eventStore = new Ext.data.RESTStore({
 			autoLoad : false,
 			autoSave : true,
-			apiUrl : App.getApiUrl('scheduler','event'),
+			apiUrl : App.utils.getApiUrl('scheduler','event'),
 			model: this.eventModel
 		});
 
 		this.freeTimeslotStore = new Ext.data.RESTStore({
 			autoLoad : false,
 			autoSave : true,
-			apiUrl : App.getApiUrl('scheduler','event'),
+			apiUrl : App.utils.getApiUrl('scheduler','event'),
 			model: [
 				    {name: 'resource_uri'},
 				    {name: 'start',type:'date',format:'c'},
@@ -233,7 +233,7 @@ App.patient.AsgmtGrid = Ext.extend(Ext.grid.EditorGridPanel, {
 		this.extServiceStore = new Ext.data.RESTStore({
 			autoLoad : false,
 			autoSave : false,
-			apiUrl : App.getApiUrl('service','extendedservice'),
+			apiUrl : App.utils.getApiUrl('service','extendedservice'),
 			model: [
 				    {name: 'resource_uri'},
 				    {name: 'staff'},
@@ -427,13 +427,13 @@ App.patient.AsgmtGrid = Ext.extend(Ext.grid.EditorGridPanel, {
 			}
 		},this);
 		App.calendar.eventManager.on('preorderwrite', this.storeReload,this);
-		App.eventManager.on('globalsearch', this.onGlobalSearch, this);
-		App.eventManager.on('visitcreate', this.onVisitCreate, this);
+		WebApp.on('globalsearch', this.onGlobalSearch, this);
+		WebApp.on('visitcreate', this.onVisitCreate, this);
 
 		this.on('destroy', function(){
 			App.calendar.eventManager.un('preorderwrite', this.storeReload,this);
-			App.eventManager.un('globalsearch', this.onGlobalSearch, this);
-			App.eventManager.un('visitcreate', this.onVisitCreate, this);
+			WebApp.un('globalsearch', this.onGlobalSearch, this);
+			WebApp.un('visitcreate', this.onVisitCreate, this);
 		},this);
 
 		this.store.on('write', function(){
@@ -529,15 +529,15 @@ App.patient.AsgmtGrid = Ext.extend(Ext.grid.EditorGridPanel, {
         	App.preorder.accessCheck(records,function(recs){
         		if (recs.length){
 		    		if (this.hasPatient){
-						App.eventManager.fireEvent('launchapp','visittab',{
+						WebApp.fireEvent('launchapp','visittab',{
 							preorderRecord:recs,
 							patientId:this.patientRecord.data.id,
 							type:'visit'
 						});
 			    	} else {
-			    		App.eventManager.fireEvent('launchapp','visittab',{
+			    		WebApp.fireEvent('launchapp','visittab',{
 							preorderRecord:recs,
-							patientId:App.uriToId(recs[0].data.patient),
+							patientId:App.utils.uriToId(recs[0].data.patient),
 							type:'visit'
 						});
 			    	}
@@ -587,7 +587,7 @@ App.patient.AsgmtGrid = Ext.extend(Ext.grid.EditorGridPanel, {
 
     onCreate: function(){
 		if (this.patientRecord) {
-			App.eventManager.fireEvent('launchapp','asgmttab',{
+			WebApp.fireEvent('launchapp','asgmttab',{
 				patientId:this.patientId,
 				card_id:this.card_id,
 				fn: function(asgmttab){
@@ -615,7 +615,7 @@ App.patient.AsgmtGrid = Ext.extend(Ext.grid.EditorGridPanel, {
 			return false
 		}
 		var service = preorder.data.service;
-		this.extServiceStore.setBaseParam('id',App.uriToId(preorder.data.service))
+		this.extServiceStore.setBaseParam('id',App.utils.uriToId(preorder.data.service))
 		this.extServiceStore.load({callback:function(records){
 			var sl = undefined;
 			if(records.length){
@@ -628,9 +628,9 @@ App.patient.AsgmtGrid = Ext.extend(Ext.grid.EditorGridPanel, {
 			var win = new App.visit.StaffWindow({
 				index:index,
 				staffList:sl,
-				service:App.uriToId(records[0].data.base_service),
-				state:App.uriToId(records[0].data.state),
-				service_name:App.uriToId(records[0].data.service_name),
+				service:App.utils.uriToId(records[0].data.base_service),
+				state:App.utils.uriToId(records[0].data.state),
+				service_name:App.utils.uriToId(records[0].data.service_name),
 				fn: function(staff){
 					win.close();
 					this.onMovePreorder(staff.data.id)
@@ -643,7 +643,7 @@ App.patient.AsgmtGrid = Ext.extend(Ext.grid.EditorGridPanel, {
 
 	updateStaff: function(rec, id, staff_name){
 		rec.beginEdit();
-		rec.set('staff', App.getApiUrl('staff', 'position', id);
+		rec.set('staff', App.utils.getApiUrl('staff', 'position', id);
 		rec.set('staff_name',staff_name);
 		rec.endEdit();
 	},
@@ -664,7 +664,7 @@ App.patient.AsgmtGrid = Ext.extend(Ext.grid.EditorGridPanel, {
        			record.set('status','з');
 				freeTimeslotWindow.close();
 				if(this.patientId){
-					App.eventManager.fireEvent('patientcardupdate',this.patientId);
+					WebApp.fireEvent('patientcardupdate',this.patientId);
 				} else {
 					this.store.load();
 				}
@@ -741,7 +741,7 @@ App.patient.AsgmtGrid = Ext.extend(Ext.grid.EditorGridPanel, {
 
 	storeReload: function(preorder){
 		//Не позволять грузить весь store без параметров
-		if ((!(this.hasPatient && !this.patientId)) && ((this.patientId && (this.patientId == App.uriToId(preorder.data.patient))) || this.store.baseParams['expiration__day'])) {
+		if ((!(this.hasPatient && !this.patientId)) && ((this.patientId && (this.patientId == App.utils.uriToId(preorder.data.patient))) || this.store.baseParams['expiration__day'])) {
 			this.store.load()
 		}
 	},
@@ -768,7 +768,7 @@ App.patient.AsgmtGrid = Ext.extend(Ext.grid.EditorGridPanel, {
 			return
 		};
 		if (rec.data.referral){
-			this.refStore.load({params:{format:'json',id:App.uriToId(rec.data.referral)},callback:function(records){
+			this.refStore.load({params:{format:'json',id:App.utils.uriToId(rec.data.referral)},callback:function(records){
 				if (records.length){
 					if (records[0].data.referral_type != 'л'){
 						this.setPreorderReferral(rec,this.referral);

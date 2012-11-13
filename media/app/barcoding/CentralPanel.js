@@ -131,15 +131,15 @@ App.BarcodeCentralPanel = Ext.extend(Ext.Panel, {
 		}
 		Ext.apply(this, Ext.apply(this.initialConfig, config));
 		App.BarcodeCentralPanel.superclass.initComponent.apply(this, arguments);
-		App.eventManager.on('launchapp', this.launchApp, this);
-		App.eventManager.on('closeapp', this.closeApp, this);
+		WebApp.on('launchapp', this.launchApp, this);
+		WebApp.on('closeapp', this.closeApp, this);
 		this.on('afterrender', function(){
 		});
 		
 		
 		this.on('destroy', function(){
-		    App.eventManager.un('launchapp', this.launchApp, this);
-			App.eventManager.un('closeapp', this.closeApp, this);
+		    WebApp.un('launchapp', this.launchApp, this);
+			WebApp.un('closeapp', this.closeApp, this);
 		},this);
 		
 		Ext.Direct.on('netstatus',function(){

@@ -6,7 +6,7 @@ App.choices.StaffChoiceGrid = Ext.extend(Ext.grid.GridPanel, {
 
 		this.store = this.store || new Ext.data.RESTStore({
 			autoLoad : true,
-			apiUrl : App.getApiUrl('staff','position'),
+			apiUrl : App.utils.getApiUrl('staff','position'),
 			model: [
 				    {name: 'id'},
 				    {name: 'resource_uri'},
@@ -133,7 +133,7 @@ App.choices.StaffChoiceGrid = Ext.extend(Ext.grid.GridPanel, {
 
 		Ext.apply(this, Ext.apply(this.initialConfig, config));
 		App.choices.StaffChoiceGrid.superclass.initComponent.apply(this, arguments);
-//		App.eventManager.on('patientwrite', this.onPatientWrite, this);
+//		WebApp.on('patientwrite', this.onPatientWrite, this);
 		this.on('staffselect', this.onStaffSelect, this);
 		//this.store.on('write', this.onStoreWrite, this);
 	},
@@ -164,7 +164,7 @@ App.choices.StaffChoiceGrid = Ext.extend(Ext.grid.GridPanel, {
 			this.fireEvent('staffselect',rs);
 		}
 //		if(action=='create') {
-//			App.eventManager.fireEvent('patientcreate',rs);
+//			WebApp.fireEvent('patientcreate',rs);
 //		}
 	},
 

@@ -6,7 +6,7 @@ App.refund.AddTab = Ext.extend(Ext.Panel, {
 	initComponent : function() {
 
 		this.proxy = new Ext.data.HttpProxy({
-		    url: App.getApiUrl('visit', 'refund')
+		    url: App.utils.getApiUrl('visit', 'refund')
 		});
 
 		this.reader = new Ext.data.JsonReader({
@@ -196,7 +196,7 @@ App.refund.AddTab = Ext.extend(Ext.Panel, {
 		b.store.each(function(rec){
 			if (!rec.data.order) {
 				rec.beginEdit();
-				rec.set('order',App.getApiUrl('visit', 'refund', orderId));
+				rec.set('order',App.utils.getApiUrl('visit', 'refund', orderId));
 				rec.endEdit();
 			}
 		});

@@ -39,7 +39,7 @@ Ext.calendar.TimeslotEditWindow = Ext.extend(Ext.Window, {
 		this.serviceStore = new Ext.data.RESTStore({
 			autoLoad : false,
 			autoSave: false,
-			apiUrl : App.getApiUrl('service','extendedservice'),
+			apiUrl : App.utils.getApiUrl('service','extendedservice'),
 			model: [
 				    {name: 'id'},
 				    {name: 'resource_uri'},
@@ -54,7 +54,7 @@ Ext.calendar.TimeslotEditWindow = Ext.extend(Ext.Window, {
 		this.patientStore = new Ext.data.RESTStore({
 			autoLoad : false,
 			autoSave : true,
-			apiUrl : App.getApiUrl('patient','patient'),
+			apiUrl : App.utils.getApiUrl('patient','patient'),
 			model: [
 				    {name: 'resource_uri'},
 				    {name: 'short_name'},
@@ -68,7 +68,7 @@ Ext.calendar.TimeslotEditWindow = Ext.extend(Ext.Window, {
 		this.patientSelectedStore = new Ext.data.RESTStore({
 			autoLoad : false,
 			autoSave : true,
-			apiUrl : App.getApiUrl('patient','patient'),
+			apiUrl : App.utils.getApiUrl('patient','patient'),
 			model: [
 				    {name: 'resource_uri'},
 				    {name: 'short_name'},
@@ -82,7 +82,7 @@ Ext.calendar.TimeslotEditWindow = Ext.extend(Ext.Window, {
 		this.freeTimeslotStore = new Ext.data.RESTStore({
 			autoLoad : false,
 			autoSave : true,
-			apiUrl : App.getApiUrl('scheduler','event'),
+			apiUrl : App.utils.getApiUrl('scheduler','event'),
 			model: [
 				    {name: 'resource_uri'},
 				    {name: 'start',type:'date',format:'c'},
@@ -149,14 +149,14 @@ Ext.calendar.TimeslotEditWindow = Ext.extend(Ext.Window, {
 
     	this.preorderStore = new Ext.data.RESTStore({
 			autoLoad : false,
-			apiUrl : App.getApiUrl('scheduler','preorder'),
+			apiUrl : App.utils.getApiUrl('scheduler','preorder'),
 			model: this.preorderModel
 		});
 
 		this.preorderStore.on('write', function(store, action, result, res, rs){
 			if(action=='create') {
 			    this.preorder = rs;
-			    //App.eventManager.fireEvent('preordercreate',rs);
+			    //WebApp.fireEvent('preordercreate',rs);
 		    };
 		    App.calendar.eventManager.fireEvent('preorderwrite',rs);
 		}, this);
@@ -587,7 +587,7 @@ Ext.calendar.TimeslotEditWindow = Ext.extend(Ext.Window, {
             else {
                 this.setTitle(this.titleTextEdit);
             }
-           	this.preorderStore.setBaseParam('timeslot',App.uriToId(rec.data['ResourceURI']));
+           	this.preorderStore.setBaseParam('timeslot',App.utils.uriToId(rec.data['ResourceURI']));
            	this.preorderStore.load({callback:this.setPreorder,scope:this});
 
             f.loadRecord(rec);
@@ -886,7 +886,7 @@ Ext.calendar.TimeslotEditWindow = Ext.extend(Ext.Window, {
     	if (!patient_uri){
     		return 0;
     	};
-    	this.patientSelectedStore.setBaseParam('id',App.uriToId(patient_uri));
+    	this.patientSelectedStore.setBaseParam('id',App.utils.uriToId(patient_uri));
 		this.patientSelectedStore.load(
 			{
 				callback: function(records){

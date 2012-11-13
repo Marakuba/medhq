@@ -21,10 +21,10 @@ App.PatientInfo = Ext.extend(Ext.Panel, {
 		Ext.apply(this, Ext.apply(this.initialConfig, config));
 		App.PatientInfo.superclass.initComponent.apply(this, arguments);
 		
-		App.eventManager.on('patientselect', this.onPatientSelect, this); //
+		WebApp.on('patientselect', this.onPatientSelect, this); //
 		
 		this.on('destroy', function(){
-		    App.eventManager.un('patientselect', this.onPatientSelect, this); 
+		    WebApp.un('patientselect', this.onPatientSelect, this); 
 		},this);
 		
 	},

@@ -7,13 +7,13 @@ App.assignment.AsgmtTab = Ext.extend(Ext.Panel, {
 
 		this.patientStore = this.patientStore || new Ext.data.RESTStore({
 			autoLoad : false,
-			apiUrl : App.getApiUrl('patient','patient'),
+			apiUrl : App.utils.getApiUrl('patient','patient'),
 			model: App.models.patientModel
 		});
 
 		this.store = this.store || new Ext.data.RESTStore({
 			autoLoad : false,
-			apiUrl : App.getApiUrl('scheduler','preorder'),
+			apiUrl : App.utils.getApiUrl('scheduler','preorder'),
 			model: App.models.preorderModel,
 			listeners:{
 				scope:this,
@@ -182,15 +182,15 @@ App.assignment.AsgmtTab = Ext.extend(Ext.Panel, {
 	},
 
 	close: function() {
-		App.eventManager.fireEvent('closeapp',this.id);
+		WebApp.fireEvent('closeapp',this.id);
 	},
 
 	onStoreWrite: function(store, action, result, res, rs) {
 		if(action=='create') {
 			if (this.hasPatient){
-				App.eventManager.fireEvent('assigmentcreate',rs);
+				WebApp.fireEvent('assigmentcreate',rs);
 			} else {
-				App.eventManager.fireEvent('assigmentcreate',rs,this.patientId);
+				WebApp.fireEvent('assigmentcreate',rs,this.patientId);
 			}
 		}
 		this.record = rs;

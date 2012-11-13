@@ -35,7 +35,7 @@ App.sampling.Editor = Ext.extend(Ext.Panel, {
 		this.tubeTree.on('beforenodedrop', function(e){
     		if(e.target.leaf){
     			var n = e.target;
-    			var uri = App.getApiUrl('lab','sampling', n.id);
+    			var uri = App.utils.getApiUrl('lab','sampling', n.id);
     			var records = e.data.selections;
     			var changed = false;
     			Ext.each(records, function(rec,i,all){

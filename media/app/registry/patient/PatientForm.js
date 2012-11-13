@@ -62,7 +62,7 @@ App.patient.PatientForm = Ext.extend(Ext.form.FormPanel, {
 			},
 		    restful: true,
 		    proxy: new Ext.data.HttpProxy({
-			    url: App.getApiUrl('billing','account')
+			    url: App.utils.getApiUrl('billing','account')
 			}),
 		    reader: new Ext.data.JsonReader({
 			    totalProperty: 'meta.total_count',
@@ -85,7 +85,7 @@ App.patient.PatientForm = Ext.extend(Ext.form.FormPanel, {
 		    	},
 		    	write:function(store, action, result, res, rs){
 		    		if(action=='create') {
-			    		//App.eventManager.fireEvent('accountcreate', rs);
+			    		//WebApp.fireEvent('accountcreate', rs);
 		    			this.onAccountCreate(rs);
 		    		}
 		    	},
@@ -259,7 +259,7 @@ App.patient.PatientForm = Ext.extend(Ext.form.FormPanel, {
 			        	width:170,
 //						anchor:'80%',
 			        	name:'ad_source',
-			        	proxyUrl:App.getApiUrl('crm','adsource')
+			        	proxyUrl:App.utils.getApiUrl('crm','adsource')
 					})]
 				},{
 					columnWidth:.5,
@@ -303,7 +303,7 @@ App.patient.PatientForm = Ext.extend(Ext.form.FormPanel, {
 			        	fieldLabel:'Скидка',
 						anchor:'80%',
 			        	name:'discount',
-			        	proxyUrl:App.getApiUrl('pricelist','discount')
+			        	proxyUrl:App.utils.getApiUrl('pricelist','discount')
 					}),{
 						xtype:'textfield',
 						name:'doc',

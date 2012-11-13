@@ -14,7 +14,7 @@ App.visit.OrderedServiceInlineGrid = Ext.extend(Ext.grid.EditorGridPanel, {
 		this.deletedRecords = [];
 
 		this.proxy = new Ext.data.HttpProxy({
-		    url: App.getApiUrl('visit','servicebasket')
+		    url: App.utils.getApiUrl('visit','servicebasket')
 		});
 
 		this.reader = new Ext.data.JsonReader({
@@ -93,7 +93,7 @@ App.visit.OrderedServiceInlineGrid = Ext.extend(Ext.grid.EditorGridPanel, {
 		this.staffStore = new Ext.data.Store({
 			autoDestroy:true,
 			proxy: new Ext.data.HttpProxy({
-			    url: App.getApiUrl('staff','position'),
+			    url: App.utils.getApiUrl('staff','position'),
 				method:'GET'
 			}),
 			reader: new Ext.data.JsonReader({
@@ -241,9 +241,9 @@ App.visit.OrderedServiceInlineGrid = Ext.extend(Ext.grid.EditorGridPanel, {
 
 		Ext.apply(this, Ext.apply(this.initialConfig, config));
 		App.visit.OrderedServiceInlineGrid.superclass.initComponent.apply(this, arguments);
-		App.eventManager.on('visitcreate', this.onVisitCreate, this);
+		WebApp.on('visitcreate', this.onVisitCreate, this);
 		this.on('destroy', function(){
-			App.eventManager.un('visitcreate', this.onVisitCreate, this);
+			WebApp.un('visitcreate', this.onVisitCreate, this);
 		},this);
 	},
 
@@ -267,7 +267,7 @@ App.visit.OrderedServiceInlineGrid = Ext.extend(Ext.grid.EditorGridPanel, {
 
 	updateStaff: function(rec, id, staff_name){
 		rec.beginEdit();
-		rec.set('staff', App.getApiUrl('staff', 'position', id));
+		rec.set('staff', App.utils.getApiUrl('staff', 'position', id));
 		rec.set('staff_name',staff_name);
 		rec.endEdit();
 	},
@@ -293,13 +293,13 @@ App.visit.OrderedServiceInlineGrid = Ext.extend(Ext.grid.EditorGridPanel, {
 		var place = ids[1];
 		var Service = this.store.recordType;
 		var s = new Service({
-			service:App.getApiUrl('service','baseservice') + '/' + id,
+			service:App.utils.getApiUrl('service','baseservice') + '/' + id,
 			service_name:text,
 			price:attrs.price,
-			staff:attrs.staff_id ? App.getApiUrl('staff','staff') + '/'+attrs.staff_id : null,
+			staff:attrs.staff_id ? App.utils.getApiUrl('staff','staff') + '/'+attrs.staff_id : null,
 			staff_name:attrs.staff_name || '',
 			count:attrs.c || 1,
-			execution_place:App.getApiUrl('state','state') + '/'+place
+			execution_place:App.utils.getApiUrl('state','state') + '/'+place
 		});
 		this.store.add(s);
 		this.getView().focusRow(this.store.getCount()-1);
@@ -314,8 +314,8 @@ App.visit.OrderedServiceInlineGrid = Ext.extend(Ext.grid.EditorGridPanel, {
 			var ids = attrs.id.split('-');
 			var has_record = false;
 			this.store.each(function(rec){
-				var serv_id = App.uriToId(rec.data.service);
-				var ex_id = App.uriToId(rec.data.execution_place);
+				var serv_id = App.utils.uriToId(rec.data.service);
+				var ex_id = App.utils.uriToId(rec.data.execution_place);
                 if ((serv_id == ids[0]) && (ex_id == ids[1])) {
                 	has_record = true;
                 	return 0
@@ -375,15 +375,15 @@ App.visit.OrderedServiceInlineGrid = Ext.extend(Ext.grid.EditorGridPanel, {
 	changeStaff: function() {
 		var rec = this.getSelectionModel().getSelected();
 		var box = new App.visit.StaffWindow({
-			service:App.uriToId(rec.data.service),
-			state:App.uriToId(rec.data.execution_place),
+			service:App.utils.uriToId(rec.data.service),
+			state:App.utils.uriToId(rec.data.execution_place),
 			height:300,
 			width:400,
 			service_name:rec.data.service_name,
 			fn:function(r){
 				if(r) {
 					rec.beginEdit();
-					rec.set('staff',App.getApiUrl('staff','position',r.data.id));
+					rec.set('staff',App.utils.getApiUrl('staff','position',r.data.id));
 					rec.set('staff_name',r.data.staff_name);
 					rec.endEdit();
 				}

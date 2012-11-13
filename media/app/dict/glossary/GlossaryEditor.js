@@ -3,7 +3,7 @@ Ext.ns('App.dict');
 App.dict.GlossaryEditor = Ext.extend(Ext.Panel, {
 	initComponent : function() {
 
-		this.staff = App.getApiUrl('staff','staff')+ '/' + active_staff;
+		this.staff = App.utils.getApiUrl('staff','staff')+ '/' + WebApp.active_staff;
 
 		this.glossary = new App.dict.XGlossaryTree({
 			staff:this.staff,
@@ -18,7 +18,7 @@ App.dict.GlossaryEditor = Ext.extend(Ext.Panel, {
 			baseParams:{
 				format:'json',
 				section:'',
-				staff:active_staff
+				staff:WebApp.active_staff
 			},
 			scope:this,
 			layout:'fit',
@@ -49,7 +49,7 @@ App.dict.GlossaryEditor = Ext.extend(Ext.Panel, {
 		this.fieldSetStore = new Ext.data.RESTStore({
 			autoSave: false,
 			autoLoad : false,
-			apiUrl : App.getApiUrl('examination','examfieldset'),
+			apiUrl : App.utils.getApiUrl('examination','examfieldset'),
 			model: App.models.FieldSet
 		});
 

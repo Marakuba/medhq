@@ -47,7 +47,7 @@ App.ServicePanel.Tree = Ext.extend(Ext.tree.TreePanel,{
 	        listeners:{
 	        	click:function(node,e){
 	        		if(node.isLeaf()) {
-	        			App.eventManager.fireEvent('servicedblclick', node.attributes);
+	        			WebApp.fireEvent('servicedblclick', node.attributes);
 	        		}
 	        	}
 	        },

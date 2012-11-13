@@ -1,9 +1,9 @@
 Ext.ns('App');
 
-App.eventManager = new Ext.util.Observable();
-App.eventManager.addEvents('globalsearch');
-App.eventManager.addEvents('nodeclick');
-App.eventManager.addEvents('addform');
-App.eventManager.addEvents('clientcreate');
-App.eventManager.addEvents('globalsearch');
-App.eventManager.addEvents('openform');
+WebApp = new Ext.util.Observable();
+WebApp.addEvents('globalsearch');
+WebApp.addEvents('nodeclick');
+WebApp.addEvents('addform');
+WebApp.addEvents('clientcreate');
+WebApp.addEvents('globalsearch');
+WebApp.addEvents('openform');
