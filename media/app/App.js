@@ -23,6 +23,8 @@ App.getApiUrl= function() {
 	return path.join("/");
 };
 
+get_api_url = App.getApiUrl;
+
 App.uriToId = function(uri) {
 	var paths = uri.split('/');
 	return paths[paths.length-1];
