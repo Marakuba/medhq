@@ -3,24 +3,24 @@ Ext.ns('App.billing');
 App.billing.PaymentGrid = Ext.extend(Ext.grid.GridPanel, {
 
 	initComponent : function() {
-		
+
 		this.store = new Ext.data.RESTStore({
 			autoLoad:false,
-		    apiUrl : get_api_url('payment'),
+		    apiUrl : App.getApiUrl('billing','payment'),
 		    model: App.models.paymentModel
 		});
-		
+
 		this.addButton = new Ext.SplitButton({
    			text: 'Добавить',
-   			handler: this.onCreate.createDelegate(this,['1']), 
+   			handler: this.onCreate.createDelegate(this,['1']),
    			menu: new Ext.menu.Menu({
         		items: [
 	    		    {text: 'Приходный', handler: this.onCreate.createDelegate(this,['1'])},
-	    		    {text: 'Расходный', handler: this.onCreate.createDelegate(this,['2'])}	    		    	    		    
+	    		    {text: 'Расходный', handler: this.onCreate.createDelegate(this,['2'])}
         		]
    			})
 		});
-		
+
 		this.gteDateField = new Ext.form.DateField({
             format:'d.m.Y',
             listeners: {
@@ -30,7 +30,7 @@ App.billing.PaymentGrid = Ext.extend(Ext.grid.GridPanel, {
                     scope:this
             }
         });
-        
+
         this.lteDateField = new Ext.form.DateField({
             format:'d.m.Y',
             listeners: {
@@ -40,23 +40,23 @@ App.billing.PaymentGrid = Ext.extend(Ext.grid.GridPanel, {
                     scope:this
             }
         })
-		
+
 		this.columns =  [
 		    {
 		    	header: "Номер",
 		    	width:15,
-		    	sortable: true, 
+		    	sortable: true,
 		    	dataIndex: 'id'
 		    },{
 		    	header: "Дата",
 		    	width:20,
-		    	sortable: true, 
+		    	sortable: true,
 		    	dataIndex: 'doc_date',
 		    	renderer:Ext.util.Format.dateRenderer('d.m.Y')
 		    },{
-		    	header: "Документ", 
-		    	width: 20, 
-		    	sortable: true, 
+		    	header: "Документ",
+		    	width: 20,
+		    	sortable: true,
 		    	renderer: function(v,params,rec){
 		    		if (rec.data.direction == '1') {
 		    			return 'Приходный ордер'
@@ -67,13 +67,13 @@ App.billing.PaymentGrid = Ext.extend(Ext.grid.GridPanel, {
 		    },{
 		    	header: "Клиент",
 		    	width:60,
-		    	sortable: true, 
+		    	sortable: true,
 		    	dataIndex: 'client_name'
 		    	//hidden:true
 		    },{
-		    	header: "Лицевой счет", 
-		    	width: 20, 
-		    	sortable: true, 
+		    	header: "Лицевой счет",
+		    	width: 20,
+		    	sortable: true,
 		    	dataIndex: 'account_id',
 		    	hidden:true
 		    	/*renderer: function(v,params,rec){
@@ -81,19 +81,19 @@ App.billing.PaymentGrid = Ext.extend(Ext.grid.GridPanel, {
                     return result
 		    	}*/
 		    },{
-		    	header: "Сумма", 
-		    	width: 20, 
-		    	sortable: true, 
+		    	header: "Сумма",
+		    	width: 20,
+		    	sortable: true,
 		    	dataIndex: 'amount'
 		    },{
-		    	header: "Примечание", 
-		    	width: 70, 
-		    	sortable: true, 
+		    	header: "Примечание",
+		    	width: 70,
+		    	sortable: true,
 		    	dataIndex: 'comment'
 		    }
-		];		
-		
-		this.ttb = new Ext.Toolbar({ 
+		];
+
+		this.ttb = new Ext.Toolbar({
 			items:[this.addButton,
 			{
 				iconCls:'silk-pencil',
@@ -129,8 +129,8 @@ App.billing.PaymentGrid = Ext.extend(Ext.grid.GridPanel, {
                 }
 		    },'-','Период c ',this.gteDateField,' по ',this.lteDateField,'-',
 			'->']
-		}); 
-		
+		});
+
 		var config = {
 //			id:'payment-grid',
 			title:'Платежные документы',
@@ -161,15 +161,15 @@ App.billing.PaymentGrid = Ext.extend(Ext.grid.GridPanel, {
 				emptyText: 'Нет записей'
 				//getRowClass : this.applyRowClass
 			})
-			
+
 		};
-		
+
 		Ext.apply(this, Ext.apply(this.initialConfig, config));
 		App.billing.PaymentGrid.superclass.initComponent.apply(this, arguments);
 		App.eventManager.on('paymentsave', this.onPaymentSave, this);
 		App.eventManager.on('globalsearch', this.onGlobalSearch, this);
 
-		
+
 		this.on('afterrender', function(){
 			if (!this.hasPatient){
 				var first_day = new Date();
@@ -183,17 +183,17 @@ App.billing.PaymentGrid = Ext.extend(Ext.grid.GridPanel, {
 				}
 			}
 		}, this);
-		
+
 		this.on('destroy', function(){
 		    App.eventManager.un('paymentsave', this.onPaymentSave, this);
 		    App.eventManager.un('globalsearch', this.onGlobalSearch, this);
 		},this);
 	},
-	
+
 	onGlobalSearch: function(v) {
 		this.storeFilter('search', v);
 	},
-	
+
 	storeFilter: function(field, value){
 		if(value===undefined) {
 			delete this.store.baseParams[field]
@@ -202,18 +202,18 @@ App.billing.PaymentGrid = Ext.extend(Ext.grid.GridPanel, {
 		}
 		this.store.load();
 	},
-	
+
 	getSelected: function() {
 		return this.getSelectionModel().getSelected()
 	},
-	
+
 	onPrint: function() {
 //		var id = this.getSelected().data.id;
 //		var url = ['/lab/print/results',id,''].join('/');
 //		window.open(url);
 	},
-	
-	
+
+
 	onCreate: function(type){
 		//if (this.patientRecord) {
 			this.win = new App.billing.PaymentWindow({
@@ -224,7 +224,7 @@ App.billing.PaymentGrid = Ext.extend(Ext.grid.GridPanel, {
 			this.win.show();
 		//}
 	},
-	
+
 	onChange: function(rowindex){
 			var rec = this.getSelected();
 			if(rec) {
@@ -239,11 +239,11 @@ App.billing.PaymentGrid = Ext.extend(Ext.grid.GridPanel, {
     			this.win.show();
 		}
 	},
-	
+
 	onDelete: function() {
-		
+
 	},
-	
+
 	setActivePatient: function(rec) {
 		id = rec.id;
 		this.patientId = id;
@@ -252,7 +252,7 @@ App.billing.PaymentGrid = Ext.extend(Ext.grid.GridPanel, {
 		s.baseParams = {format:'json','client_account__client_item__client': id};
 		s.load();
 	},
-	
+
 	onPaymentSave: function(record){
 		if (this.hasPatient){
 			App.eventManager.fireEvent('patientcardupdate',this.patientId)
@@ -265,7 +265,7 @@ App.billing.PaymentGrid = Ext.extend(Ext.grid.GridPanel, {
 			this.win.close();
 		}
 	}
-	
+
 });
 
 

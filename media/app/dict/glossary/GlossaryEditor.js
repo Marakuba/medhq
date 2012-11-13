@@ -2,9 +2,9 @@ Ext.ns('App.dict');
 
 App.dict.GlossaryEditor = Ext.extend(Ext.Panel, {
 	initComponent : function() {
-		
-		this.staff = App.getApiUrl('staff')+ '/' + active_staff;
-		
+
+		this.staff = App.getApiUrl('staff','staff')+ '/' + active_staff;
+
 		this.glossary = new App.dict.XGlossaryTree({
 			staff:this.staff,
 			root:{
@@ -45,14 +45,14 @@ App.dict.GlossaryEditor = Ext.extend(Ext.Panel, {
 				}
 			}
 		});
-		
+
 		this.fieldSetStore = new Ext.data.RESTStore({
 			autoSave: false,
 			autoLoad : false,
-			apiUrl : App.getApiUrl('examfieldset'),
+			apiUrl : App.getApiUrl('examination','examfieldset'),
 			model: App.models.FieldSet
 		});
-		
+
 		this.menuList = new Ext.list.ListView({
 	        store: this.fieldSetStore,
 	        multiSelect: false,
@@ -98,15 +98,15 @@ App.dict.GlossaryEditor = Ext.extend(Ext.Panel, {
 	                    	zIndex:9000
 	                    }
 	                };
-	                
+
 					var nodeEditor = new Ext.Editor(Ext.apply({
 	                    alignment: 'tl-tl',
 	                    listeners: {
 	                    	show:function(edt){
-	                    		
+
 	                    	},
 	                        complete: function(ed, value, oldValue){
-	                        	
+
 	                        	this.glossary.renameNode(this.node,value)
 	                        },
 	                        scope:this
@@ -149,7 +149,7 @@ App.dict.GlossaryEditor = Ext.extend(Ext.Panel, {
 				}
 			}
 		})
-		
+
 		this.glossPanel = new Ext.Panel({
 			region:'center',
  			border:false,
@@ -168,7 +168,7 @@ App.dict.GlossaryEditor = Ext.extend(Ext.Panel, {
     			this.editor
     		]
 		});
-		
+
 		this.menuPanel = new Ext.Panel({
 			region:'west',
  			border:false,
@@ -184,21 +184,21 @@ App.dict.GlossaryEditor = Ext.extend(Ext.Panel, {
     			this.menuList
     		]
 		});
-		
+
 		var config = {
 			id:'gloss-editor',
 			closable:true,
 			title: 'Редактор глоссария',
-			layout: 'border',	
+			layout: 'border',
      		items: [
 				this.menuPanel,
 				this.glossPanel
 			]
 		};
-		
+
 		Ext.apply(this, Ext.apply(this.initialConfig, config));
 		App.dict.GlossaryEditor.superclass.initComponent.apply(this, arguments);
-		
+
 		this.on('afterrender',function(){
 			this.fieldSetStore.load({callback:function(records){
 				if(records.length){
@@ -214,10 +214,10 @@ App.dict.GlossaryEditor = Ext.extend(Ext.Panel, {
 				}
 			},scope:this})
 		},this);
-		
+
 	}
-	
-	
+
+
 });
 
 Ext.reg('glosseditor', App.dict.GlossaryEditor);

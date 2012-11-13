@@ -10,17 +10,17 @@ App.examination.TemplateApp = Ext.extend(Ext.Panel, {
 		 *tplRecord - запись шаблона для редактирования
 		 *tplId
 		 *
-		 *Если передан tplId, то этот шаблон ищется в store, оттуда берется поле data и передается в 
-		 *редактор. 
+		 *Если передан tplId, то этот шаблон ищется в store, оттуда берется поле data и передается в
+		 *редактор.
 		 *Если данные изменились, редактор шлет событие с измененными данными - полем data
 		 *Менеджер заносит это поле в редактируемую запись шаблона и сохраняет store.
 		 *
 		*/
-		
+
 		this.tplStore = new Ext.data.RESTStore({
 			autoSave: false,
 			autoLoad : false,
-			apiUrl : get_api_url('examtemplate'),
+			apiUrl : App.getApiUrl('examination','examtemplate'),
 			model: App.models.Template,
 			baseParams:{
 				format:'json',
@@ -28,7 +28,7 @@ App.examination.TemplateApp = Ext.extend(Ext.Panel, {
 				deleted:false
 			}
 		});
-		
+
 		this.tplStore.on('write',function(store, action, result, res, rs){
 			if (action == 'create'){
 				this.tplId = rs.data.id;
@@ -38,7 +38,7 @@ App.examination.TemplateApp = Ext.extend(Ext.Panel, {
 				this.destroy();
 			}
 		},this);
-		
+
 		this.serviceTree = new App.ServiceTreeGrid ({
 //			layout: 'fit',
 			region:'west',
@@ -57,8 +57,8 @@ App.examination.TemplateApp = Ext.extend(Ext.Panel, {
 			collapseMode:'mini',
 			split:true
 		});
-		
-		
+
+
 		this.contentPanel = new Ext.Panel({
 			region:'center',
  			border:false,
@@ -72,39 +72,39 @@ App.examination.TemplateApp = Ext.extend(Ext.Panel, {
     		items: [
     		]
 		});
-	
+
 		var config = {
 			closable:true,
 			title: 'Шаблоны услуг',
-			layout: 'border',	
+			layout: 'border',
      		items: [
 				this.serviceTree,
 				this.contentPanel
 			]
 		};
-		
+
 		Ext.apply(this, Ext.apply(this.initialConfig, config));
 		App.examination.TemplateApp.superclass.initComponent.apply(this, arguments);
-		
+
 		this.on('afterrender',function(form){
 			if (this.tplId){
 				this.editTpl('tpl',this.tplId)
 			}
 		});
-		
+
 		this.serviceTree.on('serviceclick',function(attrs){
 			this.attrs = attrs;
 			this.onServiceClick(this.attrs)
 		},this);
 	},
-	
+
 	onServiceClick: function(attrs){
 		var ids = attrs.id.split('-');
 		var id = ids[0];
 		this.baseServiceName = attrs.text;
-		
+
 		this.baseServiceId = id;
-		
+
 		this.tplStore.setBaseParam('base_service',id);
 		this.tplStore.setBaseParam('staff',active_staff);
 		this.tplStore.setBaseParam('deleted',false);
@@ -112,7 +112,7 @@ App.examination.TemplateApp = Ext.extend(Ext.Panel, {
 			callback:function(records,opts,success){
 				if (records.length){
 					this.record = records[0];
-					this.openEditor(records[0].data.data)					
+					this.openEditor(records[0].data.data)
 				} else {
 					this.contentPanel.removeAll(true);
 					this.startPanel = this.newStartPanel({
@@ -126,35 +126,35 @@ App.examination.TemplateApp = Ext.extend(Ext.Panel, {
 			scope:this
 		});
 	},
-	
+
 	newStartPanel: function(config){
 		var tplConfig = {
 			border:false
 		};
 		Ext.applyIf(config,tplConfig);
 		var startPanel = new App.examination.TemplateStartPanel(config);
-		
+
 		startPanel.on('copy',this.copyFromSource,this);
 		startPanel.on('edit',this.editTpl,this);
 		startPanel.on('empty',this.createEmptyTpl,this);
 		return startPanel
 	},
-	
+
 	createEmptyTpl:function(){
 //		this.serviceTree.collapse();
 //		this.serviceTree.hide();
 		var emptyData = Ext.encode({'tickets':[]});
 		this.record = new this.tplStore.recordType();
 		this.record.set('data',emptyData);
-		this.record.set('staff',App.getApiUrl('staff',active_staff));
+		this.record.set('staff',App.getApiUrl('staff','staff',active_staff));
 		if (this.baseServiceName){
 			this.record.set('name',this.baseServiceName);
 		};
-		this.record.set('base_service',App.getApiUrl('baseservice',this.baseServiceId));
+		this.record.set('base_service',App.getApiUrl('service','baseservice',this.baseServiceId));
 		this.tplStore.add(this.record);
 		this.tplStore.save();
 	},
-	
+
 	copyFromSource: function(sourceType,sourceId){
 		if (!sourceId){
 			this.createEmptyTpl();
@@ -185,8 +185,8 @@ App.examination.TemplateApp = Ext.extend(Ext.Panel, {
 							deleted:false
 						};
 						this.record.set('name',this.baseServiceName);
-						this.record.set('staff',App.getApiUrl('staff',active_staff));
-						this.record.set('base_service',App.getApiUrl('baseservice',this.baseServiceId));
+						this.record.set('staff',App.getApiUrl('staff','staff',active_staff));
+						this.record.set('base_service',App.getApiUrl('service','baseservice',this.baseServiceId));
 						this.tplStore.add(this.record);
 						this.tplStore.save();
 						this.openEditor(this.record.data.data)
@@ -196,12 +196,12 @@ App.examination.TemplateApp = Ext.extend(Ext.Panel, {
 			});
 		}
 	},
-	
+
 	editTpl: function(source,tplId){
-		
+
 		if(source!='tpl'){
 			console.log('На редактирование передан не шаблон');
-			return 
+			return
 		}
 		if (!tplId){
 			this.createEmptyTpl();
@@ -222,7 +222,7 @@ App.examination.TemplateApp = Ext.extend(Ext.Panel, {
 			},scope:this});
 		}
 	},
-	
+
 	openEditor: function(data){
 		if (data) {
 			var decodedData = Ext.decode(data)
@@ -251,18 +251,18 @@ App.examination.TemplateApp = Ext.extend(Ext.Panel, {
 //		this.contentPanel.setTitle(title);
 		this.setTitle(title);
 	},
-	
+
 	updateData: function(data){
 		var encodedData = Ext.encode(data);
 		this.record.set('data',encodedData);
 		this.tplStore.save();
 	},
-	
+
 	deleteTpl: function(){
 		this.record.set('deleted', true);
 		this.tplStore.save();
 	},
-	
+
 	moveToArchive: function(name){
 		this.record.set('base_service', '');
 //		this.record.set('name',name);
@@ -271,7 +271,7 @@ App.examination.TemplateApp = Ext.extend(Ext.Panel, {
 			this.destroy()
 		}
 	}
-		
+
 });
 
 

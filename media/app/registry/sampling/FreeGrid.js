@@ -3,11 +3,11 @@ Ext.ns('App.sampling');
 App.sampling.FreeGrid = Ext.extend(Ext.grid.GridPanel, {
 
 	initComponent : function() {
-		
+
 		this.proxy = new Ext.data.HttpProxy({
-		    url: get_api_url('samplingservice')
+		    url: App.getApiUrl('visit','samplingservice')
 		});
-		
+
 		this.reader = new Ext.data.JsonReader({
 		    totalProperty: 'meta.total_count',
 		    successProperty: 'success',
@@ -21,12 +21,12 @@ App.sampling.FreeGrid = Ext.extend(Ext.grid.GridPanel, {
 		    {name: 'sampling'},
 		    {name: 'service_full_name'}
 		]);
-		
+
 		this.writer = new Ext.data.JsonWriter({
 		    encode: false,
 		    writeAllFields: true
 		});
-		
+
 		this.store = new Ext.data.Store({
 			autoLoad:true,
 			autoSave:false,
@@ -55,16 +55,16 @@ App.sampling.FreeGrid = Ext.extend(Ext.grid.GridPanel, {
 		    	scope:this
 		    }
 		});
-		
+
 		this.columns =  [new Ext.grid.RowNumberer({width: 20}),
 		    {
-		    	header: "Название", 
-		    	width: 50, 
-		    	sortable: true, 
-		    	dataIndex: 'service_full_name' 
+		    	header: "Название",
+		    	width: 50,
+		    	sortable: true,
+		    	dataIndex: 'service_full_name'
 		    }
 		];
-		
+
 		var config = {
 			loadMask : {
 				msg : 'Подождите, идет загрузка...'
@@ -87,18 +87,18 @@ App.sampling.FreeGrid = Ext.extend(Ext.grid.GridPanel, {
 				forceFit : true,
 				emptyText: 'Нет записей'
 			}
-			
+
 		}
 
 		Ext.apply(this, Ext.apply(this.initialConfig, config));
 		App.sampling.FreeGrid.superclass.initComponent.apply(this, arguments);
 	},
-	
+
 	onMove: function(){
 		var rec = this.getSelectionModel().getSelected();
 		if (rec) {
 			this.fireEvent('moverecord', rec);
 		}
 	}
-	
+
 });

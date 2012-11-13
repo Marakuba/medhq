@@ -40,7 +40,7 @@ App.examination.ResumeCardPlugin = function(config, order){
 	this.store = new Ext.data.RESTStore({
 		autoSave: false,
 		autoLoad : false,
-		apiUrl : get_api_url('card'),
+		apiUrl : App.getApiUrl('examination','card'),
 		model: App.models.Card
 	});
 	this.store.load({
@@ -81,7 +81,7 @@ App.examination.PreviousCardPlugin = function(config, order){
 	this.store = new Ext.data.RESTStore({
 		autoSave: false,
 		autoLoad : false,
-		apiUrl : get_api_url('card'),
+		apiUrl : App.getApiUrl('examination','card'),
 		model: App.models.Card
 	});
 	this.store.load({

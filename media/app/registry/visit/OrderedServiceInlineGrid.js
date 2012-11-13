@@ -4,19 +4,19 @@ Ext.ns('App.visit');
 App.visit.OrderedServiceInlineGrid = Ext.extend(Ext.grid.EditorGridPanel, {
 
 	loadInstant: false,
-	
+
 	preorders : new Ext.util.MixedCollection({}),
-	
+
 	initComponent : function() {
-		
+
 		this.shortMode = this.type=='material';
-		
+
 		this.deletedRecords = [];
-		
+
 		this.proxy = new Ext.data.HttpProxy({
-		    url: get_api_url('servicebasket')
+		    url: App.getApiUrl('visit','servicebasket')
 		});
-		
+
 		this.reader = new Ext.data.JsonReader({
 		    totalProperty: 'meta.total_count',
 		    successProperty: 'success',
@@ -39,22 +39,22 @@ App.visit.OrderedServiceInlineGrid = Ext.extend(Ext.grid.EditorGridPanel, {
 		    {name: 'preorder', allowBlank: true},
 		    {name: 'resource_uri', allowBlank: true}
 		]);
-		
+
 		this.writer = new Ext.data.JsonWriter({
 		    encode: false,
 		    writeAllFields: true
 		});
-		
+
 		this.store = new Ext.data.Store({
 			autoSave:false,
 		    baseParams: {
 		    	format:'json'
 		    },
 		    paramNames: {
-			    start : 'offset',  
-			    limit : 'limit', 
-			    sort : 'sort', 
-			    dir : 'dir' 
+			    start : 'offset',
+			    limit : 'limit',
+			    sort : 'sort',
+			    dir : 'dir'
 			},
 		    restful: true,
 		    proxy: this.proxy,
@@ -82,18 +82,18 @@ App.visit.OrderedServiceInlineGrid = Ext.extend(Ext.grid.EditorGridPanel, {
 		        transaction.call(this, rs);
 		    }
 		});
-		
+
 		this.delAllBtn = new Ext.Button({
 			iconCls:'silk-delete',
 			text:'Удалить все',
 			disabled:this.record,
 			handler:this.delAllRow.createDelegate(this)
 		});
-		
+
 		this.staffStore = new Ext.data.Store({
 			autoDestroy:true,
 			proxy: new Ext.data.HttpProxy({
-			    url: get_api_url('position'),
+			    url: App.getApiUrl('staff','position'),
 				method:'GET'
 			}),
 			reader: new Ext.data.JsonReader({
@@ -108,9 +108,9 @@ App.visit.OrderedServiceInlineGrid = Ext.extend(Ext.grid.EditorGridPanel, {
 		this.columns =  [new Ext.grid.RowNumberer({width: 30}),
 		    {
 		    	header: "МВ",
-		    	width: 3, 
+		    	width: 3,
 		    	css:'padding:0px!important;',
-		    	dataIndex: 'execution_place', 
+		    	dataIndex: 'execution_place',
 		    	renderer: function(val) {
 		    		colors = {
 		    			"5":"black",
@@ -124,41 +124,41 @@ App.visit.OrderedServiceInlineGrid = Ext.extend(Ext.grid.EditorGridPanel, {
 //		    		return "<img src='"+MEDIA_URL+"resources/images/state_"+s[s.length-1]+".png'>"
 		    	}
 		    },{
-		    	header: "Услуга", 
-		    	width: 50, 
-		    	sortable: true, 
-		    	dataIndex: 'service_name' 
+		    	header: "Услуга",
+		    	width: 50,
+		    	sortable: true,
+		    	dataIndex: 'service_name'
 		    },{
 		    	hidden:true,
-		    	dataIndex: 'preorder' 
+		    	dataIndex: 'preorder'
 		    },{
-		    	header: "Врач", 
-		    	width: 30, 
+		    	header: "Врач",
+		    	width: 30,
 		    	hidden: this.shortMode,
-		    	sortable: true, 
+		    	sortable: true,
 		    	dataIndex: 'staff_name',
 		    	renderer: function(val) {
 		    		return val //? val.staff_name : '';
 		    	}
 		    },{
-		    	header: "Кол-во", 
-		    	width: 10, 
-		    	sortable: false, 
+		    	header: "Кол-во",
+		    	width: 10,
+		    	sortable: false,
 		    	hidden: this.shortMode,
-		    	dataIndex: 'count', 
+		    	dataIndex: 'count',
 		    	editor: new Ext.ux.form.SpinnerField({
 		    		minValue: 1,
             		maxValue: 20
             	})
 		    },{
-		    	header: "Цена", 
-		    	width: 10, 
-		    	sortable: false, 
+		    	header: "Цена",
+		    	width: 10,
+		    	sortable: false,
 		    	hidden: this.shortMode,
-		    	dataIndex: 'price' 
+		    	dataIndex: 'price'
 		    },{
-		    	header: "Сумма", 
-		    	width: 10, 
+		    	header: "Сумма",
+		    	width: 10,
 		    	sortable: false,
 		    	hidden: this.shortMode,
 		    	dataIndex: 'total',
@@ -166,8 +166,8 @@ App.visit.OrderedServiceInlineGrid = Ext.extend(Ext.grid.EditorGridPanel, {
 		    		return rec.data.count*rec.data.price
 		    	}
 		    }
-		];		
-		
+		];
+
 		this.undoBtn = new Ext.Button({
 			text:'Назад',
 			disabled:true,
@@ -176,7 +176,7 @@ App.visit.OrderedServiceInlineGrid = Ext.extend(Ext.grid.EditorGridPanel, {
 				this.fireEvent('undo');
 			}
 		});
-		
+
 		this.redoBtn = new Ext.Button({
 			text:'Вперед',
 			disabled:true,
@@ -185,20 +185,20 @@ App.visit.OrderedServiceInlineGrid = Ext.extend(Ext.grid.EditorGridPanel, {
 				this.fireEvent('redo');
 			}
 		});
-		
+
 		this.delBtn = new Ext.Button({
 			iconCls:'silk-delete',
 			text:'Удалить',
 			disabled:true,
 			handler:this.delRow.createDelegate(this)
 		});
-		
+
 		this.changeStaffBtn = new Ext.Button({
 			text:'Изменить врача',
 			disabled:true,
 			handler:this.changeStaff.createDelegate(this)
 		});
-		
+
 		var config = {
 			id:'ordered-service-inline-grid',
 			loadMask : {
@@ -236,7 +236,7 @@ App.visit.OrderedServiceInlineGrid = Ext.extend(Ext.grid.EditorGridPanel, {
 				afteredit:this.onSumChange.createDelegate(this),
 				scope:this
 			}
-			
+
 		}
 
 		Ext.apply(this, Ext.apply(this.initialConfig, config));
@@ -246,11 +246,11 @@ App.visit.OrderedServiceInlineGrid = Ext.extend(Ext.grid.EditorGridPanel, {
 			App.eventManager.un('visitcreate', this.onVisitCreate, this);
 		},this);
 	},
-	
+
 	applyRowClass: function() {
 		//TODO: сделать разные цвета для сохраненных, новых и отмененных записей
 	},
-	
+
 	staffWindow: function(index, service){
 		var t = Ext.getCmp('service-panel');
 		var node = t.getNodeById(service);
@@ -260,22 +260,22 @@ App.visit.OrderedServiceInlineGrid = Ext.extend(Ext.grid.EditorGridPanel, {
 				var win = new App.visit.StaffWindow({index:index, staffList:sl});
 				win.on('validstaff', this.updateStaff, this);
 				win.show();
-				
+
 			}
 		}
 	},
-	
+
 	updateStaff: function(rec, id, staff_name){
 		rec.beginEdit();
-		rec.set('staff',"/api/v1/dashboard/position/"+id);
+		rec.set('staff', App.getApiUrl('staff', 'position', id));
 		rec.set('staff_name',staff_name);
 		rec.endEdit();
 	},
-	
+
 	saveBasket: function(){
 		this.store.save();
 	},
-	
+
 	onSumChange: function(){
 		var c = 0;
 		this.store.each(function(item){
@@ -283,7 +283,7 @@ App.visit.OrderedServiceInlineGrid = Ext.extend(Ext.grid.EditorGridPanel, {
 		});
 		this.fireEvent('sumchange',c);
 	},
-	
+
 	addRecord: function(attrs){
 //		var re = /(.*) \[\d+\]/;
 //		var res = re.exec(attrs.text);
@@ -293,24 +293,24 @@ App.visit.OrderedServiceInlineGrid = Ext.extend(Ext.grid.EditorGridPanel, {
 		var place = ids[1];
 		var Service = this.store.recordType;
 		var s = new Service({
-			service:App.getApiUrl('baseservice') + '/' + id, 
+			service:App.getApiUrl('service','baseservice') + '/' + id,
 			service_name:text,
 			price:attrs.price,
-			staff:attrs.staff_id ? App.getApiUrl('staff') + '/'+attrs.staff_id : null,
+			staff:attrs.staff_id ? App.getApiUrl('staff','staff') + '/'+attrs.staff_id : null,
 			staff_name:attrs.staff_name || '',
 			count:attrs.c || 1,
-			execution_place:App.getApiUrl('state') + '/'+place 
+			execution_place:App.getApiUrl('state','state') + '/'+place
 		});
 		this.store.add(s);
 		this.getView().focusRow(this.store.getCount()-1);
 		this.fireEvent('editstore');
 	},
-	
+
 	addRow: function(attrs, can_duplicate, callback, scope) {
 		if(!can_duplicate) {
 //			var re = /(.*) \[\d+\]/;
 //			res = re.exec(attrs.text);
-//			var text = res[res.length-1];	
+//			var text = res[res.length-1];
 			var ids = attrs.id.split('-');
 			var has_record = false;
 			this.store.each(function(rec){
@@ -356,7 +356,7 @@ App.visit.OrderedServiceInlineGrid = Ext.extend(Ext.grid.EditorGridPanel, {
 			}
 		}
 	},
-	
+
 	delRow: function() {
 		records = this.getSelectionModel().getSelections();
 		Ext.each(records,function(rec){
@@ -366,12 +366,12 @@ App.visit.OrderedServiceInlineGrid = Ext.extend(Ext.grid.EditorGridPanel, {
 		});
 		this.fireEvent('action');
 	},
-	
+
 	delAllRow: function() {
 		this.store.removeAll();
 		this.fireEvent('action');
 	},
-	
+
 	changeStaff: function() {
 		var rec = this.getSelectionModel().getSelected();
 		var box = new App.visit.StaffWindow({
@@ -383,7 +383,7 @@ App.visit.OrderedServiceInlineGrid = Ext.extend(Ext.grid.EditorGridPanel, {
 			fn:function(r){
 				if(r) {
 					rec.beginEdit();
-					rec.set('staff',App.getApiUrl('position',r.data.id));
+					rec.set('staff',App.getApiUrl('staff','position',r.data.id));
 					rec.set('staff_name',r.data.staff_name);
 					rec.endEdit();
 				}
@@ -393,7 +393,7 @@ App.visit.OrderedServiceInlineGrid = Ext.extend(Ext.grid.EditorGridPanel, {
 		});
 		box.show();
 	},
-	
+
 	onSave: function() {
 		if(this.record) {
 			var records = this.store.queryBy(function(rec,id){
@@ -411,7 +411,7 @@ App.visit.OrderedServiceInlineGrid = Ext.extend(Ext.grid.EditorGridPanel, {
 						ps.autoSave = false;
 					}
 					preorder.set('visit',this.record.data.resource_uri)
-					
+
 				}
 			}, this);
 			if(ps){
@@ -423,7 +423,7 @@ App.visit.OrderedServiceInlineGrid = Ext.extend(Ext.grid.EditorGridPanel, {
 			Ext.MessageBox.alert('Ошибка','Не задана запись визита!');
 		}
 	},
-	
+
 	getSteps: function(){
 		var steps = 0;
 		var m = this.store.getModifiedRecords().length;
@@ -435,12 +435,12 @@ App.visit.OrderedServiceInlineGrid = Ext.extend(Ext.grid.EditorGridPanel, {
 		}
 		return steps;
 	},
-	
+
 	onVisitCreate: function(record) {
 		this.record = record;
 		this.onSave();
 	},
-	
+
 	setRecord: function(record){
 		this.record = record;
 		if (this.record) {
@@ -451,7 +451,7 @@ App.visit.OrderedServiceInlineGrid = Ext.extend(Ext.grid.EditorGridPanel, {
 			},scope:this});
 		}
 	}
-	
+
 });
 
 

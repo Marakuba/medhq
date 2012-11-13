@@ -3,14 +3,14 @@ Ext.ns('App.patient');
 App.patient.OldExamCardGrid = Ext.extend(Ext.grid.GridPanel, {
 
 	loadInstant: false,
-	
+
 	initComponent : function() {
-		
+
 		// Create a standard HttpProxy instance.
 		this.proxy = new Ext.data.HttpProxy({
-		    url: get_api_url('regexamcard')
+		    url: App.getApiUrl('examination','regexamcard')
 		});
-		
+
 		// Typical JsonReader.  Notice additional meta-data params for defining the core attributes of your json-response
 		this.reader = new Ext.data.JsonReader({
 		    totalProperty: 'meta.total_count',
@@ -27,12 +27,12 @@ App.patient.OldExamCardGrid = Ext.extend(Ext.grid.GridPanel, {
 			{name: 'print_date', allowBlank: true},
 		    {name: 'staff_name', allowBlank: true}
 		]);
-		
+
 		// The new DataWriter component.
 		this.writer = new Ext.data.JsonWriter({
 		    encode: false   // <-- don't return encoded JSON -- causes Ext.Ajax#request to send data using jsonData config rather than HTTP params
 		});
-		
+
 		this.store = new Ext.data.GroupingStore({
 		    id: 'regexam-store',
 		    baseParams: {
@@ -50,34 +50,34 @@ App.patient.OldExamCardGrid = Ext.extend(Ext.grid.GridPanel, {
 		    reader: this.reader,
 		    writer: this.writer    // <-- plug a DataWriter into the store just as you would a Reader
 		});
-		
-		
+
+
 		this.columns =  [
 		    {
-		    	header: "Обследование", 
-		    	width: 50, 
-		    	sortable: true, 
+		    	header: "Обследование",
+		    	width: 50,
+		    	sortable: true,
 		    	dataIndex: 'ordered_service_id',
 		    	hidden:true
 		    },{
-		    	header: "Дата", 
-		    	width: 50, 
-		    	sortable: true, 
+		    	header: "Дата",
+		    	width: 50,
+		    	sortable: true,
 		    	dataIndex: 'created',
 		    	renderer:Ext.util.Format.dateRenderer('d.m.Y')
 		    },{
-		    	header: "Услуга", 
-		    	width: 50, 
-		    	sortable: true, 
+		    	header: "Услуга",
+		    	width: 50,
+		    	sortable: true,
 		    	dataIndex: 'name'
 		    },{
-		    	header: "Врач", 
-		    	width: 50, 
-		    	sortable: true, 
+		    	header: "Врач",
+		    	width: 50,
+		    	sortable: true,
 		    	dataIndex: 'staff_name'
 		    }
-		];		
-		
+		];
+
 		var config = {
 			loadMask : {
 				msg : 'Подождите, идет загрузка...'
@@ -96,7 +96,7 @@ App.patient.OldExamCardGrid = Ext.extend(Ext.grid.GridPanel, {
 			}],
 			listeners: {
 				rowdblclick:this.onPrint.createDelegate(this, [])
-			},	
+			},
 	        bbar: new Ext.PagingToolbar({
 	            pageSize: 100,
 	            store: this.store,
@@ -119,16 +119,16 @@ App.patient.OldExamCardGrid = Ext.extend(Ext.grid.GridPanel, {
 			view: new Ext.grid.GroupingView({
 				forceFit : true
 			})
-			
+
 		}
 
 		Ext.apply(this, Ext.apply(this.initialConfig, config));
 		App.patient.OldExamCardGrid.superclass.initComponent.apply(this, arguments);
-		
+
 		//App.eventManager.on('patientselect', this.onPatientSelect, this);
 		//this.ownerCt.on('patientselect', this.setActivePatient, this);
 	},
-	
+
 	setActivePatient: function(rec) {
 		id = rec.id;
 		this.patientId = id;
@@ -136,19 +136,19 @@ App.patient.OldExamCardGrid = Ext.extend(Ext.grid.GridPanel, {
 		s.baseParams = {format:'json','ordered_service__order__patient': id};
 		s.load();
 	},
-	
+
     getSelected: function() {
 		return this.getSelectionModel().getSelected()
 	},
-	
+
 	onPrint : function(){
 		var record = this.getSelected();
 		if(record) {
 			window.open('/exam/examcard/'+record.data.id+'/');
 		}
 	}
-	
-	
+
+
 });
 
 

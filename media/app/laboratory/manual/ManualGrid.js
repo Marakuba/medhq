@@ -3,9 +3,9 @@ Ext.ns('App.manual');
 App.manual.ManualGrid = Ext.extend(Ext.grid.GridPanel, {
 
 	initComponent : function() {
-		
+
 		this.origTitle = 'Ручные исследования';
-		
+
 		this.fields = [
   		    ['start_date','order__created__gte','Дата с','Y-m-d 00:00'],
   		    ['end_date','order__created__lte','по','Y-m-d 23:59'],
@@ -14,23 +14,23 @@ App.manual.ManualGrid = Ext.extend(Ext.grid.GridPanel, {
   		    ['staff','staff','Врач'],
   		    ['patient','order__patient','Пациент']
   		];
-  		
+
   		this.filterText = new Ext.Toolbar.TextItem({
 			text:'Фильтры не используются'
 		});
-		
+
 		this.store = new Ext.data.RESTStore({
 			autoSave : true,
 			autoLoad : false,
-			apiUrl : get_api_url('labservice'),
+			apiUrl : App.getApiUrl('visit','labservice'),
 			model: App.models.LabService
 		});
-		
+
 //		this.store.on('load',function(store, records, options){
 //			this.setTitle(String.format("{0} ({1})", this.baseTitle, records.length));
 //		},this);
 
-		
+
 		this.dateField = new Ext.form.DateField({
 			emptyText:'дата',
 			format:'d.m.Y',
@@ -38,19 +38,19 @@ App.manual.ManualGrid = Ext.extend(Ext.grid.GridPanel, {
 			minValue:new Date(1901,1,1),
 			width:80
 		});
-		
+
 		this.timeField = new Ext.form.TimeField({
 			emptyText:'время',
 			width:55,
 			format:'H:i'
 		});
-		
+
 		this.staffField = new Ext.form.LazyComboBox({
 			emptyText:'врач',
 			store: new Ext.data.JsonStore({
 				autoLoad:true,
 				proxy: new Ext.data.HttpProxy({
-					url:get_api_url('position'),
+					url:App.getApiUrl('staff','position'),
 					method:'GET'
 				}),
 				root:'objects',
@@ -60,7 +60,7 @@ App.manual.ManualGrid = Ext.extend(Ext.grid.GridPanel, {
 			displayField:'name',
 			width:120
 		});
-		
+
 		this.printBtn = new Ext.Button({
 			iconCls:'silk-printer',
 			handler:function(){
@@ -72,8 +72,8 @@ App.manual.ManualGrid = Ext.extend(Ext.grid.GridPanel, {
 			},
 			scope:this
 		});
-		
-		this.ttb = new Ext.Toolbar({ 
+
+		this.ttb = new Ext.Toolbar({
 			items:[{
 				text:'Фильтр',
 				handler:function(){
@@ -100,7 +100,7 @@ App.manual.ManualGrid = Ext.extend(Ext.grid.GridPanel, {
 					handler:this.setDateTime.createDelegate(this),
 					scope:this
 				},
-			
+
 				this.staffField, {
 					iconCls:'silk-user-go',
 					tooltip:'Текущий пользователь',
@@ -116,7 +116,7 @@ App.manual.ManualGrid = Ext.extend(Ext.grid.GridPanel, {
 							App.direct.lab.confirmManualService(rec.id, function(r,e){
 								if(r.success){
 									Ext.ux.Growl.notify({
-								        title: "Успешная операция!", 
+								        title: "Успешная операция!",
 								        message: r.message,
 								        iconCls: "x-growl-accept",
 								        alignment: "tr-tr",
@@ -134,46 +134,46 @@ App.manual.ManualGrid = Ext.extend(Ext.grid.GridPanel, {
 					},
 					scope:this
 				}]
-		}); 		
-		
+		});
+
 		this.columns =  [{
-	    	header: "Заказ", 
+	    	header: "Заказ",
 	    	width: 8,
 	    	dataIndex: 'barcode'
 	    },{
-	    	header: "Дата", 
+	    	header: "Дата",
 	    	width: 15,
 	    	dataIndex: 'created',
 	    	renderer:Ext.util.Format.dateRenderer('d.m.Y H:i')
 	    },{
-	    	header: "Пациент", 
+	    	header: "Пациент",
 	    	width: 50,
 	    	dataIndex: 'patient_name',
 	    	renderer:function(v){
 	    		return String.format("<b>{0}</b>",v);
 	    	}
 	    },{
-	    	header: "Наименование исследования", 
+	    	header: "Наименование исследования",
 	    	width: 50,
 	    	dataIndex: 'service_name'
 	    },{
-	    	header: "Офис", 
+	    	header: "Офис",
 	    	width: 15,
 	    	dataIndex: 'office_name'
 	    },{
-	    	header: "Лаборатория", 
+	    	header: "Лаборатория",
 	    	width: 15,
 	    	dataIndex: 'laboratory'
 	    },{
-	    	header: "Врач", 
+	    	header: "Врач",
 	    	width: 20,
 	    	dataIndex: 'staff_name'
 	    },{
-	    	header: "Оператор", 
+	    	header: "Оператор",
 	    	width: 15,
 	    	dataIndex: 'operator_name'
-	    }];		
-		
+	    }];
+
 		var config = {
 			id:'manual-service-grid',
 			title:this.origTitle,
@@ -221,30 +221,30 @@ App.manual.ManualGrid = Ext.extend(Ext.grid.GridPanel, {
 		            var c = record.get('executed');
 		            return c ? 'x-lab-complete' : 'x-lab-incomplete';
 		        }
-			}			
+			}
 		}
 
 		Ext.apply(this, Ext.apply(this.initialConfig, config));
 		App.manual.ManualGrid.superclass.initComponent.apply(this, arguments);
 		App.eventManager.on('globalsearch', this.onGlobalSearch, this);
-		
+
 		this.store.on('load',this.onStoreLoad,this);
-		
+
 		this.on('afterrender', function() {
 			var filters = Ext.state.Manager.getProvider().get('lab-service-filters');
 			this.updateFilters(filters);
 		}, this);
-		
+
 		this.on('beforedestroy', function(){
 			this.store.un('load',this.onStoreLoad,this);
 		},this);
-		
+
 		this.on('destroy', function(){
-		    App.eventManager.un('globalsearch', this.onGlobalSearch, this); 
+		    App.eventManager.un('globalsearch', this.onGlobalSearch, this);
 		},this);
-		
+
 	},
-	
+
 	setActiveRecord : function(sm, idx, rec) {
 		var d = rec.data;
 		if(d.staff) {
@@ -258,21 +258,21 @@ App.manual.ManualGrid = Ext.extend(Ext.grid.GridPanel, {
 		this.dateField.setValue(d.executed);
 		this.timeField.setValue(d.executed);
 	},
-	
+
 	setDateTime : function() {
 		var now = new Date();
 		this.dateField.setValue(now);
 		this.timeField.setValue(now);
 		return now
 	},
-	
+
 	setStaff : function() {
-		var staff = App.getApiUrl('position',active_profile);
+		var staff = App.getApiUrl('staff','position',active_profile);
 		var sf = this.staffField;
 		sf.setValue(staff);
 		return staff
 	},
-	
+
 	saveSDT: function(rec) {
 		var d = this.dateField.getValue();
 		var t = this.timeField.getValue().split(':');
@@ -294,16 +294,16 @@ App.manual.ManualGrid = Ext.extend(Ext.grid.GridPanel, {
 			rec.endEdit();
 		}
 	},
-	
+
 /*	setActiveRecord: function(rec) {
 		this.labOrderRecord = rec;
-		
+
 		this.store.setBaseParam('order',App.uriToId(this.labOrderRecord.data.visit));
 		this.store.load();
 
 		this.enable();
 	},*/
-	
+
 	storeFilter: function(field, value, autoLoad){
 		var autoLoad = autoLoad==undefined ? true : autoLoad;
 		if(value==undefined) {
@@ -315,9 +315,9 @@ App.manual.ManualGrid = Ext.extend(Ext.grid.GridPanel, {
 			this.store.load();
 		}
 	},
-	
+
 	onGlobalSearch: function(v){
-		
+
 		this.changeTitle = v!==undefined;
 		if(!v){
 			this.setTitle(this.origTitle);
@@ -327,17 +327,17 @@ App.manual.ManualGrid = Ext.extend(Ext.grid.GridPanel, {
 			s.load();
 		}
 	},
-	
+
 	getSelected: function() {
 		return this.getSelectionModel().getSelected()
 	},
-	
+
 	onStoreLoad : function(store,r,options){
 		if(this.changeTitle){
 			this.setTitle(String.format('{0} ({1})', this.origTitle, store.getTotalCount()));
 		}
 	},
-	
+
 	updateFilterStatus : function(filters) {
 		var filtersText = [];
 		Ext.each(this.fields, function(field){
@@ -349,7 +349,7 @@ App.manual.ManualGrid = Ext.extend(Ext.grid.GridPanel, {
 		this.filterText.setText(filtersText.length ? String.format('{0}',filtersText.join(' ')) : 'Фильтры не используются');
 		this.getTopToolbar().items.itemAt(1).setVisible(filtersText.length>0);
 	},
-	
+
 	updateFilters : function(filters) {
 		this.fireEvent('updatefilters');
 		if(filters) {
@@ -364,8 +364,8 @@ App.manual.ManualGrid = Ext.extend(Ext.grid.GridPanel, {
 		}
 		this.store.load();
 	}
-	
-	
+
+
 });
 
 Ext.reg('manualgrid', App.manual.ManualGrid);

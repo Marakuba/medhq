@@ -3,7 +3,7 @@ Ext.ns('App.clientaccount');
 
 App.clientaccount.Backend = Ext.extend(App.Backend, {
 
-		
+
 		store:new Ext.data.Store({
 			autoLoad:false,
 		    baseParams: {
@@ -17,7 +17,7 @@ App.clientaccount.Backend = Ext.extend(App.Backend, {
 			},
 		    restful: true,
 		    proxy: new Ext.data.HttpProxy({
-			    url: get_api_url('clientaccount')
+			    url: App.getApiUrl('billing','clientaccount')
 			}),
 		    reader: new Ext.data.JsonReader({
 			    totalProperty: 'meta.total_count',
@@ -62,7 +62,7 @@ App.clientaccount.Backend = Ext.extend(App.Backend, {
 		    	scope:this
 		    }
 		})
-		
+
 });
 
 App.regBackend('clientaccount', new App.clientaccount.Backend({}));

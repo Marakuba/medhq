@@ -97,7 +97,7 @@ INSTALLED_APPS = [
 #    'sentry.client',
 
     'accounting',
-    'api',
+    # 'api',
     'assistant',
     'billing',
     'core',

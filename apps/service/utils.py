@@ -67,9 +67,9 @@ def get_service_tree(state=None,payer=None,payment_type=None,price_type=None, da
             node = tree[-1]
             if (empty or node.is_root_node()) and not node.is_leaf_node():
                 #Если это не группа или один из корней, то говорим, что потомков нет
-                tree = clear_tree(tree[:-1],True) or []
+                tree = clear_tree(tree[:-1], True) or []
             else:
-                tree = clear_tree(tree[:-1],False) or []
+                tree = clear_tree(tree[:-1], False) or []
             #Если нет потомков и текущий элемент - группа
             if not node.is_leaf_node() and empty:
                 #удаляем текущий элемент

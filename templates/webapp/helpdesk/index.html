@@ -9,7 +9,7 @@
     {% assets "css_helpdesk" %}
 	 <link rel="stylesheet" type="text/css" href="{{ ASSET_URL }}"></>
 	{% endassets %}
-	
+
 	<style>
 	</style>
 
@@ -17,23 +17,20 @@
 		var state = '{{ request.active_profile.state }}';
 		var STATIC_URL = '{{ STATIC_URL }}';
 		var API_URL = '/api/v1';
-		function get_api_url(resource){
-			return [API_URL,'dashboard',resource].join("/");
-		}
 	</script>
 
     {% assets "js_ext" %}
 	 <script type="text/javascript" src="{{ ASSET_URL }}"></script>
 	{% endassets %}
-	
+
 	{% assets "js_for_all" %}
 	 <script type="text/javascript" src="{{ ASSET_URL }}"></script>
 	{% endassets %}
-	
+
 	<script type="text/javascript">
 		Raven.config("{{sentry_dsn}}");
 	</script>
-	
+
 	{% assets "js_helpdesk" %}
 	    <script type="text/javascript" src="{{ ASSET_URL }}"></script>
 	{% endassets %}

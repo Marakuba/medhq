@@ -11,23 +11,23 @@ App.examination.TicketPanel = Ext.extend(Ext.ux.Portal,{
 
 App.examination.SectionPanel = Ext.extend(Ext.Panel, {
 	initComponent : function() {
-		
+
 		this.portalColumn = new Ext.ux.PortalColumn({
 			columnWidth:1,
 			anchor:'100%'
 		});
-		
+
 		this.buffer = '';
-		
+
 		this.ctxEditor = undefined;
-		
-		this.clearFilterList = [Ext.EventObject.ESC, Ext.EventObject.RIGHT, Ext.EventObject.LEFT, 
-								Ext.EventObject.TAB, 
+
+		this.clearFilterList = [Ext.EventObject.ESC, Ext.EventObject.RIGHT, Ext.EventObject.LEFT,
+								Ext.EventObject.TAB,
 								Ext.EventObject.DELETE, 44, 59, 63]
-		
+
 		this.glossStore = new Ext.data.Store({
-            restful: true,    
-            autoLoad: true, 
+            restful: true,
+            autoLoad: true,
 			autoDestroy:true,
             baseParams:{
         		format:'json',
@@ -41,7 +41,7 @@ App.examination.SectionPanel = Ext.extend(Ext.Panel, {
 			    dir : 'dir'
 			},
             proxy: new Ext.data.HttpProxy({
-	        	url: get_api_url('glossary')
+	        	url: App.getApiUrl('examination','glossary')
 	        }),
             reader: new Ext.data.JsonReader({
 	            totalProperty: 'meta.total_count',
@@ -56,7 +56,7 @@ App.examination.SectionPanel = Ext.extend(Ext.Panel, {
 				{name: 'section'}
 	        ])
         });
-		
+
 		this.glossDropDown = new Ext.ux.DropDownList({
 			tpl: '<tpl for="."><div class="x-combo-list-item">{text}</div></tpl>',
 			store: this.glossStore,
@@ -66,7 +66,7 @@ App.examination.SectionPanel = Ext.extend(Ext.Panel, {
 			clearFilterList: this.clearFilterList,
 			listeners: {
 				processquery: function(list, options, e) {
-					
+
 					/*var txt = Ext.getCmp(list.currentEl.id);
 					var parsedAddresses = this.parseMailAddressesOnCurrentPosition(txt);
 
@@ -105,11 +105,11 @@ App.examination.SectionPanel = Ext.extend(Ext.Panel, {
 
 //					txt.setCursorPosition(newText.length);
 				},
-				
+
 				scope:this
 			}
 		});
-		
+
 		this.ticketPanel = new App.examination.TicketPanel({
 			region:'center',
 			baseCls:'ticket',
@@ -123,7 +123,7 @@ App.examination.SectionPanel = Ext.extend(Ext.Panel, {
 				},this);
 				return data
 			},
-			
+
 			listeners:{
 				'resize':function(p,adjW,adjh,w,h){
 				    /* p : panel
@@ -138,7 +138,7 @@ App.examination.SectionPanel = Ext.extend(Ext.Panel, {
 				},
 				'afterrender':function(panel){
 					panel.body.on('blur',function(e,t,o){
-						
+
 						if (this.ctxEditor){
 							this.ctxEditor.completeEdit();
 							this.onTicketEndEdit();
@@ -148,13 +148,13 @@ App.examination.SectionPanel = Ext.extend(Ext.Panel, {
 				scope:this
 			}
 		});
-		
+
 //		this.bb = new Ext.Toolbar({
 //			items:[]
 //		});
-		
+
 		var config = {
-			
+
 //		    height: 636,
 //		    width: 771,
 			layout:'border',
@@ -169,18 +169,18 @@ App.examination.SectionPanel = Ext.extend(Ext.Panel, {
 		    ],
 //		    bbar: [this.deleteBtn]
 		}
-								
+
 		Ext.apply(this, Ext.apply(this.initialConfig, config));
 		App.examination.SectionPanel.superclass.initComponent.apply(this, arguments);
-		
+
 		App.eventManager.on('tmptabchange',this.closeEditor,this);
-		
+
 		this.on('destroy', function(){
-		    App.eventManager.un('tmptabchange',this.closeEditor,this); 
+		    App.eventManager.un('tmptabchange',this.closeEditor,this);
 		},this);
-		
+
 		this.on('afterrender',function(panel){
-			
+
 			if(this.data){
 				Ext.each(this.data.tickets,function(ticket,i){
 					var new_ticket = new Ext.ux.form.Ticket({
@@ -224,30 +224,30 @@ App.examination.SectionPanel = Ext.extend(Ext.Panel, {
 				},this);
 				this.doLayout();
 			};
-			
+
 		},this);
-		
+
 		this.on('beforeclose',function(){
 			this.fireEvent('closetab',this)
 			return false
 //			this.removeTab();
 		},this);
-		
+
 		this.on('editorclose',function(){
 			this.ctxEditor = undefined;
 		},this);
-		
+
 		this.on('ticketheadeeditstart',function(panel){
 			if (this.ticket){
 				this.ticket.body.removeClass('selected')
 			};
-			
+
 			this.ticket = panel;
 			this.ticket.body.addClass('selected')
 		},this)
 
 		this.on('ticketdataupdate', function(ticket, data){
-			// в тикете обновились данные 
+			// в тикете обновились данные
 //			this.ctxEditor = undefined;
 //			this.ticket = undefined;
 //			this.ticket = ticket;
@@ -258,13 +258,13 @@ App.examination.SectionPanel = Ext.extend(Ext.Panel, {
 			this.glossDropDown.clearBuffer();
 		},this);
 	},
-	
+
 	onTicketEndEdit: function(){
 	},
-	
+
 	loadData: function(data){
 	},
-	
+
 	removeTab: function(){
 		var data = Ext.decode(this.record.data.data);
 		Ext.each(data,function(sec,i){
@@ -274,7 +274,7 @@ App.examination.SectionPanel = Ext.extend(Ext.Panel, {
 		},this);
 		this.record.set('data',Ext.encode(data));
 	},
-	
+
 	addTicket:function(title){
 		var new_ticket = new Ext.ux.form.Ticket({
 			data:{
@@ -314,12 +314,12 @@ App.examination.SectionPanel = Ext.extend(Ext.Panel, {
 		this.portalColumn.add(new_ticket);
 		this.doLayout();
 	},
-	
+
 	getData: function(){
 		var data = this.ticketPanel.getData();
 		return data
 	},
-	
+
 	parseMailAddressesOnCurrentPosition : function(textarea) {
 		curPos = this.ticket.getPos() || -1
 		var val = textarea.getValue();
@@ -334,7 +334,7 @@ App.examination.SectionPanel = Ext.extend(Ext.Panel, {
 		} else {
 			beforeAddresses = val.substring(0, beforeEnd + 1);
 		};
-		
+
 		console.log('beforeAddresses ', beforeAddresses);
 
 		var afterBegin = this.indexOfAny(afterAddresses,[',','.',' ']);
@@ -344,17 +344,17 @@ App.examination.SectionPanel = Ext.extend(Ext.Panel, {
 		} else {
 			afterAddresses = afterAddresses.substr(afterBegin);
 		};
-		
+
 //		console.log('afterAddresses ', afterAddresses);
 //		console.log('curPos ', curPos);
 //		console.log('val ', val);
 		beforeEnd = (beforeEnd == -1) ? 0 : beforeEnd;
 		afterBegin = (afterBegin == -1) ? undefined : afterBegin;
 		var currentAddress = val.substring(beforeEnd, afterBegin ? afterBegin + curPos : undefined);
-		
+
 //		console.log('left_ind ', beforeEnd);
 //		console.log('right_ind ', afterBegin);
-//		
+//
 //		console.log('currentAddress ', currentAddress);
 
 		return ({
@@ -363,7 +363,7 @@ App.examination.SectionPanel = Ext.extend(Ext.Panel, {
 			afterAddresses: afterAddresses.trim()
 		});
 	},
-	
+
 	lastIndexOfAny:function(str,arr){
 		var genInd = -1;
 		Ext.each(arr,function(chr){
@@ -372,7 +372,7 @@ App.examination.SectionPanel = Ext.extend(Ext.Panel, {
 		});
 		return genInd;
 	},
-	
+
 	indexOfAny:function(str,arr){
 		var genInd = -1;
 		Ext.each(arr,function(chr){
@@ -381,14 +381,14 @@ App.examination.SectionPanel = Ext.extend(Ext.Panel, {
 		});
 		return genInd;
 	},
-	
+
 	closeEditor: function(){
 		if(this.ctxEditor){
 			this.ctxEditor.completeEdit();
 		}
 	},
-	
-	//вставка текста в текущую позицию текущего тикета 
+
+	//вставка текста в текущую позицию текущего тикета
 	insertText: function(pastedText){
 		if (this.ticket){
 			this.ticket.doNotClose = true;
@@ -401,7 +401,7 @@ App.examination.SectionPanel = Ext.extend(Ext.Panel, {
 			};
 			if (oldText[pos] && oldText[pos] != ' '){
 				pastedText += ' ';
-			} 
+			}
 			if (pos>0 && oldText[pos-1] && oldText[pos-1] != ' '){
 				var newText = oldText.splice(pos, 0, ' '+ pastedText);
 			} else {
@@ -413,7 +413,7 @@ App.examination.SectionPanel = Ext.extend(Ext.Panel, {
 			if (this.ctxEditor){
 				this.ctxEditor.field.setValue(newText);
 				var textarea = this.ctxEditor.field.getEl().dom;
-				textarea.setSelectionRange(pos, pos); 
+				textarea.setSelectionRange(pos, pos);
 				this.ticket.setCaretTo.defer(300,this.ticket,[textarea,pos]);
 			} else {
 				this.ticket.setPos(pos);
@@ -421,7 +421,7 @@ App.examination.SectionPanel = Ext.extend(Ext.Panel, {
 			this.fireEvent('ticketdataupdate');
 		}
 	}
-	
-	
-	
+
+
+
 });

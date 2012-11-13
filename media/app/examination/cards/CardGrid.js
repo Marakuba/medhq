@@ -1,18 +1,18 @@
 Ext.ns('App.examination');
 
 App.examination.CardGrid = Ext.extend(Ext.grid.EditorGridPanel, {
-	
+
 	initComponent: function(){
 
 		this.proxy = new Ext.data.HttpProxy({
-        	url: get_api_url('card')
+        	url: App.getApiUrl('examination','card')
         });
 		this.baseParams = Ext.apply({
             format:'json',
             deleted:false,
             'ordered_service__staff': active_profile
         },this.baseParams);
-    
+
         this.reader = new Ext.data.JsonReader({
             totalProperty: 'meta.total_count',
             successProperty: 'success',
@@ -20,15 +20,15 @@ App.examination.CardGrid = Ext.extend(Ext.grid.EditorGridPanel, {
             root: 'objects',
             messageProperty: 'message'
         }, App.models.Card);
-    
+
         this.writer = new Ext.data.JsonWriter({
             encode: false,
             writeAllFields: true
-        }); 
-    
+        });
+
         this.store =  this.store || new Ext.data.Store({
-            restful: true,    
-            autoLoad: false, 
+            restful: true,
+            autoLoad: false,
             baseParams: this.baseParams,
 		    paramNames: {
 			    start : 'offset',
@@ -40,13 +40,13 @@ App.examination.CardGrid = Ext.extend(Ext.grid.EditorGridPanel, {
             reader: this.reader,
             writer: this.writer
         });
-        
+
 		this.store.on('load', function(){
-			
+
 		}, this);
-		
+
         if(!this.emptyTbar){
-			
+
 			this.tbar = this.tbar || ['Период',{
 				xtype:'datefield',
 				format:'d.m.Y',
@@ -68,7 +68,7 @@ App.examination.CardGrid = Ext.extend(Ext.grid.EditorGridPanel, {
 					scope:this
 				}
 			}];
-			
+
 			this.tbar.push({
 				xtype:'button',
 				text:'Обновить',
@@ -97,42 +97,42 @@ App.examination.CardGrid = Ext.extend(Ext.grid.EditorGridPanel, {
         this.columns =  [
         	{
                 header: "",
-                width: 15, 
-                sortable: true, 
+                width: 15,
+                sortable: true,
                 dataIndex: 'executed',
                 renderer:function(val, meta, record) {
 		    		var p = record.data.executed;
 		    		var flag = p ? 'yes' : 'no';
 		    		var img = "<img src='"+MEDIA_URL+"admin/img/admin/icon-"+flag+".gif'>"
 		    		return String.format("{0}", img);
-		    	} 
+		    	}
             },
             {
                 header: "Дата создания",
-                width: 90, 
-                sortable: true, 
+                width: 90,
+                sortable: true,
                 dataIndex: 'created',
                 renderer:Ext.util.Format.dateRenderer('d.m.y / H:i')
             },{
-                header: "Услуга", 
-                width: 240, 
-                sortable: true, 
+                header: "Услуга",
+                width: 240,
+                sortable: true,
                 dataIndex: 'name'
             },{
-                header: "Пациент", 
-                width: 100, 
-                sortable: true, 
+                header: "Пациент",
+                width: 100,
+                sortable: true,
                 dataIndex: 'patient_name'
             },{
-                header: "Изменено", 
-                width: 90, 
-                sortable: true, 
+                header: "Изменено",
+                width: 90,
+                sortable: true,
                 dataIndex: 'modified',
                 renderer:Ext.util.Format.dateRenderer('d.m.y / H:i')
             }
         ];
-    
-    
+
+
 
         config = {
 			loadMask : {
@@ -166,11 +166,11 @@ App.examination.CardGrid = Ext.extend(Ext.grid.EditorGridPanel, {
         };
         Ext.apply(this, Ext.apply(this.initialConfig, config));
 	    App.examination.CardGrid.superclass.initComponent.apply(this, arguments);
-	    
+
 	    App.eventManager.on('globalsearch', this.onGlobalSearch, this);
-		
+
 		this.on('destroy', function(){
-		    App.eventManager.un('globalsearch', this.onGlobalSearch, this); 
+		    App.eventManager.un('globalsearch', this.onGlobalSearch, this);
 		},this);
 
 		this.on('afterrender', function(){
@@ -181,9 +181,9 @@ App.examination.CardGrid = Ext.extend(Ext.grid.EditorGridPanel, {
 				scope:this
 			})
 		}, this);
-		
+
     },
-    
+
     storeFilter: function(field, value){
 		if(!value) {
 			//console.log(this.store.baseParams[field]);
@@ -194,7 +194,7 @@ App.examination.CardGrid = Ext.extend(Ext.grid.EditorGridPanel, {
 		}
 		this.store.load();
 	},
-	
+
 	onGlobalSearch: function(v) {
 		if(v) {
 			var letter = v.charAt(0);

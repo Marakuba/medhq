@@ -3,12 +3,12 @@ Ext.ns('App.insurance');
 App.insurance.StateGrid = Ext.extend(Ext.grid.GridPanel, {
 
 	initComponent : function() {
-		
+
 		// Create a standard HttpProxy instance.
 		this.proxy = new Ext.data.HttpProxy({
-		    url: get_api_url('insurance_state')
+		    url: App.getApiUrl('state','insurance_state')
 		});
-		
+
 		// Typical JsonReader.  Notice additional meta-data params for defining the core attributes of your json-response
 		this.reader = new Ext.data.JsonReader({
 		    totalProperty: 'meta.total_count',
@@ -20,12 +20,12 @@ App.insurance.StateGrid = Ext.extend(Ext.grid.GridPanel, {
 		    {name: 'id'},
 		    {name: 'name'}
 		]);
-		
+
 		this.writer = new Ext.data.JsonWriter({
 		    encode: false,
 		    writeAllFields: true
 		});
-		
+
 		this.store = new Ext.data.Store({
 			autoLoad:true,
 			autoSave:false,
@@ -43,17 +43,17 @@ App.insurance.StateGrid = Ext.extend(Ext.grid.GridPanel, {
 		    reader: this.reader,
 		    writer: this.writer    // <-- plug a DataWriter into the store just as you would a Reader
 		});
-		
+
 		this.columns =  [
 		    {
-		    	header: "Название", 
-		    	width: 50, 
-		    	sortable: true, 
-		    	dataIndex: 'name', 
+		    	header: "Название",
+		    	width: 50,
+		    	sortable: true,
+		    	dataIndex: 'name',
 		    	editor: new Ext.form.TextField({})
 		    }
 		];
-		
+
 		this.editor = new Ext.ux.grid.RowEditor({
        		saveText: 'Сохранить',
        		cancelText: 'Отменить',
@@ -64,7 +64,7 @@ App.insurance.StateGrid = Ext.extend(Ext.grid.GridPanel, {
        			scope:this
        		}
     	});
-		
+
 		var config = {
 			loadMask : {
 				msg : 'Подождите, идет загрузка...'
@@ -86,13 +86,13 @@ App.insurance.StateGrid = Ext.extend(Ext.grid.GridPanel, {
 				forceFit : true,
 				emptyText: 'Нет записей'
 			}
-			
+
 		}
 
 		Ext.apply(this, Ext.apply(this.initialConfig, config));
 		App.insurance.StateGrid.superclass.initComponent.apply(this, arguments);
 	},
-	
+
 	onAdd: function(){
         var r = new this.store.recordType({
         });
@@ -100,5 +100,5 @@ App.insurance.StateGrid = Ext.extend(Ext.grid.GridPanel, {
         this.store.add(r);
         this.editor.startEditing(this.store.getCount()-1);
 	}
-	
+
 });

@@ -8,49 +8,46 @@
 	<script type="text/javascript">
 		var state = '{{ request.active_profile.state }}';
 		var STATIC_URL = '{{ STATIC_URL }}';
-		var API_URL = '/api/v1';
-		function get_api_url(resource){
-			return [API_URL,'dashboard',resource].join("/");
-		}
+		var API_URL = '/api';
 		var MEDIA_URL = '{{ STATIC_URL }}';
 	</script>
-	
+
 	<link rel="icon" type="image/ico" href="{{ STATIC_URL }}resources/favicon.ico" />
 
     {% assets "css_calendar" %}
 	 <link rel="stylesheet" type="text/css" href="{{ ASSET_URL }}"></>
 	{% endassets %}
-	
+
     {% assets "js_ext" %}
 	 <script type="text/javascript" src="{{ ASSET_URL }}"></script>
 	{% endassets %}
-	
+
 	{% assets "js_for_all" %}
 	 <script type="text/javascript" src="{{ ASSET_URL }}"></script>
 	{% endassets %}
-	
+
 	<script type="text/javascript">
 		Raven.config("{{sentry_dsn}}");
 	</script>
-	
+
 	<script type="text/javascript" src="/webapp/settings/"></script>
-	
+
 	{% assets "js_calendar" %}
 	    <script type="text/javascript" src="{{ ASSET_URL }}"></script>
 	{% endassets %}
-    
-    <!--<script type="text/javascript" src="{{ STATIC_URL }}app/calendar/calendar-all.js"></script>  
+
+    <!--<script type="text/javascript" src="{{ STATIC_URL }}app/calendar/calendar-all.js"></script>
     <script type="text/javascript" src="{{ STATIC_URL }}app/calendar/calendar-all-debug.js"></script> -->
-    
+
     <!--<script type="text/javascript" src="{{ STATIC_URL }}app/calendar/app/calendar-list.js"></script>
     <script type="text/javascript" src="{{ STATIC_URL }}app/calendar/app/event-list.js"></script>
     <script type="text/javascript" src="{{ STATIC_URL }}app/calendar/app/test-app.js"></script>
     <script type="text/javascript" src="{{ STATIC_URL }}app/calendar/src/DoctorCalendar.js"></script>-->
-     
-    
-    
-    
-    
+
+
+
+
+
 
 {% include "webapp/includes/active_profile.html" %}
 

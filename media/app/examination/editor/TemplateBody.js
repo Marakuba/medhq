@@ -2,36 +2,36 @@ Ext.ns('App.examination');
 Ext.ns('App.patient');
 
 App.examination.TemplateBody = Ext.extend(Ext.TabPanel, {
-	
+
 	initComponent: function(){
-		
+
 		//Используется для определения режима редактора, для отображения необходимых кнопок в тулбаре
 		this.mode = this.isCard ? 'card' : 'template',
-		
+
 		this.essenceText = this.isCard ? 'карту осмотра' : 'шаблон';
-		
+
 		this.tmpStore = new Ext.data.RESTStore({
 			autoSave: true,
 			autoLoad : false,
-			apiUrl : get_api_url('examtemplate'),
+			apiUrl : App.getApiUrl('examination','examtemplate'),
 			baseParams:{
 				format:'json',
 				deleted:false
 			},
 			model: App.models.Template
 		});
-		
+
 		this.questStore = new Ext.data.RESTStore({
 			autoSave: true,
 			autoLoad : false,
-			apiUrl : get_api_url('questionnaire'),
+			apiUrl : App.getApiUrl('examination','questionnaire'),
 			baseParams:{
 				format:'json',
 				deleted:false
 			},
 			model: App.models.Questionnaire
 		});
-		
+
 		this.ticketOkBtn = new Ext.Button({
 			text:'Ok',
 			hidden:true,
@@ -44,7 +44,7 @@ App.examination.TemplateBody = Ext.extend(Ext.TabPanel, {
 			},
 			scope:this
 		})
-		
+
 		this.previewBtn = new Ext.Button({
 			iconCls:'silk-zoom',
 			text: 'Просмотр',
@@ -63,13 +63,13 @@ App.examination.TemplateBody = Ext.extend(Ext.TabPanel, {
 			handler:this.onClose.createDelegate(this),
 			scope:this
 		});
-		
+
 		this.svgBtn = new Ext.Button({
 			text: 'svg',
 			handler:this.onSVGOpen.createDelegate(this),
 			scope:this
 		});
-		
+
 		this.historyBtn = new Ext.Button({
 			iconCls:'silk-package',
 			hidden:!this.isCard,
@@ -78,7 +78,7 @@ App.examination.TemplateBody = Ext.extend(Ext.TabPanel, {
 			mode:'card',
 			scope:this
 		});
-		
+
 		this.moveArchiveBtn = new Ext.Button({
 			text: this.isCard? 'Переместить в Мои шаблоны': 'Сохранить как шаблон',
 			hidden:this.fromArchive,
@@ -93,13 +93,13 @@ App.examination.TemplateBody = Ext.extend(Ext.TabPanel, {
 					delete archiveRecord.data['base_service']
 					delete archiveRecord.data['id'];
 					this.tmpStore.add(archiveRecord);
-					
+
 					this.fireEvent('movearhcivecard');
 				}
 			},
 			scope:this
 		});
-		
+
 		this.dltBtn = new Ext.Button({
 			text: 'Удалить '+this.essenceText,
 			handler:function(){
@@ -108,22 +108,22 @@ App.examination.TemplateBody = Ext.extend(Ext.TabPanel, {
 			},
 			scope:this
 		});
-		
+
 		this.saveQuestBtn = new Ext.Button({
 			text: 'Сохранить',
 			source:'questionnaire',
 			handler:this.onSaveQuest.createDelegate(this),
 			scope:this
 		});
-		
+
 		this.removeQuestBtn = new Ext.Button({
 			text: 'Удалить анкету',
 			source:'questionnaire',
 			disabled:true,
 			handler:this.onRemoveQuest.createDelegate(this),
 			scope:this
-		}); 
-		
+		});
+
 		this.editQuestBtn = new Ext.Button({
 			text: 'Редактировать анкету',
 //			source:'questionnaire',
@@ -131,12 +131,12 @@ App.examination.TemplateBody = Ext.extend(Ext.TabPanel, {
 			hidden:true,
 			handler:this.onEditQuest.createDelegate(this),
 			scope:this
-		}); 
-		
+		});
+
 		this.ttb = new Ext.Toolbar({
 			items: ['-',this.ticketOkBtn,this.printBtn,this.previewBtn,'-', this.historyBtn, this.closeBtn, this.moveArchiveBtn, this.dltBtn,this.saveQuestBtn,this.removeQuestBtn,this.editQuestBtn]
 		});
-		
+
 		this.dataTab = new App.examination.TicketTab({
 			title:'Осмотр',
 			staff:this.staff,
@@ -161,7 +161,7 @@ App.examination.TemplateBody = Ext.extend(Ext.TabPanel, {
 				'ticketbodyclick':this.onEditTicket
 			}
 		})
-		
+
 		config = {
 			region:'center',
 			margins:'5 0 5 5',
@@ -174,7 +174,7 @@ App.examination.TemplateBody = Ext.extend(Ext.TabPanel, {
 				App.eventManager.fireEvent('tmptabchange');
 			};
 		},this);
-		
+
 		this.on('beforedestroy',function(){
 			if (!this.record.data.equipment){
 				this.record.beginEdit();
@@ -186,85 +186,85 @@ App.examination.TemplateBody = Ext.extend(Ext.TabPanel, {
 				this.record.endEdit();
 			}
 		},this);
-		
+
 		this.on('beforeticketremove', function(ticket){
 			/* тут можно узнать что тикет будет удален
 			 * если не надо удалять - можно вернуть false
 			 */
 			return true
 		},this);
-		
+
 		this.on('ticketremove', function(ticket){
 			// а тут тикет уже удален
 			var tab = this.getActiveTab();
 			this.removeTicket(tab.section,ticket.title)
-			
+
 		},this);
 
 //		this.on('ticketremove', this.removeTicket,this);
-		
+
 		this.on('ticketdataupdate', function(ticket, data){
-			// в тикете обновились данные 
+			// в тикете обновились данные
 			this.ticket = undefined;
 		},this);
-		
+
 		this.generalTab.on('printnamechange',function(newValue,oldValue){
 			if (this.record){
 				this.record.set('print_name',newValue);
 			}
 		},this);
-		
+
 		this.generalTab.on('setmkb',function(value){
 			if (this.record){
 				this.record.set('mkb_diag',value);
 				this.openMedStandarts(value);
 			}
 		},this);
-		
+
 		this.generalTab.on('setassistant',function(value){
 			if (this.record){
 				this.record.set('assistant',value);
 			}
 		},this);
-		
+
 		this.generalTab.on('changetitle',function(text){
 			this.record.set('print_name',text);
 			this.fireEvent('changetitle',text);
 		},this);
-				
+
 
 		Ext.apply(this, Ext.apply(this.initialConfig, config));
 		App.examination.TemplateBody.superclass.initComponent.apply(this, arguments);
-		
+
 		this.on('afterrender',function(form){
-			
+
 			this.fieldSetStore = new Ext.data.RESTStore({
 				autoSave: false,
 				autoLoad : false,
-				apiUrl : get_api_url('examfieldset'),
+				apiUrl : App.getApiUrl('examination','examfieldset'),
 				model: App.models.FieldSet
 			});
-			
+
 			this.subSectionStore = new Ext.data.RESTStore({
 				autoSave: false,
 				autoLoad : false,
-				apiUrl : get_api_url('examsubsection'),
+				apiUrl : App.getApiUrl('examination','examsubsection'),
 				model: App.models.SubSection
 			});
-			
+
 			this.fillQuestMenu();
-			
+
 			this.insert(0,this.dataTab);
-			
+
 			this.generalTab.setPrintName(this.print_name);
-			
+
 			this.insert(0,this.generalTab);
-			
+
 			this.setActiveTab(0);
-			
+
 		},this)
 	},
-	
+
 	onAddSubSection: function(title,section,order,data){
 		this.setActiveTab(this.dataTab);
 		var ticket_config = {
@@ -273,21 +273,21 @@ App.examination.TemplateBody = Ext.extend(Ext.TabPanel, {
 			order:order,
 			type:'text',
 			text:data
-		}; 
+		};
 		this.dataTab.addTicket(ticket_config);
 		this.doLayout();
 		this.updateRecord();
 	},
-	
+
 	updateRecord: function(){
 		if (this.dataLoading) {
 			return false;
 		};
 		var allData = this.dataTab.getData();
-		
+
 		var data = Ext.encode(allData[0]);
 		var quests = Ext.encode(allData[1]);
-		
+
 		this.record.store.autoSave = false;
 		this.record.beginEdit();
 		this.record.set('data', data);
@@ -296,7 +296,7 @@ App.examination.TemplateBody = Ext.extend(Ext.TabPanel, {
 		this.record.store.save();
 		this.record.store.autoSave = true;
 	},
-	
+
 	loadData: function(sectionPlan){
 		var recData = this.record.data.data;
 		var quests = this.record.data.questionnaire;
@@ -310,21 +310,21 @@ App.examination.TemplateBody = Ext.extend(Ext.TabPanel, {
 		};
 		if (quests){
 			this.enableQuestBtns(quests == '{}');
-			
+
 			quests = Ext.decode(quests);
 		} else {
 			this.enableQuestBtns(true);
 		}
 		this.dataTab.loadData(data,quests,sectionPlan);
 		if (this.record.data.equipment){
-			this.openEquipTab(this.record);				
+			this.openEquipTab(this.record);
 		}
 		this.dataLoading = false;
-		
+
 	},
-	
+
 	printUrlTpl : "/exam/card/{0}/",
-	
+
 	onPreview: function(isCard){
 		var essence = isCard?'card':'template';
 		App.eventManager.fireEvent('launchapp','panel',{
@@ -343,12 +343,12 @@ App.examination.TemplateBody = Ext.extend(Ext.TabPanel, {
 			autoLoad:String.format('/widget/examination/{0}/{1}/',essence,this.record.data.id)
 		});
 	},
-	
+
 	onPrint : function(){
 		var url = String.format(this.printUrlTpl,this.record.data.id);
 		window.open(url);
 	},
-	
+
 	onClose: function(){
 		if (this.isCard){
 			this.fireEvent('cardclose');
@@ -356,7 +356,7 @@ App.examination.TemplateBody = Ext.extend(Ext.TabPanel, {
 			this.fireEvent('tmpclose');
 		}
 	},
-	
+
 	removeTicket:function(section,ticketTitle){
 		var data = Ext.decode(this.record.data.data);
 		Ext.each(data,function(sec,i){
@@ -370,7 +370,7 @@ App.examination.TemplateBody = Ext.extend(Ext.TabPanel, {
 		});
 		this.record.set('data',Ext.encode(data));
 	},
-	
+
 	onSVGOpen: function(){
 		this.svgTab = new Ext.form.FormPanel({
 			title: 'SVG',
@@ -379,10 +379,10 @@ App.examination.TemplateBody = Ext.extend(Ext.TabPanel, {
 		this.add(this.svgTab);
 		this.setActiveTab(this.svgTab);
 	},
-	
+
 	onHistoryOpen: function(){
 		var name = this.patient_name.split(' ');
-		
+
 		config = {
 			closable:true,
 			title:name[0] + ': История',
@@ -392,7 +392,7 @@ App.examination.TemplateBody = Ext.extend(Ext.TabPanel, {
 		}
 		App.eventManager.fireEvent('launchapp', 'patienthistory',config);
 	},
-	
+
 	newEquipTab : function(){
 		var equip_tab = new App.examination.EquipmentTab({
 			id:'equip-tab',
@@ -416,7 +416,7 @@ App.examination.TemplateBody = Ext.extend(Ext.TabPanel, {
 		});
 		return equip_tab
 	},
-	
+
 	openEquipTab: function(record){
 		//TODO:при открытии вкладки проверять запись на наличие соотв. данных
 		//на тот случай, если оборудование не указано, но остальные поля все равно заполнены
@@ -431,10 +431,10 @@ App.examination.TemplateBody = Ext.extend(Ext.TabPanel, {
 		} else {
 			this.setActiveTab(this.equipTab);
 		};
-		
+
 		this.doLayout();
 	},
-	
+
 	fillQuestMenu: function(){
 		this.questItems = new Ext.menu.Menu({
 			items:[]
@@ -457,15 +457,15 @@ App.examination.TemplateBody = Ext.extend(Ext.TabPanel, {
 			this.fillSectionMenu();
 		},scope:this})
 	},
-	
+
 	fillSectionMenu: function(){
-		
+
 		this.sectionItems = new Ext.menu.Menu({
 			items:[]
 		});
-		
+
 		this.subSecBtns = {}
-		
+
 		this.sectionPlan = {};
 		this.additionalMenu = [];
 		this.fieldSetStore.load({callback:function(records){
@@ -478,7 +478,7 @@ App.examination.TemplateBody = Ext.extend(Ext.TabPanel, {
 					'order': rec.order
 				};
 				this.subSecBtns[rec.name] = [];
-				
+
 				this.additionalMenu.push({
 					text:rec.title,
 					handler:this.onAddSubSection.createDelegate(this,['',rec.name,rec.order]),
@@ -488,15 +488,15 @@ App.examination.TemplateBody = Ext.extend(Ext.TabPanel, {
 			this.subSectionStore.load({callback:function(records){
 				//сортируем подразделы по разделам
 				Ext.each(records,function(record){
-					var rec = record.data; 
+					var rec = record.data;
 					var item = {
 						text:rec.title,
 						handler:this.onAddSubSection.createDelegate(this,[rec.title,rec.section_name,this.sectionPlan[rec.section_name].order]),
 						scope:this
 					};
-					this.subSecBtns[rec.section_name].push(item);	
+					this.subSecBtns[rec.section_name].push(item);
 				},this);
-				
+
 				//заполняем меню кнопки Добавить элемент
 				for (rec in this.sectionPlan){
 					var section = this.sectionPlan[rec]
@@ -522,58 +522,58 @@ App.examination.TemplateBody = Ext.extend(Ext.TabPanel, {
 					};
 					this.sectionItems.add(emptySubSec);
 				};
-				
+
 				this.equipBtn = {
 					text:'Оборудование',
 					handler:this.openEquipTab.createDelegate(this,[]),
 					scope:this
 				}
-				
+
 				this.sectionItems.add(this.equipBtn);
-				
+
 				this.addSubSecBtn = new Ext.Button({
 					iconCls:'silk-page-white-add',
 					text:'Добавить подраздел',
 					menu:this.sectionItems
 				});
-				
+
 				if (this.sectionItems.items.length){
 					this.addSubSecBtn.enable();
 				} else {
 					this.addSubSecBtn.disable();
 				};
-				
+
 				this.ttb.insert(0,this.addSubSecBtn);
 				this.doLayout();
-				
+
 				//После того, как кнопка с разделами сгенерировалась, можно загружать данные,
 				//чтобы передать в форму тикетов порядок следования разделов, который может быть изменен в базе
-			
+
 			},scope:this});
 			this.loadData(this.sectionPlan);
 		},scope:this});
-		
+
 	},
-	
+
 	openQuestionnaireClick:function(questRecord){
 		if (this.questPanel){
 			Ext.Msg.alert('Уведомление','Одна анкета уже открыта');
 			this.setActiveTab(this.questPanel);
 			return
 		};
-		
+
 		//Если анкета уже вводилась
 		if (this.dataTab.quests[questRecord.name]){
 			var questData = this.dataTab.quests[questRecord.name]['data'];
 			var code = this.dataTab.quests[questRecord.name]['code'];
 		};
-		
+
 		if (!code){
 			var rawcode = questRecord.code;
 			if (!rawcode) return;
 			var code = Ext.decode(rawcode);
 		};
-		
+
 		if (!code['items']) {
 			Ext.Msg.alert('Синтаксическая ошибка','Нет параметра "items"');
 			return
@@ -583,17 +583,17 @@ App.examination.TemplateBody = Ext.extend(Ext.TabPanel, {
 			data:questData,
 			code:code,
 			title:questRecord.name
-		} 
-		
+		}
+
 		this.openQuest(quest_config);
 	},
-	
+
 	openQuest: function(config){
 		if (!config['questName']) {
 			console.log('Не указаны необходимые параметры: questName');
 			return;
 		}
-		//Проверка на наличие кода панели.		
+		//Проверка на наличие кода панели.
 		if (!config['code']) {
 			if (this.dataTab.quests){
 				config['code'] = this.dataTab.quests[config.questName]['code'];
@@ -607,15 +607,15 @@ App.examination.TemplateBody = Ext.extend(Ext.TabPanel, {
 					} else {
 						console.log('Не указаны необходимые параметры: code');
 						return;
-					} 
+					}
 				} else {
 					console.log('Не указаны необходимые параметры: code');
 					return;
 				}
 			}
 		};
-		
-		init_config = 
+
+		init_config =
 			{
 				title:'Анкета',
 				type:'questionnaire',
@@ -626,19 +626,19 @@ App.examination.TemplateBody = Ext.extend(Ext.TabPanel, {
 				}
 			}
 		Ext.applyIf(config,init_config);
-		
+
 		this.questPanel = new App.examination.QuestPreviewPanel(config);
-		
-		
+
+
 		//добавляем элементы в главную панель
 		this.questPanel.add(this.questPanel.buildElem(config['code']));
-		
-		
+
+
 		this.add(this.questPanel);
 		this.setActiveTab(this.questPanel);
-		
+
 	},
-	
+
 	questionnaireTicketEdit:function(ticket){
 		if (this.questPanel){
 			Ext.Msg.alert('Уведомление','Одна анкета уже открыта');
@@ -656,7 +656,7 @@ App.examination.TemplateBody = Ext.extend(Ext.TabPanel, {
 		}
 		this.openQuest(config)
 	},
-	
+
 	textTicketEdit:function(ticket){
 		this.ticket = ticket;
 		var ticketEditor = new App.examination.TicketEditPanel({
@@ -682,13 +682,13 @@ App.examination.TemplateBody = Ext.extend(Ext.TabPanel, {
 		this.doLayout();
 		this.setActiveTab(ticketEditor)
 	},
-	
+
 	onEditTicket: function(ticket){
 		this.ticket = ticket;
 //		this[(ticket['type'] || 'text') + 'TicketEdit'](ticket)
 		this.textTicketEdit(ticket);
 	},
-	
+
 	openMedStandarts: function(mkb10){
 		var stWin = new App.examination.MedStandartChoiceWindow({
 			mkb10:App.uriToId(mkb10),
@@ -702,9 +702,9 @@ App.examination.TemplateBody = Ext.extend(Ext.TabPanel, {
 		stWin.show();
 		this.setActiveTab(this.dataTab)
 	},
-	
+
 	showTtbItems: function(source){
-		//кнопки в тулбаре разделяются по вкладкам, в которых должны показываться, 
+		//кнопки в тулбаре разделяются по вкладкам, в которых должны показываться,
 		// а так же по режимам редактора: карта осмотра или шаблон
 		//вкладка, в которой должна показываться кнопка, указывается в параметре source
 		//режим редактора, в которой кнопка должна быть видима, указывается в параметре mode
@@ -714,7 +714,7 @@ App.examination.TemplateBody = Ext.extend(Ext.TabPanel, {
 		}
 		Ext.each(this.ttb.items.items,function(item){
 			if (item.mode && item.mode != this.mode){
-				item.hide(); 
+				item.hide();
 			} else {
 				if (item.source == source){
 					item.show()
@@ -725,7 +725,7 @@ App.examination.TemplateBody = Ext.extend(Ext.TabPanel, {
 		},this);
 		this.doLayout();
 	},
-	
+
 	onSaveQuest: function(){
 		/*
 		 * Сохраняет данные из анкеты.
@@ -770,10 +770,10 @@ App.examination.TemplateBody = Ext.extend(Ext.TabPanel, {
 			this.updateRecord();
 			// Теперь анкету можно удалить, если надо
 			this.enableQuestBtns(false);
-			
+
 		}
 	},
-	
+
 	onRemoveQuest: function(){
 		/*
 		 * Сохраняет данные из анкеты.
@@ -795,17 +795,17 @@ App.examination.TemplateBody = Ext.extend(Ext.TabPanel, {
 			this.setActiveTab(this.dataTab);
 			this.updateRecord()
 		};
-		
+
 		this.enableQuestBtns(true);
 	},
-	
+
 	onEditQuest: function(){
 		if (this.dataTab.quests){
-			for (pr in this.dataTab.quests) {var name = String(pr)}; 
+			for (pr in this.dataTab.quests) {var name = String(pr)};
 			this.openQuest({questName:name})
 		}
 	},
-	
+
 	enableQuestBtns: function(status){
 		this.questBtn.setDisabled(!status);
 		this.removeQuestBtn.setDisabled(status);

@@ -3,7 +3,7 @@ Ext.ns('App.result');
 App.result.BasePlain = Ext.extend(Ext.grid.EditorGridPanel, {
 
 	initComponent : function() {
-		
+
 		this.warnTpl = new Ext.XTemplate(
 			'<tpl if="wholes.length">',
 			'Данная операция приведет к удалению всех тестов, т.к. нет ни одного отвалидированного значения в следующих исследованиях:',
@@ -28,11 +28,11 @@ App.result.BasePlain = Ext.extend(Ext.grid.EditorGridPanel, {
 			'</tpl>',
 			'<tpl if="confirm">Продолжить?</tpl>'
 		);
-			
+
 		this.proxy = new Ext.data.HttpProxy({
-		    url: get_api_url('result')
+		    url: App.getApiUrl('lab','result')
 		});
-		
+
 		this.reader = new Ext.data.JsonReader({
 		    totalProperty: 'meta.total_count',
 		    successProperty: 'success',
@@ -60,7 +60,7 @@ App.result.BasePlain = Ext.extend(Ext.grid.EditorGridPanel, {
 		    {name: 'is_validated', type:'bool'},
 		    {name: 'is_group', type:'bool'}
 		]);
-		
+
 		this.writer = new Ext.data.JsonWriter({
 		    encode: false,
 		    writeAllFields: true
@@ -84,13 +84,13 @@ App.result.BasePlain = Ext.extend(Ext.grid.EditorGridPanel, {
 		    remoteSort: true,
 		    groupField:'service_name'
 		});
-		
+
 //		this.baseTitle = 'Тесты';
 //
 //		this.store.on('load',function(store, records, options){
 //			this.setTitle(String.format("{0} ({1})", this.baseTitle, records.length));
 //		},this);
-		
+
 		this.statusCmb = new Ext.form.ComboBox({
 			store:new Ext.data.ArrayStore({
 					fields:['id','title'],
@@ -105,7 +105,7 @@ App.result.BasePlain = Ext.extend(Ext.grid.EditorGridPanel, {
 			selectOnFocus:true,
 			editable:false
 		});
-		
+
 		this.inputListCmb = new Ext.form.ComboBox({
 			store:new Ext.data.ArrayStore({
 				fields:['title']
@@ -119,13 +119,13 @@ App.result.BasePlain = Ext.extend(Ext.grid.EditorGridPanel, {
 			selectOnFocus:true,
 			editable:true
 		});
-		
+
 		this.editorColNumber = 4;
-		
+
 		this.columns =  [{
 				header: "V",
 				width:22,
-				sortable: true, 
+				sortable: true,
 				dataIndex: 'validation',
 		    	renderer: function(val,meta,record) {
 		    		if(record.data.is_group){
@@ -151,49 +151,49 @@ App.result.BasePlain = Ext.extend(Ext.grid.EditorGridPanel, {
 		    },*/{
 		    	header: "Исследование",
 		    	width:200,
-		    	sortable: true, 
+		    	sortable: true,
 		    	hidden:true,
 		    	dataIndex: 'service_name'
 		    },{
-		    	header: "Тест", 
-		    	width: 250, 
-		    	sortable: true, 
+		    	header: "Тест",
+		    	width: 250,
+		    	sortable: true,
 		    	dataIndex: 'analysis_name'
 		    },{
-		    	header: "Пред. результат", 
-		    	width: 150, 
-		    	sortable: true, 
+		    	header: "Пред. результат",
+		    	width: 150,
+		    	sortable: true,
 		    	dataIndex: 'previous_value'
 		    },{
-		    	header: "Результат", 
-		    	width: 160, 
-		    	sortable: true, 
+		    	header: "Результат",
+		    	width: 160,
+		    	sortable: true,
 		    	dataIndex: 'value',
 		    	editor:this.inputListCmb//new Ext.form.TextField({})
 		    },{
-		    	header: "Ед.изм.", 
-		    	width: 70, 
-		    	sortable: true, 
+		    	header: "Ед.изм.",
+		    	width: 70,
+		    	sortable: true,
 		    	dataIndex: 'measurement'
 		    },{
-		    	header: "Изм.", 
-		    	width: 80, 
-		    	sortable: true, 
+		    	header: "Изм.",
+		    	width: 80,
+		    	sortable: true,
 		    	dataIndex: 'modified_by_name'
 		    }
-		];		
-		
+		];
 
-		
+
+
 	    this.infoBBar = new Ext.Toolbar({
 	    	items:[{
 	    		xtype:'tbtext',
-	    		text:this.orderRecord 
-						? String.format("Пациент: {0}, возраст: {1}", this.labOrderRecord.data.patient_name, this.orderRecord.data.patient_age) 
+	    		text:this.orderRecord
+						? String.format("Пациент: {0}, возраст: {1}", this.labOrderRecord.data.patient_name, this.orderRecord.data.patient_age)
 						: ''
 	    	}]
 	    });
-		
+
 		var config = {
 			title:'Тесты',
 //			disabled:true,
@@ -312,7 +312,7 @@ App.result.BasePlain = Ext.extend(Ext.grid.EditorGridPanel, {
 
 		Ext.apply(this, Ext.apply(this.initialConfig, config));
 		App.result.BasePlain.superclass.initComponent.apply(this, arguments);
-		
+
 		this.on('afterrender', function(){
 			new Ext.KeyMap(this.getEl(), {
 				key:Ext.EventObject.F2,
@@ -326,11 +326,11 @@ App.result.BasePlain = Ext.extend(Ext.grid.EditorGridPanel, {
 				scope:this
 			});
 		}, this);
-		
+
 		this.on('destroy', function(){
-		    App.eventManager.un('globalsearch', this.onGlobalSearch, this); 
+		    App.eventManager.un('globalsearch', this.onGlobalSearch, this);
 		},this);
-		
+
 		if(this.labOrderRecord) {
 			var d = this.labOrderRecord.data;
 			this.staffField.setValue(d.staff);
@@ -339,10 +339,10 @@ App.result.BasePlain = Ext.extend(Ext.grid.EditorGridPanel, {
 			this.setTitle(String.format("Заказ {0}", d.barcode));
 			this.store.setBaseParam('order',this.labOrderRecord.id);
 			this.store.load();
-		}		
-		
+		}
+
 	},
-	
+
 	onAddComment : function() {
 		var rec = this.getSelected();
 		if(rec) {
@@ -359,7 +359,7 @@ App.result.BasePlain = Ext.extend(Ext.grid.EditorGridPanel, {
 			this.commentWin.show();
 		}
 	},
-	
+
 	onDeleteComment : function() {
 		var rec = this.getSelected();
 		if(rec) {
@@ -367,7 +367,7 @@ App.result.BasePlain = Ext.extend(Ext.grid.EditorGridPanel, {
 			rec.store.save();
 		}
 	},
-	
+
 	onChangeState: function(val){
 		var records = this.getSelectionModel().getSelections();
 //		this.store.autoSave = false;
@@ -381,16 +381,16 @@ App.result.BasePlain = Ext.extend(Ext.grid.EditorGridPanel, {
 		this.store.save();
 //		this.store.autoSave = true;
 	},
-	
+
 	setActiveRecord: function(rec) {
 		this.labOrderRecord = rec;
-		
+
 		this.store.setBaseParam('order',this.labOrderRecord.id);
 		this.store.load();
 
 //		this.enable();
 	},
-	
+
 	onSubmit : function(){
 		var un = [];
 		var services = {};
@@ -442,7 +442,7 @@ App.result.BasePlain = Ext.extend(Ext.grid.EditorGridPanel, {
 			this.confirm();
 		}
 	},
-	
+
 	confirm : function() {
 		params = {
 			order:this.labOrderRecord.id
@@ -452,7 +452,7 @@ App.result.BasePlain = Ext.extend(Ext.grid.EditorGridPanel, {
 			if(r.success) {
 				this.labOrderRecord.set('is_completed',true);
 				Ext.ux.Growl.notify({
-			        title: "Успешная операция!", 
+			        title: "Успешная операция!",
 			        message: r.message,
 			        iconCls: "x-growl-accept",
 			        alignment: "tr-tr",
@@ -463,7 +463,7 @@ App.result.BasePlain = Ext.extend(Ext.grid.EditorGridPanel, {
 			}
 		}, this);
 	},
-	
+
 	storeFilter: function(field, value){
 		if(value===undefined) {
 			delete this.store.baseParams[field]
@@ -472,15 +472,15 @@ App.result.BasePlain = Ext.extend(Ext.grid.EditorGridPanel, {
 		}
 		this.store.load();
 	},
-	
+
 	getSelected: function() {
 		return this.getSelectionModel().getSelected()
 	},
-	
+
 	onReload : function(){
 		this.store.reload();
 	}
-	
+
 });
 
 

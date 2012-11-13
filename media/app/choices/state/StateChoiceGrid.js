@@ -7,7 +7,7 @@ App.choices.StateChoiceGrid = Ext.extend(Ext.grid.GridPanel, {
         this.store = this.store || new Ext.data.RESTStore({
             autoLoad : true,
             autoSave : false,
-            apiUrl : get_api_url('state'),
+            apiUrl : App.getApiUrl('state','state'),
             model: [
                     {name: 'id'},
                     {name: 'resource_uri'},
@@ -19,7 +19,7 @@ App.choices.StateChoiceGrid = Ext.extend(Ext.grid.GridPanel, {
             {
                 header: "Организация",
                 sortable: true,
-                dataIndex: 'name', 
+                dataIndex: 'name',
                 editor: new Ext.form.TextField({})
             }
         ];

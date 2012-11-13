@@ -1,19 +1,19 @@
 Ext.ns('App.examination');
 
 App.examination.TmpGrid = Ext.extend(Ext.grid.EditorGridPanel, {
-	
+
 	initComponent: function(){
 
 //        this.Mess = new Ext.App({});
 		this.proxy = new Ext.data.HttpProxy({
-        	url: get_api_url('examtemplate')
+        	url: App.getApiUrl('examination','examtemplate')
         });
 		this.baseParams = Ext.apply({
             format:'json',
             deleted:false,
             staff:active_staff
         },this.baseParams);
-    
+
         this.reader = new Ext.data.JsonReader({
             totalProperty: 'meta.total_count',
             successProperty: 'success',
@@ -21,16 +21,16 @@ App.examination.TmpGrid = Ext.extend(Ext.grid.EditorGridPanel, {
             root: 'objects',
             messageProperty: 'message'
         },App.models.Template);
-    
+
         this.writer = new Ext.data.JsonWriter({
             encode: false,
             writeAllFields: true
-        }); 
-    
+        });
+
         this.store =  this.store || new Ext.data.Store({
-            restful: true,    
+            restful: true,
             autoSave: false,
-            autoLoad: false, 
+            autoLoad: false,
 			autoDestroy:true,
             baseParams: this.baseParams,
 		    paramNames: {
@@ -43,17 +43,17 @@ App.examination.TmpGrid = Ext.extend(Ext.grid.EditorGridPanel, {
             reader: this.reader,
             writer: this.writer
         });
-        
+
         this.store.on('load', function(){
-			
+
 		}, this);
-		
+
 		this.store.on('write', function(store, action, result, res, rs){
 			if (action=='create'){
 				this.fireEvent('edittmp',rs);
 			}
 		}, this);
-		
+
 		this.addBtn = new Ext.Button({
 			text:'Добавить',
 			disabled:false,
@@ -62,7 +62,7 @@ App.examination.TmpGrid = Ext.extend(Ext.grid.EditorGridPanel, {
 			handler:this.onAdd,
 			scope:this
 		});
-        
+
         this.editBtn = new Ext.Button({
 			text:'Изменить',
 			disabled:true,
@@ -76,7 +76,7 @@ App.examination.TmpGrid = Ext.extend(Ext.grid.EditorGridPanel, {
 			},
 			scope:this
 		});
-		
+
 		this.delBtn = new Ext.Button({
 			text:'Удалить',
 			disabled:true,
@@ -85,11 +85,11 @@ App.examination.TmpGrid = Ext.extend(Ext.grid.EditorGridPanel, {
 			handler:this.onDelete.createDelegate(this, []),
 			scope:this
 		});
-		
+
 		if(!this.emptyTbar){
-			
+
 			this.tbar = this.tbar || [this.addBtn, this.editBtn,	this.delBtn];
-			
+
 			this.tbar.push({
 				xtype:'button',
 				text:'Обновить',
@@ -102,38 +102,38 @@ App.examination.TmpGrid = Ext.extend(Ext.grid.EditorGridPanel, {
 		} else {
 			this.tbar = undefined
 		};
-		
-		
+
+
 		var config = {
 			store: this.store,
 			border:false,
 			autoScroll:true,
 			columns:  [
 			    {
-			    	header: "Наименование", 
+			    	header: "Наименование",
 			    	width:400,
-			    	sortable: true, 
+			    	sortable: true,
 			    	hidden:false,
 			    	dataIndex: 'name',
 			    	renderer:this.printNameRenderer()
 			    },{
-			    	header: "Наименование1", 
+			    	header: "Наименование1",
 			    	width:400,
-			    	sortable: true, 
+			    	sortable: true,
 			    	hidden:true,
-			    	dataIndex: 'service_name' 
+			    	dataIndex: 'service_name'
 			    },{
-			    	header: "Создано", 
+			    	header: "Создано",
 			    	width:70,
-			    	sortable: true, 
+			    	sortable: true,
 			    	renderer:Ext.util.Format.dateRenderer('H:i / d.m.Y'),
-			    	dataIndex: 'created' 
+			    	dataIndex: 'created'
 			    },{
-			    	header: "Изменено", 
+			    	header: "Изменено",
 			    	width:70,
-			    	sortable: true, 
+			    	sortable: true,
 			    	renderer:Ext.util.Format.dateRenderer('H:i / d.m.Y'),
-			    	dataIndex: 'modified' 
+			    	dataIndex: 'modified'
 			    }
 			],
 			sm : new Ext.grid.RowSelectionModel({
@@ -176,9 +176,9 @@ App.examination.TmpGrid = Ext.extend(Ext.grid.EditorGridPanel, {
 				scope:this
 			});
 		}, this);
-		
+
     },
-    
+
     printNameRenderer: function(){
     	var self = this;
     	return function(value,metaData,record){
@@ -197,7 +197,7 @@ App.examination.TmpGrid = Ext.extend(Ext.grid.EditorGridPanel, {
     		}
     	}
     },
-    
+
     onDelete: function() {
         var rec = this.getSelectionModel().getSelected();
         if (!rec) {
@@ -209,14 +209,14 @@ App.examination.TmpGrid = Ext.extend(Ext.grid.EditorGridPanel, {
         this.delBtn.disable();
         this.store.load();
     },
-    
+
     onAdd: function(){
 		Ext.Msg.prompt('Название', 'Введите название шаблона:', function(btn, text){
 		    if (btn == 'ok'){
 		    	var emptyData = Ext.encode({'tickets':[]});
 				this.record = new this.store.recordType();
 				this.record.set('data',emptyData);
-				this.record.set('staff',App.getApiUrl('staff',active_staff));
+				this.record.set('staff',App.getApiUrl('staff','staff',active_staff));
 				this.record.set('name',text);
 				this.store.add(this.record);
 				this.store.save();

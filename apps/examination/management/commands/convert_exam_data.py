@@ -1,7 +1,7 @@
 # -*- coding: utf-8 -*-
 
 """
-    
+
 """
 from django.core.management.base import BaseCommand
 from examination.models import CardTemplate, ExaminationCard,\
@@ -16,30 +16,32 @@ class Command(BaseCommand):
     def handle(self, *args, **options):
         """
         """
-        #serv = OrderedService.objects.all()
-        #print "Выбираем уникальные старые новые карты осмотра..."
-        #orders_without_ecard = []  # #[p for p in serv if len(p.card_set.all()) > len(p.examinationcard_set.all())]
         
-        new_cards = Card.objects.all()
-        #for o in orders_without_ecard:
-        #    new_cards += o.card_set.all()
+#        new_cards = Card.objects.all()
+        serv = OrderedService.objects.all()
+        print "Выбираем уникальные старые новые карты осмотра..."
+        orders_without_ecard = []  # #[p for p in serv if len(p.card_set.all()) > len(p.examinationcard_set.all())]
+
+        new_cards = []
+        for o in orders_without_ecard:
+            new_cards += o.card_set.all()
         print "Было %s уникальных старых новых карт осмотра " % len(new_cards)
-            
+
         new_tpls = Template.objects.all()
         print "Было %s старых новых шаблонов " % len(new_tpls)
-        
+
         print "Конвертируем аттрибуты старых новых карт..."
         attrs_from_newcard = [new_to_new(card) for card in new_cards]
-        
+
         print "Конвертируем аттрибуты старых новых шаблонов..."
         attrs_from_newtpl = [new_to_new(tpl) for tpl in new_tpls]
-#        
+#
         print "Удаляем новые карты осмотра..."
         Card.objects.all().delete()
-        
+
         print "Удаляем новые шаблоны..."
         Template.objects.all().delete()
-        
+
         print "Конвертируем старые карты осмотра и шаблоны..."
         count = []
         for models in [[CardTemplate,Template],[ExaminationCard,Card]]:
@@ -70,10 +72,10 @@ class Command(BaseCommand):
                         transaction.commit()
 
             count.append(added_count)
-                    
+
         print 'Converted %s card(s)' % (count[0])
         print 'Converted %s template(s)' % (count[1])
-        
+
         print "Создаем недостающие новые карты осмотра..."
         with transaction.commit_manually():
             for attrs in attrs_from_newcard:
@@ -106,8 +108,8 @@ class Command(BaseCommand):
                     transaction.commit()
                 
         print "Конвертация завершена."
-                
-                
+
+
 def make_ticket(xtype='textticket',
                 title='',
                 value='',
@@ -118,13 +120,13 @@ def make_ticket(xtype='textticket',
                 printable=True,
                 private=False,
                 title_print=True):
-    
+
     try:
         Fsection = FieldSet.objects.get(name=section)
         order = Fsection.order
     except:
         order = 10000
-    
+
     ticket = {
         'xtype':xtype,
         'printable':printable,
@@ -138,10 +140,10 @@ def make_ticket(xtype='textticket',
         'order':order
     }
     return ticket
-    
+
 def convert_data(obj):
     data = {'tickets':[]}
-    
+
 #            print_name
     ttl = obj.print_name or obj.name
     if not ttl and hasattr(obj, 'ordered_service'):
@@ -153,7 +155,7 @@ def convert_data(obj):
                          required=True,
                          fixed=True)
     data['tickets'].append(ticket)
-    
+
     if hasattr(obj, 'equipment') and getattr(obj, 'equipment'):
         rend = [u"<strong>Выполнено на оборудовании:</strong> %s" % obj.equipment.name, ]
         if obj.area:
@@ -187,57 +189,57 @@ def convert_data(obj):
 
     if hasattr(obj,'complaints') and getattr(obj,'complaints'):
         ticket = make_ticket(
-                             value=obj.complaints, 
+                             value=obj.complaints,
                              section = 'complaints',
                              title='Жалобы')
         data['tickets'].append(ticket)
-        
+
     if hasattr(obj,'anamnesis') and getattr(obj,'anamnesis'):
         ticket = make_ticket(
-                             value=obj.anamnesis, 
+                             value=obj.anamnesis,
                              section = 'anamnesis',
                              title='Анамнез')
-        data['tickets'].append(ticket) 
-        
+        data['tickets'].append(ticket)
+
     if hasattr(obj,'objective_data') and getattr(obj,'objective_data'):
         ticket = make_ticket(
-                             value=obj.objective_data, 
+                             value=obj.objective_data,
                              section = 'status',
                              title='Объективные данные',
                              title_print=False)
         data['tickets'].append(ticket)
-        
+
     if hasattr(obj,'psycho_status') and getattr(obj,'psycho_status'):
         ticket = make_ticket(
-                             value=obj.psycho_status, 
+                             value=obj.psycho_status,
                              section = 'status',
                              title='Психологический статус')
-        data['tickets'].append(ticket)  
-        
+        data['tickets'].append(ticket)
+
     if hasattr(obj,'gen_diag') and getattr(obj,'gen_diag'):
         ticket = make_ticket(
-                             value=obj.gen_diag, 
+                             value=obj.gen_diag,
                              section = 'diagnosis',
                              title='Основной диагноз')
-        data['tickets'].append(ticket) 
-        
+        data['tickets'].append(ticket)
+
     if hasattr(obj,'complication') and getattr(obj,'complication'):
         ticket = make_ticket(
-                             value=obj.complication, 
+                             value=obj.complication,
                              section = 'complication',
                              title='Осложнения')
-        data['tickets'].append(ticket) 
-        
+        data['tickets'].append(ticket)
+
     if hasattr(obj,'ekg') and getattr(obj,'ekg'):
         ticket = make_ticket(
-                             value=obj.ekg, 
+                             value=obj.ekg,
                              section = 'ecg',
                              title='ЭКГ')
-        data['tickets'].append(ticket) 
-        
+        data['tickets'].append(ticket)
+
     if hasattr(obj,'mbk_diag') and getattr(obj,'mbk_diag'):
         value = {
-                    '_resource_uri': '/api/v1/dashboard/icd10/%s' % obj.mbk_diag.id,
+                    '_resource_uri': '/api/service/icd10/%s' % obj.mbk_diag.id,
                     '_name': obj.mbk_diag.__unicode__(),
                     '_rendered': u'<div>%s</div>' % obj.mbk_diag.name
                 }
@@ -251,63 +253,63 @@ def convert_data(obj):
 
     if hasattr(obj,'concomitant_diag') and getattr(obj,'concomitant_diag'):
         ticket = make_ticket(
-                             value=obj.concomitant_diag, 
+                             value=obj.concomitant_diag,
                              section = 'diagnosis',
                              title='Сопутствующий диагноз')
-        data['tickets'].append(ticket) 
-        
+        data['tickets'].append(ticket)
+
     if hasattr(obj,'clinical_diag') and getattr(obj,'clinical_diag'):
         ticket = make_ticket(
-                             value=obj.clinical_diag, 
+                             value=obj.clinical_diag,
                              section = 'diagnosis',
                              title='Клинический диагноз')
-        data['tickets'].append(ticket) 
-        
+        data['tickets'].append(ticket)
+
     if hasattr(obj,'treatment') and getattr(obj,'treatment'):
         ticket = make_ticket(
-                             value=obj.treatment, 
+                             value=obj.treatment,
                              section = 'conclusion',
                              title='Лечение')
         data['tickets'].append(ticket)
-        
+
     if hasattr(obj,'referral') and getattr(obj,'referral'):
         ticket = make_ticket(
-                             value=obj.referral, 
+                             value=obj.referral,
                              section = 'conclusion',
                              title='Направление')
         data['tickets'].append(ticket)
-        
+
     if hasattr(obj,'conclusion') and getattr(obj,'conclusion'):
         ticket = make_ticket(
-                             value=obj.conclusion, 
+                             value=obj.conclusion,
                              section = 'conclusion',
                              title='Заключение')
         data['tickets'].append(ticket)
-        
+
     if hasattr(obj,'disease') and getattr(obj,'disease'):
         ticket = make_ticket(
-                             value=obj.disease, 
+                             value=obj.disease,
                              section = 'anamnesis',
                              title='Характер заболевания')
         data['tickets'].append(ticket)
-        
+
     if hasattr(obj,'history') and getattr(obj,'history'):
         ticket = make_ticket(
-                             value=obj.history, 
+                             value=obj.history,
                              section = 'anamnesis',
                              title='История заболевания')
-        data['tickets'].append(ticket) 
-        
+        data['tickets'].append(ticket)
+
     if hasattr(obj,'extra_service') and getattr(obj,'extra_service'):
         ticket = make_ticket(
-                             value=obj.extra_service, 
+                             value=obj.extra_service,
                              section = 'other',
                              title='Дополнительные услуги')
-        data['tickets'].append(ticket) 
+        data['tickets'].append(ticket)
     for i,d in enumerate(data['tickets']):
         d['pos'] = i
     return data
-        
+
 #        Переводит аттрибуты старого объекта в аттрибуты нового
 def get_attributes(obj):
     attrs = {}
@@ -330,7 +332,7 @@ def get_attributes(obj):
 
 #        Конвертирует данные старой новой карты(сконвертированной уже однажды когда-то) в данные новой карты
 def convert_new_data(obj):
-    
+
     old_data = simplejson.loads(obj.data or '[]') or []
     new_data = {'tickets':[{
                 'xtype':'textticket',
@@ -344,7 +346,7 @@ def convert_new_data(obj):
     }
     if hasattr(obj,'mbk_diag') and getattr(obj,'mbk_diag'):
         value = {
-                    '_resource_uri': '/api/v1/dashboard/icd10%s' % obj.mkb_diag.id,
+                    '_resource_uri': '/api/service/icd10%s' % obj.mkb_diag.id,
                     '_name': obj.mkb_diag.name,
                     '_rendered': u'<div>%s</div>' % obj.mbk_diag.name
                 }

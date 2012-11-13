@@ -3,41 +3,41 @@ Ext.ns('App.patient');
 App.patient.ManualGrid = Ext.extend(Ext.grid.GridPanel, {
 
 	initComponent : function() {
-		
+
 		this.store = new Ext.data.RESTStore({
 			autoSave : false,
 			autoLoad : false,
-			apiUrl : get_api_url('labservice'),
+			apiUrl : App.getApiUrl('visit','labservice'),
 			model: App.models.LabService
 		});
-		
+
 		this.printBtn = new Ext.Button({
 			iconCls:'silk-printer',
 			text:'Печать',
 			handler:this.onPrint.createDelegate(this),
 			scope:this
 		});
-		
-		
+
+
 		this.columns =  [{
-	    	width: 1, 
-	    	sortable: true, 
-	    	dataIndex: 'executed', 
+	    	width: 1,
+	    	sortable: true,
+	    	dataIndex: 'executed',
 	    	renderer: function(val) {
 	    		flag = val ? 'yes' : 'no';
 	    		return "<img src='"+MEDIA_URL+"admin/img/admin/icon-"+flag+".gif'>"
 	    	}
 	    },{
-	    	header: "Заказ", 
+	    	header: "Заказ",
 	    	width: 8,
 	    	dataIndex: 'barcode'
 	    },{
-	    	header: "Дата", 
+	    	header: "Дата",
 	    	width: 15,
 	    	dataIndex: 'created',
 	    	renderer:Ext.util.Format.dateRenderer('d.m.y H:i')
 	    },{
-	    	header: "Напечатано", 
+	    	header: "Напечатано",
 	    	width: 15,
 	    	dataIndex: 'print_date',
 	    	renderer:function(val,opts,rec){
@@ -50,23 +50,23 @@ App.patient.ManualGrid = Ext.extend(Ext.grid.GridPanel, {
 	    		}
 	    	}
 	    },{
-	    	header: "Наименование исследования", 
+	    	header: "Наименование исследования",
 	    	width: 38,
 	    	dataIndex: 'service_name',
 	    },{
-	    	header: "Лаборатория", 
+	    	header: "Лаборатория",
 	    	width: 15,
 	    	dataIndex: 'laboratory',
 	    },{
-	    	header: "Врач", 
+	    	header: "Врач",
 	    	width: 15,
 	    	dataIndex: 'staff_name',
 	    },{
-	    	header: "Оператор", 
+	    	header: "Оператор",
 	    	width: 12,
 	    	dataIndex: 'operator_name',
-	    }];		
-		
+	    }];
+
 		var config = {
 			loadMask : {
 				msg : 'Подождите, идет загрузка...'
@@ -98,14 +98,14 @@ App.patient.ManualGrid = Ext.extend(Ext.grid.GridPanel, {
 			viewConfig : {
 				forceFit : true,
 				emptyText : 'Нет записей'
-			}			
+			}
 		}
 
 		Ext.apply(this, Ext.apply(this.initialConfig, config));
 		App.patient.ManualGrid.superclass.initComponent.apply(this, arguments);
-		
+
 	},
-	
+
 	onPrint: function(){
 		var rec = this.getSelectionModel().getSelected();
 		if(rec) {
@@ -113,7 +113,7 @@ App.patient.ManualGrid = Ext.extend(Ext.grid.GridPanel, {
 			window.open(url);
 		}
 	},
-	
+
 	setActivePatient: function(rec) {
 		var id = rec.id;
 		this.patientId = id;
@@ -124,7 +124,7 @@ App.patient.ManualGrid = Ext.extend(Ext.grid.GridPanel, {
 		};
 		s.load();
 	},
-	
+
 	storeFilter: function(field, value){
 		if(!value) {
 			delete this.store.baseParams[field]
@@ -133,12 +133,12 @@ App.patient.ManualGrid = Ext.extend(Ext.grid.GridPanel, {
 		}
 		this.store.load();
 	},
-	
+
 	getSelected: function() {
 		return this.getSelectionModel().getSelected()
 	},
-	
-	
+
+
 });
 
 Ext.reg('patientmanualgrid', App.patient.ManualGrid);

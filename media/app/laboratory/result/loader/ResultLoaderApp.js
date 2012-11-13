@@ -13,9 +13,9 @@ App.laboratory.ResultLoaderApp = Ext.extend(Ext.Panel, {
     		    ['is_completed','is_completed'],
     		    ['cito','visit__is_cito']
     		];
-		
+
 		this.singleDate = true;
-		
+
    		this.form = new Ext.form.FormPanel({
    			border:false,
    			baseCls:'x-plain',
@@ -27,7 +27,7 @@ App.laboratory.ResultLoaderApp = Ext.extend(Ext.Panel, {
    				activeItem:0,
    				border:true,
 //   				baseCls:'x-plain',
-   				
+
    				defaults:{
    					border:false,
    					baseCls:'x-plain',
@@ -44,7 +44,7 @@ App.laboratory.ResultLoaderApp = Ext.extend(Ext.Panel, {
    		   				valueField:'id',
    		   				store:new Ext.data.RESTStore({
    		   					autoLoad : true,
-   		   					apiUrl : get_api_url('medstate'),
+   		   					apiUrl : App.getApiUrl('state','medstate'),
    		   					model: ['id','name']
    		   				}),
    		   			    minChars:2,
@@ -102,7 +102,7 @@ App.laboratory.ResultLoaderApp = Ext.extend(Ext.Panel, {
    		   				valueField:'id',
    		   				store:new Ext.data.RESTStore({
    		   					autoLoad : true,
-   		   					apiUrl : get_api_url('medstate'),
+   		   					apiUrl : App.getApiUrl('state','medstate'),
    		   					model: ['id','name']
    		   				}),
    		   			    minChars:2,
@@ -131,7 +131,7 @@ App.laboratory.ResultLoaderApp = Ext.extend(Ext.Panel, {
 				scope:this
 			}]
    		});
-   		
+
    		this.panel = new Ext.Panel({
 			region:'center',
 			margins:'3 3 3 3',
@@ -173,7 +173,7 @@ App.laboratory.ResultLoaderApp = Ext.extend(Ext.Panel, {
 				scope:this*/
 			}
 		});
-   		
+
 		config = {
 			id:'lab-result-loader-app',
 			title:'Загрузка результатов',
@@ -190,13 +190,13 @@ App.laboratory.ResultLoaderApp = Ext.extend(Ext.Panel, {
 
 		Ext.apply(this, Ext.apply(this.initialConfig, config));
 		App.laboratory.ResultLoaderApp.superclass.initComponent.apply(this, arguments);
-		
+
 		this.panel.on('afterrender', function(){
 			this.loadMask = new Ext.LoadMask(this.panel.getEl(), {msg:"Подождите, производится загрузка..."});
 		}, this);
-		
+
 	},
-	
+
 	doLoad: function(){
 		this.loadMask.show();
 		var tab = this.form.items.itemAt(0);
@@ -253,11 +253,11 @@ App.laboratory.ResultLoaderApp = Ext.extend(Ext.Panel, {
 //		var url = String.format("/lab/print/register/?{0}", Ext.urlEncode(o));
 //		window.open(url);
 	},
-	
+
 	renderError : function(msg){
 		this.panel.update(String.format('<h1 style="color:red">{0}</h1>',msg));
 	},
-	
+
 	renderResults : function(results){
 		var tpl = new Ext.XTemplate(
 			'<h1>Результаты</h1>',
@@ -285,10 +285,10 @@ App.laboratory.ResultLoaderApp = Ext.extend(Ext.Panel, {
 				fullName:function(patient){
 					return String.format("{0} {1} {2}", patient.last_name, patient.first_name, patient.mid_name)
 				},
-				
+
 				date:function(date) {
 					var d = Date.parseDate(date,'Y-m-d H:i:s');
-					return d.format("d.m.Y H:i") 
+					return d.format("d.m.Y H:i")
 				}
 		});
 		this.panel.update(tpl.apply(results));

@@ -32,22 +32,22 @@ Ext.each(apps, function(app){
 });
 
 App.ExamCentralPanel = Ext.extend(Ext.Panel, {
-	
+
 	initComponent: function(){
-		
+
 		this.staffStore = new Ext.data.RESTStore({
 			autoSave: false,
 			autoLoad : false,
-			apiUrl : get_api_url('staff'),
+			apiUrl : App.getApiUrl('staff','staff'),
 			model: App.models.StaffModel
 		});
-		
+
 		this.genDocButton = new Ext.Button({
 			text:'Пациенты',
 			handler:this.openGenDocApp.createDelegate(this, []),
 			scope:this
 		});
-		
+
 		this.genDocGroup = new Ext.ButtonGroup({
 	            columns: 2,
 	            hidden:true,
@@ -57,9 +57,9 @@ App.ExamCentralPanel = Ext.extend(Ext.Panel, {
 	            items: [this.genDocButton]
 	        }
 	    )
-		
+
 		this.mainPanel = new App.ExamMainPanel({});
-		
+
 		this.cmb = new Ext.form.ComboBox({
     		id:'profile-cmb-exam',
 			fieldLabel:'Профиль',
@@ -84,7 +84,7 @@ App.ExamCentralPanel = Ext.extend(Ext.Panel, {
 			selectOnFocus:true,
 			editable:false
     	});
-	
+
 		this.cmb.setValue(active_profile);
 
 		config = {
@@ -99,7 +99,7 @@ App.ExamCentralPanel = Ext.extend(Ext.Panel, {
 				items:[{
 					xtype:'gsearchfield',
 					emptyText:'№ заказа или фамилия'
-					
+
 				}]
 			},{
                 xtype: 'buttongroup',
@@ -121,7 +121,7 @@ App.ExamCentralPanel = Ext.extend(Ext.Panel, {
                     scale:'medium',
                     iconAlign: 'top',
                     handler: function(){
-                    	this.launchApp('conclusion',{staff:App.getApiUrl('position')+'/'+active_profile});
+                    	this.launchApp('conclusion',{staff:App.getApiUrl('staff','position')+'/'+active_profile});
                     },
                     scope:this
                 }]
@@ -255,7 +255,7 @@ App.ExamCentralPanel = Ext.extend(Ext.Panel, {
 		App.eventManager.on('launchapp', this.launchApp, this);
 		App.eventManager.on('opentab', this.openTab, this);
 		App.eventManager.on('closeapp', this.closeApp, this);
-		
+
 		this.on('afterrender', function(){
 			//Показать кнопку лечащего врача
 			this.staffStore.load({params:{format:'json',id:active_staff},callback:function(records){
@@ -270,23 +270,23 @@ App.ExamCentralPanel = Ext.extend(Ext.Panel, {
 					this.genDocGroup.show();
 				}
 			},scope:this})
-			
+
 		},this);
-		
+
 		this.on('destroy', function(){
 		    App.eventManager.un('launchapp', this.launchApp, this);
-			App.eventManager.un('closeapp', this.closeApp, this); 
+			App.eventManager.un('closeapp', this.closeApp, this);
 			App.eventManager.un('opentab', this.openTab, this);
 		},this);
 	},
-	
+
 	closeApp: function(appId) {
 		this.mainPanel.remove(appId);
 	},
-	
+
 	launchApp: function(appId,config) {
         var app_config = {
-            xtype:appId            
+            xtype:appId
         };
         config = config || {};
 		Ext.apply(app_config, config);
@@ -296,7 +296,7 @@ App.ExamCentralPanel = Ext.extend(Ext.Panel, {
 		},this)
 		this.mainPanel.setActiveTab(new_app);
 	},
-	
+
 	openGenDocApp: function(){
 		app_config = {
 			xtype:'gendocpanel',
@@ -309,7 +309,7 @@ App.ExamCentralPanel = Ext.extend(Ext.Panel, {
 		},this)
 		this.mainPanel.setActiveTab(gen_doc_app);
 	},
-	
+
 	openTab: function(panel){
 		this.mainPanel.add(panel);
 		this.mainPanel.setActiveTab(panel)
