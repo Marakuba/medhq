@@ -157,11 +157,18 @@ def print_results(request, order):
     templates = widget.get_template()
     if widget.allow_tpl_override and order.lab_group and order.lab_group.template:
         templates.insert(0, order.lab_group.template)
-        
-    print templates
-    templates = map(format_tpl(request.active_profile.state), templates)# [t %  for t in templates]
-    return render_to_response(templates, ec,
+
+    templates = map(format_tpl(request.active_profile.state), templates)  # [t %  for t in templates]
+    rendered = render_to_response(templates, ec,
                               context_instance=RequestContext(request))
+    if 'format' in request.GET and request.GET['format'] == 'pdf':
+        from ho import pisa as pisa
+        from StringIO import StringIO
+        pdf = StringIO()
+        pisa.pisaDocument(rendered.content, pdf)
+        return HttpResponse(pdf.getvalue(), mimetype='application/pdf')
+    return rendered
+
 
 def results(request, object_id):
     """

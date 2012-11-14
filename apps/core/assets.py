@@ -642,6 +642,7 @@ js_accounting = Bundle(
 
     'app/App.js',
     'app/Models.js',
+    'app/Backend.js',
     'app/data/RestStore.js',
     'app/form/ClearableComboBox.js',
     'app/form/LazyComboBox.js',
@@ -661,6 +662,13 @@ js_accounting = Bundle(
 
     'extjs/ux/Spinner.js',
     'extjs/ux/SpinnerField.js',
+
+    'app/registry/insurance/PolicyGrid.js',
+    'app/registry/patient/ContractGrid.js',
+    'app/registry/patient/clientaccount/backends.js',
+    'app/registry/patient/clientaccount/ClientAccountGrid.js',
+    'app/registry/patient/PatientForm.js',
+    'app/registry/patient/PatientWindow.js',
 
     'app/choices/patient/PatientChoiceGrid.js',
     'app/choices/patient/PatientChoiceWindow.js',
