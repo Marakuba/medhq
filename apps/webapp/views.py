@@ -35,6 +35,7 @@ try:
     from collections import OrderedDict
 except:
     from ordereddict import OrderedDict #@Reimport
+from service.models import BS_TYPES
 
 logger = logging.getLogger('general')
 
@@ -89,7 +90,7 @@ def auth(request, authentication_form=AuthenticationForm):
                 request.session.delete_test_cookie()
 
             response = {
-                'success':True
+                'success': True
             }
 
             active_profile = getattr(request, 'active_profile', None)
@@ -99,15 +100,13 @@ def auth(request, authentication_form=AuthenticationForm):
                 response['redirect_to'] = u'/webapp/setactiveprofile/%d/%s' % (active_profile.id, next_url and u'?redirect_to=%s' % next_url or u'')
             else:
                 response = {
-                    'success':False,
-                    'message':u'Ошибка авторизации: не задан профиль пользователя'
+                    'success': False,
+                    'message': u'Ошибка авторизации: не задан профиль пользователя'
                 }
-
-
         else:
             response = {
-                'success':False,
-                'message':u'Ошибка авторизации'
+                'success': False,
+                'message': u'Ошибка авторизации'
             }
 
         return HttpResponse(simplejson.dumps(response), mimetype="application/json")
@@ -136,7 +135,7 @@ def cpanel(request):
         'admin':request.user.is_staff or request.user.is_superuser,
     }
     return {
-        'perms':simplejson.dumps(perms)
+        'perms': simplejson.dumps(perms)
     }
 
 
@@ -144,7 +143,7 @@ def cpanel(request):
 @render_to('webapp/registry/index.html')
 def registry(request):
     return {
-        'apps':simplejson.dumps(get_apps(request))
+        'apps': simplejson.dumps(get_apps(request))
     }
 
 
@@ -164,14 +163,14 @@ def testing(request):
 @render_to('webapp/reporting/index.html')
 def reporting(request):
     return {
-        'apps':simplejson.dumps(get_apps(request))
+        'apps': simplejson.dumps(get_apps(request))
     }
 
 @login_required
 @render_to('webapp/barcoding/index.html')
 def barcoding(request):
     return {
-        'apps':simplejson.dumps(get_apps(request))
+        'apps': simplejson.dumps(get_apps(request))
     }
 
 
@@ -179,14 +178,18 @@ def barcoding(request):
 @render_to('webapp/laboratory/index.html')
 def laboratory(request):
     return {
-        'apps':simplejson.dumps(get_apps(request))
+        'apps': simplejson.dumps(get_apps(request))
     }
+
 
 @login_required
 @render_to('webapp/accounting/index.html')
 def accounting(request):
+    types = map(lambda x: list(x), BS_TYPES)
+    types = [t for t in types if not t[0] == u'group']
     return {
-        'apps':simplejson.dumps(get_apps(request))
+        'bs_types': simplejson.dumps(types),
+        'apps': simplejson.dumps(get_apps(request))
     }
 
 @login_required
@@ -198,24 +201,24 @@ def examination(request):
     for sec in sections:
         subsecs = SubSection.objects.filter(section=sec.id)
         section_scheme[sec.name] = {
-                                    'order':sec.order,
-                                    'title':sec.title,
-                                    'name':sec.name,
-                                    'items':[]
+                                    'order': sec.order,
+                                    'title': sec.title,
+                                    'name': sec.name,
+                                    'items': []
                                     }
         for subsec in subsecs:
-            widget = get_widget(subsec.widget)(request,subsec.title,'')
-            ticket = {'title':subsec.title,
-                'order':sec.order,
-                'xtype':subsec.widget,
-                'value':'',
-                'printable':True,
-                'title_print':True,
-                'private':False,
-                'section':sec.name,
-                'fixed':getattr(widget,'fixed', False),
-                'required':getattr(widget,'required', False),
-                'unique':getattr(widget,'unique', False)
+            widget = get_widget(subsec.widget)(request, subsec.title, '')
+            ticket = {'title': subsec.title,
+                'order': sec.order,
+                'xtype': subsec.widget,
+                'value': '',
+                'printable': True,
+                'title_print': True,
+                'private': False,
+                'section': sec.name,
+                'fixed': getattr(widget, 'fixed', False),
+                'required': getattr(widget, 'required', False),
+                'unique': getattr(widget, 'unique', False)
             }
             if ticket['required']:
                 required_tickets.append(ticket)
@@ -226,16 +229,18 @@ def examination(request):
                       'code':quest.code
                       } for quest in quests]
     return {
-        'section_scheme':simplejson.dumps(section_scheme),
-        'questionnaires':simplejson.dumps(questionnaires),
-        'required_tickets':simplejson.dumps(required_tickets),
-        'apps':simplejson.dumps(get_apps(request))
+        'section_scheme': simplejson.dumps(section_scheme),
+        'questionnaires': simplejson.dumps(questionnaires),
+        'required_tickets': simplejson.dumps(required_tickets),
+        'apps': simplejson.dumps(get_apps(request))
     }
+
 
 @login_required
 @render_to('webapp/oldexam/index.html')
 def oldexam(request):
     return {}
+
 
 @login_required
 @render_to('webapp/calendar/index.html')
@@ -301,11 +306,11 @@ def get_service_tree(request):
         return {
             'id':obj['id'],#u'%s_%s' % (obj.base_service.id, obj.execution_place.id),
             'text':obj['name'],#obj.base_service.short_name or obj.base_service.name,
-            'leaf':True,
+            'leaf': True,
             'nodes':[node_dict(node) for node in obj['items'] if node],
             'discount':obj['discount_id'],
             'price':obj['total_price'],
-            'isComplex':True
+            'isComplex': True
         }
 
     def clear_tree(tree=[],child_list=[]):
@@ -346,11 +351,11 @@ def get_service_tree(request):
                                 "id":ext and service or '%s-%s' % (node.id,result[node.id][service]['extended_service__state__id']),
                                 "text":"%s" % (node.short_name or node.name),
                                 "cls":"multi-line-text-node",
-                                "price":str(result[node.id][service]['value']),
+                                "price": str(result[node.id][service]['value']),
                                 "exec_time":"%s" % (node.execution_time and u"%s мин" % node.execution_time or u''),
                                 "iconCls":"ex-place-%s" % result[node.id][service]['extended_service__state__id'],
                                 "parent":parent,
-                                "leaf":True}
+                                "leaf": True}
                         if not ext:
                             tree_node['staff'] = node.id in staff_all and sorted(staff_all[node.id], key=lambda staff: staff[1])
                         tree_nodes.append(tree_node)
@@ -358,9 +363,9 @@ def get_service_tree(request):
                 else:
                     tree_node = {
                             "id":ext and 'group-%s' % node.id or node.id,
-                            "leaf":False,
+                            "leaf": False,
                             'text': "%s" % (node.short_name or node.name,),
-                            'singleClickExpand':True,
+                            'singleClickExpand': True,
                             "parent":parent,
                             'children':childs
                             }
@@ -489,7 +494,8 @@ def get_service_tree(request):
             promotions_items = PromotionItem.objects.filter(promotion__in=promotions)
             promotions_dict = defaultdict(list)
             promotions_bs = {}
-            for item in promotions_items.values('base_service__id','base_service__name','base_service__short_name'):
+            for item in promotions_items.values('base_service__id', \
+                            'base_service__name', 'base_service__short_name'):
                 promotions_bs[item['base_service__id']] = item
 
             for p in promotions_items:
@@ -497,25 +503,25 @@ def get_service_tree(request):
 
             if promotions.count():
                 tree_node = {
-                    'id':'promotions',
-                    'text':u'Акции / Комплексные обследования',
-                    'children':[promo_dict({'items':promotions_dict[promo.id],
+                    'id': 'promotions',
+                    'text': u'Акции / Комплексные обследования',
+                    'children': [promo_dict({'items':promotions_dict[promo.id],
                                             'id':promo.id,
                                             'name':promo.name,
                                             'discount_id':promo.discount_id,
                                             'total_price':promo.total_price}) \
                                  for promo in promotions],
-                    'leaf':False,
-                    'singleClickExpand':True
+                    'leaf': False,
+                    'singleClickExpand': True
                 }
                 tree.append(tree_node)
-        s = clear_tree(nodes,[])
+        s = clear_tree(nodes, [])
         tree.extend(s)
         _cached_tree = simplejson.dumps(tree, cls=DjangoJSONEncoder)
 
         # кэш не обновляется, если есть параметр nocache
         if not nocache:
-            cache.set(_cache_key, _cached_tree, 24*60*60*30)
+            cache.set(_cache_key, _cached_tree, 24 * 60 * 60 * 30)
 
     return _cached_tree
 
@@ -524,7 +530,7 @@ def service_tree(request):
     resp = get_service_tree(request)
     cb = request.GET.get('cb')
     if cb:
-        resp = u'%s(%s)' % (cb,resp)
+        resp = u'%s(%s)' % (cb, resp)
     return HttpResponse(resp, mimetype="application/json")
 
 from collections import defaultdict
@@ -536,12 +542,12 @@ def sampling_tree(request, visit_id):
     for sampling in samplings:
         states[sampling.laboratory.__unicode__()].append(sampling)
     for k,v in states.iteritems():
-        children = [{'id':item.id,'text':item.tube.name,'leaf':True} for item in v]
+        children = [{'id':item.id,'text':item.tube.name,'leaf': True} for item in v]
         node = {
             'id':k,
             'text':k,
-            'leaf':False,
-            'expanded':True,
+            'leaf': False,
+            'expanded': True,
             'children':children
         }
         tree.append(node)
@@ -583,8 +589,8 @@ def barcodeimg(request):
              codestring=codestring,
              options={
                 'height':0.5,
-                'includetext':True,
-                'textfont':'Verdana',
+                'includetext': True,
+                'textfont': 'Verdana',
                 'textyoffset':-9
             })
     tmp_file = StringIO()
@@ -604,7 +610,7 @@ def get_groups(request):
             if not item.is_leaf_node():
                 node = {"id":item.id,
                         "text":item.short_name or item.name,
-                        "leaf":True}
+                        "leaf": True}
                 children = tree_iterate(item.get_children())
                 if children:
                     node['leaf'] = False

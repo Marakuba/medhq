@@ -10,7 +10,7 @@ App.ServicePanel = Ext.extend(Ext.tree.TreePanel,{
 		    header: false,
 	        animCollapse:false,
 	        animate: false,
-	        dataUrl:'/webapp/service/groups/',
+	        dataUrl:this.dataUrl || '/webapp/service/groups/',
             root: {
 	            nodeType: 'async',
 	            text: 'Услуги',
@@ -24,7 +24,6 @@ App.ServicePanel = Ext.extend(Ext.tree.TreePanel,{
 	        		}
 	        	},
 	        	click: function(node,e) {
-	        		console.log(node.id);
 	        	}
 	        },
 		    tbar: []
@@ -32,15 +31,15 @@ App.ServicePanel = Ext.extend(Ext.tree.TreePanel,{
 
 		Ext.apply(this, Ext.apply(this.initialConfig, config));
 		App.ServicePanel.superclass.initComponent.apply(this, arguments);
-		
+
 	    this.getSelectionModel().on('beforeselect', function(sm, node){
 	        //return node.isLeaf();
 	    });
 	},
-	
+
 	filterTree: function(t, e){
 		var text = t.getValue();
-		
+
 		Ext.each(this.hiddenPkgs, function(n){
 			n.ui.show();
 		});
@@ -53,7 +52,7 @@ App.ServicePanel = Ext.extend(Ext.tree.TreePanel,{
 		this.filter.filterBy(function(n){
 			return re.test(n.text);
 		});
-		
+
 		// hide empty packages that weren't filtered
 		this.hiddenPkgs = [];
                 var me = this;

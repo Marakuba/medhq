@@ -665,6 +665,16 @@ js_accounting = Bundle(
     'app/choices/patient/PatientChoiceGrid.js',
     'app/choices/patient/PatientChoiceWindow.js',
 
+    'app/service/serviceadm/ServiceTree.js',
+    'extjs/ux/MultiSelect.js',
+    'extjs/ux/ItemSelector.js',
+    'app/choices/state/StateChoiceGrid.js',
+    'app/choices/state/StateChoiceWindow.js',
+    'app/service/serviceadm/ExtServiceForm.js',
+    'app/service/serviceadm/ExtServiceGrid.js',
+    'app/service/serviceadm/BaseServiceForm.js',
+    'app/service/serviceadm/ServiceAdm.js',
+
     'app/accounting/invoice/PatientGrid.js',
     'app/accounting/invoice/InvoiceItemGrid.js',
     'app/accounting/invoice/InvoiceForm.js',
@@ -842,6 +852,7 @@ css_barcoding = Bundle(
 
     'resources/css/silk.css',
     'extjs/ux/css/Spinner.css',
+    'extjs/ux/css/MultiSelect.css',
     'extjs/ux/css/RowEditor.css',
     filters=('cssrewrite', 'cssmin'), output='assets/barcoding.css',)
 

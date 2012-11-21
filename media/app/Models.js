@@ -84,10 +84,10 @@ App.models.contractTypeModel = new Ext.data.Record.create([
 
 App.models.paymentModel = new Ext.data.Record.create([
     {name: 'id'},
-    {name: 'doc_date', allowBlank: true, type:'date', format: 'd.m.Y'}, 
-	{name: 'client_account', allowBlank: true}, 
-	{name: 'client_name', allowBlank: true}, 
-	{name: 'client', allowBlank: true}, 
+    {name: 'doc_date', allowBlank: true, type:'date', format: 'd.m.Y'},
+	{name: 'client_account', allowBlank: true},
+	{name: 'client_name', allowBlank: true},
+	{name: 'client', allowBlank: true},
 	{name: 'amount', allowBlank: true},
 	{name: 'account_id', allowBlank: true},
 	{name: 'direction', allowBlank: false},
@@ -244,7 +244,7 @@ App.models.patientModel = new Ext.data.Record.create([
 	{name: 'assignment_notify'},
 	{name: 'lab_notify'},
 	{name: 'preorder_notify'}
-	 
+
 ]);
 
 App.models.FieldSet = new Ext.data.Record.create([
@@ -320,7 +320,7 @@ App.models.tmpModel = new Ext.data.Record.create([
 	{name: 'width', allowBlank: true},
 	{name: 'contrast_enhancement', allowBlank: true}
 ]);
-		
+
 App.models.examModel = new Ext.data.Record.create([
 	{name: 'id'},
 	{name: 'resource_uri'},
@@ -387,7 +387,7 @@ App.models.Template = new Ext.data.Record.create([
 	{name: 'contrast_enhancement'},
 	{name: 'deleted'}
 ]);
-	
+
 App.models.Card = new Ext.data.Record.create([
    	{name: 'id'},
    	{name: 'created'},
@@ -622,6 +622,7 @@ App.models.MedState = new Ext.data.Record.create([
 ]);
 
 App.models.BaseService = new Ext.data.Record.create([
+    {name: 'parent_uri'},
     {name: 'id'},
     {name: 'resource_uri'},
     {name: 'name'},
@@ -642,6 +643,24 @@ App.models.BaseService = new Ext.data.Record.create([
     {name: 'conditions'},
     {name: 'description'},
     {name: 'type'}
+]);
+
+App.models.ExtendedService = new Ext.data.Record.create([
+    {name: 'id'},
+    {name: 'resource_uri'},
+    {name: 'base_service'},
+    {name: 'state'},
+    {name: 'branches'},
+    {name: 'tube'},
+    {name: 'tube_count'},
+    {name: 'is_active'},
+    {name: 'is_manual'},
+    {name: 'staff'},
+    {name: 'code'},
+    {name: 'base_profile'},
+    {name: 'state_name'},
+    {name: 'service_name'},
+    {name: 'price'},
 ]);
 
 App.models.Patient = App.models.patientModel // patientModel will deprecate

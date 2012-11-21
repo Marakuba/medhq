@@ -21,7 +21,7 @@ App.ux.tree.ColspanNodeUI = Ext.extend(Ext.ux.tree.TreeGridNodeUI,{
                         '<span unselectable="on">', (c.tpl ? c.tpl.apply(a) : a[c.dataIndex] || c.text), '</span></a>',
                     '</td>'
         ];
-        
+
         if(n.isLeaf()){
 	        for(i = 1, len = cols.length; i < len; i++){
 	            c = cols[i];
@@ -62,10 +62,10 @@ App.ux.tree.ColspanNodeUI = Ext.extend(Ext.ux.tree.TreeGridNodeUI,{
 });
 
 App.ServiceTreeGrid = Ext.extend(Ext.ux.tree.TreeGrid,{
-	
+
 	initComponent:function(){
 		this.hiddenPkgs = [];
-		this.columns = [{
+		this.columns = this.columns || [{
 	        	header:'Наименование',
 	        	dataIndex:'text',
 	        	sortable:false,
@@ -74,7 +74,7 @@ App.ServiceTreeGrid = Ext.extend(Ext.ux.tree.TreeGrid,{
 	        	header:'Цена',
 	        	dataIndex:'price',
 	        	sortable:false,
-	        	hidden: this.hidePrice ? true : false,
+	        	hidden: this.hidePrice,
 	        	width:50,
 	        	align:'right'
 	        }/*,{
@@ -95,7 +95,7 @@ App.ServiceTreeGrid = Ext.extend(Ext.ux.tree.TreeGrid,{
 	        autoScroll: false,
 	        rootVisible: false,
 	        loader:new Ext.ux.tree.TreeGridLoader({
-				baseParams:this.baseParams ? this.baseParams : 
+				baseParams:this.baseParams ? this.baseParams :
 				{
 					payment_type:'н'
 				},
@@ -146,14 +146,14 @@ App.ServiceTreeGrid = Ext.extend(Ext.ux.tree.TreeGrid,{
 		    	hidden:!this.wideActions,
 		    	text:'Сбросить кэш',
 		    	handler:function(){
-		    		
+
 		    	}
 		    },{
 		    	xtype:'datefield',
 		    	hidden:!this.wideActions,
 		    	listeners:{
 		    		select:function(df){
-		    			
+
 		    		}
 		    	}
 		    },'->',{
@@ -167,12 +167,15 @@ App.ServiceTreeGrid = Ext.extend(Ext.ux.tree.TreeGrid,{
 
 		Ext.apply(this, Ext.apply(this.initialConfig, config));
 		App.ServiceTreeGrid.superclass.initComponent.apply(this, arguments);
-		
+
 	    this.getSelectionModel().on('beforeselect', function(sm, node){
 	        return node.isLeaf();
 	    });
+
+        this.on('afterrender',function(){
+        },this)
 	},
-	
+
 	filterTree: function(t, e){
 		var text = t.getValue();
 		Ext.each(this.hiddenPkgs, function(n){
@@ -186,17 +189,17 @@ App.ServiceTreeGrid = Ext.extend(Ext.ux.tree.TreeGrid,{
 		this.getRootNode().cascade(function(node){
 			node.expandChildNodes();
 		});
-		
+
 		var re = new RegExp(Ext.escapeRe(text), 'i');
 		this.filter.filterBy(function(n){
-			return !n.isLeaf() || re.test(n.text); //!n.attributes.isClass || 
+			return !n.isLeaf() || re.test(n.text); //!n.attributes.isClass ||
 		});
-		
+
 		// hide empty packages that weren't filtered
 		this.hiddenPkgs = [];
 		var me = this;
 		this.root.cascade(function(n){
-			if(!n.isLeaf() && n.ui.ctNode.offsetHeight < 1){ // 
+			if(!n.isLeaf() && n.ui.ctNode.offsetHeight < 1){ //
 				n.ui.hide();
 				me.hiddenPkgs.push(n);
 			}

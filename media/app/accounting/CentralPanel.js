@@ -32,16 +32,16 @@ Ext.each(apps, function(app){
 });
 
 App.AccCentralPanel = Ext.extend(Ext.Panel, {
-	
+
 	initComponent: function(){
-		
+
 		this.connStatus = new Ext.Button({
 			iconCls:'silk-stop',
 			hidden:true
 		});
-		
+
 		this.mainPanel = new App.MainPanel({});
-		
+
 		this.ttb = new Ext.Toolbar({
 			items:[{
 				xtype:'buttongroup',
@@ -54,6 +54,20 @@ App.AccCentralPanel = Ext.extend(Ext.Panel, {
 					text:'Договоры',
 					handler:function(){
 						this.launchApp('accounting');
+					},
+					scope:this
+				}]
+			},{
+				xtype:'buttongroup',
+				defaults:{
+					xtype:'button',
+					scale:'medium'
+				},
+				hidden:App.settings.strictMode,
+				items:[{
+					text:'Услуги',
+					handler:function(){
+						this.launchApp('serviceadm');
 					},
 					scope:this
 				}]
@@ -103,13 +117,13 @@ App.AccCentralPanel = Ext.extend(Ext.Panel, {
 		App.eventManager.on('closeapp', this.closeApp, this);
 		this.on('afterrender', function(){
 		});
-		
-		
+
+
 		this.on('destroy', function(){
 		    App.eventManager.un('launchapp', this.launchApp, this);
 			App.eventManager.un('closeapp', this.closeApp, this);
 		},this);
-		
+
 		Ext.Direct.on('netstatus',function(){
 			this.connStatus.setIconClass('silk-tick');
 		}, this);
@@ -119,13 +133,13 @@ App.AccCentralPanel = Ext.extend(Ext.Panel, {
 		}, this);
 
 	},
-	
+
 	closeApp: function(appId) {
 		this.mainPanel.remove(appId);
 	},
-	
+
 	launchApp: function(appId,config, setActive) {
-		var a 
+		var a
         var app_config = {
             xtype:appId,
             medstateStore:this.medstateStore,
@@ -139,7 +153,7 @@ App.AccCentralPanel = Ext.extend(Ext.Panel, {
 			this.mainPanel.setActiveTab(new_app);
 		}
 	}
-	
+
 });
 
 Ext.reg('acccentralpanel', App.AccCentralPanel);
