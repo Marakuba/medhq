@@ -19,7 +19,6 @@
     {% block init %}
     {% autoescape off %}
         <script type="text/javascript">
-            var WebApp;
             Ext.onReady(function(){
 
                 Ext.QuickTips.init();
@@ -28,11 +27,15 @@
                     Accept : 'application/json'
                 };
 
-                WebApp = new App.webapp.WebApp({
+                Ext.state.Manager.setProvider(
+                    new Ext.state.CookieProvider({
+                        expires: new Date(new Date().getTime()+(60*60*24*30)),
+                    })
+                );
+
+                WebApp.init({
                     {{ options }}
                 });
-
-                WebApp.init();
 
             });
         </script>

@@ -123,6 +123,7 @@ INSTALLED_APPS = [
     'taskmanager',
     'visit',
     'webapp',
+    'jsonfield',
 
 
     'django.contrib.admin',

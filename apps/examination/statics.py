@@ -46,8 +46,8 @@ class ExamOrderGridApp(BaseWebApp):
         'app/data/RestStore.js',
         'app/form/ClearableComboBox.js',
         'app/form/LazyComboBox.js',
-        'app/ux/GSearchField.js',
         'app/ux/InputTextMask.js',
+        'app/ux/GSearchField.js',
 
         'app/examination/models.js',
 
@@ -59,24 +59,6 @@ class ExamOrderGridApp(BaseWebApp):
         'app/examination/startpanel/StartPanel.js',
         'app/examination/startpanel/CardStartPanel.js',
         'app/examination/startpanel/TemplateStartPanel.js',
-
-        'app/ux/remotetree/js/Ext.ux.form.ThemeCombo.js',
-        'app/ux/remotetree/js/Ext.ux.HttpProvider.js',
-        'app/ux/remotetree/js/Ext.ux.IconMenu.js',
-        'app/ux/remotetree/js/Ext.ux.menu.IconMenu.js',
-        'app/ux/remotetree/js/Ext.ux.ThemeCombo.js',
-        'app/ux/remotetree/js/Ext.ux.Toast.js',
-        'app/ux/remotetree/js/Ext.ux.tree.RemoteTreePanel.js',
-        'app/ux/remotetree/js/Ext.ux.tree.TreeFilterX.js',
-        'app/ux/remotetree/js/WebPage.js',
-
-        'app/ux/DropDownList.js',
-
-        'app/dict/glossary/EditNodeWindow.js',
-        'app/dict/glossary/XGlossaryTree.js',
-        'app/dict/glossary/GlossaryTree.js',
-        'app/dict/glossary/GlossaryPanel.js',
-        'app/dict/glossary/GlossaryEditor.js',
 
         'app/examination/questionnaire/QuestEditor.js',
         'app/examination/questionnaire/QuestPreviewPanel.js',
@@ -113,7 +95,7 @@ class ExamOrderGridApp(BaseWebApp):
         ]
     }
 
-    depends_on = ['webapp3', ]
+    depends_on = ['webapp3', 'glossaryeditor', ]
 
     def options(self, *args, **kwargs):
         request = kwargs['request']
@@ -158,6 +140,31 @@ class ExamOrderGridApp(BaseWebApp):
         }
 
 
+@register('glossaryeditor')
+class GlossayEditorApp(BaseWebApp):
+
+    cmp_type = 'action'
+    js = [
+        'app/ux/remotetree/js/Ext.ux.form.ThemeCombo.js',
+        'app/ux/remotetree/js/Ext.ux.HttpProvider.js',
+        'app/ux/remotetree/js/Ext.ux.IconMenu.js',
+        'app/ux/remotetree/js/Ext.ux.menu.IconMenu.js',
+        'app/ux/remotetree/js/Ext.ux.ThemeCombo.js',
+        'app/ux/remotetree/js/Ext.ux.Toast.js',
+        'app/ux/remotetree/js/Ext.ux.tree.RemoteTreePanel.js',
+        'app/ux/remotetree/js/Ext.ux.tree.TreeFilterX.js',
+        'app/ux/remotetree/js/WebPage.js',
+
+        'app/ux/DropDownList.js',
+
+        'app/examination/glossary/EditNodeWindow.js',
+        'app/examination/glossary/XGlossaryTree.js',
+        'app/examination/glossary/GlossaryTree.js',
+        'app/examination/glossary/GlossaryPanel.js',
+        'app/examination/glossary/GlossaryEditor.js',
+    ]
+
+
 @register('conclusionapp')
 class ConclusionApp(BaseWebApp):
 
@@ -196,4 +203,14 @@ class TrashApp(BaseWebApp):
         'app/examination/cards/CardGrid.js',
         'app/examination/templates/TmpGrid.js',
         'app/examination/trash/TrashApp.js',
+    ]
+
+
+@register('cardexamgrid')
+class CardExamGridApp(BaseWebApp):
+
+    cmp_type = 'action'
+    js = [
+        'app/examination/models.js',
+        'app/examination/patient/card/ExamCardGrid.js',
     ]

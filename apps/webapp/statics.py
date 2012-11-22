@@ -77,7 +77,8 @@ def get_app_opts(app):
         'is_default': app.is_default,
         'tbar_group': app.tbar_group,
         'splitter': app.splitter,
-        'cmp_type': get_webapp(app.xtype).cmp_type
+        'cmp_type': get_webapp(app.xtype).cmp_type,
+        'config': app.config
     }
     return opts
 
@@ -89,7 +90,12 @@ class WebApp3(BaseWebApp):
         'app/webapp/Utils.js',
         'app/webapp/MainPanel.js',
         'app/webapp/CentralPanel.js',
-        'app/webapp/WebApp.js'
+        'app/webapp/WebApp.js',
+
+        'app/data/RestStore.js',
+        'app/form/ClearableComboBox.js',
+        'app/form/LazyComboBox.js',
+        'app/ux/InputTextMask.js',
     ]
     css = {
         'all': [

@@ -1,6 +1,6 @@
 Ext.ns('App');
 
-App.Patients = Ext.extend(Ext.Panel, {
+App.patient.PatientApp = Ext.extend(Ext.Panel, {
 	initComponent:function(){
 		
 		this.patientFields = new Array("last_name","first_name","mid_name","second_name","mobile_phone","email","birth_day");
@@ -128,7 +128,7 @@ App.Patients = Ext.extend(Ext.Panel, {
 		}
 		
 		Ext.apply(this, Ext.apply(this.initialConfig, config));
-		App.Patients.superclass.initComponent.apply(this, arguments);
+		App.patient.PatientApp.superclass.initComponent.apply(this, arguments);
 		
 		this.initEvents();
 		
@@ -259,4 +259,4 @@ App.Patients = Ext.extend(Ext.Panel, {
 	}
 });
 
-Ext.reg('patients', App.Patients);
+Ext.reg('patientapp', App.patient.PatientApp);

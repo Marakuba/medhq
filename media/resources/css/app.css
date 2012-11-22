@@ -38,7 +38,7 @@
 	white-space:normal;
 }
 .helpdesk-row-body, .preorder-actual-row-body {
-	padding:5px;
+	padding:5px 0;
 	color:#385F95
 }
 

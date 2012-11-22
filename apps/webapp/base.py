@@ -24,8 +24,13 @@ def all_webapps():
     return _registry.items()
 
 
+from operator import itemgetter
+
+
 def all_webapps_choices():
-    return [(k, cls.verbose_name or k) for k, cls in _registry.iteritems() if cls.cmp_type in ['action', 'widget']]
+    return sorted([(k, cls.verbose_name or k) \
+        for k, cls in _registry.iteritems() \
+        if cls.cmp_type in ['action', 'widget']], key=itemgetter(1))
 
 
 def autodiscover():

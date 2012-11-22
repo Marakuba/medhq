@@ -3,6 +3,7 @@
 
 from django.db import models
 from django.contrib.auth.models import Group, User
+from jsonfield import JSONField
 
 
 class Viewport(models.Model):
@@ -39,6 +40,7 @@ class ViewportApp(models.Model):
     groups = models.ManyToManyField(Group, blank=True, null=True)
     users = models.ManyToManyField(User, blank=True, null=True)
     order = models.IntegerField(u'Порядок', default=0)
+    config = JSONField(u'Дополнительная конфигурация', help_text=u'Должен быть валидный JSON')
 
     class Meta:
         verbose_name = u'приложение интерфейса'

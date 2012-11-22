@@ -45,28 +45,30 @@ def get_patient_info(request):
     }
     return dict(success=True, data=data)
 
+
 @render_to('print/lab/register.html')
 def print_register(request):
     allowed_lookups = {
-        'visit__created__gte':u'Дата с',
-        'visit__created__lte':u'Дата по',
-        'laboratory':u'Лаборатория',
-        'visit__office':u'Офис',
-        'visit__payer':u'Плательщик',
-        'visit__patient':u'Пациент',
-        'visit__is_cito':u'cito'
+        'visit__created__gte': u'Дата с',
+        'visit__created__lte': u'Дата по',
+        'laboratory': u'Лаборатория',
+        'visit__office': u'Офис',
+        'visit__payer': u'Плательщик',
+        'visit__patient': u'Пациент',
+        'visit__is_cito': u'cito'
     }
     lookups = {}
-    
-    for k,v in request.GET.iteritems():
+
+    for k, v in request.GET.iteritems():
         if k in allowed_lookups:
             lookups['order__%s' % k] = v
 
     status = request.GET.get('is_completed', None)
     if status:
-        if status in ['0','1']:
+        if status in ['0', '1']:
             lookups['order__is_completed'] = bool(int(status))
-    
+    if 'visit__is_cito' in lookups:
+        lookups['visit__is_cito'] = True
     results = Result.objects.filter(**lookups) \
         .order_by('analysis__service__name',
                   'order__visit__created',
@@ -81,17 +83,17 @@ def print_register(request):
                 'order__visit__office__name') \
         .annotate(count=Count('analysis__service__name'))
 
-        
     r = defaultdict(list)
     for result in results:
-        r[result['analysis__service__name']].append([ u'%s %s %s' % (result['order__visit__patient__last_name'],\
+        r[result['analysis__service__name']].append([u'%s %s %s' % (result['order__visit__patient__last_name'],\
                                                                      result['order__visit__patient__first_name'],\
                                                                      result['order__visit__patient__mid_name'],\
-                                                                     ), 
+                                                                     ),
                                                      result['order__visit__created'].strftime("%d.%m.%Y"),\
                                                      result['order__is_completed'],
                                                      result['order__visit__barcode__id'],
-                                                     result['order__visit__office__name'] ])
+                                                     result['order__visit__office__name']
+                                                    ])
     result_list = []
     for k in sorted(r.keys()):
         tmp_list = sorted(r[k], key=operator.itemgetter(0))
