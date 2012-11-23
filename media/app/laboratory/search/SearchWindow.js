@@ -141,13 +141,16 @@ App.laboratory.SearchWindow = Ext.extend(Ext.Window, {
 			    	},
 			    	scope:this
 			    }
+			}),new Ext.form.Checkbox({
+				fieldLabel:'Только cito',
+				name:'cito'
 			})]
 		});
 
 		config = {
 			title:'Поиск',
 			width:400,
-			height:240,
+			height:260,
 			items:[this.form],
 			buttonAlign: 'left',
 			fbar:[{

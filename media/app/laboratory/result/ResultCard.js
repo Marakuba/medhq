@@ -222,8 +222,11 @@ App.result.ResultCard = Ext.extend(Ext.Panel, {
 		}
 		this.dateField.setValue(d.executed);
 		this.timeField.setValue(d.executed);
-		this.setTitle(String.format('Результаты: {0}, {2} &nbsp;&nbsp;&nbsp; {1}',
-				this.labOrderRecord.data.patient_name, this.labOrderRecord.data.info, this.labOrderRecord.data.patient_age));
+		this.setTitle(String.format('Результаты: {0}, {2} &nbsp;&nbsp;&nbsp; {1} &nbsp;&nbsp;&nbsp; <span style="font-weight:bold;color:red">{3}</span>',
+				this.labOrderRecord.data.patient_name, 
+				this.labOrderRecord.data.info, 
+				this.labOrderRecord.data.patient_age,
+				this.labOrderRecord.data.visit_is_cito ? 'cito' : ''));
 	},
 
 	setActiveRecord: function(rec) {

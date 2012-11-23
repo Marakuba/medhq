@@ -102,6 +102,7 @@ class VisitResource(ExtResource):
             'payer': ALL_WITH_RELATIONS,
             'id': ALL,
             'created': ALL,
+            'is_cito': ALL,
             'office': ALL_WITH_RELATIONS
         }
         list_allowed_methods = ['get', 'post', 'put']
@@ -392,6 +393,7 @@ class ExamServiceResource(ExtResource):
         resource_name = 'examservice'
         authorization = DjangoAuthorization()
         always_return_data = True
+        limit = 50
         filtering = {
             'id': ALL,
             'order': ALL_WITH_RELATIONS,

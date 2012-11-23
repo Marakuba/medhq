@@ -382,7 +382,7 @@ class Result(models.Model):
         verbose_name = u'результат'
         verbose_name_plural = u'результаты'
         ordering = ('analysis__service__%s' % BaseService._meta.tree_id_attr, #@UndefinedVariable
-                    '-analysis__service__%s' % BaseService._meta.left_attr, #@UndefinedVariable
+                    'analysis__service__%s' % BaseService._meta.left_attr, #@UndefinedVariable
                     'analysis__order',)
 
 class Sampling(models.Model):

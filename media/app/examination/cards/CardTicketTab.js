@@ -37,6 +37,14 @@ App.examination.CardTicketTab = Ext.extend(App.examination.TicketTab, {
 	
 	//Пользовательская функция добавления элементов в тулбар. выполняется после добавления обязательных кнопок
 	fillUsersMenu: function(){
+		this.printBtn = new Ext.Button({
+			iconCls:'silk-printer',
+			text: 'Печать',
+			disabled:!(this.cardId || this.tplId),
+			handler:this.onPrint.createDelegate(this,[]),
+			scope:this
+		});
+
 		this.historyBtn = new Ext.Button({
 			iconCls:'silk-package',
 			text: 'История пациента',
@@ -65,6 +73,8 @@ App.examination.CardTicketTab = Ext.extend(App.examination.TicketTab, {
 			},
 			scope:this
 		});
+		this.ttb.add('-');
+		this.ttb.add(this.printBtn);
 		this.ttb.add('-');
 		this.ttb.add(this.historyBtn);
 		this.ttb.add('-');
