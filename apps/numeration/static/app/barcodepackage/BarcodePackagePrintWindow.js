@@ -23,6 +23,39 @@ App.barcodepackage.BarcodePackagePrintWindow = Ext.extend(Ext.Window, {
         );
         var t = tpl.apply(d);
         
+        this.printerCmb = new Ext.form.ComboBox({
+            fieldLabel:'Принтер',
+            anchor:'99%',
+            store:new Ext.data.JsonStore({
+                // data:App.barcoding,
+                root:'printers',
+                fields:['id','name','address','port'],
+                idProperty:'id'
+            }),
+            listeners:{
+                select:function(cmb, rec, idx){
+                    this.printer = rec.data;
+                    this.printerId = rec.data.id;
+                    Ext.state.Manager.getProvider().set('lab_printer', this.printerId);
+                    this.msgBox = Ext.MessageBox.progress('Подождите','Идет подключение к принтеру');
+                    App.WebSocket = new WebSocket(String.format("ws://{0}:{1}/",this.printer.address,this.printer.port));
+                    App.WebSocket.onopen = function(){
+                        this.msgBox.hide();
+                    }.createDelegate(this);
+                    App.WebSocket.onerror = function(){
+                        this.msgBox.hide();
+                        Ext.MessageBox.alert('Ошибка','Невозможно подключиться к принтеру!');
+                    }.createDelegate(this);
+                }
+            },
+            mode:'local',
+            typeAhead: true,
+            triggerAction:'all',
+            valueField:'id',
+            displayField:'name',
+            // value:this.printerId
+        });
+
         this.form = new Ext.form.FormPanel({
             baseCls:'x-plain',
             defaults:{
@@ -32,37 +65,7 @@ App.barcodepackage.BarcodePackagePrintWindow = Ext.extend(Ext.Window, {
             labelAlign:'top',
             items:[{
                 html:t
-            }, new Ext.form.ComboBox({
-                fieldLabel:'Принтер',
-                anchor:'99%',
-                store:new Ext.data.JsonStore({
-                    data:App.barcoding,
-                    root:'printers',
-                    fields:['id','name','address','port'],
-                    idProperty:'id'
-                }),
-                listeners:{
-                    select:function(cmb, rec, idx){
-                        this.printer = rec.data;
-                        Ext.state.Manager.getProvider().set('lab_printer', this.printer);
-                        this.msgBox = Ext.MessageBox.progress('Подождите','Идет подключение к принтеру');
-                        App.WebSocket = new WebSocket(String.format("ws://{0}:{1}/",this.printer.address,this.printer.port));
-                        App.WebSocket.onopen = function(){
-                            this.msgBox.hide();
-                        }.createDelegate(this);
-                        App.WebSocket.onerror = function(){
-                            this.msgBox.hide();
-                            Ext.MessageBox.alert('Ошибка','Невозможно подключиться к принтеру!');
-                        }.createDelegate(this);
-                    }
-                },
-                mode:'local',
-                typeAhead: true,
-                triggerAction:'all',
-                valueField:'id',
-                displayField:'name',
-                value:this.printer || ''
-            })]
+            }, this.printerCmb]
         });
         config = {
             title:'Печать пакетов штрих-кодов',
@@ -85,11 +88,15 @@ App.barcodepackage.BarcodePackagePrintWindow = Ext.extend(Ext.Window, {
                 },
                 scope:this
             }]
-        }
+        };
 
         Ext.apply(this, Ext.apply(this.initialConfig, config));
         App.barcodepackage.BarcodePackagePrintWindow.superclass.initComponent.apply(this, arguments);
         
+        getBarcodePrinters('lab', undefined, function(){
+            this.printerCmb.getStore().loadData(App.barcoding);
+        }, this);
+
         this.on('afterrender', function(){
             //this.form.getForm().findField('code').focus(true, 350);
         }, this);

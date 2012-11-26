@@ -3,13 +3,6 @@
 from webapp.base import BaseWebApp, register
 
 
-@register('labelprinter')
-class LabelPrinterApp(BaseWebApp):
-
-    js = [
-    ]
-
-
 @register('barcodepackage')
 class BarcodePackageApp(BaseWebApp):
 
@@ -17,6 +10,7 @@ class BarcodePackageApp(BaseWebApp):
         'app/barcodepackage/PrintUtils.js',
         'app/barcodepackage/DuplicateWindow.js',
     ]
+    depends_on = ['webapp3', ]
 
 
 @register('barcodepackagegrid')
