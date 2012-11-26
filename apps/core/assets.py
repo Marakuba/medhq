@@ -670,8 +670,12 @@ js_accounting = Bundle(
     'extjs/ux/ItemSelector.js',
     'app/choices/state/StateChoiceGrid.js',
     'app/choices/state/StateChoiceWindow.js',
+    'app/choices/tube/TubeChoiceGrid.js',
+    'app/choices/tube/TubeChoiceWindow.js',
+    'app/service/serviceadm/LabServiceForm.js',
     'app/service/serviceadm/ExtServiceForm.js',
     'app/service/serviceadm/ExtServiceGrid.js',
+    'app/service/serviceadm/ExtServicePanel.js',
     'app/service/serviceadm/BaseServiceForm.js',
     'app/service/serviceadm/ServiceAdm.js',
 

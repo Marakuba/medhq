@@ -5,7 +5,7 @@ App.serviceadm.ServiceTree = Ext.extend(Ext.tree.TreePanel,{
     initComponent:function(){
 
         config = {
-            root : new Ext.tree.TreeNode({
+            root : new Ext.tree.AsyncTreeNode({
                 expanded: true,
                 text:'Услуги',
                 id:'root'
@@ -50,10 +50,14 @@ App.serviceadm.ServiceTree = Ext.extend(Ext.tree.TreePanel,{
             contextMenu: new Ext.menu.Menu({
                 items: [{
                     id: 'add-group',
-                    text: 'Добавить группу'
+                    text: 'Добавить группу',
+                    defaultText: 'Добавить группу',
+                    editable: true
                 },{
                     id: 'add-service',
-                    text: 'Добавить услугу'
+                    text: 'Добавить услугу',
+                    defaultText: 'Добавить услугу',
+                    editable: true
                 }],
                 listeners: {
                     itemclick: function(item) {

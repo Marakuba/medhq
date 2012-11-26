@@ -36,6 +36,7 @@ try:
 except:
     from ordereddict import OrderedDict #@Reimport
 from service.models import BS_TYPES
+from lab.models import WIDGET_CHOICES
 
 logger = logging.getLogger('general')
 
@@ -187,8 +188,10 @@ def laboratory(request):
 def accounting(request):
     types = map(lambda x: list(x), BS_TYPES)
     types = [t for t in types if not t[0] == u'group']
+    lab_widgets = map(lambda x: list(x), WIDGET_CHOICES)
     return {
         'bs_types': simplejson.dumps(types),
+        'lab_widgets': simplejson.dumps(lab_widgets),
         'apps': simplejson.dumps(get_apps(request))
     }
 

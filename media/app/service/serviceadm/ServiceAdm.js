@@ -59,7 +59,8 @@ App.service.ServiceAdm = Ext.extend(Ext.Panel,{
 
         this.contentPanel = new Ext.TabPanel({
             // activeTab:0,
-            width:800,
+            width:900,
+            split:true,
             items:[],
             region:'east'
         });
@@ -72,12 +73,26 @@ App.service.ServiceAdm = Ext.extend(Ext.Panel,{
 
         Ext.apply(this, Ext.apply(this.initialConfig, config));
         App.service.ServiceAdm.superclass.initComponent.apply(this, arguments);
+
+        this.serviceTree.on('contextmenu', function(node, e) {
+            node.select();
+            var c = node.getOwnerTree().contextMenu;
+            c.contextNode = node;
+            var parentName = this.getParentName(node);
+            c.items.each(function(item){
+                if (item.editable){
+                    item.setText(item.defaultText + ' в ' + parentName);
+                }
+            });
+            c.showAt(e.getXY());
+        },this);
     },
 
     onServiceClick: function(node){
         if (this.bsForm){
-            this.bsForm.closeForm(function(form){
-                form.openService(node);
+            this.bsForm.closeForm(function(thisForm){
+                thisForm.bsForm.destroy();
+                thisForm.openService(node);
             }, this);
         } else {
             this.openService(node);
@@ -102,6 +117,11 @@ App.service.ServiceAdm = Ext.extend(Ext.Panel,{
         }, scope:this});
     },
 
+    getParentName: function(node){
+        return node.attributes.type == 'group' ? node.text :
+                node.parentNode && node.parentNode.text || this.serviceTree.getRootNode().text;
+    },
+
     addService: function(node,type){
         var parent = node.attributes.type == 'group' ? node.id :
                 node.parentNode && node.parentNode.id || undefined;
@@ -123,6 +143,7 @@ App.service.ServiceAdm = Ext.extend(Ext.Panel,{
 
         if (this.bsForm){
             this.bsForm.closeForm(function(thisForm){
+                thisForm.bsForm.destroy();
                 thisForm.baseServiceStore.removeAll(true);
                 thisForm.baseServiceStore.add(newRecord);
                 thisForm.openBSForm(bsConfig);
@@ -138,15 +159,16 @@ App.service.ServiceAdm = Ext.extend(Ext.Panel,{
         var initConfig = {
             scope: this,
             listeners:{
-                openextservice:function(extServForm){
-                    this.contentPanel.add(extServForm);
-                    if(extServForm.record.data.id){
-                        this.contentPanel.setActiveTab(extServForm);
-                    }
+                openform:function(form){
+                    this.contentPanel.add(form);
                     this.doLayout();
                 },
                 activeme: function(form){
                     this.contentPanel.setActiveTab(form);
+                },
+                closeform: function(form){
+                    this.bsForm = undefined;
+                    form.destroy();
                 },
                 scope: this
             }

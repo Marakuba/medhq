@@ -8,7 +8,7 @@ from tastypie.api import Api
 from apiutils.resources import ExtResource, ComplexQuery, ExtBatchResource
 from lab.models import LabOrder, Sampling, Tube, Result, Analysis, InputList,\
     Equipment, EquipmentAssay, EquipmentResult, EquipmentTask, Invoice,\
-    InvoiceItem
+    InvoiceItem, AnalysisProfile, LabService
 from patient.utils import smartFilter
 from django.db.models.query_utils import Q
 from tastypie.cache import SimpleCache
@@ -16,13 +16,29 @@ from visit.models import OrderedService
 from apiutils.authorization import LocalAuthorization
 
 
-class TubeResource(ModelResource):
+class LSResource(ExtResource):
+    base_service = fields.OneToOneField('service.api.BaseServiceResource', 'base_service')
+
+    class Meta:
+        queryset = LabService.objects.all()
+        authorization = DjangoAuthorization()
+        resource_name = 'ls'
+        always_return_data = True
+        filtering = {
+            'base_service': ALL_WITH_RELATIONS,
+            'is_manual': ALL,
+        }
+        list_allowed_methods = ['get', 'post', 'put']
+
+
+class TubeResource(ExtResource):
     """
     """
     class Meta:
         queryset = Tube.objects.all()
         resource_name = 'tube'
         filtering = {
+            'id': ALL,
             'name': ALL
         }
         list_allowed_methods = ['get', 'post', 'put']
@@ -39,6 +55,21 @@ class AnalysisResource(ModelResource):
         always_return_data = True
         filtering = {
             'service': ALL_WITH_RELATIONS
+        }
+        list_allowed_methods = ['get', 'post', 'put']
+
+
+class AnalysisProfileResource(ExtResource):
+    """
+    """
+
+    class Meta:
+        queryset = AnalysisProfile.objects.all()
+        resource_name = 'analysisprofile'
+        always_return_data = True
+        filtering = {
+            'id': ALL,
+            'name': ALL
         }
         list_allowed_methods = ['get', 'post', 'put']
 
@@ -467,6 +498,7 @@ class InvoiceItemResource(ExtResource):
 
 api = Api(api_name='lab')
 
+api.register(AnalysisProfileResource())
 api.register(InputListResource())
 api.register(LabOrderResource())
 api.register(AnalysisResource())
@@ -482,3 +514,4 @@ api.register(EquipmentTaskResource())
 api.register(EquipmentTaskReadOnlyResource())
 api.register(InvoiceResource())
 api.register(InvoiceItemResource())
+api.register(LSResource())

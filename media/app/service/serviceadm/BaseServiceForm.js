@@ -13,31 +13,11 @@ App.serviceadm.BaseServiceForm = Ext.extend(Ext.form.FormPanel,{
 
         this.closeBtn = new Ext.Button({
             text: 'Закрыть',
-            handler: this.onClose.createDelegate(this,[]),
+            handler: this.closeForm.createDelegate(this,[]),
             scope:this
         });
 
-        this.ownStateStore = new Ext.data.RESTStore({
-            autoLoad : false,
-            autoSave : false,
-            apiUrl : App.getApiUrl('state','ownstate'),
-            model: [
-                    {name: 'id'},
-                    {name: 'resource_uri'},
-                    {name: 'name'}
-                ]
-        });
-
-        this.extServiceGrid = new App.serviceadm.ExtServiceGrid({
-            baseServiceId: this.record.data.id,
-            height:400
-        });
-
-        this.extServiceGrid.on('openextservice',this.openExtService, this);
-
-        this.extServiceGrid.on('addextservice',this.showStateWin, this);
-
-        this.extServiceGrid.on('afterrender',function(){
+        /*this.extServiceGrid.on('afterrender',function(){
             if (!this.record || this.record.data.type == 'group') return false;
             this.ownStateStore.load({callback: function(records){
                 if (records.length === 0 || this.record.data.id) return false;
@@ -48,7 +28,7 @@ App.serviceadm.BaseServiceForm = Ext.extend(Ext.form.FormPanel,{
                 }
 
             }, scope: this});
-        }, this);
+        }, this);*/
 
         this.materialCB = new Ext.form.LazyComboBox({
             fieldLabel:'Материал',
@@ -82,7 +62,7 @@ App.serviceadm.BaseServiceForm = Ext.extend(Ext.form.FormPanel,{
 
         this.typeCB = new Ext.form.ComboBox({
             fieldLabel: 'Тип',
-            disabled: this.record && this.record.data['id'],
+            disabled: this.record && this.record.data.id,
             name: 'type',
             store: new Ext.data.ArrayStore({
                 fields: ['id','title'],
@@ -97,18 +77,18 @@ App.serviceadm.BaseServiceForm = Ext.extend(Ext.form.FormPanel,{
             selectOnFocus: true,
             editable: false,
             anchor: '50%',
-            value: 'cons'
+            value: 'cons',
+            listeners: {
+                scope: this,
+                select: function(combo, record, idx){
+                    if (record.data.id == 'lab'){
+                        this.openLabServiceForm(true);
+                    }
+                }
+            }
         });
 
         this.itemsSet = [{
-            xtype: 'textfield',
-            width: 400,
-            value: '',
-            allowBlank: false,
-            fieldLabel: 'Наименование',
-            name:'name'
-
-        },{
             xtype:'hidden',
             name:'parent'
         },{
@@ -117,12 +97,31 @@ App.serviceadm.BaseServiceForm = Ext.extend(Ext.form.FormPanel,{
         }];
 
         if (this.record.data.type == 'group'){
-            this.itemsSet.push({
+            this.itemsSet.push(
+            {
+                xtype: 'textfield',
+                width: 400,
+                value: '',
+                allowBlank: false,
+                fieldLabel: 'Наименование',
+                name:'name'
+
+            },{
                 xtype:'hidden',
                 name:'type'
             });
         } else {
-            this.itemsSet = this.itemsSet.concat([{
+            this.itemsSet = this.itemsSet.concat([
+                this.typeCB,
+            {
+                xtype: 'textfield',
+                width: 400,
+                value: '',
+                allowBlank: false,
+                fieldLabel: 'Наименование',
+                name:'name'
+
+            },{
                 xtype:'textfield',
                 width: 400,
                 value: '',
@@ -130,7 +129,6 @@ App.serviceadm.BaseServiceForm = Ext.extend(Ext.form.FormPanel,{
                 fieldLabel: 'Краткое наименование',
                 name:'short_name'
             },
-            this.typeCB,
             {
                 xtype:'textfield',
                 width: 100,
@@ -170,12 +168,12 @@ App.serviceadm.BaseServiceForm = Ext.extend(Ext.form.FormPanel,{
                 value: '',
                 fieldLabel: 'Описание',
                 name:'description'
-            },
-            this.extServiceGrid]);
+            }]);
         }
 
         config = {
             layout: 'form',
+            labelWidth: 200,
             border: false,
             autoScroll: true,
             items: this.itemsSet,
@@ -184,13 +182,7 @@ App.serviceadm.BaseServiceForm = Ext.extend(Ext.form.FormPanel,{
         Ext.apply(this, Ext.apply(this.initialConfig, config));
         App.serviceadm.BaseServiceForm.superclass.initComponent.apply(this, arguments);
 
-        this.record.store.on('write', function(store, action, result, res, rs){
-            this.saving = false;
-            if(this.afterSaveFn){
-                this.afterSaveFn(rs,this.scopeForm);
-            }
-            this.cleanForm();
-        }, this);
+        this.record.store.on('write', this.onBSStoreWrite, this);
 
         this.on('afterrender', function(form){
             if (this.record){
@@ -200,6 +192,8 @@ App.serviceadm.BaseServiceForm = Ext.extend(Ext.form.FormPanel,{
         }, this);
 
         this.on('beforedestroy', function(){
+            this.record.store.un('write', this.onBSStoreWrite, this);
+
             if (this.childs.length){
                 Ext.each(this.childs, function(form){
                     form.destroy();
@@ -208,124 +202,195 @@ App.serviceadm.BaseServiceForm = Ext.extend(Ext.form.FormPanel,{
         },this);
     },
 
-    onSave: function(afterSaveFn,scopeForm){
-        var f = this.getForm();
-        if (f.isValid()){
-            this.afterSaveFn = afterSaveFn;
-            this.scopeForm = scopeForm;
-            if(f.isDirty()) {
-                this.saving = true;
-            }
-            f.updateRecord(this.record);
-            this.record.store.save();
-            this.setTitle(this.record.data.short_name);
-            if (this.fn){
-                Ext.callback(this.fn, this.scope || window, [this.record]);
+    onBSStoreWrite: function(store, action, result, res, rs){
+        if (action == 'create'){
+            this.setBaseService(rs.data.resource_uri);
+        } else {
+            this.saveChilds();
+        }
+        this.cleanForm();
+    },
+
+    onSave: function(){
+        if (!this.record){
+            console.log('Не задана запись base_service');
+            return false;
+        }
+        if (this.isDirty()){
+            // Количество сохраненных форм.
+            // Необходимо для определения факта завершения процедуры сохранения
+            this.savedCount = 0;
+
+            var f = this.getForm();
+            if (f.isValid()){
+                if(f.isDirty()) {
+                    console.log('base_service is dirty');
+                    f.updateRecord(this.record);
+                    this.record.store.save();
+                    this.setTitle(this.record.data.short_name);
+                } else {
+                    this.savedCount += 1;
+                    this.saveChilds();
+                }
+            } else {
+                this.fireEvent('activeme',this);
+                Ext.Msg.alert('Внимание!','Заполните необходимые поля формы!');
             }
         } else {
-            this.fireEvent('activeme',this);
-            Ext.Msg.alert('Внимание!','Заполните необходимые поля формы!');
+            this.onSaveComplete();
+        }
+
+    },
+
+    isDirty: function(){
+        this.countToSave = 0; //Сколько форм должно быть сохранено
+        var isDirty = false;
+        if (this.getForm().isDirty()){
+            return true;
+        }
+        Ext.each(this.childs, function(f){
+            if (f.onSave){
+                this.countToSave += 1;
+            }
+            if (f.isDirty){
+                if (f.isDirty()){
+                    isDirty = true;
+                }
+            }
+        }, this);
+        return isDirty;
+    },
+
+    saveChilds: function(){
+        Ext.each(this.childs, function(f){
+            if (f.onSave){
+                f.onSave();
+            }
+        }, this);
+    },
+
+    onSaveComplete: function(){
+        if (this.fn){
+            Ext.callback(this.fn, this.scope || window, [this.record]);
+        }
+        this.fireEvent('savecomplete', this);
+        if (this.closing){
+            this.onClose();
         }
     },
 
     setRecord: function(record){
-        if (record.data.type != 'group' && record.data['id']){
-            this.extServiceGrid.setBaseService(record.data.id);
-        }
         var form = this.getForm();
         form.loadRecord(record);
-        form.items.each(function(f){
-            if (f.getValue){
-                f.originalValue = f.getValue();
-            }
-        });
-    },
-
-    closeForm: function(afterCloseFn,scopeForm){
-        if (this.getForm().isDirty()) {
-            this.fireEvent('activeme',this);
-            Ext.Msg.alert('Были внесены изменения', 'Сохраните или закройте форму');
-        } else {
-            this.onClose(afterCloseFn,scopeForm);
-        }
-    },
-
-    onClose: function(afterCloseFn,scopeForm){
-        if (!this.savingProcess){
-            var d;
-            Ext.each(this.childs, function(form){
-                d = form.getForm().isDirty();
-                if (d) {
-                    this.fireEvent('activeme',form);
-                    Ext.Msg.alert('Были внесены изменения', 'Сохраните или закройте форму');
-                    return false;
+        this.record = record;
+        if (record.data.id){
+            form.items.each(function(f){
+                if (f.getValue){
+                    f.originalValue = f.getValue();
                 }
-            }, this);
-            if(!d){
-                if(afterCloseFn){
-                    afterCloseFn(scopeForm);
-                }
-                this.destroy();
-            }
-        } else {
-            Ext.Msg.alert('Идет процесс сохранения формы', 'Повторите действие позже');
-        }
-
-    },
-
-    showStateWin: function(){
-        this.ownStateStore.clearFilter();
-        var existing = [];
-        this.extServiceGrid.store.each(function(serv){
-            existing.push(App.uriToId(serv.data.state));
-        }, this);
-        var in_array;
-        this.ownStateStore.filterBy(function(record,id){
-            in_array = false;
-            Ext.each(existing,function(st){
-                if (record.data.id == st) in_array = true;
             });
-            return !in_array;
-        });
-        this.stateWin = new App.choices.StateChoiceWindow({
-            height: 300,
-            width: 300,
-            store: this.ownStateStore,
-            fn: this.addExtService,
-            scope:this
-        });
-        this.stateWin.show();
+        }
+        if (record.data.type !== 'group') {
+            this.openExtServiceForm(record);
+            if (record.data.type == 'lab') {
+                this.openLabServiceForm();
+            }
+        }
+
     },
 
-    openExtService: function(record){
-        var extServForm = new App.serviceadm.ExtServiceForm({
-            record: record,
-            title: this.title + ': ' + record.data.state_name,
-            store: this.extServiceGrid.store,
-            parentForm: this,
+    openExtServiceForm: function(bsRecord, activeme){
+        this.esForm = new App.serviceadm.ExtServicePanel({
+            bsRecord: bsRecord,
+            title: 'Организации',
             listeners: {
                 scope: this,
-                closeform: function(form){
-                    var currChild;
-                    var idx = this.childs.indexOf(form);
-                    if(idx!=-1) this.childs.splice(idx, 1);
+                aftersave: function(){
+                    this.savedCount += 1;
+                    if (this.savedCount >= this.countToSave) {
+                        this.onSaveComplete();
+                    }
                 },
-                activeme: function(form){
-                    this.fireEvent('activeme',form);
-                }
+                saveform: this.onSave,
+                closeform: this.closeForm
+
             }
         });
-        this.childs.push(extServForm);
-        this.fireEvent('openextservice', extServForm);
+        this.childs.push(this.esForm);
+        this.fireEvent('openform', this.esForm);
+        if (activeme) {
+            this.fireEvent('activeme', this.esForm);
+        }
     },
 
-    addExtService: function(stateRecord){
-        if (this.stateWin) this.stateWin.destroy();
-        var eRecord = new this.extServiceGrid.store.recordType();
-        eRecord.set('state',stateRecord.data.resource_uri);
-        eRecord.set('state_name',stateRecord.data.name);
-        this.extServiceGrid.store.add(eRecord);
-        this.openExtService(eRecord);
+    openLabServiceForm: function(activeme){
+        this.lsForm = new App.serviceadm.LabServiceForm({
+            bsRecord: this.record,
+            title: 'Лабораторная услуга',
+            listeners: {
+                scope: this,
+                aftersave: function(){
+                    this.savedCount += 1;
+                    if (this.savedCount >= this.countToSave) {
+                        this.onSaveComplete();
+                    }
+                },
+                saveform: this.onSave,
+                closeform: this.closeForm
+            }
+        });
+        this.childs.push(this.lsForm);
+        this.fireEvent('openform', this.lsForm);
+        if (activeme) {
+            this.fireEvent('activeme', this.lsForm);
+        }
+    },
+
+    closeForm: function(afterCloseFn,afterCloseScope){
+        this.closing = true;
+        this.afterCloseFn = afterCloseFn;
+        this.afterCloseScope = afterCloseScope;
+        if (this.isDirty()) {
+            this.fireEvent('activeme',this);
+            Ext.MessageBox.show({
+                title:'Подтверждение',
+                closable:false,
+                modal:true,
+                buttons:{
+                    cancel:'Отменить закрытие',
+                    yes:'Сохранить и закрыть',
+                    no:'Не сохранять'
+                },
+                msg:'Услуга не сохранена!',
+                fn:function(btn){
+                    if(btn!='cancel') {
+                        if(btn=='yes') {
+                            this.onSave();
+                        } else if (btn=='no') {
+                            this.onClose();
+                        }
+                    } else {
+                        this.closing = false;
+                    }
+                },
+                scope:this
+            });
+            // Ext.Msg.alert('Были внесены изменения', 'Сохраните или закройте форму');
+        } else {
+            this.onClose();
+        }
+    },
+
+    onClose: function(){
+        Ext.each(this.childs, function(form){
+            form.destroy();
+        }, this);
+        if (this.afterCloseFn){
+            this.afterCloseFn(this.afterCloseScope);
+        } else {
+            this.fireEvent('closeform', this);
+        }
+        this.fireEvent('serviceclosed', this);
     },
 
     cleanForm: function(){
@@ -335,6 +400,14 @@ App.serviceadm.BaseServiceForm = Ext.extend(Ext.form.FormPanel,{
                 f.originalValue = f.getValue();
             }
         });
+    },
+
+    setBaseService: function(baseServiceUri){
+        Ext.each(this.childs, function(f){
+            if (f.setBaseService){
+                f.setBaseService(baseServiceUri);
+            }
+        }, this);
     }
 
 });

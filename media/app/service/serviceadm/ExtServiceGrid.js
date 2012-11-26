@@ -17,17 +17,30 @@ App.serviceadm.ExtServiceGrid = Ext.extend(Ext.grid.GridPanel, {
             }
         });
 
+        this.addBtn = new Ext.Button({
+            iconCls:'silk-add',
+            text: 'Добавить',
+            // scope: this,
+            handler:this.onAdd.createDelegate(this,[])
+        });
+
+        this.editBtn = new Ext.Button({
+            iconCls:'silk-pencil',
+            text: 'Изменить',
+            // scope: this,
+            handler:this.onChange.createDelegate(this,[])
+        });
+
         this.columns =  [
             {
                 header: "Организация",
-                width: 100,
+                // width: 100,
                 sortable: true,
                 dataIndex: 'state_name'
             }
         ];
 
         var config = {
-            title:'Организации',
             loadMask : {
                 msg : 'Подождите, идет загрузка...'
             },
@@ -37,15 +50,16 @@ App.serviceadm.ExtServiceGrid = Ext.extend(Ext.grid.GridPanel, {
             sm : new Ext.grid.RowSelectionModel({
                 singleSelect : true
             }),
-            tbar:[{
-                iconCls:'silk-add',
-                text:'Добавить',
-                handler:this.onAdd.createDelegate(this,[])
-            },{
-                iconCls:'silk-pencil',
-                text:'Изменить',
-                handler:this.onChange.createDelegate(this,[])
-            }],
+            listeners:{
+                scope: this,
+                rowdblclick: function(grid, idx, e){
+                    var rec = this.store.getAt(idx);
+                    if(rec){
+                        this.fireEvent('openextservice',rec);
+                    }
+                }
+            },
+            tbar:[this.addBtn, this.editBtn],
             viewConfig : {
                 forceFit : true
             }

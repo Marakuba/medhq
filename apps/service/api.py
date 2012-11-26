@@ -8,21 +8,8 @@ from service.models import BaseService, LabServiceGroup,\
 from apiutils.resources import ExtResource
 from tastypie.api import Api
 from tastypie import fields
-from lab.models import LabService
 from django.db.models.expressions import F
 import datetime
-
-
-class LSResource(ExtResource):
-
-    class Meta:
-        queryset = LabService.objects.all()
-        authorization = DjangoAuthorization()
-        resource_name = 'ls'
-        filtering = {
-            'is_manual': ALL,
-        }
-        list_allowed_methods = ['get', 'post', 'put']
 
 
 class MaterialResource(ExtResource):
@@ -48,7 +35,7 @@ class BaseServiceResource(ExtResource):
     def obj_create(self, bundle, request=None, **kwargs):
 
         p = bundle.data['parent_uri']
-        parent = self.get_via_uri(p)
+        parent = p and self.get_via_uri(p) or None
 
         result = super(BaseServiceResource, self)\
                     .obj_create(bundle=bundle, request=request, **kwargs)
@@ -76,7 +63,7 @@ lookups[BaseService._meta.right_attr] = F(BaseService._meta.left_attr) + 1
 
 class BaseServiceGroupResource(ExtResource):
     parent = fields.ForeignKey('self', 'parent', null=True)
-    labservice = fields.ForeignKey(LSResource, 'labservice', null=True)
+    labservice = fields.ForeignKey('lab.api.LSResource', 'labservice', null=True)
 
     def dehydrate(self, bundle):
         service = bundle.obj
@@ -103,7 +90,10 @@ class ExtendedServiceResource(ExtResource):
     """
     base_service = fields.ForeignKey(BaseServiceResource, 'base_service')
     staff = fields.ManyToManyField('staff.api.PositionResource', 'staff', null=True)
+    branches = fields.ManyToManyField('state.api.MedStateResource', 'branches', null=True)
     state = fields.ForeignKey('state.api.StateResource', 'state')
+    tube = fields.ForeignKey('lab.api.TubeResource', 'tube', null=True)
+    base_profile = fields.ForeignKey('lab.api.AnalysisProfileResource', 'base_profile', null=True)
 
     def build_filters(self, filters=None):
         if filters is None:
@@ -265,7 +255,6 @@ class BaseServiceTreeResource(ModelResource):
 
 api = Api(api_name='service')
 
-api.register(LSResource())
 api.register(MaterialResource())
 api.register(ExtServAdmResource())
 api.register(BaseServiceResource())
