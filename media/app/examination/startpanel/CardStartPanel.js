@@ -101,7 +101,7 @@ App.examination.PreviousCardPlugin = function(config, order){
 						this.results.objects.push({
 							action:'copy',
 							type:'card',
-							title:rec.data.name,
+							title:String.format('{0} /{1}/', rec.data.name, Ext.util.Format.date(rec.data.created,'d.m.y')),
 							objectId:rec.data.id
 						});
 					}

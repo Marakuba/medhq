@@ -491,7 +491,7 @@ class Template(models.Model):
     class Meta:
         verbose_name = u'Шаблон'
         verbose_name_plural = u'Шаблоны'
-        ordering = ('-id',)
+        ordering = ('name',)
     
     
 class Glossary(MPTTModel):

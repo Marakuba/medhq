@@ -112,27 +112,26 @@ App.examination.TmpGrid = Ext.extend(Ext.grid.EditorGridPanel, {
 			    {
 			    	header: "Наименование",
 			    	width:400,
-			    	sortable: true,
+			    	sortable: false,
 			    	hidden:false,
 			    	dataIndex: 'name',
 			    	renderer:this.printNameRenderer()
 			    },{
 			    	header: "Наименование1",
 			    	width:400,
-			    	sortable: true,
 			    	hidden:true,
 			    	dataIndex: 'service_name'
 			    },{
 			    	header: "Создано",
 			    	width:70,
-			    	sortable: true,
-			    	renderer:Ext.util.Format.dateRenderer('H:i / d.m.Y'),
+			    	sortable: false,
+			    	renderer:Ext.util.Format.dateRenderer('d.m.y'),
 			    	dataIndex: 'created'
 			    },{
 			    	header: "Изменено",
 			    	width:70,
-			    	sortable: true,
-			    	renderer:Ext.util.Format.dateRenderer('H:i / d.m.Y'),
+			    	sortable: false,
+			    	renderer:Ext.util.Format.dateRenderer('d.m.y'),
 			    	dataIndex: 'modified'
 			    }
 			],
