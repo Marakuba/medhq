@@ -19,7 +19,8 @@ App.laboratory.LabOrderGrid = Ext.extend(Ext.grid.GridPanel, {
             ['payer','visit__payer','Плательщик'],
             ['laboratory','laboratory','Лаборатория'],
             ['staff','staff','Врач'],
-            ['patient','visit__patient','Пациент']
+            ['patient','visit__patient','Пациент'],
+            ['cito','visit__is_cito','Cito']
         ];
 
         this.columns =  [{
@@ -30,7 +31,8 @@ App.laboratory.LabOrderGrid = Ext.extend(Ext.grid.GridPanel, {
                 dataIndex: 'barcode',
                 renderer:function(v,opts,rec) {
                     return String.format("<div><b>{0}</b><span>{1}</span><br><span>{2}</span></div>",
-                            v, Ext.util.Format.date(rec.data.visit_created,'d.m.y'), Ext.util.Format.date(rec.data.visit_created,'H:i'))
+                            v, Ext.util.Format.date(rec.data.visit_created,'d.m.y'),
+                            Ext.util.Format.date(rec.data.visit_created,'H:i'));
                 }
             },{
                 header: "Дата",
@@ -43,7 +45,12 @@ App.laboratory.LabOrderGrid = Ext.extend(Ext.grid.GridPanel, {
                 header: "Пациент",
                 width: 38,
                 sortable: true,
-                dataIndex: 'patient_name'
+                dataIndex: 'patient_name',
+                renderer:function(v,opts,rec) {
+                    return String.format('<div>{0}<div style="color:red;font-weight:bold;text-align:right">{1}</div></div>',
+                            v,
+                            rec.data.visit_is_cito ? 'cito' : '');
+                }
             },{
                 id:'laboratory',
                 header: "Офис / Оператор",
@@ -54,7 +61,7 @@ App.laboratory.LabOrderGrid = Ext.extend(Ext.grid.GridPanel, {
                             v,
                             rec.data.operator_name,
                             rec.data.is_manual ? 'background:#DDD;' : '',
-                            rec.data.payer_name==v ? '' : '<p><em>'+rec.data.payer_name+'</em></p>')
+                            rec.data.payer_name==v ? '' : '<p><em>'+rec.data.payer_name+'</em></p>');
                 }
             },{
                 id:'staff',

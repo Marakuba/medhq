@@ -232,17 +232,8 @@ App.examination.TicketTab = Ext.extend(Ext.Panel, {
 			scope:this
 		});
 
-		this.printBtn = new Ext.Button({
-			iconCls:'silk-printer',
-			text: 'Печать',
-			disabled:!(this.cardId || this.tplId),
-			handler:this.onPrint.createDelegate(this,[]),
-			scope:this
-		});
-
 		this.ttb.add(this.editQuestBtn);
 		this.ttb.add(this.deleteQuestBtn);
-		this.ttb.add(this.printBtn);
 		//Добавляем пользовательские элементы в toolbar
 		this.fillUsersMenu();
 		if (this.data){
@@ -269,26 +260,25 @@ App.examination.TicketTab = Ext.extend(Ext.Panel, {
 		if(!data) return false;
 
 		Ext.each(data.tickets,function(ticket){
-			var currentSection = ticket.section || 'other'
+			var currentSection = ticket.section || 'other';
 			//Каждому тикету присваиваем order из WebApp.section_scheme, чтобы видеть, куда вставлять новые тикеты
-			ticket['order'] = WebApp.section_scheme[currentSection] && WebApp.section_scheme[currentSection]['order'] || 10000
-			if (!ticket.title){
-				ticket['title'] = WebApp.section_scheme[currentSection]['title']
-			};
+			ticket['order'] = WebApp.section_scheme[currentSection] && WebApp.section_scheme[currentSection]['order'] || 10000;
 			this.addTicket(ticket);
 		},this);
 		this.checkUniqueTickets();
 		this.dataLoading = false;
 	},
 
-	addTicket:function(ticketConfig, isNew){
+	addTicket:function(origTicketConfig, isNew){
 		//вставляем тикет в нужное место согласно порядку order
 		//порядок тикетов может быть определен либо по значению order (если добавляется новый тикет)
 		//либо по значению pos (если загружаются сохраненные тикеты)
 
+		var ticketConfig = {};
+		Ext.apply(ticketConfig, origTicketConfig);
 		if (!ticketConfig.data){
-			var ticket_data = {}
-			Ext.apply(ticket_data,ticketConfig);
+			var ticket_data = {};
+			Ext.apply(ticket_data,origTicketConfig);
 			ticketConfig['data'] = ticket_data;
 		}
 		ticketConfig['orderRecord'] = this.orderRecord;
@@ -299,6 +289,9 @@ App.examination.TicketTab = Ext.extend(Ext.Panel, {
 		ticketConfig.data['tplId'] = this.tplId;
 		ticketConfig.data['patientId'] = this.patientId; // нужно для добавления направлений
 
+		if (!ticketConfig.data.title && isNew){
+			ticketConfig.data.title = section_scheme[currentSection]['title'];
+		}
 		//если тикетов еще нет, то добавляем в конец
 		//тикет добавляется в конец секции
 		this.sectionItems.hide();
@@ -333,9 +326,9 @@ App.examination.TicketTab = Ext.extend(Ext.Panel, {
 				index = ind
 			} else {
 				if (panel[paramName] <= value) {
-					index = ind
+					index = ind;
 				} else {
-					return
+					return;
 				}
 			}
 		},this);
@@ -344,7 +337,7 @@ App.examination.TicketTab = Ext.extend(Ext.Panel, {
 
 	getData: function(){
 		var data = this.ticketPanel.getData();
-		return [data,this.quests]
+		return [data,this.quests];
 	},
 
 	addStandartServices:function(records){
@@ -448,9 +441,8 @@ App.examination.TicketTab = Ext.extend(Ext.Panel, {
 
 			if (WebApp.section_scheme[section].items.length){
 				Ext.each(WebApp.section_scheme[section].items,function(item){
-					var ticket_data = {}
+					var ticket_data = {};
 					Ext.apply(ticket_data,item);
-					ticket_data['data'] = item;
 					var subBtn = {
 						id:item.unique ? 'unique-ticket-'+item.xtype : section+"-"+item.title,
 						text:item.title,
@@ -466,8 +458,8 @@ App.examination.TicketTab = Ext.extend(Ext.Panel, {
 				},this);
 				this.sectionItems.add({
 					items:[items]
-				})
-			};
+				});
+			}
 		};
 
 		this.addSubSecBtn = new Ext.Button({

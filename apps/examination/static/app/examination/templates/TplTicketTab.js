@@ -56,8 +56,10 @@ App.examination.TplTicketTab = Ext.extend(App.examination.TicketTab, {
 			handler:this.onClose.createDelegate(this),
 			scope:this
 		});
-		this.ttb.add(this.moveArchiveBtn);
+		// this.ttb.add(this.moveArchiveBtn);
+		this.ttb.add('-');
 		this.ttb.add(this.deleteBtn);
+		this.ttb.add('-');
 		this.ttb.add(this.closeBtn);
 		this.doLayout();
 	},

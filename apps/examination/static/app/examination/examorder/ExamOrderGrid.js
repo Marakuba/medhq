@@ -167,7 +167,7 @@ App.examorder.ExamOrderGrid = Ext.extend(Ext.grid.GridPanel, {
                 forceFit:true
             },
             bbar: new Ext.PagingToolbar({
-                pageSize: 25,
+                pageSize: 50,
                 store: this.store,
                 displayInfo: true,
                 displayMsg: 'Показана запись {0} - {1} из {2}',

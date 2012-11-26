@@ -222,9 +222,15 @@ App.examination.TextTicketEditor = Ext.extend(Ext.Panel, {
         var pos = this.getPos() || 0;
         var oldText = this.bodyField.getValue();
         var pastedText = attrs.text;
+        if(this.bodyField.ed){
+            var ed = this.bodyField.ed;
+            ed.execCommand('mceInsertContent', false, attrs.text);
+            this.bodyField.focus(false, 100);
+            return;
+        }
         if (oldText[pos] && oldText[pos] != ' '){
             pastedText += ' ';
-        };
+        }
         var beforePasted = oldText.substring(0,pos);
         var afterPasted = oldText.substr(pos);
 
