@@ -4,6 +4,43 @@ App.service.ServiceAdm = Ext.extend(Ext.Panel,{
 
     initComponent:function(){
 
+        this.selectedServices = [];
+        this.selectedServiceGrid = new App.serviceadm.SelectedServiceGrid({
+            title: 'Выделенные услуги',
+            listeners: {
+                scope: this,
+                rowdblclick: function(grid, idx, e){
+                    var rec = grid.store.getAt(idx);
+                    var n = this.serviceTree.getNodeById(rec.data.id);
+                    this.onServiceClick(n);
+                },
+                deselectnode: function(rec){
+                    var n = this.serviceTree.getNodeById(rec.data.id);
+                    n.getUI().toggleCheck(false);
+                },
+
+                doaction: function(fn, scopeForm){
+                    //Если открыта услуга из списка выделенных,
+                    //то сначала закрываем ее
+                    if (this.bsForm && this.bsForm.record.id){
+                        var id = this.bsForm.record.id;
+                        var idx = this.findService(this.selectedServices, id);
+                        if (idx > -1){
+                            this.bsForm.closeForm(function(thisForm){
+                                thisForm.bsForm.destroy();
+                                thisForm.bsForm = undefined;
+                                fn(scopeForm);
+                            }, this);
+                        } else {
+                            fn(scopeForm);
+                        }
+                    } else {
+                        fn(scopeForm);
+                    }
+                }
+            }
+        });
+
 
         this.baseServiceStore = new Ext.data.RESTStore({
             autoSave: false,
@@ -44,24 +81,23 @@ App.service.ServiceAdm = Ext.extend(Ext.Panel,{
             collapseMode:'mini',
             split:true,
             listeners: {
-                scope:this,
-                click:this.onServiceClick,
-                additem:this.addService,
-                'checkchange': function(node, checked){
-                    if(checked){
-                        node.getUI().addClass('complete');
-                    }else{
-                        node.getUI().removeClass('complete');
-                    }
+                scope: this,
+                click: this.onServiceClick,
+                additem: this.addService,
+                checkchange: function(node, checked){
+                    this.onNodeChecked(node, checked);
+                    this.serviceTree.doLayout();
+                    this.loadSelectedRecords();
                 }
-            }
+            },
+            scope: this
         });
 
         this.contentPanel = new Ext.TabPanel({
-            // activeTab:0,
+            activeTab:0,
             width:900,
             split:true,
-            items:[],
+            items:[this.selectedServiceGrid],
             region:'east'
         });
 
@@ -92,6 +128,7 @@ App.service.ServiceAdm = Ext.extend(Ext.Panel,{
         if (this.bsForm){
             this.bsForm.closeForm(function(thisForm){
                 thisForm.bsForm.destroy();
+                thisForm.bsForm = undefined;
                 thisForm.openService(node);
             }, this);
         } else {
@@ -122,6 +159,10 @@ App.service.ServiceAdm = Ext.extend(Ext.Panel,{
                 node.parentNode && node.parentNode.text || this.serviceTree.getRootNode().text;
     },
 
+    loadSelectedRecords: function(){
+        this.selectedServiceGrid.loadRecords(this.selectedServices);
+    },
+
     addService: function(node,type){
         var parent = node.attributes.type == 'group' ? node.id :
                 node.parentNode && node.parentNode.id || undefined;
@@ -144,6 +185,7 @@ App.service.ServiceAdm = Ext.extend(Ext.Panel,{
         if (this.bsForm){
             this.bsForm.closeForm(function(thisForm){
                 thisForm.bsForm.destroy();
+                thisForm.bsForm = undefined;
                 thisForm.baseServiceStore.removeAll(true);
                 thisForm.baseServiceStore.add(newRecord);
                 thisForm.openBSForm(bsConfig);
@@ -183,6 +225,47 @@ App.service.ServiceAdm = Ext.extend(Ext.Panel,{
         this.contentPanel.add(this.bsForm);
         this.contentPanel.setActiveTab(this.bsForm);
         this.doLayout();
+    },
+
+    onNodeChecked: function(node, checked){
+
+        if (node.attributes.type == 'group') {
+            node.expand(true, true, function(){
+                node.eachChild(function(n){
+                    n.getUI().toggleCheck(checked);
+                }, this);
+            }, this);
+
+        } else {
+            var item = [node.attributes.id,node.attributes.text];
+            var idx = this.findService(this.selectedServices, item[0]);
+            if (checked){
+                if (idx < 0){
+                    this.selectedServices.push(item);
+                }
+            } else {
+                if (idx > -1){
+                    this.selectedServices.splice(idx, 1);
+                }
+            }
+
+        }
+    },
+
+    findService: function(arr, value){
+        var idx = -1;
+        Ext.each(arr, function(item, i){
+            if (item[0] == value) idx = i;
+        });
+        return idx;
+    },
+
+    serviceIsSelected: function(serviceId){
+        if (this.selectedServiceGrid){
+            return this.selectedServiceGrid.hasService(serviceId);
+        } else {
+            return false;
+        }
     }
 
 });

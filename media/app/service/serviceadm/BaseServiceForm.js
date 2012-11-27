@@ -209,6 +209,9 @@ App.serviceadm.BaseServiceForm = Ext.extend(Ext.form.FormPanel,{
             this.saveChilds();
         }
         this.cleanForm();
+        if (this.savedCount >= this.countToSave) {
+            this.onSaveComplete();
+        }
     },
 
     onSave: function(){
@@ -224,7 +227,6 @@ App.serviceadm.BaseServiceForm = Ext.extend(Ext.form.FormPanel,{
             var f = this.getForm();
             if (f.isValid()){
                 if(f.isDirty()) {
-                    console.log('base_service is dirty');
                     f.updateRecord(this.record);
                     this.record.store.save();
                     this.setTitle(this.record.data.short_name);

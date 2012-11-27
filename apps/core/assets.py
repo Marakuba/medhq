@@ -664,6 +664,8 @@ js_accounting = Bundle(
 
     'app/choices/patient/PatientChoiceGrid.js',
     'app/choices/patient/PatientChoiceWindow.js',
+    'app/choices/staff/StaffChoiceGrid.js',
+    'app/choices/staff/StaffChoiceWindow.js',
 
     'app/service/serviceadm/ServiceTree.js',
     'extjs/ux/MultiSelect.js',
@@ -677,6 +679,7 @@ js_accounting = Bundle(
     'app/service/serviceadm/ExtServiceGrid.js',
     'app/service/serviceadm/ExtServicePanel.js',
     'app/service/serviceadm/BaseServiceForm.js',
+    'app/service/serviceadm/SelectedServiceGrid.js',
     'app/service/serviceadm/ServiceAdm.js',
 
     'app/accounting/invoice/PatientGrid.js',
