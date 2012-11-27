@@ -3,39 +3,39 @@ Ext.ns('App.dict');
 
 App.dict.ReportTree = Ext.extend(Ext.tree.TreePanel, {
 
-	initComponent: function(){
+    initComponent: function(){
 
         config = {
                 margins: '0 0 5 5',
                 root:  new Ext.tree.AsyncTreeNode({
-	            	expanded: true,
-	            	text:'Отчеты',
-	            	id:'root'
+                    expanded: true,
+                    text:'Отчеты',
+                    id:'root'
                 }),
                 width:250,
                 split:true,
                 loader: new Ext.tree.TreeLoader({
-                	nodeParameter:'parent',
-                	dataUrl: App.getApiUrl('reporting','reporttree'),
-                	requestMethod:'GET',
-                	processResponse : function(response, node, callback, scope){
-				        var json = response.responseText;
-				        try {
-				            var o = response.responseData || Ext.decode(json);
-				            o = o.objects;
-				            node.beginUpdate();
-				            for(var i = 0, len = o.length; i < len; i++){
-				                var n = this.createNode(o[i]);
-				                if(n){
-				                    node.appendChild(n);
-				                }
-				            }
-				            node.endUpdate();
-				            this.runCallback(callback, scope || node, [node]);
-				        }catch(e){
-				            this.handleFailure(response);
-				        }
-				    }
+                    nodeParameter:'parent',
+                    dataUrl: App.utils.getApiUrl('reporting','reporttree'),
+                    requestMethod:'GET',
+                    processResponse : function(response, node, callback, scope){
+                        var json = response.responseText;
+                        try {
+                            var o = response.responseData || Ext.decode(json);
+                            o = o.objects;
+                            node.beginUpdate();
+                            for(var i = 0, len = o.length; i < len; i++){
+                                var n = this.createNode(o[i]);
+                                if(n){
+                                    node.appendChild(n);
+                                }
+                            }
+                            node.endUpdate();
+                            this.runCallback(callback, scope || node, [node]);
+                        }catch(e){
+                            this.handleFailure(response);
+                        }
+                    }
                 }),
                 rootVisible:true,
                 lines:false,
@@ -51,15 +51,15 @@ App.dict.ReportTree = Ext.extend(Ext.tree.TreePanel, {
             }
 
         this.on('click', function(node, e){
-//			this.fireEvent('nodeclick',node.id);
-			if (node.attributes.leaf) {
-				Ext.callback(this.fn, this.scope || window, [node]);
-			}
-		}, this);
+//          this.fireEvent('nodeclick',node.id);
+            if (node.attributes.leaf) {
+                Ext.callback(this.fn, this.scope || window, [node]);
+            }
+        }, this);
 
-		Ext.apply(this, Ext.apply(this.initialConfig, config));
-		App.dict.ReportTree.superclass.initComponent.apply(this, arguments);
-	}
+        Ext.apply(this, Ext.apply(this.initialConfig, config));
+        App.dict.ReportTree.superclass.initComponent.apply(this, arguments);
+    }
 
 });
 

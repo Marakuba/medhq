@@ -15,7 +15,7 @@ App.API_URL = '/api';
 /*
  * Generates api url
  */
-App.getApiUrl= function() {
+App.utils.getApiUrl= function() {
 	var path = [App.API_URL];
 	for (var index = 0; index < arguments.length; index++) {
 		path.push(arguments[index]);
@@ -23,9 +23,7 @@ App.getApiUrl= function() {
 	return path.join("/");
 };
 
-get_api_url = App.getApiUrl;
-
-App.uriToId = function(uri) {
+App.utils.uriToId = function(uri) {
 	var paths = uri.split('/');
 	return paths[paths.length-1];
 };

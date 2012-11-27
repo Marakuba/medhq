@@ -19,6 +19,11 @@ from reversion.admin import VersionAdmin
 from selection.fields import ModelChoiceField
 from patient.models import Contract, InsurancePolicy
 from django.views.generic.list_detail import object_list
+from selection.views import selection
+
+
+queryset = Referral.objects.all()
+selection.register('referral', queryset, 'list', paginate_by=50)
 
 
 class OrderedServiceForm(forms.ModelForm):

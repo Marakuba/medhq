@@ -7,7 +7,7 @@ App.choices.StateChoiceGrid = Ext.extend(Ext.grid.GridPanel, {
         this.store = this.store || new Ext.data.RESTStore({
             autoLoad : true,
             autoSave : false,
-            apiUrl : App.getApiUrl('state','state'),
+            apiUrl : App.utils.getApiUrl('state','state'),
             model: [
                     {name: 'id'},
                     {name: 'resource_uri'},
@@ -104,11 +104,11 @@ App.choices.StateChoiceGrid = Ext.extend(Ext.grid.GridPanel, {
 
         Ext.apply(this, Ext.apply(this.initialConfig, config));
         App.choices.StateChoiceGrid.superclass.initComponent.apply(this, arguments);
-        App.eventManager.on('globalsearch', this.onGlobalSearch, this);
+        WebApp.on('globalsearch', this.onGlobalSearch, this);
         this.on('destroy', function(){
-            App.eventManager.un('globalsearch', this.onGlobalSearch, this);
+            WebApp.un('globalsearch', this.onGlobalSearch, this);
         },this);
-//      App.eventManager.on('patientwrite', this.onPatientWrite, this);
+//      WebApp.on('patientwrite', this.onPatientWrite, this);
         this.on('stateselect', this.onStateSelect, this);
         //this.store.on('write', this.onStoreWrite, this);
     },
@@ -139,7 +139,7 @@ App.choices.StateChoiceGrid = Ext.extend(Ext.grid.GridPanel, {
             this.fireEvent('stateselect',rs);
         }
 //      if(action=='create') {
-//          App.eventManager.fireEvent('patientcreate',rs);
+//          WebApp.fireEvent('patientcreate',rs);
 //      }
     },
 

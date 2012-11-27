@@ -105,7 +105,7 @@ App.ServiceTreeGrid = Ext.extend(Ext.ux.tree.TreeGrid,{
 			        }
 			        return Ext.tree.TreeLoader.prototype.createNode.call(this, attr);
 			    },
-	        	dataUrl:'/webapp/service_tree/',
+	        	dataUrl:'/service/service_tree/',
 	        	requestMethod:'GET',
 	        	listeners:{
 	        		load: function(){

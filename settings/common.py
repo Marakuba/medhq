@@ -97,7 +97,7 @@ INSTALLED_APPS = [
 #    'sentry.client',
 
     'accounting',
-    # 'api',
+    'apiutils',
     'assistant',
     'billing',
     'core',
@@ -123,6 +123,7 @@ INSTALLED_APPS = [
     'taskmanager',
     'visit',
     'webapp',
+    'jsonfield',
 
 
     'django.contrib.admin',
