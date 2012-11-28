@@ -87,7 +87,7 @@ class PositionResource(ModelResource):
         resource_name = 'position'
         always_return_data = True
         caching = SimpleCache()
-        limit = 200
+        limit = 400
         filtering = {
             'id': ALL,
             'title': ('istartswith',),

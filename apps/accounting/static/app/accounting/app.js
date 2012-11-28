@@ -25,7 +25,7 @@ Ext.onReady(function(){
         items:[centralPanel]
     });
 
-    centralPanel.launchApp('accounting');
+    centralPanel.launchApp('serviceadm');
     // centralPanel.launchApp('accinvoiceapp', {
     //     // contractId: 1
     //     invoiceId: 17

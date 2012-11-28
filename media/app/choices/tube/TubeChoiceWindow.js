@@ -1,9 +1,9 @@
 Ext.ns('App.choices');
 
-App.choices.ReferralChoiceWindow = Ext.extend(Ext.Window, {
+App.choices.TubeChoiceWindow = Ext.extend(Ext.Window, {
 
 	initComponent:function(){
-		this.grid = new App.choices.ReferralChoiceGrid({
+		this.grid = new App.choices.TubeChoiceGrid({
 			fn:function(record){
 				this.sended = true;
 				Ext.callback(this.fn, this.scope || window, [record]);
@@ -23,7 +23,7 @@ App.choices.ReferralChoiceWindow = Ext.extend(Ext.Window, {
 		};
 
 		Ext.apply(this, Ext.apply(this.initialConfig, config));
-		App.choices.ReferralChoiceWindow.superclass.initComponent.apply(this, arguments);
+		App.choices.TubeChoiceWindow.superclass.initComponent.apply(this, arguments);
 
 		this.on('beforeclose',function(){
 			if (!this.sended){

@@ -636,6 +636,94 @@ js_barcoding = Bundle(
     'app/barcoding/app.js',
     filters='rjsmin', output='assets/barcoding.js',)
 
+js_accounting = Bundle(
+    'extjs/ux/SearchField.js',
+    'extjs/ux/RowEditor.js',
+
+    'app/App.js',
+    'app/Models.js',
+    'app/data/RestStore.js',
+    'app/form/ClearableComboBox.js',
+    'app/form/LazyComboBox.js',
+    'app/ux/GSearchField.js',
+    'app/ux/InputTextMask.js',
+
+    'extjs/ux/treegrid/TreeGridSorter.js',
+    'extjs/ux/treegrid/TreeGridColumnResizer.js',
+    'extjs/ux/treegrid/TreeGridNodeUI.js',
+    'extjs/ux/treegrid/TreeGridLoader.js',
+    'extjs/ux/treegrid/TreeGridColumns.js',
+    'extjs/ux/treegrid/TreeGrid.js',
+
+    'app/data/RestStore.js',
+
+    'app/service/ServiceTreeGrid.js',
+
+    'extjs/ux/Spinner.js',
+    'extjs/ux/SpinnerField.js',
+
+    'app/choices/patient/PatientChoiceGrid.js',
+    'app/choices/patient/PatientChoiceWindow.js',
+    'app/choices/staff/StaffChoiceGrid.js',
+    'app/choices/staff/StaffChoiceWindow.js',
+
+    'app/service/serviceadm/ServiceTree.js',
+    'extjs/ux/MultiSelect.js',
+    'extjs/ux/ItemSelector.js',
+    'app/choices/state/StateChoiceGrid.js',
+    'app/choices/state/StateChoiceWindow.js',
+    'app/choices/tube/TubeChoiceGrid.js',
+    'app/choices/tube/TubeChoiceWindow.js',
+    'app/service/serviceadm/LabServiceForm.js',
+    'app/service/serviceadm/ExtServiceForm.js',
+    'app/service/serviceadm/ExtServiceGrid.js',
+    'app/service/serviceadm/ExtServicePanel.js',
+    'app/service/serviceadm/BaseServiceForm.js',
+    'app/service/serviceadm/SelectedServiceGrid.js',
+    'app/service/serviceadm/ServiceAdm.js',
+
+    'app/accounting/invoice/PatientGrid.js',
+    'app/accounting/invoice/InvoiceItemGrid.js',
+    'app/accounting/invoice/InvoiceForm.js',
+    'app/accounting/invoice/InvoiceGrid.js',
+    'app/accounting/invoice/InvoiceApp.js',
+
+    'app/choices/state/StateChoiceGrid.js',
+    'app/choices/state/StateChoiceWindow.js',
+    'app/accounting/contract/ContractForm.js',
+    'app/accounting/contract/ContractWindow.js',
+    'app/accounting/contract/ContractGrid.js',
+    'app/accounting/contract/ContractApp.js',
+
+    'app/accounting/EventManager.js',
+    'app/accounting/CentralPanel.js',
+    'app/accounting/MainPanel.js',
+    'app/accounting/app.js',
+    filters='rjsmin', output='assets/accounting.js',)
+
+js_service = Bundle(
+    'app/service/ServicePanel.js',
+    'app/service/MainPanel.js',
+    'app/service/app.js',
+
+    filters='rjsmin', output='assets/service.js',)
+
+js_treatmentroom = Bundle(
+    'libs/growl/js/ext/ux/Growl.js',
+    'extjs/ux/RowEditor.js',
+    'extjs/ux/CheckColumn.js',
+    'app/data/RestStore.js',
+    'app/ux/GSearchField.js',
+    'app/App.js',
+    'app/form/ClearableComboBox.js',
+    'app/form/LazyComboBox.js',
+    'app/Models.js',
+    'app/treatmentroom/tests/LabTestGrid.js',
+    'app/treatmentroom/EventManager.js',
+    'app/treatmentroom/CentralPanel.js',
+    'app/treatmentroom/MainPanel.js',
+    'app/treatmentroom/app.js',
+    filters='rjsmin', output='assets/treatmentroom.js',)
 
 register('js_registry', js_registry)
 register('js_for_all', js_for_all)
@@ -749,6 +837,7 @@ css_barcoding = Bundle(
 
     'resources/css/silk.css',
     'extjs/ux/css/Spinner.css',
+    'extjs/ux/css/MultiSelect.css',
     'extjs/ux/css/RowEditor.css',
     filters=('cssrewrite', 'cssmin'), output='assets/barcoding.css',)
 

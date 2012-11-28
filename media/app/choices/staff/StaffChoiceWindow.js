@@ -25,11 +25,5 @@ App.choices.StaffChoiceWindow = Ext.extend(Ext.Window, {
 		Ext.apply(this, Ext.apply(this.initialConfig, config));
 		App.choices.StaffChoiceWindow.superclass.initComponent.apply(this, arguments);
 
-		this.on('beforeclose',function(){
-			if (!this.sended){
-				Ext.callback(this.fn, this.scope || window, []);
-			}
-		},this)
-
 	}
 });
