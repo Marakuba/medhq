@@ -50,7 +50,7 @@ class ServiceManager(BaseWebApp):
         'app/service/servicemanager/ServiceManager.js',
 
     ]
-    depends_on = ['webapp3', ]
+    depends_on = ['webapp3', 'analysiseditorapp']
 
     def options(self, *args, **kwargs):
 

@@ -58,8 +58,15 @@ App.servicemanager.LabServiceForm = Ext.extend(Ext.form.FormPanel,{
             }
         });
 
+        this.tests = new App.laboratory.AnalysisEditor({
+            showServiceTree:false,
+            baseServiceId: this.bsRecord.data.id,
+            height: 400
+        });
+
         config = {
             layout:'form',
+            autoScroll: true,
             title:'Лабораторная услуга',
             items:[
             {
@@ -96,7 +103,9 @@ App.servicemanager.LabServiceForm = Ext.extend(Ext.form.FormPanel,{
                     }
                 }
             },
-            this.widgetCB],
+            this.widgetCB,
+            this.tests,
+            {xtype:'textfield'}],
 
             bbar:[this.saveBtn, this.closeBtn]
         };
@@ -123,6 +132,7 @@ App.servicemanager.LabServiceForm = Ext.extend(Ext.form.FormPanel,{
             this.store.add(this.record);
             this.dataIsLoading = false;
         } else {
+            this.tests.loadBaseService(bsRecord.data.id);
             this.dataIsLoading = true;
             this.store.load({
                 params: {
