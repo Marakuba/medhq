@@ -1,6 +1,6 @@
-Ext.ns('App', 'App.serviceadm');
+Ext.ns('App', 'App.servicemanager');
 
-App.serviceadm.BaseServiceForm = Ext.extend(Ext.form.FormPanel,{
+App.servicemanager.BaseServiceForm = Ext.extend(Ext.form.FormPanel,{
 
     initComponent:function(){
         this.childs = [];
@@ -38,7 +38,7 @@ App.serviceadm.BaseServiceForm = Ext.extend(Ext.form.FormPanel,{
             store: new Ext.data.RESTStore({
                 autoSave: false,
                 autoLoad : false,
-                apiUrl : App.getApiUrl('service','material'),
+                apiUrl : App.utils.getApiUrl('service','material'),
                 model: [
                     {name: 'id'},
                     {name: 'resource_uri'},
@@ -66,7 +66,7 @@ App.serviceadm.BaseServiceForm = Ext.extend(Ext.form.FormPanel,{
             name: 'type',
             store: new Ext.data.ArrayStore({
                 fields: ['id','title'],
-                data: bs_types
+                data: WebApp.bs_types
             }),
             typeAhead: true,
             triggerAction: 'all',
@@ -180,7 +180,7 @@ App.serviceadm.BaseServiceForm = Ext.extend(Ext.form.FormPanel,{
             bbar:[this.saveBtn, this.closeBtn]
         };
         Ext.apply(this, Ext.apply(this.initialConfig, config));
-        App.serviceadm.BaseServiceForm.superclass.initComponent.apply(this, arguments);
+        App.servicemanager.BaseServiceForm.superclass.initComponent.apply(this, arguments);
 
         this.record.store.on('write', this.onBSStoreWrite, this);
 
@@ -302,7 +302,7 @@ App.serviceadm.BaseServiceForm = Ext.extend(Ext.form.FormPanel,{
     },
 
     openExtServiceForm: function(bsRecord, activeme){
-        this.esForm = new App.serviceadm.ExtServicePanel({
+        this.esForm = new App.servicemanager.ExtServicePanel({
             bsRecord: bsRecord,
             title: 'Организации',
             listeners: {
@@ -326,7 +326,7 @@ App.serviceadm.BaseServiceForm = Ext.extend(Ext.form.FormPanel,{
     },
 
     openLabServiceForm: function(activeme){
-        this.lsForm = new App.serviceadm.LabServiceForm({
+        this.lsForm = new App.servicemanager.LabServiceForm({
             bsRecord: this.record,
             title: 'Лабораторная услуга',
             listeners: {

@@ -1,6 +1,6 @@
-Ext.ns('App', 'App.serviceadm');
+Ext.ns('App', 'App.servicemanager');
 
-App.serviceadm.LabServiceForm = Ext.extend(Ext.form.FormPanel,{
+App.servicemanager.LabServiceForm = Ext.extend(Ext.form.FormPanel,{
 
     initComponent:function(){
 
@@ -19,7 +19,7 @@ App.serviceadm.LabServiceForm = Ext.extend(Ext.form.FormPanel,{
         this.store = new Ext.data.RESTStore({
             autoLoad : false,
             autoSave : false,
-            apiUrl : App.getApiUrl('lab','ls'),
+            apiUrl : App.utils.getApiUrl('lab','ls'),
             baseParams:{
                 format:'json'
             },
@@ -39,7 +39,7 @@ App.serviceadm.LabServiceForm = Ext.extend(Ext.form.FormPanel,{
             name: 'widget',
             store: new Ext.data.ArrayStore({
                 fields: ['id','title'],
-                data: lab_widgets
+                data: WebApp.lab_widgets
             }),
             typeAhead: true,
             triggerAction: 'all',
@@ -102,7 +102,7 @@ App.serviceadm.LabServiceForm = Ext.extend(Ext.form.FormPanel,{
         };
 
         Ext.apply(this, Ext.apply(this.initialConfig, config));
-        App.serviceadm.LabServiceForm.superclass.initComponent.apply(this, arguments);
+        App.servicemanager.LabServiceForm.superclass.initComponent.apply(this, arguments);
 
         this.on('afterrender', function(){
             if(this.bsRecord && this.bsRecord.data.id){

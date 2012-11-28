@@ -6,7 +6,7 @@ App.choices.ReferralChoiceGrid = Ext.extend(Ext.grid.GridPanel, {
 
 		this.store = new Ext.data.RESTStore({
 			autoLoad : true,
-			apiUrl : App.getApiUrl('visit', 'referral'),
+			apiUrl : App.utils.getApiUrl('visit', 'referral'),
 			model: [
 				{name: 'id'},
 				{name: 'resource_uri'},

@@ -6,7 +6,7 @@ App.choices.TubeChoiceGrid = Ext.extend(Ext.grid.GridPanel, {
 
 		this.store = new Ext.data.RESTStore({
 			autoLoad : true,
-			apiUrl : App.getApiUrl('lab', 'tube'),
+			apiUrl : App.utils.getApiUrl('lab', 'tube'),
 			model: [
 				{name: 'id'},
 				{name: 'resource_uri'},

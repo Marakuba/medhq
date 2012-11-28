@@ -1,4 +1,4 @@
-Ext.ns('App', 'App.service');
+Ext.ns('App', 'App.service', 'App.servicemanager');
 
 App.service.ServiceManager = Ext.extend(Ext.Panel,{
 
@@ -45,7 +45,7 @@ App.service.ServiceManager = Ext.extend(Ext.Panel,{
         this.baseServiceStore = new Ext.data.RESTStore({
             autoSave: false,
             autoLoad: false,
-            apiUrl: App.getApiUrl('service','baseservice'),
+            apiUrl: App.utils.getApiUrl('service','baseservice'),
             model: App.models.BaseService,
             baseParams: {
                 format:'json'
@@ -167,7 +167,7 @@ App.service.ServiceManager = Ext.extend(Ext.Panel,{
         var parent = node.attributes.type == 'group' ? node.id :
                 node.parentNode && node.parentNode.id || undefined;
         if (parent && parent != 'root') {
-            parent = App.getApiUrl('service','baseservice',parent);
+            parent = App.utils.getApiUrl('service','baseservice',parent);
         } else {
             parent = '';
         }
