@@ -1,6 +1,6 @@
-Ext.ns('App.result');
+Ext.ns('App.laboratory');
 
-App.result.CommentWindow = Ext.extend(Ext.Window, {
+App.laboratory.RefRangeChangeForm = Ext.extend(Ext.Window, {
 
     initComponent:function(){
         this.form = new Ext.form.FormPanel({
@@ -8,17 +8,19 @@ App.result.CommentWindow = Ext.extend(Ext.Window, {
             border:false,
             items:[{
                 xtype:'textarea',
+                border:false,
                 anchor:'100% 100%',
-                name:'comment'
+                name:'text'
             }]
         });
         
         config = {
-                title:'Комментарий :: '+this.analysis,
+                title:'Референсные интервалы :: ' + this.analysis,
                 width:550,
                 height:350,
                 modal:true,
                 layout:'fit',
+                border:false,
                 items: [this.form],
                 buttons:[{
                     text:'Сохранить',
@@ -32,16 +34,16 @@ App.result.CommentWindow = Ext.extend(Ext.Window, {
                 }]
         }
         Ext.apply(this, Ext.apply(this.initialConfig, config));
-        App.result.CommentWindow.superclass.initComponent.apply(this, arguments);
+        App.laboratory.RefRangeChangeForm.superclass.initComponent.apply(this, arguments);
         this.on('afterrender', function(){
-            this.form.getForm().findField('comment').setValue(this.comment);
+            this.form.getForm().findField('text').setValue(this.text);
         }, this);
     },
     
     onSave: function(){
         if(this.fn){
-            var comment = this.form.getForm().findField('comment').getValue();
-            Ext.callback(this.fn, this.scope || window, [comment]);
+            var text = this.form.getForm().findField('text').getValue();
+            Ext.callback(this.fn, this.scope || window, [text]);
         }
     }
 });

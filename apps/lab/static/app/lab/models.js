@@ -72,3 +72,28 @@ App.models.EquipmentTask = new Ext.data.Record.create([
     {name: 'completed', type:'date', format:'c'},
     {name: 'created', type:'date', format:'c'}
 ]);
+
+App.models.Analysis = new Ext.data.Record.create([
+    {name: 'id'},
+    {name: 'resource_uri'},
+    {name: 'service'},
+    {name: 'profile'},
+    {name: 'profile_name'},
+    {name: 'name'},
+    {name: 'code'},
+    {name: 'input_list'},
+    {name: 'measurement'},
+    {name: 'measurement_name'},
+    {name: 'ref_range_text'},
+    {name: 'order'},
+    {name: 'hidden'},
+    {name: 'by_age', type:'bool'},
+    {name: 'by_gender', type:'bool'},
+    {name: 'by_pregnancy', type:'bool'}
+]);
+
+App.models.AnalysisProfile = new Ext.data.Record.create([
+    {name: 'id'},
+    {name: 'resource_uri'},
+    {name: 'name'}
+]);

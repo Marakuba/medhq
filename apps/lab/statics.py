@@ -133,3 +133,26 @@ class ResultLoaderApp(BaseWebApp):
     js = [
         'app/lab/result/loader/ResultLoaderApp.js',
     ]
+
+
+@register('analysiseditorapp')
+class AnalysisEditorApp(BaseWebApp):
+
+    verbose_name = u'Редактор тестов'
+    cmp_type = 'action'
+    js = [
+        'extjs/ux/MultiSelect.js',
+        'extjs/ux/ItemSelector.js',
+        'libs/underscore-min.js',
+        'app/lab/models.js',
+        'app/lab/analysiseditor/AnalysisEditorApp.js',
+        'app/lab/analysiseditor/RefRangeChangeForm.js',
+        'app/lab/analysiseditor/InputListChangeForm.js',
+        'app/lab/analysiseditor/AnalysisProfileGrid.js',
+    ]
+    css = {
+        'all': [
+            'extjs/ux/css/MultiSelect.css',
+        ]
+    }
+    depends_on = ['webapp3', ]
