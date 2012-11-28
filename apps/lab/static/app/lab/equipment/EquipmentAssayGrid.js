@@ -70,7 +70,7 @@ App.equipment.EquipmentAssayGrid = Ext.extend(Ext.grid.EditorGridPanel, {
                 editor:new Ext.form.Checkbox({}),
                 renderer: function(val) {
                     flag = val ? 'yes' : 'no';
-                    return "<img src='"+MEDIA_URL+"admin/img/admin/icon-"+flag+".gif'>"
+                    return "<img src='"+WebApp.MEDIA_URL+"admin/img/admin/icon-"+flag+".gif'>"
                 }
             }
         ];

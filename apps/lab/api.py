@@ -8,7 +8,7 @@ from tastypie.api import Api
 from apiutils.resources import ExtResource, ComplexQuery, ExtBatchResource
 from lab.models import LabOrder, Sampling, Tube, Result, Analysis, InputList,\
     Equipment, EquipmentAssay, EquipmentResult, EquipmentTask, Invoice,\
-    InvoiceItem, AnalysisProfile, LabService
+    InvoiceItem, AnalysisProfile, LabService, Measurement
 from patient.utils import smartFilter
 from django.db.models.query_utils import Q
 from tastypie.cache import SimpleCache
@@ -44,17 +44,32 @@ class TubeResource(ExtResource):
         list_allowed_methods = ['get', 'post', 'put']
 
 
-class AnalysisResource(ModelResource):
+class InputListResource(ModelResource):
     """
     """
-    service = fields.ForeignKey('service.api.BaseServiceResource', 'service')
 
     class Meta:
-        queryset = Analysis.objects.select_related().all()
-        resource_name = 'analysis'
-        always_return_data = True
+        queryset = InputList.objects.all()
+        resource_name = 'inputlist'
+        limit = 10000
         filtering = {
-            'service': ALL_WITH_RELATIONS
+            'name': ALL
+        }
+        list_allowed_methods = ['get', 'post', 'put']
+
+
+class MeasurementResource(ExtResource):
+    """
+    """
+
+    class Meta:
+        queryset = Measurement.objects.all()
+        resource_name = 'measurement'
+        authorization = DjangoAuthorization()
+        always_return_data = True
+        limit = 10000
+        filtering = {
+            'name': ALL
         }
         list_allowed_methods = ['get', 'post', 'put']
 
@@ -79,10 +94,38 @@ class InputListResource(ModelResource):
     """
 
     class Meta:
-        queryset = InputList.objects.all()
-        resource_name = 'inputlist'
+        queryset = AnalysisProfile.objects.all()
+        resource_name = 'analysis_profile'
+        authorization = DjangoAuthorization()
+        always_return_data = True
         filtering = {
+            'id': ALL,
             'name': ALL
+        }
+        list_allowed_methods = ['get', 'post', 'put']
+
+
+class AnalysisResource(ExtResource):
+    """
+    """
+    service = fields.ForeignKey('service.api.BaseServiceResource', 'service')
+    input_list = fields.ToManyField(InputListResource, 'input_list', null=True)
+    profile = fields.ForeignKey(AnalysisProfileResource, 'profile', null=True)
+    measurement = fields.ForeignKey(MeasurementResource, 'measurement', null=True)
+
+    def dehydrate(self, bundle):
+        bundle.data['profile_name'] = bundle.obj.profile and bundle.obj.profile.name
+        bundle.data['measurement_name'] = bundle.obj.measurement and bundle.obj.measurement.name
+        return bundle
+
+    class Meta:
+        queryset = Analysis.objects.select_related().all()
+        resource_name = 'analysis'
+        always_return_data = True
+        limit = 1000
+        authorization = DjangoAuthorization()
+        filtering = {
+            'service': ALL_WITH_RELATIONS
         }
         list_allowed_methods = ['get', 'post', 'put']
 
@@ -498,9 +541,10 @@ class InvoiceItemResource(ExtResource):
 
 api = Api(api_name='lab')
 
-api.register(AnalysisProfileResource())
 api.register(InputListResource())
 api.register(LabOrderResource())
+api.register(AnalysisProfileResource())
+api.register(MeasurementResource())
 api.register(AnalysisResource())
 api.register(ResultResource())
 api.register(SamplingResource())

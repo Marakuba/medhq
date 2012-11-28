@@ -1,10 +1,10 @@
 Ext.ns('App.models');
 
 App.models.BaseService = new Ext.data.Record.create([
-    {name: 'parent_uri'},
     {name: 'id'},
     {name: 'resource_uri'},
     {name: 'name'},
+    {name: 'parent_uri'},
     {name: 'parent'},
     {name: 'base_group'},
     {name: 'execution_type_group'},
@@ -39,5 +39,5 @@ App.models.ExtendedService = new Ext.data.Record.create([
     {name: 'base_profile'},
     {name: 'state_name'},
     {name: 'service_name'},
-    {name: 'price'},
+    {name: 'price'}
 ]);
