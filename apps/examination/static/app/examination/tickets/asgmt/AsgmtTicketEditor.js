@@ -60,13 +60,18 @@ App.examination.AsgmtTicketEditor = Ext.extend(Ext.Panel, {
             listeners:{
                 scope:this,
                 basketexception:function(){
-                    this.fireEvent('basketexception')
+                    this.fireEvent('basketexception');
                 }
             }
         });
 
-        this.servicePanel = new App.ServiceTreeGrid({
+        this.servicePanel = new App.service.ServiceTreeGrid({
             region: 'east',
+            baseParams: {
+                payment_type:'н',
+                all:1,
+                ext:1
+            },
             margins:'5 5 5 0',
             width: 300,
             collapsible: true,
@@ -74,12 +79,9 @@ App.examination.AsgmtTicketEditor = Ext.extend(Ext.Panel, {
             split: true,
             listeners:{
                 render: function(){
-                    this.loader.baseParams = {
-                        payment_type:'н',
-                        all:true,
-                        ext:1,
-                        promotion:true
-                    }
+                    // this.loader.baseParams = {
+                    //     promotion:true
+                    // }
                 }
             }
         });

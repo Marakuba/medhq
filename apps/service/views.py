@@ -80,7 +80,7 @@ def update_patient_info(request):
 
 import datetime
 from django.conf import settings
-from django.core.cache import get_cache
+# from django.core.cache import get_cache
 from pricelist.models import Price, get_actual_ptype
 from django.db.models import Max
 from promotion.models import Promotion, PromotionItem
@@ -127,7 +127,7 @@ def get_service_tree(request):
                 }
                 node['staff'] = obj.base_service_id in staff_all and sorted(staff_all[obj.base_service_id], key=lambda staff: staff[1])
                 return node
-            except Exception, err:
+            except:
                 # logger.error(u"NODE DICT: %s" % err.__unicode__())
                 return None
 
@@ -172,34 +172,14 @@ def get_service_tree(request):
             else:
 
                 if node.is_leaf_node():
-                    for service in result[node.id]:
-                        tree_node = {
-                            "id": ext and service or '%s-%s' % (node.id, result[node.id][service]['extended_service__state__id']),
-                            "text": "%s" % (node.short_name or node.name),
-                            "cls": "multi-line-text-node",
-                            "price": str(result[node.id][service]['value']),
-                            "exec_time": "%s" % (node.execution_time and u"%s мин" % node.execution_time or u''),
-                            "iconCls": "ex-place-%s" % result[node.id][service]['extended_service__state__id'],
-                            "parent": parent,
-                            "leaf": True
-                        }
-                        if not ext:
-                            tree_node['staff'] = node.id in staff_all and sorted(staff_all[node.id], key=lambda staff: staff[1])
-                        tree_nodes.append(tree_node)
-                        #nodes.append(tree_node)
+                    tree_node = leaf_func(node, parent)
                 else:
-                    tree_node = {
-                        "id": ext and 'group-%s' % node.id or node.id,
-                        "leaf": False,
-                        'text': "%s" % (node.short_name or node.name,),
-                        'singleClickExpand': True,
-                        "parent": parent,
-                        'children': childs
-                    }
+                    tree_node = group_func(node, parent, childs)
+
+                tree_nodes.extend(tree_node)
+
                 #Если есть братья, добавляем текущий элемент к списку братьев
                 #Иначе создаём новый список братьев, в котором текущий элемент будет первым братом
-                    tree_nodes.append(tree_node)
-
                 if bro:
                     for tr in tree_nodes:
                         bro.insert(0, tr)
@@ -217,62 +197,120 @@ def get_service_tree(request):
 #                tree.append(node)
             return tree
 
-    payment_type = request.GET.get('payment_type', u'н')
+    def base_service_leaf(node, parent):
+        tree_node = {
+            "id": node.id,
+            "leaf": True,
+            'text': "%s" % (node.short_name or node.name,),
+            "parent": parent
+        }
+        return [tree_node]
+
+    def base_service_group(node, parent, childs):
+        tree_node = {
+            "id": node.id,
+            "leaf": False,
+            'text': "%s" % (node.short_name or node.name,),
+            'singleClickExpand': True,
+            "parent": parent,
+            'children': childs
+        }
+        return [tree_node]
+
+    def ext_service_leaf(node, parent):
+        tree_nodes = []
+        for service in result[node.id]:
+            node_id = ext and service or '%s-%s' % (node.id, result[node.id][service]['extended_service__state__id'])
+            tree_node = {
+                "id": node_id,
+                "text": "%s" % (node.short_name or node.name),
+                "cls": "multi-line-text-node",
+                "price": str(result[node.id][service]['value']),
+                "exec_time": "%s" % (node.execution_time and u"%s мин" % node.execution_time or u''),
+                "iconCls": "ex-place-%s" % result[node.id][service]['extended_service__state__id'],
+                "parent": parent,
+                "leaf": True
+            }
+            if not ext:
+                tree_node['staff'] = node.id in staff_all and sorted(staff_all[node.id], key=lambda staff: staff[1])
+            tree_nodes.append(tree_node)
+        return tree_nodes
+
+    def ext_service_group(node, parent, childs):
+        tree_node = {
+            "id": ext and 'group-%s' % node.id or node.id,
+            "leaf": False,
+            'text': "%s" % (node.short_name or node.name,),
+            'singleClickExpand': True,
+            "parent": parent,
+            'children': childs
+        }
+        return [tree_node]
+
+    leaf_func = base_service_leaf
+    group_func = base_service_group
+
+    payment_type = request.GET.get('payment_type')
     staff = request.GET.get('staff')
-    nocache = request.GET.get('nocache')
-    recache = request.GET.get('recache')
-    promotion = request.GET.get('promotion')
-    all = request.GET.get('all')
-    ext = request.GET.get('ext')
-    payer = request.GET.get('payer')
 
-    TODAY = datetime.date.today()
-    on_date = request.GET.get('on_date', TODAY)
-    if on_date and not isinstance(on_date, datetime.date):
-        try:
-            on_date = datetime.date.strptime(on_date, '%d-%m-%Y')
-            nocache = True
-        except:
-            on_date = TODAY
+    if payment_type:
 
-    state = None
-    ap = request.active_profile
-    if (settings.SERVICETREE_ONLY_OWN or ap.department.state.type == 'p') and ap and not all:
-        state = ap.department.state
+        leaf_func = ext_service_leaf
+        group_func = ext_service_group
 
-    try:
-        cache = get_cache('service')
-    except:
-        raise "Service cache must be defined!"
+        # nocache = request.GET.get('nocache')
+        # recache = request.GET.get('recache')
+        all = request.GET.get('all')
+        ext = request.GET.get('ext')
+        payer = request.GET.get('payer')
 
-    if payer:
-        try:
-            payer = State.objects.get(id=payer)
-        except:
-            payer = None
+        TODAY = datetime.date.today()
+        on_date = request.GET.get('on_date', TODAY)
+        if on_date and not isinstance(on_date, datetime.date):
+            try:
+                on_date = datetime.date.strptime(on_date, '%d-%m-%Y')
+                # nocache = True
+            except:
+                on_date = TODAY
 
-    if staff:
-        try:
-            staff = Position.objects.get(id=staff)
-        except:
-            staff = None
-    p_type_id = get_actual_ptype()
+        state = None
+        ap = request.active_profile
+        if (settings.SERVICETREE_ONLY_OWN or ap.department.state.type == 'p') and ap and not all:
+            state = ap.department.state
 
-    _cache_key = u'%sservice_list_%s_%s_%s_%s' % (ext and 'ext_' or '', state and state.id or u'*', payment_type, payer and payer.id or '*', p_type_id or '*')
+        # try:
+        #     cache = get_cache('service')
+        # except:
+        #     raise "Service cache must be defined!"
 
-    # запрос с параметром recache удаляет ВСЕ записи в нём
-    if recache:
-        cache.clear()
+        if payer:
+            try:
+                payer = State.objects.get(id=payer)
+            except:
+                payer = None
 
-    # если передаем параметр nocache, кэширование не происходит. иначе пробуем достать кэш по ключу
-    if nocache:
-        _cached_tree = None
-    else:
-        _cached_tree = cache.get(_cache_key)
+        if staff:
+            try:
+                staff = Position.objects.get(id=staff)
+            except:
+                staff = None
+        p_type_id = get_actual_ptype()
 
-    # если отсутствует кэш, то начинаем построение дерева услуг
-    _cached_tree = None
-    if not _cached_tree:
+        # _cache_key = u'%sservice_list_%s_%s_%s_%s' % (ext and 'ext_' or '', state and state.id or u'*', payment_type, payer and payer.id or '*', p_type_id or '*')
+
+        # запрос с параметром recache удаляет ВСЕ записи в нём
+        # if recache:
+        #     cache.clear()
+
+        # если передаем параметр nocache, кэширование не происходит. иначе пробуем достать кэш по ключу
+        # if nocache:
+        #     _cached_tree = None
+        # else:
+        #     _cached_tree = cache.get(_cache_key)
+
+        # если отсутствует кэш, то начинаем построение дерева услуг
+        # _cached_tree = None
+        # if not _cached_tree:
 
         price_args = dict(extended_service__is_active=True,
                           payment_type=payment_type,
@@ -288,7 +326,6 @@ def get_service_tree(request):
             price_args['payer__isnull'] = True
         price_args['type'] = p_type_id
 
-        nodes = []
         values = Price.objects.filter(**price_args).\
             order_by('extended_service__id', 'on_date').\
             values('on_date', 'extended_service__id', 'extended_service__state__id', \
@@ -300,53 +337,56 @@ def get_service_tree(request):
                 result[val['extended_service__base_service__id']] = {}
             result[val['extended_service__base_service__id']][val['extended_service__id']] = val
 
-        BaseService.cache_parents()
-
         staff_all = ExtendedService.get_all_staff()
 
-        for base_service in BaseService.objects.select_related().all().order_by(BaseService._meta.tree_id_attr, BaseService._meta.left_attr, 'level'):
-            if base_service.is_leaf_node():
-                if base_service.id in result:
-                    nodes.append(base_service)
-            else:
-                nodes.append(base_service)
+    #### формируем и очищаем услуги
 
-        tree = []
-        # если передан параметр promotions, добавляем их в дерево услуг
-        if not nocache or promotion:
-            promotions = Promotion.objects.actual(ap.department.state)
-            promotions_items = PromotionItem.objects.filter(promotion__in=promotions)
-            promotions_dict = defaultdict(list)
-            promotions_bs = {}
-            for item in promotions_items.values('base_service__id', 'base_service__name', 'base_service__short_name'):
-                promotions_bs[item['base_service__id']] = item
+    BaseService.cache_parents()
 
-            for p in promotions_items:
-                promotions_dict[p.promotion_id].append(p)
+    nodes = []
+    for base_service in BaseService.objects.select_related().all().order_by(BaseService._meta.tree_id_attr, BaseService._meta.left_attr, 'level'):
+        if payment_type and base_service.is_leaf_node() and base_service.id not in result:
+            continue
+        nodes.append(base_service)
 
-            if promotions.count():
-                tree_node = {
-                    'id': 'promotions',
-                    'text': u'Акции / Комплексные обследования',
-                    'children': [promo_dict({'items': promotions_dict[promo.id],
-                                            'id': promo.id,
-                                            'name': promo.name,
-                                            'discount_id': promo.discount_id,
-                                            'total_price': promo.total_price}) \
-                                 for promo in promotions],
-                    'leaf': False,
-                    'singleClickExpand': True
-                }
-                tree.append(tree_node)
-        s = clear_tree(nodes, [])
-        tree.extend(s)
-        _cached_tree = simplejson.dumps(tree, cls=DjangoJSONEncoder)
+    tree = []
 
-        # кэш не обновляется, если есть параметр nocache
-        if not nocache:
-            cache.set(_cache_key, _cached_tree, 24 * 60 * 60 * 30)
+    # если передан параметр payment_type и не передан staff, добавляем промо-акции в дерево услуг
+    if not staff and payment_type:
+        promotions = Promotion.objects.actual(ap.department.state)
+        promotions_items = PromotionItem.objects.filter(promotion__in=promotions)
+        promotions_dict = defaultdict(list)
+        promotions_bs = {}
+        for item in promotions_items.values('base_service__id', 'base_service__name', 'base_service__short_name'):
+            promotions_bs[item['base_service__id']] = item
 
-    return _cached_tree
+        for p in promotions_items:
+            promotions_dict[p.promotion_id].append(p)
+
+        if promotions.count():
+            tree_node = {
+                'id': 'promotions',
+                'text': u'Акции / Комплексные обследования',
+                'children': [promo_dict({'items': promotions_dict[promo.id],
+                                        'id': promo.id,
+                                        'name': promo.name,
+                                        'discount_id': promo.discount_id,
+                                        'total_price': promo.total_price}) \
+                             for promo in promotions],
+                'leaf': False,
+                'singleClickExpand': True
+            }
+            tree.append(tree_node)
+    # _cached_tree = simplejson.dumps(tree, cls=DjangoJSONEncoder)
+
+    # кэш не обновляется, если есть параметр nocache
+    # if not nocache:
+    #     cache.set(_cache_key, _cached_tree, 24 * 60 * 60 * 30)
+
+    s = clear_tree(nodes, [])
+    tree.extend(s)
+
+    return simplejson.dumps(tree, cls=DjangoJSONEncoder)
 
 
 from django.http import HttpResponse

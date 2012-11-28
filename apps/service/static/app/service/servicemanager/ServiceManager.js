@@ -71,7 +71,7 @@ App.service.ServiceManager = Ext.extend(Ext.Panel,{
 
         this.serviceTree = new App.servicemanager.ServiceTree({
             region:'center',
-            dataUrl:'/webapp/service_tree/',
+            // dataUrl:'/webapp/service_tree/',
             useArrows: true,
             autoScroll:true,
             width:250,
@@ -86,7 +86,7 @@ App.service.ServiceManager = Ext.extend(Ext.Panel,{
                 additem: this.addService,
                 checkchange: function(node, checked){
                     this.onNodeChecked(node, checked);
-                    this.serviceTree.doLayout();
+                    // this.serviceTree.doLayout();
                     this.loadSelectedRecords();
                 }
             },
@@ -238,7 +238,7 @@ App.service.ServiceManager = Ext.extend(Ext.Panel,{
 
         } else {
             var item = [node.attributes.id,node.attributes.text];
-            var idx = this.findService(this.selectedServices, item[0]);
+            var idx = this.selectedServices.indexOf(item[0]);//this.findService(this.selectedServices, item[0]);
             if (checked){
                 if (idx < 0){
                     this.selectedServices.push(item);

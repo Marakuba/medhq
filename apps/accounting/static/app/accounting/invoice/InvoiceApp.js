@@ -43,8 +43,12 @@ App.accounting.InvoiceApp = Ext.extend(Ext.Panel, {
         this.patientGrid.getSelectionModel().on('rowselect', this.onPatientSelect, this);
         this.patientGrid.getStore().on('remove', this.onPatientRemove, this);
 
-        this.serviceTree = new App.ServiceTreeGrid({
+        this.serviceTree = new App.service.ServiceTreeGrid({
             region:'east',
+            baseParams: {
+                payment_type:'н',
+                all:1
+            },
             split:true,
             width:360,
             listeners: {

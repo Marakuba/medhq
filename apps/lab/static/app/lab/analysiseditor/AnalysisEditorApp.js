@@ -65,16 +65,18 @@ App.laboratory.AnalysisEditor = Ext.extend(Ext.Panel, {
         if(this.showServiceTree){
             this.serviceTree = new App.service.ServiceTreeGrid({
                 region:'west',
+                baseParams: {
+                },
                 width:350,
                 split:true,
                 hidePrice: true,
                 listeners:{
                     render: function(tg){
-                        this.loader.baseParams = {
-                            payment_type:'н',
-                            all:true,
-                            promotion:false
-                        };
+                        // this.loader.baseParams = {
+                        //     payment_type:'н',
+                        //     all:true,
+                        //     promotion:false
+                        // };
                     }
                 }
             });

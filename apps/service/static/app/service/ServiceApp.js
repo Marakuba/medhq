@@ -5,6 +5,10 @@ App.service.ServiceApp = Ext.extend(Ext.Panel, {
 
         this.servicePanel = new App.service.ServiceTreeGrid({
             region:'center',
+            baseParams:{
+                payment_type:'н',
+                all:1
+            },
             border:false
         });
 

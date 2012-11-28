@@ -11,30 +11,35 @@ App.servicemanager.ServiceTree = Ext.extend(Ext.tree.TreePanel,{
                 id:'root'
             }),
             loader : new Ext.tree.TreeLoader({
-                nodeParameter:'parent',
-                dataUrl: App.utils.getApiUrl('service','baseservicetree'),
+                // nodeParameter:'parent',
+                dataUrl: '/service/service_tree/',
                 requestMethod:'GET',
                 baseAttrs : {
-                    singleClickExpand : true
+                    singleClickExpand : true,
+                    checked : false
                 },
-                processResponse : function(response, node, callback, scope){
-                    var json = response.responseText;
-                    try {
-                        var o = response.responseData || Ext.decode(json);
-                        o = o.objects;
-                        node.beginUpdate();
-                        for(var i = 0, len = o.length; i < len; i++){
-                            var n = this.createNode(o[i]);
-                            if(n){
-                                node.appendChild(n);
-                            }
-                        }
-                        node.endUpdate();
-                        this.runCallback(callback, scope || node, [node]);
-                    }catch(e){
-                        this.handleFailure(response);
-                    }
-                }
+                baseParams:this.baseParams ? this.baseParams :
+                {
+                    all:true
+                },
+                // processResponse : function(response, node, callback, scope){
+                //     var json = response.responseText;
+                //     try {
+                //         var o = response.responseData || Ext.decode(json);
+                //         o = o.objects;
+                //         node.beginUpdate();
+                //         for(var i = 0, len = o.length; i < len; i++){
+                //             var n = this.createNode(o[i]);
+                //             if(n){
+                //                 node.appendChild(n);
+                //             }
+                //         }
+                //         node.endUpdate();
+                //         this.runCallback(callback, scope || node, [node]);
+                //     }catch(e){
+                //         this.handleFailure(response);
+                //     }
+                // }
             }),
             rootVisible:true,
             lines:false,
@@ -42,7 +47,6 @@ App.servicemanager.ServiceTree = Ext.extend(Ext.tree.TreePanel,{
             animate: false,
             autoScroll: true,
             enableDD:true,
-            frame: true,
             containerScroll: true,
             header: false,
             requestMethod:'GET',
@@ -93,15 +97,15 @@ App.servicemanager.ServiceTree = Ext.extend(Ext.tree.TreePanel,{
         Ext.apply(this, Ext.apply(this.initialConfig, config));
         App.servicemanager.ServiceTree.superclass.initComponent.apply(this, arguments);
 
-        this.on('dblclick', function(node, e){
-            if (node.attributes.leaf) {
-                Ext.callback(this.fn, this.scope || window, [node]);
-            }
-        }, this);
+        // this.on('dblclick', function(node, e){
+        //     if (node.attributes.leaf) {
+        //         Ext.callback(this.fn, this.scope || window, [node]);
+        //     }
+        // }, this);
 
-        this.getSelectionModel().on('beforeselect', function(sm, node){
-            return node.isLeaf();
-        });
+        // this.getSelectionModel().on('beforeselect', function(sm, node){
+        //     return node.isLeaf();
+        // });
     },
 
     addGroup: function(node){

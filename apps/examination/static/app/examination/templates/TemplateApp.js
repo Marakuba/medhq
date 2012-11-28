@@ -39,14 +39,13 @@ App.examination.TemplateApp = Ext.extend(Ext.Panel, {
             }
         },this);
 
-        this.serviceTree = new App.ServiceTreeGrid ({
+        this.serviceTree = new App.service.ServiceTreeGrid ({
 //          layout: 'fit',
             region:'west',
             hidden:!!this.tplId,
             baseParams:{
                 payment_type:'н',
-                staff : WebApp.active_profile,
-                nocache : true
+                staff : WebApp.active_profile
             },
             hidePrice: true,
             autoScroll:true,

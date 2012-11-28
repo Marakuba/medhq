@@ -128,7 +128,7 @@ App.visit.VisitForm = Ext.extend(Ext.FormPanel, {
             listeners:{
                 scope:this,
                 basketexception:function(){
-                    this.fireEvent('basketexception')
+                    this.fireEvent('basketexception');
                 },
                 initcomplete:this.resetActionHistory,
                 action:this.saveAction
@@ -146,8 +146,7 @@ App.visit.VisitForm = Ext.extend(Ext.FormPanel, {
             region: 'east',
 //          margins:'5 5 5 0',
             baseParams:{
-                payment_type:'н',
-                promotion:true
+                payment_type:'н'
             },
             width: 400,
             collapsible: true,
@@ -158,9 +157,9 @@ App.visit.VisitForm = Ext.extend(Ext.FormPanel, {
                     this.loader.baseParams = {
                         payment_type:'н',
                         promotion:true
-                    }
+                    };
                 }
-            },
+            }
         });
 
 ///
