@@ -1,6 +1,6 @@
-Ext.ns('App', 'App.serviceadm');
+Ext.ns('App', 'App.servicemanager');
 
-App.serviceadm.ExtServicePanel = Ext.extend(Ext.Panel,{
+App.servicemanager.ExtServicePanel = Ext.extend(Ext.Panel,{
 
     initComponent:function(){
 
@@ -19,7 +19,7 @@ App.serviceadm.ExtServicePanel = Ext.extend(Ext.Panel,{
         this.medStateStore = new Ext.data.RESTStore({
             autoLoad : false,
             autoSave : false,
-            apiUrl : App.getApiUrl('state','medstate'),
+            apiUrl : App.utils.getApiUrl('state','medstate'),
             model: [
                     {name: 'id'},
                     {name: 'resource_uri'},
@@ -27,7 +27,7 @@ App.serviceadm.ExtServicePanel = Ext.extend(Ext.Panel,{
                 ]
         });
 
-        this.grid = new App.serviceadm.ExtServiceGrid({
+        this.grid = new App.servicemanager.ExtServiceGrid({
             // baseServiceId: this.bsRecord.data.id,
             // width: 200,
             region: 'center'
@@ -48,7 +48,7 @@ App.serviceadm.ExtServicePanel = Ext.extend(Ext.Panel,{
         };
 
         Ext.apply(this, Ext.apply(this.initialConfig, config));
-        App.serviceadm.ExtServicePanel.superclass.initComponent.apply(this, arguments);
+        App.servicemanager.ExtServicePanel.superclass.initComponent.apply(this, arguments);
 
         this.grid.on('afterrender', function(){
             this.medStateStore.load({callback: function(records){
@@ -121,7 +121,7 @@ App.serviceadm.ExtServicePanel = Ext.extend(Ext.Panel,{
             var p = this.extServiceForm.staffSelector.getValue();
             this.extServiceForm.destroy();
         }
-        this.extServiceForm = new App.serviceadm.ExtServiceForm({
+        this.extServiceForm = new App.servicemanager.ExtServiceForm({
             record: record,
             title: record.data.state_name
         });

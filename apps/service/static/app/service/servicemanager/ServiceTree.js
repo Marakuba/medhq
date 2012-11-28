@@ -1,6 +1,6 @@
-Ext.ns('App', 'App.serviceadm');
+Ext.ns('App', 'App.servicemanager');
 
-App.serviceadm.ServiceTree = Ext.extend(Ext.tree.TreePanel,{
+App.servicemanager.ServiceTree = Ext.extend(Ext.tree.TreePanel,{
 
     initComponent:function(){
 
@@ -12,7 +12,7 @@ App.serviceadm.ServiceTree = Ext.extend(Ext.tree.TreePanel,{
             }),
             loader : new Ext.tree.TreeLoader({
                 nodeParameter:'parent',
-                dataUrl: App.getApiUrl('service','baseservicetree'),
+                dataUrl: App.utils.getApiUrl('service','baseservicetree'),
                 requestMethod:'GET',
                 baseAttrs : {
                     singleClickExpand : true
@@ -91,7 +91,7 @@ App.serviceadm.ServiceTree = Ext.extend(Ext.tree.TreePanel,{
         };
 
         Ext.apply(this, Ext.apply(this.initialConfig, config));
-        App.serviceadm.ServiceTree.superclass.initComponent.apply(this, arguments);
+        App.servicemanager.ServiceTree.superclass.initComponent.apply(this, arguments);
 
         this.on('dblclick', function(node, e){
             if (node.attributes.leaf) {

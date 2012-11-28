@@ -1,8 +1,8 @@
-Ext.ns('App.serviceadm');
+Ext.ns('App.servicemanager');
 
 
 
-App.serviceadm.ExtServiceGrid = Ext.extend(Ext.grid.GridPanel, {
+App.servicemanager.ExtServiceGrid = Ext.extend(Ext.grid.GridPanel, {
 
 
     initComponent : function() {
@@ -10,7 +10,7 @@ App.serviceadm.ExtServiceGrid = Ext.extend(Ext.grid.GridPanel, {
         this.store = this.store || new Ext.data.RESTStore({
             autoSave: false,
             autoLoad : false,
-            apiUrl : App.getApiUrl('service','extserviceadm'),
+            apiUrl : App.utils.getApiUrl('service','extservicemanager'),
             model: App.models.ExtendedService,
             baseParams:{
                 format:'json'
@@ -67,7 +67,7 @@ App.serviceadm.ExtServiceGrid = Ext.extend(Ext.grid.GridPanel, {
         };
 
         Ext.apply(this, Ext.apply(this.initialConfig, config));
-        App.serviceadm.ExtServiceGrid.superclass.initComponent.apply(this, arguments);
+        App.servicemanager.ExtServiceGrid.superclass.initComponent.apply(this, arguments);
 
         this.on('afterrender', function(){
             if (this.baseServiceId){

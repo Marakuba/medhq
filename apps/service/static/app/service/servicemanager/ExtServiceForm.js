@@ -1,16 +1,16 @@
-Ext.ns('App', 'App.serviceadm', 'Ext.ux');
+Ext.ns('App', 'App.servicemanager', 'Ext.ux');
 
-App.serviceadm.ItemSelector = Ext.extend(Ext.ux.form.ItemSelector, {
+App.servicemanager.ItemSelector = Ext.extend(Ext.ux.form.ItemSelector, {
     initComponent: function(){
 
         config = {};
 
         Ext.apply(this, Ext.apply(this.initialConfig, config));
-        App.serviceadm.ItemSelector.superclass.initComponent.call(this);
+        App.servicemanager.ItemSelector.superclass.initComponent.call(this);
     },
 
     onRender: function(ct, position){
-        App.serviceadm.ItemSelector.superclass.onRender.call(this, ct, position);
+        App.servicemanager.ItemSelector.superclass.onRender.call(this, ct, position);
         this.fromMultiselect.fs.setAutoScroll(true);
         this.toMultiselect.fs.setAutoScroll(true);
         this.doLayout();
@@ -56,14 +56,14 @@ App.serviceadm.ItemSelector = Ext.extend(Ext.ux.form.ItemSelector, {
     }
 });
 
-App.serviceadm.ExtServiceForm = Ext.extend(Ext.form.FormPanel,{
+App.servicemanager.ExtServiceForm = Ext.extend(Ext.form.FormPanel,{
 
     initComponent:function(){
 
         this.branchStore = new Ext.data.RESTStore({
             autoLoad : false,
             autoSave : false,
-            apiUrl : App.getApiUrl('state','medstate'),
+            apiUrl : App.utils.getApiUrl('state','medstate'),
             model: [
                     {name: 'id'},
                     {name: 'resource_uri'},
@@ -75,7 +75,7 @@ App.serviceadm.ExtServiceForm = Ext.extend(Ext.form.FormPanel,{
             fields: ['resource_uri','name']
         });
 
-        this.branchSelector = new App.serviceadm.ItemSelector({
+        this.branchSelector = new App.servicemanager.ItemSelector({
             name: 'branches',
             fieldLabel: 'Филиалы',
             imagePath: MEDIA_URL + 'extjs/ux/images/',
@@ -116,7 +116,7 @@ App.serviceadm.ExtServiceForm = Ext.extend(Ext.form.FormPanel,{
         this.staffStore = new Ext.data.RESTStore({
             autoLoad : false,
             autoSave : false,
-            apiUrl : App.getApiUrl('staff','position'),
+            apiUrl : App.utils.getApiUrl('staff','position'),
             model: [
                 {name: 'resource_uri'},
                 {name: 'name'}
@@ -131,7 +131,7 @@ App.serviceadm.ExtServiceForm = Ext.extend(Ext.form.FormPanel,{
             fields: ['resource_uri','name']
         });
 
-        this.staffSelector = new App.serviceadm.ItemSelector({
+        this.staffSelector = new App.servicemanager.ItemSelector({
             name: 'staff',
             fieldLabel: 'Кем выполняется',
             imagePath: MEDIA_URL + 'extjs/ux/images/',
@@ -175,7 +175,7 @@ App.serviceadm.ExtServiceForm = Ext.extend(Ext.form.FormPanel,{
             baseParams: {
                 format: 'json'
             },
-            apiUrl : App.getApiUrl('lab','tube'),
+            apiUrl : App.utils.getApiUrl('lab','tube'),
             model: [
                 {name: 'resource_uri'},
                 {name: 'name'},
@@ -207,7 +207,7 @@ App.serviceadm.ExtServiceForm = Ext.extend(Ext.form.FormPanel,{
         this.profileStore = new Ext.data.RESTStore({
             autoLoad : false,
             autoSave : false,
-            apiUrl : App.getApiUrl('lab','analysisprofile'),
+            apiUrl : App.utils.getApiUrl('lab','analysisprofile'),
             model: [
                 {name: 'resource_uri'},
                 {name: 'name'},
@@ -310,7 +310,7 @@ App.serviceadm.ExtServiceForm = Ext.extend(Ext.form.FormPanel,{
             ]
         };
         Ext.apply(this, Ext.apply(this.initialConfig, config));
-        App.serviceadm.ExtServiceForm.superclass.initComponent.apply(this, arguments);
+        App.servicemanager.ExtServiceForm.superclass.initComponent.apply(this, arguments);
 
         this.staffSelector.on('afterrender', function(form){
             if (this.record){

@@ -1,8 +1,8 @@
-Ext.ns('App.serviceadm');
+Ext.ns('App.servicemanager');
 
 
 
-App.serviceadm.SelectedServiceGrid = Ext.extend(Ext.grid.GridPanel, {
+App.servicemanager.SelectedServiceGrid = Ext.extend(Ext.grid.GridPanel, {
 
 
     initComponent : function() {
@@ -60,7 +60,7 @@ App.serviceadm.SelectedServiceGrid = Ext.extend(Ext.grid.GridPanel, {
         };
 
         Ext.apply(this, Ext.apply(this.initialConfig, config));
-        App.serviceadm.SelectedServiceGrid.superclass.initComponent.apply(this, arguments);
+        App.servicemanager.SelectedServiceGrid.superclass.initComponent.apply(this, arguments);
 
     },
 

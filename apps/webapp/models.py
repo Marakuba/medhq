@@ -40,7 +40,7 @@ class ViewportApp(models.Model):
     groups = models.ManyToManyField(Group, blank=True, null=True)
     users = models.ManyToManyField(User, blank=True, null=True)
     order = models.IntegerField(u'Порядок', default=0)
-    config = JSONField(u'Дополнительная конфигурация', help_text=u'Должен быть валидный JSON')
+    config = JSONField(u'Дополнительная конфигурация', help_text=u'Должен быть валидный JSON', blank=True)
 
     class Meta:
         verbose_name = u'приложение интерфейса'
