@@ -6,7 +6,10 @@ from django.db.models import Q
 from webassets.env import RegisterError
 from .models import Viewport
 from .base import get_webapp
-from collections import OrderedDict
+try:
+    from collections import OrderedDict
+except:
+    from ordereddict import OrderedDict #@Reimport
 
 
 def get_vp_for_user(user):

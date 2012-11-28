@@ -3,10 +3,6 @@
 from webapp.base import BaseWebApp, register
 import simplejson
 
-try:
-    from collections import OrderedDict
-except:
-    from ordereddict import OrderedDict #@Reimport
 from service.models import BS_TYPES
 from lab.models import WIDGET_CHOICES
 
