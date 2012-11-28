@@ -2,6 +2,8 @@ Ext.ns('App', 'App.servicemanager');
 
 App.servicemanager.ExtServicePanel = Ext.extend(Ext.Panel,{
 
+    origTitle : 'Организации',
+
     initComponent:function(){
 
         this.saveBtn = new Ext.Button({
@@ -43,6 +45,7 @@ App.servicemanager.ExtServicePanel = Ext.extend(Ext.Panel,{
 
         config = {
             layout:'border',
+            title: this.title || this.origTitle,
             items:[this.grid,this.contentPanel],
             bbar:[this.saveBtn, this.closeBtn]
         };
@@ -50,7 +53,8 @@ App.servicemanager.ExtServicePanel = Ext.extend(Ext.Panel,{
         Ext.apply(this, Ext.apply(this.initialConfig, config));
         App.servicemanager.ExtServicePanel.superclass.initComponent.apply(this, arguments);
 
-        this.grid.on('afterrender', function(){
+        this.on('afterrender', function(){
+            this.origTitle = this.title; //Если заголовок задается извне
             this.medStateStore.load({callback: function(records){
                 if (!this.bsRecord) return false;
                 if (this.bsRecord.data.id){
@@ -76,14 +80,21 @@ App.servicemanager.ExtServicePanel = Ext.extend(Ext.Panel,{
 
         this.grid.store.on('write', function(){
             this.fireEvent('aftersave');
+            this.onAfterSave();
         }, this);
+
+
+    },
+
+    onAfterSave: function(){
+        this.setTitle(this.origTitle);
     },
 
     showStateWin: function(){
         this.medStateStore.clearFilter();
         var existing = [];
         this.grid.store.each(function(serv){
-            existing.push(App.uriToId(serv.data.state));
+            existing.push(App.utils.uriToId(serv.data.state));
         }, this);
         var in_array;
         this.medStateStore.filterBy(function(record,id){
@@ -123,7 +134,13 @@ App.servicemanager.ExtServicePanel = Ext.extend(Ext.Panel,{
         }
         this.extServiceForm = new App.servicemanager.ExtServiceForm({
             record: record,
-            title: record.data.state_name
+            title: record.data.state_name,
+            listeners: {
+                scope: this,
+                formchanged: function(form){
+                    this.setTitle(this.origTitle + '*')
+                }
+            }
         });
         this.contentPanel.add(this.extServiceForm);
         this.record = record;

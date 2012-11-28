@@ -10,7 +10,7 @@ App.servicemanager.ExtServiceGrid = Ext.extend(Ext.grid.GridPanel, {
         this.store = this.store || new Ext.data.RESTStore({
             autoSave: false,
             autoLoad : false,
-            apiUrl : App.utils.getApiUrl('service','extservicemanager'),
+            apiUrl : App.utils.getApiUrl('service','extserviceadm'),
             model: App.models.ExtendedService,
             baseParams:{
                 format:'json'
@@ -36,7 +36,13 @@ App.servicemanager.ExtServiceGrid = Ext.extend(Ext.grid.GridPanel, {
                 header: "Организация",
                 // width: 100,
                 sortable: true,
-                dataIndex: 'state_name'
+                dataIndex: 'state_name',
+                renderer:function(val, meta, record) {
+                    var p = record.data.is_active;
+                    var flag = p ? 'yes' : 'no';
+                    var img = "<img src='"+WebApp.MEDIA_URL+"admin/img/admin/icon-"+flag+".gif'>";
+                    return String.format("{0} {1}", img, val);
+                }
             }
         ];
 
@@ -52,14 +58,14 @@ App.servicemanager.ExtServiceGrid = Ext.extend(Ext.grid.GridPanel, {
             }),
             listeners:{
                 scope: this,
-                rowdblclick: function(grid, idx, e){
+                rowclick: function(grid, idx, e){
                     var rec = this.store.getAt(idx);
                     if(rec){
                         this.fireEvent('openextservice',rec);
                     }
                 }
             },
-            tbar:[this.addBtn, this.editBtn],
+            tbar:[this.addBtn],
             viewConfig : {
                 forceFit : true
             }

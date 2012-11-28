@@ -2,6 +2,8 @@ Ext.ns('App', 'App.servicemanager');
 
 App.servicemanager.LabServiceForm = Ext.extend(Ext.form.FormPanel,{
 
+    origTitle: 'Лабораторная услуга',
+
     initComponent:function(){
 
         this.saveBtn = new Ext.Button({
@@ -59,24 +61,24 @@ App.servicemanager.LabServiceForm = Ext.extend(Ext.form.FormPanel,{
         });
 
         this.tests = new App.laboratory.AnalysisEditor({
-            showServiceTree:false,
+            showServiceTree: false,
             baseServiceId: this.bsRecord.data.id,
             height: 400
         });
 
         config = {
-            layout:'form',
+            layout: 'form',
             autoScroll: true,
-            title:'Лабораторная услуга',
-            items:[
+            title: this.title || this.origTitle,
+            items: [
             {
-                xtype:'hidden',
-                name:'base_service'
+                xtype: 'hidden',
+                name: 'base_service'
             },{
-                xtype:'checkbox',
-                name:'is_manual',
-                checked:false,
-                boxLabel:'В отдельный ордер',
+                xtype: 'checkbox',
+                name: 'is_manual',
+                checked: false,
+                boxLabel: 'В отдельный ордер',
                 listeners: {
                     scope: this,
                     check: function() {
@@ -104,8 +106,7 @@ App.servicemanager.LabServiceForm = Ext.extend(Ext.form.FormPanel,{
                 }
             },
             this.widgetCB,
-            this.tests,
-            {xtype:'textfield'}],
+            this.tests],
 
             bbar:[this.saveBtn, this.closeBtn]
         };
@@ -114,6 +115,7 @@ App.servicemanager.LabServiceForm = Ext.extend(Ext.form.FormPanel,{
         App.servicemanager.LabServiceForm.superclass.initComponent.apply(this, arguments);
 
         this.on('afterrender', function(){
+            this.origTitle = this.title;
             if(this.bsRecord && this.bsRecord.data.id){
                 this.setRecord(this.bsRecord);
             } else {
@@ -123,6 +125,7 @@ App.servicemanager.LabServiceForm = Ext.extend(Ext.form.FormPanel,{
 
         this.store.on('write', function(){
             this.fireEvent('aftersave');
+            this.makeClean();
         }, this);
     },
 
@@ -159,11 +162,13 @@ App.servicemanager.LabServiceForm = Ext.extend(Ext.form.FormPanel,{
             this.store.add(this.record);
         }
         this.getForm().updateRecord(this.record);
+        this.markDirty();
     },
 
     setBaseService: function(bsUri){
         this.getForm().findField('base_service').setValue(bsUri);
         this.updateRecord();
+        this.tests.setBaseService(bsRecord.data.id);
         this.onSave();
     },
 
@@ -185,6 +190,14 @@ App.servicemanager.LabServiceForm = Ext.extend(Ext.form.FormPanel,{
 
     onCloseBtnClick: function(){
         this.fireEvent('closeform');
+    },
+
+    markDirty: function(){
+        this.setTitle(this.origTitle + '*');
+    },
+
+    makeClean: function(){
+        this.setTitle(this.origTitle);
     }
 
 });

@@ -17,49 +17,6 @@ App.servicemanager.BaseServiceForm = Ext.extend(Ext.form.FormPanel,{
             scope:this
         });
 
-        /*this.extServiceGrid.on('afterrender',function(){
-            if (!this.record || this.record.data.type == 'group') return false;
-            this.ownStateStore.load({callback: function(records){
-                if (records.length === 0 || this.record.data.id) return false;
-                if (records.length == 1) {
-                    this.addExtService(records[0]);
-                } else {
-                    this.showStateWin();
-                }
-
-            }, scope: this});
-        }, this);*/
-
-        this.materialCB = new Ext.form.LazyComboBox({
-            fieldLabel:'Материал',
-            allowBlank:true,
-            displayField: 'name',
-            anchor:'50%',
-            store: new Ext.data.RESTStore({
-                autoSave: false,
-                autoLoad : false,
-                apiUrl : App.utils.getApiUrl('service','material'),
-                model: [
-                    {name: 'id'},
-                    {name: 'resource_uri'},
-                    {name: 'name'}
-                ],
-                baseParams:{
-                    format:'json'
-                }
-            }),
-            name:'material',
-            editable:false,
-            typeAhead:true,
-            selectOnFocus:false,
-            valueField: 'resource_uri',
-            listeners:  {
-                'select':function(combo, record, index){
-                },
-                scope:this
-            }
-        });
-
         this.typeCB = new Ext.form.ComboBox({
             fieldLabel: 'Тип',
             disabled: this.record && this.record.data.id,
@@ -83,7 +40,8 @@ App.servicemanager.BaseServiceForm = Ext.extend(Ext.form.FormPanel,{
                 select: function(combo, record, idx){
                     if (record.data.id == 'lab'){
                         this.openLabServiceForm(true);
-                    }
+                    };
+                    this.markDirty();
                 }
             }
         });
@@ -104,8 +62,7 @@ App.servicemanager.BaseServiceForm = Ext.extend(Ext.form.FormPanel,{
                 value: '',
                 allowBlank: false,
                 fieldLabel: 'Наименование',
-                name:'name'
-
+                name:'name',
             },{
                 xtype:'hidden',
                 name:'type'
@@ -119,7 +76,7 @@ App.servicemanager.BaseServiceForm = Ext.extend(Ext.form.FormPanel,{
                 value: '',
                 allowBlank: false,
                 fieldLabel: 'Наименование',
-                name:'name'
+                name:'name',
 
             },{
                 xtype:'textfield',
@@ -177,6 +134,14 @@ App.servicemanager.BaseServiceForm = Ext.extend(Ext.form.FormPanel,{
             border: false,
             autoScroll: true,
             items: this.itemsSet,
+            defaults:{
+                listeners: {
+                    scope:this,
+                    change: function() {
+                        this.markDirty();
+                    }
+                }
+            },
             bbar:[this.saveBtn, this.closeBtn]
         };
         Ext.apply(this, Ext.apply(this.initialConfig, config));
@@ -185,6 +150,7 @@ App.servicemanager.BaseServiceForm = Ext.extend(Ext.form.FormPanel,{
         this.record.store.on('write', this.onBSStoreWrite, this);
 
         this.on('afterrender', function(form){
+            this.origTitle = this.title;
             if (this.record){
                 this.setRecord(this.record);
             }
@@ -282,6 +248,7 @@ App.servicemanager.BaseServiceForm = Ext.extend(Ext.form.FormPanel,{
     },
 
     setRecord: function(record){
+        this.dataIsLoading = true;
         var form = this.getForm();
         form.loadRecord(record);
         this.record = record;
@@ -298,6 +265,7 @@ App.servicemanager.BaseServiceForm = Ext.extend(Ext.form.FormPanel,{
                 this.openLabServiceForm();
             }
         }
+        this.dataIsLoading = false;
 
     },
 
@@ -402,6 +370,7 @@ App.servicemanager.BaseServiceForm = Ext.extend(Ext.form.FormPanel,{
                 f.originalValue = f.getValue();
             }
         });
+        this.setTitle(this.origTitle);
     },
 
     setBaseService: function(baseServiceUri){
@@ -410,6 +379,12 @@ App.servicemanager.BaseServiceForm = Ext.extend(Ext.form.FormPanel,{
                 f.setBaseService(baseServiceUri);
             }
         }, this);
+    },
+
+    markDirty: function(){
+        if(this.dataIsLoading === false){
+            this.setTitle(this.origTitle + '*')
+        }
     }
 
 });
