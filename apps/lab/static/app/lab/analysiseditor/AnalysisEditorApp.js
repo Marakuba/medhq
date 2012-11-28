@@ -110,6 +110,18 @@ App.laboratory.AnalysisEditor = Ext.extend(Ext.Panel, {
 
     setBaseService : function(id){
         this.baseServiceId = id;
+        var uri = App.utils.getApiUrl('service','baserservice',id);
+        this.analysisStore.each(function(rec){
+            rec.set('service', uri);
+        });
+        this.analysisStore.save();
+        this.profileTab.items.each(function(tab){
+            tab.baseService = uri;
+        });
+    },
+
+    loadBaseService : function(id){
+        this.baseServiceId = id;
         this.loadAnalysis();
     },
 

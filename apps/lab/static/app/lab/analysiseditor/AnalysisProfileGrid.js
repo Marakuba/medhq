@@ -129,7 +129,9 @@ App.laboratory.AnalysisProfileGrid = Ext.extend(Ext.grid.EditorGridPanel, {
             }),
             listeners:{
                 afteredit: function(e) {
-                    this.store.save();
+                    if(this.baseService){
+                        this.store.save();
+                    }
                 },
                 scope:this
             }
@@ -154,7 +156,9 @@ App.laboratory.AnalysisProfileGrid = Ext.extend(Ext.grid.EditorGridPanel, {
                 var rec = this.getSelectionModel().getSelected();
                 if(rec) {
                     rec.set('measurement', result[0].resource_uri);
-                    this.analysisStore.save();
+                    if(this.baseService){
+                        this.analysisStore.save();
+                    }
                 }
             }
         }, this);
@@ -236,7 +240,9 @@ App.laboratory.AnalysisProfileGrid = Ext.extend(Ext.grid.EditorGridPanel, {
             profile:this.profile
         });
         this.store.add(new_model);
-        this.store.save();
+        if(this.baseService){
+            this.store.save();
+        }
         this.startEditing(this.store.getCount()-1,0);
     },
 
@@ -274,7 +280,9 @@ App.laboratory.AnalysisProfileGrid = Ext.extend(Ext.grid.EditorGridPanel, {
             analysis : rec.data.name,
             fn : function(refRange){
                 rec.set('ref_range_text', refRange);
-                this.analysisStore.save();
+                if(this.baseService){
+                    this.analysisStore.save();
+                }
                 win.close();
             },
             scope : this
@@ -290,7 +298,9 @@ App.laboratory.AnalysisProfileGrid = Ext.extend(Ext.grid.EditorGridPanel, {
             analysis : rec.data.name,
             fn : function(inputList){
                 rec.set('input_list', inputList);
-                this.analysisStore.save();
+                if(this.baseService){
+                    this.analysisStore.save();
+                }
                 win.close();
             },
             scope : this
