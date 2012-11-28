@@ -103,6 +103,7 @@ class InputList(models.Model):
     class Meta:
         verbose_name = u'маска результатов'
         verbose_name_plural = u'маски результатов'
+        ordering = ('id',)
 
 
 class AnalysisProfile(models.Model):

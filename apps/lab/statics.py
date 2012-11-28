@@ -155,4 +155,4 @@ class AnalysisEditorApp(BaseWebApp):
             'extjs/ux/css/MultiSelect.css',
         ]
     }
-    depends_on = ['webapp3', ]
+    depends_on = ['service-panel', 'webapp3', ]

@@ -5,9 +5,9 @@ App.laboratory.AnalysisEditor = Ext.extend(Ext.Panel, {
     
     origTitle : 'Редактор тестов',
 
-    initComponent: function() {
+    showServiceTree : true,
 
-        this.baseServiceId = 3709;
+    initComponent: function() {
 
         this.analysisStore = new Ext.data.RESTStore({
             autoLoad : false,
@@ -60,6 +60,31 @@ App.laboratory.AnalysisEditor = Ext.extend(Ext.Panel, {
             region: 'center'
         });
 
+        this.items = [this.profileTab];
+
+        if(this.showServiceTree){
+            this.serviceTree = new App.service.ServiceTreeGrid({
+                region:'west',
+                width:350,
+                split:true,
+                hidePrice: true,
+                listeners:{
+                    render: function(tg){
+                        this.loader.baseParams = {
+                            payment_type:'н',
+                            all:true,
+                            promotion:false
+                        };
+                    }
+                }
+            });
+            this.serviceTree.on('serviceclick', function(node){
+                var pair = node.id.split('-');
+                this.setBaseService(pair[0]);
+            }, this);
+            this.items.push(this.serviceTree);
+        }
+
         config = {
             id:'analysis-editor-app',
             title:this.origTitle,
@@ -68,24 +93,36 @@ App.laboratory.AnalysisEditor = Ext.extend(Ext.Panel, {
             defaults:{
                 border:false
             },
-            items:[this.profileTab]
+            items:this.items
         };
         Ext.apply(this, Ext.apply(this.initialConfig, config));
         App.laboratory.AnalysisEditor.superclass.initComponent.apply(this, arguments);
 
+        this.profileTab.on('tabchange', this.onProfileTabChange, this);
+
         this.on('afterrender', function(){
-            this.profileTab.on('tabchange', this.onProfileTabChange, this);
-            this.analysisStore.load({
-                params:{
-                    service: this.baseServiceId
-                },
-                callback:function(res, opts){
-                    this.processResp(res);
-                },
-                scope:this
-            });
+            if(this.baseServiceId){
+                this.loadAnalysis();
+            }
         }, this);
         
+    },
+
+    setBaseService : function(id){
+        this.baseServiceId = id;
+        this.loadAnalysis();
+    },
+
+    loadAnalysis : function(){
+        this.analysisStore.load({
+            params:{
+                service: this.baseServiceId
+            },
+            callback:function(res, opts){
+                this.processResp(res);
+            },
+            scope:this
+        });
     },
 
     processResp : function(res) {
