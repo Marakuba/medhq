@@ -8,14 +8,20 @@ App.servicemanager.SelectedServiceGrid = Ext.extend(Ext.grid.GridPanel, {
     initComponent : function() {
 
         this.store = this.store || new Ext.data.ArrayStore({
-            fields: ['id','name']
+            fields: ['id','code','name']
         });
 
         this.columns =  [
             {
+                header: "Код",
+                width: 10,
+                sortable: false,
+                dataIndex: 'code'
+            },
+            {
                 header: "Наименование",
                 width: 100,
-                sortable: true,
+                sortable: false,
                 dataIndex: 'name'
             }
         ];

@@ -203,6 +203,7 @@ def get_service_tree(request):
             "leaf": True,
             'text': "%s" % (node.short_name or node.name,),
             'type': node.type,
+            'code': node.code,
             "parent": parent
         }
         return [tree_node]

@@ -55,6 +55,7 @@ App.service.ServiceManager = Ext.extend(Ext.Panel,{
         this.contentPanel = new Ext.TabPanel({
             activeTab:0,
             width:900,
+            border:false,
             split:true,
             items:[],
             region:'east'
@@ -259,7 +260,7 @@ App.service.ServiceManager = Ext.extend(Ext.Panel,{
             return n.attributes.type!='group';
         });
         this.selectedServices = _.map(nodes, function(n){
-            return [n.attributes.id, n.attributes.text];
+            return [n.attributes.id, n.attributes.code, n.attributes.text];
         });
         if(!this.stopNodeCheckedEvent){
             this.loadSelectedRecords();
