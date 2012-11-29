@@ -30,6 +30,9 @@ class ServiceManager(BaseWebApp):
 
     cmp_type = 'action'
     js = [
+        'libs/underscore-min.js',
+        'extjs/ux/MultiSelect.js',
+        'extjs/ux/ItemSelector.js',
         'app/ux/GSearchField.js',
         'app/choices/staff/StaffChoiceGrid.js',
         'app/choices/staff/StaffChoiceWindow.js',
@@ -37,8 +40,6 @@ class ServiceManager(BaseWebApp):
         'app/choices/state/StateChoiceWindow.js',
         'app/choices/tube/TubeChoiceGrid.js',
         'app/choices/tube/TubeChoiceWindow.js',
-        'extjs/ux/MultiSelect.js',
-        'extjs/ux/ItemSelector.js',
         'app/service/models.js',
         'app/service/servicemanager/ServiceTree.js',
         'app/service/servicemanager/LabServiceForm.js',

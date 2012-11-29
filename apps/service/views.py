@@ -202,6 +202,7 @@ def get_service_tree(request):
             "id": node.id,
             "leaf": True,
             'text': "%s" % (node.short_name or node.name,),
+            'type': node.type,
             "parent": parent
         }
         return [tree_node]
@@ -211,7 +212,8 @@ def get_service_tree(request):
             "id": node.id,
             "leaf": False,
             'text': "%s" % (node.short_name or node.name,),
-            'singleClickExpand': True,
+            # 'singleClickExpand': True,
+            'type': node.type,
             "parent": parent,
             'children': childs
         }

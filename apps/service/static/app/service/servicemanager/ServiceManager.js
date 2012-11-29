@@ -1,5 +1,7 @@
 Ext.ns('App', 'App.service', 'App.servicemanager');
 
+var selectedServices = [];
+
 App.service.ServiceManager = Ext.extend(Ext.Panel,{
 
     initComponent:function(){
@@ -71,15 +73,8 @@ App.service.ServiceManager = Ext.extend(Ext.Panel,{
 
         this.serviceTree = new App.servicemanager.ServiceTree({
             region:'center',
-            // dataUrl:'/webapp/service_tree/',
-            useArrows: true,
-            autoScroll:true,
             width:250,
             searchFieldWidth: 200,
-            border: false,
-            collapsible:true,
-            collapseMode:'mini',
-            split:true,
             listeners: {
                 scope: this,
                 click: this.onServiceClick,
@@ -87,7 +82,7 @@ App.service.ServiceManager = Ext.extend(Ext.Panel,{
                 checkchange: function(node, checked){
                     this.onNodeChecked(node, checked);
                     // this.serviceTree.doLayout();
-                    this.loadSelectedRecords();
+                    // this.loadSelectedRecords();
                 }
             },
             scope: this
@@ -229,35 +224,29 @@ App.service.ServiceManager = Ext.extend(Ext.Panel,{
 
     onNodeChecked: function(node, checked){
 
-        if (node.attributes.type == 'group') {
-            node.expand(true, true, function(){
-                node.eachChild(function(n){
-                    n.getUI().toggleCheck(checked);
-                }, this);
-            }, this);
+        if(this.stopNodeCheckedEvent) {
+            return;
+        }
 
-        } else {
-            var item = [node.attributes.id,node.attributes.text];
-            var idx = this.selectedServices.indexOf(item[0]);//this.findService(this.selectedServices, item[0]);
-            if (checked){
-                if (idx < 0){
-                    this.selectedServices.push(item);
-                }
-            } else {
-                if (idx > -1){
-                    this.selectedServices.splice(idx, 1);
-                }
-            }
+        if (node.attributes.type == 'group') {
+            this.stopNodeCheckedEvent = true;
+            node.expand(true, false);
+            node.cascade(function(n){
+                n.getUI().toggleCheck(checked);
+            }, this);
+            this.stopNodeCheckedEvent = false;
 
         }
-    },
-
-    findService: function(arr, value){
-        var idx = -1;
-        Ext.each(arr, function(item, i){
-            if (item[0] == value) idx = i;
+        var nodes = this.serviceTree.getChecked();
+        nodes = _.filter(nodes, function(n){
+            return n.attributes.type!='group';
         });
-        return idx;
+        this.selectedServices = _.map(nodes, function(n){
+            return [n.attributes.id, n.attributes.text];
+        });
+        if(!this.stopNodeCheckedEvent){
+            this.loadSelectedRecords();
+        }
     },
 
     serviceIsSelected: function(serviceId){

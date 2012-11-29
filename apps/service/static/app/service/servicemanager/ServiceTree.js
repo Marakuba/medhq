@@ -11,46 +11,27 @@ App.servicemanager.ServiceTree = Ext.extend(Ext.tree.TreePanel,{
                 id:'root'
             }),
             loader : new Ext.tree.TreeLoader({
-                // nodeParameter:'parent',
                 dataUrl: '/service/service_tree/',
                 requestMethod:'GET',
                 baseAttrs : {
                     singleClickExpand : true,
                     checked : false
-                },
-                baseParams:this.baseParams ? this.baseParams :
-                {
-                    all:true
-                },
-                // processResponse : function(response, node, callback, scope){
-                //     var json = response.responseText;
-                //     try {
-                //         var o = response.responseData || Ext.decode(json);
-                //         o = o.objects;
-                //         node.beginUpdate();
-                //         for(var i = 0, len = o.length; i < len; i++){
-                //             var n = this.createNode(o[i]);
-                //             if(n){
-                //                 node.appendChild(n);
-                //             }
-                //         }
-                //         node.endUpdate();
-                //         this.runCallback(callback, scope || node, [node]);
-                //     }catch(e){
-                //         this.handleFailure(response);
-                //     }
-                // }
+                }
             }),
+            useArrows: true,
+            autoScroll:true,
+            border: false,
+            collapsible:true,
+            collapseMode:'mini',
+            split:true,
             rootVisible:true,
             lines:false,
             animCollapse:false,
             animate: false,
-            autoScroll: true,
             enableDD:true,
             containerScroll: true,
             header: false,
             requestMethod:'GET',
-            border:false,
             contextMenu: new Ext.menu.Menu({
                 items: [{
                     id: 'add-group',
@@ -84,10 +65,10 @@ App.servicemanager.ServiceTree = Ext.extend(Ext.tree.TreePanel,{
                 contextmenu: function(node, e) {
         //          Register the context node with the menu so that a Menu Item's handler function can access
         //          it via its parentMenu property.
-                    node.select();
-                    var c = node.getOwnerTree().contextMenu;
-                    c.contextNode = node;
-                    c.showAt(e.getXY());
+                    // node.select();
+                    // var c = node.getOwnerTree().contextMenu;
+                    // c.contextNode = node;
+                    // c.showAt(e.getXY());
                 },
                 scope:this
             },
