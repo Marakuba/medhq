@@ -62,8 +62,16 @@ App.servicemanager.LabServiceForm = Ext.extend(Ext.form.FormPanel,{
 
         this.tests = new App.laboratory.AnalysisEditor({
             showServiceTree: false,
-            baseServiceId: this.bsRecord.data.id,
-            height: 400
+            height: 300,
+            listeners: {
+                scope: this,
+                aftersave: function(){
+                    this.savedCount += 1;
+                    if (this.savedCount == this.countToSave){
+                        this.fireEvent('aftersave');
+                    }
+                }
+            }
         });
 
         config = {
@@ -124,7 +132,10 @@ App.servicemanager.LabServiceForm = Ext.extend(Ext.form.FormPanel,{
         }, this);
 
         this.store.on('write', function(){
-            this.fireEvent('aftersave');
+            this.savedCount += 1;
+            if (this.savedCount == this.countToSave){
+                this.fireEvent('aftersave');
+            }
             this.makeClean();
         }, this);
     },
@@ -173,15 +184,23 @@ App.servicemanager.LabServiceForm = Ext.extend(Ext.form.FormPanel,{
     },
 
     onSave: function(){
-        this.store.save();
+        this.savedCount = 0;
+        if (this.isDirty()){
+            this.store.save();
+            this.tests.onSave();
+        }
     },
 
     isDirty: function(){
-
+        this.countToSave = 0;
         var records = this.store.getModifiedRecords();
         if (records.length > 0){
+            this.countToSave +=1;
         }
-        return records.length > 0;
+        if (this.tests.isDirty()){
+            this.countToSave +=1;
+        }
+        return this.countToSave > 0;
     },
 
     onSaveBtnClick: function(){

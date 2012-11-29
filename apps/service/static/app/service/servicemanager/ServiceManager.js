@@ -126,13 +126,14 @@ App.service.ServiceManager = Ext.extend(Ext.Panel,{
                 this.contentPanel.setActiveTab(this.selectedServiceGrid);
             } else {
                 this.selectedServiceGrid.destroy();
-                this.selectedServiceGrid = undefined;
             }
         } else {
-            this.selectedServiceGrid = this.newSelServGrid();
-            this.selectedServiceGrid.loadRecords(this.selectedServices);
-            this.contentPanel.insert(0, this.selectedServiceGrid);
-            this.contentPanel.setActiveTab(this.selectedServiceGrid);
+            if (this.selectedServices.length){
+                this.selectedServiceGrid = this.newSelServGrid();
+                this.selectedServiceGrid.loadRecords(this.selectedServices);
+                this.contentPanel.insert(0, this.selectedServiceGrid);
+                this.contentPanel.setActiveTab(this.selectedServiceGrid);
+            }
         }
 
 
@@ -148,28 +149,41 @@ App.service.ServiceManager = Ext.extend(Ext.Panel,{
                     var n = this.serviceTree.getNodeById(rec.data.id);
                     this.onServiceClick(n);
                 },
-                deselectnode: function(rec){
-                    var n = this.serviceTree.getNodeById(rec.data.id);
-                    n.getUI().toggleCheck(false);
+                deselectnode: function(records){
+                    if (!records) return false;
+                    this.stopNodeCheckedEvent = true;
+                    Ext.each(records, function(rec){
+                        var n = this.serviceTree.getNodeById(rec.data.id);
+                        n.getUI().toggleCheck(false);
+                    }, this);
+                    this.selectedServiceGrid.removeRecords(records);
+                    this.serviceTree.uncheckGroups();
+                    this.stopNodeCheckedEvent = false;
                 },
 
-                doaction: function(fn, scopeForm){
+                beforedestroy: function(){
+                    this.selectedServiceGrid = undefined;
+                },
+
+                doaction: function(fn, scopeForm, opt){
                     //Если открыта услуга из списка выделенных,
                     //то сначала закрываем ее
                     if (this.bsForm && this.bsForm.record.id){
                         var id = this.bsForm.record.id;
-                        var idx = this.findService(this.selectedServices, id);
-                        if (idx > -1){
+                        var el = _.find(this.selectedServices, function(serv){
+                            return serv[0] == id
+                        });
+                        if (el){
                             this.bsForm.closeForm(function(thisForm){
                                 thisForm.bsForm.destroy();
                                 thisForm.bsForm = undefined;
-                                fn(scopeForm);
+                                fn(scopeForm, opt);
                             }, this);
                         } else {
-                            fn(scopeForm);
+                            fn(scopeForm, opt);
                         }
                     } else {
-                        fn(scopeForm);
+                        fn(scopeForm, opt);
                     }
                 }
             }
@@ -241,7 +255,6 @@ App.service.ServiceManager = Ext.extend(Ext.Panel,{
     },
 
     onNodeChecked: function(node, checked){
-
         if(this.stopNodeCheckedEvent) {
             return;
         }

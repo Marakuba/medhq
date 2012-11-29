@@ -4,6 +4,7 @@ Ext.ns('App.servicemanager');
 
 App.servicemanager.SelectedServiceGrid = Ext.extend(Ext.grid.GridPanel, {
 
+    origTitle: 'Отмеченные услуги',
 
     initComponent : function() {
 
@@ -27,14 +28,28 @@ App.servicemanager.SelectedServiceGrid = Ext.extend(Ext.grid.GridPanel, {
         ];
 
         this.deselectBtn = new Ext.Button({
-            text: 'Убрать из выделенных',
-            handler:this.onDeselect.createDelegate(this,[]),
+            text: 'Убрать из отмеченных',
+            handler: function(){
+                var records = this.getSelectionModel().getSelections();
+                this.fireEvent('deselectnode', records);
+            },
+            scope: this,
             iconCls:'silk-cancel',
             disabled: true
         });
 
+        this.deselectAllBtn = new Ext.Button({
+            text: 'Очистить таблицу',
+            handler: function(){
+                var records = this.store.data.items;
+                this.fireEvent('deselectnode', records);
+            },
+            scope: this,
+            iconCls:'silk-cancel'
+        });
+
         var config = {
-            title:'Выделенные услуги',
+            title: this.title || this.origTitle,
             loadMask : {
                 msg : 'Подождите, идет загрузка...'
             },
@@ -42,7 +57,7 @@ App.servicemanager.SelectedServiceGrid = Ext.extend(Ext.grid.GridPanel, {
             store:this.store,
             columns:this.columns,
             sm : new Ext.grid.RowSelectionModel({
-                singleSelect : true,
+                singleSelect : false,
                 listeners: {
                     scope: this,
                     rowselect: function(sm, ind, rec){
@@ -57,8 +72,16 @@ App.servicemanager.SelectedServiceGrid = Ext.extend(Ext.grid.GridPanel, {
                 iconCls:'silk-pencil',
                 text:'Добавить услуги врачу',
                 handler:this.doAction.createDelegate(this,[this.onStaffCoice])
+            },{
+                iconCls:'silk-pencil',
+                text:'Активировать',
+                handler:this.doAction.createDelegate(this,[this.setActive, true])
+            },{
+                iconCls:'silk-pencil',
+                text:'Деактивировать',
+                handler:this.doAction.createDelegate(this,[this.setActive, false])
             },
-            this.deselectBtn],
+            this.deselectBtn, this.deselectAllBtn],
             viewConfig : {
                 forceFit : true
             }
@@ -81,8 +104,8 @@ App.servicemanager.SelectedServiceGrid = Ext.extend(Ext.grid.GridPanel, {
         }
     },
 
-    doAction: function(fn){
-        this.fireEvent('doaction', fn, this);
+    doAction: function(fn, opt){
+        this.fireEvent('doaction', fn, this, opt);
     },
 
     onStaffCoice: function(scopeForm){
@@ -90,7 +113,10 @@ App.servicemanager.SelectedServiceGrid = Ext.extend(Ext.grid.GridPanel, {
             fn: function(staffRecord){
                 staffWin.close();
                 var params = {};
-                params['records'] = this.records;
+                var records = _.map(this.store.data.items, function(rec){
+                    return rec.data.id;
+                });
+                params['records'] = records;
                 params['staff'] = staffRecord.data.id;
                 App.direct.service.updateStaffInfo(params, function(res,e){
                     Ext.Msg.alert('Уведомление', res.data.text);
@@ -101,16 +127,35 @@ App.servicemanager.SelectedServiceGrid = Ext.extend(Ext.grid.GridPanel, {
         staffWin.show();
     },
 
-    loadRecords: function(records){
-        this.records = records;
-        this.store.loadData(records);
-        this.setBtnsDisabled(true);
+    setActive: function(scopeForm, opt){
+        var params = {};
+        var records = _.map(scopeForm.store.data.items, function(rec){
+                    return rec.data.id;
+                });
+        params['records'] = records;
+        params['status'] = opt;
+        App.direct.service.setActive(params, function(res,e){
+            Ext.Msg.alert('Уведомление', res.data.text);
+        }, this);
     },
 
-    onDeselect: function(){
-        var rec = this.getSelectionModel().getSelected();
-        if (rec){
-            this.fireEvent('deselectnode', rec);
+    loadRecords: function(records){
+        this.store.loadData(records);
+        this.setBtnsDisabled(true);
+        this.setTitle(this.origTitle + ' (' + records.length + ')');
+    },
+
+    removeRecords: function(records){
+        if (records.length == this.store.data.length){
+            this.store.removeAll();
+        } else {
+            this.store.remove(records);
+        }
+        var len = this.store.data.length;
+        if (len){
+            this.setTitle(this.origTitle + ' (' + len + ')');
+        } else {
+            this.destroy();
         }
 
     }

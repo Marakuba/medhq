@@ -102,6 +102,33 @@ App.servicemanager.ServiceTree = Ext.extend(Ext.tree.TreePanel,{
      */
     getSelected: function(){
         return this.getSelectionModel().getSelectedNode();
+    },
+
+    uncheckGroups: function(){
+        var nodes = this.getChecked();
+        Ext.each(nodes, function(n){
+            if (!n.leaf){
+                if (!this.hasCheckedChilds(n.childNodes)){
+                    n.getUI().toggleCheck(false);
+                }
+            }
+        }, this);
+    },
+
+    hasCheckedChilds: function(nodes){
+        var hasChecked = false;
+        Ext.each(nodes, function(n){
+            if (!n.leaf){
+                if (this.hasCheckedChilds(n.childNodes)){
+                    hasChecked = true;
+                }
+            } else {
+                if (n.attributes.checked){
+                    hasChecked = true;
+                }
+            }
+        }, this);
+        return hasChecked;
     }
 
 });

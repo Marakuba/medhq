@@ -46,11 +46,10 @@ def get_actual_price(request):
 
 
 @remoting(remote_provider, len=1, action='service', name='updateStaffInfo')
-def update_patient_info(request):
+def update_staff_info(request):
     data = simplejson.loads(request.raw_post_data)
     params = data['data'][0]
-    records = params['records']
-    services = map(lambda x: x[0], records)
+    services = params['records']
     bs_list = BaseService.objects.filter(id__in=services)
     service_list = []
     for s in bs_list:
@@ -72,6 +71,37 @@ def update_patient_info(request):
             'success': False,
             'data': {
                 'text': 'Врач не найден'
+            }
+        }
+
+    return result
+
+
+@remoting(remote_provider, len=1, action='service', name='setActive')
+def set_services_active(request):
+    data = simplejson.loads(request.raw_post_data)
+    params = data['data'][0]
+    services = params['records']
+    status = params['status']
+    bs_list = BaseService.objects.filter(id__in=services)
+    service_list = []
+    for s in bs_list:
+        service_list += s.extendedservice_set.all()
+    try:
+        for service in service_list:
+            service.is_active = status
+            service.save()
+        result = {
+            'success': True,
+            'data': {
+                'text': 'Операция проведена успешно'
+            }
+        }
+    except:
+        result = {
+            'success': False,
+            'data': {
+                'text': 'Ошибка на сервере'
             }
         }
 
@@ -171,7 +201,7 @@ def get_service_tree(request):
                 node = None
             else:
 
-                if node.is_leaf_node():
+                if node.is_leaf_node() and not node.type == 'group':
                     tree_node = leaf_func(node, parent)
                 else:
                     tree_node = group_func(node, parent, childs)

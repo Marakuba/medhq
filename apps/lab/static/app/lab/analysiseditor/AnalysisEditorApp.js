@@ -2,7 +2,7 @@ Ext.ns('App.laboratory');
 
 
 App.laboratory.AnalysisEditor = Ext.extend(Ext.Panel, {
-    
+
     origTitle : 'Редактор тестов',
 
     showServiceTree : true,
@@ -107,7 +107,7 @@ App.laboratory.AnalysisEditor = Ext.extend(Ext.Panel, {
                 this.loadAnalysis();
             }
         }, this);
-        
+
     },
 
     setBaseService : function(id){
