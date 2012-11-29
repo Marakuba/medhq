@@ -7,42 +7,6 @@ App.service.ServiceManager = Ext.extend(Ext.Panel,{
     initComponent:function(){
 
         this.selectedServices = [];
-        this.selectedServiceGrid = new App.servicemanager.SelectedServiceGrid({
-            title: 'Выделенные услуги',
-            listeners: {
-                scope: this,
-                rowdblclick: function(grid, idx, e){
-                    var rec = grid.store.getAt(idx);
-                    var n = this.serviceTree.getNodeById(rec.data.id);
-                    this.onServiceClick(n);
-                },
-                deselectnode: function(rec){
-                    var n = this.serviceTree.getNodeById(rec.data.id);
-                    n.getUI().toggleCheck(false);
-                },
-
-                doaction: function(fn, scopeForm){
-                    //Если открыта услуга из списка выделенных,
-                    //то сначала закрываем ее
-                    if (this.bsForm && this.bsForm.record.id){
-                        var id = this.bsForm.record.id;
-                        var idx = this.findService(this.selectedServices, id);
-                        if (idx > -1){
-                            this.bsForm.closeForm(function(thisForm){
-                                thisForm.bsForm.destroy();
-                                thisForm.bsForm = undefined;
-                                fn(scopeForm);
-                            }, this);
-                        } else {
-                            fn(scopeForm);
-                        }
-                    } else {
-                        fn(scopeForm);
-                    }
-                }
-            }
-        });
-
 
         this.baseServiceStore = new Ext.data.RESTStore({
             autoSave: false,
@@ -92,7 +56,7 @@ App.service.ServiceManager = Ext.extend(Ext.Panel,{
             activeTab:0,
             width:900,
             split:true,
-            items:[this.selectedServiceGrid],
+            items:[],
             region:'east'
         });
 
@@ -155,7 +119,60 @@ App.service.ServiceManager = Ext.extend(Ext.Panel,{
     },
 
     loadSelectedRecords: function(){
-        this.selectedServiceGrid.loadRecords(this.selectedServices);
+        if (this.selectedServiceGrid){
+            if (this.selectedServices.length){
+                this.selectedServiceGrid.loadRecords(this.selectedServices);
+                this.contentPanel.setActiveTab(this.selectedServiceGrid);
+            } else {
+                this.selectedServiceGrid.destroy();
+                this.selectedServiceGrid = undefined;
+            }
+        } else {
+            this.selectedServiceGrid = this.newSelServGrid();
+            this.selectedServiceGrid.loadRecords(this.selectedServices);
+            this.contentPanel.insert(0, this.selectedServiceGrid);
+            this.contentPanel.setActiveTab(this.selectedServiceGrid);
+        }
+
+
+    },
+
+    newSelServGrid: function(){
+        return new App.servicemanager.SelectedServiceGrid({
+            title: 'Выделенные услуги',
+            listeners: {
+                scope: this,
+                rowdblclick: function(grid, idx, e){
+                    var rec = grid.store.getAt(idx);
+                    var n = this.serviceTree.getNodeById(rec.data.id);
+                    this.onServiceClick(n);
+                },
+                deselectnode: function(rec){
+                    var n = this.serviceTree.getNodeById(rec.data.id);
+                    n.getUI().toggleCheck(false);
+                },
+
+                doaction: function(fn, scopeForm){
+                    //Если открыта услуга из списка выделенных,
+                    //то сначала закрываем ее
+                    if (this.bsForm && this.bsForm.record.id){
+                        var id = this.bsForm.record.id;
+                        var idx = this.findService(this.selectedServices, id);
+                        if (idx > -1){
+                            this.bsForm.closeForm(function(thisForm){
+                                thisForm.bsForm.destroy();
+                                thisForm.bsForm = undefined;
+                                fn(scopeForm);
+                            }, this);
+                        } else {
+                            fn(scopeForm);
+                        }
+                    } else {
+                        fn(scopeForm);
+                    }
+                }
+            }
+        });
     },
 
     addService: function(node,type){

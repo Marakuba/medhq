@@ -78,7 +78,7 @@ App.servicemanager.ExtServiceForm = Ext.extend(Ext.form.FormPanel,{
         this.branchSelector = new App.servicemanager.ItemSelector({
             name: 'branches',
             fieldLabel: 'Филиалы',
-            imagePath: MEDIA_URL + 'extjs/ux/images/',
+            imagePath: WebApp.MEDIA_URL + 'extjs/ux/images/',
             multiselects: [{
                 // autoScroll: true,
                 legend: 'Доступные',
@@ -106,7 +106,7 @@ App.servicemanager.ExtServiceForm = Ext.extend(Ext.form.FormPanel,{
             listeners: {
                 scope: this,
                 change: function() {
-                    if (!(this.dataIsLoading === true || this.dataIsLoading === undefined)){
+                    if (this.dataIsLoading === false){
                         this.updateRecord();
                     }
                 }
@@ -134,7 +134,7 @@ App.servicemanager.ExtServiceForm = Ext.extend(Ext.form.FormPanel,{
         this.staffSelector = new App.servicemanager.ItemSelector({
             name: 'staff',
             fieldLabel: 'Кем выполняется',
-            imagePath: MEDIA_URL + 'extjs/ux/images/',
+            imagePath: WebApp.MEDIA_URL + 'extjs/ux/images/',
             multiselects: [{
                 // autoScroll: true,
                 legend: 'Доступные',
@@ -162,7 +162,7 @@ App.servicemanager.ExtServiceForm = Ext.extend(Ext.form.FormPanel,{
             listeners: {
                 scope: this,
                 change: function() {
-                    if (!(this.dataIsLoading === true || this.dataIsLoading === undefined)){
+                    if (this.dataIsLoading === false){
                         this.updateRecord();
                     }
                 }
@@ -243,14 +243,14 @@ App.servicemanager.ExtServiceForm = Ext.extend(Ext.form.FormPanel,{
                 name: 'base_service',
                 allowBlank: false
             },{
-                xtype:'checkbox',
-                name:'is_active',
-                checked:true,
-                boxLabel:'Услуга активна',
+                xtype: 'checkbox',
+                name: 'is_active',
+                checked: false,
+                boxLabel: 'Услуга активна',
                 listeners: {
                     scope: this,
                     check: function() {
-                        if (!(this.dataIsLoading === true || this.dataIsLoading === undefined)){
+                        if (this.dataIsLoading === false){
                             this.updateRecord();
                         }
                     }
@@ -264,7 +264,7 @@ App.servicemanager.ExtServiceForm = Ext.extend(Ext.form.FormPanel,{
                 listeners: {
                     scope:this,
                     check: function() {
-                        if (!(this.dataIsLoading === true || this.dataIsLoading === undefined)){
+                        if (this.dataIsLoading === false){
                             this.updateRecord();
                         }
                     }
@@ -279,7 +279,7 @@ App.servicemanager.ExtServiceForm = Ext.extend(Ext.form.FormPanel,{
                     render: function(c) {
                         var el = c.getEl();
                         el.on('blur',function(f){
-                            if (!(this.dataIsLoading === true || this.dataIsLoading === undefined)){
+                            if (this.dataIsLoading === false){
                                 this.updateRecord();
                             }
                         }, this);
@@ -297,7 +297,7 @@ App.servicemanager.ExtServiceForm = Ext.extend(Ext.form.FormPanel,{
                     render: function(c) {
                         var el = c.getEl();
                         el.on('blur',function(f){
-                            if (!(this.dataIsLoading === true || this.dataIsLoading === undefined)){
+                            if (this.dataIsLoading === false){
                                 this.updateRecord();
                             }
                         }, this);
@@ -367,6 +367,7 @@ App.servicemanager.ExtServiceForm = Ext.extend(Ext.form.FormPanel,{
     updateRecord: function(){
         if (!this.record) return false;
         this.getForm().updateRecord(this.record);
+        this.fireEvent('formchanged', this);
     },
 
     onTubeChoice: function() {
