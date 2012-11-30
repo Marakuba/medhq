@@ -4,6 +4,29 @@ App.servicemanager.ServiceTree = Ext.extend(Ext.tree.TreePanel,{
 
     initComponent:function(){
 
+        var menu = new Ext.menu.Menu({
+            items:[{
+                xtype:'menucheckitem',
+                group:'bs_type',
+                text:'любой',
+                checked:true
+            }]
+        });
+
+        Ext.each(WebApp.bs_types, function(t){
+            menu.add({
+                xtype:'menucheckitem',
+                group:'bs_type',
+                text:t[1]
+            });
+        });
+
+        this.typeSelector = new Ext.Button({
+            text:'Тип',
+            menu:menu
+        });
+
+
         this.baseServiceStore = new Ext.data.RESTStore({
             autoSave: false,
             autoLoad: false,
@@ -22,7 +45,7 @@ App.servicemanager.ServiceTree = Ext.extend(Ext.tree.TreePanel,{
 
         this.searchField = new Ext.form.TriggerField({
             xtype:'trigger',
-            width:300,
+            width:270,
             emptyText:'Поиск по названию',
             enableKeyEvents: true,
             triggerClass:'x-form-clear-trigger',
@@ -59,7 +82,7 @@ App.servicemanager.ServiceTree = Ext.extend(Ext.tree.TreePanel,{
                 dataUrl: '/service/service_tree/',
                 requestMethod:'GET',
                 preloadChildren: true,
-                clearOnLoad: false,
+                clearOnLoad: true,
                 baseAttrs : {
                     singleClickExpand : true,
                     checked : false
@@ -129,6 +152,13 @@ App.servicemanager.ServiceTree = Ext.extend(Ext.tree.TreePanel,{
                 iconCls:'x-icon-collapse-all',
                 tooltip: 'Свернуть всё',
                 handler: function(){ this.root.collapse(true); },
+                scope:this
+            },'-',{
+                iconCls:'x-tbar-loading',
+                handler:function(){
+                    this.getLoader().load(this.getRootNode());
+                    this.getRootNode().expand();
+                },
                 scope:this
             }],
             listeners: {
