@@ -9,6 +9,10 @@ App.laboratory.AnalysisEditor = Ext.extend(Ext.Panel, {
 
     initComponent: function() {
 
+        this.profiles = {
+            'Основной профиль':null
+        };
+
         this.analysisStore = new Ext.data.RESTStore({
             autoLoad : false,
             autoSave : false,
@@ -23,6 +27,9 @@ App.laboratory.AnalysisEditor = Ext.extend(Ext.Panel, {
                     if(action!='create'){
                         store.sort('order','ASC');
                     }
+                },
+                save:function(){
+                    this.fireEvent('aftersave');
                 },
                 scope:this
             }
@@ -105,6 +112,8 @@ App.laboratory.AnalysisEditor = Ext.extend(Ext.Panel, {
         this.on('afterrender', function(){
             if(this.baseServiceId){
                 this.loadAnalysis();
+            } else {
+                this.initTabs();
             }
         }, this);
 
@@ -145,7 +154,6 @@ App.laboratory.AnalysisEditor = Ext.extend(Ext.Panel, {
     },
 
     getProfiles : function(res) {
-        this.profiles = {};
         Ext.each(res, function(r){
             var profile = r.data.profile_name || 'Основной профиль';
             this.profiles[profile] = r.data.profile;
@@ -192,6 +200,14 @@ App.laboratory.AnalysisEditor = Ext.extend(Ext.Panel, {
 
     onProfileTabChange : function(tp, p) {
         p.setProfileFilter();
+    },
+
+    isDirty: function(){
+        return this.analysisStore.getModifiedRecords()!==0;
+    },
+
+    onSave: function(){
+        this.analysisStore.save();
     }
 
 });

@@ -34,6 +34,7 @@ class ServiceManager(BaseWebApp):
         'extjs/ux/MultiSelect.js',
         'extjs/ux/ItemSelector.js',
         'app/ux/GSearchField.js',
+        'app/ux/remotetree/js/Ext.ux.tree.TreeFilterX.js',
         'app/choices/staff/StaffChoiceGrid.js',
         'app/choices/staff/StaffChoiceWindow.js',
         'app/choices/state/StateChoiceGrid.js',
