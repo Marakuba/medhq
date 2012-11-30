@@ -138,7 +138,8 @@ BS_TYPES = (
     (u'archive',u'архив'),
 )
 if 'lab' in settings.INSTALLED_APPS:
-    BS_TYPES = BS_TYPES + ( (u'lab',u'лабораторная услуга'), )
+    BS_TYPES = BS_TYPES + ((u'lab', u'лабораторная услуга'),)
+
 
 class BaseService(models.Model):
 
@@ -153,7 +154,7 @@ class BaseService(models.Model):
     execution_time = models.PositiveIntegerField(u'Время выполнения', null=True, blank=True)
     partnership = models.BooleanField(u'В направление')
     version = models.PositiveIntegerField(u'Версия', default=0, null=True, blank=True)
-    is_group = models.BooleanField(u'Группа',default=False)
+    is_group = models.BooleanField(u'Группа', default=False)
 
     material = models.ForeignKey(Material, blank=True, null=True)
     gen_ref_interval = models.TextField(u"Общий референсный интервал",
@@ -161,11 +162,10 @@ class BaseService(models.Model):
                                         help_text=u'Выводится в результатах один на все тесты. Если пусто, используются значения из тестов.')
     lab_group = models.ForeignKey(LabServiceGroup, null=True, blank=True)
 
-
-    inner_template = models.CharField(u'Рабочий бланк', max_length=100, blank=True)
+    inner_template = models.CharField(u'Рабочий бланк', max_length=100, null=True, blank=True)
     conditions = models.ManyToManyField(Condition, null=True, blank=True)
 
-    description = models.TextField(u'Дополнительное описание', blank=True)
+    description = models.TextField(u'Дополнительное описание', null=True, blank=True)
     type = models.CharField(u'Тип', choices=BS_TYPES, default=u'cons', max_length=10)
 
     _top = {}

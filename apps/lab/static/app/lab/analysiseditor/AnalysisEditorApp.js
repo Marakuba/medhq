@@ -121,17 +121,24 @@ App.laboratory.AnalysisEditor = Ext.extend(Ext.Panel, {
 
     setBaseService : function(id){
         this.baseServiceId = id;
-        var uri = App.utils.getApiUrl('service','baserservice',id);
-        this.analysisStore.each(function(rec){
-            rec.set('service', uri);
-        });
-        this.analysisStore.save();
         this.profileTab.items.each(function(tab){
-            tab.baseService = uri;
+            if(tab.setBaseService){
+                tab.setBaseService(id);
+            }
+        }, this);
+        this.baseService = App.utils.getApiUrl('service','baseservice',id);
+        this.analysisStore.each(function(rec){
+            rec.set('service', this.baseService);
+        }, this);
+
+        this.profileTab.items.each(function(tab){
+            tab.baseService = this.baseService;
         });
+        // this.onSave();
     },
 
     loadBaseService : function(id){
+        this.baseService = App.utils.getApiUrl('service','baseservice',id);
         this.baseServiceId = id;
         this.loadAnalysis();
     },
@@ -203,11 +210,13 @@ App.laboratory.AnalysisEditor = Ext.extend(Ext.Panel, {
     },
 
     isDirty: function(){
-        return this.analysisStore.getModifiedRecords()!==0;
+        return this.analysisStore.getModifiedRecords().length !== 0;
     },
 
     onSave: function(){
-        this.analysisStore.save();
+        if (this.baseService){
+            this.analysisStore.save();
+        }
     }
 
 });

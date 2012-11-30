@@ -40,7 +40,7 @@ App.servicemanager.BaseServiceForm = Ext.extend(Ext.form.FormPanel,{
                 select: function(combo, record, idx){
                     if (record.data.id == 'lab'){
                         this.openLabServiceForm(true);
-                    };
+                    }
                     this.markDirty();
                 }
             }
@@ -62,7 +62,7 @@ App.servicemanager.BaseServiceForm = Ext.extend(Ext.form.FormPanel,{
                 value: '',
                 allowBlank: false,
                 fieldLabel: 'Наименование',
-                name:'name',
+                name:'name'
             },{
                 xtype:'hidden',
                 name:'type'
@@ -73,10 +73,26 @@ App.servicemanager.BaseServiceForm = Ext.extend(Ext.form.FormPanel,{
             {
                 xtype: 'textfield',
                 width: 400,
+                padding: 4,
                 value: '',
                 allowBlank: false,
                 fieldLabel: 'Наименование',
                 name:'name',
+                listeners: {
+                    scope:this,
+                    change: function() {
+                        this.markDirty();
+                    },
+                    render: function(c) {
+                        var el = c.getEl();
+                        el.on('blur',function(f){
+                            var short_name = this.getForm().findField('short_name');
+                            if (short_name && !short_name.getValue() && c.getValue()){
+                                short_name.setValue(c.getValue());
+                            }
+                        }, this);
+                    }
+                }
 
             },{
                 xtype:'textfield',
@@ -170,13 +186,20 @@ App.servicemanager.BaseServiceForm = Ext.extend(Ext.form.FormPanel,{
 
     onBSStoreWrite: function(store, action, result, res, rs){
         if (action == 'create'){
-            this.setBaseService(rs.data.resource_uri);
+            this.setBaseService(rs.data.id);
         } else {
             this.saveChilds();
         }
+        this.origTitle = rs.data.short_name;
         this.cleanForm();
         if (this.savedCount >= this.countToSave) {
             this.onSaveComplete();
+        }
+        if (!this.closing){
+            this.dataIsLoading = true;
+            this.getForm().loadRecord(rs);
+            this.dataIsLoading = false;
+            this.cleanForm();
         }
     },
 
@@ -214,14 +237,14 @@ App.servicemanager.BaseServiceForm = Ext.extend(Ext.form.FormPanel,{
         this.countToSave = 0; //Сколько форм должно быть сохранено
         var isDirty = false;
         if (this.getForm().isDirty()){
+            console.log('BaseForm isDirty');
             return true;
         }
         Ext.each(this.childs, function(f){
-            if (f.onSave){
-                this.countToSave += 1;
-            }
-            if (f.isDirty){
+            if (f.onSave && f.isDirty){
                 if (f.isDirty()){
+                    console.log(f.title + ' isDirty');
+                    this.countToSave += 1;
                     isDirty = true;
                 }
             }
@@ -244,6 +267,8 @@ App.servicemanager.BaseServiceForm = Ext.extend(Ext.form.FormPanel,{
         this.fireEvent('savecomplete', this);
         if (this.closing){
             this.onClose();
+        } else {
+
         }
     },
 
@@ -373,17 +398,17 @@ App.servicemanager.BaseServiceForm = Ext.extend(Ext.form.FormPanel,{
         this.setTitle(this.origTitle);
     },
 
-    setBaseService: function(baseServiceUri){
+    setBaseService: function(bsId){
         Ext.each(this.childs, function(f){
             if (f.setBaseService){
-                f.setBaseService(baseServiceUri);
+                f.setBaseService(bsId);
             }
         }, this);
     },
 
     markDirty: function(){
         if(this.dataIsLoading === false){
-            this.setTitle(this.origTitle + '*')
+            this.setTitle(this.origTitle + '*');
         }
     }
 

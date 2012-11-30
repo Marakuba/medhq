@@ -141,8 +141,6 @@ App.laboratory.AnalysisProfileGrid = Ext.extend(Ext.grid.EditorGridPanel, {
         Ext.apply(this, Ext.apply(this.initialConfig, config));
         App.laboratory.AnalysisProfileGrid.superclass.initComponent.apply(this, arguments);
 
-        this.baseService = App.utils.getApiUrl('service','baseservice', this.baseServiceId);
-
         this.profileStore.on('load', function(s, records, opts){
             this.initProfileMenu();
         }, this);
@@ -317,6 +315,11 @@ App.laboratory.AnalysisProfileGrid = Ext.extend(Ext.grid.EditorGridPanel, {
         if(this.profiles[title]===undefined){
             this.fireEvent('addprofile', title, resource_uri, this.analysisStore.getCount()===0);
         }
+    },
+
+    setBaseService: function(baseServiceId){
+        this.baseServiceId = baseServiceId;
+        this.baseService = App.utils.getApiUrl('service','baseservice', this.baseServiceId);
     }
 
 });

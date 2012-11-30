@@ -197,7 +197,9 @@ App.servicemanager.ExtServiceForm = Ext.extend(Ext.form.FormPanel,{
                     el.on('click',this.onTubeChoice.createDelegate(this, []),this);
                 },
                 forceload: function(value){
-                    this.updateRecord();
+                    if (this.dataIsLoading === false){
+                        this.updateRecord();
+                    }
                 },
                 scope:this
             },
@@ -276,13 +278,10 @@ App.servicemanager.ExtServiceForm = Ext.extend(Ext.form.FormPanel,{
                 width:200,
                 listeners: {
                     scope:this,
-                    render: function(c) {
-                        var el = c.getEl();
-                        el.on('blur',function(f){
-                            if (this.dataIsLoading === false){
-                                this.updateRecord();
-                            }
-                        }, this);
+                    change: function(c) {
+                        if (this.dataIsLoading === false){
+                            this.updateRecord();
+                        }
                     }
                 }
             },
@@ -294,13 +293,10 @@ App.servicemanager.ExtServiceForm = Ext.extend(Ext.form.FormPanel,{
                 width:200,
                 listeners: {
                     scope:this,
-                    render: function(c) {
-                        var el = c.getEl();
-                        el.on('blur',function(f){
-                            if (this.dataIsLoading === false){
-                                this.updateRecord();
-                            }
-                        }, this);
+                    change: function(c) {
+                        if (this.dataIsLoading === false){
+                            this.updateRecord();
+                        }
                     }
                 }
             },
@@ -380,9 +376,18 @@ App.servicemanager.ExtServiceForm = Ext.extend(Ext.form.FormPanel,{
                 }
                 this.tubeCombo.forceValue(record.data.resource_uri);
                 tubeWindow.close();
+                var tubeCountField = this.getForm().findField('tube_count');
+                if (tubeCountField.getValue()===''){
+                    tubeCountField.setValue(1);
+                }
             }
          });
         tubeWindow.show();
+    },
+
+    setBaseService: function(bsId){
+        this.baseService = App.utils.getApiUrl('service', 'baseservice', bsId);
+        this.getForm().findField('base_service').setValue(this.baseService);
     }
 
 });

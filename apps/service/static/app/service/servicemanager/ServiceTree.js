@@ -59,7 +59,7 @@ App.servicemanager.ServiceTree = Ext.extend(Ext.tree.TreePanel,{
                 dataUrl: '/service/service_tree/',
                 requestMethod:'GET',
                 preloadChildren: true,
-                clearOnLoad: false,
+                clearOnLoad: true,
                 baseAttrs : {
                     singleClickExpand : true,
                     checked : false
