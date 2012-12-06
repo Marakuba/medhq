@@ -178,6 +178,8 @@ App.examination.TemplateApp = Ext.extend(Ext.Panel, {
                         var source = records[0];
                         this.record = new this.tplStore.recordType();
                         Ext.applyIf(this.record.data,source.data);
+                        delete this.record.id;
+                        delete this.record.data.id;
                         store.baseParams = {
                             format:'json',
                             staff:WebApp.active_staff,

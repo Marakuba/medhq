@@ -67,6 +67,7 @@ class QuestionnaireAdmin(admin.ModelAdmin):
 class TemplateAdmin(admin.ModelAdmin):
     save_as = True
     list_display = ('name','print_name','base_service','staff')
+    search_fields = ['name', ]
     
 class CardAdmin(admin.ModelAdmin):
     readonly_fields = ['ordered_service','mkb_diag']
