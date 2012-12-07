@@ -24,4 +24,5 @@ django-constance
 redis
 xlwt
 django-tagging
+factory_boy
 -e git+git://github.com/dottedmag/path.py.git#egg=path_py

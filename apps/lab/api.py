@@ -81,21 +81,6 @@ class AnalysisProfileResource(ExtResource):
 
     class Meta:
         queryset = AnalysisProfile.objects.all()
-        resource_name = 'analysisprofile'
-        always_return_data = True
-        filtering = {
-            'id': ALL,
-            'name': ALL
-        }
-        list_allowed_methods = ['get', 'post', 'put']
-
-
-class InputListResource(ModelResource):
-    """
-    """
-
-    class Meta:
-        queryset = AnalysisProfile.objects.all()
         resource_name = 'analysis_profile'
         authorization = DjangoAuthorization()
         always_return_data = True

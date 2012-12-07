@@ -323,18 +323,15 @@ class ExtendedService(models.Model):
 
     def get_actual_price(self, date=None, payment_type=u'н', payer=None, p_type=None):
         args = {}
-        if payer:
-            args['payer'] = payer
-        else:
-            args['payer__isnull'] = True
         date = date or datetime.datetime.today()
         if not p_type:
-            p_type = get_actual_ptype(date)
-        try:
-            price_item = self.price_set.filter(type=p_type,price_type=u'r', payment_type=payment_type, on_date__lte=date, **args).latest('on_date')
-            return int(price_item.value.normalize())
-        except:
-            return 0
+            p_type = get_actual_ptype(date=date, payer=payer, payment_type=payment_type)
+        # import pdb; pdb.set_trace()
+        # try:
+        price_item = self.price_set.filter(type=p_type, on_date__lte=date, **args).latest('on_date')
+        return int(price_item.value.normalize())
+        # except:
+        #     return 0
 
 #    def get_absolute_url(self):
 #        return "/admin/service/extendedservice/%s/" % self.id
