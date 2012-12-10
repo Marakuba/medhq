@@ -53,6 +53,7 @@ class LabBoardApp(BaseWebApp):
 
     cmp_type = 'action'
     js = [
+        'libs/growl/js/ext/ux/Growl.js',
         'app/lab/models.js',
         'app/lab/fields/InputList.js',
         'app/lab/search/SearchWindow.js',
@@ -62,6 +63,11 @@ class LabBoardApp(BaseWebApp):
         'app/lab/laborder/LabOrderGrid.js',
         'app/lab/laborder/LabBoard.js',
     ]
+    css = {
+        'all': [
+            'libs/growl/css/ext/ux/Growl.css',
+        ]
+    }
     depends_on = ['barcodepackage', ]
 
 
@@ -156,3 +162,21 @@ class AnalysisEditorApp(BaseWebApp):
         ]
     }
     depends_on = ['service-panel', 'webapp3', ]
+
+
+@register('labemailtaskgrid')
+class LabEmailTaskApp(BaseWebApp):
+
+    verbose_name = u'Отправка email'
+    cmp_type = 'action'
+    js = [
+        'libs/growl/js/ext/ux/Growl.js',
+        'app/lab/email/EmailHistoryGrid.js',
+        'app/lab/email/EmailHistoryWindow.js',
+        'app/lab/email/EmailTaskGrid.js',
+    ]
+    css = {
+        'all': [
+            'libs/growl/css/ext/ux/Growl.css',
+        ]
+    }

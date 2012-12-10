@@ -1,11 +1,19 @@
-/*@font-face {
-	font-family: Tahoma; 
-	src: url(http://localhost/medhq/media/resources/css/fonts/tahoma.ttf);
-}*/
-
+@font-face {
+    font-family: Arial; 
+    src: url("/static/resources/fonts/Arial.ttf");
+}
+@font-face {
+    font-family: Arial; 
+    font-weight: bold;
+    src: url("/static/resources/fonts/Arial_Bold.ttf");
+}
 html {
 	font-family: 'Arial';
 	font-size:9.5pt;
+}
+
+table {
+    -pdf-keep-in-frame-mode: overflow;
 }
 
 .page_wrapper {
@@ -25,14 +33,15 @@ html {
 .patient {
 	border: 1px solid;
 	padding:6px;
-	margin-bottom:30px;
+	margin-bottom:10px;
 }
 
 .patient td {
-	padding:4px;
+	padding:2px;
 }
 
 .patient .name {
+	text-align: left;
 	width:5cm;
 }
 
@@ -51,10 +60,14 @@ html {
 }
 
 .results td {
+	/*border: 1px solid black;*/
+}
+
+.results tr.row td, .results tr.stripe td {
 	border: 1px solid black;
 }
 
-.results .stripe {
+.results .stripe td {
 	background-color:#F0F0F0;
 }
 
@@ -95,6 +108,17 @@ border-bottom: none;
 
 .results .analysis {
 	text-align:left;
+	width:7cm;
+}
+
+.results .measurements {
+	text-align:center;
+	width:2cm;
+}
+
+.results .refranges {
+	text-align:center;
+	width:5.8cm;
 }
 
 
@@ -145,7 +169,8 @@ sub {
 }
 
 td.group {
-	border:none;
+	border-left:none;
+	border-right:none;
 	font-size:2em;
 	font-weight:bold;
 	padding: 10px 0 4px 0;

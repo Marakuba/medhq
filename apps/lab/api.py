@@ -8,7 +8,7 @@ from tastypie.api import Api
 from apiutils.resources import ExtResource, ComplexQuery, ExtBatchResource
 from lab.models import LabOrder, Sampling, Tube, Result, Analysis, InputList,\
     Equipment, EquipmentAssay, EquipmentResult, EquipmentTask, Invoice,\
-    InvoiceItem, AnalysisProfile, LabService, Measurement
+    InvoiceItem, AnalysisProfile, LabService, Measurement, LabOrderEmailTask, LabOrderEmailHistory
 from patient.utils import smartFilter
 from django.db.models.query_utils import Q
 from tastypie.cache import SimpleCache
@@ -149,6 +149,17 @@ class LabOrderResource(ExtResource):
             if v.menses_day:
                 info.append(u"Д/ц: <font color='red'>%s</font>" % v.menses_day)
             bundle.data['info'] = "; ".join(info)
+            try:
+                task = laborder.laborderemailtask
+                status = 'email'
+                if task.status in ['send', 'resent']:
+                    status += '-go'
+                elif task.status == 'failed':
+                    status += '-error'
+                bundle.data['send_to_email'] = status
+            except:
+                email_flag = v.send_to_email and 'email' or ''
+                bundle.data['send_to_email'] = email_flag
             bundle.data['visit_created'] = v.created
             bundle.data['visit_is_cito'] = v.is_cito
             bundle.data['visit_id'] = v.id
@@ -539,6 +550,50 @@ class InvoiceItemResource(ExtResource):
         list_allowed_methods = ['get', 'post', 'put']
 
 
+class LabOrderEmailTaskResource(ExtResource):
+
+    lab_order = fields.ForeignKey(LabOrderResource, 'lab_order')
+
+    def dehydrate(self, bundle):
+        visit = bundle.obj.lab_order.visit
+        bundle.data['order_id'] = visit.barcode_id
+        bundle.data['order_created'] = visit.created
+        bundle.data['patient_name'] = visit.patient.full_name()
+        bundle.data['status_text'] = bundle.obj.get_status_display()
+        return bundle
+
+    class Meta:
+        queryset = LabOrderEmailTask.objects.all()
+        resource_name = 'emailtask'
+        authorization = DjangoAuthorization()
+        limit = 50
+        filtering = {
+            'lab_order': ALL_WITH_RELATIONS,
+            'status': ALL,
+        }
+        list_allowed_methods = ['get', 'post', 'put']
+
+
+class LabOrderEmailHistoryResource(ModelResource):
+
+    email_task = fields.ForeignKey(LabOrderEmailTaskResource, 'email_task')
+
+    def dehydrate(self, bundle):
+        bundle.data['status_text'] = bundle.obj.get_status_display()
+        bundle.data['created_by_name'] = bundle.obj.created_by and bundle.obj.created_by.__unicode__()
+        return bundle
+
+    class Meta:
+        queryset = LabOrderEmailHistory.objects.all()
+        resource_name = 'emailhistory'
+        authorization = DjangoAuthorization()
+        limit = 50
+        filtering = {
+            'email_task': ALL_WITH_RELATIONS,
+        }
+        list_allowed_methods = ['get', 'post', 'put']
+
+
 api = Api(api_name='lab')
 
 api.register(InputListResource())
@@ -559,3 +614,5 @@ api.register(EquipmentTaskReadOnlyResource())
 api.register(InvoiceResource())
 api.register(InvoiceItemResource())
 api.register(LSResource())
+api.register(LabOrderEmailTaskResource())
+api.register(LabOrderEmailHistoryResource())

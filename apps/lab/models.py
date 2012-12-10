@@ -2,18 +2,15 @@
 
 from django.db import models
 from service.models import BaseService, LabServiceGroup
-from lab.vars import OPERATORS, FACTOR_FIELDS, RESULTS, TEST_FORM
+from lab.vars import RESULTS, TEST_FORM
 from state.models import State
-from staff.models import Staff, Position
+from staff.models import Position
 import datetime
 from workflow.models import Status
 from django.contrib.auth.models import User
 from numeration.models import NumeratorItem
-from django.conf import settings
 from django.utils.encoding import smart_unicode
 from core.models import GENDER_TYPES, make_operator_object
-from django.db.models.aggregates import Count
-from django.contrib.contenttypes.models import ContentType
 from django.core.exceptions import ObjectDoesNotExist, MultipleObjectsReturned
 from constance import config
 
@@ -21,17 +18,18 @@ import logging
 from django.template import Template, Context
 from django.db.models.signals import post_save
 from lab.managers import ResultManager
-from taskmanager.settings import DELAYED_TASK_STATUSES
 from lab.base_widgets import BasePlain, BaseColumn
 from lab.widgets import register, widget_choices
-logger = logging.getLogger(__name__)
 
+
+logger = logging.getLogger(__name__)
 
 
 register('baseplain', BasePlain)
 register('basecolumn', BaseColumn)
 
 WIDGET_CHOICES = widget_choices()
+
 
 class LabService(models.Model):
     """
@@ -150,7 +148,7 @@ class Analysis(models.Model):
     class Meta:
         verbose_name = u'тест'
         verbose_name_plural = u'тесты'
-        ordering = ('profile','order',)
+        ordering = ('profile', 'order',)
 
 
 class RefRange(models.Model):
@@ -165,22 +163,14 @@ class RefRange(models.Model):
     pregnance_to = models.PositiveIntegerField(u'Беременность, до (нед.)', null=True, blank=True)
     min_value = models.DecimalField(u'Мин.значение', max_digits=12, decimal_places=2, null=True, blank=True)
     min_value = models.DecimalField(u'Макс.значение', max_digits=12, decimal_places=2, null=True, blank=True)
-    result = models.SmallIntegerField(u'Уровень', max_length=1, choices=( (-1,u'Отрицательно'),(0,u'Сомнительно'),(1,u'Норма') ) )
+    result = models.SmallIntegerField(u'Уровень', max_length=1, choices=((-1, u'Отрицательно'), (0, u'Сомнительно'), (1, u'Норма')))
 
     def __unicode__(self):
-        return smart_unicode(u"Ref to: %s" % (self.analysis) )
+        return smart_unicode(u"Ref to: %s" % (self.analysis))
 
     class Meta:
         verbose_name = u'реф.значение'
         verbose_name_plural = u'реф.значения'
-
-
-LABORDER_STATUSES = (
-    (u'work',u'в работе'),
-    (u'ready',u'готово к отправке'),
-    (u'sended',u'отправлено'),
-    (u'failed',u'неудачная отправка'),
-)
 
 
 class LabOrder(models.Model):
@@ -194,7 +184,7 @@ class LabOrder(models.Model):
     laboratory = models.ForeignKey(State,
                                    verbose_name=u'Лаборатория',
                                    related_name='laboratory',
-                                   limit_choices_to={'type__in':['b','m','p']})
+                                   limit_choices_to={'type__in': ['b', 'm', 'p']})
     lab_group = models.ForeignKey(LabServiceGroup, blank=True, null=True)
     staff = models.ForeignKey(Position, verbose_name=u'Врач', blank=True, null=True, related_name='staff_pos')
     staff_text = models.TextField(u'Врач (текст)', blank=True)
@@ -204,9 +194,6 @@ class LabOrder(models.Model):
     is_printed = models.BooleanField(u'Печать', default=False)
     is_manual = models.BooleanField(u'Ручные исследования', default=False)
     manual_service = models.CharField(u'Наименование ручного исследования', max_length=300, blank=True)
-    send_status = models.CharField(u'Статус отправки', max_length=10, blank=True,
-                                   choices=LABORDER_STATUSES)
-    sended = models.DateTimeField(u'Дата/время отправки', blank=True, null=True)
     widget = models.CharField(u'Виджет', max_length=32, blank=True)
     print_date = models.DateTimeField(u'Дата печати', blank=True, null=True)
     printed_by = models.ForeignKey(User, blank=True, null=True)
@@ -220,7 +207,7 @@ class LabOrder(models.Model):
             self._info = u"Заказ %s, %s, %s, %s" % (self.visit.barcode.id,
                                           self.visit.created.strftime('%d.%m.%Y'),
                                           self.visit.office,
-                                          self.visit.patient.short_name() )
+                                          self.visit.patient.short_name())
         return self._info
 
     def print_date_display(self):
@@ -295,7 +282,7 @@ class LabOrder(models.Model):
         try:
             staff_user = operator.staff_user
             return u"%s, %s" % (staff_user.short_name(), staff_user.get_position())
-        except Exception, err:
+        except:
             return operator
     operator.short_description = u'Регистратор'
 
@@ -314,6 +301,7 @@ PASS_STATUS = (
     (1, u'Валидация пройдена'),
     (-1, u'Валидация не пройдена'),
 )
+
 
 class Result(models.Model):
     """
@@ -343,7 +331,7 @@ class Result(models.Model):
 
     def __unicode__(self):
         if self.is_group():
-            return self.analysis.name.replace('##','')
+            return self.analysis.name.replace('##', '')
         return u"%s" % self.analysis
 
     def is_completed(self):
@@ -360,7 +348,7 @@ class Result(models.Model):
         return self.value or self.input_list or u'---'
 
     def get_full_result(self):
-        return smart_unicode(u"%s %s" % ( self.get_result(),self.analysis.measurement ))
+        return smart_unicode(u"%s %s" % (self.get_result(), self.analysis.measurement))
 
     def get_title(self):
         title = self.analysis.__unicode__()
@@ -382,15 +370,16 @@ class Result(models.Model):
     class Meta:
         verbose_name = u'результат'
         verbose_name_plural = u'результаты'
-        ordering = ('analysis__service__%s' % BaseService._meta.tree_id_attr, #@UndefinedVariable
-                    'analysis__service__%s' % BaseService._meta.left_attr, #@UndefinedVariable
+        ordering = ('analysis__service__%s' % BaseService._meta.tree_id_attr,
+                    'analysis__service__%s' % BaseService._meta.left_attr,
                     'analysis__order',)
+
 
 class Sampling(models.Model):
     """
     """
     created = models.DateTimeField(u'Дата', default=datetime.datetime.now())
-    visit = models.ForeignKey('visit.Visit', verbose_name=u"Прием", null=True, blank=True) #@UndefinedVariable
+    visit = models.ForeignKey('visit.Visit', verbose_name=u"Прием", null=True, blank=True)
     laboratory = models.ForeignKey(State, verbose_name=u'Лаборатория')
     tube = models.ForeignKey(Tube, verbose_name=Tube._meta.verbose_name)
     tube_count = models.IntegerField(u'Количество пробирок', default=1)
@@ -409,7 +398,6 @@ class Sampling(models.Model):
         services = self.visit.orderedservice_set.all()
         return services
 
-
     class Meta:
         verbose_name = u'забор материала'
         verbose_name_plural = u'забор материалов'
@@ -418,7 +406,7 @@ class Sampling(models.Model):
 class Invoice(make_operator_object('invoice')):
     """
     """
-    office = models.ForeignKey(State, verbose_name=u'Офис', limit_choices_to={'type':u'b'}, related_name='office')
+    office = models.ForeignKey(State, verbose_name=u'Офис', limit_choices_to={'type': u'b'}, related_name='office')
     modified = models.DateTimeField(u'Изменено', auto_now=True)
     state = models.ForeignKey(State, related_name='lab')
     comment = models.TextField(u'Комментарий', blank=True)
@@ -453,7 +441,7 @@ class EquipmentAnalysis(models.Model):
     analysis = models.OneToOneField(Analysis)
 
     def __unicode__(self):
-        if self.analysis.name==self.analysis.service.name:
+        if self.analysis.name == self.analysis.service.name:
             return self.analysis.name
         return u"%s/%s" % (self.analysis.name, self.analysis.service.name)
 
@@ -491,7 +479,7 @@ class EquipmentAssay(models.Model):
     is_active = models.BooleanField(u'Активно', default=True)
 
     def __unicode__(self):
-        return smart_unicode( u"%s [%s]" % (self.equipment_analysis,self.equipment) )
+        return smart_unicode(u"%s [%s]" % (self.equipment_analysis, self.equipment))
 
     class Meta:
         verbose_name = u'аппаратное исследование'
@@ -505,6 +493,7 @@ ET_STATUS = (
     (u'disc', u'Отменен'),
     (u'lock', u'Заблокирован'),
 )
+
 
 class EquipmentTask(models.Model):
     """
@@ -523,12 +512,14 @@ class EquipmentTask(models.Model):
     def __unicode__(self):
         return "<<EQTASK>>"
 #        return smart_unicode( u"%s - %s" % (self.ordered_service, self.equipment_assay) )
+
     def save(self, *args, **kwargs):
         if not self.pk and not self.assay_protocol:
             t = Template(self.equipment_assay.def_protocol)
-            c = Context({'order':self.ordered_service})
+            c = Context({'order': self.ordered_service})
             self.assay_protocol = t.render(c)
         super(EquipmentTask, self).save(*args, **kwargs)
+
     class Meta:
         verbose_name = u'задание для анализаторов'
         verbose_name_plural = u'задания для анализаторов'
@@ -536,16 +527,17 @@ class EquipmentTask(models.Model):
 
 
 RESULT_TYPE = (
-    ('F',u'Итоговый'),
-    ('I',u'Интерпретируемый'),
-    ('P',u'Инструментальный'),
+    ('F', u'Итоговый'),
+    ('I', u'Интерпретируемый'),
+    ('P', u'Инструментальный'),
 )
 
 RESULT_STATUS = (
-    ('F',u'Итоговый'),
-    ('R',u'Повторный'),
-    ('X',u'Невозможно выполнить тест'),
+    ('F', u'Итоговый'),
+    ('R', u'Повторный'),
+    ('X', u'Невозможно выполнить тест'),
 )
+
 
 class EquipmentResult(models.Model):
     """
@@ -572,7 +564,7 @@ class EquipmentResult(models.Model):
                                                            ordered_service__order__barcode__id=int(self.specimen))
                 if equipment_task:
                     self.equipment_task = equipment_task
-                    if self.result_type=='F':
+                    if self.result_type == 'F':
                         visit = self.equipment_task.ordered_service.order
                         try:
                             result_obj = Result.objects.get(order__visit=visit,
@@ -581,7 +573,7 @@ class EquipmentResult(models.Model):
                                 logger.debug(u"LAB: result %s" % result_obj.id)
                             if result_obj.value:
                                 result_obj.previous_value = result_obj.value
-                            result_obj.value=self.result
+                            result_obj.value = self.result
                             result_obj.save()
                             self.equipment_task.result = result_obj
                             self.equipment_task.status = u'done'
@@ -595,7 +587,7 @@ class EquipmentResult(models.Model):
                             logger.exception(u"LAB:Error during result finding for specimen %s, analysis: %s" % (visit.barcode.id, self.equipment_task.equipment_assay.equipment_analysis.analysis.name))
             except Exception, err:
                 if __debug__:
-                    logger.debug(u"""LAB:Error during eq/task finding: %s SN: %s Name: %s Code: %s Specimen: %s""" % ( err.__unicode__(), self.eq_serial_number, self.assay_name, self.assay_code, self.specimen ) )
+                    logger.debug(u"""LAB:Error during eq/task finding: %s SN: %s Name: %s Code: %s Specimen: %s""" % (err.__unicode__(), self.eq_serial_number, self.assay_name, self.assay_code, self.specimen))
         super(EquipmentResult, self).save(*args, **kwargs)
 
 
@@ -603,29 +595,65 @@ def generate_analysis_code(sender, **kwargs):
     obj = kwargs['instance']
     if not obj.code and config.ANALYSIS_CODE_TEMPLATE:
         t = Template(config.ANALYSIS_CODE_TEMPLATE)
-        c = Context({'analysis':obj})
+        c = Context({'analysis': obj})
         result = t.render(c)
         obj.code = result
         obj.save()
+
 
 def generate_lab_code(sender, **kwargs):
     obj = kwargs['instance']
     if not obj.code and config.LAB_SERVICE_CODE_TEMPLATE:
         t = Template(config.LAB_SERVICE_CODE_TEMPLATE)
-        c = Context({'labservice':obj})
+        c = Context({'labservice': obj})
         result = t.render(c)
         obj.code = result
         obj.save()
 
 post_save.connect(generate_analysis_code, sender=Analysis)
-#post_save.connect(generate_analysis_code, sender=LabService)
 
 
+EMAIL_STATUSES = (
+    (u'noaddr', u'ожидание адреса'),
+    (u'ready', u'готово к отправке'),
+    (u'repeat', u'повторная отправка'),
+    (u'sent', u'отправлено'),
+    (u'resent', u'повторно отправлено'),
+    (u'failed', u'неудачная отправка'),
+    (u'canceled', u'отменено'),
+)
 
-# def auto_create_lab_service(sender, **kwargs):
-#     if kwargs['created']:
-#         obj = kwargs['instance']
-#         if 'lab' in settings.INSTALLED_APPS and obj.type==u'lab':
-#             LabService.objects.create(base_service=obj)
 
-# post_save.connect(auto_create_lab_service, sender=BaseService)
+class LabOrderEmailTask(models.Model):
+    """
+    """
+    created = models.DateTimeField(auto_now_add=True)
+    modified = models.DateTimeField(auto_now=True)
+    sent = models.DateTimeField(u'Отправлено', blank=True, null=True)
+    lab_order = models.OneToOneField(LabOrder)
+    status = models.CharField(u'Статус', max_length=10, choices=EMAIL_STATUSES, default=u'ready')
+
+    class Meta:
+        verbose_name = u'laborder email'
+        verbose_name_plural = u'laborder emails'
+        ordering = ('-modified', )
+
+    def __unicode__(self):
+        return u'%s, %s' % (self.lab_order.__unicode__(), self.get_status_display())
+
+
+class LabOrderEmailHistory(models.Model):
+    """
+    """
+    email_task = models.ForeignKey(LabOrderEmailTask)
+    created = models.DateTimeField(auto_now_add=True)
+    created_by = models.ForeignKey(User, null=True, blank=True)
+    status = models.CharField(u'Статус', max_length=10, choices=EMAIL_STATUSES)
+
+    class Meta:
+        verbose_name = u'laborder email history'
+        verbose_name_plural = u'laborder emails history'
+        ordering = ('-created', )
+
+    def __unicode__(self):
+        return u"%s" % self.id
