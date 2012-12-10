@@ -7,7 +7,7 @@
 	<tr>
 		<th>Наименование исследования</th>
 		<th>Результат</th>
-		<th>Единицы измерения</th>
+		<th>Ед.изм.</th>
 		<th>Референсные значения</th>
 	</tr>
 	
@@ -30,8 +30,8 @@
 	<tr class="{% cycle 'row' 'stripe' %}">
 		<td class="analysis">{{ result.object.get_title }}</td>
 		<td class="">{% autoescape off %}{{ result.object.get_result|sup }}{% endautoescape %}</td>
-		<td class="">{{ result.object.measurement|default:"---" }}</td>
-		<td class="">{{ result.object.ref_range_text|default:"---"|linebreaks }}</td>
+		<td class="measurements">{{ result.object.measurement|default:"---" }}</td>
+		<td class="refranges">{{ result.object.ref_range_text|default:"---"|linebreaks }}</td>
 	</tr>
 		{% if result.object.comment %}
 		<tr>

@@ -22,6 +22,7 @@ App.models.Visit = new Ext.data.Record.create([
     {name: 'patient_name'},
     {name: 'patient_id'},
     {name: 'is_billed', type:'boolean'},
+    {name: 'send_to_email', type:'boolean'},
     {name: 'insurance_policy'},
     {name: 'referral'},
     {name: 'referral_name'},

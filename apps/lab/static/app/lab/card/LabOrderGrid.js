@@ -26,6 +26,7 @@
                 {name: 'is_completed', allowBlank: false, type:'boolean'},
                 {name: 'is_printed', allowBlank: false, type:'boolean'},
                 {name: 'print_date', allowBlank: false, type:'date'},
+                {name: 'send_to_email'},
                 {name: 'barcode'},
                 {name: 'manual_service'},
                 {name: 'laboratory_name'},
@@ -58,6 +59,16 @@
 
 
             this.columns =  [{
+                width:25,
+                sortable:false,
+                renderer:function(val, opts, rec) {
+                    var cls;
+                    if(rec.data.send_to_email){
+                        cls = 'silk-'+rec.data.send_to_email;
+                    }
+                    return String.format('<div class="{0}" style="width:20px;height:16px;"></div>', cls);
+                }
+            },{
                 header: "№ заказа",
                 width: 90,
                 sortable: false,
@@ -123,6 +134,15 @@
                     iconCls:'silk-printer',
                     text:'Печать',
                     handler:this.onPrint.createDelegate(this, [])
+                },'-',{
+                    xtype:'button',
+                    iconCls:'app-pdf',
+                    // text:'Печать',
+                    handler:this.onPrint.createDelegate(this, ['pdf'])
+                },'-',{
+                    iconCls:'silk-email',
+                    text:'Отправить по email',
+                    handler:this.makeEmailTask.createDelegate(this)
                 }],
                 listeners: {
                     rowdblclick:this.onPrint.createDelegate(this, [])
@@ -145,6 +165,22 @@
             App.lab.LabOrderGrid.superclass.initComponent.apply(this, arguments);
         },
 
+        makeEmailTask: function(){
+            var rec = this.getSelected();
+            if(!rec) { return; }
+            App.direct.lab.makeEmailTask(rec.data.id, function(res){
+                if(res.success){
+                    Ext.ux.Growl.notify({
+                        title: "Успешная операция",
+                        message: res.message,
+                        iconCls: "x-growl-accept",
+                        alignment: "tr-tr",
+                        offset: [-10, 10]
+                    });
+                }
+            });
+        },
+
         applyRowClass : function(record, index){
             if(record.data.is_completed){
                 return "x-grid-row-normal";
@@ -164,11 +200,12 @@
             return this.getSelectionModel().getSelected();
         },
 
-        onPrint: function() {
+        onPrint: function(format) {
             var rec = this.getSelected();
             if(!rec) { return; }
             var id = rec.data.id;
-            var url = ['/lab/print/results',id,''].join('/');
+            format = format ? '?format='+format : '';
+            var url = String.format('/lab/print/results/{0}/{1}', id, format);
             window.open(url);
         }
 

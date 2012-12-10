@@ -22,6 +22,7 @@ App.models.LabOrder = new Ext.data.Record.create([
     {name: 'is_completed', type:'bool'},
     {name: 'is_manual', type:'bool'},
     {name: 'manual_service'},
+    {name: 'send_to_email'},
     {name: 'comment'},
     {name: 'widget'},
     {name: 'print_date', type:'date',format:'c'},

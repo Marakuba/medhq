@@ -155,6 +155,8 @@ class Visit(make_operator_object('visit')):
     comment = models.TextField(u'Дополнительная информация, комментарии',
                                null=True, blank=True)
     contract = models.ForeignKey('patient.Contract', null=True, blank=True)
+
+    send_to_email = models.BooleanField(u'Отправка результатов по email', default=False)
     
     sync_obj = generic.GenericRelation(SyncObject)
     

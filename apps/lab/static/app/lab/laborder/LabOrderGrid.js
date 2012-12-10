@@ -26,13 +26,14 @@ App.laboratory.LabOrderGrid = Ext.extend(Ext.grid.GridPanel, {
         this.columns =  [{
                 id: 'order',
                 header: "Заказ",
-                width: 9,
+                width: 10,
                 sortable: true,
                 dataIndex: 'barcode',
                 renderer:function(v,opts,rec) {
-                    return String.format("<div><b>{0}</b><span>{1}</span><br><span>{2}</span></div>",
+                    return String.format("<div><span style='font-weight:bold'>{0}</span>{3}<br><span>{1}</span><br><span>{2}</span></div>",
                             v, Ext.util.Format.date(rec.data.visit_created,'d.m.y'),
-                            Ext.util.Format.date(rec.data.visit_created,'H:i'));
+                            Ext.util.Format.date(rec.data.visit_created,'H:i'),
+                            rec.data.send_to_email ? "<span class='silk-email' style='margin-left:4px;padding-left:16px;'>&nbsp;</span>" : "");
                 }
             },{
                 header: "Дата",

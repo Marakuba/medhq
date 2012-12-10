@@ -4,67 +4,73 @@
 
 {% block title %}{{ order }} - Результаты{% endblock %}
 
+{% block header %}
+{{ block.super }}
+<style>
+</style>
+{% endblock %}
+
 {% block orientation %}book{% endblock %}
 
 {% block content %}
 
 {% block page_header %}
-	{% include "print/lab/header.html" %}
+    {% include "print/lab/header.html" %}
 {% endblock %}
 
 {% block details %}
 <table class="patient">
-	<tr>
-		<td>
-			<table>
-				<tr>
-					<td class="name">Ф.И.О.:</td><td class="bold">{{ order.visit.patient.full_name }}</td>
-				</tr>
-				<tr>
-					<td class="name">Дата рождения:</td><td class="bold">{{ order.visit.patient.birth_day|date:"d.m.Y" }}</td>
-				</tr>
-				<tr>
-					<td class="name">Дата исследования:</td><td class="bold">{{ order.visit.created|date:"d.m.Y, H:i" }}</td>
-				</tr>
-				{% if order.visit.pregnancy_week %}
-				<tr>
-					<td class="name">Срок беременности:</td><td class="bold">{{ order.visit.pregnancy_week }} нед.</td>
-				</tr>
-				{% endif %}
-				{% if order.visit.menses_day %}
-				<tr>
-					<td class="name">День цикла:</td><td class="bold">{{ order.visit.menses_day }}</td>
-				</tr>
-				{% endif %}
-			</table>
-		</td>
-		<td align="right">
-			<table>
-				<tr>
-					<td class="name">Заказ:</td>
-					<td class="bold">{{ order.visit.barcode_id|zid:"10" }}</td>
-				</tr>
-				<tr>
-					<td class="name">Врач:</td>
-					<td class="bold">{{ order.staff.id|zid:"5"|default:'---' }}</td>
-				</tr>
-				<tr>
-					<td class="name">Направившее учреждение:</td>
-					<td class="bold">{{ order.visit.referral.id|zid:"5"|default:'б/н' }}</td>
-				</tr>
-			</table>
-		</td>
-	</tr>
+    <tr>
+        <td style="width:12cm;">
+            <table>
+                <tr>
+                    <td class="name">Ф.И.О.:</td><td class="bold">{{ order.visit.patient.full_name }}</td>
+                </tr>
+                <tr>
+                    <td class="name">Дата рождения:</td><td class="bold">{{ order.visit.patient.birth_day|date:"d.m.Y" }}</td>
+                </tr>
+                <tr>
+                    <td class="name">Дата исследования:</td><td class="bold">{{ order.visit.created|date:"d.m.Y, H:i" }}</td>
+                </tr>
+                {% if order.visit.pregnancy_week %}
+                <tr>
+                    <td class="name">Срок беременности:</td><td class="bold">{{ order.visit.pregnancy_week }} нед.</td>
+                </tr>
+                {% endif %}
+                {% if order.visit.menses_day %}
+                <tr>
+                    <td class="name">День цикла:</td><td class="bold">{{ order.visit.menses_day }}</td>
+                </tr>
+                {% endif %}
+            </table>
+        </td>
+        <td align="right">
+            <table>
+                <tr>
+                    <td class="name">Заказ:</td>
+                    <td class="bold">{{ order.visit.barcode_id|zid:"10" }}</td>
+                </tr>
+                <tr>
+                    <td class="name">Врач:</td>
+                    <td class="bold">{{ order.staff.id|zid:"5"|default:'---' }}</td>
+                </tr>
+                <tr>
+                    <td class="name">Направившее учреждение:</td>
+                    <td class="bold">{{ order.visit.referral.id|zid:"5"|default:'б/н' }}</td>
+                </tr>
+            </table>
+        </td>
+    </tr>
 </table>
 {% endblock %}
 
 {% block data %}{% endblock %}
 
 {% block underwrite %}
-	{% if order.is_completed or preview %}
-	<div class="comment">{% autoescape off %}{{ order.comment }}{% endautoescape %}</div>
-	{% endif %}
-	<div class="print_time">{{ order.print_date_display }}</div>
+    {% if order.is_completed or preview %}
+    <div class="comment">{% autoescape off %}{{ order.comment }}{% endautoescape %}</div>
+    {% endif %}
+    <div class="print_time">{{ order.print_date_display }}</div>
 {% endblock %}
 
 {% block page_footer %}

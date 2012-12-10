@@ -31,6 +31,9 @@
 .med-doctor {
 	background-image: url(../images/doctor.png) !important; background-repeat: no-repeat;
 }
+.app-pdf {
+	background-image: url(../images/icon_pdf.png) !important; background-repeat: no-repeat;
+}
 .x-loading {
 	background-image: url(../images/loading.gif) !important; background-repeat: no-repeat;
 }

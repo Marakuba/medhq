@@ -502,6 +502,57 @@ App.visit.VisitForm = Ext.extend(Ext.FormPanel, {
                 name:'cito'
             }]
         };
+        this.sendToEmail = {
+            width:150,
+            layout: 'form',
+            border:false,
+            baseCls:'x-border-layout-ct',
+            margins: '0 0 0 5',
+            items:[{
+                boxLabel:'Отправить по email',
+                hideLabel:true,
+                xtype:'checkbox',
+                name:'send_to_email',
+                listeners:{
+                    check:function(cb, checked){
+                        if(checked){
+                            if(!this.patientRecord.data.email){
+                                Ext.MessageBox.prompt(
+                                    'Предупреждение',
+                                    'У пациента не указан email. Можно указать его позже, либо ввести в поле запроса ниже',
+                                    function(btn, text){
+                                        var email = /^(\w+)([\-+.][\w]+)*@(\w[\-\w]*\.){1,5}([A-Za-z]){2,6}$/;
+                                        (function(btn, text){
+                                            if(btn=='ok'){
+                                                if(!email.test(text)){
+                                                    Ext.MessageBox.prompt(
+                                                        'Ошибка!',
+                                                        String.format('Введенное значение "{0}" не является корректным адресом!', text),
+                                                        arguments.callee,
+                                                        this,
+                                                        false,
+                                                        text
+                                                    );
+                                                } else {
+                                                    this.setEmail(text);
+                                                }
+                                            } else {
+                                                Ext.MessageBox.alert(
+                                                    'Предупреждение',
+                                                    'Отправка результатов будет произведена только после установки email в карточке пациента!'
+                                                );
+                                            }
+                                        }).call(this, btn, text);
+                                    },
+                                    this
+                                );
+                            }
+                        }
+                    },
+                    scope:this
+                }
+            }]
+        };
         this.diagnosis = {
             layout: 'form',
             border:false,
@@ -624,6 +675,7 @@ App.visit.VisitForm = Ext.extend(Ext.FormPanel, {
         });
 
         this.barcode = new Ext.form.CompositeField({
+            width:180,
             layout: 'hbox',
             baseCls:'x-border-layout-ct',
             border:false,
@@ -652,14 +704,21 @@ App.visit.VisitForm = Ext.extend(Ext.FormPanel, {
             },
             baseCls:'x-border-layout-ct',
             height:this.adHeight,
-            items:[
-                this.barcode,
+            items:[{
+                    layout:'hbox',
+                    defaults:{
+                        baseCls:'x-border-layout-ct',
+                        // height:
+                        border:false
+                    },
+                    items:[this.barcode, this.sendToEmail]
+                },
                 {
                     layout:'hbox',
                     defaults:{
-                    baseCls:'x-border-layout-ct',
-                    border:false
-                },
+                        baseCls:'x-border-layout-ct',
+                        border:false
+                    },
                     items:[this.pregnancy, this.menstruation, this.mp]
                 },
                 this.diagnosis,
@@ -863,6 +922,11 @@ App.visit.VisitForm = Ext.extend(Ext.FormPanel, {
         this.orderedService.on('redo',this.redoAction, this);
         this.servicePanel.on('serviceclick', this.onServiceClick, this);
 
+    },
+
+    setEmail: function(email){
+        this.patientRecord.set('email', email);
+        // console.info('email will be set to:', email);
     },
 
     addPreorderRecords : function(records) {
