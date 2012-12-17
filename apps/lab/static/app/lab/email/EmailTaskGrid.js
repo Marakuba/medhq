@@ -109,7 +109,7 @@
                 sortable: false,
                 dataIndex: 'patient_name'
             },{
-                header: "Отправлено",
+                header: "Статус",
                 width: 150,
                 sortable: false,
                 dataIndex: 'status',
@@ -212,7 +212,9 @@
                 nowBtn.enable();
                 cancelBtn.enable();
             } else {
-                repeatBtn.enable();
+                if(rec.data.status!='noaddr'){
+                    repeatBtn.enable();
+                }
             }
         },
 
@@ -230,6 +232,7 @@
         },
 
         onRowDeselect: function(sm, idx, rec){
+            this.resetButtons();
         },
 
         setEmailStatus: function(status){
