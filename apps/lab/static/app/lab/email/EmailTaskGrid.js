@@ -109,7 +109,7 @@
                 sortable: false,
                 dataIndex: 'patient_name'
             },{
-                header: "Отправлено",
+                header: "Статус",
                 width: 150,
                 sortable: false,
                 dataIndex: 'status',
@@ -154,6 +154,11 @@
                     text:'Повторная отправка',
                     disabled:true,
                     handler:this.setEmailStatus.createDelegate(this, ['repeat'])
+                },{
+                    id:'set-address-btn',
+                    text:'Установить адрес',
+                    disabled:true,
+                    handler:this.setAddress.createDelegate(this)
                 },'-',{
                     text:'История отправки',
                     handler:this.openHistory.createDelegate(this)
@@ -176,7 +181,8 @@
                 viewConfig : {
                     // forceFit: true,
                     emptyText: 'Нет записей',
-                    getRowClass : this.applyRowClass
+                    getRowClass : this.applyRowClass,
+                    markDirty: false
                 }
 
             };
@@ -208,11 +214,16 @@
             var nowBtn = Ext.getCmp('email-task-send-now-btn');
             var cancelBtn = Ext.getCmp('email-task-cancel-btn');
             var repeatBtn = Ext.getCmp('email-task-repeat-btn');
+            var setBtn = Ext.getCmp('set-address-btn');
             if(rec.data.status=='ready' || rec.data.status=='repeat'){
                 nowBtn.enable();
                 cancelBtn.enable();
             } else {
-                repeatBtn.enable();
+                if(rec.data.status!='noaddr'){
+                    repeatBtn.enable();
+                } else {
+                    setBtn.enable();
+                }
             }
         },
 
@@ -220,9 +231,11 @@
             var nowBtn = Ext.getCmp('email-task-send-now-btn');
             var cancelBtn = Ext.getCmp('email-task-cancel-btn');
             var repeatBtn = Ext.getCmp('email-task-repeat-btn');
+            var setBtn = Ext.getCmp('set-address-btn');
             nowBtn.disable();
             cancelBtn.disable();
             repeatBtn.disable();
+            setBtn.disable();
         },
 
         onRowSelect: function(sm, idx, rec){
@@ -230,6 +243,46 @@
         },
 
         onRowDeselect: function(sm, idx, rec){
+            this.resetButtons();
+        },
+
+        setAddress: function(){
+            var rec = this.getSelected();
+            if(!rec) { return; }
+
+            Ext.MessageBox.prompt(
+                '',
+                'Введите корректный адрес электронной почты для пациента '+rec.data.patient_name,
+                function(btn, text){
+                    var email = /^(\w+)([\-+.][\w]+)*@(\w[\-\w]*\.){1,5}([A-Za-z]){2,6}$/;
+                    (function(btn, text){
+                        if(btn=='ok'){
+                            if(!email.test(text)){
+                                Ext.MessageBox.prompt(
+                                    'Ошибка!',
+                                    String.format('Введенное значение "{0}" не является корректным адресом!', text),
+                                    arguments.callee,
+                                    this,
+                                    false,
+                                    text
+                                );
+                            } else {
+                                App.direct.lab.setAddress(rec.data.id, text, function(res){
+                                    rec.set('status', res.status);
+                                    this.resetButtons();
+                                    this.setButtons(rec);
+                                }, this);
+                            }
+                        } else {
+                            Ext.MessageBox.alert(
+                                'Предупреждение',
+                                'Отправка результатов будет произведена только после установки email в карточке пациента!'
+                            );
+                        }
+                    }).call(this, btn, text);
+                },
+                this
+            );
         },
 
         setEmailStatus: function(status){

@@ -15,6 +15,7 @@ import operator
 from remoting.views import post_results
 from direct.providers import remote_provider
 from extdirect.django.decorators import remoting
+from django.db import transaction
 
 import logging
 from taskmanager.tasks import manageable_task, SendError
@@ -227,6 +228,12 @@ def make_email_task(request):
     except:
         return dict(success=False, message="Laborder %s not found" % laborder_id)
 
+    if not lab_order.is_completed:
+        return {
+            'success': False,
+            'message': u'Лабораторный ордер к заказу %s не выполнен и не может быть отправлен' % lab_order.visit.barcode_id
+        }
+
     v = lab_order.visit
     if not v.send_to_email:
         v.send_to_email = True
@@ -287,6 +294,34 @@ def get_email_task_status(request):
     return {
         'success': True,
         'message': task.status
+    }
+
+
+@transaction.commit_on_success
+@remoting(remote_provider, len=2, action='lab', name='setAddress')
+def set_address(request):
+    """
+    """
+    data = simplejson.loads(request.raw_post_data)
+    task_id = data['data'][0]
+
+    try:
+        task = LabOrderEmailTask.objects.get(id=task_id)
+    except:
+        return dict(success=False, message="Отсутствует задание на отправку почты #%s" % task_id)
+
+    patient = task.lab_order.visit.patient
+
+    patient.email = data['data'][1]
+    patient.save()
+
+    task.status = 'ready'
+    task.save()
+
+    return {
+        'success': True,
+        'message': u'Адрес электронной почты был успешно сохранен',
+        'status': task.status
     }
 
 
@@ -516,47 +551,47 @@ def result_loader(request):
     except Exception, err:
         print err
         return {
-            'error':u'Ошибка определения лаборатории'
+            'error': u'Ошибка определения лаборатории'
         }
-    
+
     if specimens:
         try:
-            specimens = specimens.replace(' ','').split(',')
+            specimens = specimens.replace(' ', '').split(',')
         except:
             return {
-                'error':u'Неправильно заданы номера образцов'
+                'error': u'Неправильно заданы номера образцов'
             }
-        
+
         results = update_result_feed(state_key, specimens=specimens)
         return {
-            'results':results
+            'results': results
         }
-    
+
     if start:
         try:
-            start = datetime.datetime.strptime(start,'%Y-%m-%dT%H:%M:%S')
+            start = datetime.datetime.strptime(start, '%Y-%m-%dT%H:%M:%S')
         except:
             return {
-                'error':u'Некорректная начальная дата'
+                'error': u'Некорректная начальная дата'
             }
         if end:
             try:
-                end = datetime.datetime.strptime(end,'%Y-%m-%dT%H:%M:%S')
+                end = datetime.datetime.strptime(end, '%Y-%m-%dT%H:%M:%S')
                 end = datetime.datetime(year=end.year, month=end.month, day=end.day,
                                         hour=23, minute=59, second=59)
                 print end
             except Exception, err:
                 print err
                 return {
-                    'error':u'Некорректная конечная дата'
+                    'error': u'Некорректная конечная дата'
                 }
         results = update_result_feed(state_key, start, end, update=False)
         return {
-            'results':results
+            'results': results
         }
-            
+
     return {
-        'error':u'Нет данных'
+        'error': u'Нет данных'
     }
 
 

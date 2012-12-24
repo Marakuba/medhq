@@ -14,13 +14,16 @@ except:
 
 def get_vp_for_user(user):
     qs = Viewport.objects.filter(is_active=True)
+    if user.is_superuser:
+        return qs
     groups = user.groups.get_query_set()
     qs = qs.complex_filter(Q(groups__in=groups) | Q(users__in=[user]))
     return qs
 
 
 def get_app_list(request, to_json=False):
-    apps = [(v.name, "/webapp/%s/" % v.slug) for v in Viewport.objects.all()]
+    vp_list = get_vp_for_user(request.user)
+    apps = [(v.name, "/webapp/%s/" % v.slug) for v in vp_list]
     if request.user.is_staff or request.user.is_superuser:
         apps.append([u'Администрирование', u'/admin/'])
     if to_json:

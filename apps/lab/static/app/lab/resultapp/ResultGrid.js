@@ -22,6 +22,7 @@ App.results.Grid = Ext.extend(Ext.grid.GridPanel, {
             {name: 'print_date', allowBlank: false, type:'date'},
             {name: 'visit_id'},
             {name: 'barcode'},
+            {name: 'send_to_email'},
             {name: 'patient_name'},
             {name: 'office_name'},
             {name: 'laboratory_name'},
@@ -57,6 +58,16 @@ App.results.Grid = Ext.extend(Ext.grid.GridPanel, {
         this.store.load();
 
         this.columns =  [{
+                width:25,
+                sortable:false,
+                renderer:function(val, opts, rec) {
+                    var cls;
+                    if(rec.data.send_to_email){
+                        cls = 'silk-'+rec.data.send_to_email;
+                    }
+                    return String.format('<div class="{0}" style="width:20px;height:16px;"></div>', cls);
+                }
+            },{
                 header: "№ заказа",
                 width: 70,
                 sortable: false,
