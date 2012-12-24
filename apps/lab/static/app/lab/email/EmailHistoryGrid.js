@@ -79,7 +79,8 @@ App.lab.EmailHistoryGrid = Ext.extend(Ext.grid.GridPanel, {
                 singleSelect : true
             }),
             viewConfig : {
-                forceFit : true
+                forceFit : true,
+                emptyText: 'нет записей'
             }
         };
 

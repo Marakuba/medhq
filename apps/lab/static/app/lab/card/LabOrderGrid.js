@@ -169,15 +169,13 @@
             var rec = this.getSelected();
             if(!rec) { return; }
             App.direct.lab.makeEmailTask(rec.data.id, function(res){
-                if(res.success){
-                    Ext.ux.Growl.notify({
-                        title: "Успешная операция",
-                        message: res.message,
-                        iconCls: "x-growl-accept",
-                        alignment: "tr-tr",
-                        offset: [-10, 10]
-                    });
-                }
+                Ext.ux.Growl.notify({
+                    title: res.success ? "Успешная операция" : "Ошибка",
+                    message: res.message,
+                    iconCls: res.success ? "x-growl-accept" : "x-growl-error",
+                    alignment: "tr-tr",
+                    offset: [-10, 10]
+                });
             });
         },
 

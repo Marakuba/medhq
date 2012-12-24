@@ -33,7 +33,7 @@ App.laboratory.LabOrderGrid = Ext.extend(Ext.grid.GridPanel, {
                     return String.format("<div><span style='font-weight:bold'>{0}</span>{3}<br><span>{1}</span><br><span>{2}</span></div>",
                             v, Ext.util.Format.date(rec.data.visit_created,'d.m.y'),
                             Ext.util.Format.date(rec.data.visit_created,'H:i'),
-                            rec.data.send_to_email ? "<span class='silk-email' style='margin-left:4px;padding-left:16px;'>&nbsp;</span>" : "");
+                            rec.data.send_to_email ? String.format("<span class='silk-{0}' style='margin-left:4px;padding-left:16px;'>&nbsp;</span>", rec.data.send_to_email) : "");
                 }
             },{
                 header: "Дата",

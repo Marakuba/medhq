@@ -169,6 +169,12 @@
     background-position: 10px 10px;
 }
 
+.x-growl-error {
+    background-image: url("../images/error.png");
+    background-repeat: no-repeat;
+    background-position: 10px 10px;
+}
+
 .x-filters-enabled {
 	color:red;
 }

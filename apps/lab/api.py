@@ -152,7 +152,7 @@ class LabOrderResource(ExtResource):
             try:
                 task = laborder.laborderemailtask
                 status = 'email'
-                if task.status in ['send', 'resent']:
+                if task.status in ['sent', 'resent']:
                     status += '-go'
                 elif task.status == 'failed':
                     status += '-error'
