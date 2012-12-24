@@ -76,6 +76,7 @@ ROOT_URLCONF = 'medhq.urls'
 
 MIDDLEWARE_CLASSES = [
 #    'debug_toolbar.middleware.DebugToolbarMiddleware',
+    # 'django.middleware.gzip.GZipMiddleware',
     'django.middleware.common.CommonMiddleware',
     'django.contrib.sessions.middleware.SessionMiddleware',
     'django.contrib.auth.middleware.AuthenticationMiddleware',

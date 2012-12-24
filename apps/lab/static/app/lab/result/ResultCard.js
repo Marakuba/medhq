@@ -58,6 +58,7 @@ App.result.ResultCard = Ext.extend(Ext.Panel, {
                 fields:['resource_uri','name','title']
             }),
             displayField:'name',
+            queryParam:'staff__last_name__istartswith',
             width:200
         });
 

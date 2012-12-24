@@ -59,6 +59,7 @@ class LabBoardApp(BaseWebApp):
         'app/lab/search/SearchWindow.js',
         'app/lab/result/widget/BaseColumn.js',
         'app/lab/result/widget/BasePlain.js',
+        'app/lab/result/CommentWindow.js',
         'app/lab/result/ResultCard.js',
         'app/lab/laborder/LabOrderGrid.js',
         'app/lab/laborder/LabBoard.js',
