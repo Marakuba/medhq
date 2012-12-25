@@ -53,7 +53,7 @@ def auth(request, authentication_form=AuthenticationForm):
             active_profile = getattr(request, 'active_profile', None)
             if active_profile:
                 next_url = request.POST.get('next', None)
-                response['redirect_to'] = u'/webapp/setactiveprofile/%d/%s' % (active_profile.id, next_url and u'?redirect_to=%s' % next_url or u'')
+                response['redirect_to'] = u'/webapp/setactiveprofile/%d/%s' % (active_profile.id, next_url and u'?redirect_to=%s' % next_url or u'?redirect_to=/webapp/cpanel/')
             else:
                 response = {
                     'success': False,

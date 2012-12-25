@@ -9,6 +9,7 @@ from constance import config
 from django.db import models
 from django_extensions.db.fields import UUIDField
 import pytils
+from pricelist.models import PriceType
 
 
 #TODO: реквизиты организаций
@@ -58,13 +59,26 @@ class State(models.Model):
     def save(self, *args, **kwargs):
         if not self.price_type:
             if self.type == 'i':
-                self.price_type = config.CONSTANCE_CONFIG['DEFAULT_PRICETYPE_INSURANCE']
+                try:
+                    pt = PriceType.objects.get(id=config.DEFAULT_PRICETYPE_INSURANCE)
+                except:
+                    raise Exception('Configured DEFAULT_PRICETYPE_INSURANCE type not found')
             elif self.type == 'm':
-                self.price_type = config.CONSTANCE_CONFIG['DEFAULT_PRICETYPE_NONCASH']
+                try:
+                    pt = PriceType.objects.get(id=config.DEFAULT_PRICETYPE_NONCASH)
+                except:
+                    raise Exception('Configured DEFAULT_PRICETYPE_NONCASH type not found')
             elif self.type == 'b':
-                self.price_type = config.CONSTANCE_CONFIG['DEFAULT_PRICETYPE_CORP']
+                try:
+                    pt = PriceType.objects.get(id=config.DEFAULT_PRICETYPE_CORP)
+                except:
+                    raise Exception('Configured DEFAULT_PRICETYPE_CORP type not found')
             else:
-                self.price_type = config.CONSTANCE_CONFIG['DEFAULT_PRICETYPE']
+                try:
+                    pt = PriceType.objects.get(id=config.DEFAULT_PRICETYPE)
+                except:
+                    raise Exception('Configured DEFAULT_PRICETYPE type not found')
+            self.price_type = pt
 
         super(State, self).save(*args, **kwargs)
 

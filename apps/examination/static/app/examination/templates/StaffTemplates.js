@@ -107,7 +107,7 @@ App.examination.StaffTemplates = Ext.extend(Ext.Panel, {
 	editTmp: function(record){
 		if(!record){
 			console.log('нет записи');
-			return false
+			return false;
 		}
 
 		this.print_name = record.data.name;
@@ -119,7 +119,13 @@ App.examination.StaffTemplates = Ext.extend(Ext.Panel, {
 			title: record.data.print_name,
 			print_name:record.data.print_name,
 //			record:record,
-			staff:this.staff
+			staff:this.staff,
+			fn: function(){
+				this.archiveGrid.store.load();
+				this.contentPanel.update();
+				this.doLayout();
+			},
+			scope: this
 		};
 
 		WebApp.fireEvent('launchapp', 'templateapp',config);

@@ -10,7 +10,7 @@ import logging
 import cStringIO
 import codecs
 import datetime
-from pricelist.models import get_actual_ptype
+from pricelist.utils import get_actual_ptype
 from django.utils import simplejson
 from lab.models import LabService, Tube, InputList, Measurement, Analysis
 from django.core.exceptions import MultipleObjectsReturned

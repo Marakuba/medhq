@@ -3,6 +3,7 @@ Ext.ns('Ext.ux');
 
 App.examination.TextTicketEditor = Ext.extend(Ext.Panel, {
     initComponent: function(){
+        this.sourceText = this.sourceType == 'tpl' ? 'шаблону' : 'карте';
 
         this.clearFilterList = [Ext.EventObject.ESC, Ext.EventObject.RIGHT, Ext.EventObject.LEFT,
                                 Ext.EventObject.TAB,
@@ -130,7 +131,7 @@ App.examination.TextTicketEditor = Ext.extend(Ext.Panel, {
                     }, this);
                     el.on('click',function(e,t,o){
                         var pos = this.getCaretPos(el.dom);
-                        this.fireEvent('editorclick',e,t,o)
+                        this.fireEvent('editorclick',e,t,o);
                     }, this);
                     el.on('blur', function(t,e) {
                         this.getCaretPos(el.dom);
@@ -146,41 +147,45 @@ App.examination.TextTicketEditor = Ext.extend(Ext.Panel, {
                         }
                     } .createDelegate(this));
                 },
-                scope:this
+                scope: this
             }
-        })
+        });
 
         this.ticketPanel = new Ext.Panel({
-            layout:'border',
-            border:false,
-            items:[
+            layout: 'border',
+            border: false,
+            items: [
                 this.headerField,
                 this.bodyField
             ],
-            border:false,
-            region:'center'
+            region: 'center'
         });
 
         this.okBtn = new Ext.Button({
-            iconCls:'silk-resultset-previous',
-            text:'Вернуться к карте',
-            handler:this.editComplete,
-            scope:this
-        })
+            iconCls: 'silk-resultset-previous',
+            text: 'Вернуться к ' + this.sourceText,
+            handler: this.editComplete.createDelegate(this, []),
+            scope: this
+        });
 
         this.ttb = new Ext.Toolbar({
             items:[this.okBtn]
-        })
+        });
+
+        this.bb = new Ext.Toolbar({
+            items:[]
+        });
 
 
         config = {
-            layout:'border',
-            type:'ticket-edit-panel',
-            items:[
+            layout: 'border',
+            type: 'ticket-edit-panel',
+            items: [
                 this.ticketPanel,
                 this.glossPanel
             ],
-            tbar:this.ttb
+            tbar: this.ttb,
+            bbar: this.bb
         };
 
         Ext.apply(this, Ext.apply(this.initialConfig, config));
@@ -190,6 +195,31 @@ App.examination.TextTicketEditor = Ext.extend(Ext.Panel, {
                 this.loadTicket(this.data);
                 this.bodyField.focus(false, 350);
             }
+            if (this.prevTicket && this.prevTicket.section != 'name'){
+                var prevText = this.prevTicket.title != this.prevTicket.defaultTitle &&
+                               this.prevTicket.title ||
+                               Ext.util.Format.ellipsis(this.prevTicket.data.value, 40);
+                this.prevBtn = new Ext.Button({
+                    text: prevText,
+                    iconCls: 'silk-resultset-previous',
+                    handler: this.editComplete.createDelegate(this, [this.prevTicket])
+                });
+                this.bb.add(this.prevBtn);
+            }
+            if (this.nextTicket){
+                var nextText = this.nextTicket.title != this.nextTicket.defaultTitle &&
+                               this.nextTicket.title ||
+                               Ext.util.Format.ellipsis(this.nextTicket.data.value, 40);
+                this.nextBtn = new Ext.Button({
+                    text: nextText,
+                    iconCls: 'silk-resultset-next',
+                    handler: this.editComplete.createDelegate(this, [this.nextTicket])
+                });
+                this.bb.add('->');
+                this.bb.add(this.nextBtn);
+            }
+            this.doLayout();
+
 //          console.log(this.bodyField.getEl())
 //          this.glossDropDown.bindElement(this.bodyField.getEl(), this.glossDropDown);
         });
@@ -200,7 +230,7 @@ App.examination.TextTicketEditor = Ext.extend(Ext.Panel, {
 
         this.on('editorclick', function(){
             this.glossDropDown.clearBuffer();
-        },this)
+        },this);
 
     },
 
@@ -255,14 +285,14 @@ App.examination.TextTicketEditor = Ext.extend(Ext.Panel, {
         var pastedText = record.data.text;
         var newPos = curPos - this.glossDropDown.buffer.length + pastedText.length;
 
-        if (!Ext.isEmpty(beforePasted) && !(beforePasted[beforePasted.length-1]==' ')) {
+        if (!Ext.isEmpty(beforePasted) && (beforePasted[beforePasted.length-1]!=' ')) {
             beforePasted += ' ';
             newPos += 1;
-        };
+        }
         if (!Ext.isEmpty(afterPasted)){
-            if (!afterPasted[0]==' ') pastedText += ' ';
+            if (afterPasted[0] != ' ') pastedText += ' ';
             newPos += 1;
-        };
+        }
         var newText = beforePasted + pastedText + afterPasted;
         this.bodyField.setValue(newText);
         var textarea = this.bodyField.getEl().dom;
@@ -294,7 +324,7 @@ App.examination.TextTicketEditor = Ext.extend(Ext.Panel, {
         } else if(obj.selectionStart) {
             obj.focus(false,300);
             obj.setSelectionRange(pos, pos);
-        };
+        }
     },
 
     getCaretPos: function(el) {
@@ -306,7 +336,7 @@ App.examination.TextTicketEditor = Ext.extend(Ext.Panel, {
             rng.collapse(true);
             rng.moveStart("character", -el.value.length);
             ii=rng.text.length;
-        };
+        }
         this.setPos(ii);
         return ii;
     },
@@ -328,14 +358,14 @@ App.examination.TextTicketEditor = Ext.extend(Ext.Panel, {
         this.updateData();
     },
 
-    editComplete: function(){
+    editComplete: function(ticket){
         var data = {};
         data['title'] = this.headerField.getValue();
         data['value'] = this.bodyField.getValue();
         this.fireEvent('editcomplete',data);
         if (this.fn){
-            this.fn(data,this.panel)
-        };
+            this.fn(data,this.panel, ticket);
+        }
         this.destroy();
     }
 });

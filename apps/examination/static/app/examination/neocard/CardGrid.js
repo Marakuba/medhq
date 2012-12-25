@@ -10,7 +10,7 @@ App.examination.CardGrid = Ext.extend(Ext.grid.EditorGridPanel, {
         this.baseParams = Ext.apply({
             format:'json',
             deleted:false,
-            'ordered_service__staff': WebApp.active_profile
+            'ordered_service__staff__staff': WebApp.active_staff
         },this.baseParams);
 
         this.reader = new Ext.data.JsonReader({

@@ -1,18 +1,14 @@
 # -*- coding: utf-8 -*-
 
 from django.db import models
-
-from state.models import State
-from constance import config
 #from service.models import BaseService, ExtendedService
-from django.utils.encoding import smart_unicode
+
 import datetime
 from visit.settings import PAYMENT_TYPES
 from copy import deepcopy
-import time
-from django.core.cache import cache
-from operator import itemgetter
 from django.db.models.signals import post_save, post_delete
+from django.core.cache import cache
+
 
 FIELD_RANGES = {
     'hour':     '00:00-23:59',
@@ -30,7 +26,7 @@ class PriceType(models.Model):
     month_day = models.CharField(u'Дни месяца', max_length=150, default=u'', null=True, blank=True)
     month = models.CharField(u'Месяцы', max_length=150, default=u'', null=True, blank=True)
     active = models.BooleanField(u'Активно', default=True)
-    priority = models.PositiveIntegerField(u'Приоритет', default=0)
+    priority = models.PositiveIntegerField(u'Приоритет', default=0, unique=False)
 
     def __unicode__(self):
         return u"%s" % self.name
@@ -50,6 +46,14 @@ class PriceRule(models.Model):
     month = models.CharField(u'Месяцы', max_length=150, default=u'', null=True, blank=True)
     active = models.BooleanField(u'Активно', default=True)
     priority = models.PositiveIntegerField(u'Приоритет', default=0, unique=True)
+
+    def save(self, *args, **kwargs):
+        # self.is_billed = True
+
+        # print 'priority'
+        # import pdb; pdb.set_trace()
+
+        super(PriceRule, self).save(*args, **kwargs)
 
     def get_periods(self):
         """
@@ -115,63 +119,6 @@ class PriceRule(models.Model):
         ordering = ('priority', 'active',)
 
 
-def build_period_table():
-    pt_list = PriceRule.objects.filter(active=True)
-    period_table = []
-    for pt in pt_list:
-        period_table += pt.get_periods()
-    cache.set('periods', period_table, 24 * 60 * 60 * 30)
-    return period_table
-
-
-def get_actual_ptype(date=None, payer=None, payment_type=u'н'):
-
-    """
-    Возвращает id актуального на текущий момент типа цены PriceType
-    date - дата, на которую определяем тип цены
-    payer - id плательщика
-    payment_type - id типа оплаты из PAYMENT_TYPES
-    """
-
-    # Если передан плательщик и у него указан тип цены, возвращаем его
-    if payer:
-        try:
-            payer = State.objects.get(id=payer)
-        except:
-            raise Exception('payer not found "%s"' % payer)
-        if payer.price_type:
-            return payer.price_type.id
-
-    # Если тип оплаты не касса, и в настройках указан соответствующий тип цены
-    # по умолчанию, то возвращаем его
-    if payment_type == u'д':
-        if config.DEFAULT_PRICETYPE_INSURANCE:
-            return config.DEFAULT_PRICETYPE_INSURANCE
-    elif payment_type == u'б':
-        if config.DEFAULT_PRICETYPE_NONCASH:
-            return config.DEFAULT_PRICETYPE_NONCASH
-    elif payment_type == u'к':
-        if config.DEFAULT_PRICETYPE_CORP:
-            return config.DEFAULT_PRICETYPE_CORP
-
-    date = date or datetime.datetime.now()
-    t = cache.get('periods') or build_period_table()
-    now = "%02d:%02d" % (date.hour, date.minute)
-    r = filter(lambda x: (now >= x['hour_from']) \
-             and (now <= x['hour_to']) \
-             and (x['month_day_from'] <= date.day) and (x['month_day_to'] >= date.day) \
-             and (date.weekday() >= x['week_day_from']) and (date.weekday() <= x['week_day_to']) \
-             and (date.month >= x['month_from']) and (date.month <= x['month_to']), t)
-    r = sorted(r, key=itemgetter('priority'), reverse=True)
-    if len(r) == 0:
-        if config.DEFAULT_PRICETYPE:
-            return config.DEFAULT_PRICETYPE
-        else:
-            raise Exception('default price type is not configured')
-    # import pdb; pdb.set_trace()
-    return r[0]['id']
-
-
 PRICE_TYPES = (
     (u'r', u'Розничная'),
     (u'z', u'Закупочная'),
@@ -189,12 +136,12 @@ class Price(models.Model):
     value = models.DecimalField(u'Сумма, руб.', max_digits=10, decimal_places=2,
                                 null=True)
     on_date = models.DateField(u'Начало действия', default=datetime.date.today())
-    payer = models.ForeignKey(State, verbose_name=u'Плательщик',
+    payer = models.ForeignKey('state.State', verbose_name=u'Плательщик',
                               related_name='payer_in_pricelist',
                               null=True, blank=True)
 
     def __unicode__(self):
-        return u"<<PRICE OBJECT %s %s>>" % (self.service, self.on_date)
+        return u"<<PRICE OBJECT %s %s>>" % (self.extended_service.base_service, self.on_date)
 #        return smart_unicode(u"%s - %s" % (self.extended_service.state, self.get_price_type_display()))
 
     class Meta:
@@ -229,6 +176,15 @@ class Discount(models.Model):
         verbose_name = u'скидка'
         verbose_name_plural = u'скидки'
         ordering = ('name',)
+
+
+def build_period_table():
+    pt_list = PriceRule.objects.filter(active=True)
+    period_table = []
+    for pt in pt_list:
+        period_table += pt.get_periods()
+    cache.set('periods', period_table, 24 * 60 * 60 * 30)
+    return period_table
 
 
 def set_period_cache(sender, **kwargs):
