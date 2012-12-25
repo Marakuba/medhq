@@ -280,6 +280,7 @@ App.result.BasePlain = Ext.extend(Ext.grid.EditorGridPanel, {
                     }
                     this.menu.showAt(e.getXY());
                 },
+                rowbodydblclick:this.onAddComment.createDelegate(this),
                 scope:this
             },
             view : new Ext.grid.GroupingView({
@@ -287,9 +288,12 @@ App.result.BasePlain = Ext.extend(Ext.grid.EditorGridPanel, {
                 emptyText: 'Нет записей',
                 groupTextTpl:this.mode=='order' ? "{text} <span style='padding-left:10px; color:gray;font-variant:italic'>Лаборатория: {[values.rs[0].data['laboratory']]}" : "{text}</span>",
                 enableRowBody:true,
+                processEvent: function(name, e){
+                    Ext.grid.GroupingView.superclass.processEvent.call(this, name, e);
+                },
                 getRowClass: function(record, index, p, store) {
                     if(record.data.is_group){
-                        return 'x-result-group'
+                        return 'x-result-group';
                     }
                     var cls = [];
                     if(record.data.comment) {
@@ -308,7 +312,7 @@ App.result.BasePlain = Ext.extend(Ext.grid.EditorGridPanel, {
                 //getRowClass : this.applyRowClass
             }),
             saveOnActivate:true
-        }
+        };
 
         Ext.apply(this, Ext.apply(this.initialConfig, config));
         App.result.BasePlain.superclass.initComponent.apply(this, arguments);
@@ -457,7 +461,7 @@ App.result.BasePlain = Ext.extend(Ext.grid.EditorGridPanel, {
                     iconCls: "x-growl-accept",
                     alignment: "tr-tr",
                     offset: [-10, 10]
-                })
+                });
             } else {
                 Ext.MessageBox.alert('Ошибка!', r.message);
             }

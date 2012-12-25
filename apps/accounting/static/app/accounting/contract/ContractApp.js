@@ -21,6 +21,7 @@ App.accounting.ContractApp = Ext.extend(Ext.Panel, {
         });
 
         config = {
+            id:'accounting-contract-app',
             title:'Договоры',
             layout:'border',
             items:[this.contractGrid,this.invoiceGrid]
@@ -43,5 +44,9 @@ Ext.reg('accounting', App.accounting.ContractApp);
 
 
 App.webapp.actions.add('accounting', new Ext.Action({
-    text: 'Договоры'
+    text: 'Договоры',
+    scale: 'medium',
+    handler: function(){
+        WebApp.fireEvent('launchapp','accounting');
+    }
 }));

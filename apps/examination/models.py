@@ -432,8 +432,8 @@ class ExaminationDetail(models.Model):
 class Card(models.Model):
     name = models.TextField(u'Рабочее наименование', null=True, blank=True)
     print_name = models.TextField(u'Заголовок для печати', null=True, blank=True)
-    created = models.DateTimeField(u'Дата создания', auto_now_add=True)
-    modified = models.DateTimeField(auto_now=True)
+    created = models.DateTimeField(u'Созданo', auto_now_add=True)
+    modified = models.DateTimeField(u'Изменено', auto_now=True)
     print_date = models.DateTimeField(u'Время печати', blank=True, null=True)
     ordered_service = models.ForeignKey(OrderedService, blank=True, null=True)
     mkb_diag = models.ForeignKey(ICD10, null=True, blank=True)

@@ -9,7 +9,7 @@ from .base import get_webapp
 try:
     from collections import OrderedDict
 except:
-    from ordereddict import OrderedDict #@Reimport
+    from ordereddict import OrderedDict
 
 
 def get_vp_for_user(user):
@@ -73,8 +73,8 @@ def build_static(request, vp):
     js = list(OrderedDict.fromkeys(js))
     css = list(OrderedDict.fromkeys(css))
 
-    js_bundle = Bundle(*js)
-    css_bundle = Bundle(*css)
+    js_bundle = Bundle(*js, filters='rjsmin', output="assets/%s.js" % vp.slug)
+    css_bundle = Bundle(*css, filters=('cssrewrite', 'cssmin'), output="assets/%s.css" % vp.slug)
 
     js_bundle_name = 'webapp_%s_js' % vp.slug
     css_bundle_name = 'webapp_%s_css' % vp.slug

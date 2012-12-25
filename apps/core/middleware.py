@@ -13,10 +13,10 @@ class SQLLogMiddleware:
         
         print "Queries count:",len(connection.queries) #@UndefinedVariable
         print "Time:", time
-#        print "Queries explain:"
-#        for q in connection.queries:
-#            print q
-#            print "--------------"
+        print "Queries explain:"
+        for q in connection.queries:
+            print q
+            print "--------------"
 
         return response
     

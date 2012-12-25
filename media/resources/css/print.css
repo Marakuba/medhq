@@ -1,4 +1,8 @@
 @font-face {
+    font-family: Impact; 
+    src: url("/static/resources/fonts/Impact.ttf");
+}
+@font-face {
     font-family: Arial; 
     src: url("/static/resources/fonts/Arial.ttf");
 }

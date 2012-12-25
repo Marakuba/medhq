@@ -23,7 +23,7 @@ App.result.ResultCard = Ext.extend(Ext.Panel, {
             '</div>',
             {
                 parseDate : function(v){
-                    return Ext.util.Format.date(v,'d.m.Y')
+                    return Ext.util.Format.date(v,'d.m.Y');
                 },
 
                 nullFormatter: function(v)
@@ -62,6 +62,36 @@ App.result.ResultCard = Ext.extend(Ext.Panel, {
             width:200
         });
 
+        this.lockBtn = new Ext.Button({
+            iconCls:'silk-link-break',
+            enableToggle:true,
+            pressed:false,
+            toggleHandler:function(btn, state){
+                if(state){
+                    this.defaultStaff = this.staffField.findRecord(this.staffField.valueField, this.staffField.getValue());
+                } else {
+                    this.defaultStaff = undefined;
+                }
+                var msg = this.defaultStaff ?
+                    "Установлен новый врач по умолчанию: " + this.defaultStaff.data.name :
+                    "Врач по умолчанию снят. Поле необходимо заполнять вручную.";
+                if(state && !this.defaultStaff){
+                    msg = "Врач не выбран!";
+                    btn.toggle();
+                } else {
+                    btn.setIconClass(state ? 'silk-link' : 'silk-link-break');
+                }
+                Ext.ux.Growl.notify({
+                    title: "",
+                    message: msg,
+                    iconCls: "x-growl-accept",
+                    alignment: "tr-tr",
+                    offset: [-10, 10]
+                });
+            },
+            scope:this
+        });
+
         this.printBtn = new Ext.Button({
             iconCls:'silk-printer',
 //          disabled:true,
@@ -84,7 +114,7 @@ App.result.ResultCard = Ext.extend(Ext.Panel, {
                     scope:this
                 },
 
-                this.staffField, {
+                this.staffField, this.lockBtn, {
 //                  text:'Текущий',
                     iconCls:'silk-user-go',
                     tooltip:'Текущий пользователь',
@@ -156,6 +186,8 @@ App.result.ResultCard = Ext.extend(Ext.Panel, {
             }
         });
 
+        this.taskQueue = {};
+
         config = {
             border:false,
             title:'Результаты',
@@ -168,7 +200,7 @@ App.result.ResultCard = Ext.extend(Ext.Panel, {
                 qtip:'Посмотреть информацию о пациенте'
             }],
             items:this.tab
-        }
+        };
 
         Ext.apply(this, Ext.apply(this.initialConfig, config));
         App.result.ResultCard.superclass.initComponent.apply(this, arguments);
@@ -179,10 +211,13 @@ App.result.ResultCard = Ext.extend(Ext.Panel, {
         if(this.labOrderRecord){
             this.saveSDT(this.labOrderRecord);
         }
-        this.tab.items.each(function(item){
-            if(item.onSave) {
-                item.onSave();
-            }
+        this.taskQueue[this.labOrderRecord.data.id] = [];
+        this.taskQueue[this.labOrderRecord.data.id].push(function(){
+            this.tab.items.each(function(item){
+                if(item.onSave) {
+                    item.onSave();
+                }
+            });
         });
     },
 
@@ -190,10 +225,13 @@ App.result.ResultCard = Ext.extend(Ext.Panel, {
         if(this.labOrderRecord){
             this.saveSDT(this.labOrderRecord);
         }
-        this.tab.items.each(function(item){
-            if(item.onSubmit) {
-                item.onSubmit();
-            }
+        this.taskQueue[this.labOrderRecord.data.id] = [];
+        this.taskQueue[this.labOrderRecord.data.id].push(function(){
+            this.tab.items.each(function(item){
+                if(item.onSubmit) {
+                    item.onSubmit();
+                }
+            });
         });
     },
 
@@ -216,10 +254,14 @@ App.result.ResultCard = Ext.extend(Ext.Panel, {
         if(d.staff) {
             this.staffField.setValue(d.staff);
         } else {
-            this.staffField.setRawValue('');
-            this.staffField.originalValue='';
-            this.staffField.value='';
-            this.staffField.reset();
+            if(!this.defaultStaff) {
+                this.staffField.setRawValue('');
+                this.staffField.originalValue='';
+                this.staffField.value='';
+                this.staffField.reset();
+            } else {
+                this.staffField.forceValue(this.defaultStaff.data.resource_uri);
+            }
         }
         this.dateField.setValue(d.executed);
         this.timeField.setValue(d.executed);
@@ -256,14 +298,26 @@ App.result.ResultCard = Ext.extend(Ext.Panel, {
         var now = new Date();
         this.dateField.setValue(now);
         this.timeField.setValue(now);
-        return now
+        return now;
     },
 
     setStaff : function() {
         var staff = App.utils.getApiUrl('staff','position', WebApp.active_profile);
         var sf = this.staffField;
         sf.setValue(staff);
-        return staff
+        return staff;
+    },
+
+    updateLabOrder: function(result){
+        Ext.each(result, function(res){
+            var tasks = this.taskQueue[res.id];
+            if(tasks && Ext.isArray(tasks)){
+                Ext.each(tasks, function(task){
+                    Ext.callback(task, this);
+                }, this);
+                delete this.taskQueue[res.id];
+            }
+        }, this);
     },
 
     saveSDT: function(rec) {
@@ -321,10 +375,10 @@ App.result.ResultCard = Ext.extend(Ext.Panel, {
             });
             patientInfoWin.show();
             this.infoTpl.overwrite(infoPanel.body,data);
-        },this)
+        },this);
 
 
     }
 
 
-})
+});

@@ -68,10 +68,31 @@ class TemplateAdmin(admin.ModelAdmin):
     save_as = True
     list_display = ('name','print_name','base_service','staff')
     search_fields = ['name', ]
-    
+
+
 class CardAdmin(admin.ModelAdmin):
-    readonly_fields = ['ordered_service','mkb_diag']
-    
+    list_display = ['order', 'order_date', 'patient', 'service', 'created', 'modified']
+    readonly_fields = ['ordered_service', 'mkb_diag']
+    date_hierarchy = 'created'
+    search_fields = ['ordered_service__order__barcode__id', 'ordered_service__order__patient__last_name']
+
+    def order(self, obj):
+        return obj.ordered_service.order.barcode.id
+    order.short_description = u'№ заказа'
+
+    def order_date(self, obj):
+        return obj.ordered_service.order.created.strftime('%d.%m.%Y')
+    order_date.short_description = u'Дата заказа'
+
+    def patient(self, obj):
+        return obj.ordered_service.order.patient.short_name()
+    patient.short_description = u'Пациент'
+
+    def service(self, obj):
+        return obj.ordered_service.service
+    service.short_description = u'Услуга'
+
+
 admin.site.register(Equipment)
 admin.site.register(Card, CardAdmin)
 admin.site.register(Template, TemplateAdmin)

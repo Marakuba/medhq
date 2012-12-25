@@ -47,6 +47,12 @@ App.laboratory.LabBoard = Ext.extend(Ext.Panel, {
         this.LabOrderGrid.on('updatefilters', function(){
             this.ResultCard.disable();
         }, this);
+
+        this.LabOrderGrid.store.on('write', function(store, action, result, res, rs){
+            if(action=='update'){
+                this.ResultCard.updateLabOrder(result);
+            }
+        }, this);
     },
 
     onGlobalSearch: function(v) {

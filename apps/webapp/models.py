@@ -14,10 +14,12 @@ class Viewport(models.Model):
     users = models.ManyToManyField(User, blank=True, null=True)
     is_active = models.BooleanField(default=True)
     template = models.CharField(u'Шаблон', max_length=200, blank=True)
+    order = models.IntegerField(u'Порядок', default=0)
 
     class Meta:
         verbose_name = u'интерфейс'
         verbose_name_plural = u'интерфейсы'
+        ordering = ('order',)
 
     def __unicode__(self):
         return self.name

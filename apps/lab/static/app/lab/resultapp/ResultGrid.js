@@ -128,6 +128,11 @@ App.results.Grid = Ext.extend(Ext.grid.GridPanel, {
                 iconCls:'silk-printer',
                 text:'Печать',
                 handler:this.onPrint.createDelegate(this, [])
+            },'-', {
+                xtype:'button',
+                iconCls:'app-pdf',
+                // text:'Печать',
+                handler:this.onPrint.createDelegate(this, ['pdf'])
             }/*,'->','Период',{
                 id:'visits-start-date-filter',
                 xtype:'datefield',
@@ -189,7 +194,7 @@ App.results.Grid = Ext.extend(Ext.grid.GridPanel, {
                 getRowClass : this.applyRowClass
             }
 
-        }
+        };
 
         Ext.apply(this, Ext.apply(this.initialConfig, config));
         App.results.Grid.superclass.initComponent.apply(this, arguments);
@@ -205,14 +210,14 @@ App.results.Grid = Ext.extend(Ext.grid.GridPanel, {
     applyRowClass : function(record, index){
         // x-grid-row-normal
         if(record.data.is_completed){
-            return "x-grid-row-normal"
+            return "x-grid-row-normal";
         }
-        return ""
+        return "";
     },
 
     storeFilter: function(field, value){
         if(!value) {
-            delete this.store.baseParams[field]
+            delete this.store.baseParams[field];
         } else {
             this.store.setBaseParam(field, value);
         }
@@ -220,12 +225,15 @@ App.results.Grid = Ext.extend(Ext.grid.GridPanel, {
     },
 
     getSelected: function() {
-        return this.getSelectionModel().getSelected()
+        return this.getSelectionModel().getSelected();
     },
 
-    onPrint: function() {
-        var id = this.getSelected().data.id;
-        var url = ['/lab/print/results',id,''].join('/');
+    onPrint: function(format) {
+        var rec = this.getSelected();
+        if(!rec) { return; }
+        var id = rec.data.id;
+        format = format ? '?format='+format : '';
+        var url = String.format('/lab/print/results/{0}/{1}', id, format);
         window.open(url);
     },
 

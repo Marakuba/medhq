@@ -30,7 +30,8 @@ class ViewportAddInlineAdmin(admin.StackedInline):
 
 class ViewportAdmin(admin.ModelAdmin):
 
-    list_display = ('name', 'slug')
+    list_display = ('name', 'slug', 'order')
+    list_editable = ('order',)
     inlines = [ViewportAddInlineAdmin]
     filter_horizontal = ('users', 'groups')
 

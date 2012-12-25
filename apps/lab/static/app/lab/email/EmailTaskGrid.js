@@ -167,6 +167,11 @@
                     iconCls:'silk-printer',
                     text:'Печать',
                     handler:this.onPrint.createDelegate(this, [])
+                },'-', {
+                    xtype:'button',
+                    iconCls:'app-pdf',
+                    // text:'Печать',
+                    handler:this.onPrint.createDelegate(this, ['pdf'])
                 },'->',this.statusBtn],
                 listeners: {
                     rowdblclick:this.onPrint.createDelegate(this, [])
@@ -313,14 +318,14 @@
             return this.getSelectionModel().getSelected();
         },
 
-        onPrint: function() {
+        onPrint: function(format) {
             var rec = this.getSelected();
             if(!rec) { return; }
-            var id = App.utils.uriToId(rec.data.lab_order);
-            var url = ['/lab/print/results',id,''].join('/');
+            var id = rec.data.id;
+            format = format ? '?format='+format : '';
+            var url = String.format('/lab/print/results/{0}/{1}', id, format);
             window.open(url);
         }
-
 
     });
 

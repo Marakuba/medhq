@@ -167,7 +167,7 @@ App.visit.VisitForm = Ext.extend(Ext.FormPanel, {
         this.policyCmb = new Ext.form.LazyClearableComboBox({
 //          id:'visit-policy-cmb',
             fieldLabel:'Полис ДМС',
-            anchor:'98%',
+            anchor:'99%',
             name:'insurance_policy',
             emptyText:'Выберите полис',
             store:new Ext.data.JsonStore({
@@ -200,6 +200,7 @@ App.visit.VisitForm = Ext.extend(Ext.FormPanel, {
             border:false,
             layout:'hbox',
             hidden:this.record ? this.record.data.payment_type!='д' : true,
+            baseCls:'x-border-layout-ct',
             defaults:{
                 baseCls:'x-border-layout-ct',
                 border:false
@@ -211,7 +212,8 @@ App.visit.VisitForm = Ext.extend(Ext.FormPanel, {
                 items:this.policyCmb
             },{
                 //columnWidth:0.20,
-                width:30,
+                width:24,
+                baseCls:'x-plain',
                 items:{
                     xtype:'button',
                     //text:'Добавить',
@@ -282,7 +284,7 @@ App.visit.VisitForm = Ext.extend(Ext.FormPanel, {
                 layout: 'form',
                 baseCls:'x-border-layout-ct',
                 border:false,
-                anchor:'98%',
+                anchor:'-2',
                 name:'payer',
                 minChars:3,
                 // hidden:(App.settings.strictMode && this.types==='material'),
@@ -329,7 +331,7 @@ App.visit.VisitForm = Ext.extend(Ext.FormPanel, {
                     },
                     scope:this
                 }
-        })
+        });
 
 
         this.payerBar = new Ext.Panel({
@@ -343,7 +345,7 @@ App.visit.VisitForm = Ext.extend(Ext.FormPanel, {
                 border:false
             },
             items:[{
-                flex:0.99,
+                flex:1,
                 layout:'form',
                 hideLabels:true,
                 items:this.payerCmb
@@ -379,7 +381,7 @@ App.visit.VisitForm = Ext.extend(Ext.FormPanel, {
         };
 
         this.referralCB = new Ext.form.LazyComboBox({
-            anchor:'98%',
+            anchor:'99%',
             fieldLabel:'Кто направил',
             emptyText:'Выберите направившего врача...',
             name:'referral',
@@ -402,7 +404,7 @@ App.visit.VisitForm = Ext.extend(Ext.FormPanel, {
                 border:false
             },
             items:[this.referral, {
-                width:31,
+                width:24,
                 items:{
                     xtype:'button',
                     iconCls:'silk-add',
@@ -584,8 +586,8 @@ App.visit.VisitForm = Ext.extend(Ext.FormPanel, {
                 width:95,
                 text:'Форма оплаты: ',
                 cls:'x-form-item-label'
-            }]}
-            ,new Ext.Button({
+            }]},
+            new Ext.Button({
                 allowDepress:false,
                 enableToggle:true,
                 toggleGroup:'ex-ptype-cls',
@@ -634,8 +636,9 @@ App.visit.VisitForm = Ext.extend(Ext.FormPanel, {
             value:0,
             style:{
                 fontSize:'2.5em',
-                height:'45px',
-                width:'160px'
+                height:'44px',
+                width:'160px',
+                textAlign:'right'
             }
         });
 
