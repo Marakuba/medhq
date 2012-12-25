@@ -289,6 +289,7 @@ App.examination.TicketTab = Ext.extend(Ext.Panel, {
             Ext.apply(ticket_data,origTicketConfig);
             ticketConfig['data'] = ticket_data;
         }
+        var currentSection = ticketConfig['section'] || ticketConfig['data']['section'] || 'other';
         ticketConfig['orderRecord'] = this.orderRecord;
         ticketConfig['record'] = this.record;
         //Источник - карта осмотра или шаблон
@@ -296,18 +297,17 @@ App.examination.TicketTab = Ext.extend(Ext.Panel, {
         ticketConfig['cardId'] = this.cardId;
         ticketConfig.data['cardId'] = this.cardId;
         ticketConfig['tplId'] = this.tplId;
-        ticketConfig['section_name'] = section_scheme[currentSection]['title'];
+        ticketConfig['section_name'] = WebApp.section_scheme[currentSection]['title'];
         ticketConfig.data['tplId'] = this.tplId;
         ticketConfig.data['patientId'] = this.patientId; // нужно для добавления направлений
 
         if (!ticketConfig.data.title && isNew){
-            ticketConfig.data.title = section_scheme[currentSection]['title'];
+            ticketConfig.data.title = WebApp.section_scheme[currentSection]['title'];
         }
         //если тикетов еще нет, то добавляем в конец
         //тикет добавляется в конец секции
         this.sectionItems.hide();
         var insertMethod = ticketConfig['pos'] ? 'pos' : 'order';
-        var currentSection = ticketConfig['section'] || ticketConfig['data']['section'] || 'other';
         if (!ticketConfig[insertMethod]){
             ticketConfig[insertMethod] = WebApp.section_scheme[currentSection] && WebApp.section_scheme[currentSection][insertMethod]||10000;
         }
