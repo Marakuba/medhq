@@ -37,7 +37,7 @@ def autodiscover():
         except ImportError:
             continue
         __import__('%s.%s' % (app, REPORTING_SOURCE_FILE))
-        print '%s.%s' % (app, REPORTING_SOURCE_FILE)
+        # print '%s.%s' % (app, REPORTING_SOURCE_FILE)
 #    REPORTS_DIR = 'reports'
 #    CUSTOM_APPS = settings.CUSTOM_APPS
 #    print CUSTOM_APPS / REPORTS_DIR

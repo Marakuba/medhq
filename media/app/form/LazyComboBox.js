@@ -35,7 +35,7 @@ Ext.form.LazyComboBox = Ext.extend(Ext.form.ComboBox, {
             	this._cachedValue = value;
                 this.store.load({
                 	params: {
-                    	id:App.uriToId(value)
+                    	id:App.utils.uriToId(value)
                     },
                 	callback: function(r, opts, success){
                     	if(r.length) {
@@ -56,7 +56,7 @@ Ext.form.LazyComboBox = Ext.extend(Ext.form.ComboBox, {
 		this._cachedValue = value;
 		this.store.load({
 			params: {
-				id:App.uriToId(value)
+				id:App.utils.uriToId(value)
 			},
 			callback: function(r, opts, success){
 				if(r.length) {
@@ -109,7 +109,7 @@ Ext.form.LazyClearableComboBox = Ext.extend(Ext.form.ClearableComboBox, {
                                 this._cachedValue = value;
                                 this.store.load({
                                         params: {
-                                                id:App.uriToId(value)
+                                                id:App.utils.uriToId(value)
                                         },
                                         callback: function(r, opts, success){
                                                 if(r.length) {
@@ -130,7 +130,7 @@ Ext.form.LazyClearableComboBox = Ext.extend(Ext.form.ClearableComboBox, {
 		this._cachedValue = value;
 		this.store.load({
 			params: {
-				id:App.uriToId(value)
+				id:App.utils.uriToId(value)
 			},
 			callback: function(r, opts, success){
 				if(r.length) {

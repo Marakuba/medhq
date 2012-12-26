@@ -1,62 +1,62 @@
 <style>
-	#LabRegistry {
+	.LabRegistry {
 		font-family:'Arial';
 		padding:4px;
 	}
 	 
-	#LabRegistry h1 {
+	.LabRegistry h1 {
 		font-size:18pt;
 		padding:6pt 0;
 	}
 	
-	#LabRegistry table {
+	.LabRegistry table {
 		width:100%;
 		border-collapse: collapse;
 		border-spacing: 0;
 	}
 	
-	#LabRegistry td, th {
+	.LabRegistry td, .LabRegistry th {
 		border:1px solid gray;
 		padding:1px 3px;
 		font-size:10pt;
 	}
-	#LabRegistry th {
+	.LabRegistry th {
 		background-color:#DDD;
 		vertical-align: middle;
 	}
-	#LabRegistry td a {
+	.LabRegistry td a {
 		text-decoration: none;
 		color: black;
 	}
-	#LabRegistry td a:hover {
+	.LabRegistry td a:hover {
 		text-decoration: underline;
 	}
-	#LabRegistry td.analysis {
+	.LabRegistry td.analysis {
 		border:none;
 		padding:8px 1px 3px 1px;
 		font-weight: bold;
 		font-size: 13pt;
 	}
-	#LabRegistry td.num {
+	.LabRegistry td.num {
 	}
-	#LabRegistry td.date {
+	.LabRegistry td.date {
 		text-align: center;
 	}
-	#LabRegistry tr.complete {
+	.LabRegistry tr.complete {
 		background-color: #D3FFC7;
 	}
-	#LabRegistry tr.data:hover {
+	.LabRegistry tr.data:hover {
 		/* background-color: #FAEF7A; */
 		border-top:1px solid #EEE;
 		border-bottom:1px solid #AAA;
 	}
 </style>
 
-<div id="LabRegistry">
+<div class="LabRegistry">
 
 <!-- <h1>Реестр исследований</h1> -->
 
-<table cellspacing="0" cellpadding="0" border="0">
+<table class="data" cellspacing="0" cellpadding="0" border="0">
 	{% for result in result_list %}
 	<tr>
 		<td colspan="5" class="analysis">{{ result.0 }}</td>

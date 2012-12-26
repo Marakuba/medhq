@@ -23,17 +23,19 @@ body {
 }
 
 #print-box {
-	position:absolute;
+	position:fixed;
 	top:20px;
 	left:20px;
-	padding:8px 8px 8px 25px;
-	background:white url(icons/printer.png) no-repeat 5px 8px;
-	border-radius:4px;
 }
 #print-box a {
 	font-family:'Arial';
 	color:black;
 	text-decoration: none;
+	padding:8px 8px 8px 25px;
+	background:white url(icons/printer.png) no-repeat 5px 8px;
+	border-radius:4px;
+	border:1px solid gray;
+	box-shadow:1px 1px 2px black;
 }
 
 .separator {

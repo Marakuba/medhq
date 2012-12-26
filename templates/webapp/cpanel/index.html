@@ -52,7 +52,7 @@
 		{% endfor %}
 		]
 		var active_profile = {{ request.active_profile.id|default:'null' }};
-		var permissions = {{ perms|default:'[]' }};
+		var apps = {{ apps|default:'[]' }};
 		
 	</script>
 	{% endautoescape %}

@@ -8,7 +8,7 @@ from tastypie.api import Api
 from apiutils.resources import ExtResource, ComplexQuery, ExtBatchResource
 from lab.models import LabOrder, Sampling, Tube, Result, Analysis, InputList,\
     Equipment, EquipmentAssay, EquipmentResult, EquipmentTask, Invoice,\
-    InvoiceItem
+    InvoiceItem, AnalysisProfile, LabService, Measurement, LabOrderEmailTask, LabOrderEmailHistory
 from patient.utils import smartFilter
 from django.db.models.query_utils import Q
 from tastypie.cache import SimpleCache
@@ -16,29 +16,31 @@ from visit.models import OrderedService
 from apiutils.authorization import LocalAuthorization
 
 
-class TubeResource(ModelResource):
+class LSResource(ExtResource):
+    base_service = fields.OneToOneField('service.api.BaseServiceResource', 'base_service')
+
+    class Meta:
+        queryset = LabService.objects.all()
+        authorization = DjangoAuthorization()
+        resource_name = 'ls'
+        always_return_data = True
+        filtering = {
+            'base_service': ALL_WITH_RELATIONS,
+            'is_manual': ALL,
+        }
+        list_allowed_methods = ['get', 'post', 'put']
+
+
+class TubeResource(ExtResource):
     """
     """
     class Meta:
         queryset = Tube.objects.all()
         resource_name = 'tube'
+        limit = 500
         filtering = {
+            'id': ALL,
             'name': ALL
-        }
-        list_allowed_methods = ['get', 'post', 'put']
-
-
-class AnalysisResource(ModelResource):
-    """
-    """
-    service = fields.ForeignKey('service.api.BaseServiceResource', 'service')
-
-    class Meta:
-        queryset = Analysis.objects.select_related().all()
-        resource_name = 'analysis'
-        always_return_data = True
-        filtering = {
-            'service': ALL_WITH_RELATIONS
         }
         list_allowed_methods = ['get', 'post', 'put']
 
@@ -50,8 +52,81 @@ class InputListResource(ModelResource):
     class Meta:
         queryset = InputList.objects.all()
         resource_name = 'inputlist'
+        limit = 10000
         filtering = {
             'name': ALL
+        }
+        list_allowed_methods = ['get', 'post', 'put']
+
+
+class MeasurementResource(ExtResource):
+    """
+    """
+
+    class Meta:
+        queryset = Measurement.objects.all()
+        resource_name = 'measurement'
+        authorization = DjangoAuthorization()
+        always_return_data = True
+        limit = 10000
+        filtering = {
+            'name': ALL
+        }
+        list_allowed_methods = ['get', 'post', 'put']
+
+
+class AnalysisProfileResource(ExtResource):
+    """
+    """
+
+    class Meta:
+        queryset = AnalysisProfile.objects.all()
+        resource_name = 'analysisprofile'
+        always_return_data = True
+        filtering = {
+            'id': ALL,
+            'name': ALL
+        }
+        list_allowed_methods = ['get', 'post', 'put']
+
+
+class InputListResource(ModelResource):
+    """
+    """
+
+    class Meta:
+        queryset = AnalysisProfile.objects.all()
+        resource_name = 'analysis_profile'
+        authorization = DjangoAuthorization()
+        always_return_data = True
+        filtering = {
+            'id': ALL,
+            'name': ALL
+        }
+        list_allowed_methods = ['get', 'post', 'put']
+
+
+class AnalysisResource(ExtResource):
+    """
+    """
+    service = fields.ForeignKey('service.api.BaseServiceResource', 'service')
+    input_list = fields.ToManyField(InputListResource, 'input_list', null=True)
+    profile = fields.ForeignKey(AnalysisProfileResource, 'profile', null=True)
+    measurement = fields.ForeignKey(MeasurementResource, 'measurement', null=True)
+
+    def dehydrate(self, bundle):
+        bundle.data['profile_name'] = bundle.obj.profile and bundle.obj.profile.name
+        bundle.data['measurement_name'] = bundle.obj.measurement and bundle.obj.measurement.name
+        return bundle
+
+    class Meta:
+        queryset = Analysis.objects.select_related().all()
+        resource_name = 'analysis'
+        always_return_data = True
+        limit = 1000
+        authorization = DjangoAuthorization()
+        filtering = {
+            'service': ALL_WITH_RELATIONS
         }
         list_allowed_methods = ['get', 'post', 'put']
 
@@ -75,6 +150,17 @@ class LabOrderResource(ExtResource):
             if v.menses_day:
                 info.append(u"Д/ц: <font color='red'>%s</font>" % v.menses_day)
             bundle.data['info'] = "; ".join(info)
+            try:
+                task = laborder.laborderemailtask
+                status = 'email'
+                if task.status in ['sent', 'resent']:
+                    status += '-go'
+                elif task.status == 'failed':
+                    status += '-error'
+                bundle.data['send_to_email'] = status
+            except:
+                email_flag = v.send_to_email and 'email' or ''
+                bundle.data['send_to_email'] = email_flag
             bundle.data['visit_created'] = v.created
             bundle.data['visit_is_cito'] = v.is_cito
             bundle.data['visit_id'] = v.id
@@ -117,7 +203,59 @@ class LabOrderResource(ExtResource):
         return orm_filters
 
     class Meta:
-        queryset = LabOrder.objects.select_related().all()
+        queryset = LabOrder.objects.select_related('visit',
+            'visit__barcode',
+            'visit__patient',
+            'visit__office',
+            'visit__payer',
+            'visit__operator',
+            'laboratory',
+            'staff',
+            'staff__staff').only('is_completed',
+            'id',
+            'comment',
+            'widget',
+            'executed',
+            'created',
+            'confirmed',
+            'is_printed',
+            'is_manual',
+            'manual_service',
+            'print_date',
+            'staff',
+            'staff__staff__last_name',
+            'staff__staff__first_name',
+            'staff__staff__mid_name',
+            'visit',
+            'laboratory',
+            'laboratory__name',
+            'visit__send_to_email',
+            'visit__pregnancy_week',
+            'visit__menses_day',
+            'visit__created',
+            'visit__is_cito',
+            'visit__barcode__id',
+            'visit__payer',
+            'visit__operator',
+            'visit__operator__username',
+            'visit__patient',
+            'visit__patient__last_name',
+            'visit__patient__first_name',
+            'visit__patient__mid_name',
+            'visit__patient__gender',
+            'visit__patient__birth_day',
+            'visit__office',
+            'visit__office__name')
+        fields = ['id','is_completed',
+            'comment',
+            'widget',
+            'executed',
+            'created',
+            'confirmed',
+            'is_printed',
+            'is_manual',
+            'manual_service',
+            'print_date']
         resource_name = 'laborder'
         authorization = DjangoAuthorization()
         always_return_data = True
@@ -465,10 +603,56 @@ class InvoiceItemResource(ExtResource):
         list_allowed_methods = ['get', 'post', 'put']
 
 
+class LabOrderEmailTaskResource(ExtResource):
+
+    lab_order = fields.ForeignKey(LabOrderResource, 'lab_order')
+
+    def dehydrate(self, bundle):
+        visit = bundle.obj.lab_order.visit
+        bundle.data['order_id'] = visit.barcode_id
+        bundle.data['order_created'] = visit.created
+        bundle.data['patient_name'] = visit.patient.full_name()
+        bundle.data['status_text'] = bundle.obj.get_status_display()
+        return bundle
+
+    class Meta:
+        queryset = LabOrderEmailTask.objects.all()
+        resource_name = 'emailtask'
+        authorization = DjangoAuthorization()
+        limit = 50
+        filtering = {
+            'lab_order': ALL_WITH_RELATIONS,
+            'status': ALL,
+        }
+        list_allowed_methods = ['get', 'post', 'put']
+
+
+class LabOrderEmailHistoryResource(ModelResource):
+
+    email_task = fields.ForeignKey(LabOrderEmailTaskResource, 'email_task')
+
+    def dehydrate(self, bundle):
+        bundle.data['status_text'] = bundle.obj.get_status_display()
+        bundle.data['created_by_name'] = bundle.obj.created_by and bundle.obj.created_by.__unicode__()
+        return bundle
+
+    class Meta:
+        queryset = LabOrderEmailHistory.objects.all()
+        resource_name = 'emailhistory'
+        authorization = DjangoAuthorization()
+        limit = 50
+        filtering = {
+            'email_task': ALL_WITH_RELATIONS,
+        }
+        list_allowed_methods = ['get', 'post', 'put']
+
+
 api = Api(api_name='lab')
 
 api.register(InputListResource())
 api.register(LabOrderResource())
+api.register(AnalysisProfileResource())
+api.register(MeasurementResource())
 api.register(AnalysisResource())
 api.register(ResultResource())
 api.register(SamplingResource())
@@ -482,3 +666,6 @@ api.register(EquipmentTaskResource())
 api.register(EquipmentTaskReadOnlyResource())
 api.register(InvoiceResource())
 api.register(InvoiceItemResource())
+api.register(LSResource())
+api.register(LabOrderEmailTaskResource())
+api.register(LabOrderEmailHistoryResource())

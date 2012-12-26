@@ -31,6 +31,9 @@
 .med-doctor {
 	background-image: url(../images/doctor.png) !important; background-repeat: no-repeat;
 }
+.app-pdf {
+	background-image: url(../images/icon_pdf.png) !important; background-repeat: no-repeat;
+}
 .x-loading {
 	background-image: url(../images/loading.gif) !important; background-repeat: no-repeat;
 }
@@ -38,14 +41,18 @@
 	white-space:normal;
 }
 .helpdesk-row-body, .preorder-actual-row-body {
-	padding:5px;
+	padding:5px 0;
 	color:#385F95
 }
 
 .result-row-body {
 	margin-top:2px;
 	padding:1px 5px 7px 18px;
-	color:#385F95
+	color:#385F95;
+}
+
+.x-grid3-row-selected .result-row-body {
+	color:white;
 }
 
 .splash {
@@ -162,6 +169,12 @@
 
 .x-growl-accept {
     background-image: url("../images/accept32.png");
+    background-repeat: no-repeat;
+    background-position: 10px 10px;
+}
+
+.x-growl-error {
+    background-image: url("../images/error.png");
     background-repeat: no-repeat;
     background-position: 10px 10px;
 }
@@ -336,6 +349,10 @@ button.icon-main-button {
 	padding-top:3px;
 	border-top:2px solid #edf4ff;
 	background-color:#cee1ff;
+}
+.disabled-groups .x-grid-group-title {
+	background: transparent!important;
+	padding-left: 6px!important;
 }
 .cell-completed-icon {
 	background: url('../images/icon-yes.gif') no-repeat;

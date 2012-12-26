@@ -24,3 +24,4 @@ import lab.views
 import numeration.views
 import service.views
 import staff.views
+import scheduler.views

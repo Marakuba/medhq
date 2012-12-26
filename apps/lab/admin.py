@@ -340,19 +340,35 @@ class SamplingAdmin(admin.ModelAdmin):
     
     def barcode(self, obj):
         return obj.visit.barcode.id
-    
+
+
+class LabOrderEmailTaskAdmin(admin.ModelAdmin):
+    """
+    """
+    readonly_fields = ['lab_order', ]
+
+
+class LabOrderEmailHistoryAdmin(admin.ModelAdmin):
+    """
+    """
+    readonly_fields = ['email_task', ]
+    list_display = ['id','email_task','created','status']
+
+
 admin.site.register(AnalysisProfile)
 admin.site.register(Analysis, AnalysisAdmin)
 admin.site.register(Sampling, SamplingAdmin)
 admin.site.register(InputList)
 admin.site.register(Measurement)
 admin.site.register(Tube)
-admin.site.register(LabOrder,LabOrderAdmin)
+admin.site.register(LabOrder, LabOrderAdmin)
 admin.site.register(Result, ResultAdmin)
-admin.site.register(Equipment,EquipmentAdmin)
+admin.site.register(Equipment, EquipmentAdmin)
 admin.site.register(EquipmentAnalysis, EquipmentAnalysisAdmin)
 admin.site.register(EquipmentAssay, EquipmentAssayAdmin)
 admin.site.register(EquipmentTask, EquipmentTaskAdmin)
 admin.site.register(EquipmentResult, EquipmentResultAdmin)
 admin.site.register(Invoice)
 admin.site.register(InvoiceItem)
+admin.site.register(LabOrderEmailTask, LabOrderEmailTaskAdmin)
+admin.site.register(LabOrderEmailHistory, LabOrderEmailHistoryAdmin)
