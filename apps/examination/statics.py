@@ -19,6 +19,7 @@ class ExamOrderGridApp(BaseWebApp):
         'libs/tiny_mce/tiny_mce.js',
         'libs/tiny_mce/langs/ru.js',
         'libs/tiny_mce/themes/advanced/editor_template.js',
+        'libs/tiny_mce/themes/advanced/langs/ru.js',
         'libs/tiny_mce/plugins/pagebreak/editor_plugin.js',
         'libs/tiny_mce/plugins/style/editor_plugin.js',
         'libs/tiny_mce/plugins/layer/editor_plugin.js',

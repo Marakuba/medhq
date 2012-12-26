@@ -7,6 +7,8 @@ from webapp.base import BaseWebApp, register
 class BarcodePackageApp(BaseWebApp):
 
     js = [
+        'resources/js/web-socket-js/swfobject.js',
+        'resources/js/web-socket-js/web_socket.js',
         'app/barcodepackage/PrintUtils.js',
         'app/barcodepackage/DuplicateWindow.js',
     ]

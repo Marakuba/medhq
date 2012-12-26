@@ -8,6 +8,9 @@ class CardVisitGridApp(BaseWebApp):
 
     cmp_type = 'action'
     js = [
+        'resources/js/web-socket-js/swfobject.js',
+        'resources/js/web-socket-js/web_socket.js',
+        'app/barcodepackage/PrintUtils.js',
         'app/visit/models.js',
         'app/visit/barcode/BarcodeChoiceGrid.js',
         'app/visit/barcode/BarcodeChoiceWindow.js',
