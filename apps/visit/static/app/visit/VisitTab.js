@@ -222,8 +222,8 @@ App.visit.VisitTab = Ext.extend(Ext.Panel, {
     },
 
     close: function() {
-        WebApp.fireEvent('closeapp',this.id);
         WebApp.fireEvent('patientcardupdate',this.patientId);
+        WebApp.fireEvent('closeapp',this.id);
 //      WebApp.fireEvent('balanceupdate');
     },
 

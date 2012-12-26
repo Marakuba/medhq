@@ -70,7 +70,7 @@ App.billing.PaymentWindow = Ext.extend(Ext.Window, {
         if(action=='create') {
             //WebApp.fireEvent('paymentcreate',rs);
         }
-        WebApp.fireEvent('paymentsave',rs);
+        WebApp.fireEvent('patientcardupdate', rs.data.client);
         this.record = rs;
         this.onClose();
         //Убрал статус бар, т.к. возникала ошибка при автоматическом закрытии окна(закрывалось раньше чем установится статус)
