@@ -91,7 +91,7 @@ App.choices.TubeChoiceGrid = Ext.extend(Ext.grid.GridPanel, {
 			tbar:[this.choiceButton,
 			this.searchField],
 			bbar: new Ext.PagingToolbar({
-				pageSize: 20,
+				pageSize: 500,
 				store: this.store,
 				displayInfo: true,
 				displayMsg: 'Записи {0} - {1} из {2}',

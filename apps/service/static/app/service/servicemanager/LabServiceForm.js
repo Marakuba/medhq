@@ -48,6 +48,7 @@ App.servicemanager.LabServiceForm = Ext.extend(Ext.form.FormPanel,{
             valueField: 'id',
             displayField: 'title',
             mode: 'local',
+            value: 'baseplain',
             forceSelection: true,
             selectOnFocus: true,
             editable: false,
@@ -77,6 +78,8 @@ App.servicemanager.LabServiceForm = Ext.extend(Ext.form.FormPanel,{
         config = {
             layout: 'form',
             autoScroll: true,
+            padding:4,
+            labelWidth: 170,
             title: this.title || this.origTitle,
             items: [
             {
@@ -103,13 +106,10 @@ App.servicemanager.LabServiceForm = Ext.extend(Ext.form.FormPanel,{
                 width:200,
                 listeners: {
                     scope:this,
-                    render: function(c) {
-                        var el = c.getEl();
-                        el.on('blur',function(f){
-                            if (!(this.dataIsLoading === true || this.dataIsLoading === undefined)){
-                                this.updateRecord();
-                            }
-                        }, this);
+                    change: function(c) {
+                        if (this.dataIsLoading === false){
+                            this.updateRecord();
+                        }
                     }
                 }
             },
@@ -146,6 +146,7 @@ App.servicemanager.LabServiceForm = Ext.extend(Ext.form.FormPanel,{
             this.store.add(this.record);
             this.dataIsLoading = false;
         } else {
+            this.baseService = bsRecord.data.resource_uri;
             this.tests.loadBaseService(bsRecord.data.id);
             this.dataIsLoading = true;
             this.store.load({
@@ -176,18 +177,22 @@ App.servicemanager.LabServiceForm = Ext.extend(Ext.form.FormPanel,{
         this.markDirty();
     },
 
-    setBaseService: function(bsUri){
-        this.getForm().findField('base_service').setValue(bsUri);
+    setBaseService: function(bsId){
+        this.baseService = App.utils.getApiUrl('service','baseservice', bsId);
+        this.getForm().findField('base_service').setValue(this.baseService);
         this.updateRecord();
-        this.tests.setBaseService(bsRecord.data.id);
+        this.tests.setBaseService(bsId);
         this.onSave();
     },
 
     onSave: function(){
         this.savedCount = 0;
         if (this.isDirty()){
-            this.store.save();
-            this.tests.onSave();
+            if (this.baseService){
+                this.store.save();
+                this.tests.onSave();
+            }
+
         }
     },
 
@@ -195,9 +200,11 @@ App.servicemanager.LabServiceForm = Ext.extend(Ext.form.FormPanel,{
         this.countToSave = 0;
         var records = this.store.getModifiedRecords();
         if (records.length > 0){
+            // console.log('Лабораторная форма isDirty')
             this.countToSave +=1;
         }
         if (this.tests.isDirty()){
+            // console.log('tests isDirty')
             this.countToSave +=1;
         }
         return this.countToSave > 0;

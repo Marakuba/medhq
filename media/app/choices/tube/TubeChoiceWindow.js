@@ -16,7 +16,7 @@ App.choices.TubeChoiceWindow = Ext.extend(Ext.Window, {
 			height:500,
 			modal:true,
 			layout:'fit',
-			title:'Реферралы',
+			title:'Пробирки',
 			items:[
 				this.grid
 			]

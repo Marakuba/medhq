@@ -39,6 +39,7 @@ App.servicemanager.ExtServicePanel = Ext.extend(Ext.Panel,{
             width:700,
             layout: 'fit',
             items:[],
+            padding: 4,
             region:'east',
             margins: '0 5 0 0'
         });
@@ -58,6 +59,7 @@ App.servicemanager.ExtServicePanel = Ext.extend(Ext.Panel,{
             this.medStateStore.load({callback: function(records){
                 if (!this.bsRecord) return false;
                 if (this.bsRecord.data.id){
+                    this.baseService = this.bsRecord.data.resource_uri;
                     this.grid.store.setBaseParam('base_service', this.bsRecord.data.id);
                     this.grid.store.load({callback: function(records){
                         if (records.length){
@@ -138,7 +140,7 @@ App.servicemanager.ExtServicePanel = Ext.extend(Ext.Panel,{
             listeners: {
                 scope: this,
                 formchanged: function(form){
-                    this.setTitle(this.origTitle + '*')
+                    this.markDirty();
                 }
             }
         });
@@ -153,16 +155,11 @@ App.servicemanager.ExtServicePanel = Ext.extend(Ext.Panel,{
         eRecord.set('base_service',this.bsRecord.data.resource_uri);
         eRecord.set('state',stateRecord.data.resource_uri);
         eRecord.set('state_name',stateRecord.data.name);
+        eRecord.set('is_active',true);
         this.grid.store.add(eRecord);
         this.grid.getSelectionModel().selectRecords([eRecord]);
         this.openExtService(eRecord);
-    },
-
-    setBSRecord: function(){
-        if(this.bsRecord && this.bsRecord.data.id){
-
-        }
-
+        this.markDirty();
     },
 
     isValid: function(){
@@ -173,19 +170,22 @@ App.servicemanager.ExtServicePanel = Ext.extend(Ext.Panel,{
         return isValid;
     },
 
-    setBaseService: function(bsUri){
+    setBaseService: function(bsId){
+        this.baseService = App.utils.getApiUrl('service', 'baseservice', bsId);
         if (this.extServiceForm){
-            var esForm = this.extServiceForm.getForm();
-            esForm.findField('base_service').setValue(bsUri);
+            this.extServiceForm.setBaseService(bsId);
         }
         this.grid.store.each(function(rec){
-            rec.set('base_service', bsUri);
+            rec.set('base_service', this.baseService);
         }, this);
         this.onSave();
     },
 
     onSave: function(){
-        this.grid.store.save();
+        if (this.baseService){
+            this.grid.store.save();
+        }
+
     },
 
     isDirty: function(){
@@ -201,5 +201,9 @@ App.servicemanager.ExtServicePanel = Ext.extend(Ext.Panel,{
 
     onCloseBtnClick: function(){
         this.fireEvent('closeform');
+    },
+
+    markDirty: function(){
+        this.setTitle(this.origTitle + '*');
     }
 });

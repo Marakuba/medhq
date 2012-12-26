@@ -37,6 +37,7 @@ class TubeResource(ExtResource):
     class Meta:
         queryset = Tube.objects.all()
         resource_name = 'tube'
+        limit = 500
         filtering = {
             'id': ALL,
             'name': ALL

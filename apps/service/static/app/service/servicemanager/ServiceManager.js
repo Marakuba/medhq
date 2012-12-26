@@ -20,16 +20,16 @@ App.service.ServiceManager = Ext.extend(Ext.Panel,{
 
         this.baseServiceStore.on('write', function(store, action, result, res, rs){
             if (action == 'create') {
+                this.parentNode.expand();
                 this.parentNode.appendChild({
-                    text: rs.data.name,
+                    text: rs.data.short_name,
                     id:rs.data.id,
                     leaf: rs.data.type != 'group',
-                    parent:this.parentNode.id,
+                    parent: this.parentNode.id,
                     type: rs.data.type,
                     checked: false
                 });
                 this.parentNode.leaf = false;
-                this.parentNode.expand();
                 this.serviceTree.doLayout();
             }
         },this);
@@ -85,6 +85,7 @@ App.service.ServiceManager = Ext.extend(Ext.Panel,{
     },
 
     onServiceClick: function(node){
+        if (node.id == 'root') return false;
         if (this.bsForm){
             this.bsForm.closeForm(function(thisForm){
                 thisForm.bsForm.destroy();
@@ -171,7 +172,7 @@ App.service.ServiceManager = Ext.extend(Ext.Panel,{
                     if (this.bsForm && this.bsForm.record.id){
                         var id = this.bsForm.record.id;
                         var el = _.find(this.selectedServices, function(serv){
-                            return serv[0] == id
+                            return serv[0] == id;
                         });
                         if (el){
                             this.bsForm.closeForm(function(thisForm){
@@ -195,10 +196,12 @@ App.service.ServiceManager = Ext.extend(Ext.Panel,{
                 node.parentNode && node.parentNode.id || undefined;
         if (parent && parent != 'root') {
             parent = App.utils.getApiUrl('service','baseservice',parent);
+            this.parentNode = node.attributes.type == 'group' ? node : node.parentNode;
         } else {
             parent = '';
+            this.parentNode = node;
         }
-        this.parentNode = node.attributes.type == 'group' ? node : node.parentNode;
+
         var newRecord = new this.baseServiceStore.recordType();
         newRecord.set('parent_uri',parent);
         newRecord.set('type',type);
