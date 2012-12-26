@@ -15,8 +15,49 @@ class Config(object):
     """
     """
 
-    def __init__(self, *args, **kwargs):
-        pass
+    def __init__(self, source, header, *args, **kwargs):
+        self.source = source
+        self.header = header
+        self.totals = kwargs.get('totals', None)
+        self.opts = kwargs
+
+    def __call__(self, report, **kwargs):
+        results, cols = self.prep_data(report)
+
+        if not results:
+            return []
+        na = self.opts.get('na', '0')
+        df = pd.DataFrame(results, columns=cols).fillna(na)
+
+        self.series = OrderedDict()
+
+        for col in df:
+            self.series[col] = [df[col]]
+
+        # for cfg in self.values:
+        #     if isinstance(cfg, basestring):
+        #         cfg = {
+        #             'values': cfg,
+        #             'aggfunc': np.sum
+        #         }
+        #     p = pd.pivot_table(df,
+        #         values=cfg['values'],
+        #         rows=self.rows,
+        #         cols=self.cols,
+        #         aggfunc=cfg['aggfunc'])
+
+        #     self.series[cfg['values']] = []
+        #     for col in p:
+        #         self.series[cfg['values']].append(p[col].fillna(na))
+
+        results = {
+            'data': self.header(self)
+        }
+
+        if self.totals:
+            results['totals'] = self.totals(self)
+
+        return results
 
     def prep_data(self, report, *args, **kwargs):
         return self.source(self, report, **kwargs)
@@ -158,8 +199,8 @@ class Header(object):
 
         # print [ix[1] for ix in df.index.values][0]
 
-        for h in self.headers:
-            self.columns.extend(h(self))
+        for header in self.headers:
+            self.columns.extend(header(self))
 
         columns = [col[0][0] for col in self.columns]
 
@@ -172,9 +213,9 @@ class Header(object):
 
         # pprint.pprint(self.columns)
 
-        df = pd.DataFrame(data)
+        self.results = pd.DataFrame(data, columns=columns)
 
-        return [DataRow(row, attrs) for ix, row in df.iterrows()]
+        return [DataRow(row, attrs) for ix, row in self.results.iterrows()]
 
 
         # titles = [col[0][1] for col in self.columns]
@@ -254,6 +295,32 @@ class PivotResult(object):
         return result
 
 
+class Column(object):
+    """
+    """
+    renderer = lambda v, row: v
+
+    def __init__(self, col, title=None, attrs=None, renderer=None):
+        self.col = col
+        self.title = title
+        self.attrs = attrs or {}
+        if renderer:
+            self.renderer = renderer
+
+    def __call__(self, header):
+        result = []
+        sr = header.config.series[self.col]
+        for i, s in enumerate(sr):
+            # print "%s_%s" % (self.col, s.name)
+            # print list(s.values)
+            result.append([
+                [u'%s_%s' % (self.col, i), (self.title, )],
+                list(s.values),
+                self.attrs
+            ])
+        return result
+
+
 class SqlDataSource(object):
     """
     """
@@ -286,6 +353,18 @@ class ConfigDataSource(object):
 
     def get(self):
         pass
+
+
+class Total(object):
+    """
+    """
+    def __init__(self, *args, **kwargs):
+        self.position = kwargs.get('position', 'top')
+        self.aggfunc = kwargs.get('aggfunc', np.sum)
+        self.columns = args
+
+    def __call__(self, config):
+        print config.header.results['total_price'].sum()
 
 
 class PandasReport(object):

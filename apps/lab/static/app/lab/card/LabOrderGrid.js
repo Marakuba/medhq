@@ -118,6 +118,13 @@
                 }
             ];
 
+            this.emailBtn = new Ext.Button({
+                iconCls:'silk-email',
+                text:'Отправить по email',
+                disabled:true,
+                handler:this.makeEmailTask.createDelegate(this)
+            });
+
             var config = {
                 loadMask : {
                     msg : 'Подождите, идет загрузка...'
@@ -127,7 +134,18 @@
                 store:this.store,
                 columns:this.columns,
                 sm : new Ext.grid.RowSelectionModel({
-                            singleSelect : true
+                            singleSelect : true,
+                            listeners: {
+                                rowselect:function(sm, i, rec){
+                                    if(rec.data.is_completed){
+                                        this.emailBtn.enable();
+                                    }
+                                },
+                                rowdeselect: function(sm, i, rec){
+                                    this.emailBtn.disable();
+                                },
+                                scope:this
+                            }
                         }),
                 tbar:[{
                     xtype:'button',
@@ -139,11 +157,7 @@
                     iconCls:'app-pdf',
                     // text:'Печать',
                     handler:this.onPrint.createDelegate(this, ['pdf'])
-                },'-',{
-                    iconCls:'silk-email',
-                    text:'Отправить по email',
-                    handler:this.makeEmailTask.createDelegate(this)
-                }],
+                },'-', this.emailBtn],
                 listeners: {
                     rowdblclick:this.onPrint.createDelegate(this, [])
                 },
@@ -168,7 +182,44 @@
         makeEmailTask: function(){
             var rec = this.getSelected();
             if(!rec) { return; }
-            App.direct.lab.makeEmailTask(rec.data.id, function(res){
+            if(!this.patientRecord.data.email) {
+                Ext.MessageBox.prompt(
+                    'Отсутствует email!',
+                    'Введите корректный адрес электронной почты для пациента '+this.patientRecord.data.short_name,
+                    function(btn, text){
+                        var email = /^(\w+)([\-+.][\w]+)*@(\w[\-\w]*\.){1,5}([A-Za-z]){2,6}$/;
+                        (function(btn, text){
+                            if(btn=='ok'){
+                                if(!email.test(text)){
+                                    Ext.MessageBox.prompt(
+                                        'Ошибка!',
+                                        String.format('Введенное значение "{0}" не является корректным адресом!', text),
+                                        arguments.callee,
+                                        this,
+                                        false,
+                                        text
+                                    );
+                                } else {
+                                    this._makeEmailTask(rec.data.id, text);
+                                }
+                            } else {
+                                Ext.MessageBox.alert(
+                                    'Предупреждение',
+                                    'Отправка результатов будет произведена только после установки email в карточке пациента!'
+                                );
+                                this._makeEmailTask(rec.data.id);
+                            }
+                        }).call(this, btn, text);
+                    },
+                    this
+                );
+            } else {
+                this._makeEmailTask(rec.data.id);
+            }
+        },
+
+        _makeEmailTask: function(id, email){
+            App.direct.lab.makeEmailTask(id, email, function(res){
                 Ext.ux.Growl.notify({
                     title: res.success ? "Успешная операция" : "Ошибка",
                     message: res.message,
@@ -189,6 +240,7 @@
         setActivePatient: function(rec) {
             id = rec.id;
             this.patientId = id;
+            this.patientRecord = rec;
             var s = this.store;
             s.setBaseParam('visit__patient', id);
             s.load();

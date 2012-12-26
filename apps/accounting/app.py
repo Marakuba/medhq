@@ -9,7 +9,8 @@ class AccountingApp(BaseApp):
     urls_conf = 'accounting.urls'
 
     def callback(self, *args, **kwargs):
-        print "callback inside accounting"
+        pass
+        # print "callback inside accounting"
 
 application = AccountingApp
 

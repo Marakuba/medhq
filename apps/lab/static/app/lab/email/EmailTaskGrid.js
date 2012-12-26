@@ -321,7 +321,7 @@
         onPrint: function(format) {
             var rec = this.getSelected();
             if(!rec) { return; }
-            var id = rec.data.id;
+            var id = App.utils.uriToId(rec.data.lab_order);
             format = format ? '?format='+format : '';
             var url = String.format('/lab/print/results/{0}/{1}', id, format);
             window.open(url);

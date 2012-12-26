@@ -174,8 +174,11 @@ def _create_email_task(lab_order, resend=True):
         if task.status in ['sent', 'resent', 'failed', 'canceled'] and resend:
             task.status = 'repeat'
             task.save()
+        elif task.status == 'noaddr':
+            task.status = 'ready'
+            task.save()
 
-    return task
+    return task, created
 
 
 from django.core.mail import EmailMessage

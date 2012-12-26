@@ -46,7 +46,7 @@ def autodiscover():
         except ImportError:
             continue
         __import__('%s.%s' % (app, WEBAPP_SOURCE_FILE))
-        print '%s.%s' % (app, WEBAPP_SOURCE_FILE)
+        # print '%s.%s' % (app, WEBAPP_SOURCE_FILE)
 
 
 class BaseWebApp(object):

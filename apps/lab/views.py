@@ -216,7 +216,7 @@ def confirm_results(request):
     }
 
 
-@remoting(remote_provider, len=1, action='lab', name='makeEmailTask')
+@remoting(remote_provider, len=2, action='lab', name='makeEmailTask')
 def make_email_task(request):
     """
     """
@@ -239,11 +239,28 @@ def make_email_task(request):
         v.send_to_email = True
         v.save()
 
-    _create_email_task(lab_order=lab_order)
+    try:
+        email = data['data'][1]
+    except:
+        email = None
+
+    if email:
+        v.patient.email = email
+        print "new email received:", email
+        v.patient.save()
+
+    task, created = _create_email_task(lab_order=lab_order)
+
+    # if created:
+    msg = u'Лабораторный ордер к заказу %s успешно добавлен в список отправки' % lab_order.visit.barcode_id
+    # else:
+    #     if task.status in [u'ready', u'resent']:
+    #         msg = u'Лабораторный ордер к заказу %s уже был добавлен к отправке ранее' % lab_order.visit.barcode_id
+    #     elif task.status == u'resent'
 
     return {
         'success': True,
-        'message': u'Лабораторный ордер к заказу %s успешно добавлен в список отправки' % lab_order.visit.barcode_id
+        'message': msg
     }
 
 
