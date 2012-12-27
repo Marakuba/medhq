@@ -117,6 +117,9 @@ def results(request, object_id):
     return lab_order_to_html(request, order)
 
 
+from .utils import make_lab
+
+
 def revert_results(request):
     """
     """
@@ -128,7 +131,7 @@ def revert_results(request):
             ordered_services = lab_order.visit.orderedservice_set.filter(execution_place=lab_order.laboratory,
                                                                          service__lab_group=lab_order.lab_group)
             for ordered_service in ordered_services:
-                ordered_service.to_lab()
+                make_lab(ordered_service)
 
             for result in lab_order.result_set.all():
                 if not result.is_completed():

@@ -76,9 +76,9 @@ update_specimen_action.short_description = u"Загрузить результа
 class LabOrderAdmin(admin.ModelAdmin):
     
     readonly_fields = ('laboratory',)
-    exclude = ('is_completed','is_printed','print_date','visit','lab_group')
+    exclude = ('is_completed','is_printed','print_date','visit')
 #    list_display = ('__unicode__','is_completed','is_printed','print_date_display',actions)
-    list_display = ('visit_id','visit_created','patient_name','visit_office','laboratory','operator','is_completed','is_printed','print_date_display','created_date')
+    list_display = ('visit_id','visit_created','patient_name','visit_office','laboratory','operator','is_completed','is_printed','print_date_display','created_date','lab_group')
     list_filter = ('laboratory','is_completed','lab_group')
     date_hierarchy = 'created'
     inlines = [ResultInline]

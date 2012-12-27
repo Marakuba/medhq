@@ -211,28 +211,34 @@ App.result.ResultCard = Ext.extend(Ext.Panel, {
         if(this.labOrderRecord){
             this.saveSDT(this.labOrderRecord);
         }
-        this.taskQueue[this.labOrderRecord.data.id] = [];
-        this.taskQueue[this.labOrderRecord.data.id].push(function(){
-            this.tab.items.each(function(item){
-                if(item.onSave) {
-                    item.onSave();
-                }
-            });
+        this.tab.items.each(function(item){
+            if(item.onSave) {
+                item.onSave();
+            }
         });
     },
 
     onSubmit : function(){
+        var dirty;
         if(this.labOrderRecord){
-            this.saveSDT(this.labOrderRecord);
+            dirty = this.saveSDT(this.labOrderRecord);
         }
-        this.taskQueue[this.labOrderRecord.data.id] = [];
-        this.taskQueue[this.labOrderRecord.data.id].push(function(){
+        if(dirty) {
+            this.taskQueue[this.labOrderRecord.data.id] = [];
+            this.taskQueue[this.labOrderRecord.data.id].push(function(){
+                this.tab.items.each(function(item){
+                    if(item.onSubmit) {
+                        item.onSubmit();
+                    }
+                });
+            });
+        } else {
             this.tab.items.each(function(item){
                 if(item.onSubmit) {
                     item.onSubmit();
                 }
             });
-        });
+        }
     },
 
     initCommentPanel : function(){
@@ -332,13 +338,16 @@ App.result.ResultCard = Ext.extend(Ext.Panel, {
         if(!staff){
             staff = this.setStaff();
         }
+        var dirty;
         if(rec) {
             rec.beginEdit();
             rec.set('executed', d);
             rec.set('comment', this.ResultComment.getForm().findField('comment').getValue());
             rec.set('staff', staff || null);
+            dirty = rec.dirty;
             rec.endEdit();
         }
+        return dirty;
     },
 
     onPrint: function() {
