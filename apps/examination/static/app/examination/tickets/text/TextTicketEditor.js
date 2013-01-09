@@ -172,11 +172,6 @@ App.examination.TextTicketEditor = Ext.extend(Ext.Panel, {
             items:[this.okBtn]
         });
 
-        this.bb = new Ext.Toolbar({
-            items:[]
-        });
-
-
         config = {
             layout: 'border',
             type: 'ticket-edit-panel',
@@ -184,8 +179,7 @@ App.examination.TextTicketEditor = Ext.extend(Ext.Panel, {
                 this.ticketPanel,
                 this.glossPanel
             ],
-            tbar: this.ttb,
-            bbar: this.bb
+            tbar: this.ttb
         };
 
         Ext.apply(this, Ext.apply(this.initialConfig, config));
@@ -195,6 +189,7 @@ App.examination.TextTicketEditor = Ext.extend(Ext.Panel, {
                 this.loadTicket(this.data);
                 this.bodyField.focus(false, 350);
             }
+            this.ttb.add('->');
             if (this.prevTicket && this.prevTicket.section != 'name'){
                 var prevText = this.prevTicket.title != this.prevTicket.defaultTitle &&
                                this.prevTicket.title ||
@@ -204,9 +199,9 @@ App.examination.TextTicketEditor = Ext.extend(Ext.Panel, {
                     iconCls: 'silk-resultset-previous',
                     handler: this.editComplete.createDelegate(this, [this.prevTicket])
                 });
-                this.bb.add(this.prevBtn);
+                this.ttb.add(this.prevBtn);
             }
-            if (this.nextTicket){
+            if (this.nextTicket && this.nextTicket.section != 'name'){
                 var nextText = this.nextTicket.title != this.nextTicket.defaultTitle &&
                                this.nextTicket.title ||
                                Ext.util.Format.ellipsis(this.nextTicket.data.value, 40);
@@ -215,8 +210,8 @@ App.examination.TextTicketEditor = Ext.extend(Ext.Panel, {
                     iconCls: 'silk-resultset-next',
                     handler: this.editComplete.createDelegate(this, [this.nextTicket])
                 });
-                this.bb.add('->');
-                this.bb.add(this.nextBtn);
+                this.ttb.add('-');
+                this.ttb.add(this.nextBtn);
             }
             this.doLayout();
 

@@ -100,10 +100,9 @@ App.examination.AsgmtTicketEditor = Ext.extend(Ext.Panel, {
             scope:this
         });
 
-        this.bb = new Ext.Toolbar({
-            items:[]
+        this.ttb = new Ext.Toolbar({
+            items:[this.okBtn, this.cancelBtn]
         });
-
 
         config = {
 //          bodyStyle: 'padding:5px',
@@ -113,9 +112,7 @@ App.examination.AsgmtTicketEditor = Ext.extend(Ext.Panel, {
             layout: 'border',
             items: [this.preorderGrid, this.servicePanel],
 
-            tbar: [this.okBtn,this.cancelBtn],
-            bbar: this.bb
-
+            tbar: this.ttb
         };
 
         Ext.apply(this, Ext.apply(this.initialConfig, config));
@@ -123,23 +120,24 @@ App.examination.AsgmtTicketEditor = Ext.extend(Ext.Panel, {
         this.servicePanel.on('serviceclick', this.onServiceClick, this);
 
         this.on('afterrender',function(){
+            this.ttb.add('->');
             if (this.prevTicket && this.prevTicket.section != 'name'){
                 this.prevBtn = new Ext.Button({
                     text:this.prevTicket.title,
                     iconCls: 'silk-resultset-previous',
                     handler: this.onEditComplete.createDelegate(this, [this.prevTicket])
                 });
-                this.bb.add(this.prevBtn);
+                this.ttb.add(this.prevBtn);
             }
-            if (this.nextTicket){
+            if (this.nextTicket && this.nextTicket.section != 'name'){
                 this.nextBtn = new Ext.Button({
                     text:this.nextTicket.title,
                     iconCls: 'silk-resultset-next',
                     iconAlign: 'right',
                     handler: this.onEditComplete.createDelegate(this, [this.nextTicket])
                 });
-                this.bb.add('->');
-                this.bb.add(this.nextBtn);
+                this.ttb.add('-');
+                this.ttb.add(this.nextBtn);
             }
             this.doLayout();
         });
