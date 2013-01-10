@@ -8,7 +8,10 @@ from django.template import Template, Context
 import pandas as pd
 import numpy as np
 
-from collections import OrderedDict
+try:
+    from collections import OrderedDict
+except:
+    from ordereddict import OrderedDict  #@Reimport
 
 
 class Config(object):
