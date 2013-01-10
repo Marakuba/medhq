@@ -141,7 +141,8 @@ def set_services_active(request):
 import datetime
 from django.conf import settings
 # from django.core.cache import get_cache
-from pricelist.models import Price, get_actual_ptype
+from pricelist.models import Price
+from pricelist.utils import get_actual_ptype
 from django.db.models import Max
 from promotion.models import Promotion, PromotionItem
 from django.core.serializers.json import DjangoJSONEncoder
@@ -314,24 +315,26 @@ def get_service_tree(request):
     group_func = base_service_group
 
     payment_type = request.GET.get('payment_type')
-    staff = request.GET.get('staff')
+    staff = request.GET.get('staff') or None
+    payer = request.GET.get('payer') or None
 
-    if payment_type:
-
-        leaf_func = ext_service_leaf
-        group_func = ext_service_group
+    if payment_type or staff or payer:
+        # Если передан staff, то нам цены не нужны. Это значит, что мы работаем
+        # с конструктором шаблонов
 
         # nocache = request.GET.get('nocache')
         # recache = request.GET.get('recache')
+        payment_type = payment_type or u'н'
+        leaf_func = ext_service_leaf
+        group_func = ext_service_group
         all = request.GET.get('all')
         ext = request.GET.get('ext')
-        payer = request.GET.get('payer')
 
         TODAY = datetime.date.today()
         on_date = request.GET.get('on_date', TODAY)
         if on_date and not isinstance(on_date, datetime.date):
             try:
-                on_date = datetime.date.strptime(on_date, '%d-%m-%Y')
+                on_date = datetime.datetime.strptime(on_date, '%Y-%m-%d')
                 # nocache = True
             except:
                 on_date = TODAY
@@ -357,37 +360,51 @@ def get_service_tree(request):
                 staff = Position.objects.get(id=staff)
             except:
                 staff = None
-        p_type_id = get_actual_ptype()
 
-        # _cache_key = u'%sservice_list_%s_%s_%s_%s' % (ext and 'ext_' or '', state and state.id or u'*', payment_type, payer and payer.id or '*', p_type_id or '*')
-
-        # запрос с параметром recache удаляет ВСЕ записи в нём
-        # if recache:
-        #     cache.clear()
-
-        # если передаем параметр nocache, кэширование не происходит. иначе пробуем достать кэш по ключу
-        # if nocache:
-        #     _cached_tree = None
-        # else:
-        #     _cached_tree = cache.get(_cache_key)
-
-        # если отсутствует кэш, то начинаем построение дерева услуг
-        # _cached_tree = None
-        # if not _cached_tree:
-
+        # дата в функцию get_actual_ptype должна передаваться
+        # в формате datetime.datetime, т.к. там определяется период действия
+        # типа цены учитывая минуты
+        time = datetime.datetime.now()
         price_args = dict(extended_service__is_active=True,
-                          payment_type=payment_type,
-                          price_type='r',
                           on_date__lte=on_date)
         if staff:
             price_args['extended_service__staff'] = staff
-        if state:
-            price_args['extended_service__branches'] = state
-        if payer:
-            price_args['payer'] = payer.id
         else:
-            price_args['payer__isnull'] = True
-        price_args['type'] = p_type_id
+            d = datetime.datetime(year=on_date.year,
+                                  month=on_date.month,
+                                  day=on_date.day,
+                                  hour=time.hour,
+                                  minute=time.minute,
+                                  second=time.second,
+                                  microsecond=time.microsecond)
+            p_type_id = get_actual_ptype(date=d,
+                                         payer=payer and payer.id or None,
+                                         payment_type=payment_type)
+
+            # _cache_key = u'%sservice_list_%s_%s_%s_%s' % (ext and 'ext_' or '', state and state.id or u'*', payment_type, payer and payer.id or '*', p_type_id or '*')
+
+            # запрос с параметром recache удаляет ВСЕ записи в нём
+            # if recache:
+            #     cache.clear()
+
+            # если передаем параметр nocache, кэширование не происходит. иначе пробуем достать кэш по ключу
+            # if nocache:
+            #     _cached_tree = None
+            # else:
+            #     _cached_tree = cache.get(_cache_key)
+
+            # если отсутствует кэш, то начинаем построение дерева услуг
+            # _cached_tree = None
+            # if not _cached_tree:
+
+            if state:
+                price_args['extended_service__branches'] = state
+            # if payer:
+            #     price_args['payer'] = payer.id
+            # else:
+            #     price_args['payer__isnull'] = True
+            if not all:
+                price_args['type'] = p_type_id
 
         values = Price.objects.filter(**price_args).\
             order_by('extended_service__id', 'on_date').\
@@ -420,7 +437,9 @@ def get_service_tree(request):
         promotions_items = PromotionItem.objects.filter(promotion__in=promotions)
         promotions_dict = defaultdict(list)
         promotions_bs = {}
-        for item in promotions_items.values('base_service__id', 'base_service__name', 'base_service__short_name'):
+        for item in promotions_items.values('base_service__id',
+                                            'base_service__name',
+                                            'base_service__short_name'):
             promotions_bs[item['base_service__id']] = item
 
         for p in promotions_items:

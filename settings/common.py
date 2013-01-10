@@ -181,16 +181,19 @@ djcelery.setup_loader()
 CONSTANCE_CONFIG = {
     'BRAND': (u'', 'company brand'),
     'BASE_REPORT_FORM': (u'', 'Форма отчетов по умолчанию'),
-    'MAIN_STATE_ID' : (1,'main state id'),
-    'PRICE_BY_PAYMENT_TYPE':(False,'Индивидуальные цены по каждому способу оплаты'),
-    'START_HOUR':(8,u'Начало работы'),
-    'END_HOUR':(20,u'Окончание работы'),
-    'CUMULATIVE_DISCOUNTS':(True,u'Использование накопительных скидок (temporary)'),
-    'SERVICETREE_ONLY_OWN':(True,u'Показывать услуги только текущей организации'),
-    'SERVICE_CACHE_AUTO_CLEAR':(False,u'Автоматически сбрасывать кэш услуг после изменений'),
-    'BASE_SERVICE_CODE_TEMPLATE':('MEDHQ.{{service.id}}',u'Шаблон кода базовой услуги'),
-    'ANALYSIS_CODE_TEMPLATE':('MEDHQ.{{analysis.id}}',u'Шаблон кода анализа'),
-    'LAB_SERVICE_CODE_TEMPLATE':('MEDHQ.{{labservice.id}}',u'Шаблон кода ручного исследования'),
-    'REGISTRY_SHOW_ALERTS':(True,u'Показывать предупреждения в карте пациента')
+    'MAIN_STATE_ID': (1, 'main state id'),
+    'PRICE_BY_PAYMENT_TYPE': (False, 'Индивидуальные цены по каждому способу оплаты'),
+    'START_HOUR': (8, u'Начало работы'),
+    'END_HOUR': (20, u'Окончание работы'),
+    'CUMULATIVE_DISCOUNTS': (True, u'Использование накопительных скидок (temporary)'),
+    'SERVICETREE_ONLY_OWN': (True, u'Показывать услуги только текущей организации'),
+    'SERVICE_CACHE_AUTO_CLEAR': (False, u'Автоматически сбрасывать кэш услуг после изменений'),
+    'BASE_SERVICE_CODE_TEMPLATE': ('MEDHQ.{{service.id}}', u'Шаблон кода базовой услуги'),
+    'ANALYSIS_CODE_TEMPLATE': ('MEDHQ.{{analysis.id}}', u'Шаблон кода анализа'),
+    'LAB_SERVICE_CODE_TEMPLATE': ('MEDHQ.{{labservice.id}}', u'Шаблон кода ручного исследования'),
+    'REGISTRY_SHOW_ALERTS': (True, u'Показывать предупреждения в карте пациента'),
+    'DEFAULT_PRICETYPE': (1, u'ID типа цены по умолчанию'),
+    'DEFAULT_PRICETYPE_INSURANCE': (1, u'ID типа цены по умолчанию для операций по ДМС'),
+    'DEFAULT_PRICETYPE_NONCASH': (1, u'ID типа цены по умолчанию для операций по безналичному переводу денег'),
+    'DEFAULT_PRICETYPE_CORP': (1, u'ID типа цены по умолчанию для операций по внутрикорпоративным расчетам')
 }
-

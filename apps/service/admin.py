@@ -43,9 +43,10 @@ class StandardServiceAdmin(TreeEditor):
 #class StandardServiceAdmin(admin.ModelAdmin):
 #    pass
 
+
 class PriceInlineAdmin(admin.TabularInline):
     model = Price
-    exclude = ('service',)
+    exclude = ('price_type', 'payment_type', 'payer')
 
 
 class AnalysisInlineAdminForm(forms.ModelForm):

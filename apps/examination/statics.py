@@ -50,6 +50,7 @@ class ExamOrderGridApp(BaseWebApp):
         'app/ux/GSearchField.js',
 
         'app/examination/models.js',
+        'app/scheduler/models.js',
 
         'app/examination/patient/PatientHistoryTreeGrid.js',
         'app/examination/patient/PatientHistoryPanel.js',
