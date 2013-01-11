@@ -262,7 +262,7 @@ App.dict.XGlossaryTree = Ext.extend(Ext.ux.tree.RemoteTreePanel, {
 
 		jsonData[this.paramNames.text] = newText;
 		jsonData['id'] = node.attributes.id;
-		jsonData['resource_uri'] = App.App.utils.getApiUrl('examination','glossary',node.attributes.id);
+		jsonData['resource_uri'] = App.utils.getApiUrl('examination','glossary',node.attributes.id);
 		jsonData['section'] = this.section;
 		jsonData['staff'] = this.staff;
 		jsonData['base_service'] = this.base_service;
@@ -275,7 +275,7 @@ App.dict.XGlossaryTree = Ext.extend(Ext.ux.tree.RemoteTreePanel, {
 			params:params,
 			method:'PUT',
 			jsonData:data,
-			url:App.App.utils.getApiUrl('examination','glossary', node.attributes.id),
+			url:App.utils.getApiUrl('examination','glossary', node.attributes.id),
 			headers:{
 				'Content-Type':'application/json'
 			},
@@ -319,7 +319,7 @@ App.dict.XGlossaryTree = Ext.extend(Ext.ux.tree.RemoteTreePanel, {
 				var o = Ext.apply(this.getOptions(), {
 					action:'removeNode',
 					node:node,
-					url: App.App.utils.getApiUrl('examination','glossary', node.attributes.id),
+					url: App.utils.getApiUrl('examination','glossary', node.attributes.id),
 					params:params,
 					method:'DELETE',
 					jsonData:data,
@@ -357,7 +357,7 @@ App.dict.XGlossaryTree = Ext.extend(Ext.ux.tree.RemoteTreePanel, {
 		var params = this.applyBaseParams();
 		var jsonData = {};
 		jsonData['id'] = movedNode.attributes.id;
-		jsonData['resource_uri'] = App.App.utils.getApiUrl('examination','glossary', movedNode.attributes.id);
+		jsonData['resource_uri'] = App.utils.getApiUrl('examination','glossary', movedNode.attributes.id);
 		jsonData['section'] = this.section;
 		jsonData['staff'] = this.staff;
 		jsonData['base_service'] = this.base_service;
@@ -370,7 +370,7 @@ App.dict.XGlossaryTree = Ext.extend(Ext.ux.tree.RemoteTreePanel, {
 			e:e,
 			node:e.dropNode,
 			params:params,
-			url:App.App.utils.getApiUrl('examination','glossary',movedNode.attributes.id),
+			url:App.utils.getApiUrl('examination','glossary',movedNode.attributes.id),
 			method:'PUT',
 			jsonData:data,
 			headers:{

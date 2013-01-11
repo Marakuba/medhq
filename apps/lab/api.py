@@ -203,59 +203,7 @@ class LabOrderResource(ExtResource):
         return orm_filters
 
     class Meta:
-        queryset = LabOrder.objects.all() #select_related('visit',
-        #     'visit__barcode',
-        #     'visit__patient',
-        #     'visit__office',
-        #     'visit__payer',
-        #     'visit__operator',
-        #     'laboratory',
-        #     'staff',
-        #     'staff__staff').only('is_completed',
-        #     'id',
-        #     'comment',
-        #     'widget',
-        #     'executed',
-        #     'created',
-        #     'confirmed',
-        #     'is_printed',
-        #     'is_manual',
-        #     'manual_service',
-        #     'print_date',
-        #     'staff',
-        #     'staff__staff__last_name',
-        #     'staff__staff__first_name',
-        #     'staff__staff__mid_name',
-        #     'visit',
-        #     'laboratory',
-        #     'laboratory__name',
-        #     'visit__send_to_email',
-        #     'visit__pregnancy_week',
-        #     'visit__menses_day',
-        #     'visit__created',
-        #     'visit__is_cito',
-        #     'visit__barcode__id',
-        #     'visit__payer',
-        #     'visit__operator',
-        #     'visit__operator__username',
-        #     'visit__patient',
-        #     'visit__patient__last_name',
-        #     'visit__patient__first_name',
-        #     'visit__patient__mid_name',
-        #     'visit__patient__gender',
-        #     'visit__patient__birth_day',
-        #     'visit__office',
-        #     'visit__office__name')
-        # fields = ['id','is_completed',
-        #     'comment',
-        #     'widget',
-        #     'executed',
-        #     'created',
-        #     'confirmed',
-        #     'is_printed',
-        #     'is_manual',
-        #     'manual_service',
-        #     'print_date','lab_group']
+        queryset = LabOrder.objects.select_related().all()
         resource_name = 'laborder'
         authorization = DjangoAuthorization()
         always_return_data = True
@@ -612,8 +560,32 @@ class LabOrderEmailTaskResource(ExtResource):
         bundle.data['order_id'] = visit.barcode_id
         bundle.data['order_created'] = visit.created
         bundle.data['patient_name'] = visit.patient.full_name()
+        bundle.data['email'] = visit.patient.email
         bundle.data['status_text'] = bundle.obj.get_status_display()
         return bundle
+
+    def build_filters(self, filters=None):
+        if filters is None:
+            filters = {}
+
+        orm_filters = super(LabOrderEmailTaskResource, self).build_filters(filters)
+
+        if "search" in filters:
+            smart_filters = smartFilter(filters['search'], 'lab_order__visit__patient')
+            if len(smart_filters.keys()) == 1:
+                try:
+                    cond = Q(**smart_filters)
+                    cond |= Q(lab_order__visit__barcode__id=int(filters['search']))
+                    cond |= Q(lab_order__visit__patient__email__icontains=filters['search'])
+
+                    orm_filters = ComplexQuery(cond, \
+                                      **orm_filters)
+                except:
+                    orm_filters.update(**smart_filters)
+            else:
+                orm_filters.update(**smart_filters)
+
+        return orm_filters
 
     class Meta:
         queryset = LabOrderEmailTask.objects.all()

@@ -24,6 +24,7 @@
                 {name: 'resource_uri'},
                 {name: 'status'},
                 {name: 'patient_name'},
+                {name: 'email'},
                 {name: 'order_id'},
                 {name: 'order_created'},
                 {name: 'status_text'},
@@ -108,6 +109,11 @@
                 width: 400,
                 sortable: false,
                 dataIndex: 'patient_name'
+            },{
+                header: "Email",
+                width: 200,
+                sortable: false,
+                dataIndex: 'email'
             },{
                 header: "Статус",
                 width: 150,
@@ -194,6 +200,12 @@
 
             Ext.apply(this, Ext.apply(this.initialConfig, config));
             App.lab.EmailTaskGrid.superclass.initComponent.apply(this, arguments);
+    
+            WebApp.on('globalsearch', this.onGlobalSearch, this);
+
+            this.on('destroy', function(){
+                WebApp.un('globalsearch', this.onGlobalSearch, this);
+            },this);
         },
 
         storeFilter: function(field, value){
@@ -203,6 +215,13 @@
                 this.store.setBaseParam(field, value);
             }
             this.store.load();
+        },
+
+        onGlobalSearch: function(v){
+            var s = this.store;
+            s.baseParams = { format:'json' };
+            s.setBaseParam('search', v);
+            s.load();
         },
 
         openHistory: function(){
