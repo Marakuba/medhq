@@ -6,6 +6,8 @@
 
         loadInstant: false,
 
+        origTitle: 'Почта',
+
         initComponent : function() {
 
             this.proxy = new Ext.data.HttpProxy({
@@ -129,7 +131,7 @@
                 loadMask : {
                     msg : 'Подождите, идет загрузка...'
                 },
-                title:'Почта',
+                title: this.origTitle,
                 closable:true,
                 border : false,
                 store:this.store,
@@ -202,9 +204,10 @@
             App.lab.EmailTaskGrid.superclass.initComponent.apply(this, arguments);
     
             WebApp.on('globalsearch', this.onGlobalSearch, this);
-
+            this.store.on('load', this.onTaskLoad, this);
             this.on('destroy', function(){
                 WebApp.un('globalsearch', this.onGlobalSearch, this);
+                this.store.un('load', this.onTaskLoad, this);
             },this);
         },
 
@@ -218,12 +221,23 @@
         },
 
         onGlobalSearch: function(v){
+            this.changeTitle = v!==undefined;
+            if(!v){
+                this.setTitle(this.origTitle);
+            }
+
             var s = this.store;
             s.baseParams = { format:'json' };
             s.setBaseParam('search', v);
             s.load();
         },
 
+        onTaskLoad : function(store,r,options){
+            if(this.changeTitle){
+                this.setTitle(String.format('{0} ({1})', this.origTitle, store.getTotalCount()));
+            }
+        },
+        
         openHistory: function(){
             var rec = this.getSelected();
             if(!rec) { return; }
