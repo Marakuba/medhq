@@ -119,7 +119,7 @@ App.examination.CardApp = Ext.extend(Ext.Panel, {
 
         this.on('afterrender',function(){
             if (this.record){
-                this.editCard('card',this.record.data.id)
+                this.editCard('card',this.record.data.id);
             }
             else {
                 this.startPanel = this.newStartPanel({
@@ -149,13 +149,13 @@ App.examination.CardApp = Ext.extend(Ext.Panel, {
         startPanel.on('loadcomplete', function(panel){
             this.mask.hide();
         }, this);
-        return startPanel
+        return startPanel;
     },
 
     createEmptyCard:function(){
         this.record = new this.cardStore.recordType();
         var emptyData = Ext.encode({'tickets':[]});
-        this.record.set('data',emptyData)
+        this.record.set('data',emptyData);
         this.record.set('ordered_service',App.utils.getApiUrl('visit','orderedservice',this.orderId));
         this.record.set('name',this.orderRecord.data.service_name);
         this.cardStore.add(this.record);
@@ -165,15 +165,15 @@ App.examination.CardApp = Ext.extend(Ext.Panel, {
     copyFromSource: function(sourceType,sourceId){
         if (!sourceId){
             this.createEmptyCard();
-            return
+            return;
         } else {
-            var store = this[sourceType+'Store']
+            var store = this[sourceType+'Store'];
             store.setBaseParam('id',sourceId);
             store.load({callback:function(records){
                 if (!records.length){
                     console.log('Источник не найден: ',sourceType,' ',sourceId);
                     this.createEmptyCard();
-                    return
+                    return;
                 } else {
                     var source = records[0];
                     this.record = new this.cardStore.recordType();
@@ -181,7 +181,7 @@ App.examination.CardApp = Ext.extend(Ext.Panel, {
                     var name = this.orderRecord.data.service_name;
                     Ext.each(dataField.tickets,function(ticket){
                         if (ticket.xtype == 'titleticket'){
-                            name = ticket.value
+                            name = ticket.value;
                         }
                     });
                     Ext.applyIf(this.record.data,source.data);
@@ -190,7 +190,7 @@ App.examination.CardApp = Ext.extend(Ext.Panel, {
                     this.record.set('name',name);
                     this.cardStore.add(this.record);
                     this.cardStore.save();
-                    this.openTickets(this.record.data.data)
+                    this.openTickets(this.record.data.data);
                 }
             },scope:this});
         }
@@ -199,38 +199,34 @@ App.examination.CardApp = Ext.extend(Ext.Panel, {
     editCard: function(sourceType,cardId){
         if (sourceType !='card') {
             console.log('На редактирование передана не карта');
-            return
+            return;
         }
         if (!cardId){
             this.createEmptyCard();
-            return
+            return;
         } else {
-            this.cardId = cardId
+            this.cardId = cardId;
             this.cardStore.setBaseParam('id',cardId);
             this.cardStore.load({callback:function(records){
                 if (!records.length){
                     console.log('Карта не найдена: ',cardId);
                     this.createEmptyCard();
-                    return
+                    return;
                 } else {
                     this.record = records[0];
-                    this.openTickets(this.record.data.data)
+                    this.openTickets(this.record.data.data);
                 }
             },scope:this});
         }
     },
 
     openTickets: function(data){
-        if (data) {
-            var decodedData = Ext.decode(data)
-        } else {
-            var decodedData = {}
-        }
         this.mask.hide();
         this.cardBody = new App.examination.CardTicketTab({
-            data:decodedData,
+            data: data ? Ext.decode(data) : {},
             cardId : this.cardId,
             record: this.record,
+            sourceType: 'card',
             patientName: this.patientName,
             orderRecord:this.orderRecord,
             patientId:this.patientId,
@@ -266,7 +262,7 @@ App.examination.CardApp = Ext.extend(Ext.Panel, {
         Ext.applyIf(archiveRecord.data,this.record.data);
         archiveRecord.set('staff',App.utils.getApiUrl('staff','staff',WebApp.active_staff));
         archiveRecord.set('name',name);
-        delete archiveRecord.data['base_service']
+        delete archiveRecord.data['base_service'];
         delete archiveRecord.data['id'];
         this.tplStore.add(archiveRecord);
         this.tplStore.save();

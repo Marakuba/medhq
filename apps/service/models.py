@@ -15,7 +15,8 @@ from state.models import State
 from constance import config
 from collections import defaultdict
 from django.template import Context, Template
-from pricelist.models import get_actual_ptype
+from pricelist.utils import get_actual_ptype
+from django.db import connection
 
 
 class ICD10(MPTTModel):
@@ -52,11 +53,12 @@ class StandardService(models.Model):
 
 
 EXECUTION = (
-    (u'у',u'УЗИ'),
-    (u'к',u'Консультация'),
-    (u'п',u'Процедурный кабинет'),
-    (u'д',u'Другое'),
+    (u'у', u'УЗИ'),
+    (u'к', u'Консультация'),
+    (u'п', u'Процедурный кабинет'),
+    (u'д', u'Другое'),
 )
+
 
 class Condition(models.Model):
     """
@@ -127,15 +129,14 @@ class ExecutionTypeGroup(ServiceGroup):
         verbose_name_plural = u'способы исполнения'
 
 
-
 BS_TYPES = (
-    (u'cons',u'консультативная услуга'),
-    (u'man',u'манипуляция'),
-    (u'exam',u'обследование'),
-    (u'article',u'товар'),
-    (u'material',u'материал'),
-    (u'group',u'группа'),
-    (u'archive',u'архив'),
+    (u'cons', u'консультативная услуга'),
+    (u'man', u'манипуляция'),
+    (u'exam', u'обследование'),
+    (u'article', u'товар'),
+    (u'material', u'материал'),
+    (u'group', u'группа'),
+    (u'archive', u'архив'),
 )
 if 'lab' in settings.INSTALLED_APPS:
     BS_TYPES = BS_TYPES + ((u'lab', u'лабораторная услуга'),)
@@ -225,15 +226,15 @@ class BaseService(models.Model):
     def price_by_states(self, slugs):
         """
         """
-        if isinstance(slugs, (str,unicode)):
+        if isinstance(slugs, (str, unicode)):
             slugs = (slugs,)
         prices = {}
         for slug in slugs:
             try:
                 price = self.price_set.filter(type__slug=slug).latest()
-                prices[slug]=price.value
+                prices[slug] = price.value
             except:
-                prices[slug]=None
+                prices[slug] = None
         return prices
 
     def top_level_named(self):
@@ -242,7 +243,7 @@ class BaseService(models.Model):
                 if self.id not in BaseService._top:
                     BaseService._top[self.id] = self.get_ancestors()[0]
                 _top = BaseService._top[self.id]
-                return u"%s / %s" % ( self.__unicode__(), _top.__unicode__() )
+                return u"%s / %s" % (self.__unicode__(), _top.__unicode__())
             except:
                 pass
         return self.__unicode__()
@@ -255,7 +256,7 @@ class BaseService(models.Model):
     @classmethod
     def cache_parents(self):
         services = BaseService.objects.all().order_by(BaseService._meta.tree_id_attr, BaseService._meta.left_attr, 'level')
-        BaseService._parents = dict([(s['id'],s['parent__id']) for s in services.values('parent__id','id')])
+        BaseService._parents = dict([(s['id'], s['parent__id']) for s in services.values('parent__id', 'id')])
 
     def get_absolute_url(self):
         return "/service/baseservice/%s/" % self.id
@@ -284,15 +285,17 @@ class ExtendedServiceManager(models.Manager):
 
 class ExtendedService(models.Model):
     """
+    state - кто предоставляет услугу
+    branches - кто может продавать
     """
     base_service = models.ForeignKey(BaseService)
     state = models.ForeignKey('state.State',
                               verbose_name=u'Учреждение',
-                              limit_choices_to = {'type__in': (u'm', u'b')})
+                              limit_choices_to={'type__in': (u'm', u'b')})
     branches = models.ManyToManyField('state.State',
                               verbose_name=u'Филиалы',
-                              limit_choices_to = {'type__in': (u'b', u'p')},
-                              related_name = 'branches')
+                              limit_choices_to={'type__in': (u'b', u'p')},
+                              related_name='branches')
     tube = models.ForeignKey('lab.Tube',
                              related_name='tube',
                              null=True, blank=True,
@@ -306,39 +309,76 @@ class ExtendedService(models.Model):
     base_profile = models.ForeignKey('lab.AnalysisProfile', null=True, blank=True,
                                      verbose_name=u'Профиль')
 
-
     objects = ExtendedServiceManager()
 
     @classmethod
     def get_all_staff(cls):
-        services = ExtendedService.objects.all().values('base_service__id','staff__id','staff__staff__last_name','staff__staff__first_name','staff__staff__mid_name','staff__title')
+        services = ExtendedService.objects.all().values('base_service__id',
+                                                        'staff__id',
+                                                        'staff__staff__last_name',
+                                                        'staff__staff__first_name',
+                                                        'staff__staff__mid_name',
+                                                        'staff__title')
 
-        r = defaultdict(list)
+        arr = defaultdict(list)
 
         for s in services:
             if s['staff__id']:
-                r[s['base_service__id']].append([s['staff__id'], u'%s %s. %s., %s' % ( s['staff__staff__last_name'], s['staff__staff__first_name'] and s['staff__staff__first_name'][0] or u'', s['staff__staff__mid_name'] and s['staff__staff__mid_name'][0] or u'', s['staff__title'] )])
+                staff_item = [s['staff__id'], u'%s %s. %s, %s' % \
+                        (s['staff__staff__last_name'], s['staff__staff__first_name']
+                            and s['staff__staff__first_name'][0] or u'',
+                        s['staff__staff__mid_name'] and "%s." % s['staff__staff__mid_name'][0] or u'',
+                        s['staff__title'])]
+                if not staff_item in arr[s['base_service__id']]:
+                    arr[s['base_service__id']].append(staff_item)
 
-        return r
+        return arr
 
     def get_actual_price(self, date=None, payment_type=u'н', payer=None, p_type=None):
+        # - payment_type - тип оплаты,
+        # - payer - плательщик
+        # - p_type - тип цены
+        # - date - дата, на которую нужно выбрать цену.
         args = {}
-        if payer:
-            args['payer'] = payer
-        else:
-            args['payer__isnull'] = True
         date = date or datetime.datetime.today()
         if not p_type:
-            p_type = get_actual_ptype(date)
-        try:
-            price_item = self.price_set.filter(type=p_type,price_type=u'r', payment_type=payment_type, on_date__lte=date, **args).latest('on_date')
-            return int(price_item.value.normalize())
-        except:
-            return 0
+            p_type = get_actual_ptype(date=date, payer=payer, payment_type=payment_type)
+        # import pdb; pdb.set_trace()
+        # try:
+        price_items = self.price_set.filter(type=p_type, on_date__lte=date, **args)
+        price = len(price_items) and price_items.latest('on_date') or None
+
+        return price and int(price.value.normalize()) or 0
+        # except:
+        #     return 0
 
 #    def get_absolute_url(self):
 #        return "/admin/service/extendedservice/%s/" % self.id
 #
+    def get_price(self):
+        query = """SELECT ptype.id, ptype.NAME, q2.VALUE, q2.max_date
+            FROM pricelist_pricetype ptype
+
+            LEFT JOIN(
+                SELECT pr.type_id, pr.VALUE, q1.max_date AS max_date
+                FROM pricelist_price pr
+
+                INNER JOIN
+                        (
+                        SELECT type_id, MAX(on_date) AS max_date
+                        FROM pricelist_price
+                        WHERE extended_service_id=%s
+                        GROUP BY type_id) AS q1 ON q1.type_id=pr.type_id AND q1.max_date=pr.on_date
+
+                WHERE pr.extended_service_id=%s
+                ORDER BY pr.type_id) AS q2 ON q2.type_id = ptype.id""" % (self.id, self.id)
+
+        cursor = connection.cursor()
+        cursor.execute(query)
+        results = cursor.fetchall()
+        cursor.close()
+        import pdb; pdb.set_trace()
+
     def __unicode__(self):
         return smart_unicode(u"%s" % self.base_service.short_name)
 
@@ -348,13 +388,12 @@ class ExtendedService(models.Model):
         unique_together = ('base_service', 'state')
 
 
-
 class ExecutionPlace(models.Model):
     """
     """
     state = models.ForeignKey('state.State',
                               verbose_name=u'Учреждение',
-                              limit_choices_to = {'type__in':(u'm',u'b')})
+                              limit_choices_to={'type__in': (u'm', u'b')})
     base_service = models.ForeignKey(BaseService)
     is_prefer = models.BooleanField(u'Предпочитаемое')
     is_blocked = models.BooleanField(u'Временно недоступно')
@@ -369,7 +408,6 @@ try:
     mptt.register(BaseService)
 except mptt.AlreadyRegistered:
     pass
-
 
 
 def _clear_cache():

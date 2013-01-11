@@ -1,9 +1,9 @@
 Ext.ns('App.examination');
 
 App.examination.QuestionnaireTicketEditor = Ext.extend(Ext.form.FormPanel, {
-	
+
     initComponent: function() {
-    	
+
     	/*Пример кода анкеты
  * 		{layout:'tab',
     items:[
@@ -12,12 +12,12 @@ App.examination.QuestionnaireTicketEditor = Ext.extend(Ext.form.FormPanel, {
         section:'anamnesis',
         layout:'tab',
         items:[
-        {   
+        {
             items:[{type:'text',
                 value:'555'},{type:'text',
                 value:'555'}],
             title:'1',
-            
+
         }, {
             title:'2',
             type:'text',
@@ -36,8 +36,8 @@ App.examination.QuestionnaireTicketEditor = Ext.extend(Ext.form.FormPanel, {
          }]
     }]
 }*/
-    	
-    	this.questComponents = {
+		this.sourceText = this.sourceType == 'tpl' ? 'шаблону' : 'карте';
+		this.questComponents = {
 			'text':{
 				'constructor':Ext.form.TextField,
 				'config':{
@@ -63,7 +63,7 @@ App.examination.QuestionnaireTicketEditor = Ext.extend(Ext.form.FormPanel, {
 			//					fieldLabel:'Введите значения',
 					columns:1,
 					type:'checkbox'
-					
+
 				}
 			},
 			'radio':{
@@ -72,7 +72,7 @@ App.examination.QuestionnaireTicketEditor = Ext.extend(Ext.form.FormPanel, {
 			//					fieldLabel:'Введите значения',
 					columns:1,
 					type:'radio'
-					
+
 				}
 			},
 			'space':{
@@ -91,22 +91,22 @@ App.examination.QuestionnaireTicketEditor = Ext.extend(Ext.form.FormPanel, {
 				    valueField: 'item',
 				    displayField: 'item',
 					type:'combobox'
-					
+
 				}
 			}
 		};
-			
+
 		this.okBtn = new Ext.Button({
 			iconCls:'silk-resultset-previous',
-	    	text:'Вернуться к карте',
+	    	text:'Вернуться к ' + this.sourceText,
 			handler:this.onSave.createDelegate(this),
 			scope:this
 		});
-		
+
     	this.ttb = new Ext.Toolbar({
 			items: [this.okBtn]
 		});
-		
+
     	var config = {
     		autoScroll:true,
 			layout: 'form',
@@ -115,24 +115,24 @@ App.examination.QuestionnaireTicketEditor = Ext.extend(Ext.form.FormPanel, {
 			items:[this.buildPanel(this.code)],
 			tbar:this.ttb
         };
-        
+
 		Ext.apply(this, Ext.apply(this.initialConfig, config));
         App.examination.QuestionnaireTicketEditor.superclass.initComponent.call(this);
-        
+
         this.on('afterrender',function(){
 //        	this.makeTickets();
         	if (this.data){
     			this.loadData(this.data)
     		}
-        	
+
         },this)
     },
-    
+
     clear: function(){
     	this.items.clear();
     	this.update();
     },
-    
+
     //Для каждого массива создает отдельную панель и заполняет её объектами
 	//Если массив содержит список массивов, то у текущей панели будет layout vbox. иначе auto.
 	//поэтому массив должен содержать элементы одного типа: либо массивы, либо словари.
@@ -168,11 +168,11 @@ App.examination.QuestionnaireTicketEditor = Ext.extend(Ext.form.FormPanel, {
 					activeTab:0,
 					border:false
 				});
-				
+
 				var parent = tabPanel;
-				
+
 			} else {
-				var parent = elem 
+				var parent = elem
 			}
 			var i = 0;
 			Ext.each(obj.items,function(item){
@@ -183,14 +183,14 @@ App.examination.QuestionnaireTicketEditor = Ext.extend(Ext.form.FormPanel, {
 			//Если у объекта нет поля items, то это не панель
 			var elem = this.buildObject(obj,deep,index,sec)
 		};
-		
+
 		if (tabPanel){
 			elem.add(parent)
 		};
-		
+
 		return elem
 	},
-    
+
 	//Создает объект согласно словаря компонентов
 	buildObject: function(obj,deep,index,section){
 		var elem;
@@ -231,16 +231,16 @@ App.examination.QuestionnaireTicketEditor = Ext.extend(Ext.form.FormPanel, {
 				}
 			};
 			if (comp['constructor']){
-				//объединяем пользовательскую и преднастроенную конфигурацию. 
+				//объединяем пользовательскую и преднастроенную конфигурацию.
 				var comp_config = comp['config'] || {};
 				Ext.applyIf(obj_conf,comp_config);
 				elem = new comp['constructor'](obj_conf);
-			}	
+			}
 		};
 		if (!elem) return new Ext.form.FieldLabel();
 		return elem;
 	},
-	
+
 	getCmpValue: function(field) {
 		var value = field.getValue();
 		if (!value) return '';
@@ -254,7 +254,7 @@ App.examination.QuestionnaireTicketEditor = Ext.extend(Ext.form.FormPanel, {
         }
 	return value
     },
-	
+
 	collectData: function(panel){
 		var f = (panel) || this;
 		var data = {
@@ -262,10 +262,10 @@ App.examination.QuestionnaireTicketEditor = Ext.extend(Ext.form.FormPanel, {
 		    section:panel.section,
 		    rows:this.getPanelData(panel)
 		};
-		
+
 		return data;
 	},
-	
+
 	getPanelData: function(panel){
 		var rows = []
 		panel.items.each(function(f){
@@ -278,7 +278,7 @@ App.examination.QuestionnaireTicketEditor = Ext.extend(Ext.form.FormPanel, {
 		},this);
 		return rows;
 	},
-	
+
 	makeTickets:function(){
 		//Выбираем начальную форму секций, в зависимости от того, какого она типа: обычная панель или TabPanel
 		var form = this.get(0).get(0);
@@ -296,17 +296,17 @@ App.examination.QuestionnaireTicketEditor = Ext.extend(Ext.form.FormPanel, {
 			allData = allData.concat(rows['rows']);
 			tickets.push(ticketData)
 		},this);
-		
+
 		return [tickets,allData,this.questName]
 	},
-	
+
 	/* Получает данные в виде
 	 * {
 	 * 		title:'...',
 	 * 		section:'...',
 	 * 		data:[{name:'...',(values:'...'|['...','...',...])},{...}]
-	 * 
-	 * } 
+	 *
+	 * }
 	 * Преобразует их в вид
 	 * {title:'...',
 	 * section:'...',
@@ -320,7 +320,7 @@ App.examination.QuestionnaireTicketEditor = Ext.extend(Ext.form.FormPanel, {
 		Ext.each(dataObj.rows,function(item){
 			if (!Ext.isArray(item.values)){
 				data += item.values + ' '
-			} else { 
+			} else {
 				Ext.each(item.values,function(value){
 					data += ' ' + value + ','
 				});
@@ -338,7 +338,7 @@ App.examination.QuestionnaireTicketEditor = Ext.extend(Ext.form.FormPanel, {
 		    	xtype:'questionnaire'};
 		return cObj
 	},
-	
+
 	loadData: function(dataArr){
 		var form = this.getForm();
 		Ext.each(dataArr,function(elem){
@@ -346,7 +346,7 @@ App.examination.QuestionnaireTicketEditor = Ext.extend(Ext.form.FormPanel, {
 			if (Ext.isArray(elem['values'])){
 				var name_list = {};
 				Ext.each(field.items,function(item){
-					name_list[item.name] = elem['values'].indexOf(item.inputValue) > -1 
+					name_list[item.name] = elem['values'].indexOf(item.inputValue) > -1
 				},this);
 				field.setValue(name_list);
 			} else {
@@ -354,7 +354,7 @@ App.examination.QuestionnaireTicketEditor = Ext.extend(Ext.form.FormPanel, {
 			}
 		},this);
 	},
-	
+
 	onSave: function(){
 		if (this.fn){
 			this.fn(this.makeTickets(),this.panel)

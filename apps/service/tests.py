@@ -5,11 +5,6 @@ from django.test.client import Client
 
 class ServiceApiTest(unittest.TestCase):
 
-    def test_service_ls(self):
-        client = Client()
-        response = client.get('/api/service/ls')
-        self.assertEqual(response.status_code, 200)
-
     def test_service_baseservice(self):
         client = Client()
         response = client.get('/api/service/baseservice')
