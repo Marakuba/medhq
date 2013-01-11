@@ -575,7 +575,10 @@ class LabOrderEmailTaskResource(ExtResource):
             if len(smart_filters.keys()) == 1:
                 try:
                     cond = Q(**smart_filters)
-                    cond |= Q(lab_order__visit__barcode__id=int(filters['search']))
+                    try:
+                        cond |= Q(lab_order__visit__barcode__id=int(filters['search']))
+                    except:
+                        pass
                     cond |= Q(lab_order__visit__patient__email__icontains=filters['search'])
 
                     orm_filters = ComplexQuery(cond, \

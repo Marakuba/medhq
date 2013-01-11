@@ -62,8 +62,16 @@ class PatientResource(ExtResource):
             smart_filters = smartFilter(filters['search'])
             if len(smart_filters.keys()) == 1:
                 try:
-                    orm_filters = ComplexQuery(Q(visit__barcode__id=int(filters['search'])) | Q(**smart_filters), \
+                    cond = Q(**smart_filters)
+                    try:
+                        cond |= Q(visit__barcode__id=int(filters['search']))
+                    except:
+                        pass
+                    cond |= Q(email__icontains=filters['search'])
+
+                    orm_filters = ComplexQuery(cond, \
                                       **orm_filters)
+
                 except:
                     orm_filters.update(**smart_filters)
             else:
