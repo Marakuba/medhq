@@ -58,7 +58,7 @@ class PatientResource(ExtResource):
 
         orm_filters = super(PatientResource, self).build_filters(filters)
 
-        if "search" in filters:
+        if "search" in filters and filters['search']:
             smart_filters = smartFilter(filters['search'])
             if len(smart_filters.keys()) == 1:
                 try:

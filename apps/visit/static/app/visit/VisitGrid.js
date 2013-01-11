@@ -294,10 +294,7 @@ App.visit.VisitGrid = Ext.extend(Ext.grid.GridPanel, {
     },
 
     onGlobalSearch: function(v){
-        var s = this.store;
-        s.baseParams = { format:'json' };
-        s.setBaseParam('search', v);
-        s.load();
+        this.storeFilter('search', v);
     },
 
     printBarcode: function()

@@ -182,16 +182,17 @@ App.patient.PatientGrid = Ext.extend(Ext.grid.GridPanel, {
         window.open(url);
     },
 
+    storeFilter: function(field, value){
+        if(!value) {
+            delete this.store.baseParams[field];
+        } else {
+            this.store.setBaseParam(field, value);
+        }
+        this.store.load();
+    },
+
     onGlobalSearch: function(v){
-        var s = this.store;
-//      s.baseParams = { format:'json' };
-//      vi = parseInt(v);
-//      if (!isNaN(vi)){
-//          s.setBaseParam('visit_id', vi);
-//      } else {
-            s.setBaseParam('search', v);
-//      }
-        s.load();
+        this.storeFilter('search', v);
     },
 
     onPatientAdd: function() {
