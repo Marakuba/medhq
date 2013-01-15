@@ -54,11 +54,12 @@ class Config(object):
         #         self.series[cfg['values']].append(p[col].fillna(na))
 
         results = {
-            'data': self.header(self)
+            'data': self.header(self),
+            'totals': None
         }
 
-        if self.totals:
-            results['totals'] = self.totals(self)
+        # if self.totals:
+        #     results['totals'] = self.totals(self)
 
         return results
 
@@ -84,6 +85,11 @@ class PivotConfig(Config):
         self.cols = cols
         self.values = values
         self.header = header
+        if 'totals' in kwargs:
+            self.totals = kwargs['totals']
+            del kwargs['totals']
+        else:
+            self.totals = None
         self.opts = kwargs
 
     def __call__(self, report, **kwargs):
@@ -111,7 +117,12 @@ class PivotConfig(Config):
             for col in p:
                 self.series[cfg['values']].append(p[col].fillna(na))
 
-        return self.header(self)
+        results = {
+            'data': self.header(self),
+            'totals': self.totals and self.totals(self)
+        }
+
+        return results
 
 
 
@@ -219,14 +230,6 @@ class Header(object):
         self.results = pd.DataFrame(data, columns=columns)
 
         return [DataRow(row, attrs) for ix, row in self.results.iterrows()]
-
-
-        # titles = [col[0][1] for col in self.columns]
-
-        # print max([len(t) if isinstance(t, tuple) else 1 for t in titles])
-
-        # pprint.pprint(titles)
-
 
 
 class PivotRows(object):
@@ -361,13 +364,46 @@ class ConfigDataSource(object):
 class Total(object):
     """
     """
-    def __init__(self, *args, **kwargs):
-        self.position = kwargs.get('position', 'top')
+    def __init__(self, column, *args, **kwargs):
+        self.column = column
         self.aggfunc = kwargs.get('aggfunc', np.sum)
-        self.columns = args
 
     def __call__(self, config):
-        print config.header.results['total_price'].sum()
+        #print config.header.results[self.column].sum()
+        pass
+
+
+class Totals(object):
+    """
+    """
+
+    def __init__(self, *args, **kwargs):
+        self.position = kwargs.get('position', 'top')
+        self.totals = []
+        for total in args:
+            if isinstance(total, basestring):
+                self.totals.append(Total(total))
+            elif isinstance(total, Total):
+                self.totals.append(total)
+            else:
+                continue
+
+    def __call__(self, config):
+        for total in self.totals:
+            total(config)
+
+
+class Results(object):
+    """
+    """
+
+    def __init__(self, report, *args, **kwargs):
+
+        self.report = report
+        self.config = self.report.config(self.report, *args, **kwargs)
+
+        self.report.results = self.config['data']
+        self.report.totals = self.config['totals']
 
 
 class PandasReport(object):
@@ -385,7 +421,9 @@ class PandasReport(object):
         self.build_filters(*args, **kwargs)
 
         # entry point
-        self.results = self.config(self, *args, **kwargs)
+        Results(self, *args, **kwargs)
+
+        # self.results = self.config(self, *args, **kwargs)
 
     def build_filters(self, *args, **kwargs):
         if 'filters' in kwargs:

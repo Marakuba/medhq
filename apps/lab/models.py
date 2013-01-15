@@ -321,7 +321,7 @@ class Result(models.Model):
     is_validated = models.BooleanField(u'V', default=True)
     validation = models.IntegerField(u'Статус валидации', choices=PASS_STATUS, default=0)
     sample = models.ForeignKey('Sampling', blank=True, null=True)
-    status = models.ForeignKey(Status, blank=True, null=True)
+    # status = models.ForeignKey(Status, blank=True, null=True)
     modified = models.DateTimeField(auto_now=True)
     modified_by = models.ForeignKey(User, blank=True, null=True)
     comment = models.TextField(u'Комментарий', blank=True, null=True)
@@ -385,7 +385,7 @@ class Sampling(models.Model):
     code = models.IntegerField(u'Код', null=True, blank=True)
     is_barcode = models.BooleanField()
     number = models.ForeignKey(NumeratorItem, null=True, blank=True)
-    status = models.ForeignKey(Status, blank=True, null=True)
+    # status = models.ForeignKey(Status, blank=True, null=True)
 
     def __unicode__(self):
         return u"№%s, %s, %s, к заказу %s" % (self.id, self.tube, self.laboratory, self.visit.id)

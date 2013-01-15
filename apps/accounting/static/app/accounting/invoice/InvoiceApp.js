@@ -159,20 +159,32 @@ App.accounting.InvoiceApp = Ext.extend(Ext.Panel, {
             return;
         }
         var a = node.attributes;
-        var id = a.id.split('-');
-        var fields = {
-            patient: App.utils.getApiUrl('patient','patient', p.data.id),
-            // patient_name: p.data.patient_name,
-            service: App.utils.getApiUrl('service','baseservice', id[0]),
-            service_name: a.text,
-            execution_place: App.utils.getApiUrl('state','state', id[1]),
-            price:a.price,
-            count:1,
-            total_price:a.price
-        };
 
-        this.basket.addItem(fields);
-        // // console.info(fields);
+        var nodes;
+        if(a.isComplex){
+            nodes = a.nodes;
+        } else {
+            nodes = [a];
+        }
+
+        Ext.each(nodes, function(node){
+
+            var id = node.id.split('-');
+            var fields = {
+                patient: App.utils.getApiUrl('patient','patient', p.data.id),
+                // patient_name: p.data.patient_name,
+                service: App.utils.getApiUrl('service','baseservice', id[0]),
+                service_name: node.text,
+                execution_place: App.utils.getApiUrl('state','state', id[1]),
+                price:node.price,
+                count:1,
+                total_price:node.price
+            };
+
+            this.basket.addItem(fields);
+
+        }, this);
+
     },
 
     onTotalPriceChange : function(total_price) {

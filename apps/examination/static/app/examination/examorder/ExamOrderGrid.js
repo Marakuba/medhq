@@ -186,7 +186,7 @@ App.examorder.ExamOrderGrid = Ext.extend(Ext.grid.GridPanel, {
         this.on('afterrender',function(){
             this.store.setBaseParam('staff__staff', WebApp.active_staff);
             this.store.load();
-        })
+        });
 
         //this.on('rowcontextmenu', this.onContextMenu, this);
     },
@@ -194,7 +194,10 @@ App.examorder.ExamOrderGrid = Ext.extend(Ext.grid.GridPanel, {
     onAdd: function() {
         var rec = this.getSelected();
         if (!rec) return;
-        if (!rec.data.executed) {
+
+        var dueDate = new Date().add(Date.HOUR, -WebApp.settings.examCardEditable);
+
+        if (!rec.data.executed || rec.data.executed>dueDate) {
             var conf = {
                 closable:true,
                 patientId:rec.data.patient,
