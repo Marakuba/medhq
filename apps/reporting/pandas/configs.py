@@ -28,11 +28,6 @@ class Config(object):
 
         data = []
 
-        test_group = df.groupby(['service_group', 'payment_type'])
-
-        for item in test_group.agg(self.group_by.get_funcs())['service_group'].iterrows():
-            print item
-
         if self.group_by:
 
             grouped = df.groupby(self.group_by.columns)
