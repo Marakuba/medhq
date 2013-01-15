@@ -65,7 +65,6 @@ App.examination.TextTicketEditor = Ext.extend(Ext.Panel, {
         this.glossPanel = new App.dict.XGlossaryTree({
             section:this.section,
             base_service:this.base_service,
-            staff:this.staff,
             collapsible:true,
             animate: false,
             collapsed:false,
@@ -241,6 +240,8 @@ App.examination.TextTicketEditor = Ext.extend(Ext.Panel, {
         var rootNode = this.glossPanel.getRootNode();
         this.glossStore.setBaseParam('section',ticket.section);
         this.glossStore.load();
+        this.glossPanel.section = ticket.section;
+        this.section = ticket.section;
         this.glossPanel.loader.baseParams['section'] = ticket.section;
         this.glossPanel.loader.baseParams['staff'] = WebApp.active_staff;
 //      this.glossPanel.loader.load(rootNode);

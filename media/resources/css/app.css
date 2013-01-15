@@ -40,7 +40,15 @@
 .x-tree-node-anchor {
 	white-space:normal;
 }
-.helpdesk-row-body, .preorder-actual-row-body {
+.helpdesk-row-body {
+	padding:5px 0
+}
+
+.default-row-body {
+	padding:2px 0
+}
+
+.preorder-actual-row-body {
 	padding:5px 0;
 	color:#385F95
 }
@@ -244,8 +252,8 @@
 	background:url(../images/stripe_warn.png);
 }
 
-.icon-main-button { 
-	background-image: url(../images/main-button.png) !important; 
+.icon-main-button {
+	background-image: url(../images/main-button.png) !important;
 	background-repeat: no-repeat;
 }
 
@@ -270,7 +278,7 @@ button.icon-main-button {
 	font-family:'Verdana';
 }
 .patient-card-header ul {
-	background-image: url(icons/error.png) !important; background-repeat: no-repeat; 
+	background-image: url(icons/error.png) !important; background-repeat: no-repeat;
 	padding-left:20px;
 	float:right;
 }
@@ -383,7 +391,7 @@ button.icon-main-button {
 	cursor: pointer;
 }
 
-#startView .item-selected 
+#startView .item-selected
 {
     background-color: #7284D6 !important;
     background-image: none;

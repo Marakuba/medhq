@@ -17,7 +17,7 @@ App.examination.AsgmtTicketEditor = Ext.extend(Ext.Panel, {
             idProperty: 'id',
             root: 'objects',
             messageProperty: 'message'
-        }, App.models.preorderModel);
+        }, App.models.Preorder);
 
         this.writer = new Ext.data.JsonWriter({
             encode: false,
