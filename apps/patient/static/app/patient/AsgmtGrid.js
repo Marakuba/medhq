@@ -378,6 +378,8 @@ App.patient.AsgmtGrid = Ext.extend(Ext.grid.EditorGridPanel, {
             		var service = record.get('service');
             		if (record.data.comment){
             			p.body = '<p class="helpdesk-row-body"> Комментарий: '+record.data.comment+'</p>';
+            		} else {
+            			p.body = '<p class="default-row-body"></p>';
             		};
             		if (record.data.deleted){
             			return 'preorder-deactive-row-body'

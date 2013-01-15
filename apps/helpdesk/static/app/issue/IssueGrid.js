@@ -107,7 +107,7 @@ App.issue.IssueGrid = Ext.extend(Ext.grid.GridPanel, {
                 }
             })
 
-        }
+        };
 
         Ext.apply(this, Ext.apply(this.initialConfig, config));
         App.issue.IssueGrid.superclass.initComponent.apply(this, arguments);
