@@ -49,6 +49,10 @@ class AccountingInvoiceResource(ExtResource):
         result = super(AccountingInvoiceResource, self).obj_create(bundle=bundle, request=request, **kwargs)
         return result
 
+    def dehydrate(self, bundle):
+        bundle.data['state_name'] = bundle.obj.contract.state.__unicode__()
+        return bundle
+
     class Meta:
         queryset = AccInvoice.objects.all()
         resource_name = 'acc_invoice'

@@ -19,6 +19,7 @@ App.models.AccountingInvoice = new Ext.data.Record.create([
     {name: 'created', type:'date', dateFormat:'c'},
     {name: 'contract'},
     {name: 'number'},
+    {name: 'state_name'},
     {name: 'on_date', type:'date', dateFormat:'c'},
     {name: 'total_price'},
     {name: 'modified', type:'date', dateFormat:'c'}
