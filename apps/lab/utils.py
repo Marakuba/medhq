@@ -197,7 +197,7 @@ def send_lab_order_to_email(obj):
 
     email = EmailMessage(subject=subject, body=body, to=[obj.visit.patient.email, ])
     pdf = lab_order_to_pdf(obj, raw=True)
-    filename = 'Euromed Lab %s.pdf' % obj.visit.barcode.id
+    filename = 'Euromed Lab %s.pdf' % obj.visit.barcode_id
     email.attach(filename, pdf, 'application/pdf')
     email.send(fail_silently=False)
 

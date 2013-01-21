@@ -249,7 +249,7 @@ def make_email_task(request):
 
     if email:
         v.patient.email = email
-        print "new email received:", email
+        # print "new email received:", email
         v.patient.save()
 
     task, created = _create_email_task(lab_order=lab_order)
@@ -569,7 +569,7 @@ def result_loader(request):
         state = RemoteState.objects.get(state__id=state_id)
         state_key = state.secret_key
     except Exception, err:
-        print err
+        # print err
         return {
             'error': u'Ошибка определения лаборатории'
         }
@@ -599,9 +599,9 @@ def result_loader(request):
                 end = datetime.datetime.strptime(end, '%Y-%m-%dT%H:%M:%S')
                 end = datetime.datetime(year=end.year, month=end.month, day=end.day,
                                         hour=23, minute=59, second=59)
-                print end
+                # print end
             except Exception, err:
-                print err
+                # print err
                 return {
                     'error': u'Некорректная конечная дата'
                 }

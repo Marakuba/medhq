@@ -23,7 +23,7 @@ class BarcodeResource(ModelResource):
         if "patient" in filters:
             patient_id = filters['patient']
             visit_list = Visit.objects.filter(patient=patient_id)
-            barcode_id_list = [visit.barcode.id for visit in visit_list]
+            barcode_id_list = [visit.barcode_id for visit in visit_list]
             orm_filters['id__in'] = barcode_id_list
 
         return orm_filters

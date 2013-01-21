@@ -62,8 +62,8 @@ class VisitResource(ExtResource):
         bundle.data['patient_name'] = bundle.obj.patient.short_name()
         bundle.data['office_name'] = bundle.obj.office
         bundle.data['payer_name'] = bundle.obj.payer and bundle.obj.payer.name or ''
-        bundle.data['patient_id'] = bundle.obj.patient.id
-        bundle.data['barcode_id'] = bundle.obj.barcode.id
+        bundle.data['patient_id'] = bundle.obj.patient_id
+        bundle.data['barcode_id'] = bundle.obj.barcode_id
 
         return none_to_empty(bundle)
 
@@ -171,7 +171,7 @@ class OrderedServiceResource(ExtBatchResource):
         bundle.data['service_full_name'] = service.name
         bundle.data['created'] = bundle.obj.order.created
         bundle.data['visit_id'] = bundle.obj.order.id
-        bundle.data['barcode'] = bundle.obj.order.barcode.id
+        bundle.data['barcode'] = bundle.obj.order.barcode_id
         bundle.data['patient_name'] = bundle.obj.order.patient.short_name()
         bundle.data['payer_name'] = bundle.obj.order.payer and bundle.obj.order.payer.name or ''
 #        bundle.data['operator_name'] = bundle.obj.operator
@@ -204,7 +204,7 @@ class LabOrderedServiceResource(OrderedServiceResource):
         bundle.data['service_full_name'] = service.name
         bundle.data['created'] = bundle.obj.order.created
         bundle.data['visit_id'] = bundle.obj.order.id
-        bundle.data['barcode'] = bundle.obj.order.barcode.id
+        bundle.data['barcode'] = bundle.obj.order.barcode_id
         bundle.data['patient_name'] = bundle.obj.order.patient.short_name()
         bundle.data['operator_name'] = bundle.obj.operator
         bundle.data['laboratory'] = bundle.obj.execution_place
@@ -264,7 +264,7 @@ class LabServiceResource(ExtResource):
         bundle.data['operator_name'] = bundle.obj.order.operator
         bundle.data['office_name'] = bundle.obj.order.office
         bundle.data['laboratory'] = bundle.obj.execution_place
-        bundle.data['barcode'] = bundle.obj.order.barcode.id
+        bundle.data['barcode'] = bundle.obj.order.barcode_id
         return bundle
 
     def build_filters(self, filters=None):
@@ -319,7 +319,7 @@ class LabTestResource(ExtResource):
 #        bundle.data['lab_group'] = service.lab_group
         bundle.data['created'] = order.created
         bundle.data['printed'] = bundle.obj.print_date
-        bundle.data['barcode'] = order.barcode.id
+        bundle.data['barcode'] = order.barcode_id
         bundle.data['patient'] = patient.full_name()
         bundle.data['patient_age'] = patient.full_age()
         bundle.data['staff_name'] = bundle.obj.staff
@@ -370,7 +370,7 @@ class ExamServiceResource(ExtResource):
         #bundle.data['lab_group'] = service.lab_group
         bundle.data['created'] = bundle.obj.order.created
         bundle.data['printed'] = bundle.obj.print_date
-        bundle.data['barcode'] = bundle.obj.order.barcode.id
+        bundle.data['barcode'] = bundle.obj.order.barcode_id
         bundle.data['patient_full'] = bundle.obj.order.patient.full_name()
         bundle.data['patient_name'] = bundle.obj.order.patient.short_name()
         bundle.data['patient_age'] = bundle.obj.order.patient.full_age()
@@ -436,7 +436,7 @@ class SamplingServiceResource(ExtResource):
         bundle.data['created'] = bundle.obj.order.created
         bundle.data['visit_id'] = bundle.obj.order.id
         bundle.data['patient_name'] = bundle.obj.order.patient.short_name()
-        bundle.data['barcode'] = bundle.obj.order.barcode.id
+        bundle.data['barcode'] = bundle.obj.order.barcode_id
         bundle.data['sampling'] = bundle.obj.sampling
         return bundle
 

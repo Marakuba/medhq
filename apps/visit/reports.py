@@ -223,24 +223,26 @@ SELECT
     ) as C4,
     (
         SELECT
-            sum(count)
+            sum(Tvisit.total_price)
         FROM
-            visit_orderedservice as Tordservice
-        LEFT OUTER JOIN visit_visit Tvisit on Tordservice.order_id=Tvisit.id
+            visit_visit as Tvisit
+--            visit_orderedservice as Tordservice
+--        LEFT OUTER JOIN visit_visit Tvisit on Tordservice.order_id=Tvisit.id
         WHERE
             to_char(Tvisit.created,'YYYY-MM-DD') BETWEEN '{{ start_date }}' and '{{ end_date }}'
             AND Tvisit.payment_type = 'д'
-    ) as Dcnt,
+    ) as Dttp,
     (
         SELECT
-            sum(count)
+            sum(Tvisit.total_price)
         FROM
-            visit_orderedservice as Tordservice
-        LEFT OUTER JOIN visit_visit Tvisit on Tordservice.order_id=Tvisit.id
+            visit_visit as Tvisit
+--            visit_orderedservice as Tordservice
+--        LEFT OUTER JOIN visit_visit Tvisit on Tordservice.order_id=Tvisit.id
         WHERE
             to_char(Tvisit.created,'YYYY-MM-DD') BETWEEN '{{ start_date }}' and '{{ end_date }}'
             AND Tvisit.payment_type = 'н'
-    ) as Ccnt
+    ) as Cttp
 
             """),
         header=Header(
@@ -252,8 +254,8 @@ SELECT
             Column('c3', u'Наличные', attrs={'class': 'number'}),
             Column('d4', u'ДМС', attrs={'class': 'number'}),
             Column('c4', u'Наличные', attrs={'class': 'number'}),
-            Column('dcnt', u'ДМС', attrs={'class': 'number'}),
-            Column('ccnt', u'Наличные', attrs={'class': 'number'}),
+            Column('dttp', u'ДМС', attrs={'class': 'number'}),
+            Column('cttp', u'Наличные', attrs={'class': 'number'}),
         ),
         # totals=Total('count', 'total_price', 'total_discount', position='bottom', aggfunc=np.sum)
     )
@@ -291,10 +293,10 @@ LEFT OUTER JOIN visit_visit Tvisit on Tordservice.order_id=Tvisit.id
 LEFT OUTER JOIN service_baseservice Tservice on Tordservice.service_id=Tservice.id
 WHERE
     to_char(Tvisit.created,'YYYY-MM-DD') BETWEEN '{{ start_date }}' and '{{ end_date }}'
-    AND Tservice.name LIKE %s
+    AND Tservice.id IN (2468,2462,4447,2209,2204,2201,4561,4562,4563,5266,2230,2839,2837,2836,2187,2190,2186,2182,2926,2175,2156,2148,4446,2131,2128,2127,4550,2850,2849,2131,2128,2127,2111,2432,2431,2430,2096,2094,2091,2425,2477,2476,2072,2915,2054,2052)
 ORDER BY
     Tvisit.created DESC
-        """, params=[u"%с контрастом%"]),
+        """),
         header=Header(
             Column('service_group', u'Группа', renderer=service_group_renderer),
             Column('created', u'Дата'),

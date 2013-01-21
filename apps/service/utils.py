@@ -97,7 +97,7 @@ def get_service_tree(state=None, payer=None, payment_type=None, price_type=None,
         # типа цены учитывая минуты
         time = datetime.datetime.now()
         d = datetime.datetime(year=date.year, month=date.month, day=date.day, hour=time.hour, minute=time.minute, second=time.second, microsecond=time.microsecond)
-        price_type = get_actual_ptype(date=d, payer=payer.id, payment_type=payment_type)
+        price_type = get_actual_ptype(date=d, payer=payer, payment_type=payment_type)
     values = Price.objects.filter(extended_service__is_active=True,
                                     price_type='r', type=price_type, **args).\
         order_by('extended_service__id', 'on_date').\
@@ -268,7 +268,7 @@ class ServiceTreeLoader():
         if 'analysis' in node:
             anl_list = node['analysis']
             for anl in anl_list:
-                print anl['name'], anl['code']
+                # print anl['name'], anl['code']
                 il_cache = []
                 if 'input_list' in anl:
                     for il in anl['input_list']:

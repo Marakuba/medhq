@@ -19,7 +19,7 @@ POINTS = {
 def move_node(request):
 
     r = simplejson.loads(request.raw_post_data)
-    print r['data']
+    # print r['data']
     try:
         drop_node = BaseService.objects.get(id=int(r['data'][0]))
     except Exception:
@@ -314,7 +314,7 @@ def get_service_tree(request):
     leaf_func = base_service_leaf
     group_func = base_service_group
 
-    payment_type = request.GET.get('payment_type')
+    payment_type = request.GET.get('payment_type', u'н')
     staff = request.GET.get('staff') or None
     payer = request.GET.get('payer') or None
 
@@ -324,7 +324,7 @@ def get_service_tree(request):
 
         # nocache = request.GET.get('nocache')
         # recache = request.GET.get('recache')
-        payment_type = payment_type or u'н'
+        # payment_type = payment_type or u'н'
         leaf_func = ext_service_leaf
         group_func = ext_service_group
         all = request.GET.get('all')

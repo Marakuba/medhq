@@ -337,7 +337,7 @@ class BaseServiceAdmin(TreeEditor, TabbedAdmin):
             date = datetime.datetime.today()
         if not isinstance(date, datetime.datetime):
             date = datetime.datetime.strptime(date, "%d.%m.%Y")
-        print date
+        # print date
         services = BaseService.objects.actual().order_by(BaseService._meta.tree_id_attr, #@UndefinedVariable
                                                       'level',
                                                       "-"+BaseService._meta.left_attr) #@UndefinedVariable

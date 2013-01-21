@@ -313,8 +313,8 @@ def post_results(orders):
         options = {
             'services':order[1]
         }
-        print data_set
-        print options
+        # print data_set
+        # print options
         post_results_to_local(data_set, options)
 
 
@@ -347,7 +347,7 @@ def update_result_feed(state_key, start=None, end=None, specimens=None, date_typ
     params = urlencode(params)
     URL = "%slab/feed/?%s" % (state.domain_url, params)
 
-    print URL
+    # print URL
 
     h = httplib2.Http()
     
@@ -358,7 +358,7 @@ def update_result_feed(state_key, start=None, end=None, specimens=None, date_typ
         try:
             results = simplejson.loads(content)
             if not results:
-                print "No results"
+                # print "No results"
                 return
             orders = flat(results)
             post_results(orders)

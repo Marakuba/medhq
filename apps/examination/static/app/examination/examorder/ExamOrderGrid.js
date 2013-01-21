@@ -44,7 +44,7 @@ App.examorder.ExamOrderGrid = Ext.extend(Ext.grid.GridPanel, {
                 renderer:function(val, meta, record) {
                     var p = record.data.executed;
                     var flag = p ? 'yes' : 'no';
-                    var img = "<img src='"+WebApp.MEDIA_URL+"admin/img/admin/icon-"+flag+".gif'>";
+                    var img = "<img src='"+WebApp.MEDIA_URL+"resources/images/icon-"+flag+".gif'>";
                     return String.format("{0} {1}", img, p ? Ext.util.Format.date(p, 'd.m.Y H:i') : "");
                 }
             }];

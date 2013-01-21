@@ -39,7 +39,7 @@ def get_actual_ptype(date=None, payer=None, payment_type=u'н'):
             return config.DEFAULT_PRICETYPE_CORP
 
     date = date or datetime.datetime.now()
-    t = cache.get('periods') or build_period_table()
+    t = build_period_table()
     now = "%02d:%02d" % (date.hour, date.minute)
     r = filter(lambda x: (now >= x['hour_from']) \
              and (now <= x['hour_to']) \

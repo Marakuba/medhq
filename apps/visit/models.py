@@ -244,7 +244,7 @@ class PlainVisit(Visit):
         return self.patient.ad_source.name
 
     def __unicode__(self):
-        return smart_unicode(u"%s %s" % (self.barcode.id, self.patient.full_name()))
+        return smart_unicode(u"%s %s" % (self.barcode_id, self.patient.full_name()))
 
     class Meta:
         proxy = True
@@ -460,12 +460,12 @@ def BarcodeGenerator(sender, **kwargs):
             new_barcode = Barcode.objects.create()
             visit.barcode = new_barcode
             if not visit.specimen:
-                visit.specimen = str(visit.barcode.id)
+                visit.specimen = str(new_barcode.id)
             visit.save()
         else:
             visit.barcode.status = 1
             visit.barcode.save()
-            print 'status %s' % visit.barcode.status
+            # print 'status %s' % visit.barcode.status
 
 post_save.connect(BarcodeGenerator, sender=Visit)
 

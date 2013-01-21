@@ -23,7 +23,7 @@ App.accounting.ContractForm = Ext.extend(Ext.form.FormPanel, {
         });
 
         this.stateStore = new Ext.data.RESTStore({
-            apiUrl : App.utils.getApiUrl('state','state'),
+            apiUrl : App.utils.getApiUrl('state','jstate'),
             autoLoad : true,
             autoSave : false,
             baseParams:{

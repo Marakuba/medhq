@@ -73,12 +73,12 @@ class StateResource(ModelResource):
         list_allowed_methods = ['get', 'post', 'put']
 
 
-class GenericStateResource(ExtResource):
+class JStateResource(ExtResource):
 
     class Meta:
         queryset = State.objects.all()
-        resource_name = 'genericstate'
-        authorizaion = DjangoAuthorization()
+        resource_name = 'jstate'
+        authorization = DjangoAuthorization()
         always_return_data = True
         limit = 50
         filtering = {
@@ -133,7 +133,7 @@ class DepartmentResource(ExtResource):
 api = Api(api_name='state')
 
 api.register(StateResource())
-api.register(GenericStateResource())
+api.register(JStateResource())
 api.register(DepartmentResource())
 api.register(MedStateResource())
 api.register(OwnStateResource())

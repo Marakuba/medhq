@@ -149,7 +149,7 @@ class LabOrderResource(ExtResource):
             bundle.data['visit_created'] = v.created
             bundle.data['visit_is_cito'] = v.is_cito
             bundle.data['visit_id'] = v.id
-            bundle.data['barcode'] = v.barcode.id
+            bundle.data['barcode'] = v.barcode_id
             bundle.data['is_male'] = v.patient.gender == u'М'
             bundle.data['patient_name'] = v.patient.full_name()
             bundle.data['payer_name'] = v.payer and v.payer.name or ''
@@ -282,7 +282,7 @@ class ResultResource(ExtResource):
 
     def dehydrate(self, bundle):
         obj = bundle.obj
-        bundle.data['barcode'] = obj.order.visit.barcode.id
+        bundle.data['barcode'] = obj.order.visit.barcode_id
         bundle.data['patient'] = obj.order.visit.patient.full_name()
         bundle.data['service_name'] = obj.analysis.service
         bundle.data['laboratory'] = obj.order.laboratory
@@ -358,7 +358,7 @@ class EquipmentTaskReadOnlyResource(ExtBatchResource):
         bundle.data['service_name'] = bundle.obj.ordered_service.service.short_name
         bundle.data['analysis_name'] = bundle.obj.equipment_assay.equipment_analysis
         bundle.data['patient_name'] = bundle.obj.ordered_service.order.patient.short_name()
-        bundle.data['order'] = bundle.obj.ordered_service.order.barcode.id
+        bundle.data['order'] = bundle.obj.ordered_service.order.barcode_id
         bundle.data['result'] = bundle.obj.result and bundle.obj.result.get_full_result() or u''
         return bundle
 
@@ -411,7 +411,7 @@ class EquipmentTaskResource(ExtBatchResource):
         bundle.data['service_name'] = bundle.obj.ordered_service.service
         bundle.data['patient_name'] = bundle.obj.ordered_service.order.patient.short_name()
         bundle.data['lat'] = bundle.obj.ordered_service.order.patient.translify()
-        bundle.data['order'] = bundle.obj.ordered_service.order.barcode.id
+        bundle.data['order'] = bundle.obj.ordered_service.order.barcode_id
         bundle.data['result'] = bundle.obj.result and bundle.obj.result.get_full_result() or u''
         return bundle
 
@@ -511,7 +511,7 @@ class InvoiceItemResource(ExtResource):
     def dehydrate(self, bundle):
         s = bundle.obj.ordered_service
         bundle.data['created'] = s.order.created
-        bundle.data['barcode'] = s.order.barcode.id
+        bundle.data['barcode'] = s.order.barcode_id
         bundle.data['patient_name'] = s.order.patient.short_name()
         bundle.data['service_name'] = s.service
         bundle.data['sampling'] = s.sampling.tube

@@ -105,7 +105,7 @@ App.examination.TextTicketEditor = Ext.extend(Ext.Panel, {
             region:'center',
             enableKeyEvents:true,
             tinymceSettings: {
-                baseURL: WebApp.MEDIA_URL+"libs/tiny_mce",
+                document_base_url: WebApp.MEDIA_URL+"libs/tiny_mce",
                 theme: "advanced",
                 skin : "o2k7",
                 language : "ru",

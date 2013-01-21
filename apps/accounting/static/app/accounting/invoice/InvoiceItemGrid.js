@@ -67,7 +67,8 @@ App.accounting.InvoiceItemGrid = Ext.extend(Ext.grid.EditorGridPanel, {
                     iconCls:'silk-delete',
                     text:'Удалить',
                     handler:this.onDeleteItem.createDelegate(this)
-                }, {
+                }, '-', {
+                    iconCls: 'silk-page-white-copy',
                     text:'Скопировать из счета',
                     handler:this.onInvoiceCopy.createDelegate(this)
                 }]

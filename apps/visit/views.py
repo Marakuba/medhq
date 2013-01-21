@@ -98,7 +98,7 @@ def visit(request, visit_id):
         'custom_blanks':",".join(['"%s"' % b for b in custom_blanks])
     }
     
-    print "print/visit/visit_state_%s.html" % visit.office.id
+    # print "print/visit/visit_state_%s.html" % visit.office.id
     
     return render_to_response(["print/visit/visit_state_%s.html" % visit.office.id,"print/visit/visit.html"],
                               extra_context,

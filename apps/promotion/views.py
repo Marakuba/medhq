@@ -66,7 +66,7 @@ def promo_upload(request):
         except:
             error_text += [u'Услуга "%s" не найдена' % row[1]]
             
-    print error_text
+    # print error_text
         
     return render_to_response('promotion/result.html', {'error_text': error_text,'complete_text':complete_text}, 
                               context_instance=RequestContext(request))

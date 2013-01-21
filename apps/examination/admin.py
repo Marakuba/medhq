@@ -77,7 +77,7 @@ class CardAdmin(admin.ModelAdmin):
     search_fields = ['ordered_service__order__barcode__id', 'ordered_service__order__patient__last_name']
 
     def order(self, obj):
-        return obj.ordered_service.order.barcode.id
+        return obj.ordered_service.order.barcode_id
     order.short_description = u'№ заказа'
 
     def order_date(self, obj):
