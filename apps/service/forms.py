@@ -35,11 +35,12 @@ state_qs = State.objects.filter(type='b')
 payer_qs = State.objects.all()
 price_type_qs = PriceType.objects.all()
 payment_types = PAYMENT_TYPES
-payment_types.append((u'-',u'---'))
+payment_types.append((u'-', u'---'))
+
 class PriceForm(forms.Form):
     """
     """
-    
+
     date = forms.DateField(label=u'Дата', required=True)
     state = forms.ModelChoiceField(label=u'Организация',
                                             queryset=state_qs,
@@ -47,9 +48,9 @@ class PriceForm(forms.Form):
     payer = forms.ModelChoiceField(label=u'Плательщик',
                                             queryset=payer_qs,
                                             required=False)
-    payment_type = forms.ChoiceField(label=u'Форма оплаты',
-                                            choices=payment_types,
-                                            required=False)
+    # payment_type = forms.ChoiceField(label=u'Форма оплаты',
+    #                                         choices=payment_types,
+    #                                         required=False)
     price_type = forms.ModelChoiceField(label=u'Тип цены',
                                             queryset=price_type_qs,
                                             required=False)

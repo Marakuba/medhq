@@ -10,7 +10,7 @@ App.examination.CardGrid = Ext.extend(Ext.grid.EditorGridPanel, {
         this.baseParams = Ext.apply({
             format:'json',
             deleted:false,
-            'ordered_service__staff': WebApp.active_profile
+            'ordered_service__staff__staff': WebApp.active_staff
         },this.baseParams);
 
         this.reader = new Ext.data.JsonReader({
@@ -103,7 +103,7 @@ App.examination.CardGrid = Ext.extend(Ext.grid.EditorGridPanel, {
                 renderer:function(val, meta, record) {
                     var p = record.data.executed;
                     var flag = p ? 'yes' : 'no';
-                    var img = "<img src='"+WebApp.MEDIA_URL+"admin/img/admin/icon-"+flag+".gif'>";
+                    var img = "<img src='"+WebApp.MEDIA_URL+"resources/images/icon-"+flag+".gif'>";
                     return String.format("{0}", img);
                 }
             },

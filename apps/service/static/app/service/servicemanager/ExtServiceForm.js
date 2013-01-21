@@ -209,7 +209,7 @@ App.servicemanager.ExtServiceForm = Ext.extend(Ext.form.FormPanel,{
         this.profileStore = new Ext.data.RESTStore({
             autoLoad : false,
             autoSave : false,
-            apiUrl : App.utils.getApiUrl('lab','analysisprofile'),
+            apiUrl : App.utils.getApiUrl('lab','analysis_profile'),
             model: [
                 {name: 'resource_uri'},
                 {name: 'name'},

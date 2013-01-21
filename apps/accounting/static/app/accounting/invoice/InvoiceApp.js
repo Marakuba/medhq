@@ -65,7 +65,9 @@ App.accounting.InvoiceApp = Ext.extend(Ext.Panel, {
 
         this.basket.on('totalpricechange', this.onTotalPriceChange, this);
         this.basket.on('patientlist', this.onPatientList, this);
+        this.basket.on('copy', this.addItems, this);
         this.basket.store.on('save', this.onBasketSave, this);
+
 
         config = {
             closable:true,
@@ -120,7 +122,9 @@ App.accounting.InvoiceApp = Ext.extend(Ext.Panel, {
 
         this.contractId = App.utils.uriToId(rec.data.contract);
         this.loadContract(this.contractId);
-        this.basket.loadItems(rec.data.id);
+        if(rec.data.id){
+            this.basket.loadItems(rec.data.id);
+        }
     },
 
     loadContract : function(id){
@@ -153,26 +157,47 @@ App.accounting.InvoiceApp = Ext.extend(Ext.Panel, {
     },
 
     onServiceClick: function(node){
+        var a = node.attributes;
+
+        var nodes;
+        if(a.isComplex){
+            nodes = a.nodes;
+        } else {
+            nodes = [a];
+        }
+
+        var items = _.map(nodes, function(node){
+            var id = node.id.split('-');
+            return {
+                service: App.utils.getApiUrl('service','baseservice', id[0]),
+                service_name: node.text,
+                execution_place: App.utils.getApiUrl('state','state', id[1]),
+                price:node.price,
+                count:1,
+                total_price:node.price
+            };
+        });
+
+        this.addItems(items);
+
+    },
+
+    addItems: function(items){
         var p = this.getCurrentPatient();
         if(!p) {
             Ext.MessageBox.alert('Ошибка','Сначала выберите пациента!');
             return;
         }
-        var a = node.attributes;
-        var id = a.id.split('-');
-        var fields = {
-            patient: App.utils.getApiUrl('patient','patient', p.data.id),
-            // patient_name: p.data.patient_name,
-            service: App.utils.getApiUrl('service','baseservice', id[0]),
-            service_name: a.text,
-            execution_place: App.utils.getApiUrl('state','state', id[1]),
-            price:a.price,
-            count:1,
-            total_price:a.price
-        };
 
-        this.basket.addItem(fields);
-        // // console.info(fields);
+        Ext.each(items, function(item){
+            var fields = {
+                patient: App.utils.getApiUrl('patient','patient', p.data.id)
+            };
+            Ext.apply(fields, item);
+            this.basket.addItem(fields);
+
+        }, this);
+
     },
 
     onTotalPriceChange : function(total_price) {

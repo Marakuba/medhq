@@ -117,6 +117,9 @@ def results(request, object_id):
     return lab_order_to_html(request, order)
 
 
+from .utils import make_lab
+
+
 def revert_results(request):
     """
     """
@@ -128,7 +131,7 @@ def revert_results(request):
             ordered_services = lab_order.visit.orderedservice_set.filter(execution_place=lab_order.laboratory,
                                                                          service__lab_group=lab_order.lab_group)
             for ordered_service in ordered_services:
-                ordered_service.to_lab()
+                make_lab(ordered_service)
 
             for result in lab_order.result_set.all():
                 if not result.is_completed():
@@ -246,7 +249,7 @@ def make_email_task(request):
 
     if email:
         v.patient.email = email
-        print "new email received:", email
+        # print "new email received:", email
         v.patient.save()
 
     task, created = _create_email_task(lab_order=lab_order)
@@ -566,7 +569,7 @@ def result_loader(request):
         state = RemoteState.objects.get(state__id=state_id)
         state_key = state.secret_key
     except Exception, err:
-        print err
+        # print err
         return {
             'error': u'Ошибка определения лаборатории'
         }
@@ -596,9 +599,9 @@ def result_loader(request):
                 end = datetime.datetime.strptime(end, '%Y-%m-%dT%H:%M:%S')
                 end = datetime.datetime(year=end.year, month=end.month, day=end.day,
                                         hour=23, minute=59, second=59)
-                print end
+                # print end
             except Exception, err:
-                print err
+                # print err
                 return {
                     'error': u'Некорректная конечная дата'
                 }

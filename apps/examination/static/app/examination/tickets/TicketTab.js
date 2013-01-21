@@ -13,6 +13,8 @@ App.examination.TicketPanel = Ext.extend(Ext.ux.Portal,{
                   'drop',
                   'beforedrop',
                   'ticketheadeeditrstart',
+                  'ticketbeforeedit',
+                  'ticketeditcomplete',
                   'ticketbodyclick'],
     closable: false
 });
@@ -110,16 +112,16 @@ App.examination.TicketTab = Ext.extend(Ext.Panel, {
                         var itemData = item.getData();
                         itemData['pos'] = ind;
                         tickets.push(itemData);
-                    };
-                },this);
-                return(tickets)
+                    }
+                }, this);
+                return(tickets);
             },
 
             listeners:{
                 'beforedrop':function(res,e,t){
                     if (res.panel.fixed)
                         return false;
-                    if (res.position == 0 && this.portalColumn.items.items[0].data.fixed)
+                    if (res.position === 0 && this.portalColumn.items.items[0].data.fixed)
                         return false;
 
                     var panel = res.panel;
@@ -131,15 +133,21 @@ App.examination.TicketTab = Ext.extend(Ext.Panel, {
                     //если открыт редактор тикета, карту осмотра закрывать нельзя
                     if (!this.editInProcess){
                         this.editInProcess = true;
-                        return true
+                        panel.otherTickets = this.portalColumn.items;
+                        return true;
                     } else {
                         Ext.Msg.alert('Внимание!','Один редактор уже открыт!');
-                        return false
+                        return false;
                     }
 
                 },
-                'ticketeditcomplete': function(){
+                'ticketeditcomplete': function(nextTicket){
+                    // nextTicket - тикет, переданный для последующего редактирования
+
                     this.editInProcess = false;
+                    if (nextTicket){
+                        nextTicket.onEdit(nextTicket);
+                    }
                 },
                 scope:this
             }
@@ -170,31 +178,31 @@ App.examination.TicketTab = Ext.extend(Ext.Panel, {
                 this.loadData(this.data);
             } else {
                 this.loadRequiredTickets();
-            };
+            }
 
         },this);
 
         this.on('ticketbodyclick', function(panel,editor,pos){
             if (this.ticket) {
                 this.ticket.body.removeClass('selected');
-            };
+            }
             this.ticket = panel;
-            this.ticket.body.addClass('selected')
+            this.ticket.body.addClass('selected');
         },this);
 
         this.on('ticketheadeeditstart',function(panel){
             if (this.ticket){
-                this.ticket.body.removeClass('selected')
-            };
+                this.ticket.body.removeClass('selected');
+            }
 
             this.ticket = panel;
-            this.ticket.body.addClass('selected')
-        },this)
+            this.ticket.body.addClass('selected');
+        },this);
 
         this.on('ticketdataupdate', function(ticket, data){
             if(this.ticket){
                 this.ticket.body.addClass('selected');
-            };
+            }
             this.updateData();
         },this);
 
@@ -206,7 +214,7 @@ App.examination.TicketTab = Ext.extend(Ext.Panel, {
             ticket.destroy();
             this.updateData();
             this.doLayout();
-            return false
+            return false;
         },this);
     },
 
@@ -281,22 +289,25 @@ App.examination.TicketTab = Ext.extend(Ext.Panel, {
             Ext.apply(ticket_data,origTicketConfig);
             ticketConfig['data'] = ticket_data;
         }
+        var currentSection = ticketConfig['section'] || ticketConfig['data']['section'] || 'other';
         ticketConfig['orderRecord'] = this.orderRecord;
         ticketConfig['record'] = this.record;
+        //Источник - карта осмотра или шаблон
+        ticketConfig['sourceType'] = this.sourceType;
         ticketConfig['cardId'] = this.cardId;
         ticketConfig.data['cardId'] = this.cardId;
         ticketConfig['tplId'] = this.tplId;
+        ticketConfig['section_name'] = WebApp.section_scheme[currentSection]['title'];
         ticketConfig.data['tplId'] = this.tplId;
         ticketConfig.data['patientId'] = this.patientId; // нужно для добавления направлений
 
         if (!ticketConfig.data.title && isNew){
-            ticketConfig.data.title = section_scheme[currentSection]['title'];
+            ticketConfig.data.title = WebApp.section_scheme[currentSection]['title'];
         }
         //если тикетов еще нет, то добавляем в конец
         //тикет добавляется в конец секции
         this.sectionItems.hide();
         var insertMethod = ticketConfig['pos'] ? 'pos' : 'order';
-        var currentSection = ticketConfig['section'] || ticketConfig['data']['section'] || 'other';
         if (!ticketConfig[insertMethod]){
             ticketConfig[insertMethod] = WebApp.section_scheme[currentSection] && WebApp.section_scheme[currentSection][insertMethod]||10000;
         }
@@ -323,7 +334,7 @@ App.examination.TicketTab = Ext.extend(Ext.Panel, {
         Ext.each(this.portalColumn.items.items,function(panel,ind){
             if (panel.data.dragged || panel.data.fixed) {
                 //Если тикет поставили сюда вручную или он зафиксирован, то его пропускаем
-                index = ind
+                index = ind;
             } else {
                 if (panel[paramName] <= value) {
                     index = ind;
@@ -454,13 +465,12 @@ App.examination.TicketTab = Ext.extend(Ext.Panel, {
                     if(item.unique){
                         this.uniqueTickets.push(item.xtype);
                     }
-
-                },this);
+                }, this);
                 this.sectionItems.add({
                     items:[items]
                 });
             }
-        };
+        }
 
         this.addSubSecBtn = new Ext.Button({
             iconCls:'silk-page-white-add',
@@ -472,7 +482,7 @@ App.examination.TicketTab = Ext.extend(Ext.Panel, {
             this.addSubSecBtn.enable();
         } else {
             this.addSubSecBtn.disable();
-        };
+        }
 
         this.ttb.insert(0,this.addSubSecBtn);
         this.doLayout();
@@ -489,7 +499,7 @@ App.examination.TicketTab = Ext.extend(Ext.Panel, {
                 handler:this.questBtnClick.createDelegate(this,[quest]),
                 scope:this
             };
-            this.questItems.add(questBtn)
+            this.questItems.add(questBtn);
         },this);
 
         this.questsBtn = new Ext.Button({
@@ -516,7 +526,7 @@ App.examination.TicketTab = Ext.extend(Ext.Panel, {
             panel:this,
             fn:this.saveQuestData,
             scope:this
-        })
+        });
     },
 
     //Вызывается после нажатия на кнопку Ок в панели редактирования анкеты
@@ -556,7 +566,7 @@ App.examination.TicketTab = Ext.extend(Ext.Panel, {
                 panel.addTicket(ticketConfig);
             });
             panel.dataLoading = false;
-        };
+        }
         panel.doLayout();
         panel.updateData();
         panel.editQuestBtn.show();
@@ -573,13 +583,14 @@ App.examination.TicketTab = Ext.extend(Ext.Panel, {
             code:Ext.decode(quest.code),
             fn:this.saveQuestData,
             scope:this
-        })
+        });
     },
 
     deleteQuestClick: function(){
         var questName = this.data.questionnaire.name;
+        var t;
         do {
-            var t = this.findTicket('questName',questName);
+            t = this.findTicket('questName',questName);
             if (t){
                 t.destroy();
             }
@@ -594,7 +605,7 @@ App.examination.TicketTab = Ext.extend(Ext.Panel, {
     loadRequiredTickets: function(){
         var tickets = WebApp.required_tickets;
         if (!tickets.length){
-            return false
+            return false;
         } else {
             for (var i = 0; i < tickets.length; i++){
                 var ticket = {};

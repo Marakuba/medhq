@@ -34,7 +34,7 @@ def autodiscover():
 
         try:
             imp.find_module(REPORTING_SOURCE_FILE, app_path)
-        except ImportError:
+        except ImportError, err:
             continue
         __import__('%s.%s' % (app, REPORTING_SOURCE_FILE))
         # print '%s.%s' % (app, REPORTING_SOURCE_FILE)

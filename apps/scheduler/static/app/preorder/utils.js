@@ -4,21 +4,24 @@ App.preorder.getRowClass = function(record, index, p, store) {
     var service = record.get('service');
     var visit = record.get('visit');
     var today = new Date();
+    var actual;
     if (record.data.start){
-        var start_date = record.data.start.clone(); 
-        var actual = start_date.clearTime() >= today.clearTime();
+        var start_date = record.data.start.clone();
+        actual = start_date.clearTime() >= today.clearTime();
     } else {
-        var actual = true;
+        actual = true;
     }
     if (record.data.comment){
         p.body = '<p class="helpdesk-row-body"> Комментарий: '+record.data.comment+'</p>';
-    };
+    } else {
+        p.body = '<p class="default-row-body"></p>';
+    }
     if (visit) {
         return 'preorder-visited-row-body';
-    };
+    }
     if (!actual) {
         return 'preorder-deactive-row-body';
-    };
+    }
     if (record.data.service){
         in_array = false;
         var branches = Ext.decode(record.data.branches);
@@ -27,17 +30,17 @@ App.preorder.getRowClass = function(record, index, p, store) {
         });
         if (!in_array) {
             return 'preorder-other-place-row-body';
-        };
-    };
+        }
+    }
     if (actual) {
         return 'preorder-actual-row-body';
-    };
+    }
     return 'preorder-deactive-row-body';
 };
 
 App.preorder.ErrorWindow = Ext.extend(Ext.Window, {
     initComponent : function() {
-        
+
         this.tpl = new Ext.Template([
             '<div name="error">',
                 '<br><span class=error"><font size=3 color="red">{0}</font> <font size=3 color="green">{1}</font></span></br>',
@@ -81,7 +84,7 @@ App.preorder.ErrorWindow = Ext.extend(Ext.Window, {
         }
         Ext.apply(this, Ext.apply(this.initialConfig, config));
         App.preorder.ErrorWindow.superclass.initComponent.apply(this, arguments);
-        
+
         this.on('afterrender',function(){
             this.setTitle(String.format('Ошибки: {0}',this.errorCaption));
             Ext.each(this.errors,function(error){
@@ -93,20 +96,20 @@ App.preorder.ErrorWindow = Ext.extend(Ext.Window, {
                     this.accessedTpl.append(this.form.body,[record.data.service_name || record.data.staff_name + ' - без услуги']);
                 },this);
             }
-            
+
         })
-        
+
     },
     onOk:function(){
         if (this.fn){
             Ext.callback(this.fn, this.scope || window, []);
         }
     },
-    
+
     onCancel: function(){
         this.close()
     }
-    
+
 });
 
 App.preorder.accessCheck = function(records,fn,scope){
@@ -128,15 +131,15 @@ App.preorder.accessCheck = function(records,fn,scope){
             case 'general':
                 error[0] = 'Ошибка!';
                 break;
-            default: 
+            default:
                 error[0] = content || ''
                 break;
         };
         error[1] = text || '';
         return error
     };
-    
-    
+
+
     var only_one_patient = true;
     var only_one_ptype = true;
     var errors = [];
@@ -157,16 +160,16 @@ App.preorder.accessCheck = function(records,fn,scope){
         };
         referrals[rec.data.referral]['services'].push({'service':rec.data.service_name, 'staff':rec.data.staff_name});
     });
-    
+
     if (!only_one_patient){
         errors.push(makeErrorText('Выбрано несколько пациентов!','general'));
     };
     if(!only_one_ptype){
         errors.push(makeErrorText('Выбрано несколько видов оплаты!','general'));
     };
-    
+
     if (Object.keys(referrals).length > 1){
-        
+
         errors.push(makeErrorText('Указано несколько реферралов!','general'));
         Ext.each(Object.keys(referrals),function(ref){
             errors.push([String.format('Реферрал {0}: ', referrals[ref]['name'] || 'не указан'),'']);
@@ -175,7 +178,7 @@ App.preorder.accessCheck = function(records,fn,scope){
             });
         })
     }
-    
+
     var errorType = 'alert';
     var errorCaption = '';
     if (!errors.length){
@@ -183,12 +186,12 @@ App.preorder.accessCheck = function(records,fn,scope){
         Ext.each(records, function(record){
             var today = new Date();
             if (record.data.start) {
-                var start_date = record.data.start.clone(); 
+                var start_date = record.data.start.clone();
                 var actual = start_date.clearTime() >= today.clearTime();
             } else {
                 var actual = true
             };
-            
+
             if (!record.data.patient){
                 //В некоторых предзаказах может не быть услуги, но врач наверняка есть.
                 if (record.data.service){
@@ -223,7 +226,7 @@ App.preorder.accessCheck = function(records,fn,scope){
                 errorType = 'confirm';
                 return
             }
-            
+
             if (!actual){
                 if (record.data.service){
                     var error = makeErrorText('Данный предзаказ просрочен!','service',record.data.service_name);
@@ -234,7 +237,7 @@ App.preorder.accessCheck = function(records,fn,scope){
                 errorType = 'confirm';
                 return
             }
-            
+
             recs.push(record);
         });
         //Сформирован массив ошибок и массив допустимых строк
@@ -245,7 +248,7 @@ App.preorder.accessCheck = function(records,fn,scope){
             errorCaption = 'Продолжить оформление оставшихся записей?'
         };
     };
-    
+
     if (errors.length){
         var errorWin = new App.preorder.ErrorWindow({
             errorCaption:errorCaption,

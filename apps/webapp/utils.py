@@ -18,7 +18,7 @@ def get_vp_for_user(user):
         return qs
     groups = user.groups.get_query_set()
     qs = qs.complex_filter(Q(groups__in=groups) | Q(users__in=[user]))
-    return qs
+    return qs.distinct()
 
 
 def get_app_list(request, to_json=False):
@@ -73,8 +73,8 @@ def build_static(request, vp):
     js = list(OrderedDict.fromkeys(js))
     css = list(OrderedDict.fromkeys(css))
 
-    js_bundle = Bundle(*js, filters='rjsmin', output="assets/%s.js" % vp.slug)
-    css_bundle = Bundle(*css, filters=('cssrewrite', 'cssmin'), output="assets/%s.css" % vp.slug)
+    js_bundle = Bundle(*js, filters='rjsmin', output="assets/%s_%s.js" % (vp.slug, request.user.id))
+    css_bundle = Bundle(*css, filters=('cssrewrite', 'cssmin'), output="assets/%s_%s.css" % (vp.slug, request.user.id))
 
     js_bundle_name = 'webapp_%s_js' % vp.slug
     css_bundle_name = 'webapp_%s_css' % vp.slug

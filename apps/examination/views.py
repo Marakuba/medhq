@@ -175,8 +175,8 @@ def get_history_tree(request):
                 visit_childs = []
                 visit_childs = build_order_tree(visit)
                 visit_node = {
-                    "id":"visit_%s" % (visit.barcode.id),
-                    "text":"Прием %s" % (visit.barcode.id),
+                    "id":"visit_%s" % (visit.barcode_id),
+                    "text":"Прием %s" % (visit.barcode_id),
                     "date":visit.created,
                     "operator": visit.operator.first_name,
                     'singleClickExpand':True,

@@ -85,7 +85,7 @@ import datetime
 from constance import config
 
 from django.conf import settings
-from django.template import RequestContext, Context
+from django.template import RequestContext
 from django.shortcuts import render_to_response
 from django.http import HttpResponse
 
@@ -182,17 +182,23 @@ def _create_email_task(lab_order, resend=True):
 
 
 from django.core.mail import EmailMessage
+from django.template import loader, Context
 
 
 def send_lab_order_to_email(obj):
-    print obj.visit.patient.email
-    email = EmailMessage('Результаты анализов',
-        'Добрый день! Высылаем результаты анализов',
-        'support@medhq.ru',
-        [obj.visit.patient.email, ]
-    )
+
+    t = loader.get_template('lab/email/subject.html')
+    c = Context({'object': obj})
+    subject = t.render(c)
+
+    t = loader.get_template('lab/email/body.html')
+    c = Context({'object': obj})
+    body = t.render(c)
+
+    email = EmailMessage(subject=subject, body=body, to=[obj.visit.patient.email, ])
     pdf = lab_order_to_pdf(obj, raw=True)
-    email.attach('results.pdf', pdf, 'application/pdf')
+    filename = 'Euromed Lab %s.pdf' % obj.visit.barcode_id
+    email.attach(filename, pdf, 'application/pdf')
     email.send(fail_silently=False)
 
 
@@ -217,9 +223,19 @@ def _email_sent_failed(task, operator=None):
     _create_email_history(task, operator)
 
 
+def check_addresses():
+    tasks = LabOrderEmailTask.objects.filter(status=u'noaddr')
+    for task in tasks:
+        if task.lab_order.visit.patient.email:
+            task.status = u'ready'
+            task.save()
+
+
 def send_all_email_task(status_list=None):
     """
     """
+    check_addresses()
+
     status_list = status_list or ['ready', 'repeat']
     tasks = LabOrderEmailTask.objects.filter(status__in=status_list)
     for task in tasks:

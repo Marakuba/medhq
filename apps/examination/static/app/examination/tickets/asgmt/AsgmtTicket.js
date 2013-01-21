@@ -24,7 +24,7 @@ App.examination.AsgmtTicket = Ext.extend(App.examination.Ticket,{
             idProperty: 'id',
             root: 'objects',
             messageProperty: 'message'
-        }, App.models.preorderModel);
+        }, App.models.Preorder);
 
         this.writer = new Ext.data.JsonWriter({
             encode: false,
@@ -51,7 +51,7 @@ App.examination.AsgmtTicket = Ext.extend(App.examination.Ticket,{
             writer: this.writer,
             listeners:{
                 exception: function(){
-                    this.fireEvent('basketexception')
+                    this.fireEvent('basketexception');
                 },
                 scope:this
             }
@@ -81,22 +81,24 @@ App.examination.AsgmtTicket = Ext.extend(App.examination.Ticket,{
             this.store.load({callback:function(records){
                 this.records = records;
                 this.updateData();
-            },scope:this})
+            },scope:this});
         }
     },
 
     setCardId: function(cardId){
-        if (this.data.cardId) return false
+        if (this.data.cardId) return false;
         this.data.cardId = cardId;
         this.store.setBaseParam('card',cardId);
         this.store.load({callback:function(records){
             this.records = records;
             this.updateData();
-        },scope:this})
+        },scope:this});
     },
 
     getEditorConfig : function(panel){
         var editorConfig = {
+            prevTicket: this.previousSibling(),
+            nextTicket: this.nextSibling(),
             store:this.store,
             title:panel.data.title,
             data:panel.data,
@@ -105,11 +107,12 @@ App.examination.AsgmtTicket = Ext.extend(App.examination.Ticket,{
             listeners:{
                 scope:this,
                 cancel:function(){
+                    this.fireEvent('ticketeditcomplete');
                     this.store.load();
                 }
             }
-        }
-        return editorConfig
+        };
+        return editorConfig;
     },
 
     dataTpl : new Ext.XTemplate(
@@ -128,14 +131,13 @@ App.examination.AsgmtTicket = Ext.extend(App.examination.Ticket,{
     updateValueData : function(d) {
         if (this.records && this.records.length) {
             this.body.removeClass('empty-body');
-            var recs = _.map(this.records, function(rec){ return rec.data });
+            var recs = _.map(this.records, function(rec){ return rec.data; });
             var text = this.dataTpl.apply(recs);
             this.body.update(text);
         } else {
-            d['value'] = ''
-        };
-    },
-
+            d['value'] = '';
+        }
+    }
 });
 
 Ext.reg('asgmtticket', App.examination.AsgmtTicket);

@@ -32,7 +32,7 @@ def autodiscover():
         except ImportError:
             continue
         __import__('%s.%s' % (app, REPORTING_SOURCE_FILE))
-        print '%s.%s' % (app, REPORTING_SOURCE_FILE)
+        # print '%s.%s' % (app, REPORTING_SOURCE_FILE)
 
 
 def DistinctCount(field):
