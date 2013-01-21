@@ -101,7 +101,6 @@ class InputList(models.Model):
     class Meta:
         verbose_name = u'маска результатов'
         verbose_name_plural = u'маски результатов'
-        ordering = ('id',)
 
 
 class AnalysisProfile(models.Model):
@@ -204,7 +203,7 @@ class LabOrder(models.Model):
 
     def get_info(self):
         if not hasattr(self, '_info'):
-            self._info = u"Заказ %s, %s, %s, %s" % (self.visit.barcode.id,
+            self._info = u"Заказ %s, %s, %s, %s" % (self.visit.barcode_id,
                                           self.visit.created.strftime('%d.%m.%Y'),
                                           self.visit.office,
                                           self.visit.patient.short_name())
@@ -223,7 +222,7 @@ class LabOrder(models.Model):
         """
         """
         chunks = self.staff_text.split('\n')
-        print chunks
+        # print chunks
         if not staff_text in chunks:
             chunks.append(staff_text)
         self.staff_text = "\n".join(chunks)
@@ -322,7 +321,7 @@ class Result(models.Model):
     is_validated = models.BooleanField(u'V', default=True)
     validation = models.IntegerField(u'Статус валидации', choices=PASS_STATUS, default=0)
     sample = models.ForeignKey('Sampling', blank=True, null=True)
-    status = models.ForeignKey(Status, blank=True, null=True)
+    # status = models.ForeignKey(Status, blank=True, null=True)
     modified = models.DateTimeField(auto_now=True)
     modified_by = models.ForeignKey(User, blank=True, null=True)
     comment = models.TextField(u'Комментарий', blank=True, null=True)
@@ -386,7 +385,7 @@ class Sampling(models.Model):
     code = models.IntegerField(u'Код', null=True, blank=True)
     is_barcode = models.BooleanField()
     number = models.ForeignKey(NumeratorItem, null=True, blank=True)
-    status = models.ForeignKey(Status, blank=True, null=True)
+    # status = models.ForeignKey(Status, blank=True, null=True)
 
     def __unicode__(self):
         return u"№%s, %s, %s, к заказу %s" % (self.id, self.tube, self.laboratory, self.visit.id)
@@ -580,11 +579,11 @@ class EquipmentResult(models.Model):
                             self.equipment_task.repeats += 1
                             self.equipment_task.save()
                         except MultipleObjectsReturned:
-                            logger.exception(u"LAB: MultipleObjectsReturned for specimen %s, analysis: %s" % (visit.barcode.id, self.equipment_task.equipment_assay.equipment_analysis.analysis.name))
+                            logger.exception(u"LAB: MultipleObjectsReturned for specimen %s, analysis: %s" % (visit.barcode_id, self.equipment_task.equipment_assay.equipment_analysis.analysis.name))
                         except ObjectDoesNotExist:
-                            logger.exception(u"LAB: result not found for specimen %s, analysis: %s" % (visit.barcode.id, self.equipment_task.equipment_assay.equipment_analysis.analysis.name))
+                            logger.exception(u"LAB: result not found for specimen %s, analysis: %s" % (visit.barcode_id, self.equipment_task.equipment_assay.equipment_analysis.analysis.name))
                         except Exception, err:
-                            logger.exception(u"LAB:Error during result finding for specimen %s, analysis: %s" % (visit.barcode.id, self.equipment_task.equipment_assay.equipment_analysis.analysis.name))
+                            logger.exception(u"LAB:Error during result finding for specimen %s, analysis: %s" % (visit.barcode_id, self.equipment_task.equipment_assay.equipment_analysis.analysis.name))
             except Exception, err:
                 if __debug__:
                     logger.debug(u"""LAB:Error during eq/task finding: %s SN: %s Name: %s Code: %s Specimen: %s""" % (err.__unicode__(), self.eq_serial_number, self.assay_name, self.assay_code, self.specimen))

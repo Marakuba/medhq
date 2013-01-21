@@ -3,18 +3,18 @@ Ext.ns('App.examorder');
 App.examorder.ExamOrderGrid = Ext.extend(Ext.grid.GridPanel, {
 
     initComponent : function() {
-        
+
         this.staff = App.utils.getApiUrl('staff', WebApp.active_staff);
-        
+
         this.tmp_id = Ext.id();
-        
+
         this.store = new Ext.data.RESTStore({
             autoSave : true,
             autoLoad : false,
             apiUrl : App.utils.getApiUrl('visit','examservice'),
             model: App.models.ExamService
         });
-        
+
         this.columns =  [{
                 header: "№ заказа",
                 width: 60,
@@ -44,11 +44,11 @@ App.examorder.ExamOrderGrid = Ext.extend(Ext.grid.GridPanel, {
                 renderer:function(val, meta, record) {
                     var p = record.data.executed;
                     var flag = p ? 'yes' : 'no';
-                    var img = "<img src='"+WebApp.MEDIA_URL+"admin/img/admin/icon-"+flag+".gif'>";
+                    var img = "<img src='"+WebApp.MEDIA_URL+"resources/images/icon-"+flag+".gif'>";
                     return String.format("{0} {1}", img, p ? Ext.util.Format.date(p, 'd.m.Y H:i') : "");
                 }
             }];
-    
+
         this.historyBtn = new Ext.Button({
             text:'История пациента',
             iconCls:'silk-package',
@@ -62,7 +62,7 @@ App.examorder.ExamOrderGrid = Ext.extend(Ext.grid.GridPanel, {
             disabled:true,
             handler:this.onAdd.createDelegate(this, [])
         });
-        
+
         this.ttb = new Ext.Toolbar({
             items:[this.addBtn, {
                 text:'Подтвердить выполнение',
@@ -110,12 +110,12 @@ App.examorder.ExamOrderGrid = Ext.extend(Ext.grid.GridPanel, {
                 pressed: false,
                 toggleHandler: function(btn, pressed) {
                     if (pressed) {
-                        this.store.filter('')
-                        this.store.setBaseParam('executed__isnull',true)
-                        this.store.load()
+                        this.store.filter('');
+                        this.store.setBaseParam('executed__isnull',true);
+                        this.store.load();
                     } else {
-                        delete this.store.baseParams['executed__isnull']
-                        this.store.load()
+                        delete this.store.baseParams['executed__isnull'];
+                        this.store.load();
                     }
                 },
                 scope: this
@@ -124,11 +124,11 @@ App.examorder.ExamOrderGrid = Ext.extend(Ext.grid.GridPanel, {
                 iconCls:'x-tbar-loading',
                 scope:this,
                 handler:function(){
-                    this.store.load()
+                    this.store.load();
                 }
             }]
-        }); 
-        
+        });
+
         var config = {
             id:'examorder-grid',
             title:'Журнал заказов',
@@ -149,7 +149,7 @@ App.examorder.ExamOrderGrid = Ext.extend(Ext.grid.GridPanel, {
                             this.addBtn.disable();
                         };
                         this.historyBtn.enable();
-                        
+
                     },
                     rowdeselect: function() {
                         Ext.getCmp(this.tmp_id+'order-exec').disable();
@@ -174,27 +174,30 @@ App.examorder.ExamOrderGrid = Ext.extend(Ext.grid.GridPanel, {
                 emptyMsg: "Нет записей"
             })
         };
-        
+
         Ext.apply(this, Ext.apply(this.initialConfig, config));
         App.examorder.ExamOrderGrid.superclass.initComponent.apply(this, arguments);
         WebApp.on('globalsearch', this.onGlobalSearch, this);
-        
+
         this.on('destroy', function(){
             WebApp.un('globalsearch', this.onGlobalSearch, this);
         },this);
-        
+
         this.on('afterrender',function(){
-            this.store.setBaseParam('staff', WebApp.active_profile);
+            this.store.setBaseParam('staff__staff', WebApp.active_staff);
             this.store.load();
-        })
-        
+        });
+
         //this.on('rowcontextmenu', this.onContextMenu, this);
     },
-    
+
     onAdd: function() {
         var rec = this.getSelected();
         if (!rec) return;
-        if (!rec.data.executed) {
+
+        var dueDate = new Date().add(Date.HOUR, -WebApp.settings.examCardEditable);
+
+        if (!rec.data.executed || rec.data.executed>dueDate) {
             var conf = {
                 closable:true,
                 patientId:rec.data.patient,
@@ -205,20 +208,20 @@ App.examorder.ExamOrderGrid = Ext.extend(Ext.grid.GridPanel, {
                 baseServiceId:App.utils.uriToId(rec.data.service),
                 print_name:rec.data.service_name,
                 staff:this.staff
-            }
-            
+            };
+
             WebApp.fireEvent('launchapp', 'cardapp',conf);
-            
+
         } else {
-            var conf = {
+            var configure = {
                 order_id:rec.data.id
-            }
-            WebApp.fireEvent('launchapp', 'conclusion',conf);
+            };
+            WebApp.fireEvent('launchapp', 'conclusionapp',configure);
         }
-        
-        
+
+
     },
-    
+
     onGlobalSearch: function(v) {
         if(v) {
             var letter = v.charAt(0);
@@ -237,7 +240,7 @@ App.examorder.ExamOrderGrid = Ext.extend(Ext.grid.GridPanel, {
             this.store.load();
         }
     },
-    
+
     storeFilter: function(field, value){
         if(!value) {
             //console.log(this.store.baseParams[field]);
@@ -248,11 +251,11 @@ App.examorder.ExamOrderGrid = Ext.extend(Ext.grid.GridPanel, {
         }
         this.store.load();
     },
-    
+
     getSelected: function() {
         return this.getSelectionModel().getSelected()
     },
-    
+
     onOpenHistory: function(){
         var rec = this.getSelected();
         if (rec) {
@@ -271,7 +274,7 @@ App.examorder.ExamOrderGrid = Ext.extend(Ext.grid.GridPanel, {
         }
     }
 
-    
+
 });
 
 

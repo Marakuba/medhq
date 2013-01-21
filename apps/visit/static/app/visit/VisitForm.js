@@ -678,14 +678,14 @@ App.visit.VisitForm = Ext.extend(Ext.FormPanel, {
         });
 
         this.barcode = new Ext.form.CompositeField({
-            width:180,
+            width:300,
             layout: 'hbox',
             baseCls:'x-border-layout-ct',
             border:false,
             labelWidth:100,
             fieldLabel:'Штрих-код',
             items:[
-                this.autoBarcode,this.barcodeBtn, this.barcodeId,this.cito
+                this.autoBarcode,this.barcodeBtn, this.barcodeId,this.cito, this.sendToEmail
             ]
         });
 
@@ -714,7 +714,7 @@ App.visit.VisitForm = Ext.extend(Ext.FormPanel, {
                         // height:
                         border:false
                     },
-                    items:[this.barcode, this.sendToEmail]
+                    items:[this.barcode]
                 },
                 {
                     layout:'hbox',

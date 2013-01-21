@@ -6,9 +6,7 @@
 {% block head %}
 	<link rel="icon" type="image/ico" href="{{ STATIC_URL }}resources/favicon.ico" />
 
-    {% assets "css_auth" %}
-	 <link rel="stylesheet" type="text/css" href="{{ ASSET_URL }}"></>
-	{% endassets %}
+    <link rel="stylesheet" type="text/css" href="{{ STATIC_URL }}extjs/resources/css/ext-all.css"/>
 
     <!-- LIBS -->
     <script type="text/javascript" src="{{ STATIC_URL }}extjs/adapter/ext/ext-base.js"></script>
@@ -17,13 +15,11 @@
     <script type="text/javascript" src="{{ STATIC_URL }}extjs/ext-all{% if debug %}-debug{% endif %}.js"></script>
     <!--<script type="text/javascript" src="{{ STATIC_URL }}extjs/src/debug.js"></script>-->
     
-    {% assets "js_for_all" %}
-	 <script type="text/javascript" src="{{ ASSET_URL }}"></script>
-	{% endassets %}
+    <!--<script type="text/javascript" src="{{ STATIC_URL }}libs/raven.js"></script>
 	
 	<script type="text/javascript">
 		Raven.config("{{sentry_dsn}}");
-	</script>
+	</script>-->
 
     <script type="text/javascript" src="{{ STATIC_URL }}extjs/ux/CenterLayout.js"></script>
 

@@ -112,7 +112,7 @@ class ExtendedServiceResource(ExtResource):
     def dehydrate(self, bundle):
         ptype = getattr(self, 'ptype', u'н')
         on_date = getattr(self, 'on_date', None)
-        print on_date
+        # print on_date
         bundle.data['staff'] = bundle.obj.staff and [[staff.id, staff] for staff in bundle.obj.staff.all()] or None
         bundle.data['state_name'] = bundle.obj.state.name
         bundle.data['service_name'] = bundle.obj.base_service.name
@@ -140,7 +140,7 @@ class ExtServAdmResource(ExtendedServiceResource):
     def dehydrate(self, bundle):
         ptype = getattr(self, 'ptype', u'н')
         on_date = getattr(self, 'on_date', None)
-        print on_date
+        # print on_date
         # bundle.data['staff'] = bundle.obj.staff and [[staff.id, staff] for staff in bundle.obj.staff.all()] or None
         bundle.data['state_name'] = bundle.obj.state.name
         bundle.data['service_name'] = bundle.obj.base_service.name

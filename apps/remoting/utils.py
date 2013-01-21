@@ -161,29 +161,31 @@ def get_result(data, request=None):
         if __debug__:
             logger.exception(msg)
         raise Exception(msg)
-        
+
     try:
-        result = Result.objects.get(order__visit__specimen=specimen_id, 
+        result = Result.objects.get(order__visit__specimen=specimen_id,
                                     analysis__code=r['code'])
-        
+
         #updating analysis info
         if r['measurement']:
-            measurement,m_created = Measurement.objects.get_or_create(name=r['measurement'])
+            measurement, m_created = Measurement.objects.get_or_create(name=r['measurement'])
             result.analysis.measurement = measurement
         result.analysis.ref_range_text = r['ref_interval']
         result.analysis.save()
-        
+
         if result.value:
             result.previous_value = result.value
         result.value = r['value']
         result.validation = 1
+        result.measurement = r['measurement']
+        result.ref_range_text = r['ref_interval']
         result.save()
-        
-        msg = u"Результат теста '%s' для образца %s сохранен" % (r['name'],specimen_id)
+
+        msg = u"Результат теста '%s' для образца %s сохранен" % (r['name'], specimen_id)
         if __debug__:
             logger.info(msg)
         return result
-    
+
     except ObjectDoesNotExist:
         msg = u"Результат теста '%s' для образца %s не найден" % (r['name'],specimen_id)
         logger.exception(msg)
@@ -311,8 +313,8 @@ def post_results(orders):
         options = {
             'services':order[1]
         }
-        print data_set
-        print options
+        # print data_set
+        # print options
         post_results_to_local(data_set, options)
 
 
@@ -345,7 +347,7 @@ def update_result_feed(state_key, start=None, end=None, specimens=None, date_typ
     params = urlencode(params)
     URL = "%slab/feed/?%s" % (state.domain_url, params)
 
-    print URL
+    # print URL
 
     h = httplib2.Http()
     
@@ -356,7 +358,7 @@ def update_result_feed(state_key, start=None, end=None, specimens=None, date_typ
         try:
             results = simplejson.loads(content)
             if not results:
-                print "No results"
+                # print "No results"
                 return
             orders = flat(results)
             post_results(orders)

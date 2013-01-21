@@ -45,7 +45,7 @@ App.examination.ResumeCardPlugin = function(config, order){
     this.store.load({
         params:{
             deleted:false,
-            ordered_service__staff:WebApp.active_profile,
+            ordered_service__staff__staff:WebApp.active_staff,
             ordered_service:this.config.orderId
         },
         callback:function(records, opts, success){
@@ -86,7 +86,7 @@ App.examination.PreviousCardPlugin = function(config, order){
     this.store.load({
         params:{
             deleted:false,
-            ordered_service__staff:WebApp.active_profile,
+            ordered_service__staff__staff:WebApp.active_staff,
             ordered_service__order__patient:config.patientId
         },
         callback:function(records, opts, success){

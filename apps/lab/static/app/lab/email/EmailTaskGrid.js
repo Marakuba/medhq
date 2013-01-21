@@ -6,6 +6,8 @@
 
         loadInstant: false,
 
+        origTitle: 'Почта',
+
         initComponent : function() {
 
             this.proxy = new Ext.data.HttpProxy({
@@ -24,6 +26,7 @@
                 {name: 'resource_uri'},
                 {name: 'status'},
                 {name: 'patient_name'},
+                {name: 'email'},
                 {name: 'order_id'},
                 {name: 'order_created'},
                 {name: 'status_text'},
@@ -109,6 +112,11 @@
                 sortable: false,
                 dataIndex: 'patient_name'
             },{
+                header: "Email",
+                width: 200,
+                sortable: false,
+                dataIndex: 'email'
+            },{
                 header: "Статус",
                 width: 150,
                 sortable: false,
@@ -123,7 +131,7 @@
                 loadMask : {
                     msg : 'Подождите, идет загрузка...'
                 },
-                title:'Почта',
+                title: this.origTitle,
                 closable:true,
                 border : false,
                 store:this.store,
@@ -194,6 +202,13 @@
 
             Ext.apply(this, Ext.apply(this.initialConfig, config));
             App.lab.EmailTaskGrid.superclass.initComponent.apply(this, arguments);
+    
+            WebApp.on('globalsearch', this.onGlobalSearch, this);
+            this.store.on('load', this.onTaskLoad, this);
+            this.on('destroy', function(){
+                WebApp.un('globalsearch', this.onGlobalSearch, this);
+                this.store.un('load', this.onTaskLoad, this);
+            },this);
         },
 
         storeFilter: function(field, value){
@@ -205,6 +220,24 @@
             this.store.load();
         },
 
+        onGlobalSearch: function(v){
+            this.changeTitle = v!==undefined;
+            if(!v){
+                this.setTitle(this.origTitle);
+            }
+
+            var s = this.store;
+            s.baseParams = { format:'json' };
+            s.setBaseParam('search', v);
+            s.load();
+        },
+
+        onTaskLoad : function(store,r,options){
+            if(this.changeTitle){
+                this.setTitle(String.format('{0} ({1})', this.origTitle, store.getTotalCount()));
+            }
+        },
+        
         openHistory: function(){
             var rec = this.getSelected();
             if(!rec) { return; }

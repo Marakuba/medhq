@@ -61,11 +61,18 @@ App.accounting.InvoiceItemGrid = Ext.extend(Ext.grid.EditorGridPanel, {
                     scope:this
                 }
             }),
-            tbar:[{
-                iconCls:'silk-delete',
-                text:'Удалить',
-                handler:this.onDeleteItem.createDelegate(this)
-            }],
+            tbar: new Ext.Toolbar({
+                hidden: this.hideToolbar,
+                items: [{
+                    iconCls:'silk-delete',
+                    text:'Удалить',
+                    handler:this.onDeleteItem.createDelegate(this)
+                }, '-', {
+                    iconCls: 'silk-page-white-copy',
+                    text:'Скопировать из счета',
+                    handler:this.onInvoiceCopy.createDelegate(this)
+                }]
+            }),
             viewConfig : {
                 forceFit : true
                 //getRowClass : this.applyRowClass
@@ -79,6 +86,17 @@ App.accounting.InvoiceItemGrid = Ext.extend(Ext.grid.EditorGridPanel, {
         Ext.apply(this, Ext.apply(this.initialConfig, config));
         App.accounting.InvoiceItemGrid.superclass.initComponent.apply(this, arguments);
 
+    },
+
+    onInvoiceCopy: function(){
+        var win = new App.accounting.CopierWindow({
+            fn: function(records){
+                this.fireEvent('copy', records);
+                win.close();
+            },
+            scope: this
+        });
+        win.show();
     },
 
     afterEdit : function(e) {

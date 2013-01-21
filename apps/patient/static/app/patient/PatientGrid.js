@@ -182,16 +182,17 @@ App.patient.PatientGrid = Ext.extend(Ext.grid.GridPanel, {
         window.open(url);
     },
 
+    storeFilter: function(field, value){
+        if(!value) {
+            delete this.store.baseParams[field];
+        } else {
+            this.store.setBaseParam(field, value);
+        }
+        this.store.load();
+    },
+
     onGlobalSearch: function(v){
-        var s = this.store;
-//      s.baseParams = { format:'json' };
-//      vi = parseInt(v);
-//      if (!isNaN(vi)){
-//          s.setBaseParam('visit_id', vi);
-//      } else {
-            s.setBaseParam('search', v);
-//      }
-        s.load();
+        this.storeFilter('search', v);
     },
 
     onPatientAdd: function() {
@@ -265,7 +266,7 @@ App.patient.PatientGrid = Ext.extend(Ext.grid.GridPanel, {
                 if (btn=='yes'){
                     params = {}
                     params['patient'] = record.data.id;
-                    params['state'] = state;
+                    params['state'] = WebApp.state;
                     App.direct.patient.setAcceptedDate(params,function(res){
                         var date = Date.parseDate(res.data.accepted,'m/d/Y H:i:s');
                         record.data['accepted'] = date;

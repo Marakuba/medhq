@@ -62,7 +62,7 @@ def update_specimen_action(modeladmin, request, queryset):
             if k not in states:
                 states[k] = []
         except Exception, err:
-            print err
+            # print err
             continue
         specimen = obj.visit.specimen
         if specimen not in states[k]:
@@ -76,9 +76,9 @@ update_specimen_action.short_description = u"Загрузить результа
 class LabOrderAdmin(admin.ModelAdmin):
     
     readonly_fields = ('laboratory',)
-    exclude = ('is_completed','is_printed','print_date','visit','lab_group')
+    exclude = ('is_completed','is_printed','print_date','visit')
 #    list_display = ('__unicode__','is_completed','is_printed','print_date_display',actions)
-    list_display = ('visit_id','visit_created','patient_name','visit_office','laboratory','operator','is_completed','is_printed','print_date_display','created_date')
+    list_display = ('visit_id','visit_created','patient_name','visit_office','laboratory','operator','is_completed','is_printed','print_date_display','created_date','lab_group')
     list_filter = ('laboratory','is_completed','lab_group')
     date_hierarchy = 'created'
     inlines = [ResultInline]
@@ -90,7 +90,7 @@ class LabOrderAdmin(admin.ModelAdmin):
     created_date.short_description = u'Создан'
     
     def visit_id(self, obj):
-        return u"№%s" % obj.visit.barcode.id
+        return u"№%s" % obj.visit.barcode_id
     visit_id.short_description = u'Номер заказа'
     
     def visit_office(self, obj):
@@ -309,7 +309,7 @@ class EquipmentTaskAdmin(admin.ModelAdmin):
         return obj.ordered_service.service
     
     def visit_id(self, obj):
-        return obj.ordered_service.order.barcode.id
+        return obj.ordered_service.order.barcode_id
     
 class EquipmentResultAdmin(admin.ModelAdmin):
     list_display = ('created','specimen','eq_serial_number','assay_name','assay_code','assay_protocol','abnormal_flags','result_type','result_status','result')
@@ -339,7 +339,7 @@ class SamplingAdmin(admin.ModelAdmin):
     list_display = ('barcode','tube','laboratory','is_barcode')
     
     def barcode(self, obj):
-        return obj.visit.barcode.id
+        return obj.visit.barcode_id
 
 
 class LabOrderEmailTaskAdmin(admin.ModelAdmin):

@@ -27,7 +27,7 @@ def smartFilter(request,prefix=''):
                     date_arg = datetime.date(year=date_arg.tm_year,month=date_arg.tm_mon,day=date_arg.tm_mday)
                     break
                 except Exception, err:
-                    print err
+                    # print err
                     pass
     #если последний элемент строки - дата
     if date_arg:

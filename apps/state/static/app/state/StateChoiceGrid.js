@@ -7,7 +7,7 @@ App.choices.StateChoiceGrid = Ext.extend(Ext.grid.GridPanel, {
         this.store = this.store || new Ext.data.RESTStore({
             autoLoad : true,
             autoSave : false,
-            apiUrl : get_api_url('state'),
+            apiUrl : App.utils.getApiUrl('state','state'),
             model: [
                     {name: 'id'},
                     {name: 'resource_uri'},
@@ -19,7 +19,7 @@ App.choices.StateChoiceGrid = Ext.extend(Ext.grid.GridPanel, {
             {
                 header: "Организация",
                 sortable: true,
-                dataIndex: 'name', 
+                dataIndex: 'name',
                 editor: new Ext.form.TextField({})
             }
         ];
@@ -81,7 +81,7 @@ App.choices.StateChoiceGrid = Ext.extend(Ext.grid.GridPanel, {
                     scope:this
                 }
             }),
-            tbar:[this.choiceButton, new Ext.ux.form.SearchField({
+            tbar:[this.addButton, this.choiceButton, new Ext.ux.form.SearchField({
                 paramName:'name__istartswith',
                 store: this.store
             })],
@@ -105,12 +105,13 @@ App.choices.StateChoiceGrid = Ext.extend(Ext.grid.GridPanel, {
         Ext.apply(this, Ext.apply(this.initialConfig, config));
         App.choices.StateChoiceGrid.superclass.initComponent.apply(this, arguments);
         WebApp.on('globalsearch', this.onGlobalSearch, this);
+        this.store.on('write', this.onStoreWrite, this);
         this.on('destroy', function(){
             WebApp.un('globalsearch', this.onGlobalSearch, this);
+            // this.store.un('write', this.onStoreWrite, this);
         },this);
 //      WebApp.on('patientwrite', this.onPatientWrite, this);
         this.on('stateselect', this.onStateSelect, this);
-        //this.store.on('write', this.onStoreWrite, this);
     },
 
     btnSetDisabled: function(status) {
@@ -122,7 +123,7 @@ App.choices.StateChoiceGrid = Ext.extend(Ext.grid.GridPanel, {
     },
 
     getSelected: function() {
-        return this.getSelectionModel().getSelected()
+        return this.getSelectionModel().getSelected();
     },
 
     onGlobalSearch: function(v){
@@ -133,29 +134,30 @@ App.choices.StateChoiceGrid = Ext.extend(Ext.grid.GridPanel, {
     },
 
     onStoreWrite: function(store, action, result, res, rs) {
-        if( res.success && this.win ) {
-            store.filter('id',rs.data.id);
-            this.getSelectionModel().selectFirstRow();
-            this.fireEvent('stateselect',rs);
+        if(res.success && action=='create' && this.fn) {
+            Ext.callback(this.fn, this.scope || window, [rs]);
         }
-//      if(action=='create') {
-//          WebApp.fireEvent('patientcreate',rs);
-//      }
     },
 
     onAddCompany : function(){
-        var r = new this.store.recordType({
-        });
-        this.editor.stopEditing();
-        this.store.add(r);
-        this.editor.startEditing(this.store.getCount()-1);
+        Ext.Msg.prompt('Новая организация','Введите название организации', function(btn, text){
+            if(btn=='ok'){
+                var rec = new this.store.recordType();
+                rec.set('name', text);
+                rec.set('print_name', text);
+                rec.set('official_title', text);
+                rec.set('type', this.companyType);
+                this.store.add(rec);
+                this.store.save();
+            }
+        }, this);
     },
 
     onChoice: function() {
         var record = this.getSelectionModel().getSelected();
         if (record) {
             Ext.callback(this.fn, this.scope || window, [record]);
-        };
+        }
     }
 
 });

@@ -19,6 +19,7 @@ App.models.AccountingInvoice = new Ext.data.Record.create([
     {name: 'created', type:'date', dateFormat:'c'},
     {name: 'contract'},
     {name: 'number'},
+    {name: 'state_name'},
     {name: 'on_date', type:'date', dateFormat:'c'},
     {name: 'total_price'},
     {name: 'modified', type:'date', dateFormat:'c'}
@@ -40,4 +41,21 @@ App.models.AccountingInvoiceItem = new Ext.data.Record.create([
     {name: 'total_price'},
     {name: 'preorder'},
     {name: 'modified', type:'date', dateFormat:'c'}
+]);
+
+App.models.State = new Ext.data.Record.create([
+    {name: 'id'},
+    {name: 'resource_uri'},
+    {name: 'name'},
+    {name: 'print_name'},
+    {name: 'official_title'},
+    {name: 'type'},
+    {name: 'remotestate'}
+]);
+
+App.models.MedState = new Ext.data.Record.create([
+    {name: 'id'},
+    {name: 'resource_uri'},
+    {name: 'name'},
+    {name: 'print_name'}
 ]);

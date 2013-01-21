@@ -238,10 +238,7 @@ App.results.Grid = Ext.extend(Ext.grid.GridPanel, {
     },
 
     onGlobalSearch: function(v){
-        var s = this.store;
-        s.baseParams = { format:'json' };
-        s.setBaseParam('search', v);
-        s.load();
+        this.storeFilter('search', v);
     },
 
     initToolbar: function(){

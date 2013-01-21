@@ -6,7 +6,7 @@ App.models.Preorder = new Ext.data.Record.create([
     {name: 'patient'},
     {name: 'patient_name'},
     {name: 'timeslot'},
-    {name: 'comment'},
+    {name: 'comment', allowBlank: true},
     {name: 'visit'},
     {name: 'service'},
     {name: 'base_service'},

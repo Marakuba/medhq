@@ -21,6 +21,10 @@
         <script type="text/javascript">
             Ext.onReady(function(){
 
+                if(window.tinyMCE) {
+                    tinyMCE.baseURL = "{{ STATIC_URL }}libs/tiny_mce";
+                }
+
                 Ext.QuickTips.init();
                 
                 Ext.Ajax.defaultHeaders = {

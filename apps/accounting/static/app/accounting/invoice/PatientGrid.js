@@ -35,15 +35,18 @@ App.accounting.PatientGrid = Ext.extend(Ext.grid.GridPanel, {
                     scope:this
                 }
             }),
-            tbar:[{
-                iconCls: 'silk-add',
-                text:'Добавить пациента',
-                handler: this.onAddPatient.createDelegate(this)
-            }, {
-                iconCls: 'silk-delete',
-                text:'Исключить',
-                handler: this.onRemovePatient.createDelegate(this)
-            }],
+            tbar: new Ext.Toolbar({
+                hidden: this.hideToolbar,
+                items:[{
+                    iconCls: 'silk-add',
+                    text:'Добавить пациента',
+                    handler: this.onAddPatient.createDelegate(this)
+                }, {
+                    iconCls: 'silk-delete',
+                    text:'Исключить',
+                    handler: this.onRemovePatient.createDelegate(this)
+                }]
+            }),
             viewConfig : {
                 forceFit : true
                 //getRowClass : this.applyRowClass

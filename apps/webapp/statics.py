@@ -116,6 +116,7 @@ class WebApp3(BaseWebApp):
             'startHour': config.START_HOUR,
             'endHour': config.END_HOUR,
             'showAlerts': config.REGISTRY_SHOW_ALERTS,
+            'examCardEditable': config.EXAM_CARD_EDITABLE,
         }
         return {
             'appPool': get_app_list(request, to_json=True),
