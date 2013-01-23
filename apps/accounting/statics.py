@@ -16,6 +16,9 @@ class AccountingWebApp(BaseWebApp):
 
         'app/accounting/models.js',
 
+        'app/accounting/invoice/copier/CopierInvoiceGrid.js',
+        'app/accounting/invoice/copier/CopierWindow.js',
+
         'app/accounting/invoice/PatientGrid.js',
         'app/accounting/invoice/InvoiceItemGrid.js',
         'app/accounting/invoice/InvoiceForm.js',
