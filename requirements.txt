@@ -1,4 +1,4 @@
-django
+django==1.4.3
 django-annoying
 django-admin-tools
 django-autocomplete
@@ -8,9 +8,9 @@ django-staticfiles
 django-sentry
 johnny-cache
 django-compressor
-django-tastypie
+django-tastypie==0.9.11
 django-reversion
-django-mptt
+django-mptt==0.5.2
 feincms
 elaphe
 South
@@ -21,8 +21,27 @@ django-flatblocks
 django-memcached
 django-dbtemplates
 django-constance
+django-celery
+django-test-utils
+djangocodemirror==0.6.5
+sorl-thumbnail
+django-assets
+jsonfield
+simplejson
+yuicompressor
+pytils
 redis
 xlwt
+pisa
+reportlab
+pypdf
+html5lib
+numpy
+pandas
+httplib2
+pydicom
+fabric
+extdirect.django
 django-tagging
 factory_boy
 -e git+git://github.com/dottedmag/path.py.git#egg=path_py
