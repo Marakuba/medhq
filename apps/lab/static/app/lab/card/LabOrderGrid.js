@@ -102,7 +102,7 @@
                     renderer: function(val,opts,rec) {
                         if(val){
                             time = Ext.util.Format.date(rec.data.print_date, 'd.m.y / H:i');
-                            return String.format('{0}&nbsp;&nbsp;<img src="{1}admin/img/admin/icon-yes.gif">', time, WebApp.MEDIA_URL)
+                            return String.format('{0}&nbsp;&nbsp;<img src="{1}resources/images/icon-yes.gif">', time, WebApp.MEDIA_URL)
                         }
                     }
                 },{

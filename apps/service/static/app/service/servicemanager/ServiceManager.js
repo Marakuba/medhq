@@ -62,6 +62,7 @@ App.service.ServiceManager = Ext.extend(Ext.Panel,{
         });
 
         config = {
+            closable:true,
             layout:'border',
             title:'Панель управления услугами',
             items:[this.serviceTree,this.contentPanel]
@@ -296,7 +297,7 @@ App.service.ServiceManager = Ext.extend(Ext.Panel,{
 Ext.reg('servicemanager', App.service.ServiceManager);
 
 
-App.webapp.actions.add('examordergrid', new Ext.Action({
+App.webapp.actions.add('servicemanager', new Ext.Action({
     text: 'Управление услугами',
     scale: 'medium',
     handler: function(){

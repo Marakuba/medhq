@@ -155,9 +155,8 @@ Ext.calendar.DoctorScheduler = Ext.extend(Ext.Panel, {
             //height:190,
             //autoSize:true,
             //anchor:'100% 100%',
-            autoScroll:true,
             doctorMode:this.doctorMode,
-            autoHeight:true,
+            // autoHeight:true,
             sm : new Ext.grid.RowSelectionModel({
                 singleSelect : true,
                 listeners: {
@@ -183,9 +182,10 @@ Ext.calendar.DoctorScheduler = Ext.extend(Ext.Panel, {
         // or placed elsewhere within the application.
         config = {
             id:'doctor-scheduler',
-            layout: 'border',
+            layout: 'fit',
             title:'Расписание врачей',
             closable: true,
+            border: false,
             items: [{
                 id: 'app-center',
                 title: '...', // will be updated to view date range
@@ -202,14 +202,15 @@ Ext.calendar.DoctorScheduler = Ext.extend(Ext.Panel, {
                       border:false
                     },
                     items: [{
-                      region:'center',
-                      // height:190,
+                      region:'north',
+                      height:199,
                       items:this.datePicker
                     },{
-                      region:'south',
-                      autoScroll:true,
-                      height:200,
-                      items:this.staffGrid
+                      region:'center',
+                      // autoScroll:true,
+                      // height:200,
+                      layout:'fit',
+                      items:[this.staffGrid]
                     }]
                 },{
                     xtype: 'calendarpanel',

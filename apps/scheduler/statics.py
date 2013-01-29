@@ -60,6 +60,7 @@ class SchedulerApp(BaseWebApp):
         'all': [
             'app/scheduler/assets/css/calendar.css',
             'app/scheduler/assets/css/examples.css',
+            'app/scheduler/assets/css/custom.css',
         ]
     }
     depends_on = ['webapp3', ]

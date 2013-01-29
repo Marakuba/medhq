@@ -174,7 +174,7 @@ class BaseService(models.Model):
 
     def __unicode__(self):
         #return "%s %s" % (self.code, self.name)
-        return self.name
+        return smart_unicode(self.name)
 
     def is_manual(self):
         try:

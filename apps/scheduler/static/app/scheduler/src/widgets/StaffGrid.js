@@ -40,26 +40,16 @@ Ext.calendar.StaffGrid = Ext.extend(Ext.grid.GridPanel, {
         });
 
         this.columns =  [{
-                header: "Врачи",
-                //width: 8,
-                //anchor:'100%',
-                sortable: true,
-                dataIndex: 'name'
-            },{
-                header: " Должность",
-                //width: 8,
-                //anchor:'100%',
-                sortable: true,
-                dataIndex: 'title'
-            },{
-            //  header: " Должность",
-                //width: 8,
-                //anchor:'100%',
-                hidden:true,
-                sortable: true,
-                dataIndex: 'department'
-            }
-        ];
+            header: "Врачи",
+            width: 80,
+            sortable: false,
+            dataIndex: 'name'
+        },{
+            header: " Должность",
+            width: 75,
+            sortable: false,
+            dataIndex: 'title'
+        }];
 
         this.store.on('load',function(){
             this.getSelectionModel().selectFirstRow(0);
@@ -68,7 +58,7 @@ Ext.calendar.StaffGrid = Ext.extend(Ext.grid.GridPanel, {
         this.on('afterrender',function(){
             if (this.doctorMode){
                 this.store.setBaseParam('id', WebApp.active_profile);
-            };
+            }
             this.store.load();
         });
 
@@ -96,7 +86,7 @@ Ext.calendar.StaffGrid = Ext.extend(Ext.grid.GridPanel, {
                     if (record) {
                         this.store.filter('department',record.data.resource_uri);
                     } else {
-                        this.store.clearFilter()
+                        this.store.clearFilter();
                     }
                 },
                 'clearclick': function() {
@@ -114,28 +104,22 @@ Ext.calendar.StaffGrid = Ext.extend(Ext.grid.GridPanel, {
             stripeRows:true,
             border : false,
             store:this.store,
-            autoScroll:true,
-            height:200,
             columns:this.columns,
-            tbar: [this.departmentCB]
-            //sm : new Ext.grid.RowSelectionModel({
-                //singleSelect : true
-            //})
-        }
+            tbar: [this.departmentCB],
+            view : new Ext.grid.GridView({
+                forceFit : false
+            })
+        };
 
         Ext.apply(this, Ext.apply(this.initialConfig, config));
         Ext.calendar.StaffGrid.superclass.initComponent.apply(this, arguments);
 
-    },
-
-    afterRender: function() {
-        this.getSelectionModel().selectFirstRow(0);
     }
 
 });
 
 
-    Ext.override(Ext.Panel, {
+/*    Ext.override(Ext.Panel, {
         syncHeight : function(){
         if(!(this.autoHeight || this.duringLayout)){
             var last = this.lastSize;
@@ -153,6 +137,6 @@ Ext.calendar.StaffGrid = Ext.extend(Ext.grid.GridPanel, {
             }
         }
         }
-    });
+    });*/
 
 Ext.reg('staffgrid', Ext.calendar.StaffGrid);

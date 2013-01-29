@@ -7,7 +7,6 @@ App.reporting.FilterPanel = Ext.extend(Ext.form.FormPanel, {
         this.startDateField = new Ext.form.DateField({
             name:'start_date',
             format:'Y-m-d',
-            allowBlank: false,
             plugins:[new Ext.ux.netbox.InputTextMask('9999-99-99')],
             minValue:new Date(1901,1,1),
             fieldLabel: 'Дата с',
@@ -16,7 +15,6 @@ App.reporting.FilterPanel = Ext.extend(Ext.form.FormPanel, {
         this.endDateField = new Ext.form.DateField({
             name:'end_date',
             format:'Y-m-d',
-            allowBlank: false,
             plugins:[new Ext.ux.netbox.InputTextMask('9999-99-99')],
             minValue:new Date(1901,1,1),
             fieldLabel: 'Дата по',
@@ -41,10 +39,7 @@ App.reporting.FilterPanel = Ext.extend(Ext.form.FormPanel, {
                 ],
                 data: [
                     ['п','Посещение'],
-                    ['б','Прием биоматериала'],
-//                  ['н','Внутреннее направление'],
-//                  ['з','Предварительная запись'],
-//                  ['в','Возврат']
+                    ['б','Прием биоматериала']
                 ]
             }),
             valueField: 'id',
@@ -69,7 +64,6 @@ App.reporting.FilterPanel = Ext.extend(Ext.form.FormPanel, {
                 ],
                 data: [
                     ['cash','Наличные'],
-                    ['non_cash','Безналичный расчет'],
                     ['card','Банковская карта']
                 ]
             }),
@@ -102,8 +96,8 @@ App.reporting.FilterPanel = Ext.extend(Ext.form.FormPanel, {
             valueField: 'id',
             listeners:{
                 'render': function(f){
-                    var el = f.getEl()
-                    el.on('click',this.onChoice.createDelegate(this,['Patient']),this)
+                    var el = f.getEl();
+                    el.on('click',this.onChoice.createDelegate(this,['Patient']),this);
                 },
                 'select':function(combo,record,index){
                 },
@@ -144,8 +138,8 @@ App.reporting.FilterPanel = Ext.extend(Ext.form.FormPanel, {
             valueField: 'id',
             listeners:{
                 'render': function(f){
-                    var el = f.getEl()
-                    el.on('click',this.onChoice.createDelegate(this,['Staff']),this)
+                    var el = f.getEl();
+                    el.on('click',this.onChoice.createDelegate(this,['Staff']),this);
                 },
                 'select':function(combo,record,index){
                 },
@@ -177,8 +171,8 @@ App.reporting.FilterPanel = Ext.extend(Ext.form.FormPanel, {
             valueField: 'id',
             listeners:{
                 'render': function(f){
-                    var el = f.getEl()
-                    el.on('click',this.onChoice.createDelegate(this,['ServiceGroup']),this)
+                    var el = f.getEl();
+                    el.on('click',this.onChoice.createDelegate(this,['ServiceGroup']),this);
                 },
                 'select':function(combo,record,index){
                 },
@@ -232,8 +226,8 @@ App.reporting.FilterPanel = Ext.extend(Ext.form.FormPanel, {
             valueField: 'id',
             listeners:{
                 'render': function(f){
-                    var el = f.getEl()
-                    el.on('click',this.onChoice.createDelegate(this,['Referral']),this)
+                    var el = f.getEl();
+                    el.on('click',this.onChoice.createDelegate(this,['Referral']),this);
                 },
                 'select':function(combo,record,index){
                 },
@@ -261,8 +255,8 @@ App.reporting.FilterPanel = Ext.extend(Ext.form.FormPanel, {
             valueField: 'id',
             listeners:{
                 'render': function(f){
-                    var el = f.getEl()
-                    el.on('click',this.onChoice.createDelegate(this,['State','fromPlace']),this)
+                    var el = f.getEl();
+                    el.on('click',this.onChoice.createDelegate(this,['State','fromPlace']),this);
                 },
                 'select':function(combo,record,index){
                 },
@@ -289,8 +283,8 @@ App.reporting.FilterPanel = Ext.extend(Ext.form.FormPanel, {
             valueField: 'id',
             listeners:{
                 'render': function(f){
-                    var el = f.getEl()
-                    el.on('click',this.onChoice.createDelegate(this,['State','fromLab']),this)
+                    var el = f.getEl();
+                    el.on('click',this.onChoice.createDelegate(this,['State','fromLab']),this);
                 },
                 'select':function(combo,record,index){
                 },
@@ -317,8 +311,8 @@ App.reporting.FilterPanel = Ext.extend(Ext.form.FormPanel, {
             valueField: 'id',
             listeners:{
                 'render': function(f){
-                    var el = f.getEl()
-                    el.on('click',this.onChoice.createDelegate(this,['State','exPlOffice']),this)
+                    var el = f.getEl();
+                    el.on('click',this.onChoice.createDelegate(this,['State','exPlOffice']),this);
                 },
                 'select':function(combo,record,index){
                 },
@@ -345,8 +339,8 @@ App.reporting.FilterPanel = Ext.extend(Ext.form.FormPanel, {
             valueField: 'id',
             listeners:{
                 'render': function(f){
-                    var el = f.getEl()
-                    el.on('click',this.onChoice.createDelegate(this,['State','exPlFilial']),this)
+                    var el = f.getEl();
+                    el.on('click',this.onChoice.createDelegate(this,['State','exPlFilial']),this);
                 },
                 'select':function(combo,record,index){
                 },
@@ -372,29 +366,8 @@ App.reporting.FilterPanel = Ext.extend(Ext.form.FormPanel, {
             mode: 'local',
             forceSelection:true,
             selectOnFocus:false,
-            editable:false,
-            anchor:'50%'
-        });
-
-        this.priceTypeCB = new Ext.form.ClearableComboBox({
-            fieldLabel:'Тип цены',
-            name:'price_type',
-            store:new Ext.data.ArrayStore({
-                fields:['id','title'],
-                data: [
-                    ['r','Розничная'],
-                    ['z','Закупочная']]
-            }),
-            typeAhead: true,
-            triggerAction: 'all',
-            baseCls:'x-border-layout-ct',
-            valueField:'id',
-            displayField:'title',
-            mode: 'local',
-            forceSelection:true,
-            selectOnFocus:false,
-            editable:false,
-            anchor:'50%'
+            editable:false
+            // anchor:'100%'
         });
 
         var config = {
@@ -415,8 +388,7 @@ App.reporting.FilterPanel = Ext.extend(Ext.form.FormPanel, {
                 this.exPlOfficeCombo,
 //              this.exPlFilialCombo,
                 this.paymentTypeCB,
-                this.ptypeCmb,
-                this.priceTypeCB
+                this.ptypeCmb
             ]
         };
 
@@ -427,7 +399,7 @@ App.reporting.FilterPanel = Ext.extend(Ext.form.FormPanel, {
             this.today = new Date();
             this.startDateField.setValue(this.today);
             this.endDateField.setValue(this.today);
-        },this)
+        },this);
     },
 
     onPrint:function(node){
@@ -445,11 +417,11 @@ App.reporting.FilterPanel = Ext.extend(Ext.form.FormPanel, {
     onClearForm: function(){
         Ext.each(this.items.items,function(item){
             if (item.name == 'start_date' || item.name == 'end_date'){
-                item.setValue(this.today)
+                item.setValue(this.today);
             } else {
                 item.setRawValue('');
             }
-        },this)
+        },this);
     },
 
     onChoice: function(type,source) {
@@ -472,7 +444,7 @@ App.reporting.FilterPanel = Ext.extend(Ext.form.FormPanel, {
     makeParamStr: function(fields){
         if (fields.length){
             this.showFields(fields);
-        };
+        }
         var paramStr = '';
         var f = this.getForm();
         if(!f.isValid()){
@@ -488,15 +460,15 @@ App.reporting.FilterPanel = Ext.extend(Ext.form.FormPanel, {
                 }
             }
         },this);
-        return paramStr
+        return paramStr;
 
     },
 
     contains: function (arr, obj) {
         for(var i=0; i<arr.length; i++) {
             if (arr[i] == obj) return true;
-        };
-        return false
+        }
+        return false;
     },
 
 

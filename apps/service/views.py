@@ -153,7 +153,7 @@ def get_service_tree(request):
 
     import sys
 
-    sys.setrecursionlimit(3000)
+    sys.setrecursionlimit(4000)
 
     """
     Генерирует дерево в json-формате.
@@ -214,7 +214,7 @@ def get_service_tree(request):
             return (child_list and child_list[0]) or []
         else:
             node = tree[-1]
-            parent = node.get_parent()
+            parent = node.parent_id
 
             bro = []
             childs = []
@@ -314,7 +314,7 @@ def get_service_tree(request):
     leaf_func = base_service_leaf
     group_func = base_service_group
 
-    payment_type = request.GET.get('payment_type', u'н')
+    payment_type = request.GET.get('payment_type')
     staff = request.GET.get('staff') or None
     payer = request.GET.get('payer') or None
 
@@ -421,7 +421,7 @@ def get_service_tree(request):
 
     #### формируем и очищаем услуги
 
-    BaseService.cache_parents()
+    # BaseService.cache_parents()
 
     nodes = []
     for base_service in BaseService.objects.select_related().all().order_by(BaseService._meta.tree_id_attr, BaseService._meta.left_attr, 'level'):

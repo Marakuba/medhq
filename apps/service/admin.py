@@ -21,12 +21,12 @@ import StringIO
 
 from pricelist.models import Price
 from django.views.generic.simple import direct_to_template
-from service.forms import PriceForm, TreeLoaderForm, ExtServiceCopierForm
+from service.forms import PriceForm, TreeLoaderForm, ExtServiceCopierForm, PriceListLoaderForm
 from core.admin import TabbedAdmin
 from django.conf import settings
 from django.shortcuts import render_to_response
 from django.template.context import RequestContext
-from service.utils import ServiceTreeLoader
+from service.utils import ServiceTreeLoader, PriceListLoader, LoaderException
 from core.utils import copy_model_object
 from selection.views import selection
 
@@ -265,14 +265,15 @@ class ExtendedServiceInlineAdmin(admin.StackedInline):
 
 
 lookups = {}
-lookups[BaseService._meta.right_attr] = F(BaseService._meta.left_attr)+1
+lookups[BaseService._meta.right_attr] = F(BaseService._meta.left_attr) + 1
+
 
 class BaseServiceForm(forms.ModelForm):
 
     name = forms.CharField(label=u'Полное наименование', required=True, max_length=300,
-                           widget=forms.TextInput(attrs={'size':100}))
+                           widget=forms.TextInput(attrs={'size': 100}))
     short_name = forms.CharField(label=u'Краткое наименование', required=False, max_length=300,
-                                 widget=forms.TextInput(attrs={'size':100}))
+                                 widget=forms.TextInput(attrs={'size': 100}))
     parent = TreeNodeChoiceField(label=u'Группа',
                                  queryset=BaseService.objects.exclude(base_group__isnull=True, **lookups).order_by(BaseService._meta.tree_id_attr, BaseService._meta.left_attr, 'level'),
                                  required=False)
@@ -280,22 +281,60 @@ class BaseServiceForm(forms.ModelForm):
     class Meta:
         model = BaseService
 
+
 class BaseServiceAdmin(TreeEditor, TabbedAdmin):
     """
     """
 
     form = BaseServiceForm
 
-
     list_per_page = 2000
-    list_display = ('name','short_name','code','execution_time','type')
-    list_editable = ('code','execution_time','type')
+    list_display = ('name', 'short_name', 'code', 'execution_time', 'type')
+    list_editable = ('code', 'execution_time', 'type')
 
-    inlines = [ExtendedServiceInlineAdmin,AnalysisInlineAdmin,LabServiceInline]
+    inlines = [ExtendedServiceInlineAdmin, AnalysisInlineAdmin, LabServiceInline]
     save_as = True
     exclude = ('standard_service',)
-    search_fields = ['name','short_name','code']
-    actions = [make_inactive_action,dump_for_load]
+    search_fields = ['name', 'short_name', 'code']
+    actions = [make_inactive_action, dump_for_load]
+
+    def price_list_loader(self, request):
+
+        def handle_uploaded_file(f, name):
+                destination = open(name, 'w')
+                for chunk in f.chunks():
+                    destination.write(chunk)
+                f.close()
+                destination.close()
+
+        if request.method == 'POST':
+            """
+            """
+            form = PriceListLoaderForm(request.POST, request.FILES)
+            if form.is_valid():
+                f = request.FILES['f']
+                tmp_name = '/tmp/' + f.name
+                handle_uploaded_file(f, tmp_name)
+                d = form.cleaned_data
+                ldr = PriceListLoader(tmp_name, d['on_date'], d['price_type'])
+                try:
+                    ldr.load_data()
+                except LoaderException:
+                    messages.error(request, u'В ходе загрузки возникли следующие ошибки, которые должны быть устранены:')
+                    for err in ldr.errors:
+                        messages.error(request, err)
+        else:
+            TODAY = datetime.date.today()
+            form = PriceListLoaderForm(initial={
+                'on_date': TODAY
+            })
+
+        ec = {
+            'form': form
+        }
+
+        return render_to_response('admin/service/price_list_loader.html', ec,
+                                  context_instance=RequestContext(request))
 
     def tree_loader(self, request):
 
@@ -306,21 +345,21 @@ class BaseServiceAdmin(TreeEditor, TabbedAdmin):
                 f.close()
                 destination.close()
 
-        if request.method=='POST':
+        if request.method == 'POST':
             """
             """
             form = TreeLoaderForm(request.POST, request.FILES)
             if form.is_valid():
                 f = request.FILES['f']
-                tmp_name = '/tmp/'+f.name
+                tmp_name = '/tmp/' + f.name
                 handle_uploaded_file(f, tmp_name)
                 d = form.cleaned_data
-                ServiceTreeLoader(tmp_name,d['branches'],d['state'],d['root'],d['top'])
+                ServiceTreeLoader(tmp_name, d['branches'], d['state'], d['root'], d['top'])
         else:
             form = TreeLoaderForm()
 
         ec = {
-            'form':form
+            'form': form
         }
 
         return render_to_response('admin/service/tree_loader.html', ec,
@@ -373,6 +412,7 @@ class BaseServiceAdmin(TreeEditor, TabbedAdmin):
     def get_urls(self):
         urls = super(BaseServiceAdmin, self).get_urls()
         my_urls = patterns('',
+            (r'^price_list_loader/$', self.price_list_loader),
             (r'^tree_loader/$', self.tree_loader),
             (r'^export/csv/$', self.export_csv),
             (r'^pricelist/$', self.pricelist),

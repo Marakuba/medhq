@@ -73,6 +73,7 @@ class ExamOrderGridApp(BaseWebApp):
 
         'app/examination/tickets/title/TitleTicket.js',
 
+        'app/dict/mkb/MKBTree.js',
         'app/examination/tickets/icd/IcdTicket.js',
         'app/examination/tickets/icd/IcdTicketEditor.js',
 

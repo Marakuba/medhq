@@ -189,6 +189,158 @@ def pricelist_dump(on_date=None, file_handler=None):
     table.writerows(rows)
 
 
+import pandas as pd
+from medhq.libs.utils.unicsv import UnicodeReader
+from StringIO import StringIO
+import decimal
+
+
+class LoaderException(Exception):
+    """
+    """
+
+
+class PriceListLoader():
+
+    DLM = '/'
+
+    def __init__(self, f, on_date=None, ptype=None):
+        self.on_date = on_date or datetime.date.today()
+        self.fn = f
+        self.ptype = ptype
+        # self.load_data(f)
+        self.errors = []
+
+    @transaction.commit_on_success
+    def load_data(self):
+        self.df = pd.read_csv(self.fn)
+        self.df = self.df.dropna()
+        self.ext_mode = 'price' in self.df
+        self.get_groups()
+        self.get_states()
+        if self.errors:
+            raise LoaderException()
+        self.proccess_data()
+
+    def ustrip(self, v):
+        return unicode(v.strip(), 'utf-8')
+
+    def proccess_data(self):
+        for idx, row in self.df.iterrows():
+            code = row['code'].strip()
+            base_service = self.test_code(code)
+            if not base_service:
+                """
+                обработка только добавления
+                """
+                parent = self.get_parent(row['group'])
+                name = unicode(row['name'], 'utf-8')
+                if len(name) > 300:
+                    name = name[:300]
+                short_name = unicode(row['short_name'], 'utf-8')
+                if len(short_name) > 300:
+                    short_name = short_name[:300]
+                base_service, created = BaseService.objects.get_or_create(
+                    parent=parent,
+                    code=unicode(code, 'utf-8'),
+                    name=name,
+                    short_name=short_name,
+                    type=unicode(row['type'], 'utf-8')
+                )
+            if self.ext_mode:
+                extended_service, created = ExtendedService.objects.get_or_create(
+                    base_service=base_service,
+                    state=self.states[self.ustrip(row['state'])]
+                )
+                if row['branches']:
+                    branches = []
+                    for b in row['branches'].split(','):
+                        branches.append(self.states[self.ustrip(b)])
+                    extended_service.branches.add(*branches)
+                if row['price']:
+                    value = decimal.Decimal(row['price'].replace(',', '.'))
+                    Price.objects.get_or_create(
+                        extended_service=extended_service,
+                        type=self.ptype,
+                        value=value,
+                        on_date=self.on_date
+                    )
+
+    def test_code(self, code):
+        if not code:
+            return False
+        try:
+            service = BaseService.objects.get(code__iexact=code)
+            return service
+        except:
+            return False
+
+    def get_states(self):
+        self.states = {}
+
+        states = sorted([unicode(idx, 'utf-8') for idx in self.df['state'].value_counts().index])
+        for state in states:
+            name = state.strip()
+            if name not in self.states:
+                try:
+                    state_obj = State.objects.get(name=name)
+                    self.states[name] = state_obj
+                except:
+                    self.errors.append(u'Организация "%s" не найдена' % name)
+
+        branches = sorted([unicode(idx, 'utf-8') for idx in self.df['branches'].value_counts().index])
+        for states in branches:
+            for state in states.split(','):
+                name = state.strip()
+                if name not in self.states:
+                    try:
+                        state_obj = State.objects.get(name=name)
+                        self.states[name] = state_obj
+                    except:
+                        self.errors.append(u'Организация "%s" не найдена' % name)
+
+    def get_groups(self):
+        groups = sorted([unicode(idx, 'utf-8') for idx in self.df['group'].value_counts().index])
+        all_groups = []
+        for group in groups:
+            # print "group:", group
+            all_groups.append(group)
+            chunks = group.split(self.DLM)
+            l = len(chunks)
+            for i in range(l - 1, 0, -1):
+                idx = l - i
+                parent = self.DLM.join(chunks[:-idx])
+                if parent not in all_groups:
+                    all_groups.append(parent)
+
+        self.groups = sorted(all_groups)
+        self.group_objects = {}
+
+    def get_parent(self, path):
+        if path not in self.group_objects:
+            """
+            Группа не найдена, и её необходимо создать, но для этого надо проверить всех предков в указанном пути
+            """
+
+            name = path.split(self.DLM)[-1]
+            parent_path = self.DLM.join(path.split(self.DLM)[:-1])
+            if parent_path:
+                """
+                есть предок, будем получать его объект рекурсивным вызовом
+                """
+                parent = self.get_parent(parent_path)
+            else:
+                """
+                нет предка, можно создавать группу в корне дерева
+                """
+                parent = None
+
+            new_object, created = BaseService.objects.get_or_create(parent=parent, name=name, short_name=name, type='group')
+            self.group_objects[path] = new_object
+
+        return self.group_objects[path]
+
+
 class ServiceTreeLoader():
 
     def __init__(self, f, branches, state, root=None, top=None, data_format='medhqjson'):

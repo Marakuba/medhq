@@ -67,6 +67,7 @@ TEMPLATE_CONTEXT_PROCESSORS = (
     "django.core.context_processors.media",
     "django.core.context_processors.request",
     "django.core.context_processors.static",
+    "django.contrib.messages.context_processors.messages",
     "constance.context_processors.config",
     "core.context_processors.global_vars"
 
@@ -103,7 +104,6 @@ INSTALLED_APPS = [
     'apiutils',
     'assistant',
     'billing',
-    'core',
     'crm',
     'direct',
     'examination',
@@ -155,6 +155,9 @@ INSTALLED_APPS = [
     'raven.contrib.django',
     'djangocodemirror',
     'test_utils',
+
+    'core',
+
 ]
 
 APPSERVER_ADMIN_TITLE = u'Главная панель'

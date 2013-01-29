@@ -59,6 +59,90 @@ from reporting.pandas import PandasReport, Config, SqlDataSource, Header,\
     Column, NumberColumn, Totals, Total, Group, Agg
 
 
+@register('staff-referral-patient')
+class StaffReferralPatientReport(PandasReport):
+    """
+    """
+
+    config = Config(
+        source=SqlDataSource("""
+SELECT
+    Tstaff.last_name ||' '|| substr(Tstaff.first_name,1,1)||'.' ||substr(Tstaff.mid_name,1,1)||'., '||Tpstf.title as staff,
+    Trefrl.name as referral,
+    to_char(Tvis.created,'YYYY-MM-DD HH24:MI') as created,
+    Tpnt.last_name ||' '|| substr(Tpnt.first_name,1,1)||'.' ||substr(Tpnt.mid_name,1,1)||'.' as patient,
+    Tpolis.number as polis,
+    TTbarcode.id as order,
+    Tserv.code as code,
+    Tserv.name as service,
+    sum(TTvis.count) as count,
+    sum(TTvis.count * TTvis.price) as sum,
+    round(sum(TTvis.count * TTvis.price * (Tvis.discount_value/100)),2) as discount,
+    sum(TTvis.count * TTvis.price) - round(sum(TTvis.count * TTvis.price * (Tvis.discount_value/100)),2) as clean_sum
+FROM
+    public.visit_visit Tvis
+    left outer join public.numeration_barcode TTbarcode on TTbarcode.id = Tvis.barcode_id
+    left outer join public.visit_orderedservice TTvis on TTvis.order_id = Tvis.id
+    left outer join public.state_state Tstate on Tstate.id = TTvis.execution_place_id
+    left outer join public.service_baseservice Tserv on Tserv.id = TTvis.service_id
+    left outer join public.staff_position Tpstf on Tpstf.id = TTvis.staff_id
+    left outer join public.staff_staff Tstaff on  Tstaff.id = Tpstf.staff_id
+    left outer join public.state_department Tdpr on Tdpr.id = Tpstf.department_id
+    left outer join public.patient_patient Tpnt on Tpnt.id = Tvis.patient_id
+    left outer join public.visit_referral Trefrl on Trefrl.id = Tvis.referral_id
+    left outer join public.visit_referralagent Trefrlagent on Trefrlagent.id = Trefrl.agent_id
+    left outer join public.reporting_stategroup_state TTstgr on TTstgr.state_id = TTvis.execution_place_id
+    left outer join public.reporting_stategroup Tstgr on Tstgr.id = TTstgr.stategroup_id
+    left outer join public.patient_insurancepolicy Tpolis on Tpolis.id = Tvis.insurance_policy_id
+    left outer join public.reporting_servicegroup_baseservice TTrepbsgp on TTrepbsgp.baseservice_id = Tserv.id
+    left outer join public.reporting_servicegroup Trepbsgp on Trepbsgp.id = TTrepbsgp.servicegroup_id
+WHERE
+    TTvis.count is not null and TTvis.price is not null and
+    to_char(Tvisit.created,'YYYY-MM-DD') BETWEEN '{{ start_date }}' and '{{ end_date }}'
+GROUP BY
+    Tstaff.last_name,
+    Tstaff.first_name,
+    Tstaff.mid_name,
+    Tpstf.title,
+    Trefrl.name,
+    Tvis.created,
+    Tpolis.number,
+    TTbarcode.id,
+    Tpnt.last_name,
+    Tpnt.first_name,
+    Tpnt.mid_name,
+    Tserv.id,
+    Tserv.name
+ORDER BY
+    staff,
+    referral,
+    created,
+    patient,
+    polis,
+    order,
+    code,
+    service"""),
+        header=Header(
+            Column('staff'),
+            Column('referral'),
+            Column('created'),
+            Column('patient'),
+            Column('order'),
+            Column('service'),
+            NumberColumn('count'),
+            NumberColumn('sum'),
+            NumberColumn('discount'),
+            NumberColumn('clean_sum'),
+        ),
+        totals=Totals(
+            Total('count'),
+            Total('sum'),
+            Total('discount'),
+            Total('clean_sum'),
+        )
+    )
+
+
 @register('department-sales')
 class DepartmentSalesReport(PandasReport):
     """
