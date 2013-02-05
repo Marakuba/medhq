@@ -17,8 +17,8 @@ class BasePlain(BaseWidget):
         return ["print/lab/widgets/baseplain_state_%s.html","print/lab/widgets/baseplain.html"]
     
     def make_results(self, lab_order):
-        result_qs = lab_order.result_set.active().filter(order=lab_order, to_print=True).order_by('analysis__service__%s' % BaseService._meta.tree_id_attr, 
-                    '-analysis__service__%s' % BaseService._meta.left_attr,
+        result_qs = lab_order.result_set.active().filter(order=lab_order, to_print=True).order_by('analysis__service__%s' % BaseService.tree.tree_id_attr, 
+                    '-analysis__service__%s' % BaseService.tree.left_attr,
                     'analysis__order')
         
         cur_service = None
@@ -72,8 +72,8 @@ class BaseColumn(BaseWidget):
     
     def make_results(self, lab_order):
         result_qs = lab_order.result_set.active().filter(order=lab_order, to_print=True) \
-            .order_by('analysis__service__%s' % BaseService._meta.tree_id_attr, 
-            '-analysis__service__%s' % BaseService._meta.left_attr,
+            .order_by('analysis__service__%s' % BaseService.tree.tree_id_attr, 
+            '-analysis__service__%s' % BaseService.tree.left_attr,
             'analysis__order')
         results = OrderedDict()
         cols = [u'Наименование показателя',]

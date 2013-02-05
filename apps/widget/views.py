@@ -61,8 +61,8 @@ def report(request,slug):
 def lab_results(request, object_id):
     order = get_object_or_404(OrderedService, pk=object_id)
     result_set = Result.objects.filter(order__visit=order.order,analysis__service=order.service.id,analysis__service__labservice__is_manual=False)\
-        .order_by('analysis__service__%s' % BaseService._meta.tree_id_attr, 
-                '-analysis__service__%s' % BaseService._meta.left_attr,
+        .order_by('analysis__service__%s' % BaseService.tree.tree_id_attr, 
+                '-analysis__service__%s' % BaseService.tree.left_attr,
                 'analysis__order') 
     
     cur_service = None

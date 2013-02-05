@@ -21,69 +21,73 @@ from decimal import Decimal
 logger = logging.getLogger('general')
 
 NOTIFICATION_TYPES = (
-    (0,u'Не уведомлять'),
-    (1,u'Уведомлять по SMS'),
-    (2,u'Уведомлять по Email'),
+    (0, u'Не уведомлять'),
+    (1, u'Уведомлять по SMS'),
+    (2, u'Уведомлять по Email'),
 )
 
+
 def cap_first(text):
-    return text[0].upper()+text[1:]
+    if len(text) == 1:
+        return text.upper()
+    return text[0].upper() + text[1:]
+
 
 class Patient(make_person_object('patient')):
-    
+
     modified = models.DateTimeField(auto_now=True)
     state = models.ForeignKey(State, null=True, blank=True, verbose_name=u'Организация')
-    
+
     user = models.ForeignKey(User, related_name="django_user", null=True, blank=True)
     hid_card = models.CharField(u'№ карты', max_length=50, blank=True)
-    discount = models.ForeignKey(Discount, 
-                                 verbose_name=u'Скидка', 
+    discount = models.ForeignKey(Discount,
+                                 verbose_name=u'Скидка',
                                  null=True, blank=True)
     initial_account = models.DecimalField(u'Первоначальная сумма', max_digits=10, decimal_places=2, default=Decimal('0.0'))
     billed_account = models.DecimalField(u'Счет накопления', max_digits=10, decimal_places=2, default=Decimal('0.0'))
     doc = models.CharField(u'Документ', max_length=30, blank=True, help_text=u'Пенсионное удостоверение, студенческий билет и т.д.')
-    client_item = models.OneToOneField(ClientItem, null=True, blank= True, related_name = 'client')
+    client_item = models.OneToOneField(ClientItem, null=True, blank=True, related_name='client')
     balance = models.FloatField(u'Баланс', blank=True, null=True)
     ad_source = models.ForeignKey(AdSource, blank=True, null=True, verbose_name=u'Источник рекламы')
-    preorder_notify = models.PositiveIntegerField(u'Уведомление о предзаказах', default = 0, choices = NOTIFICATION_TYPES)
-    assignment_notify = models.PositiveIntegerField(u'Уведомление о направлениях', default = 0, choices = NOTIFICATION_TYPES)
-    lab_notify = models.PositiveIntegerField(u'Уведомление о готовых результатах анализов', default = 0, choices = NOTIFICATION_TYPES)
-    
+    preorder_notify = models.PositiveIntegerField(u'Уведомление о предзаказах', default=0, choices=NOTIFICATION_TYPES)
+    assignment_notify = models.PositiveIntegerField(u'Уведомление о направлениях', default=0, choices=NOTIFICATION_TYPES)
+    lab_notify = models.PositiveIntegerField(u'Уведомление о готовых результатах анализов', default=0, choices=NOTIFICATION_TYPES)
+
     objects = models.Manager()
-    
+
     def __unicode__(self):
-        return u"%s /%s/ - ID %s" % ( self.full_name(), self.birth_day.strftime("%d.%m.%Y"), self.zid())
-    
+        return u"%s /%s/ - ID %s" % (self.full_name(), self.birth_day.strftime("%d.%m.%Y"), self.zid())
+
     def zid(self):
         return str(self.id).zfill(7)
     zid.short_description = u'ID'
-    
+
     def full_name(self):
         return u"%s %s %s" % (self.last_name, self.first_name, self.mid_name)
     full_name.short_description = u'Полное имя'
-    
+
     def full_age(self):
         today = datetime.date.today()
         delta = today - self.birth_day
         return delta.days / 365
-    
+
     def is_adult(self):
-        return self.full_age()>=18
-    
+        return self.full_age() >= 18
+
     def short_name(self):
         return u"%s %s.%s" % (self.last_name, self.first_name[0].capitalize(), self.mid_name and u"%s." % self.mid_name[0].capitalize() or u'')
-    
+
     def translify(self):
         return pytils.translit.translify(self.short_name()).upper()
-    
+
     def is_f(self):
-        return self.gender==u'Ж'
-    
+        return self.gender == u'Ж'
+
     def get_contract(self):
         """
         """
         return self.contract_set.actual()
-    
+
     def warnings(self):
         warns = []
 #        if not self.get_contract():
@@ -93,15 +97,15 @@ class Patient(make_person_object('patient')):
 #        if len(warns):
 #            return ". ".join(warns)
         return None
-    
+
     def update_account(self):
         visits = self.visit_set.all()
         result = visits.aggregate(price=Sum('total_price'), discount=Sum('total_discount'))
-        total = (result['price'] or 0)- (result['discount'] or 0)
+        total = (result['price'] or 0) - (result['discount'] or 0)
         self.billed_account = total
-        
+
 #        print "set new account value:", total
-        
+
         if config.CUMULATIVE_DISCOUNTS:
             if not self.discount or self.discount.type in (u'accum',):
                 full_total = total + self.initial_account
@@ -115,50 +119,51 @@ class Patient(make_person_object('patient')):
 #                        print "no discounts for current value!"
         #commit all changes
         self.save()
-    
+
     def get_absolute_url(self):
         return u"/patient/patient/%s/" % self.id
-    
+
     def updBalance(self):
         orders = Payment.objects.filter(client_account__client_item = self.client_item).aggregate(Sum("amount"))
-        visits = Visit.objects.filter(patient = self, payment_type__in=[u'н',u'б'], cls=u'п')
+        visits = Visit.objects.filter(patient = self, payment_type__in=[u'н', u'б'], cls=u'п')
         sales = visits.aggregate(Sum("total_price"))
         discount = visits.aggregate(Sum("total_discount"))
         self.balance = (float(orders['amount__sum'] or 0) + float(discount['total_discount__sum'] or 0) - float( sales['total_price__sum'] or 0 )) or 0
         self.save()
-        
+
     class Meta:
         verbose_name = u"Пациент"
         verbose_name_plural = u"Пациенты"
-        ordering = ('last_name','first_name','mid_name')
-        
-    def get_accepted_date(self,state):
+        ordering = ('last_name', 'first_name', 'mid_name')
+
+    def get_accepted_date(self, state):
         try:
-            agrmt = Agreement.objects.get(patient=self,state=state)
+            agrmt = Agreement.objects.get(patient=self, state=state)
             return agrmt.accepted
         except:
             return ''
-        
+
     def save(self, *args, **kwargs):
         self.first_name = cap_first(self.first_name.strip())
         self.last_name = cap_first(self.last_name.strip())
         self.mid_name = self.mid_name and cap_first(self.mid_name.strip()) or ''
-        
+
         super(Patient, self).save(*args, **kwargs)
+
 
 class Agreement(models.Model):
     """
     """
     patient = models.ForeignKey(Patient)
-    accepted = models.DateTimeField(u'Время подписания согласия', auto_now_add=True, null = True, blank=True)
+    accepted = models.DateTimeField(u'Время подписания согласия', auto_now_add=True, null=True, blank=True)
     state = models.ForeignKey(State)
-    
+
     def __unicode__(self):
-        return smart_unicode(u'%s, %s' % (self.patient, self.state) )
-    
+        return smart_unicode(u'%s, %s' % (self.patient, self.state))
+
     class Meta:
         verbose_name = u'соглашение'
-        verbose_name_plural = u'соглашения'       
+        verbose_name_plural = u'соглашения'
 
 class InsurancePolicy(make_operator_object('insurance_policy')):
     """
@@ -168,12 +173,12 @@ class InsurancePolicy(make_operator_object('insurance_policy')):
     number = models.CharField(u'№ полиса', max_length=50)
     start_date = models.DateField(u'Начало действия', blank=True, null=True)
     end_date = models.DateField(u'Окончание действия', blank=True, null=True)
-    
+
     objects = models.Manager()
-    
+
     def __unicode__(self):
         return smart_unicode(u'%s, %s' % (self.number, self.insurance_state) )
-    
+
     class Meta:
         verbose_name = u'страховой полис'
         verbose_name_plural = u'страховые полисы'
@@ -182,7 +187,7 @@ class InsurancePolicy(make_operator_object('insurance_policy')):
 class ContractManager(models.Manager):
     """
     """
-    
+
     def actual(self):
         try:
             TODAY = datetime.date.today()
@@ -193,10 +198,10 @@ class ContractManager(models.Manager):
 
 
 CONTRACT_TYPES = (
-    (u'р',u'Разовый'),
-    (u'с',u'Срочный'),
-    (u'г',u'До конца года'),
-    (u'б',u'Бессрочный'),
+    (u'р', u'Разовый'),
+    (u'с', u'Срочный'),
+    (u'г', u'До конца года'),
+    (u'б', u'Бессрочный'),
 )
 
 class ContractType(models.Model):
@@ -204,15 +209,15 @@ class ContractType(models.Model):
     validity = models.IntegerField(u'Срок действия')
     type = models.CharField(u'Тип контракта', choices=CONTRACT_TYPES,default=u'г', max_length=1)
     template = models.CharField(u'Шаблон',max_length=100, null=True, blank=True)
-    
+
     def __unicode__(self):
         return u"%s, %s" % (self.title, self.get_type_display())
-    
+
     class Meta:
         verbose_name = u'тип договора'
         verbose_name_plural = u'типы договора'
-        
-        
+
+
 class Contract(models.Model):
     """
     """
@@ -222,40 +227,40 @@ class Contract(models.Model):
     active = models.BooleanField(u'Действующий', default=True)
     state = models.ForeignKey(State, null=True, blank=True)
     contract_type = models.ForeignKey(ContractType, null=True, blank=True)
-    
+
     objects = ContractManager()
-        
+
     def __unicode__(self):
         return u"Договор №%s от %s" % (self.id, self.created.strftime("%d.%m.%Y"))
-    
+
     def details(self):
         return u"№%s от %s" % (self.id, self.created.strftime("%d.%m.%Y"))
-    
+
     class Meta:
         verbose_name = u'договор'
         verbose_name_plural = u'договоры'
-        
-        
+
+
 class CardType(models.Model):
     title = models.CharField(max_length=100)
-    
+
     def __unicode__(self):
         return u"%s" % self.title
-    
+
     class Meta:
         verbose_name = u"Медицинская карточка"
         verbose_name_plural = u"Медицинские карточки"
-        
-        
+
+
 class PatientCard(make_operator_object('patient_card')):
     patient = models.ForeignKey(Patient, related_name='patient_field')
     card_type = models.ForeignKey(CardType)
-    
+
     objects = models.Manager()
-    
+
     def __unicode__(self):
         return u"%s (%s)" % (self.patient, self.card_type)
-    
+
     class Meta:
         verbose_name = u"Карта пациента"
         verbose_name_plural = u"Карты пациента"
@@ -274,5 +279,5 @@ def AccountGenerator(sender, **kwargs):
         account = Account.objects.create()
         client_account = ClientAccount.objects.create(client_item=client_item,account=account)
         patient.save()
-            
-post_save.connect(AccountGenerator, sender=Patient)  
+
+post_save.connect(AccountGenerator, sender=Patient)

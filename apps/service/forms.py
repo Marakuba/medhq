@@ -61,7 +61,7 @@ class PriceForm(forms.Form):
                                             required=False)
 
 lookups = {}
-lookups[BaseService._meta.right_attr] = F(BaseService._meta.left_attr) + 1
+lookups[BaseService.tree.right_attr] = F(BaseService.tree.left_attr) + 1
 
 
 class TreeLoaderForm(forms.Form):
@@ -76,7 +76,7 @@ class TreeLoaderForm(forms.Form):
                                             queryset=payer_qs,
                                             required=True)
     root = TreeNodeChoiceField(label=u'Группа',
-                                 queryset=BaseService.objects.exclude(**lookups).order_by(BaseService._meta.tree_id_attr, BaseService._meta.left_attr, 'level'),
+                                 queryset=BaseService.objects.exclude(**lookups).order_by(BaseService.tree.tree_id_attr, BaseService.tree.left_attr, 'level'),
                                  required=False)
     top = forms.CharField(label=u'Добавить в группу', required=False, max_length=300,
                            widget=forms.TextInput(attrs={'size': 100}))

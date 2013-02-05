@@ -99,14 +99,14 @@ def get_service_tree(state=None, payer=None, payment_type=None, price_type=None,
         d = datetime.datetime(year=date.year, month=date.month, day=date.day, hour=time.hour, minute=time.minute, second=time.second, microsecond=time.microsecond)
         price_type = get_actual_ptype(date=d, payer=payer, payment_type=payment_type)
     values = Price.objects.filter(extended_service__is_active=True,
-                                    price_type='r', type=price_type, **args).\
+                                    type=price_type, **args).\
         order_by('extended_service__id', 'on_date').\
         values('on_date', 'extended_service__id', 'value', 'extended_service__base_service__id').\
         annotate(Max('on_date'))
     result = {}
     for val in values:
         result[val['extended_service__base_service__id']] = val
-    for base_service in BaseService.objects.all().order_by(BaseService._meta.tree_id_attr, BaseService._meta.left_attr, 'level'):
+    for base_service in BaseService.objects.all().order_by(BaseService.tree.tree_id_attr, BaseService.tree.left_attr, 'level'):
         if base_service.is_leaf_node():
             if base_service.id in result:
                 nodes.append(base_service)
@@ -161,7 +161,7 @@ def pricelist_dump(on_date=None, file_handler=None):
     table = UnicodeWriter(file_handler, delimiter=",")
     rows = [[u'ID услуги', u'extID', u'ID группы', u'Группа', u'Услуга',
             u'Краткое наименование', u'Организация', u'Активно', u'Цена (руб.коп)']]
-    services = BaseService.objects.select_related().all().order_by(BaseService._meta.tree_id_attr, BaseService._meta.left_attr, 'level')
+    services = BaseService.objects.select_related().all().order_by(BaseService.tree.tree_id_attr, BaseService.tree.left_attr, 'level')
     for service in services:
         if not service.is_leaf_node():
             rows.append([str(service.id),

@@ -424,7 +424,7 @@ def get_service_tree(request):
     # BaseService.cache_parents()
 
     nodes = []
-    for base_service in BaseService.objects.select_related().all().order_by(BaseService._meta.tree_id_attr, BaseService._meta.left_attr, 'level'):
+    for base_service in BaseService.objects.select_related().all().order_by(BaseService.tree.tree_id_attr, BaseService.tree.left_attr, 'level'):
         if payment_type and base_service.is_leaf_node() and base_service.id not in result:
             continue
         nodes.append(base_service)
