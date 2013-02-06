@@ -104,6 +104,7 @@ INSTALLED_APPS = [
     'apiutils',
     'assistant',
     'billing',
+    'bonus',
     'crm',
     'direct',
     'examination',
