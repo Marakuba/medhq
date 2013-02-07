@@ -313,6 +313,7 @@ class ExtendedService(models.Model):
 
     @classmethod
     def get_all_staff(cls):
+        #  TODO: Описать в комментариях, как должно работать
         services = ExtendedService.objects.all().values('base_service__id',
                                                         'staff__id',
                                                         'staff__staff__last_name',

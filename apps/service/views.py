@@ -186,7 +186,7 @@ def get_service_tree(request):
                     "price": price,
                     "c": obj.count or 1
                 }
-                node['staff'] = obj.base_service_id in staff_all and sorted(staff_all[obj.base_service_id], key=lambda staff: staff[1])
+                # node['staff'] = obj.base_service_id in staff_all and sorted(staff_all[obj.base_service_id], key=lambda staff: staff[1])
                 return node
             except:
                 # logger.error(u"NODE DICT: %s" % err.__unicode__())
@@ -295,8 +295,8 @@ def get_service_tree(request):
                 "parent": parent,
                 "leaf": True
             }
-            if not ext:
-                tree_node['staff'] = node.id in staff_all and sorted(staff_all[node.id], key=lambda staff: staff[1])
+            # if not ext:
+            #     tree_node['staff'] = node.id in staff_all and sorted(staff_all[node.id], key=lambda staff: staff[1])
             tree_nodes.append(tree_node)
         return tree_nodes
 
@@ -314,9 +314,10 @@ def get_service_tree(request):
     leaf_func = base_service_leaf
     group_func = base_service_group
 
-    payment_type = request.GET.get('payment_type')
+    payment_type = request.GET.get('payment_type') or None
     staff = request.GET.get('staff') or None
     payer = request.GET.get('payer') or None
+    result = {}
 
     if payment_type or staff or payer:
         # Если передан staff, то нам цены не нужны. Это значит, что мы работаем
@@ -325,8 +326,9 @@ def get_service_tree(request):
         # nocache = request.GET.get('nocache')
         # recache = request.GET.get('recache')
         # payment_type = payment_type or u'н'
-        leaf_func = ext_service_leaf
-        group_func = ext_service_group
+        if payment_type and not staff:
+            leaf_func = ext_service_leaf
+            group_func = ext_service_group
         all = request.GET.get('all')
         ext = request.GET.get('ext')
 
@@ -411,13 +413,12 @@ def get_service_tree(request):
             values('on_date', 'extended_service__id', 'extended_service__state__id', \
                 'extended_service__staff__id', 'value', 'extended_service__base_service__id').\
             annotate(Max('on_date'))
-        result = {}
         for val in values:
             if val['extended_service__base_service__id'] not in result:
                 result[val['extended_service__base_service__id']] = {}
             result[val['extended_service__base_service__id']][val['extended_service__id']] = val
 
-        staff_all = ExtendedService.get_all_staff()
+        # staff_all = ExtendedService.get_all_staff()
 
     #### формируем и очищаем услуги
 
@@ -425,7 +426,7 @@ def get_service_tree(request):
 
     nodes = []
     for base_service in BaseService.objects.select_related().all().order_by(BaseService._meta.tree_id_attr, BaseService._meta.left_attr, 'level'):
-        if payment_type and base_service.is_leaf_node() and base_service.id not in result:
+        if base_service.is_leaf_node() and base_service.id not in result:
             continue
         nodes.append(base_service)
 
