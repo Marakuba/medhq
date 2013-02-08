@@ -67,7 +67,7 @@ App.visit.VisitForm = Ext.extend(Ext.FormPanel, {
                     width:'50%',
                     height:30,
                     handler:function(){
-                        this.onGetBarcode(this.barcodeInputField.getValue())
+                        this.onGetBarcode(this.barcodeInputField.getValue());
                     },
                     scope:this
                 },{
@@ -84,12 +84,12 @@ App.visit.VisitForm = Ext.extend(Ext.FormPanel, {
             }],
             listeners:{
                 render:function(){
-                    this.barcodeWin.items.items[0].items.items[0].focus(false,500)
+                    this.barcodeWin.items.items[0].items.items[0].focus(false,500);
                 },
                 scope:this
             },
             scope:this
-        })
+        });
 
         this.inlines = new Ext.util.MixedCollection({});
 
@@ -378,7 +378,7 @@ App.visit.VisitForm = Ext.extend(Ext.FormPanel, {
         };
         if(this.patientRecord) {
             this.discountCmb.setValue(this.patientRecord.data.discount);
-        };
+        }
 
         this.referralCB = new Ext.form.LazyComboBox({
             anchor:'99%',
@@ -613,7 +613,7 @@ App.visit.VisitForm = Ext.extend(Ext.FormPanel, {
                 handler:this.onPaymentTypeChoice.createDelegate(this,['д']),
                 scope:this
             }),this.policyBar,
-                this.payerBar]
+                this.payerBar];
 
         this.paymentTypeGroup = new Ext.Panel({
             labelWidth:90,
@@ -665,9 +665,7 @@ App.visit.VisitForm = Ext.extend(Ext.FormPanel, {
         this.barcodeId = new Ext.form.DisplayField({
             hidden:!this.hasBarcode,
             value:''
-        })
-
-
+        });
 
         this.barcodeBtn = new Ext.Button({
             text:'Автоматически',
@@ -744,7 +742,7 @@ App.visit.VisitForm = Ext.extend(Ext.FormPanel, {
         this.paymentTypeField = new Ext.form.Hidden({
             name:'payment_type',
             value:this.type == 'material' ? 'л' : 'н'
-        })
+        });
 
         this.types = {
             visit:[
@@ -857,13 +855,13 @@ App.visit.VisitForm = Ext.extend(Ext.FormPanel, {
                         this.barcode
                     ]
                 }]
-        }
-
+        };
+        var items = [];
         if(this.type){
-            var items = this.defaultItems.concat(this.types[this.type]);
+            items = this.defaultItems.concat(this.types[this.type]);
         } else {
 //          console.error('Не задан тип формы');
-        };
+        }
 
         this.undoBtn = new Ext.Button({
             text:'Назад',
@@ -902,7 +900,7 @@ App.visit.VisitForm = Ext.extend(Ext.FormPanel, {
                 items:[this.generalPanel,this.orderedService]
             }, this.servicePanel]
 
-        }
+        };
 
         Ext.apply(this, Ext.apply(this.initialConfig, config));
         App.visit.VisitForm.superclass.initComponent.apply(this, arguments);
@@ -936,15 +934,18 @@ App.visit.VisitForm = Ext.extend(Ext.FormPanel, {
         //Устанавливаем реферрала. У всех добавляемых предзаказов один реферрал
         if (records.length){
             var cur_ref = this.referralCB.getValue();
-            var preorder_ref = records[0].data.referral
+            var preorder_ref = records[0].data.referral;
             if (cur_ref || (!cur_ref && this.orderedService.store.data.items.length)){
                 if ((preorder_ref || '') != cur_ref){
-                    Ext.Msg.alert('Внимание!',String.format('Реферралы не совпадают! {0} и {1}',this.referralCB.getRawValue() || 'не указан',records[0].data.referral_name || 'не указан') )
+                    Ext.Msg.alert('Внимание!',
+                                  String.format('Реферралы не совпадают! {0} и {1}',
+                                        this.referralCB.getRawValue() || 'не указан',
+                                        records[0].data.referral_name || 'не указан') );
                     return false;
                 }
             } else {
                 if (preorder_ref){
-                    this.referralCB.forceValue(preorder_ref)
+                    this.referralCB.forceValue(preorder_ref);
                 }
             }
         }
@@ -1032,7 +1033,7 @@ App.visit.VisitForm = Ext.extend(Ext.FormPanel, {
             var s = inline.getSteps();
             steps+=s;
         });
-        return steps
+        return steps;
     },
 
     updateTotalSum:function(sum) {
@@ -1054,10 +1055,10 @@ App.visit.VisitForm = Ext.extend(Ext.FormPanel, {
         if(!this.serviceClicked && this.type == 'visit'){
             this.hideAdPanel(true);
             this.serviceClicked = true;
-        };
+        }
         var a = node.attributes;
         if (a.isComplex) {
-            this.cNodes = new Array();
+            this.cNodes = [];
             this.cNodes = this.cNodes.concat(a.nodes);
             this.rowAdded = false;
             complexAdd = function() {
@@ -1066,7 +1067,7 @@ App.visit.VisitForm = Ext.extend(Ext.FormPanel, {
                     this.addRow(item, function(added){
                         if (added){
                             this.rowAdded = added;
-                        };
+                        }
                         if(this.cNodes.length) {
                             complexAdd.createDelegate(this,[])();
                         } else {
@@ -1080,7 +1081,7 @@ App.visit.VisitForm = Ext.extend(Ext.FormPanel, {
                         complexAdd.createDelegate(this,[])();
                     }
                 }
-            }
+            };
             complexAdd.createDelegate(this,[])();
 //          Ext.each(a.nodes, function(item,i){
 //              this.addRow(item);
@@ -1113,7 +1114,7 @@ App.visit.VisitForm = Ext.extend(Ext.FormPanel, {
     onPreorderChoice : function(){
 
         //собираем уже выбранные предзаказы, чтобы в окне их уже не показывать
-        var preorderList = []
+        var preorderList = [];
         this.orderedService.store.each(function(record){
             if (record.data.preorder) preorderList.push(App.utils.uriToId(record.data.preorder));
         });
@@ -1192,7 +1193,7 @@ App.visit.VisitForm = Ext.extend(Ext.FormPanel, {
                 this.showPaymentCmb('policy');
                 this.reloadTree(id);
                 this.rePrice(id);
-                break
+                break;
             case 'б':
                 this.servicePanel.getLoader().baseParams['payment_type'] = id;
                 this.hidePaymentCmb('policy');
@@ -1204,7 +1205,7 @@ App.visit.VisitForm = Ext.extend(Ext.FormPanel, {
                 this.reloadTree(id);
                 this.rePrice(id);
                 break;
-        };
+        }
 
     },
 
@@ -1214,44 +1215,44 @@ App.visit.VisitForm = Ext.extend(Ext.FormPanel, {
             sp.getLoader().baseParams['payer'] = payer;
         } else {
             delete sp.getLoader().baseParams['payer'];
-        };
+        }
         if (this.type == 'material' && ptype_id == 'б'){
-            ptype_id = 'к'
+            ptype_id = 'к';
         }
         sp.getLoader().baseParams['payment_type'] = ptype_id;
-        sp.getLoader().load(sp.getRootNode())
+        sp.getLoader().load(sp.getRootNode());
     },
 
     rePrice: function(ptype,payer){
         if (!ptype){
-            console.log('пересчет цен: не указан тип цены')
-            return false
-        };
+            console.log('пересчет цен: не указан тип цены');
+            return false;
+        }
         var base_services = this.orderedService.store.data.items;
         //если услуг нет, ничего выполнять не надо
         if (!base_services.length) {
             this.saveAction();
-            return false
-        };
-        var bs_ids = {} // список услуг, который был до обновления цен
-        var id_list = [] // передается на сервер для выборки цен
+            return false;
+        }
+        var bs_ids = {};  // список услуг, который был до обновления цен
+        var id_list = [];  // передается на сервер для выборки цен
         //сервер возвращает услуги с id формата 'idУслуги_idМестаВыполнения' - содержимое переменной comp_id
         Ext.each(base_services,function(rec){
-            if(!rec.data.preorder) { 
-                var id = []
+            if(!rec.data.preorder) {
+                var id = [];
                 id[0] = App.utils.uriToId(rec.data.service);
                 id[1] = App.utils.uriToId(rec.data.execution_place);
-                var comp_id = String.format('{0}_{1}',id[0],id[1])
+                var comp_id = String.format('{0}_{1}', id[0], id[1]);
                 bs_ids[comp_id] = {
                     'price': rec.data.price,
                     'name': rec.data.service_name,
                     'id':id[0],
                     'comp_id':comp_id
                 };
-                id_list.push(id)
+                id_list.push(id);
             }
-        })
-        var params = {}
+        });
+        var params = {};
         params['services'] = id_list;
         params['ptype'] = ptype;
         params['state'] = WebApp.state;
@@ -1264,9 +1265,9 @@ App.visit.VisitForm = Ext.extend(Ext.FormPanel, {
             for (serv in bs_ids){
                 var id = bs_ids[serv].id;
                 var comp_id = bs_ids[serv].comp_id;
-                var service = App.utils.getApiUrl('service','baseservice',id)
+                var service = App.utils.getApiUrl('service','baseservice',id);
                 ind = store.find("service",service);
-                if (new_prices[comp_id]==undefined || new_prices[comp_id] == 0){
+                if (new_prices[comp_id]===undefined || new_prices[comp_id] === 0){
                     if (ind > -1){
                         store.removeAt(ind);
                         missing_list.push(bs_ids[comp_id].name);
@@ -1274,22 +1275,22 @@ App.visit.VisitForm = Ext.extend(Ext.FormPanel, {
                 } else {
                     var rec = store.getAt(ind);
                     //если цена все-таки изменилась, то меняем в store
-                    if (!(bs_ids[comp_id].price==String(new_prices[comp_id]))) {
+                    if (bs_ids[comp_id].price!=String(new_prices[comp_id])) {
                         rec.beginEdit();
-                        rec.set('price',new_prices[comp_id])
+                        rec.set('price',new_prices[comp_id]);
                         rec.endEdit();
-                    };
-                    this.orderedService.onSumChange()
+                    }
+                    this.orderedService.onSumChange();
                 }
-            };
+            }
             this.saveAction();
 //          console.log(missing_list);
-        },this)
+        },this);
 
     },
 
     hidePaymentCmb: function(type){
-        if (!type) return false
+        if (!type) return false;
         this[type+'Cmb'].allowBlank = true;
         this[type+'Cmb'].setRawValue('');
         this[type+'Cmb'].originalValue = '';
@@ -1300,7 +1301,7 @@ App.visit.VisitForm = Ext.extend(Ext.FormPanel, {
     },
 
     showPaymentCmb: function(type){
-        if (!type) return false
+        if (!type) return false;
         this[type+'Cmb'].allowBlank = false;
         this[type+'Bar'].show();
         this.paymentTypeGroup.doLayout();
@@ -1339,16 +1340,16 @@ App.visit.VisitForm = Ext.extend(Ext.FormPanel, {
                     scope:this
                 });
                 if (records.length){
-                    this.contractCmb.setValue(records[0].data.resource_uri)
+                    this.contractCmb.setValue(records[0].data.resource_uri);
                     item.items.push(this.contractSplitBtn);
                     this.contractBtnType = 'split';
                 } else {
-                    item.items.push(this.contractAddBtn)
-                    this.contractBtnType = 'add'
+                    item.items.push(this.contractAddBtn);
+                    this.contractBtnType = 'add';
                 }
                 this.contractBar.add(item);
                 this.doLayout();
-            },scope:this})
+            },scope:this});
         },scope:this});
 
     },
@@ -1374,7 +1375,7 @@ App.visit.VisitForm = Ext.extend(Ext.FormPanel, {
             this.bioPayerCmb.disable();
             this.policyCmb.disable();
             this.contractCmb.disable();
-        };
+        }
     },
 
     setPreorderRecord: function(record){
@@ -1423,18 +1424,18 @@ App.visit.VisitForm = Ext.extend(Ext.FormPanel, {
 
     saveAction: function(){
         if (this.record){
-            return false
+            return false;
         }
         this.historyTailPop();
         var actionItem = {};
         var services = [];
         this.orderedService.store.each(function(record){
-            var p = new this.orderedService.store.recordType()
+            var p = new this.orderedService.store.recordType();
             p.beginEdit();
             Ext.apply(p.data,record.data);
             p.endEdit();
-            services.push(p)
-        },this)
+            services.push(p);
+        },this);
         actionItem['services'] = services;
         actionItem['ptype'] = this.getPTypeValue();
         actionItem['payer'] = this.payerCmb.getValue();
@@ -1457,7 +1458,7 @@ App.visit.VisitForm = Ext.extend(Ext.FormPanel, {
         while (historyCount > this.curActionPos){
             this.historyList.pop();
             historyCount -= 1;
-        };
+        }
         this.orderedService.redoBtn.disable();
     },
 
@@ -1493,35 +1494,37 @@ App.visit.VisitForm = Ext.extend(Ext.FormPanel, {
         this.orderedService.doLayout();
         var payer = actionItem['payer'];
         var biopayer = actionItem['biopayer'];
+        var payer_id;
         if (payer) {
-            var payer_id = App.utils.uriToId(payer);
+            payer_id = App.utils.uriToId(payer);
         } else {
-            payer_id = undefined
+            payer_id = undefined;
         }
+        var biopayer_id;
         if (biopayer) {
-            var biopayer_id = App.utils.uriToId(biopayer);
+            biopayer_id = App.utils.uriToId(biopayer);
         } else {
-            biopayer_id = undefined
+            biopayer_id = undefined;
         }
         var ptype = actionItem['ptype'];
         var policy = actionItem['policy'];
         //Перегружать дерево только если поменялись значения типа оплаты или плательщика
         if (this.type == 'visit'){
             if (ptype==cur_ptype){
-                if (!(payer == cur_payer)){
-                    this.reloadTree(ptype,payer_id)
+                if (payer != cur_payer){
+                    this.reloadTree(ptype,payer_id);
                 }
             } else {
-                this.reloadTree(ptype,payer_id)
+                this.reloadTree(ptype,payer_id);
             }
-        };
+        }
         if (this.type == 'material'){
             if (ptype==cur_ptype){
-                if (!(biopayer == cur_biopayer)){
-                    this.reloadTree(ptype,biopayer_id)
+                if (biopayer != cur_biopayer){
+                    this.reloadTree(ptype,biopayer_id);
                 }
             } else {
-                this.reloadTree(ptype,biopayer_id)
+                this.reloadTree(ptype,biopayer_id);
             }
         }
         this.setPTypeValue(ptype);
@@ -1535,11 +1538,11 @@ App.visit.VisitForm = Ext.extend(Ext.FormPanel, {
                     this.policyCmb.originalValue = '';
                     this.policyCmb.value = '';
                     this.policyCmb.reset();
-                };
+                }
                 this.policyCmb.setValue(actionItem['policy']);
                 this.hidePaymentCmb('payer');
                 this.showPaymentCmb('policy');
-                break
+                break;
             case 'б':
                 if (payer){
                     this.payerCmb.setValue(payer);
@@ -1552,7 +1555,7 @@ App.visit.VisitForm = Ext.extend(Ext.FormPanel, {
                 this.servicePanel.getLoader().baseParams['payment_type'] = ptype;
                 this.hidePaymentCmb('policy');
                 this.showPaymentCmb('payer');
-                break
+                break;
 
             case 'к':
                 if (biopayer){
@@ -1561,7 +1564,7 @@ App.visit.VisitForm = Ext.extend(Ext.FormPanel, {
                 this.servicePanel.getLoader().baseParams['payment_type'] = ptype;
                 this.hidePaymentCmb('policy');
                 this.showPaymentCmb('payer');
-                break
+                break;
             case 'н':
                 this.hidePaymentCmb('policy');
                 this.hidePaymentCmb('payer');
@@ -1569,12 +1572,12 @@ App.visit.VisitForm = Ext.extend(Ext.FormPanel, {
                 this.bioPayerCmb.originalValue = '';
                 this.bioPayerCmb.value = '';
                 this.bioPayerCmb.reset();
-                break
+                break;
             default:
                 this.hidePaymentCmb('policy');
                 this.hidePaymentCmb('payer');
-                break
-        };
+                break;
+        }
         this.orderedService.onSumChange();
     },
 
@@ -1602,28 +1605,27 @@ App.visit.VisitForm = Ext.extend(Ext.FormPanel, {
                 if(item.ptype == ptype && !item.pressed){
                     item.toggle();
                 }
-            })
+            });
         }
         if (this.type == 'material'){
             this.paymentTypeField.setValue(ptype);
             if (ptype == 'к' && this.record){
-                this.bioPayerCmb.forceValue(this.record.data.payer)
+                this.bioPayerCmb.forceValue(this.record.data.payer);
             }
         }
     },
     getPTypeValue: function(ptype){
-        var ptype = ''
         if (this.type == 'visit'){
             Ext.each(this.paymentTypeItems,function(item){
                 if(item.pressed){
-                    ptype = item.ptype
+                    ptype = item.ptype;
                 }
-            })
+            });
         }
         if (this.type == 'material'){
             ptype = this.paymentTypeField.getValue() || 'н';
         }
-        return ptype
+        return ptype || '';
     },
 
     contractChoice: function(){
@@ -1636,7 +1638,7 @@ App.visit.VisitForm = Ext.extend(Ext.FormPanel, {
             fn: function(record){
                 if (record){
                     this.contractCmb.forceValue(record.data.resource_uri);
-                };
+                }
                 win.close();
             },
             listeners:{
@@ -1663,7 +1665,7 @@ App.visit.VisitForm = Ext.extend(Ext.FormPanel, {
                 scope:this
             },
             scope:this
-        })
+        });
         win = new Ext.Window({
             items:[contractGrid],
             modal:true,
@@ -1688,7 +1690,7 @@ App.visit.VisitForm = Ext.extend(Ext.FormPanel, {
             App.direct.numeration.getBarcodePayer(value,function(res,e) {
                 if(res && res.success) {
                     var payer_id = res.data['payer_id'];
-                    var payer_uri = App.utils.getApiUrl('state','state',payer_id)
+                    var payer_uri = App.utils.getApiUrl('state','state',payer_id);
                     this.bioPayerCmb.forceValue(payer_uri);
                     //обновляются услуги
                     var sp = this.servicePanel;
@@ -1710,7 +1712,7 @@ App.visit.VisitForm = Ext.extend(Ext.FormPanel, {
                 }
             }, this);
         } else {
-            Ext.Msg.alert('Ошибка!','Введен пустой штрихкод!')
+            Ext.Msg.alert('Ошибка!','Введен пустой штрихкод!');
 //          this.fireEvent('closeall');
         }
     }
