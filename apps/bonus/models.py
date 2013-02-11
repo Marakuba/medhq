@@ -3,6 +3,10 @@
 from django.db import models
 
 from service.models import BaseService
+from visit.models import Referral
+
+from .managers import BonusRuleManager
+# from staff.models import Staff
 
 
 class BonusServiceGroup(models.Model):
@@ -31,9 +35,9 @@ CATEGORIES = (
 
 
 SOURCES = (
-    (u'order__referral__staff', u'Внешнее направление'),
-    (u'assigment__referral__staff', u'Внутренее направление'),
-    (u'staff', u'Собственные услуги'),
+    (u'order__referral', u'Внешнее направление'),
+    (u'assigment__referral', u'Внутренее направление'),
+    (u'staff__staff__referral', u'Собственные услуги'),
 )
 
 
@@ -43,24 +47,30 @@ class BonusRule(models.Model):
     source = models.CharField(u'Источник аналитики', max_length=50, choices=SOURCES)
     is_active = models.BooleanField(u'Активно', default=True)
 
+    objects = BonusRuleManager()
+
     class Meta:
         verbose_name = u'правило'
         verbose_name_plural = u'правила'
 
     def __unicode__(self):
-        pass
+        return u'%s::%s::%s' % (self.object_type, self.category, self.source)
 
 
-from staff.models import Staff
+OPERATIONS = (
+    (u'%', u'%'),
+    (u'a', u'abs'),
+)
 
 
 class BonusRuleItem(models.Model):
     rule = models.ForeignKey(BonusRule, verbose_name=u'Правило')
     service_group = models.ForeignKey(BonusServiceGroup, verbose_name=u'Группа услуг', null=True, blank=True)
-    operation = models.CharField(u'Тип', max_length=1)
+    operation = models.CharField(u'Тип', max_length=1, choices=OPERATIONS, default="%")
     on_date = models.DateField(u'Дата')
     value = models.DecimalField(u'Значение', max_digits=8, decimal_places=2)
-    staff = models.ForeignKey(Staff, verbose_name=u'Врач')
+    # staff = models.ForeignKey(Staff, verbose_name=u'Врач', null=True, blank=True)
+    referral = models.ForeignKey(Referral, verbose_name=u'Врач', null=True, blank=True)
     with_discounts = models.BooleanField(u'Учитывать скидки', default=True)
 
     class Meta:
@@ -68,7 +78,7 @@ class BonusRuleItem(models.Model):
         verbose_name_plural = u'настройки правил'
 
     def __unicode__(self):
-        pass
+        return u'<<BonusRule %s>>' % self.id
 
 
 class BonusRuleItemHistory(models.Model):
@@ -88,7 +98,8 @@ class Calculation(models.Model):
     start_date = models.DateField(u'Начало периода')
     end_date = models.DateField(u'Конец периода')
     category = models.CharField(u'Категория', max_length=30, choices=CATEGORIES)
-    staff_list = models.ManyToManyField(Staff, verbose_name=u'Врачи')
+    # staff_list = models.ManyToManyField(Staff, verbose_name=u'Врачи')
+    referral_list = models.ManyToManyField(Referral, verbose_name=u'Врачи')
     comment = models.TextField(u'Комментарий', blank=True)
 
     class Meta:
@@ -104,7 +115,8 @@ from visit.models import OrderedService
 
 class CalculationItem(models.Model):
     calculation = models.ForeignKey(Calculation, verbose_name=u'Начисление')
-    staff = models.ForeignKey(Staff, verbose_name=u'Врач')
+    # staff = models.ForeignKey(Staff, verbose_name=u'Врач')
+    referral = models.ForeignKey(Referral, verbose_name=u'Врач')
     source = models.CharField(u'Источник аналитики', max_length=50, choices=SOURCES)
     ordered_service = models.ForeignKey(OrderedService, verbose_name=u'Продажа')
     value = models.DecimalField(u'Сумма бонуса', max_digits=8, decimal_places=2)

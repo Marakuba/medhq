@@ -16,12 +16,12 @@ urlpatterns = patterns(
 )
 
 
-import core.views
-import remoting.views
-import visit.views
-import patient.views
-import lab.views
-import numeration.views
-import service.views
-import staff.views
-import scheduler.views
+# import core.views
+# import remoting.views
+# import visit.views
+# import patient.views
+# import lab.views
+# import numeration.views
+# import service.views
+# import staff.views
+# import scheduler.views
