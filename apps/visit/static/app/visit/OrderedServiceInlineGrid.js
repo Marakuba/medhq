@@ -66,7 +66,7 @@ App.visit.OrderedServiceInlineGrid = Ext.extend(Ext.grid.EditorGridPanel, {
                 clear:this.onSumChange.createDelegate(this),
 //              load:this.onSumChange.createDelegate(this),
                 exception: function(){
-                    this.fireEvent('basketexception')
+                    this.fireEvent('basketexception');
                 },
                 scope:this
             },
@@ -104,7 +104,7 @@ App.visit.OrderedServiceInlineGrid = Ext.extend(Ext.grid.EditorGridPanel, {
                 {name: 'id'},
                 {name: 'staff_name', mapping:'text'}
             ])
-        })
+        });
         this.columns =  [new Ext.grid.RowNumberer({width: 30}),
             {
                 header: "МВ",
@@ -138,7 +138,7 @@ App.visit.OrderedServiceInlineGrid = Ext.extend(Ext.grid.EditorGridPanel, {
                 sortable: true,
                 dataIndex: 'staff_name',
                 renderer: function(val) {
-                    return val //? val.staff_name : '';
+                    return val; //? val.staff_name : '';
                 }
             },{
                 header: "Кол-во",
@@ -163,7 +163,7 @@ App.visit.OrderedServiceInlineGrid = Ext.extend(Ext.grid.EditorGridPanel, {
                 hidden: this.shortMode,
                 dataIndex: 'total',
                 renderer: function(v,params,rec){
-                    return rec.data.count*rec.data.price
+                    return rec.data.count*rec.data.price;
                 }
             }
         ];
@@ -237,7 +237,7 @@ App.visit.OrderedServiceInlineGrid = Ext.extend(Ext.grid.EditorGridPanel, {
                 scope:this
             }
 
-        }
+        };
 
         Ext.apply(this, Ext.apply(this.initialConfig, config));
         App.visit.OrderedServiceInlineGrid.superclass.initComponent.apply(this, arguments);
@@ -256,12 +256,12 @@ App.visit.OrderedServiceInlineGrid = Ext.extend(Ext.grid.EditorGridPanel, {
         var node = t.getNodeById(service);
         if(node){
             var sl = node.attributes.staff;
-            if(sl) {
+            // if(sl) {
                 var win = new App.visit.StaffWindow({index:index, staffList:sl});
                 win.on('validstaff', this.updateStaff, this);
                 win.show();
 
-            }
+            // }
         }
     },
 
@@ -287,7 +287,7 @@ App.visit.OrderedServiceInlineGrid = Ext.extend(Ext.grid.EditorGridPanel, {
     addRecord: function(attrs){
 //      var re = /(.*) \[\d+\]/;
 //      var res = re.exec(attrs.text);
-        var text = attrs.text//res[res.length-1];
+        var text = attrs.text;//res[res.length-1];
         var ids = attrs.id.split('-');
         var id = ids[0];
         var place = ids[1];
@@ -307,31 +307,31 @@ App.visit.OrderedServiceInlineGrid = Ext.extend(Ext.grid.EditorGridPanel, {
     },
 
     addRow: function(attrs, can_duplicate, callback, scope) {
+        var ids = attrs.id.split('-');
         if(!can_duplicate) {
 //          var re = /(.*) \[\d+\]/;
 //          res = re.exec(attrs.text);
 //          var text = res[res.length-1];
-            var ids = attrs.id.split('-');
             var has_record = false;
             this.store.each(function(rec){
                 var serv_id = App.utils.uriToId(rec.data.service);
                 var ex_id = App.utils.uriToId(rec.data.execution_place);
                 if ((serv_id == ids[0]) && (ex_id == ids[1])) {
                     has_record = true;
-                    return 0
+                    return 0;
                 }
             });
             if (has_record) {
                 if(callback) {
                     Ext.callback(callback,scope, [false]);
-                };
+                }
                 return false;
-            };
+            }
         }
-        if(attrs.staff){
+        // if(attrs.staff){
             var box = new App.visit.StaffWindow({
-                state:ids[1],
-                service:ids[0],
+                state: ids[1],
+                service: ids[0],
                 height:300,
                 width:400,
                 service_name:attrs.text,
@@ -343,18 +343,18 @@ App.visit.OrderedServiceInlineGrid = Ext.extend(Ext.grid.EditorGridPanel, {
                     }
                     if(callback) {
                         Ext.callback(callback,scope, [true]);
-                    };
+                    }
                     box.close();
                 },
                 scope:this
             });
-            box.show();
-        } else {
-            this.addRecord(attrs);
-            if(callback) {
-                Ext.callback(callback,scope, [true]);
-            }
-        }
+            box.getStaff(ids[0], ids[1]);
+        // } else {
+        //     this.addRecord(attrs);
+        //     if(callback) {
+        //         Ext.callback(callback,scope, [true]);
+        //     }
+        // }
     },
 
     delRow: function() {
@@ -410,7 +410,7 @@ App.visit.OrderedServiceInlineGrid = Ext.extend(Ext.grid.EditorGridPanel, {
                         ps = preorder.store;
                         ps.autoSave = false;
                     }
-                    preorder.set('visit',this.record.data.resource_uri)
+                    preorder.set('visit',this.record.data.resource_uri);
 
                 }
             }, this);
