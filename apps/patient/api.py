@@ -166,6 +166,7 @@ class ContractResource(ExtResource):
             'state': ALL_WITH_RELATIONS,
             'contract_type': ALL_WITH_RELATIONS,
             'active': ALL,
+            'expire': ALL,
             'id': ALL
         }
         list_allowed_methods = ['get', 'post', 'put']

@@ -255,7 +255,15 @@ App.visit.VisitForm = Ext.extend(Ext.FormPanel, {
                 }),
                 root:'objects',
                 idProperty:'resource_uri',
-                fields:['resource_uri','patient','created','expire','active','state','id','name','state_name']
+                fields:['resource_uri',
+                        'patient',
+                        'created',
+                        'expire',
+                        'active',
+                        'state',
+                        'id',
+                        'name',
+                        'state_name']
             }),
             displayField: 'name',
             listeners:{
@@ -1315,9 +1323,11 @@ App.visit.VisitForm = Ext.extend(Ext.FormPanel, {
     },
 
     setContractRecord: function(patientId){
-        this.contractCmb.store.setBaseParam('patient',patientId);
-        this.contractCmb.store.setBaseParam('active',true);
-        this.contractCmb.store.setBaseParam('state',WebApp.state);
+        var today = new Date();
+        this.contractCmb.store.setBaseParam('patient', patientId);
+        this.contractCmb.store.setBaseParam('active', true);
+        this.contractCmb.store.setBaseParam('state', WebApp.state);
+        this.contractCmb.store.setBaseParam('expire__gte', today.format('Y-m-d'));
         var item = {
             width:40,
             items:[]
@@ -1335,7 +1345,9 @@ App.visit.VisitForm = Ext.extend(Ext.FormPanel, {
                     iconCls:'silk-printer',
                     handler:this.contractPrint.createDelegate(this,[]),
                     menu: new Ext.menu.Menu({
-                        items:[{iconCls:'silk-add', text:'Выбрать',handler:this.contractChoice.createDelegate(this,[])}]
+                        items:[{iconCls:'silk-add',
+                                text:'Выбрать',
+                                handler:this.contractChoice.createDelegate(this,[])}]
                     }),
                     scope:this
                 });
@@ -1643,9 +1655,11 @@ App.visit.VisitForm = Ext.extend(Ext.FormPanel, {
             },
             listeners:{
                 afterrender: function(grid){
+                    var today = new Date();
                     grid.store.setBaseParam('patient',grid.record.data.id);
                     grid.store.setBaseParam('active',true);
                     grid.store.setBaseParam('state',WebApp.state);
+                    grid.store.setBaseParam('expire__gte', today.format('Y-m-d'));
                     grid.fillAddMenu();
                 },
                 contractcreate: function(record){

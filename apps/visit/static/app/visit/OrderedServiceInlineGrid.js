@@ -391,7 +391,8 @@ App.visit.OrderedServiceInlineGrid = Ext.extend(Ext.grid.EditorGridPanel, {
             },
             scope:this
         });
-        box.show();
+        box.getStaff(App.utils.uriToId(rec.data.service),
+                     App.utils.uriToId(rec.data.execution_place));
     },
 
     onSave: function() {
