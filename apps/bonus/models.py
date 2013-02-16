@@ -1,6 +1,7 @@
 # -*- coding: utf-8 -*-
 
 from django.db import models
+from django.db.models.aggregates import Sum
 
 from service.models import BaseService
 from visit.models import Referral
@@ -99,15 +100,19 @@ class Calculation(models.Model):
     end_date = models.DateField(u'Конец периода')
     category = models.CharField(u'Категория', max_length=30, choices=CATEGORIES)
     # staff_list = models.ManyToManyField(Staff, verbose_name=u'Врачи')
-    referral_list = models.ManyToManyField(Referral, verbose_name=u'Врачи')
+    referral_list = models.ManyToManyField(Referral, verbose_name=u'Врачи', blank=True)
     comment = models.TextField(u'Комментарий', blank=True)
 
     class Meta:
         verbose_name = u'начисление'
         verbose_name_plural = u'начисления'
 
+    def get_amount(self):
+        result = self.calculationitem_set.all().aggregate(sum=Sum('value'))
+        return result['sum'] or 0
+
     def __unicode__(self):
-        pass
+        return u"Документ №%s" % self.id
 
 
 from visit.models import OrderedService
@@ -118,6 +123,7 @@ class CalculationItem(models.Model):
     # staff = models.ForeignKey(Staff, verbose_name=u'Врач')
     referral = models.ForeignKey(Referral, verbose_name=u'Врач')
     source = models.CharField(u'Источник аналитики', max_length=50, choices=SOURCES)
+    service_group = models.ForeignKey(BonusServiceGroup, null=True, blank=True)
     ordered_service = models.ForeignKey(OrderedService, verbose_name=u'Продажа')
     value = models.DecimalField(u'Сумма бонуса', max_digits=8, decimal_places=2)
 
@@ -126,4 +132,4 @@ class CalculationItem(models.Model):
         verbose_name_plural = u'позиции начислений'
 
     def __unicode__(self):
-        pass
+        return u'Позиция начисления к документу %s' % self.calculation.id

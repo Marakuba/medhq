@@ -3,7 +3,9 @@
 
 import datetime
 
-from .models import BonusRule, CalculationItem
+from django.db import connection
+
+from .models import BonusRule, Calculation, CalculationItem
 from visit.models import OrderedService
 
 
@@ -17,7 +19,8 @@ def get_related(obj, attrs):
     return rel
 
 
-def process_calculation(calculation):
+def process_calculation(calculation_id):
+    calculation = Calculation.objects.get(id=calculation_id)
     start = calculation.start_date
     end = calculation.end_date
 
@@ -35,11 +38,12 @@ def process_calculation(calculation):
             s = services.filter()
             if item.service_group:
                 s = s.filter(service__in=item.service_group.services.all())
-            # if item.staff:
-            #     s = s.filter(staff=item.staff)
             lookup = {
                 "%s__referral_type__iexact" % rule.source: rule.category
             }
+            referral_list = calculation.referral_list.all().values_list('id', flat=True)
+            if referral_list:
+                lookup["%s__id__in" % rule.source] = referral_list
             s = s.filter(**lookup)
             for obj in s:
                 value = 0
@@ -55,33 +59,42 @@ def process_calculation(calculation):
                     calculation=calculation,
                     referral=referral,
                     source=rule.source,
+                    service_group=item.service_group,
                     ordered_service=obj,
                     value=value
                 )
 
+    return calculation.get_amount()
 
-def get_detail_result(calculation):
-    from django.db import connection
+
+def get_detail_result(calculation_id, referral_id=None):
+    calculation = Calculation.objects.get(id=calculation_id)
     query = """
 SELECT
-    CalcItem.id, CalcItem.source, CalcItem.value, Ref.name, BaseSrv.name
+    CalcItem.id, CalcItem.source, CalcItem.value, Ref.name as ref_name,
+    BaseSrv.name as serv_name, ServGroup.name as group_name
 FROM bonus_calculationitem as CalcItem
+JOIN bonus_bonusservicegroup as ServGroup ON ServGroup.id = CalcItem.service_group_id
 JOIN visit_referral as Ref ON Ref.id = CalcItem.referral_id
 JOIN visit_orderedservice as OrdServ ON OrdServ.id = CalcItem.ordered_service_id
 JOIN service_baseservice as BaseSrv on BaseSrv.id = OrdServ.service_id
 WHERE
     CalcItem.calculation_id=%s
 """
+    if referral_id:
+        query += " AND CalcItem.referral_id=%s" % referral_id
 
     cursor = connection.cursor()
     cursor.execute(query % calculation.id)
     rows = cursor.fetchall()
+    desc = cursor.description
+    cols = [col[0] for col in desc]
     cursor.close()
-    return rows
+    return rows, cols
 
 
-def get_category_result(calculation):
-    from django.db import connection
+def get_category_result(calculation_id):
+    calculation = Calculation.objects.get(id=calculation_id)
     col_mapping = {
         u'в': ['order__referral', ],
         u'л': ['staff__staff__referral', 'assigment__referral'],
@@ -94,23 +107,25 @@ LEFT OUTER JOIN (
     WHERE source = '%(source)s' AND calculation_id = %(id)s
     GROUP BY
         referral_id
-) as Q%(seq)s ON Q%(seq)s.referral_id = bci.referral_id
+) as Q%(source)s ON Q%(source)s.referral_id = bci.referral_id
 """
     query_tpl = """
 SELECT
-    bci.referral_id, vref.name, %(cols)s
+    bci.referral_id, vref.name, %(cols)s, sum(value) as total
 FROM bonus_calculationitem as bci
 JOIN visit_referral as vref ON vref.id = bci.referral_id
 %(joins)s
 WHERE bci.calculation_id=%(id)s
 GROUP BY
-    bci.referral_id, vref.name, %(cols)s
+    bci.referral_id, vref.name, %(groupcols)s
 """
     columns = col_mapping[calculation.category]
     joins = []
     cols = []
+    groupcols = []
     for i, col in enumerate(columns):
-        cols.append("Q%s" % i)
+        cols.append("Q%(col)s.val as q%(col)s" % {'col': col})
+        groupcols.append("Q%(col)s.val" % {'col': col})
         joins.append(join_tpl % {
             'source': col,
             'id': calculation.id,
@@ -119,6 +134,7 @@ GROUP BY
     params = {
         'id': calculation.id,
         'cols': ", ".join(cols),
+        'groupcols': ", ".join(groupcols),
         'joins': "\n".join(joins)
     }
 
@@ -127,5 +143,7 @@ GROUP BY
     cursor = connection.cursor()
     cursor.execute(query)
     rows = cursor.fetchall()
+    desc = cursor.description
+    cols = [col[0] for col in desc]
     cursor.close()
-    return rows
+    return rows, cols

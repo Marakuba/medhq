@@ -636,14 +636,16 @@ class BonusUnitTest(TransactionTestCase):
                 end_date=datetime.date.today(),
                 category=cat
             )
-            process_calculation(calculation)
+            process_calculation(calculation.id)
 
             cnt = CalculationItem.objects.filter(calculation__category=cat).count()
             self.assertEqual(cnt, cats[cat])
 
-            res = get_detail_result(calculation)
+            # res, cols = get_detail_result(calculation)
+            res, cols = get_category_result(calculation.id)
 
             print cat
+            print cols
             for r in res:
                 print r
 

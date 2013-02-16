@@ -395,7 +395,7 @@ ORDER BY
                 # 'colspan': 3,
             },
             row_attrs={
-                'class': 'group1',
+                'class': 'group',
             },
             agg=[
                 Agg('count', attrs={'class':'number'}),

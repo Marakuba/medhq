@@ -6,6 +6,35 @@ from django.core.exceptions import ObjectDoesNotExist
 from service.exceptions import TubeIsNoneException
 from lab.models import Sampling, LabOrder, Result, EquipmentTask, LabOrderEmailHistory
 from lab.widgets import get_widget
+from remoting.utils import post_results
+from taskmanager.exceptions import SendError
+
+
+import logging
+logger = logging.getLogger(__name__)
+
+
+def router(obj, task_type, **kwargs):
+
+    if task_type == 'remote':
+        try:
+            post_results(obj)
+        except Exception, err:
+            logger.exception(err.__unicode__())
+            raise SendError(err)
+    elif task_type == 'email':
+        send_lab_order_to_email(obj)
+
+
+def clean_value(v):
+    if not v:
+        return ''
+    try:
+        if "." in v:
+            return str(round(float(v), 2))
+        return str(int(v))
+    except:
+        return v
 
 
 def make_lab(ordered_service):
@@ -242,6 +271,5 @@ def send_all_email_task(status_list=None):
         try:
             send_lab_order_to_email(task.lab_order)
             _email_sent_success(task)
-        except Exception, err:
-            # print err
+        except:
             _email_sent_failed(task)

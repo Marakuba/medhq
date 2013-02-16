@@ -34,8 +34,8 @@ class StaffAdmin(TabbedAdmin):
             'fields':('user',),
         }),
     )
-    
-    
+    search_fields = ['last_name', 'first_name']
+
     def save_model(self, request, obj, form, change):
         obj.operator=request.user
         obj.save()

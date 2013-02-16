@@ -12,11 +12,20 @@ from .models import Calculation, CalculationItem
 
 class CalculationResource(ExtResource):
 
+    def dehydrate(self, bundle):
+        bundle.data['amount'] = bundle.obj.get_amount()
+        bundle.data['category_name'] = bundle.obj.get_category_display()
+        return bundle
+
     class Meta:
         queryset = Calculation.objects.all()
         resource_name = 'calculation'
         authorization = DjangoAuthorization()
+        always_return_data = True
         list_allowed_methods = ['get', 'post', 'put']
+        filtering = {
+            'id': ALL,
+        }
 
 
 class CalculationItemResource(ExtResource):
@@ -25,6 +34,7 @@ class CalculationItemResource(ExtResource):
         queryset = CalculationItem.objects.all()
         resource_name = 'calculationitem'
         authorization = DjangoAuthorization()
+        always_return_data = True
         list_allowed_methods = ['get', 'post', 'put']
 
 

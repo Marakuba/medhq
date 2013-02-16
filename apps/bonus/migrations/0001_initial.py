@@ -80,6 +80,7 @@ class Migration(SchemaMigration):
             ('calculation', self.gf('django.db.models.fields.related.ForeignKey')(to=orm['bonus.Calculation'])),
             ('referral', self.gf('django.db.models.fields.related.ForeignKey')(to=orm['visit.Referral'])),
             ('source', self.gf('django.db.models.fields.CharField')(max_length=50)),
+            ('service_group', self.gf('django.db.models.fields.related.ForeignKey')(to=orm['bonus.BonusServiceGroup'], null=True, blank=True)),
             ('ordered_service', self.gf('django.db.models.fields.related.ForeignKey')(to=orm['visit.OrderedService'])),
             ('value', self.gf('django.db.models.fields.DecimalField')(max_digits=8, decimal_places=2)),
         ))
@@ -129,7 +130,7 @@ class Migration(SchemaMigration):
         },
         'auth.user': {
             'Meta': {'object_name': 'User'},
-            'date_joined': ('django.db.models.fields.DateTimeField', [], {'default': 'datetime.datetime(2013, 2, 8, 9, 10, 40, 78095)'}),
+            'date_joined': ('django.db.models.fields.DateTimeField', [], {'default': 'datetime.datetime(2013, 2, 12, 12, 27, 55, 195476)'}),
             'email': ('django.db.models.fields.EmailField', [], {'max_length': '75', 'blank': 'True'}),
             'first_name': ('django.db.models.fields.CharField', [], {'max_length': '30', 'blank': 'True'}),
             'groups': ('django.db.models.fields.related.ManyToManyField', [], {'to': "orm['auth.Group']", 'symmetrical': 'False', 'blank': 'True'}),
@@ -137,7 +138,7 @@ class Migration(SchemaMigration):
             'is_active': ('django.db.models.fields.BooleanField', [], {'default': 'True'}),
             'is_staff': ('django.db.models.fields.BooleanField', [], {'default': 'False'}),
             'is_superuser': ('django.db.models.fields.BooleanField', [], {'default': 'False'}),
-            'last_login': ('django.db.models.fields.DateTimeField', [], {'default': 'datetime.datetime(2013, 2, 8, 9, 10, 40, 77992)'}),
+            'last_login': ('django.db.models.fields.DateTimeField', [], {'default': 'datetime.datetime(2013, 2, 12, 12, 27, 55, 195168)'}),
             'last_name': ('django.db.models.fields.CharField', [], {'max_length': '30', 'blank': 'True'}),
             'password': ('django.db.models.fields.CharField', [], {'max_length': '128'}),
             'user_permissions': ('django.db.models.fields.related.ManyToManyField', [], {'to': "orm['auth.Permission']", 'symmetrical': 'False', 'blank': 'True'}),
@@ -191,6 +192,7 @@ class Migration(SchemaMigration):
             'id': ('django.db.models.fields.AutoField', [], {'primary_key': 'True'}),
             'ordered_service': ('django.db.models.fields.related.ForeignKey', [], {'to': "orm['visit.OrderedService']"}),
             'referral': ('django.db.models.fields.related.ForeignKey', [], {'to': "orm['visit.Referral']"}),
+            'service_group': ('django.db.models.fields.related.ForeignKey', [], {'to': "orm['bonus.BonusServiceGroup']", 'null': 'True', 'blank': 'True'}),
             'source': ('django.db.models.fields.CharField', [], {'max_length': '50'}),
             'value': ('django.db.models.fields.DecimalField', [], {'max_digits': '8', 'decimal_places': '2'})
         },
@@ -245,7 +247,7 @@ class Migration(SchemaMigration):
         'lab.sampling': {
             'Meta': {'object_name': 'Sampling'},
             'code': ('django.db.models.fields.IntegerField', [], {'null': 'True', 'blank': 'True'}),
-            'created': ('django.db.models.fields.DateTimeField', [], {'default': 'datetime.datetime(2013, 2, 8, 9, 10, 39, 513685)'}),
+            'created': ('django.db.models.fields.DateTimeField', [], {'default': 'datetime.datetime(2013, 2, 12, 12, 27, 54, 449563)'}),
             'id': ('django.db.models.fields.AutoField', [], {'primary_key': 'True'}),
             'is_barcode': ('django.db.models.fields.BooleanField', [], {'default': 'False'}),
             'laboratory': ('django.db.models.fields.related.ForeignKey', [], {'to': "orm['state.State']"}),
@@ -292,7 +294,7 @@ class Migration(SchemaMigration):
             'prefix': ('django.db.models.fields.CharField', [], {'max_length': '10', 'blank': 'True'}),
             'reset_on': ('django.db.models.fields.IntegerField', [], {'default': '0'}),
             'tag': ('django.db.models.fields.CharField', [], {'max_length': '20'}),
-            'valid_till': ('django.db.models.fields.DateTimeField', [], {'default': 'datetime.datetime(2013, 2, 8, 9, 10, 39, 488974)'})
+            'valid_till': ('django.db.models.fields.DateTimeField', [], {'default': 'datetime.datetime(2013, 2, 12, 12, 27, 54, 414536)'})
         },
         'numeration.numeratoritem': {
             'Meta': {'ordering': "('-id',)", 'object_name': 'NumeratorItem'},

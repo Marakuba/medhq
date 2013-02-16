@@ -3,11 +3,13 @@
 from django.contrib import admin
 
 from .models import BonusServiceGroup, BonusRule, BonusRuleItem, BonusRuleItemHistory, Calculation, CalculationItem
+from .forms import ServiceGroupForm
 
 
 class BonusServiceGroupAdmin(admin.ModelAdmin):
     filter_horizontal = ('services',)
     prepopulated_fields = {"slug": ("name",)}
+    form = ServiceGroupForm
 
 
 class BonusRuleItemInlineAdmin(admin.TabularInline):
@@ -28,7 +30,7 @@ class BonusRuleItemAdmin(admin.ModelAdmin):
 
 class CalculationItemInlineAdmin(admin.TabularInline):
     model = CalculationItem
-    readonly_fields = ('calculation', 'ordered_service', 'staff')
+    readonly_fields = ('calculation', 'ordered_service', 'referral')
 
 
 class CalculationAdmin(admin.ModelAdmin):
