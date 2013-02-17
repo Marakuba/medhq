@@ -58,7 +58,7 @@ def prep_detail_data(config, report, **kwargs):
 
 
 from reporting.pandas import choices_renderer
-from .models import SOURCES
+from .models import BonusRule
 
 
 @register('bonus-card')
@@ -70,7 +70,7 @@ class BonusCardReport(PandasReport):
         source=BaseSource(prep_data_func=prep_detail_data),
         header=Header(
             Column('id'),
-            Column('source', renderer=choices_renderer(SOURCES)),
+            Column('source', renderer=choices_renderer(BonusRule.SOURCES)),
             NumberColumn('value'),
             Column('ref_name'),
             Column('serv_name'),

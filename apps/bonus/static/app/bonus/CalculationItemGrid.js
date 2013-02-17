@@ -103,10 +103,7 @@ App.bonus.CalculationItemGrid = Ext.extend(Ext.grid.GridPanel, {
         this.registryButton = new Ext.Button({
             iconCls:'silk-printer',
             text:this.registryButtonText,
-            handler:function(){
-                var url = "/reporting/bonus-registry/print/?calculation="+this.calculation_id;
-                window.open(url);
-            },
+            handler:this.onRegistryPrint.createDelegate(this),
             scope:this
         });
 
@@ -187,15 +184,20 @@ App.bonus.CalculationItemGrid = Ext.extend(Ext.grid.GridPanel, {
         }, this);
     },
 
+    onRegistryPrint: function(){
+        var url = String.format("/reporting/bonus-registry/print/?calculation={0}", this.calculation_id);
+        window.open(url);
+    },
+
     onAllCardsPrint: function(){
-        var url = String.format("/bonus/allcards/{0}/", this.calculation_id);
+        var url = String.format("/reporting/bonus-card/print/?calculation={0}", this.calculation_id);
         window.open(url);
     },
 
     onCardPrint: function(){
         var rec = this.getSelectionModel().getSelected();
         if(!rec) { return; }
-        var url = String.format("/bonus/card/{0}/{1}/", this.calculation_id, rec.data.referral_id);
+        var url = String.format("/reporting/bonus-card/print/?calculation={0}&referral={1}", this.calculation_id, rec.data.referral_id);
         window.open(url);
     },
 

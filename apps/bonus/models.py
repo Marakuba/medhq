@@ -7,7 +7,6 @@ from service.models import BaseService
 from visit.models import Referral
 
 from .managers import BonusRuleManager
-# from staff.models import Staff
 
 
 class BonusServiceGroup(models.Model):
@@ -23,27 +22,31 @@ class BonusServiceGroup(models.Model):
         return self.name
 
 
-OBJECT_TYPES = (
-    (u'staff', u'Врач'),
-)
-
-
-CATEGORIES = (
-    (u'в', u'Врач/Организация'),
-    (u'л', u'Лечащий врач'),
-    (u'к', u'Врач клиники')
-)
-
-
-SOURCES = (
-    (u'order__referral', u'Внешнее направление'),
-    (u'assigment__referral', u'Внутренее направление'),
-    (u'staff__staff__referral', u'Собственные услуги'),
-)
-
-
 class BonusRule(models.Model):
-    object_type = models.CharField(u'Объект', max_length=10, choices=OBJECT_TYPES, default=u'staff')
+    OBJECT_TYPE_STAFF = u'staff'
+    OBJECT_TYPES = (
+        (OBJECT_TYPE_STAFF, u'Врач'),
+    )
+
+    CATEGORY_V = u'в'
+    CATEGORY_L = u'л'
+    CATEGORY_K = u'к'
+    CATEGORIES = (
+        (CATEGORY_V, u'Врач/Организация'),
+        (CATEGORY_L, u'Лечащий врач'),
+        (CATEGORY_K, u'Врач клиники')
+    )
+
+    SOURCE_ORDER_REFERRAL = u'order__referral'
+    SOURCE_ASSIGMENT_REFERRAL = u'assigment__referral'
+    SOURCE_STAFF_STAFF_REFERRAL = u'staff__staff__referral'
+    SOURCES = (
+        (SOURCE_ORDER_REFERRAL, u'Внешнее направление'),
+        (SOURCE_ASSIGMENT_REFERRAL, u'Внутренее направление'),
+        (SOURCE_STAFF_STAFF_REFERRAL, u'Собственные услуги'),
+    )
+
+    object_type = models.CharField(u'Объект', max_length=10, choices=OBJECT_TYPES, default=OBJECT_TYPE_STAFF)
     category = models.CharField(u'Категория', max_length=30, choices=CATEGORIES)
     source = models.CharField(u'Источник аналитики', max_length=50, choices=SOURCES)
     is_active = models.BooleanField(u'Активно', default=True)
@@ -55,22 +58,24 @@ class BonusRule(models.Model):
         verbose_name_plural = u'правила'
 
     def __unicode__(self):
-        return u'%s::%s::%s' % (self.object_type, self.category, self.source)
-
-
-OPERATIONS = (
-    (u'%', u'%'),
-    (u'a', u'abs'),
-)
+        return u'%s::%s::%s' % (self.id, self.get_category_display(), self.get_source_display())
 
 
 class BonusRuleItem(models.Model):
+    """
+    """
+    OPERATION_PERCENT = u'%'
+    OPERATION_ABS = u'a'
+    OPERATIONS = (
+        (OPERATION_PERCENT, u'%'),
+        (OPERATION_ABS, u'abs'),
+    )
+
     rule = models.ForeignKey(BonusRule, verbose_name=u'Правило')
     service_group = models.ForeignKey(BonusServiceGroup, verbose_name=u'Группа услуг', null=True, blank=True)
-    operation = models.CharField(u'Тип', max_length=1, choices=OPERATIONS, default="%")
+    operation = models.CharField(u'Тип', max_length=1, choices=OPERATIONS, default=OPERATION_PERCENT)
     on_date = models.DateField(u'Дата')
     value = models.DecimalField(u'Значение', max_digits=8, decimal_places=2)
-    # staff = models.ForeignKey(Staff, verbose_name=u'Врач', null=True, blank=True)
     referral = models.ForeignKey(Referral, verbose_name=u'Врач', null=True, blank=True)
     with_discounts = models.BooleanField(u'Учитывать скидки', default=True)
 
@@ -98,8 +103,7 @@ class BonusRuleItemHistory(models.Model):
 class Calculation(models.Model):
     start_date = models.DateField(u'Начало периода')
     end_date = models.DateField(u'Конец периода')
-    category = models.CharField(u'Категория', max_length=30, choices=CATEGORIES)
-    # staff_list = models.ManyToManyField(Staff, verbose_name=u'Врачи')
+    category = models.CharField(u'Категория', max_length=30, choices=BonusRule.CATEGORIES)
     referral_list = models.ManyToManyField(Referral, verbose_name=u'Врачи', blank=True)
     comment = models.TextField(u'Комментарий', blank=True)
 
@@ -120,9 +124,8 @@ from visit.models import OrderedService
 
 class CalculationItem(models.Model):
     calculation = models.ForeignKey(Calculation, verbose_name=u'Начисление')
-    # staff = models.ForeignKey(Staff, verbose_name=u'Врач')
     referral = models.ForeignKey(Referral, verbose_name=u'Врач')
-    source = models.CharField(u'Источник аналитики', max_length=50, choices=SOURCES)
+    source = models.CharField(u'Источник аналитики', max_length=50, choices=BonusRule.SOURCES)
     service_group = models.ForeignKey(BonusServiceGroup, null=True, blank=True)
     ordered_service = models.ForeignKey(OrderedService, verbose_name=u'Продажа')
     value = models.DecimalField(u'Сумма бонуса', max_digits=8, decimal_places=2)

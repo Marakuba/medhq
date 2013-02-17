@@ -1,50 +1,37 @@
 # -*- coding: utf-8 -*-
 
+import simplejson
 
-from annoying.decorators import render_to
-from collections import OrderedDict
-from django.shortcuts import get_object_or_404
+from direct.providers import remote_provider
+from extdirect.django.decorators import remoting
 
-from .models import Calculation
-from visit.models import Referral
-
-
-def _make_card(calculation, referral_id=None):
-    items = calculation.calculationitem_set.all()
-    if referral_id:
-        items = items.filter(referral__id=referral_id)
-
-    results = OrderedDict()
-    for item in items:
-        n = item.referral.name
-        s = item.get_source_display()
-        g = item.service_group.name
-        if n not in results:
-            results[n] = OrderedDict()
-        ref = results[n]
-        if s not in ref:
-            ref[s] = OrderedDict()
-        src = ref[s]
-        if g not in src:
-            src[g] = list()
-        results[n][s][g].append(item)
-
-    return results
+from .utils import process_calculation, get_category_result
 
 
-def allcards(request, calculation_id):
-    return
+@remoting(remote_provider, len=1, action='bonus', name='processCalculation')
+def _process_calculation(request):
+    """
+    """
+    data = simplejson.loads(request.raw_post_data)
+    calculation_id = data['data'][0]
 
-
-@render_to('bonus/card.html')
-def card(request, calculation_id, referral_id):
-    calculation = get_object_or_404(Calculation, id=calculation_id)
-    items = _make_card(calculation, referral_id)
-
-    details = request.GET.get('details', False)
+    amount = process_calculation(calculation_id)
 
     return {
-        'calculation': calculation,
-        'items': items,
-        'details': details
+        'success': True,
+        'amount': amount
+    }
+
+
+@remoting(remote_provider, len=1, action='bonus', name='getCategoryResult')
+def _get_category_result(request):
+    """
+    """
+    data = simplejson.loads(request.raw_post_data)
+    calculation_id = data['data'][0]
+
+    rows, cols = get_category_result(calculation_id)
+    return {
+        'success': True,
+        'rows': [dict(zip(cols, row)) for row in rows]
     }

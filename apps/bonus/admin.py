@@ -17,6 +17,7 @@ class BonusRuleItemInlineAdmin(admin.TabularInline):
 
 
 class BonusRuleAdmin(admin.ModelAdmin):
+    list_display = ('id', 'object_type', 'category', 'source', 'is_active')
     inlines = [BonusRuleItemInlineAdmin]
 
 

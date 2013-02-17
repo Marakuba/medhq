@@ -6,50 +6,6 @@ App.bonus.CalculationForm = Ext.extend(Ext.form.FormPanel, {
 
     initComponent: function(){
 
-        this.store = this.store || new Ext.data.RESTStore({
-            autoSave : false,
-            autoLoad : false,
-            apiUrl : App.utils.getApiUrl('accounting','acc_contract'),
-            model: App.models.AccountingContract
-        });
-
-        this.branchStore = new Ext.data.RESTStore({
-            apiUrl : App.utils.getApiUrl('state','state'),
-            baseParams:{
-                format:'json',
-                type:'b'
-            },
-            model: App.models.MedState
-        });
-
-        this.stateStore = new Ext.data.RESTStore({
-            apiUrl : App.utils.getApiUrl('state','jstate'),
-            autoLoad : true,
-            autoSave : false,
-            baseParams:{
-                format:'json',
-                type:'j'
-            },
-            model: App.models.State
-        });
-
-        this.branchField = new Ext.form.LazyComboBox({
-            fieldLabel:'Филиал',
-            allowBlank:false,
-            displayField: 'name',
-            anchor:'100%',
-            store: this.branchStore,
-            name:'branch',
-            editable:false,
-            typeAhead:true,
-            selectOnFocus:false,
-            listeners:  {
-                'select':function(combo, record, index){
-                },
-                scope:this
-            }
-        });
-
         config = {
             layout:'form',
             padding:10,
