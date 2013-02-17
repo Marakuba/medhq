@@ -28,12 +28,19 @@ class Command(BaseCommand):
         #                        payer=payer.id)
         # es = ExtendedService.objects.get(base_service__name='test_serv')
         # es.get_price()
-        # payer = State.objects.get(name='payer')
+        try:
+            payer = State.objects.get(name='payer2').id
+        except:
+            payer = None
         # print es.get_actual_price(payer=payer.id)
         client = Client()
-        client.login(username='user1', password='123')
-        responce = client.get('/service/service_tree/', {'on_date': datetime.date(year=2012,month=11,day=12),
-                                                          'payer': 31
-                                                          })
+        client.login(username='user2', password='123')
+        response = client.get('/service/service_tree/',
+                              {'payer': payer,
+                               'on_date': datetime.date(year=2012,
+                                                        month=1,
+                                                        day=1),
+                               'payment_type': u'н'
+                               })
         import pdb; pdb.set_trace()
         pass

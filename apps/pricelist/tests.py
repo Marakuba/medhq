@@ -162,7 +162,7 @@ class PricelistUnitTest(TransactionTestCase):
         # Возвращает id типа оплаты в соответствии с правилами PriceRule
         # payment_type: u'н', u'д', u'к', u'б',
 
-        self.assertEqual(get_actual_ptype(), self.day_pt.id)
+        self.assertEqual(get_actual_ptype() > 0, True)
         day_07_59 = datetime.datetime(year=2012, month=12, day=6, hour=7, minute=59)
         hol_07_59 = datetime.datetime(year=2012, month=12, day=8, hour=7, minute=59)
         day_23_59 = datetime.datetime(year=2012, month=12, day=6, hour=23, minute=59)
@@ -304,12 +304,10 @@ class ServiceTreeTest(TransactionTestCase):
     Принимаемые параметры:
         ext - вывод не для формы визита
         staff - выводит услуги, которые выполняет указанный staff
-        state - услуги указанной организации. Если не указано,
-                берется главная организация из constance
         on_date - цены актуализируются на указанную дату;
                   если не указана - берется сегодняшняя
-        all - дает возможность вывести услуги всех организаций
-        payment_type - тип оплаты. По умолчанию u'н'
+        payment_type - тип оплаты. Если не передан, то выдается простая форма
+            дерева без цен.
         payer - плательщик
 
     """
@@ -352,9 +350,10 @@ class ServiceTreeTest(TransactionTestCase):
         self.position2 = PositionFactory.create(staff=self.staff2,
                                                 department=self.dept2)
 
+        # без типа цены плательщик быть не может!
         self.payer1 = StateFactory.create(price_type=self.vip_pt)
         self.payer2 = StateFactory.create(price_type=self.corp_pt)
-        self.payer3 = StateFactory.create(price_type=None)
+        self.payer3 = StateFactory.create(price_type=self.day_pt)
         """
         У нас есть дерево услуг со следующей структурой:
         /---
@@ -445,10 +444,10 @@ class ServiceTreeTest(TransactionTestCase):
         self.price8 = PriceFactory.create(on_date=self.jan01,
                                      extended_service=self.serv2,
                                      type=self.gen_pt)
-        self.price9 = PriceFactory.create(on_date=self.jan01,
+        self.price9 = PriceFactory.create(on_date=self.sep01,
                                      extended_service=self.serv2,
                                      type=self.gen_pt)
-        self.price10 = PriceFactory.create(on_date=self.sep01,
+        self.price10 = PriceFactory.create(on_date=self.jan01,
                                      extended_service=self.serv2,
                                      type=self.corp_pt)
         self.price11 = PriceFactory.create(on_date=self.jan01,
@@ -457,7 +456,7 @@ class ServiceTreeTest(TransactionTestCase):
         self.price12 = PriceFactory.create(on_date=self.sep01,
                                      extended_service=self.serv2,
                                      type=self.vip_pt)
-        self.price13 = PriceFactory.create(on_date=self.sep01,
+        self.price13 = PriceFactory.create(on_date=self.jan01,
                                      extended_service=self.serv2,
                                      type=self.day_pt)
 
@@ -493,7 +492,7 @@ class ServiceTreeTest(TransactionTestCase):
                                              name='bs3')
         self.serv4 = ExtServiceFactory.create(state=self.state1, base_service=self.bs3)
         self.serv4.staff = [self.position1, self.position2]
-        self.serv4.branches = [self.state1]
+        self.serv4.branches = [self.state1, self.state2]
         self.serv4.save()
         self.price20 = PriceFactory.create(on_date=self.jan01,
                                      extended_service=self.serv4,
@@ -515,7 +514,52 @@ class ServiceTreeTest(TransactionTestCase):
     def dec(self, value):
         return "%s%s" % (value, '.00')
 
-    def test_get_service_tree(self):
+    def make_ext_leaf(self, bs, ext_serv, price, position, staff_list, ext=None):
+        node = {
+            "id": ext and int(ext_serv.id) or '%s-%s' % (int(bs.id), int(position.department.state.id)),
+            "text": "%s" % (bs.short_name or bs.name),
+            "cls": "multi-line-text-node",
+            "price": self.dec(price),
+            "exec_time": str("%s" % (bs.execution_time and u"%s мин" % bs.execution_time or u'')),
+            "iconCls": "ex-place-%s" % ext_serv.state.id,
+            "parent": bs.parent_id,
+            "leaf": True
+        }
+        # if not ext:
+        #     node['staff'] = staff_list
+        return node
+
+    def make_ext_group(self, bs, childs, ext=None):
+        return {
+            "id": ext and 'group-%s' % int(bs.id) or int(bs.id),
+            "leaf": False,
+            'text': "%s" % (bs.short_name or bs.name,),
+            'singleClickExpand': True,
+            "parent": bs.parent_id,
+            'children': childs
+        }
+
+    def make_simple_leaf(self, bs):
+        return {
+            "id": int(bs.id),
+            "text": "%s" % (bs.short_name or bs.name),
+            "type": bs.type,
+            "code": str(bs.code),
+            "parent": bs.parent_id,
+            "leaf": True
+        }
+
+    def make_simple_group(self, bs, childs):
+        return {
+            "id": int(bs.id),
+            "leaf": False,
+            'text': "%s" % (bs.short_name or bs.name,),
+            "type": bs.type,
+            "parent": bs.parent_id,
+            'children': childs
+        }
+
+    def test_state1(self):
         # Проверяем, что адрес существует
         client = Client()
         client.login(username='Fred', password='333')
@@ -523,6 +567,7 @@ class ServiceTreeTest(TransactionTestCase):
         self.assertEqual(response.status_code, 200)
         # Если в параметрах ничего не передано, должно что-то вернуться
         self.assertEqual(isinstance(simplejson.loads(response.content), list), True)
+        # self.assertEqual(len(simplejson.loads(response.content)) > 0, True)
 
         # Указан плательщик с типом цены corp_pt на 12 ноября
 
@@ -539,50 +584,551 @@ class ServiceTreeTest(TransactionTestCase):
                     |-serv4-state1: staff1, staff2
                         |-price22: 01.01.2012 corp_pt
         """
-        result_wanted = [{
-            "id": int(self.group1.id),
-            "leaf": False,
-            'text': "%s" % (self.group1.short_name or self.group1.name,),
-            'singleClickExpand': True,
-            "parent": self.group1.get_parent(),
-            'children': [{
-                "id": '%s-%s' % (int(self.bs1.id), int(self.position1.department.state.id)),
-                "text": "%s" % (self.bs1.short_name or self.bs1.name),
-                "cls": "multi-line-text-node",
-                "price": self.dec(self.price5.value),
-                "exec_time": str("%s" % (self.bs1.execution_time and u"%s мин" % self.bs1.execution_time or u'')),
-                "iconCls": "ex-place-%s" % self.serv1.state.id,
-                "parent": self.bs1.get_parent(),
-                "leaf": True,
-                "staff": [[int(self.position1.id), str(self.position1.__unicode__())],
-                          [int(self.position2.id), str(self.position2.__unicode__())]]
-            }]
-        }, {
-            "id": int(self.group2.id),
-            "leaf": False,
-            'text': "%s" % (self.group2.short_name or self.group2.name,),
-            'singleClickExpand': True,
-            "parent": self.group2.get_parent(),
-            'children': [{
-                "id": '%s-%s' % (self.bs3.id, self.position1.department.state.id),
-                "text": "%s" % (self.bs3.short_name or self.bs3.name),
-                "cls": "multi-line-text-node",
-                "price": self.dec(self.price22.value),
-                "exec_time": str("%s" % (self.bs3.execution_time and u"%s мин" % self.bs3.execution_time or u'')),
-                "iconCls": "ex-place-%s" % self.serv4.state.id,
-                "parent": self.bs3.get_parent(),
-                "leaf": True,
-                "staff": [[int(self.position1.id), str(self.position1.__unicode__())],
-                          [int(self.position2.id), str(self.position2.__unicode__())]]
-            }]
-        }]
+        result_wanted = [
+            self.make_ext_group(bs=self.group1,
+                ext=None,
+                childs=[
+                    self.make_ext_leaf(bs=self.bs1,
+                       ext_serv=self.serv1,
+                       price=self.price5.value,
+                       position=self.position1,
+                       staff_list=[[int(self.position1.id), str(self.position1.__unicode__())],
+                                   [int(self.position2.id), str(self.position2.__unicode__())]],
+                        ext=None
+                    )
+                ]
+            ),
+            self.make_ext_group(bs=self.group2,
+                ext=None,
+                childs=[
+                    self.make_ext_leaf(bs=self.bs3,
+                       ext_serv=self.serv4,
+                       price=self.price22.value,
+                       position=self.position1,
+                       staff_list=[[int(self.position1.id), str(self.position1.__unicode__())],
+                                   [int(self.position2.id), str(self.position2.__unicode__())]],
+                        ext=None
+                    )
+                ]
+            )
+        ]
 
         response = client.get('/service/service_tree/',
                               {'payer': self.payer2.id,
                                'on_date': datetime.date(year=2012,
                                                         month=11,
-                                                        day=12)
+                                                        day=12),
+                               'payment_type': u'н'
                                })
+        self.assertEqual(result_wanted, simplejson.loads(response.content))
+
+        #  То же самое, только ext = True
+        result_wanted = [
+            self.make_ext_group(bs=self.group1,
+                ext=True,
+                childs=[
+                    self.make_ext_leaf(bs=self.bs1,
+                       ext_serv=self.serv1,
+                       price=self.price5.value,
+                       position=self.position1,
+                       staff_list=[[int(self.position1.id), str(self.position1.__unicode__())],
+                                   [int(self.position2.id), str(self.position2.__unicode__())]],
+                        ext=True
+                    )
+                ]
+            ),
+            self.make_ext_group(bs=self.group2,
+                ext=True,
+                childs=[
+                    self.make_ext_leaf(bs=self.bs3,
+                       ext_serv=self.serv4,
+                       price=self.price22.value,
+                       position=self.position1,
+                       staff_list=[[int(self.position1.id), str(self.position1.__unicode__())],
+                                   [int(self.position2.id), str(self.position2.__unicode__())]],
+                        ext=True
+                    )
+                ]
+            )
+        ]
+
+        response = client.get('/service/service_tree/',
+                              {'payer': self.payer2.id,
+                               'on_date': datetime.date(year=2012,
+                                                        month=11,
+                                                        day=12),
+                               'payment_type': u'н',
+                               'ext': True
+                               })
+        #  То же самое, только ext = True
+        self.assertEqual(result_wanted, simplejson.loads(response.content))
+
+        #  Упрощенное дерево, payment_type не указан
+        result_wanted = [
+            self.make_simple_group(bs=self.group1,
+                childs=[
+                    self.make_simple_leaf(bs=self.bs1)
+                ]
+            ),
+            self.make_simple_group(bs=self.group2,
+                childs=[
+                    self.make_simple_leaf(bs=self.bs3)
+                ]
+            )
+        ]
+
+        response = client.get('/service/service_tree/',
+                              {'payer': self.payer2.id,
+                               'on_date': datetime.date(year=2012,
+                                                        month=11,
+                                                        day=12),
+                               'ext': True,
+                               'state': 1
+                               })
+        #  То же самое, только ext = True
+        #  Параметр state не должен ни на что влиять
+        self.assertEqual(result_wanted, simplejson.loads(response.content))
+
+        #  На 1 января
+        response = client.get('/service/service_tree/',
+                              {'payer': self.payer2.id,
+                               'on_date': datetime.date(year=2012,
+                                                        month=1,
+                                                        day=1),
+                               'payment_type': u'н'
+                               })
+        """
+        Должно вернуть следующее:
+        /---
+            |--group1
+            |    |-bs1
+            |       |-serv1-state1: staff1, staff2
+            |           |-price4: 01.01.2012 corp_pt
+            |
+            |--group2
+                 |-bs3
+                    |-serv4-state1: staff1, staff2
+                        |-price22: 01.01.2012 corp_pt
+        """
+
+        result_wanted = [
+            self.make_ext_group(bs=self.group1,
+                ext=None,
+                childs=[
+                    self.make_ext_leaf(bs=self.bs1,
+                       ext_serv=self.serv1,
+                       price=self.price4.value,
+                       position=self.position1,
+                       staff_list=[[int(self.position1.id), str(self.position1.__unicode__())],
+                                   [int(self.position2.id), str(self.position2.__unicode__())]],
+                        ext=None
+                    )
+                ]
+            ),
+            self.make_ext_group(bs=self.group2,
+                ext=None,
+                childs=[
+                    self.make_ext_leaf(bs=self.bs3,
+                       ext_serv=self.serv4,
+                       price=self.price22.value,
+                       position=self.position1,
+                       staff_list=[[int(self.position1.id), str(self.position1.__unicode__())],
+                                   [int(self.position2.id), str(self.position2.__unicode__())]],
+                        ext=None
+                    )
+                ]
+            )
+        ]
+        self.assertEqual(result_wanted, simplejson.loads(response.content))
+
+        # Payer1  payment_type = VIP на 1 января  2012 (это было воскресенье)
+        # Должно вернуть пустой список
+
+        response = client.get('/service/service_tree/',
+                              {'payer': self.payer1.id,
+                               'on_date': datetime.date(year=2012,
+                                                        month=1,
+                                                        day=1)
+                               })
+
+        self.assertEqual([], simplejson.loads(response.content))
+
+        # Payer3 payment_type = day на 10 ноября  2012 (это было воскресенье)
+        """
+        У нас есть дерево услуг со следующей структурой:
+        /---
+            |--group1
+            |    |-bs1
+            |    |  |-serv1-state1: staff1, staff2
+            |    |  |   |-price7: 01.09.2012 day_pt
+            |
+            |--group2
+            |    |-bs3
+            |    |  |-serv4-state1,state2: staff1, staff2
+            |    |  |   |-price23: 01.09.2012 day_pt
+        """
+        response = client.get('/service/service_tree/',
+                              {'payer': self.payer3.id,
+                               'on_date': datetime.date(year=2012,
+                                                        month=11,
+                                                        day=10),
+                               'payment_type': u'н'
+                               })
+
+        result_wanted = [
+            self.make_ext_group(bs=self.group1,
+                ext=None,
+                childs=[
+                    self.make_ext_leaf(bs=self.bs1,
+                       ext_serv=self.serv1,
+                       price=self.price7.value,
+                       position=self.position1,
+                       staff_list=[[int(self.position1.id), str(self.position1.__unicode__())],
+                                   [int(self.position2.id), str(self.position2.__unicode__())]],
+                        ext=None
+                    )
+                ]
+            ),
+            self.make_ext_group(bs=self.group2,
+                ext=None,
+                childs=[
+                    self.make_ext_leaf(bs=self.bs3,
+                       ext_serv=self.serv4,
+                       price=self.price23.value,
+                       position=self.position1,
+                       staff_list=[[int(self.position1.id), str(self.position1.__unicode__())],
+                                   [int(self.position2.id), str(self.position2.__unicode__())]],
+                        ext=None
+                    )
+                ]
+            )
+        ]
+        self.assertEqual(get_actual_ptype(date=datetime.datetime(year=2012,
+                                                        month=11,
+                                                        day=13,
+                                                        hour=14),
+                                          payment_type=u'н',
+                                          payer=self.payer3.id),
+                        self.day_pt.id)
+        self.assertEqual(result_wanted, simplejson.loads(response.content))
+
+    def test_state2(self):
+        # Проверяем, что адрес существует
+        client = Client()
+        client.login(username='Robert', password='432')
+        response = client.get('/service/service_tree/')
+        self.assertEqual(response.status_code, 200)
+        # Если в параметрах ничего не передано, должно что-то вернуться
+        self.assertEqual(isinstance(simplejson.loads(response.content), list), True)
+        # self.assertEqual(len(simplejson.loads(response.content)) > 0, True)
+
+        # Указан плательщик с типом цены corp_pt на 12 ноября
+
+        """
+        Должно вернуть следующее:
+        /---
+            |--group1
+            |    |-bs1
+            |    |  |-serv2-state2: staff1
+            |    |  |   |-price10: 01.01.2012 corp_pt
+            |    |-bs2
+            |    |  |-serv3-state2: staff2
+            |    |  |   |-price16: 01.09.2012 corp_pt
+            |
+            |--group2
+            |    |-bs3
+            |    |  |-serv4-state1,state2: staff1, staff2
+            |    |  |   |-price22: 01.01.2012 corp_pt
+        """
+        result_wanted = [
+            self.make_ext_group(bs=self.group1,
+                ext=None,
+                childs=[
+                    self.make_ext_leaf(bs=self.bs1,
+                        ext_serv=self.serv2,
+                        price=self.price10.value,
+                        position=self.position2,
+                        staff_list=[[int(self.position1.id), str(self.position1.__unicode__())]],
+                        ext=None
+                    ),
+                    self.make_ext_leaf(bs=self.bs2,
+                        ext_serv=self.serv3,
+                        price=self.price16.value,
+                        position=self.position2,
+                        staff_list=[[int(self.position2.id), str(self.position2.__unicode__())]],
+                        ext=None
+                    )
+                ]
+            ),
+            self.make_ext_group(bs=self.group2,
+                ext=None,
+                childs=[
+                    self.make_ext_leaf(bs=self.bs3,
+                       ext_serv=self.serv4,
+                       price=self.price22.value,
+                       position=self.position1,
+                       staff_list=[[int(self.position1.id), str(self.position1.__unicode__())],
+                                   [int(self.position2.id), str(self.position2.__unicode__())]],
+                        ext=None
+                    )
+                ]
+            )
+        ]
+
+        response = client.get('/service/service_tree/',
+                              {'payer': self.payer2.id,
+                               'on_date': datetime.date(year=2012,
+                                                        month=11,
+                                                        day=12),
+                               'payment_type': u'н'
+                               })
+        self.assertEqual(result_wanted, simplejson.loads(response.content))
+
+        #  То же самое, только ext = True
+        result_wanted = [
+            self.make_ext_group(bs=self.group1,
+                ext=True,
+                childs=[
+                    self.make_ext_leaf(bs=self.bs1,
+                        ext_serv=self.serv2,
+                        price=self.price10.value,
+                        position=self.position2,
+                        staff_list=[[int(self.position1.id), str(self.position1.__unicode__())]],
+                        ext=True
+                    ),
+                    self.make_ext_leaf(bs=self.bs2,
+                        ext_serv=self.serv3,
+                        price=self.price16.value,
+                        position=self.position2,
+                        staff_list=[[int(self.position2.id), str(self.position2.__unicode__())]],
+                        ext=True
+                    )
+                ]
+            ),
+            self.make_ext_group(bs=self.group2,
+                ext=True,
+                childs=[
+                    self.make_ext_leaf(bs=self.bs3,
+                        ext_serv=self.serv4,
+                        price=self.price22.value,
+                        position=self.position1,
+                        staff_list=[[int(self.position1.id), str(self.position1.__unicode__())],
+                                   [int(self.position2.id), str(self.position2.__unicode__())]],
+                        ext=True
+                    )
+                ]
+            )
+        ]
+
+        response = client.get('/service/service_tree/',
+                              {'payer': self.payer2.id,
+                               'on_date': datetime.date(year=2012,
+                                                        month=11,
+                                                        day=12),
+                               'payment_type': u'н',
+                               'ext': True
+                               })
+        #  То же самое, только ext = True
+        self.assertEqual(result_wanted, simplejson.loads(response.content))
+
+        #  Упрощенное дерево, payment_type не указан
+        result_wanted = [
+            self.make_simple_group(bs=self.group1,
+                childs=[
+                    self.make_simple_leaf(bs=self.bs1),
+                    self.make_simple_leaf(bs=self.bs2)
+                ]
+            ),
+            self.make_simple_group(bs=self.group2,
+                childs=[
+                    self.make_simple_leaf(bs=self.bs3)
+                ]
+            )
+        ]
+
+        response = client.get('/service/service_tree/',
+                              {'payer': self.payer2.id,
+                               'on_date': datetime.date(year=2012,
+                                                        month=11,
+                                                        day=12),
+                               'ext': True,
+                               'state': 1
+                               })
+        #  То же самое, только ext = True
+        #  Параметр state не должен ни на что влиять
+        self.assertEqual(result_wanted, simplejson.loads(response.content))
+
+        #  На 1 января
+        response = client.get('/service/service_tree/',
+                              {'payer': self.payer2.id,
+                               'on_date': datetime.date(year=2012,
+                                                        month=1,
+                                                        day=2),
+                               'payment_type': u'н'
+                               })
+        """
+        Должно вернуть следующее:
+        /---
+            |--group1
+            |    |-bs1
+            |    |  |-serv2-state2: staff1
+            |    |  |   |-price10: 01.01.2012 corp_pt
+            |    |-bs2
+            |    |  |-serv3-state2: staff2
+            |    |  |   |-price15: 01.01.2012 corp_pt
+            |
+            |--group2
+            |    |-bs3
+            |    |  |-serv4-state1,state2: staff1, staff2
+            |    |  |   |-price22: 01.01.2012 corp_pt
+        """
+
+        result_wanted = [
+            self.make_ext_group(bs=self.group1,
+                ext=None,
+                childs=[
+                    self.make_ext_leaf(bs=self.bs1,
+                        ext_serv=self.serv2,
+                        price=self.price10.value,
+                        position=self.position2,
+                        staff_list=[[int(self.position1.id), str(self.position1.__unicode__())]],
+                        ext=None
+                    ),
+                    self.make_ext_leaf(bs=self.bs2,
+                        ext_serv=self.serv3,
+                        price=self.price15.value,
+                        position=self.position2,
+                        staff_list=[[int(self.position2.id), str(self.position2.__unicode__())]],
+                        ext=None
+                    )
+                ]
+            ),
+            self.make_ext_group(bs=self.group2,
+                ext=None,
+                childs=[
+                    self.make_ext_leaf(bs=self.bs3,
+                       ext_serv=self.serv4,
+                       price=self.price22.value,
+                       position=self.position1,
+                       staff_list=[[int(self.position1.id), str(self.position1.__unicode__())],
+                                   [int(self.position2.id), str(self.position2.__unicode__())]],
+                        ext=None
+                    )
+                ]
+            )
+        ]
+        self.assertEqual(result_wanted, simplejson.loads(response.content))
+
+        # Payer1  payment_type = VIP на 1 января  2012 (это было воскресенье)
+        # Должно вернуть следующее
+        """
+        /---
+            |--group1
+            |    |-bs1
+            |    |  |-serv2-state2: staff1
+            |    |  |   |-price11: 01.01.2012 vip_pt
+            |    |-bs2
+            |    |  |-serv3-state2: staff2
+            |    |  |   |-price17: 01.01.2012 vip_pt
+        """
+
+        result_wanted = [
+            self.make_ext_group(bs=self.group1,
+                ext=None,
+                childs=[
+                    self.make_ext_leaf(bs=self.bs1,
+                        ext_serv=self.serv2,
+                        price=self.price11.value,
+                        position=self.position2,
+                        staff_list=[[int(self.position1.id), str(self.position1.__unicode__())]],
+                        ext=None
+                    ),
+                    self.make_ext_leaf(bs=self.bs2,
+                        ext_serv=self.serv3,
+                        price=self.price17.value,
+                        position=self.position2,
+                        staff_list=[[int(self.position2.id), str(self.position2.__unicode__())]],
+                        ext=None
+                    )
+                ]
+            )
+        ]
+        response = client.get('/service/service_tree/',
+                              {'payer': self.payer1.id,
+                               'on_date': datetime.date(year=2012,
+                                                        month=1,
+                                                        day=1),
+                               'payment_type': u'н'
+                               })
+
+        self.assertEqual(result_wanted, simplejson.loads(response.content))
+
+        # Payer3 payment_type = day на 10 ноября  2012 (это было воскресенье)
+        """
+        У нас есть дерево услуг со следующей структурой:
+        /---
+            |--group1
+            |    |-bs1
+            |    |  |-serv2-state2: staff1
+            |    |  |   |-price13: 01.01.2012 day_pt
+            |    |-bs2
+            |    |  |-serv3-state2: staff2
+            |    |  |   |-price19: 01.09.2012 day_pt
+            |
+            |--group2
+            |    |-bs3
+            |    |  |-serv4-state1,state2: staff1, staff2
+            |    |  |   |-price23: 01.09.2012 day_pt
+        """
+        response = client.get('/service/service_tree/',
+                              {'payer': self.payer3.id,
+                               'on_date': datetime.date(year=2012,
+                                                        month=11,
+                                                        day=10),
+                               'payment_type': u'н'
+                               })
+
+        result_wanted = [
+            self.make_ext_group(bs=self.group1,
+                ext=None,
+                childs=[
+                    self.make_ext_leaf(bs=self.bs1,
+                        ext_serv=self.serv2,
+                        price=self.price13.value,
+                        position=self.position2,
+                        staff_list=[[int(self.position1.id), str(self.position1.__unicode__())]],
+                        ext=None
+                    ),
+                    self.make_ext_leaf(bs=self.bs2,
+                        ext_serv=self.serv3,
+                        price=self.price19.value,
+                        position=self.position2,
+                        staff_list=[[int(self.position2.id), str(self.position2.__unicode__())]],
+                        ext=None
+                    )
+                ]
+            ),
+            self.make_ext_group(bs=self.group2,
+                ext=None,
+                childs=[
+                    self.make_ext_leaf(bs=self.bs3,
+                       ext_serv=self.serv4,
+                       price=self.price23.value,
+                       position=self.position1,
+                       staff_list=[[int(self.position1.id), str(self.position1.__unicode__())],
+                                   [int(self.position2.id), str(self.position2.__unicode__())]],
+                        ext=None
+                    )
+                ]
+            )
+        ]
+        self.assertEqual(get_actual_ptype(date=datetime.datetime(year=2012,
+                                                        month=11,
+                                                        day=13,
+                                                        hour=14),
+                                          payment_type=u'н',
+                                          payer=self.payer3.id),
+                        self.day_pt.id)
         self.assertEqual(result_wanted, simplejson.loads(response.content))
 
 
