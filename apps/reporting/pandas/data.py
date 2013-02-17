@@ -24,7 +24,11 @@ class Column(object):
         self.renderer = renderer
 
     def __call__(self, header):
-        s = header.config.df[self.col]
+        try:
+            s = header.config.df[self.col]
+        except:
+            return None
+
         if self.fillna is not None:
             s = s.fillna(self.fillna)
         if self.renderer:
@@ -99,7 +103,9 @@ class Header(object):
         self.config = config
 
         for header in self.headers:
-            self.columns.append(header(self))
+            result = header(self)
+            if result:
+                self.columns.append(result)
 
         columns = [col[0][0] for col in self.columns]
         data = [col[1] for col in self.columns]
@@ -123,7 +129,11 @@ class Total(object):
         self.attrs = kwargs.get('attrs', {'class': 'number'})
 
     def __call__(self, config):
-        return self.aggfunc(config.df[self.column])
+        try:
+            result = self.aggfunc(config.df[self.column])
+        except:
+            result = None
+        return result
 
 
 class Totals(object):
@@ -146,7 +156,11 @@ class Totals(object):
                 continue
 
     def __call__(self, config):
-        totals = [(total(config), total.attrs) for total in self.totals]
+        totals = []
+        for total in self.totals:
+            result = total(config)
+            if result is not None:
+                totals.append((result, total.attrs))
         data = [t[0] for t in totals]
         attrs = [t[1] for t in totals]
         if 'hide_label' not in self.opts:

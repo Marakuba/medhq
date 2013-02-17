@@ -28,6 +28,8 @@ def import_urls():
     from django.conf.urls.defaults import include, url
     app_urls = []
     for app, cls in app_pool.iteritems():
+        if not hasattr(cls, 'urls_conf'):
+            continue
         urls_conf = cls.urls_conf
         urls_path = cls.urls_path or app
         app_urls.append(url(r'^%s/' % urls_path, include(urls_conf)))

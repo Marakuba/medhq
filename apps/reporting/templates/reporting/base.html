@@ -8,60 +8,60 @@
 
 {% block body %}
 <div id="print-box">
-	<a href="javascript:window.print();">Печать</a>
+    <a href="javascript:window.print();">Печать</a>
 </div>
 
 <div class="page_wrapper_A4_landscape">
 <div class="page_wrapper">
 
-	{% block print_header %}
-	{% include "print/header.html"%}
-	{% endblock %}
-	
-	<div id="changelist" class="module">
-	<h1>{{ name }}</h1>
-	
-	<table class="params" border="0" cellpadding="0" cellspacing="1">
-	{% for params in report.filter_legend %}
-	<tr>
-	<td>{{ params.0 }}</td><td class="data">{{ params.1 }}</td></tr>
-	{% endfor %}
-	</table>
-	            
-	<br><br>
-	            
-    {% block data %}
-    	{% get_report_as_list report False as results %}
-	    <table class="data">
-	    {% if results|length == 1 %}
-	    <tr><td><div class="empty">Нет данных по заданным условиям</div></td></tr>
-	    {% else %}
-	    {% for row in results %}
-	        <tr class="row-{{ row.type }} {% if row.type == 'data' %}{% cycle 'row1' 'row2' %}{% endif %} {{ row.cssCls }}">
-	            {% for cell in row.data %}
-	                {% if row.type == 'header' %}
-	                    <th colspan="{{ cell.colspan }}">{{cell.value}}</th>
-	                {% else %}
-	                    <td {% if cell.cssCls %}class="{{ cell.cssCls }}"{% endif %} colspan="{{ cell.colspan }}">
-	                    	{% if not cell.value %}
-	                    		<div class="empty">{{cell.default|default:'Не указано'}}</div>
-	                    	{% else %}
-	                    		{{cell.value}}
-	                    	{% endif %}
-	                    </td>
-	                {% endif %}
-	            {% endfor %}
-	        </tr>
-	    {% endfor %}
-	    {% endif %}
-	    </table>
+    {% block print_header %}
+    {% include "print/header.html"%}
     {% endblock %}
-	
-	
-	{% block footer %}{% endblock %}
-	
-	</div>
-	
+
+    <div id="changelist" class="module">
+    <h1>{{ name }}</h1>
+
+    <table class="params" border="0" cellpadding="0" cellspacing="1">
+    {% for params in report.filter_legend %}
+    <tr>
+    <td>{{ params.0 }}</td><td class="data">{{ params.1 }}</td></tr>
+    {% endfor %}
+    </table>
+
+    <br><br>
+
+    {% block data %}
+        {% get_report_as_list report False as results %}
+        <table class="data">
+        {% if results|length == 1 %}
+        <tr><td><div class="empty">Нет данных по заданным условиям</div></td></tr>
+        {% else %}
+        {% for row in results %}
+            <tr class="row-{{ row.type }} {% if row.type == 'data' %}{% cycle 'row1' 'row2' %}{% endif %} {{ row.cssCls }}">
+                {% for cell in row.data %}
+                    {% if row.type == 'header' %}
+                        <th colspan="{{ cell.colspan }}">{{cell.value}}</th>
+                    {% else %}
+                        <td {% if cell.cssCls %}class="{{ cell.cssCls }}"{% endif %} colspan="{{ cell.colspan }}">
+                            {% if not cell.value %}
+                                <div class="empty">{{cell.default|default:'Не указано'}}</div>
+                            {% else %}
+                                {{cell.value}}
+                            {% endif %}
+                        </td>
+                    {% endif %}
+                {% endfor %}
+            </tr>
+        {% endfor %}
+        {% endif %}
+        </table>
+    {% endblock %}
+
+
+    {% block footer %}{% endblock %}
+
+    </div>
+
 </div>
 </div>
 

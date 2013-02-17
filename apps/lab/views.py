@@ -1,44 +1,25 @@
 # -*- coding: utf-8 -*-
 
-from django.shortcuts import get_object_or_404
-from lab.models import LabOrder, Result, Invoice, InvoiceItem, Sampling,\
-    EquipmentTask, LabOrderEmailTask
 import datetime
 import simplejson
+
+from django.shortcuts import get_object_or_404
+from lab.models import LabOrder, Result, Invoice, InvoiceItem, Sampling
+
 from django.http import HttpResponse, HttpResponseBadRequest
-from visit.models import OrderedService, Visit
+from visit.models import OrderedService
 from state.models import State
 from annoying.decorators import render_to
 from django.db.models.aggregates import Count
 from collections import defaultdict
 import operator
-from remoting.views import post_results
-from direct.providers import remote_provider
-from extdirect.django.decorators import remoting
-from django.db import transaction
 
-import logging
-from taskmanager.tasks import manageable_task, SendError
 from remoting.models import RemoteState
 from remoting.utils import update_result_feed
 
-logger = logging.getLogger('lab.models')
 
-
-@remoting(remote_provider, len=1, action='lab', name='getPatientInfo')
-def get_patient_info(request):
-    data = simplejson.loads(request.raw_post_data)
-    order_id = data['data'][0]
-    laborder = LabOrder.objects.get(id=order_id)
-    patient = laborder.visit.patient
-    data = {
-        'last_name': patient.last_name,
-        'first_name': patient.first_name,
-        'mid_name': patient.mid_name,
-        'birth_day': patient.birth_day,
-        'gender': patient.gender,
-    }
-    return dict(success=True, data=data)
+import logging
+logger = logging.getLogger(__name__)
 
 
 @render_to('print/lab/register.html')
@@ -148,203 +129,6 @@ def revert_results(request):
     return HttpResponseBadRequest()
 
 
-from .utils import send_lab_order_to_email
-
-
-def router(obj, task_type, **kwargs):
-
-    if task_type == 'remote':
-        try:
-            post_results(obj)
-        except Exception, err:
-            logger.exception(err.__unicode__())
-            raise SendError(err)
-    elif task_type == 'email':
-
-        send_lab_order_to_email(obj)
-
-        # print "Order", obj.visit.barcode.id, "will be send to patient email", obj.visit.patient.email
-
-        # from django.core.mail import EmailMessage
-        # email = EmailMessage('Результаты анализов',
-        #     'Добрый день! Высылаем результаты анализов',
-        #     'support@medhq.ru',
-        #     [obj.visit.patient.email, ]
-        # )
-        # pdf = lab_order_to_pdf(obj, raw=True)
-        # email.attach('results.pdf', pdf, 'application/pdf')
-        # email.send()
-
-
-from .utils import _create_email_task
-
-
-@remoting(remote_provider, len=1, action='lab', name='confirmResults')
-def confirm_results(request):
-    """
-    """
-    data = simplejson.loads(request.raw_post_data)
-    laborder_id = data['data'][0]
-
-    try:
-        lab_order = LabOrder.objects.get(id=laborder_id)
-    except:
-        return dict(success=False, message="Laborder %s not found" % laborder_id)
-
-    lab_order.confirm_results()
-
-    msg = lab_order.is_completed and u'Лабораторный ордер подтвержден' or u'Присутствуют пустые значения. Лабораторный ордер не подтвержден'
-
-    if lab_order.is_completed:
-        try:
-            state = lab_order.visit.office.remotestate
-#            logger.info(u"LabOrder for specimen %s is remote" % lab_order.visit.specimen)
-            if state.mode == u'a':
-                action_params = {}
-                manageable_task.delay(operator=request.user,
-                                      task_type='remote',
-                                      action=router,
-                                      object=lab_order,
-                                      action_params=action_params,
-                                      task_params={'countdown': 300})
-            else:
-                pass
-        except:
-            if lab_order.visit.send_to_email:
-                _create_email_task(lab_order=lab_order, resend=False)
-
-    return {
-        'success': lab_order.is_completed,
-        'message': msg
-    }
-
-
-@remoting(remote_provider, len=2, action='lab', name='makeEmailTask')
-def make_email_task(request):
-    """
-    """
-    data = simplejson.loads(request.raw_post_data)
-    laborder_id = data['data'][0]
-
-    try:
-        lab_order = LabOrder.objects.get(id=laborder_id)
-    except:
-        return dict(success=False, message="Laborder %s not found" % laborder_id)
-
-    if not lab_order.is_completed:
-        return {
-            'success': False,
-            'message': u'Лабораторный ордер к заказу %s не выполнен и не может быть отправлен' % lab_order.visit.barcode_id
-        }
-
-    v = lab_order.visit
-    if not v.send_to_email:
-        v.send_to_email = True
-        v.save()
-
-    try:
-        email = data['data'][1]
-    except:
-        email = None
-
-    if email:
-        v.patient.email = email
-        # print "new email received:", email
-        v.patient.save()
-
-    task, created = _create_email_task(lab_order=lab_order)
-
-    # if created:
-    msg = u'Лабораторный ордер к заказу %s успешно добавлен в список отправки' % lab_order.visit.barcode_id
-    # else:
-    #     if task.status in [u'ready', u'resent']:
-    #         msg = u'Лабораторный ордер к заказу %s уже был добавлен к отправке ранее' % lab_order.visit.barcode_id
-    #     elif task.status == u'resent'
-
-    return {
-        'success': True,
-        'message': msg
-    }
-
-
-from celery.task import subtask
-from .tasks import email_sent_success
-
-
-@remoting(remote_provider, len=1, action='lab', name='sendEmailNow')
-def send_email_now(request):
-    """
-    """
-    data = simplejson.loads(request.raw_post_data)
-    laborder_id = data['data'][0]
-
-    try:
-        lab_order = LabOrder.objects.get(id=laborder_id)
-    except:
-        return dict(success=False, message="Laborder %s not found" % laborder_id)
-
-    action_params = {}
-    manageable_task.delay(operator=request.user,
-                          task_type='email',
-                          action=router,
-                          object=lab_order,
-                          action_params=action_params,
-                          task_params={'countdown': 300},
-                          success=subtask(email_sent_success)
-                          )
-
-    return {
-        'success': lab_order.is_completed,
-        'message': u'Лабораторный ордер к заказу %s отправлен' % lab_order.visit.barcode_id
-    }
-
-
-@remoting(remote_provider, len=1, action='lab', name='getEmailTaskStatus')
-def get_email_task_status(request):
-    """
-    """
-    data = simplejson.loads(request.raw_post_data)
-    task_id = data['data'][0]
-
-    try:
-        task = LabOrderEmailTask.objects.get(id=task_id)
-    except:
-        return dict(success=False, message="Отсутствует задание на отправку почты #%s" % task_id)
-
-    return {
-        'success': True,
-        'message': task.status
-    }
-
-
-@transaction.commit_on_success
-@remoting(remote_provider, len=2, action='lab', name='setAddress')
-def set_address(request):
-    """
-    """
-    data = simplejson.loads(request.raw_post_data)
-    task_id = data['data'][0]
-
-    try:
-        task = LabOrderEmailTask.objects.get(id=task_id)
-    except:
-        return dict(success=False, message="Отсутствует задание на отправку почты #%s" % task_id)
-
-    patient = task.lab_order.visit.patient
-
-    patient.email = data['data'][1]
-    patient.save()
-
-    task.status = 'ready'
-    task.save()
-
-    return {
-        'success': True,
-        'message': u'Адрес электронной почты был успешно сохранен',
-        'status': task.status
-    }
-
-
 def pull_invoice(request):
     """
     """
@@ -399,37 +183,7 @@ def print_invoice(request, invoice_id):
     }
 
 
-@remoting(remote_provider, len=1, action='lab', name='getSpecimenStatus')
-def get_specimen_status(request):
-    data = simplejson.loads(request.raw_post_data)
-    barcode_id = data['data'][0]
-    try:
-        Visit.objects.get(barcode__id=barcode_id)
-        tasks = EquipmentTask.objects.filter(ordered_service__order__barcode__id=barcode_id, status=u'wait') \
-            .order_by('equipment_assay__equipment__order')
-        try:
-            task = tasks[0]
-            next_place = task.equipment_assay.equipment.name
-        except Exception, err:
-            logger.error(u"LAB: %s " % err)
-            next_place = u"Архив"
-    except:
-        next_place = u'Образец не найден'
-    data = {
-        'next': next_place
-    }
-    return dict(success=True, data=data)
-
-
-def clean_value(v):
-    if not v:
-        return ''
-    try:
-        if "." in v:
-            return str(round(float(v), 2))
-        return str(int(v))
-    except:
-        return v
+from .utils import clean_value
 
 
 def hem_results(request):
@@ -568,8 +322,7 @@ def result_loader(request):
     try:
         state = RemoteState.objects.get(state__id=state_id)
         state_key = state.secret_key
-    except Exception, err:
-        # print err
+    except:
         return {
             'error': u'Ошибка определения лаборатории'
         }
@@ -599,9 +352,7 @@ def result_loader(request):
                 end = datetime.datetime.strptime(end, '%Y-%m-%dT%H:%M:%S')
                 end = datetime.datetime(year=end.year, month=end.month, day=end.day,
                                         hour=23, minute=59, second=59)
-                # print end
-            except Exception, err:
-                # print err
+            except:
                 return {
                     'error': u'Некорректная конечная дата'
                 }

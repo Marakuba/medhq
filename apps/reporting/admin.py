@@ -3,7 +3,6 @@ from django.contrib import admin
 from models import *
 from forms import *
 from feincms.admin.tree_editor import TreeEditor
-from django import forms as djforms
 
 
 class StateGroup_StateInline(admin.TabularInline):
@@ -21,29 +20,7 @@ class ServiceGroupPriceAdmin(admin.ModelAdmin):
     ]
 
 
-from django.forms.models import ModelMultipleChoiceField
-from service.models import BaseService
-from django.contrib.admin.widgets import FilteredSelectMultiple
-
-qs = BaseService.objects.all().order_by(BaseService.tree.tree_id_attr, BaseService.tree.left_attr, 'level')
-
-
-class ServiceModelChoiceField(ModelMultipleChoiceField):
-
-    def label_from_instance(self, obj):
-        identer = u'---'
-        if not obj.is_leaf_node():
-            identer = u'+++'
-        return u"%s %s" % (obj.level * identer, obj.name, )
-
-
-class ServiceGroupForm(djforms.ModelForm):
-
-    baseservice = ServiceModelChoiceField(label=u'Услуги', queryset=qs, widget=FilteredSelectMultiple(u'Услуги', False))
-
-
 class ServiceGroupAdmin(admin.ModelAdmin):
-    form = ServiceGroupForm
     filter_horizontal = ('baseservice',)
 
 
