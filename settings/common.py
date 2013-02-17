@@ -89,22 +89,18 @@ MIDDLEWARE_CLASSES = [
 ]
 
 INSTALLED_APPS = [
-    #'reversion',
     'admin_tools',
     'admin_tools.theming',
     'admin_tools.dashboard',
     'admin_tools.menu',
 
-#    'indexer',
-#    'paging',
-#    'sentry',
-#    'sentry.client',
-
+    ### local apps
     'accounting',
     'apiutils',
     'assistant',
     'billing',
     'bonus',
+    'core',
     'crm',
     'direct',
     'examination',
@@ -117,7 +113,6 @@ INSTALLED_APPS = [
     'patient',
     'pricelist',
     'promotion',
-    'pytils',
     'remoting',
     'reporting',
     'scheduler',
@@ -127,9 +122,8 @@ INSTALLED_APPS = [
     'taskmanager',
     'visit',
     'webapp',
-    'jsonfield',
 
-
+    ### django apps
     'django.contrib.admin',
     'django.contrib.auth',
     'django.contrib.contenttypes',
@@ -138,6 +132,8 @@ INSTALLED_APPS = [
     'django.contrib.sites',
     'django.contrib.staticfiles',
 
+    ### 3rd-party apps
+    'pytils',
     'autocomplete',
     'constance',
     'dbtemplates',
@@ -145,19 +141,18 @@ INSTALLED_APPS = [
     'django_assets',
     'django_extensions',
     'django_memcached',
+    'djangocodemirror',
     'djcelery',
     'feincms',
     'flatblocks',
+    'jsonfield',
+    'raven.contrib.django',
+    'reversion',
     'sorl.thumbnail',
     'south',
-    'reversion',
-    'tastypie',
     'tagging',
-    'raven.contrib.django',
-    'djangocodemirror',
+    'tastypie',
     'test_utils',
-
-    'core',
 
 ]
 
