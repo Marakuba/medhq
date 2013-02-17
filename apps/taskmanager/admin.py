@@ -3,7 +3,7 @@
 from django.contrib import admin
 from taskmanager.models import DelayedTask
 
-from lab.views import router
+from lab.utils import router
 from taskmanager.tasks import manageable_task
 
 

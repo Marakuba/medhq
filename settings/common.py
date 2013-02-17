@@ -76,7 +76,6 @@ TEMPLATE_CONTEXT_PROCESSORS = (
 ROOT_URLCONF = 'medhq.urls'
 
 MIDDLEWARE_CLASSES = [
-#    'debug_toolbar.middleware.DebugToolbarMiddleware',
     'django.middleware.gzip.GZipMiddleware',
     'django.middleware.common.CommonMiddleware',
     'django.middleware.transaction.TransactionMiddleware',
@@ -133,7 +132,6 @@ INSTALLED_APPS = [
     'django.contrib.staticfiles',
 
     ### 3rd-party apps
-    'pytils',
     'autocomplete',
     'constance',
     'dbtemplates',
@@ -146,6 +144,7 @@ INSTALLED_APPS = [
     'feincms',
     'flatblocks',
     'jsonfield',
+    'pytils',
     'raven.contrib.django',
     'reversion',
     'sorl.thumbnail',
