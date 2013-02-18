@@ -543,7 +543,7 @@ class ServiceTreeTest(TransactionTestCase):
         return {
             "id": int(bs.id),
             "text": "%s" % (bs.short_name or bs.name),
-            "type": bs.type,
+            "type": str(bs.type),
             "code": str(bs.code),
             "parent": bs.parent_id,
             "leaf": True
@@ -554,7 +554,7 @@ class ServiceTreeTest(TransactionTestCase):
             "id": int(bs.id),
             "leaf": False,
             'text': "%s" % (bs.short_name or bs.name,),
-            "type": bs.type,
+            "type": str(bs.type),
             "parent": bs.parent_id,
             'children': childs
         }
@@ -1129,6 +1129,42 @@ class ServiceTreeTest(TransactionTestCase):
                                           payment_type=u'н',
                                           payer=self.payer3.id),
                         self.day_pt.id)
+        self.assertEqual(result_wanted, simplejson.loads(response.content))
+
+    def test_all(self):
+        # Должно вернуть все услуги и все группы
+        result_wanted = [
+            self.make_simple_group(bs=self.group1,
+                childs=[
+                    self.make_simple_leaf(bs=self.bs1),
+                    self.make_simple_leaf(bs=self.bs2)
+                ]
+            ),
+            self.make_simple_group(bs=self.group2,
+                childs=[
+                    self.make_simple_group(bs=self.group3,
+                        childs=[
+                            self.make_simple_leaf(bs=self.bs4)
+                        ]
+                    ),
+                    self.make_simple_leaf(bs=self.bs3)
+                ]
+            ),
+            self.make_simple_group(bs=self.group4,
+                childs=[]
+            )
+        ]
+        client = Client()
+        client.login(username='Fred', password='333')
+        response = client.get('/service/service_tree/',
+                              {'all': True}
+                             )
+        self.assertEqual(result_wanted, simplejson.loads(response.content))
+
+        response = client.get('/service/service_tree/',
+                              {'all': True,
+                              'payer': self.payer3.id}
+                             )
         self.assertEqual(result_wanted, simplejson.loads(response.content))
 
 

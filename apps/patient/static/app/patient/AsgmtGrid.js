@@ -621,7 +621,7 @@ App.patient.AsgmtGrid = Ext.extend(Ext.grid.EditorGridPanel, {
         this.extServiceStore.load({callback:function(records){
             var win = new App.visit.StaffWindow({
                 index:index,
-                staffList:sl,
+                // staffList:sl,
                 service:App.utils.uriToId(records[0].data.base_service),
                 state:App.utils.uriToId(records[0].data.state),
                 service_name:App.utils.uriToId(records[0].data.service_name),

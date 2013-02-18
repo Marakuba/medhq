@@ -255,11 +255,11 @@ App.visit.OrderedServiceInlineGrid = Ext.extend(Ext.grid.EditorGridPanel, {
         var t = Ext.getCmp('service-panel');
         var node = t.getNodeById(service);
         if(node){
-            var sl = node.attributes.staff;
+            // var sl = node.attributes.staff;
             // if(sl) {
-                var win = new App.visit.StaffWindow({index:index, staffList:sl});
-                win.on('validstaff', this.updateStaff, this);
-                win.show();
+            var win = new App.visit.StaffWindow({index:index});
+            win.on('validstaff', this.updateStaff, this);
+            win.show();
 
             // }
         }

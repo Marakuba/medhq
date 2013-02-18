@@ -227,12 +227,12 @@ def get_service_tree(request):
                 if item and not node.is_leaf_node() and item[0]['parent'] == node.id:
                     childs = item
             tree_nodes = []
-            if not node.is_leaf_node() and not childs:
+            if not node.is_leaf_node() and not childs and not all:
                 #удаляем текущий элемент
                 node = None
             else:
 
-                if node.is_leaf_node() and not node.type == 'group':
+                if node.is_leaf_node() and not (node.type == u'group') and not node.is_group:
                     tree_node = leaf_func(node, parent)
                 else:
                     tree_node = group_func(node, parent, childs)
@@ -257,6 +257,40 @@ def get_service_tree(request):
 #            if node:
 #                tree.append(node)
             return tree
+
+    def new_clear_tree(tree):
+        clean_tree = []
+        bro = []
+        #
+        """
+        bro - двумерный массив, каждый элемент которого - массив элементов,
+            являющихся братьями друг другу
+        обходим массив tree с конца
+
+        сначала фасуем элементы по братьям.
+        """
+        for node in tree[::-1]:
+            if len(bro):
+                if node.is_leaf_node():
+                    node = leaf_func(node)
+                else:
+                    node = group_func(node, [])
+                has_bro = False
+                for b in bro:
+                    if b[0].parent == node.parent:
+                        b.insert(0, node)
+                        has_bro = True
+                        break
+                if not has_bro:
+                    bro.append([node])
+            else:
+                bro.append([node])
+
+        # далее формируем элементы дерева.
+        # если при формировании группа не имеет потомков, то удаляем ее.
+        # new_tree = rebuild_tree(bro)
+
+        return clean_tree
 
     def base_service_leaf(node, parent):
         tree_node = {
@@ -317,6 +351,7 @@ def get_service_tree(request):
     payment_type = request.GET.get('payment_type') or None
     staff = request.GET.get('staff') or None
     payer = request.GET.get('payer') or None
+    all = request.GET.get('all') or None
     result = {}
 
     if payment_type or staff or payer:
@@ -329,7 +364,6 @@ def get_service_tree(request):
         if payment_type and not staff:
             leaf_func = ext_service_leaf
             group_func = ext_service_group
-        all = request.GET.get('all')
         ext = request.GET.get('ext')
 
         TODAY = datetime.date.today()
@@ -426,14 +460,14 @@ def get_service_tree(request):
 
     nodes = []
     for base_service in BaseService.objects.select_related().all().order_by(BaseService._meta.tree_id_attr, BaseService._meta.left_attr, 'level'):
-        if base_service.is_leaf_node() and base_service.id not in result:
+        if base_service.is_leaf_node() and base_service.id not in result and (not all or payment_type):
             continue
         nodes.append(base_service)
 
     tree = []
 
     # если передан параметр payment_type и не передан staff, добавляем промо-акции в дерево услуг
-    if not staff and payment_type:
+    if not staff and payment_type and not all:
         promotions = Promotion.objects.actual(ap.department.state)
         promotions_items = PromotionItem.objects.filter(promotion__in=promotions)
         promotions_dict = defaultdict(list)
@@ -465,7 +499,6 @@ def get_service_tree(request):
     # кэш не обновляется, если есть параметр nocache
     # if not nocache:
     #     cache.set(_cache_key, _cached_tree, 24 * 60 * 60 * 30)
-
     s = clear_tree(nodes, [])
     tree.extend(s)
 

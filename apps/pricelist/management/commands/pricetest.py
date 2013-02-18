@@ -36,11 +36,13 @@ class Command(BaseCommand):
         client = Client()
         client.login(username='user2', password='123')
         response = client.get('/service/service_tree/',
-                              {'payer': payer,
-                               'on_date': datetime.date(year=2012,
-                                                        month=1,
-                                                        day=1),
-                               'payment_type': u'н'
+                              {
+                              'all': True
+                                # 'payer': payer,
+                                # 'on_date': datetime.date(year=2012,
+                                #                          month=1,
+                                #                          day=1),
+                                # 'payment_type': u'н'
                                })
         import pdb; pdb.set_trace()
         pass
