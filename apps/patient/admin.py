@@ -1,19 +1,22 @@
 # -*- coding: utf-8 -*-
 
-from django.contrib import admin
-from django.conf import settings
-from patient.models import Patient, Contract, InsurancePolicy
-from core.admin import OperatorAdmin, TabbedMedia
-from django.conf.urls.defaults import patterns, url
-from django.views.generic.simple import direct_to_template
-from django.shortcuts import get_object_or_404, redirect, render_to_response
-from django.core.urlresolvers import reverse
-from django.contrib.admin.util import unquote
-from lab.models import LabOrder
-from django.http import HttpResponse
-from patient.forms import ContractForm
 import datetime
-from medhq.apps.patient.models import ContractType
+import reversion
+
+from django.conf.urls.defaults import patterns, url
+from django.contrib import admin
+from django.contrib.admin.util import unquote
+from django.core.urlresolvers import reverse
+from django.shortcuts import get_object_or_404, redirect, render_to_response
+from django.views.generic.simple import direct_to_template
+
+from core.admin import OperatorAdmin, TabbedMedia
+from lab.models import LabOrder
+from patient.models import Patient, Contract, InsurancePolicy
+
+from .forms import ContractForm
+from .models import ContractType
+
 
 class InsurancePolicyInlineAdmin(admin.TabularInline):
     model = InsurancePolicy
@@ -27,34 +30,35 @@ RESPONSE_TPL = """
 </script>
 """
 
+
 class ContractInlineAdmin(admin.TabularInline):
-    
+
     model = Contract
     extra = 0
-    
 
-class PatientAdmin(OperatorAdmin, TabbedMedia):
+
+class PatientAdmin(reversion.VersionAdmin, OperatorAdmin, TabbedMedia):
 
     fieldsets = (
-        (u'Личные данные',{
-            'fields':('last_name','first_name','mid_name','birth_day','gender'),
+        (u'Личные данные', {
+            'fields': ('last_name', 'first_name', 'mid_name', 'birth_day', 'gender'),
         }),
-        (u'Паспортные данные',{
-            'fields':('guardian','id_card_series','id_card_number','id_card_issue_date','id_card_org'),
+        (u'Паспортные данные', {
+            'fields': ('guardian', 'id_card_series', 'id_card_number', 'id_card_issue_date', 'id_card_org'),
         }),
-        (u'Маркетинговая информация',{
-            'fields':('discount','doc','initial_account','hid_card','ad_source'),
+        (u'Маркетинговая информация', {
+            'fields': ('discount', 'doc', 'initial_account', 'hid_card', 'ad_source'),
         }),
-        (u'Контакты и адрес',{
-            'fields':('mobile_phone','work_phone','home_phone','home_address_street','work_address_street','email'),
+        (u'Контакты и адрес', {
+            'fields': ('mobile_phone', 'work_phone', 'home_phone', 'home_address_street', 'work_address_street', 'email'),
         }),
-        (u'Прочее',{
-            'fields':('state',),
+        (u'Прочее', {
+            'fields': ('state',),
         }),
     )
     readonly_fields = ('state',)
-    list_display = ('zid','full_name','birth_day','billed_account','operator',)
-    search_fields = ['last_name','first_name','mid_name']
+    list_display = ('zid', 'full_name', 'birth_day', 'billed_account', 'operator',)
+    search_fields = ['last_name', 'first_name', 'mid_name']
     inlines = [ContractInlineAdmin, InsurancePolicyInlineAdmin]
 
     def response_add(self, request, obj, post_url_continue='../%s/'):
@@ -62,25 +66,24 @@ class PatientAdmin(OperatorAdmin, TabbedMedia):
             attrs = {
                 'id': obj._get_pk_val(),
                 'label': obj.full_name(),
-                'obj':obj,
-                'desc': u'PID %s, д.р.: %s' % (obj.zid(),obj.birth_day)
+                'obj': obj,
+                'desc': u'PID %s, д.р.: %s' % (obj.zid(), obj.birth_day)
             }
-            return render_to_response("admin/patient/patient/response.html", attrs) 
+            return render_to_response("admin/patient/patient/response.html", attrs)
         return super(PatientAdmin, self).response_add(request, obj, post_url_continue=post_url_continue)
 
     def change_view(self, request, object_id, extra_context=None):
         "The 'change' admin view for this model."
 
-        obj = self.get_object(request, unquote(object_id))   
-        extra_context = {'results':LabOrder.objects.filter(visit__patient=obj)}
+        obj = self.get_object(request, unquote(object_id))
+        extra_context = {'results': LabOrder.objects.filter(visit__patient=obj)}
         return super(PatientAdmin, self).change_view(request, object_id, extra_context=extra_context)
-        
-         
+
     def contract_detail(self, request, object_id):
         """
         """
         patient = get_object_or_404(Patient, pk=object_id)
-        if request.method=='POST':
+        if request.method == 'POST':
             form = ContractForm(request.POST)
             if form.is_valid():
                 Contract.objects.filter(patient=patient).update(active=False)
@@ -91,13 +94,16 @@ class PatientAdmin(OperatorAdmin, TabbedMedia):
         else:
             today = datetime.date.today()
             expire = datetime.date(year=today.year, month=12, day=31)
-            form = ContractForm({'created':today,'expire':expire})
+            form = ContractForm({
+                'created': today,
+                'expire': expire
+            })
         extra_context = {
-            'patient':patient,
-            'form':form
+            'patient': patient,
+            'form': form
         }
         return direct_to_template(request, "print/patient/contract_detail.html", extra_context=extra_context)
-    
+
     def print_contract(self, request, object_id):
         """
         """
@@ -105,25 +111,25 @@ class PatientAdmin(OperatorAdmin, TabbedMedia):
         patient = get_object_or_404(Patient, pk=object_id)
         contract = patient.get_contract()
         extra_context = {
-            'state':state,
-            'patient':patient,
-            'contract':contract
+            'state': state,
+            'patient': patient,
+            'contract': contract
         }
         return direct_to_template(request, "print/patient/contract.html", extra_context=extra_context)
-    
+
     def print_agreement(self, request, object_id):
         """
         """
         patient = get_object_or_404(Patient, pk=object_id)
         contract = patient.get_contract()
         extra_context = {
-            'patient':patient,
-            'contract':contract,
-            'f':patient.is_f() and u"а" or u"",
-            'ff':patient.is_f() and u"на" or u"ен"
+            'patient': patient,
+            'contract': contract,
+            'f': patient.is_f() and u"а" or u"",
+            'ff': patient.is_f() and u"на" or u"ен"
         }
         return direct_to_template(request, "print/patient/agreement.html", extra_context=extra_context)
-    
+
     def print_card(self, request, object_id):
         """
         """
@@ -131,14 +137,14 @@ class PatientAdmin(OperatorAdmin, TabbedMedia):
         patient = get_object_or_404(Patient, pk=object_id)
         contract = patient.get_contract()
         extra_context = {
-            'state':state,
-            'patient':patient,
-            'contract':contract,
-            'f':patient.is_f() and u"а" or u"",
-            'ff':patient.is_f() and u"на" or u"ен"
+            'state': state,
+            'patient': patient,
+            'contract': contract,
+            'f': patient.is_f() and u"а" or u"",
+            'ff': patient.is_f() and u"на" or u"ен"
         }
         return direct_to_template(request, "print/patient/card_face.html", extra_context=extra_context)
-    
+
     def print_card_face(self, request, object_id):
         """
         """
@@ -151,8 +157,7 @@ class PatientAdmin(OperatorAdmin, TabbedMedia):
 #            'ff':patient.is_f() and u"на" or u"ен"
         }
         return direct_to_template(request, "print/patient/card_face.html", extra_context=extra_context)
-    
-    
+
     def get_urls(self):
         urls = super(PatientAdmin, self).get_urls()
         my_urls = patterns('',
@@ -163,7 +168,7 @@ class PatientAdmin(OperatorAdmin, TabbedMedia):
             url(r'^(?P<object_id>\d+)/print_card_face/$', self.print_card_face, name="print_card_face"),
         )
         return my_urls + urls
-    
+
 
 admin.site.register(Patient, PatientAdmin)
 admin.site.register(Contract)

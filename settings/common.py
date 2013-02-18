@@ -76,12 +76,12 @@ TEMPLATE_CONTEXT_PROCESSORS = (
 ROOT_URLCONF = 'medhq.urls'
 
 MIDDLEWARE_CLASSES = [
-#    'debug_toolbar.middleware.DebugToolbarMiddleware',
     'django.middleware.gzip.GZipMiddleware',
     'django.middleware.common.CommonMiddleware',
     'django.middleware.transaction.TransactionMiddleware',
     'django.contrib.sessions.middleware.SessionMiddleware',
     'django.contrib.auth.middleware.AuthenticationMiddleware',
+    'core.middleware.LoginRequiredMiddleware',
     'django.contrib.messages.middleware.MessageMiddleware',
     'webapp.middleware.ActiveProfileMiddleware',
     'reversion.middleware.RevisionMiddleware',
@@ -89,21 +89,18 @@ MIDDLEWARE_CLASSES = [
 ]
 
 INSTALLED_APPS = [
-    #'reversion',
     'admin_tools',
     'admin_tools.theming',
     'admin_tools.dashboard',
     'admin_tools.menu',
 
-#    'indexer',
-#    'paging',
-#    'sentry',
-#    'sentry.client',
-
+    ### local apps
     'accounting',
     'apiutils',
     'assistant',
     'billing',
+    'bonus',
+    'core',
     'crm',
     'direct',
     'examination',
@@ -116,7 +113,6 @@ INSTALLED_APPS = [
     'patient',
     'pricelist',
     'promotion',
-    'pytils',
     'remoting',
     'reporting',
     'scheduler',
@@ -126,9 +122,8 @@ INSTALLED_APPS = [
     'taskmanager',
     'visit',
     'webapp',
-    'jsonfield',
 
-
+    ### django apps
     'django.contrib.admin',
     'django.contrib.auth',
     'django.contrib.contenttypes',
@@ -137,6 +132,7 @@ INSTALLED_APPS = [
     'django.contrib.sites',
     'django.contrib.staticfiles',
 
+    ### 3rd-party apps
     'autocomplete',
     'constance',
     'dbtemplates',
@@ -144,19 +140,19 @@ INSTALLED_APPS = [
     'django_assets',
     'django_extensions',
     'django_memcached',
+    'djangocodemirror',
     'djcelery',
     'feincms',
     'flatblocks',
+    'jsonfield',
+    'pytils',
+    'raven.contrib.django',
+    'reversion',
     'sorl.thumbnail',
     'south',
-    'reversion',
-    'tastypie',
     'tagging',
-    'raven.contrib.django',
-    'djangocodemirror',
+    'tastypie',
     'test_utils',
-
-    'core',
 
 ]
 

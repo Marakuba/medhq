@@ -6,10 +6,8 @@ import datetime
 from celery.task import task, subtask
 from taskmanager.models import DelayedTask
 
+from .exceptions import SendError
 
-class SendError(Exception):
-    """
-    """
 
 INITIAL_TASK_PARAMS = dict(max_retries=4, default_retry_delay=5 * 60)
 

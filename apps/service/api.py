@@ -58,7 +58,7 @@ class BaseServiceResource(ExtResource):
 
 
 lookups = {}
-lookups[BaseService._meta.right_attr] = F(BaseService._meta.left_attr) + 1
+lookups[BaseService.tree.right_attr] = F(BaseService.tree.left_attr) + 1
 
 
 class BaseServiceGroupResource(ExtResource):
@@ -72,7 +72,7 @@ class BaseServiceGroupResource(ExtResource):
 
     class Meta:
         queryset = BaseService.objects.exclude(**lookups).order_by(\
-            BaseService._meta.tree_id_attr, BaseService._meta.left_attr, 'level')
+            BaseService.tree.tree_id_attr, BaseService.tree.left_attr, 'level')
         authorization = DjangoAuthorization()
         always_return_data = True
         resource_name = 'baseservicegroup'

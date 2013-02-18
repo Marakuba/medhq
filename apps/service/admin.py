@@ -32,7 +32,7 @@ from selection.views import selection
 
 
 queryset = BaseService.objects.select_related().all().\
-            order_by(BaseService._meta.tree_id_attr, BaseService._meta.left_attr, 'level')
+            order_by(BaseService.tree.tree_id_attr, BaseService.tree.left_attr, 'level')
 selection.register('service', queryset, 'tree', paginate_by=100, template_name="selection/bs_tree.html")
 
 
@@ -265,7 +265,7 @@ class ExtendedServiceInlineAdmin(admin.StackedInline):
 
 
 lookups = {}
-lookups[BaseService._meta.right_attr] = F(BaseService._meta.left_attr) + 1
+lookups[BaseService.tree.right_attr] = F(BaseService.tree.left_attr) + 1
 
 
 class BaseServiceForm(forms.ModelForm):
@@ -275,7 +275,7 @@ class BaseServiceForm(forms.ModelForm):
     short_name = forms.CharField(label=u'Краткое наименование', required=False, max_length=300,
                                  widget=forms.TextInput(attrs={'size': 100}))
     parent = TreeNodeChoiceField(label=u'Группа',
-                                 queryset=BaseService.objects.exclude(base_group__isnull=True, **lookups).order_by(BaseService._meta.tree_id_attr, BaseService._meta.left_attr, 'level'),
+                                 queryset=BaseService.objects.exclude(base_group__isnull=True, **lookups).order_by(BaseService.tree.tree_id_attr, BaseService.tree.left_attr, 'level'),
                                  required=False)
 
     class Meta:
@@ -377,9 +377,9 @@ class BaseServiceAdmin(TreeEditor, TabbedAdmin):
         if not isinstance(date, datetime.datetime):
             date = datetime.datetime.strptime(date, "%d.%m.%Y")
         # print date
-        services = BaseService.objects.actual().order_by(BaseService._meta.tree_id_attr, #@UndefinedVariable
+        services = BaseService.objects.actual().order_by(BaseService.tree.tree_id_attr, #@UndefinedVariable
                                                       'level',
-                                                      "-"+BaseService._meta.left_attr) #@UndefinedVariable
+                                                      "-"+BaseService.tree.left_attr) #@UndefinedVariable
 
         extra_context = {
                             'services':services,
@@ -390,7 +390,7 @@ class BaseServiceAdmin(TreeEditor, TabbedAdmin):
     def export_csv(self, request):
         response =  HttpResponse(mimetype='text/csv')
         writer = csv.writer(response)
-        qs = self.queryset(request).order_by(self.model._meta.tree_id_attr, self.model._meta.left_attr)
+        qs = self.queryset(request).order_by(self.model.tree.tree_id_attr, self.model.tree.left_attr)
         for obj in qs:
             row = [obj.id,
                    obj.parent_id,

@@ -1,0 +1,9 @@
+{% extends "print/preview_blank.html" %}
+
+{% block orientation %}book{% endblock %}
+
+{% block content %}
+{% for ref, sources in items.iteritems %}
+{{ ref }}
+{% endfor %}
+{% endblock %}

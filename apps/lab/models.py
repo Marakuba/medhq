@@ -369,8 +369,8 @@ class Result(models.Model):
     class Meta:
         verbose_name = u'результат'
         verbose_name_plural = u'результаты'
-        ordering = ('analysis__service__%s' % BaseService._meta.tree_id_attr,
-                    'analysis__service__%s' % BaseService._meta.left_attr,
+        ordering = ('analysis__service__%s' % BaseService.tree.tree_id_attr,
+                    'analysis__service__%s' % BaseService.tree.left_attr,
                     'analysis__order',)
 
 

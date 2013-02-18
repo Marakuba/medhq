@@ -13,8 +13,8 @@ from django.shortcuts import render_to_response
 from django.template.context import RequestContext
 
 lookups = {}
-lookups[BaseService._meta.right_attr] = F(BaseService._meta.left_attr)+1
-qs = BaseService.objects.filter(**lookups)#.order_by(BaseService._meta.tree_id_attr, BaseService._meta.left_attr, 'level')
+lookups[BaseService.tree.right_attr] = F(BaseService.tree.left_attr)+1
+qs = BaseService.objects.filter(**lookups)#.order_by(BaseService.tree.tree_id_attr, BaseService.tree.left_attr, 'level')
 
 class PromotionItemForm(forms.ModelForm):
     """

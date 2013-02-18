@@ -32,7 +32,7 @@ def get_service_list():
         """
         """
         nodes = []
-        for item in qs.filter(is_active=True).order_by(BaseService._meta.tree_id_attr, "-"+BaseService._meta.left_attr):
+        for item in qs.filter(is_active=True).order_by(BaseService.tree.tree_id_attr, "-"+BaseService.tree.left_attr):
             node = {"id":item.id,
                     "text":item.short_name or item.name,
                     "name":item.name,
@@ -59,7 +59,7 @@ def get_ancestors():
         """
         """
         nodes = []
-        for item in qs.filter(is_active=True).order_by(BaseService._meta.tree_id_attr, "-"+BaseService._meta.left_attr):
+        for item in qs.filter(is_active=True).order_by(BaseService.tree.tree_id_attr, "-"+BaseService.tree.left_attr):
             node = {"id":item.id,
                     "text":item.short_name or item.name,
                     "name":item.name,
@@ -96,7 +96,7 @@ def get_nodes():
     _cached_nodes = cache.get('nodes_list')
     if not _cached_nodes:
         nodes = defaultdict(list)
-        for item in BaseService.objects.actual().order_by(BaseService._meta.tree_id_attr, "-"+BaseService._meta.left_attr):
+        for item in BaseService.objects.actual().order_by(BaseService.tree.tree_id_attr, "-"+BaseService.tree.left_attr):
             if item.is_leaf_node():
                 node = {
                     "id":item.id,

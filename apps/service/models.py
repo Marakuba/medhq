@@ -255,7 +255,7 @@ class BaseService(models.Model):
 
     @classmethod
     def cache_parents(self):
-        services = BaseService.objects.all().order_by(BaseService._meta.tree_id_attr, BaseService._meta.left_attr, 'level')
+        services = BaseService.objects.all().order_by(BaseService.tree.tree_id_attr, BaseService.tree.left_attr, 'level')
         BaseService._parents = dict([(s['id'], s['parent__id']) for s in services.values('parent__id', 'id')])
 
     def get_absolute_url(self):

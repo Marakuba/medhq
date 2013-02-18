@@ -27,9 +27,9 @@ selection.register('referral', queryset, 'list', paginate_by=50)
 
 
 class OrderedServiceForm(forms.ModelForm):
-    
+
     service = ModelChoiceField('service', label=u'Услуга')
-    
+
     class Meta:
         model = OrderedService
 
@@ -39,13 +39,13 @@ class OrderedServiceAdmin(admin.TabularInline):
     fields = ('service','execution_place','staff','count')
     extra = 0
     #form = OrderedServiceForm
-    
+
 class OrderedServiceFullAdmin(admin.StackedInline):
     model = OrderedService
     fields = ('service','execution_place','executed','print_date','staff','count','price','total_price','operator')
     extra = 0
     form = OrderedServiceForm
-    
+
 state_qs = State.objects.filter(type=u'j')
 base_service_qs = BaseService.objects.all()
 
@@ -53,18 +53,18 @@ class VisitForm(forms.ModelForm):
     """
     """
     referral = ModelChoiceField('referral', label=u'Кто направил', required=False)
-    
+
     def __init__(self, *args, **kwargs):
         super(VisitForm, self).__init__(*args, **kwargs)
         if self.instance.id:
             self.fields['contract'].queryset = Contract.objects.filter(patient=self.instance.patient)
             self.fields['insurance_policy'].queryset = InsurancePolicy.objects.filter(patient=self.instance.patient)
 
-    
+
     class Meta:
         model = Visit
-       
-lab_qs = State.objects.filter(type__in=(u'm',u'b'))     
+
+lab_qs = State.objects.filter(type__in=(u'm',u'b'))
 class IncomeForm(VisitForm):
     """
     """
@@ -82,7 +82,7 @@ def discount_value(obj):
     return "---"
 discount_value.short_description = u'Скидка'
 
-        
+
 def export_into_1c(modeladmin, request, queryset):
     #response =  HttpResponse(mimetype='text/csv')
     tmp_file = StringIO.StringIO()
@@ -104,7 +104,7 @@ def export_into_1c(modeladmin, request, queryset):
         doc.append(u'ДатаДоговора:%s\n' % (contract and contract.created or ''))
         doc.append(u'Сумма:%s\n' % (item.total_price-item.total_discount))
         doc.append(u'КонецДок\n')
-        
+
         [tmp_file.write(s.encode("windows-1251")) for s in doc]
     row = u"Конец выгрузки"
     tmp_file.write(u'Конец выгрузки\n'.encode("windows-1251"))
@@ -121,11 +121,11 @@ from autocomplete.admin import AutocompleteAdmin
 class PatientAutocomplete(AutocompleteSettings):
     search_fields = ('^last_name', '^first_name')
     limit = 20
-    
+
 autocomplete.register(PlainVisit.patient, PatientAutocomplete)
 
 
-class PlainVisitAdmin(AutocompleteAdmin, admin.ModelAdmin): 
+class PlainVisitAdmin(AutocompleteAdmin, admin.ModelAdmin):
     """
     """
     inlines = [OrderedServiceFullAdmin]
@@ -136,7 +136,7 @@ class PlainVisitAdmin(AutocompleteAdmin, admin.ModelAdmin):
     search_fields = ('patient__last_name','barcode__id')
     readonly_fields = ('barcode',)
     form = VisitForm
-    
+
     def save_model(self, request, obj, form, change):
         obj.save()
         if obj.on_date:
@@ -159,34 +159,35 @@ class ReferralAdmin(admin.ModelAdmin):
     exclude = ('operator',)
     list_display = ('__unicode__','name','agent','visit_count')
     list_editable = ('name','agent',)
-    
+    search_fields = ['name', ]
+
     def get_urls(self):
         urls = super(ReferralAdmin, self).get_urls()
         my_urls = patterns('',
             (r'^list/$', self.ref_list),
         )
         return my_urls + urls
-    
+
     def ref_list(self, request):
         qs = Referral.objects.all()
         return object_list(request, qs, template_name='print/visit/referral_list.html')
-    
+
     def visit_count(self, obj):
         return obj.visit_set.all().count()
     visit_count.short_description = u'Визиты'
-    
+
     def save_model(self, request, obj, form, change):
         if not change:
             obj.operator=request.user
         obj.save()
-        
+
 class ReferralListAdmin(admin.TabularInline):
     """
     """
     model = Referral
     fields = ('name',)
     extra = 0
-        
+
 class ReferralAgentAdmin(admin.ModelAdmin):
     """
     """
@@ -194,13 +195,13 @@ class ReferralAgentAdmin(admin.ModelAdmin):
 #    inlines = [ReferralListAdmin]
     list_display = ('__unicode__','name')
     list_editable = ('name',)
-    
-    
+
+
     def save_model(self, request, obj, form, change):
         if not change:
             obj.operator=request.user
         obj.save()
-        
+
 class OrderedServicePlainAdmin(admin.ModelAdmin):
     search_fields = ('order__patient__last_name','order__barcode__id')
     list_display = ('order','service')

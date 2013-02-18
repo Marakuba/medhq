@@ -76,6 +76,7 @@ class PreorderManagerApp(BaseWebApp):
     verbose_name = u'Предзаказы'
     cmp_type = 'action'
     js = [
+        'extjs/ux/printer/Printer-all.js',
         'app/patient/models.js',
         'app/scheduler/models.js',
         'app/asgmt/AsgmtForm.js',
