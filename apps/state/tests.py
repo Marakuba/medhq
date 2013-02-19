@@ -25,11 +25,6 @@ class StateApiTest(unittest.TestCase):
         response = client.get('/api/state/state')
         self.assertEqual(response.status_code, 200)
 
-    def test_state_genericstate(self):
-        client = Client()
-        response = client.get('/api/state/genericstate')
-        self.assertEqual(response.status_code, 200)
-
     def test_state_insurance_state(self):
         client = Client()
         response = client.get('/api/state/insurance_state')

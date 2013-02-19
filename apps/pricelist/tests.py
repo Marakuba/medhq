@@ -1168,9 +1168,23 @@ class ServiceTreeTest(TransactionTestCase):
         self.assertEqual(result_wanted, simplejson.loads(response.content))
 
 
+from django.contrib.auth.hashers import make_password
+
+
 class PricelistApiTest(unittest.TestCase):
+
+    def setUp(self):
+        """
+        """
+        self.user = UserFactory.create(password=make_password('api'))
+
+        self.staff1 = StaffFactory.create(user=self.user, operator=self.user)
+        self.dept1 = DepartmentFactory.create()
+        self.position1 = PositionFactory.create(staff=self.staff1,
+                                                department=self.dept1)
 
     def test_pricelist_discount(self):
         client = Client()
+        client.login(username=self.user.username, password='api')
         response = client.get('/api/pricelist/discount')
         self.assertEqual(response.status_code, 200)

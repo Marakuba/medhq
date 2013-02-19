@@ -290,7 +290,12 @@ class OrderedService(make_operator_object('ordered_service')):
                                  null=True, blank=True)
 
     transactions = generic.GenericRelation(TransactionItem)
-    assigment = models.ForeignKey('scheduler.Preorder', verbose_name=u'Направление', blank=True, null=True)
+    assigment = models.ForeignKey(
+        'scheduler.Preorder',
+        verbose_name=u'Направление',
+        blank=True,
+        null=True,
+        on_delete=models.PROTECT)
 
     objects = models.Manager()
 

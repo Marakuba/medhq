@@ -76,7 +76,6 @@ class UserFactory(factory.Factory):
     FACTORY_FOR = User
 
     username = factory.Sequence(lambda n: 'user{0}'.format(n))
-    password = '123'
     email = ''
 
 
@@ -203,6 +202,7 @@ class BonusUnitTest(TransactionTestCase):
     reset_sequences = True
 
     def setUp(self):
+        self.super_user = UserFactory.create(username='super', password='super', is_superuser=True, is_staff=True)
         self.year_start = datetime.date(year=2013, month=1, day=1)
         self.gen_pt = PriceTypeFactory.create(name='Основной', priority=1)
 
@@ -644,11 +644,6 @@ class BonusUnitTest(TransactionTestCase):
             # res, cols = get_detail_result(calculation)
             res, cols = get_category_result(calculation.id)
 
-            print cat
-            print cols
-            for r in res:
-                print r
-
     def create_service_sequence(self, range=None, state=None, staff=None, price_type=None, price_on_date=None):
         for num in range:
             bs = BaseServiceFactory.create()
@@ -686,14 +681,33 @@ class BonusUnitTest(TransactionTestCase):
         BonusRuleItemHistoryFactory.create()
 
 
+from django.contrib.auth.hashers import make_password
+from django.conf import settings
+
+
 class BonusApiTest(unittest.TestCase):
+
+    def setUp(self):
+        """
+        """
+        self.user = UserFactory.create(password=make_password('api'))
+        self.position = PositionFactory.create()
+        self.position.staff.user = self.user
+        self.position.staff.save()
 
     def test_bonus_calculation(self):
         client = Client()
+        # client.login(username=self.user, password='')
+        response = client.post(settings.LOGIN_URL, {'username': self.user.username, 'password': 'api'})
+        js = simplejson.loads(response.content)
+        self.assertEqual(js['success'], True)
         response = client.get('/api/bonus/calculation')
         self.assertEqual(response.status_code, 200)
 
     def test_bonus_calculation_item(self):
         client = Client()
+        response = client.post(settings.LOGIN_URL, {'username': self.user.username, 'password': 'api'})
+        js = simplejson.loads(response.content)
+        self.assertEqual(js['success'], True)
         response = client.get('/api/bonus/calculationitem')
         self.assertEqual(response.status_code, 200)
