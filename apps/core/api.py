@@ -6,6 +6,8 @@ from apiutils.resources import ExtResource
 from django.contrib.contenttypes.models import ContentType
 from django.contrib.auth.models import User
 from tastypie.resources import ModelResource
+from core.models import Unit
+from tastypie.constants import ALL
 
 
 class ContentTypeResource(ExtResource):
@@ -25,7 +27,22 @@ class UserResource(ModelResource):
         list_allowed_methods = ['get', 'post', 'put']
 
 
+class UnitResource(ExtResource):
+
+    class Meta:
+        queryset = Unit.objects.all()
+        authorization = DjangoAuthorization()
+        always_return_data = True
+        resource_name = 'unit'
+        filtering = {
+            'id': ALL,
+            'name': ALL
+        }
+        list_allowed_methods = ['get', 'post', 'put']
+
+
 api = Api(api_name='core')
 
 api.register(ContentTypeResource())
 api.register(UserResource())
+api.register(UnitResource())
