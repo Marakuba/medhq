@@ -7,8 +7,9 @@ from django.utils import unittest
 from django.test.client import Client
 from django.conf import settings
 import imp
-import datetime
 import inspect
+import factory
+from core.models import Unit
 
 
 def autodiscover():
@@ -38,6 +39,12 @@ def autodiscover():
                 except:
                     pass
     return resources
+
+
+class UnitFactory(factory.Factory):
+    FACTORY_FOR = Unit
+
+    name = factory.Sequence(lambda n: 'unit{0}'.format(n))
 
 
 class CoreApiTest(unittest.TestCase):
