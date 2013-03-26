@@ -122,10 +122,10 @@ class Visit(make_operator_object('visit')):
                               related_name='payer_in_visit',
                               null=True, blank=True)
     source_lab = models.ForeignKey(State, verbose_name=u'Лаборатория',
-                              related_name='source_lab_in_visit',
-                              limit_choices_to={'type__in': (u'b', u'm')},
-                              null=True, blank=True,
-                              help_text=u'Выбрать лабораторию, из которой поступил материал')
+                                   related_name='source_lab_in_visit',
+                                   limit_choices_to={'type__in': (u'b', u'm')},
+                                   null=True, blank=True,
+                                   help_text=u'Выбрать лабораторию, из которой поступил материал')
     barcode = models.ForeignKey(Barcode, null=True, blank=True)
     specimen = models.CharField(u'Образец', max_length=30, blank=True)
     total_price = models.DecimalField(u'Сумма, руб.', max_digits=10,
@@ -150,8 +150,8 @@ class Visit(make_operator_object('visit')):
                                          max_digits=10, decimal_places=2, default=0,
                                          null=True, blank=True)
     total_discount = models.DecimalField(u'Сумма скидки, руб.',
-                                     max_digits=10, decimal_places=2,
-                                     default=0, null=True, blank=True)
+                                         max_digits=10, decimal_places=2,
+                                         default=0, null=True, blank=True)
     is_billed = models.BooleanField(u'Проведен', default=False)
     is_cito = models.BooleanField(u'Cito', default=False)
     comment = models.TextField(u'Дополнительная информация, комментарии',
@@ -275,7 +275,7 @@ class OrderedService(make_operator_object('ordered_service')):
     price = models.DecimalField(u'Цена услуги',
                                 max_digits=10, decimal_places=2, default=0)
     total_price = models.DecimalField(u'Итого',
-                                max_digits=10, decimal_places=2, default=0)
+                                      max_digits=10, decimal_places=2, default=0)
     test_form = models.CharField(u'Форма теста',
                                  choices=TEST_FORM,
                                  max_length=1,
@@ -290,12 +290,11 @@ class OrderedService(make_operator_object('ordered_service')):
                                  null=True, blank=True)
 
     transactions = generic.GenericRelation(TransactionItem)
-    assigment = models.ForeignKey(
-        'scheduler.Preorder',
-        verbose_name=u'Направление',
-        blank=True,
-        null=True,
-        on_delete=models.PROTECT)
+    assigment = models.ForeignKey('scheduler.Preorder',
+                                  verbose_name=u'Направление',
+                                  blank=True,
+                                  null=True,
+                                  on_delete=models.PROTECT)
 
     objects = models.Manager()
 
@@ -352,7 +351,7 @@ class OrderedService(make_operator_object('ordered_service')):
 
         if ext_service.tube is None:
             raise TubeIsNoneException(u"В расширенной услуге <strong>'%s'</strong> для организации <strong>%s</strong> не указан тип пробирки" %
-                                       (ext_service.base_service.name, ext_service.state))
+                                      (ext_service.base_service.name, ext_service.state))
 
         sampling, created = Sampling.objects.get_or_create(visit=visit,
                                                            laboratory=self.execution_place,
@@ -374,10 +373,10 @@ class OrderedService(make_operator_object('ordered_service')):
 #                                                       widget=widget.ext_app_name,
 #                                                       is_manual=is_manual)
         lab_order, created = LabOrder.objects.get_or_create(visit=visit,
-                                                   laboratory=self.execution_place,
-                                                   lab_group=s.lab_group,
-                                                   widget=widget.ext_app_name,
-                                                   is_manual=is_manual)
+                                                            laboratory=self.execution_place,
+                                                            lab_group=s.lab_group,
+                                                            widget=widget.ext_app_name,
+                                                            is_manual=is_manual)
 
         analysis_list = self.service.analysis_set.all()
         if ext_service.base_profile:

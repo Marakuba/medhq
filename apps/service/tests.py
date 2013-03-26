@@ -1,6 +1,16 @@
 # -*- coding: utf-8 -*-
 from django.utils import unittest
 from django.test.client import Client
+import factory
+from core.tests import UnitFactory
+from service.models import BaseService
+
+
+class BaseServiceFactory(factory.Factory):
+    FACTORY_FOR = BaseService
+
+    name = factory.Sequence(lambda n: 'base_service{0}'.format(n))
+    partnership = False
 
 
 class ServiceApiTest(unittest.TestCase):

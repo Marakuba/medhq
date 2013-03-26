@@ -1,6 +1,17 @@
 # -*- coding: utf-8 -*-
 from django.utils import unittest
 from django.test.client import Client
+from state.models import State
+import factory
+from pricelist.tests import PriceTypeFactory
+
+
+class StateFactory(factory.Factory):
+    FACTORY_FOR = State
+
+    name = factory.Sequence(lambda n: 'state{0}'.format(n))
+    price_type = factory.SubFactory(PriceTypeFactory)
+    type = 'j'
 
 
 class StateApiTest(unittest.TestCase):

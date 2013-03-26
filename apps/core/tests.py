@@ -10,6 +10,7 @@ import imp
 import inspect
 import factory
 from core.models import Unit
+from django.contrib.auth.models import User
 
 
 def autodiscover():
@@ -45,6 +46,14 @@ class UnitFactory(factory.Factory):
     FACTORY_FOR = Unit
 
     name = factory.Sequence(lambda n: 'unit{0}'.format(n))
+
+
+class UserFactory(factory.Factory):
+    FACTORY_FOR = User
+
+    username = factory.Sequence(lambda n: 'user{0}'.format(n))
+    password = '123'
+    email = ''
 
 
 class CoreApiTest(unittest.TestCase):

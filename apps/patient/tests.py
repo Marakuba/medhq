@@ -1,6 +1,18 @@
 # -*- coding: utf-8 -*-
 from django.utils import unittest
 from django.test.client import Client
+import factory
+from patient.models import Patient
+import datetime
+
+
+class PatientFactory(factory.Factory):
+    FACTORY_FOR = Patient
+
+    last_name = factory.Sequence(lambda n: 'Ivanov{0}'.format(n))
+    first_name = factory.Sequence(lambda n: 'Ivan{0}'.format(n))
+    birth_day = datetime.date.today()
+    gender = u'М'
 
 
 class PatientApiTest(unittest.TestCase):

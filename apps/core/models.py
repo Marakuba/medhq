@@ -3,6 +3,7 @@
 from django.db import models
 from django.contrib.auth.models import User
 
+
 def make_operator_object(sub_model):
 
     class OperatorObject(models.Model):

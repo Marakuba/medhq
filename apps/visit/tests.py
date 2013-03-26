@@ -1,6 +1,26 @@
 # -*- coding: utf-8 -*-
 from django.utils import unittest
 from django.test.client import Client
+import factory
+from visit.models import Visit, OrderedService
+from patient.tests import PatientFactory
+from service.tests import BaseServiceFactory
+from core.tests import UserFactory
+
+
+class VisitFactory(factory.Factory):
+    FACTORY_FOR = Visit
+
+    patient = factory.SubFactory(PatientFactory)
+    operator = factory.SubFactory(UserFactory)
+    office = u'b'
+
+
+class OrderedServiceFactory(factory.Factory):
+    FACTORY_FOR = OrderedService
+
+    order = factory.SubFactory(VisitFactory)
+    service = factory.SubFactory(BaseServiceFactory)
 
 
 class VisitApiTest(unittest.TestCase):
