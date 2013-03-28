@@ -9,6 +9,7 @@ from django.db.models.signals import post_save
 from django.template import Context, Template
 from state.models import State
 from visit.models import OrderedService
+from django.db import connection
 
 
 class Product(MPTTModel):
@@ -55,6 +56,7 @@ class Ingredient(models.Model):
     content_type = models.ForeignKey(ContentType, blank=True, null=True)
     object_id = models.PositiveIntegerField(blank=True, null=True)
     source = generic.GenericForeignKey('content_type', 'object_id')
+    # base_service = models.ForeignKey('service.BaseService')
     product = models.ForeignKey(Product)
     count = models.PositiveIntegerField(u'Количество', default=0)
 
@@ -186,8 +188,10 @@ def on_visit_save(document):
         for store in store_list:
             if store in stores:
                 stores[store['store']] += store['lots']
+            else:
+                stores[store['store']] = store['lots']
     for store in stores.keys():
-        doc = Document(store=store, reason_doc=document)
+        doc = Document.objects.create(store=store, reason_doc=document)
         lot_list = stores[store]
         for item in lot_list:
             #списание
@@ -200,8 +204,31 @@ def on_visit_save(document):
             RegistryItem(lot=lot, count=-lot['count'])
 
 
-def on_labresult_save(*args, **kwargs):
-    pass
+def on_labresult_save(document):
+    service = document.equipment_task.ordered_service.service
+    #prod_list = [{'product': id, 'count': int}]
+    prod_list = get_service_products(service)
+    stores = {}
+    for prod in prod_list:
+        #Создаем документы для разных складов, откуда берутся продукты
+        store_list = get_product_lots(prod['id'], prod['count'])
+        for store in store_list:
+            if store in stores:
+                stores[store['store']] += store['lots']
+            else:
+                stores[store['store']] = store['lots']
+    for store in stores.keys():
+        doc = Document.objects.create(store=store, reason_doc=document)
+        lot_list = stores[store]
+        for item in lot_list:
+            #списание
+            source_lot = item['lot']
+            lot = Lot.objects.create(product=source_lot.product,
+                                     number=source_lot.number,
+                                     expire_date=source_lot.expire_date,
+                                     document=doc,
+                                     count=item['count'])
+            RegistryItem.objects.create(lot=lot, count=-lot['count'])
 
 
 def check_doc_items(doc_items=[]):
@@ -224,8 +251,8 @@ def on_receipt_save(shipper, store, doc_items=[], lots=[]):
         raise TypeError("shipper must be State instance")
     if not isinstance(store, Store):
         raise TypeError("store must be store.Store instance")
-    receipt = Receipt(shipper=shipper, store=store)
-    doc = Document(store=store, reason_doc=receipt)
+    receipt = Receipt.objects.create(shipper=shipper)
+    doc = Document.objects.create(store=store, reason_doc=receipt)
     # проверяем содержимое doc_items и lots
     check_doc_items(doc_items)
     check_lots(lots)
@@ -235,14 +262,22 @@ def on_receipt_save(shipper, store, doc_items=[], lots=[]):
         if count > item.get('total_count'):
             raise ValueError(u"%s: Общая сумма партий больше суммы document_item" % item['product'].name)
         if count < item.get('total_count'):
-            Lot(product=prod, document=doc, count=item['total_count']-count)
-        DocumentItem(product=prod, total_count=item['total_count'], document=doc)
+            recidual = item['total_count']-count
+            lot = Lot.objects.create(product=prod,
+                                     document=doc,
+                                     count=recidual)
+            RegistryItem.objects.create(lot=lot, count=recidual)
+        DocumentItem.objects.create(product=prod, total_count=item['total_count'], document=doc)
     # Создаем все переданные лоты
     for lot_item in lots:
         prod = Product.objects.get(id=lot_item.get('product'))
         count = lot_item.get('count', 0)
-        lot = Lot(product=prod, document=doc, count=count)
-        RegistryItem(lot=lot, count=count)
+        lot = Lot.objects.create(product=prod,
+                                 document=doc,
+                                 count=lot_item.get('count', 0),
+                                 number=lot_item.get('number', ''),
+                                 expire_date=lot_item.get('expire_date', 0))
+        RegistryItem.objects.create(lot=lot, count=count)
 
 
 def on_writeoff_save(store=None, product_list=[]):
@@ -254,19 +289,19 @@ def on_writeoff_save(store=None, product_list=[]):
         #Если передан store и на нем не хватает нужных продуктов, то
         #создастся исключение ValueError
         for store in store_list:
-            wo_doc = WriteOff(store=store.get('store'))
-            doc = Document(store=store, reason_doc=wo_doc)
+            wo_doc = WriteOff.objects.create(store=store.get('store'))
+            doc = Document.objects.create(store=store, reason_doc=wo_doc)
             lot_list = store.get('lots')
             #lot_list=['store': Store,
             #          'lots': [{'lot':Lot, 'count':int}]}]
             for item in lot_list:
                 source_lot = item['lot']
-                lot = Lot(product=source_lot.product,
-                          number=source_lot.number,
-                          expire_date=source_lot.expire_date,
-                          document=doc,
-                          count=item['count'])
-                RegistryItem(lot=lot, count=-lot['count'])
+                lot = Lot.objects.create(product=source_lot.product,
+                                         number=source_lot.number,
+                                         expire_date=source_lot.expire_date,
+                                         document=doc,
+                                         count=item['count'])
+                RegistryItem.objects.create(lot=lot, count=-lot['count'])
 
 
 def on_shift_save(document, store, product_list=[]):
@@ -279,46 +314,65 @@ def on_shift_save(document, store, product_list=[]):
         #          'lots': [{'lot':Lot, 'count':int}]}]
 
         #Создаем документ списания со склада
-        writeoff = Document(store=store, reason_doc=document)
+        writeoff = Document.objects.create(store=store, reason_doc=document)
 
         #Создаем документ прихода на склад
-        receipt = Document(store=document.store_to, reason_doc=document)
+        receipt = Document.objects.create(store=document.store_to, reason_doc=document)
         for item in lot_list:
             #списание
             source_lot = item['lot']
-            lot = Lot(product=source_lot.product,
-                      number=source_lot.number,
-                      expire_date=source_lot.expire_date,
-                      document=writeoff,
-                      count=item['count'])
-            RegistryItem(lot=lot, count=-lot['count'])
+            lot = Lot.objects.create(product=source_lot.product,
+                                     number=source_lot.number,
+                                     expire_date=source_lot.expire_date,
+                                     document=writeoff,
+                                     count=item['count'])
+            RegistryItem.objects.create(lot=lot, count=-lot['count'])
             #приход
-            lot = Lot(product=source_lot.product,
-                      number=source_lot.number,
-                      expire_date=source_lot.expire_date,
-                      document=receipt,
-                      count=item['count'])
-            RegistryItem(lot=lot, count=lot['count'])
+            lot = Lot.objects.create(product=source_lot.product,
+                                     number=source_lot.number,
+                                     expire_date=source_lot.expire_date,
+                                     document=receipt,
+                                     count=item['count'])
+            RegistryItem.objects.create(lot=lot, count=lot['count'])
 
 
 def stock_balance(store=None, product=None):
-    pass
+    query = '''SELECT sum(TRegItem.count)
+       FROM public.store_registryitem TRegItem
+       left outer join public.store_lot TLot on TLot.id = TRegItem.lot_id%s
+       WHERE TLot.product_id = %s
+    ''' % (store and ''' left outer join
+                            public.store_document TDoc on
+                            TLot.document_id=Tdoc.id ''' or '', product.id)
+    if store:
+        query += ' and TDoc.store_id = %s' % store.id
+    cursor = connection.cursor()
+    cursor.execute(query)
+    results = cursor.fetchall()
+    cursor.close()
+    return results[0][0]
 
 
 def get_product_lots(product=None, count=0, store=None):
-    '''Возвращает имеющиеся партии продуктов, содержащие необходимое количество.
+    '''Возвращает имеющиеся партии продуктов, содержащие необходимое их количество.
     Приоритетные лоты - с минимальным оставшимся сроком годности.
     Далее по мере добавления партии на склад
     возвращает массив словарей ['store': Store,
                                 'lots': [{'lot':Lot, 'count':int}]}]'''
 
-    pass
+    '''SELECT TDoc.store_id, TLot.id, TLot.product_id, sum(TRegItem.count) from
+    '''
 
 
 def get_service_products(source):
     '''Возвращает список [{'product':id, 'count':int}]'''
-    pass
-
+    source_cls = source.__class__
+    items = Ingredient.objects.all()
+    ct = ContentType.objects.get_for_model(source_cls)
+    item_ids = items.values_list("object_id", flat=True).filter(content_type=ct, object_id=source.id)
+    ingredients = Ingredient.objects.filter(object_id__in=item_ids)
+    prod_list = [{'product': i.product.id, 'count': i.count} for i in ingredients]
+    return prod_list
 
 SAVE_METHODS = {'visit': on_visit_save,
                 'labresult': on_labresult_save,

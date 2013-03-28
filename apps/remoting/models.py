@@ -20,7 +20,7 @@ class SyncObject(models.Model):
     content_object = generic.GenericForeignKey('content_type', 'object_id')
     sync_id = models.IntegerField()
     state = models.ForeignKey(State)
-    
+
     class Meta:
         verbose_name = u'объект синхронизации'
         verbose_name_plural = u'объекты синхронизации'
@@ -28,14 +28,15 @@ class SyncObject(models.Model):
 
     def __unicode__(self):
         return smart_unicode("<<SyncObject>>")
-    
-    
+
+
 REMOTE_STATE_MODES = (
-    (u'a',u'Активный'),
-    (u'p',u'Пассивный'),
-    (u'c',u'Пассивный с подтверждением'),
+    (u'a', u'Активный'),
+    (u'p', u'Пассивный'),
+    (u'c', u'Пассивный с подтверждением'),
 )
-    
+
+
 class RemoteState(models.Model):
     """
     """
@@ -47,7 +48,7 @@ class RemoteState(models.Model):
     mode = models.CharField(u'Режим', max_length=1, default=u'a', choices=REMOTE_STATE_MODES)
     last_updated = models.DateTimeField(u'Последнее обновление', blank=True, null=True)
     user = models.ForeignKey(User, blank=True, null=True)
-    
+
     class Meta:
         verbose_name = u'внешняя лаборатория'
         verbose_name_plural = u'внешние лаборатории'
@@ -55,14 +56,15 @@ class RemoteState(models.Model):
 
     def __unicode__(self):
         return smart_unicode("<<RemoteLab>>")
-    
+
 
 TRANSACTION_TYPES = (
-    (u'state.out',u'Выгрузка данных для лаборатории'),
-    (u'state.in',u'Получение результатов анализов'),
-    (u'lab.in',u'Получение данных для лаборатории'),
-    (u'lab.out',u'Передача результатов анализов'),
+    (u'state.out', u'Выгрузка данных для лаборатории'),
+    (u'state.in', u'Получение результатов анализов'),
+    (u'lab.in', u'Получение данных для лаборатории'),
+    (u'lab.out', u'Передача результатов анализов'),
 )
+
 
 class Transaction(models.Model):
     """
@@ -71,12 +73,13 @@ class Transaction(models.Model):
     type = models.CharField(u'Тип', max_length=20, choices=TRANSACTION_TYPES)
     sender = models.ForeignKey(State, related_name='sender_state')
     reciever = models.ForeignKey(State, related_name='reciever_state')
-    
+
 
 TRANSACTION_STATUSES = (
-    (u'error',u'Ошибка связи'),
-    (u'complete',u'Данные выгружены'),
+    (u'error', u'Ошибка связи'),
+    (u'complete', u'Данные выгружены'),
 )
+
 
 class TransactionItem(models.Model):
     """
@@ -87,6 +90,6 @@ class TransactionItem(models.Model):
     object_id = models.IntegerField()
     content_object = generic.GenericForeignKey('content_type', 'object_id')
     message = models.TextField(blank=True)
-    
+
     def __unicode__(self):
         return self.message or u'<<transaction item>>'

@@ -138,7 +138,7 @@ class StoreUnitTest(TestCase):
         doc_item = doc_items[0]
         self.assertEqual(doc_item.total_count, 15)
         lots = Lot.objects.filter(document=doc)
-        self.assertEqual(len(lots), 0)
+        self.assertEqual(len(lots), 3)
 
     def test_income_product_without_items(self):
         save_method = get_save_method('receipt')
@@ -184,7 +184,7 @@ class StoreUnitTest(TestCase):
         for reg in regs:
             if reg.count < 0:
                 positive = False
-        self.assertEqual(positive, True)
+        self.assertTrue(positive)
 
         regs = RegistryItem.objects.filter(lot=lot)
         self.assertEqual(len(regs), 1)
@@ -226,13 +226,11 @@ class StoreUnitTest(TestCase):
         self.assertEqual(len(doc_items), 1)
         doc_item = doc_items[0]
         self.assertEqual(doc_item.total_count, 15)
-        self.assertEqual(stock_balance(product=self.prod3), 15)
+        self.assertEqual(int(stock_balance(product=self.prod3)), 15)
         lots = Lot.objects.filter(document=doc)
-        self.assertEqual(len(lots), 0)
+        self.assertEqual(len(lots), 9)
 
-        lots = Lot.objects.filter(document=doc)
         '''проверка на количество созданных лотов'''
-        self.assertEqual(len(lots), 8)
         lots = Lot.objects.filter(document=doc, product=self.prod2)
         self.assertEqual(len(lots), 4)
         lots = Lot.objects.filter(number='111')
@@ -248,13 +246,13 @@ class StoreUnitTest(TestCase):
         self.assertEqual(lot.count, 10)
         '''проверка создания registry_item'''
         regs = RegistryItem.objects.filter(lot__document=doc)
-        self.assertEqual(len(regs), 8)
+        self.assertEqual(len(regs), 9)
         '''все registry_item должны быть положительными'''
         positive = True
         for reg in regs:
             if reg.count < 0:
                 positive = False
-        self.assertEqual(positive, True)
+        self.assertTrue(positive)
         regs = RegistryItem.objects.filter(lot=lot)
         self.assertEqual(len(regs), 1)
         self.assertEqual(regs[0].count, 10)
@@ -279,14 +277,14 @@ class StoreUnitTest(TestCase):
     def test_get_service_products(self):
         '''Получение списка продуктов для услуги визита либо лабораторного результата'''
         products = get_service_products(source=self.bs1)
-        res = [{'product': self.prod1, 'count': 4},
-               {'product': self.prod2, 'count': 5},
-               {'product': self.prod3, 'count': 1}]
+        res = [{'product': self.prod1.id, 'count': 4},
+               {'product': self.prod2.id, 'count': 5},
+               {'product': self.prod3.id, 'count': 1}]
         self.assertEqual(products, res)
         products = get_service_products(source=self.bs2)
-        res = [{'product': self.prod1, 'count': 3},
-               {'product': self.prod2, 'count': 2},
-               {'product': self.prod3, 'count': 4}]
+        res = [{'product': self.prod1.id, 'count': 3},
+               {'product': self.prod2.id, 'count': 2},
+               {'product': self.prod3.id, 'count': 4}]
         self.assertEqual(products, res)
 
     def test_outcome_product_from_visit(self):
@@ -303,9 +301,9 @@ class StoreUnitTest(TestCase):
         prod1_count = stock_balance(product=self.prod1)
         prod2_count = stock_balance(product=self.prod2)
         prod3_count = stock_balance(product=self.prod3)
-        self.assertEqual(prod1_count, 43)
-        self.assertEqual(prod2_count, 43)
-        self.assertEqual(prod3_count, 45)
+        self.assertEqual(int(prod1_count), 43)
+        self.assertEqual(int(prod2_count), 43)
+        self.assertEqual(int(prod3_count), 45)
         #Количество base_service > 1
         visit = VisitFactory()
         OrderedServiceFactory(service=self.bs1, order=visit, count=3)
@@ -313,9 +311,9 @@ class StoreUnitTest(TestCase):
         prod1_count = stock_balance(product=self.prod1)
         prod2_count = stock_balance(product=self.prod2)
         prod3_count = stock_balance(product=self.prod3)
-        self.assertEqual(prod1_count, 16)
-        self.assertEqual(prod2_count, 18)
-        self.assertEqual(prod3_count, 22)
+        self.assertEqual(int(prod1_count), 16)
+        self.assertEqual(int(prod2_count), 18)
+        self.assertEqual(int(prod3_count), 22)
 
     def test_outcome_product_from_lab_result(self):
         #Занесем товары на склад
@@ -327,11 +325,10 @@ class StoreUnitTest(TestCase):
                      {'product': self.prod2.id, 'total_count': 30},
                      {'product': self.prod3.id, 'total_count': 15}]
         save_method(shipper=self.shipper, store=self.store1, doc_items=item_list)
-        writeoff_doc = WriteOff.objects.create()
         products = [{'product': self.prod1.id, 'count': 5},
                     {'product': self.prod2.id, 'count': 9}]
         save_method = get_save_method('writeoff')
-        save_method(document=writeoff_doc, product_list=products)
+        save_method(product_list=products)
         # Допустим, каждого продукта в базе не более 1 лота
         lot_prod1 = Lot.objects.filter(product=self.prod1)
         reg_prod1 = RegistryItem.objects.filter(lot=lot_prod1)
@@ -449,10 +446,10 @@ class StoreUnitTest(TestCase):
         p1_count_store2 = stock_balance(product=self.prod1, store=self.store2)
         p2_count_store1 = stock_balance(product=self.prod2, store=self.store1)
         p2_count_store2 = stock_balance(product=self.prod2, store=self.store2)
-        self.assertEqual(p1_count_store1, 5)
-        self.assertEqual(p1_count_store2, 5)
-        self.assertEqual(p2_count_store1, 21)
-        self.assertEqual(p2_count_store2, 9)
+        self.assertEqual(int(p1_count_store1), 5)
+        self.assertEqual(int(p1_count_store2), 5)
+        self.assertEqual(int(p2_count_store1), 21)
+        self.assertEqual(int(p2_count_store2), 9)
 
     def test_diff_lot(self):
         '''Тестирование возможности списания продукта с разных партий'''
@@ -470,10 +467,29 @@ class StoreUnitTest(TestCase):
                     {'product': self.prod3.id, 'count': 4, 'number': '131'},
                     {'product': self.prod3.id, 'count': 6, 'number': '132'}]
         save_method(shipper=self.shipper, store=self.store1, doc_items=item_list, lots=lot_list)
-        writeoff_doc = WriteOff.objects.create()
         products = [{'product': self.prod1.id, 'count': 5},
                     {'product': self.prod2.id, 'count': 9}]
         save_method = get_save_method('writeoff')
-        save_method(document=writeoff_doc, product_list=products)
-        self.assertEqual(stock_balance(product=self.prod1), 5)
-        self.assertEqual(stock_balance(product=self.prod2), 21)
+        save_method(product_list=products)
+        self.assertEqual(int(stock_balance(product=self.prod1)), 5)
+        self.assertEqual(int(stock_balance(product=self.prod2)), 21)
+
+    def test_stock_balance(self):
+        save_method = get_save_method('receipt')
+        item_list = [{'product': self.prod1.id, 'total_count': 10},
+                     {'product': self.prod2.id, 'total_count': 30},
+                     {'product': self.prod3.id, 'total_count': 15}]
+        lot_list = [{'product': self.prod1.id, 'count': 3, 'number': '111'},
+                    {'product': self.prod1.id, 'count': 7, 'number': '112'},
+                    {'product': self.prod2.id, 'count': 10, 'number': '121', 'expire_date': 10},
+                    {'product': self.prod2.id, 'count': 10, 'number': '122'},
+                    {'product': self.prod2.id, 'count': 5, 'number': '123'},
+                    {'product': self.prod2.id, 'count': 5, 'number': '124', 'expire_date': 5},
+                    {'product': self.prod3.id, 'count': 4, 'number': '131'},
+                    {'product': self.prod3.id, 'count': 6, 'number': '132'}]
+        save_method(shipper=self.shipper, store=self.store1, doc_items=item_list, lots=lot_list)
+        save_method(shipper=self.shipper, store=self.store2, doc_items=item_list, lots=lot_list)
+        prod_balance = stock_balance(product=self.prod1)
+        self.assertEqual(int(prod_balance), 20)
+        prod_balance = stock_balance(product=self.prod3, store=self.store2)
+        self.assertEqual(int(prod_balance), 15)
