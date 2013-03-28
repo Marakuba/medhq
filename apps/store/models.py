@@ -360,8 +360,19 @@ def get_product_lots(product=None, count=0, store=None):
     возвращает массив словарей ['store': Store,
                                 'lots': [{'lot':Lot, 'count':int}]}]'''
 
-    '''SELECT TDoc.store_id, TLot.id, TLot.product_id, sum(TRegItem.count) from
-    '''
+    query = '''SELECT TDoc.store_id, TLot.id, TLot.expire_date, sum(TRegItem.count)
+       FROM public.store_registryitem TRegItem
+       left outer join public.store_lot TLot on TLot.id = TRegItem.lot_id
+       left outer join public.store_document TDoc on TLot.document_id=Tdoc.id
+       WHERE TLot.product_id = %s
+       GROUP BY TLot.id, TDoc.store_id, TLot.expire_date
+       ORDER BY TLot.expire_date
+    ''' % product.id
+    cursor = connection.cursor()
+    cursor.execute(query)
+    results = cursor.fetchall()
+    cursor.close()
+    return results
 
 
 def get_service_products(source):

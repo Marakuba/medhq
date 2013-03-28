@@ -358,7 +358,7 @@ class StoreUnitTest(TestCase):
         save_method(shipper=self.shipper, store=self.store1, doc_items=item_list, lots=lot_list)
         #столько же заносим в store2
         lot_list = [{'product': self.prod1.id, 'count': 3, 'number': '211'},
-                    {'product': self.prod1.id, 'count': 7, 'number': '212', 'expire_date': 3},
+                    {'product': self.prod1.id, 'count': 7, 'number': '212', 'expire_date': 2},
                     {'product': self.prod2.id, 'count': 10, 'number': '221'},
                     {'product': self.prod2.id, 'count': 10, 'number': '222', 'expire_date': 8},
                     {'product': self.prod2.id, 'count': 5, 'number': '223'},
@@ -384,7 +384,7 @@ class StoreUnitTest(TestCase):
         lot232 = Lot.objects.get(number='232', product=self.prod3)
 
         lots = get_product_lots(product=self.prod1, count=2)
-        self.assertEqual(lots, [{'lot': lot112, 'count': 2}])
+        self.assertEqual(lots, [{'lot': lot212, 'count': 2}])
 
         lots = get_product_lots(product=self.prod1, count=18)
         self.assertEqual(lots, [{'lot': lot112, 'count': 7},
