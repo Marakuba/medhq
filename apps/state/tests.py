@@ -11,7 +11,7 @@ class StateFactory(factory.Factory):
 
     name = factory.Sequence(lambda n: 'state{0}'.format(n))
     price_type = factory.SubFactory(PriceTypeFactory)
-    type = 'j'
+    type = 'b'
 
 
 class StateApiTest(unittest.TestCase):

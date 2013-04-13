@@ -170,9 +170,23 @@ class RegistryItem(models.Model):
         return "%s" % self.id
 
 
+def groupByStore(lotlist):
+    '''Группирует список лотов по складу
+        Возвращает конструкцию:
+        [[{'lot':Lot1, 'count':int, 'store': Store1},
+          {'lot':Lot2, 'count':int, 'store': Store1},
+          {'lot':Lot3, 'count':int, 'store': Store1}],
+         [{'lot':Lot4, 'count':int, 'store': Store2},
+          {'lot':Lot5, 'count':int, 'store': Store2}]]
+    '''
+    stores = set(map(lambda x: x['store'], lotlist))
+    return [[lot for lot in lotlist if lot['store'] == store] for store in stores]
+
+
 def on_visit_save(document):
     ordered_services = OrderedService.objects.filter(order=document)
     #Собираем общий список необходимых продуктов из всех ordered_service
+    # [{<prod_id>:count}]
     general_list = {}
     for ord_serv in ordered_services:
         prod_list = get_service_products(ord_serv.service)
@@ -181,54 +195,48 @@ def on_visit_save(document):
                 general_list[prod['product']] += prod['count']
             else:
                 general_list[prod['product']] = prod['count']
-    stores = {}
     for prod_id in general_list.keys():
         #Создаем документы для разных складов, откуда берутся продукты
-        store_list = get_product_lots(prod_id, general_list[prod_id])
-        for store in store_list:
-            if store in stores:
-                stores[store['store']] += store['lots']
+        grouped_lots = groupByStore(get_product_lots(prod_id, general_list[prod_id]))
+        for group in grouped_lots:
+            if len(group):
+                store_from_lot = Store.objects.get(id=group[0]['store'])
             else:
-                stores[store['store']] = store['lots']
-    for store in stores.keys():
-        doc = Document.objects.create(store=store, reason_doc=document)
-        lot_list = stores[store]
-        for item in lot_list:
-            #списание
-            source_lot = item['lot']
-            lot = Lot(product=source_lot.product,
-                      number=source_lot.number,
-                      expire_date=source_lot.expire_date,
-                      document=doc,
-                      count=item['count'])
-            RegistryItem(lot=lot, count=-lot['count'])
+                continue
+            doc = Document.objects.create(store=store_from_lot, reason_doc=document)
+            for item in group:
+                #списание
+                source_lot = item['lot']
+                lot = Lot(product=source_lot.product,
+                          number=source_lot.number,
+                          expire_date=source_lot.expire_date,
+                          document=doc,
+                          count=item['count'])
+                RegistryItem.objects.create(lot=lot, count=-lot['count'])
 
 
 def on_labresult_save(document):
     service = document.equipment_task.ordered_service.service
     #prod_list = [{'product': id, 'count': int}]
     prod_list = get_service_products(service)
-    stores = {}
     for prod in prod_list:
         #Создаем документы для разных складов, откуда берутся продукты
-        store_list = get_product_lots(prod['id'], prod['count'])
-        for store in store_list:
-            if store in stores:
-                stores[store['store']] += store['lots']
+        grouped_lots = groupByStore(get_product_lots(prod['product'], prod['count']))
+        for group in grouped_lots:
+            if len(group):
+                store_from_lot = Store.objects.get(id=group[0]['store'])
             else:
-                stores[store['store']] = store['lots']
-    for store in stores.keys():
-        doc = Document.objects.create(store=store, reason_doc=document)
-        lot_list = stores[store]
-        for item in lot_list:
-            #списание
-            source_lot = item['lot']
-            lot = Lot.objects.create(product=source_lot.product,
-                                     number=source_lot.number,
-                                     expire_date=source_lot.expire_date,
-                                     document=doc,
-                                     count=item['count'])
-            RegistryItem.objects.create(lot=lot, count=-lot['count'])
+                continue
+            doc = Document.objects.create(store=store_from_lot, reason_doc=document)
+            for item in group:
+                #списание
+                source_lot = item['lot']
+                lot = Lot.objects.create(product=source_lot.product,
+                                         number=source_lot.number,
+                                         expire_date=source_lot.expire_date,
+                                         document=doc,
+                                         count=item['count'])
+                RegistryItem.objects.create(lot=lot, count=-lot['count'])
 
 
 def check_doc_items(doc_items=[]):
@@ -281,38 +289,40 @@ def on_receipt_save(shipper, store, doc_items=[], lots=[]):
 
 
 def on_writeoff_save(store=None, product_list=[]):
+    ''' Процедура списания продукта со склада
+    '''
 
     for prod in product_list:
-        store_list = get_product_lots(prod.get('product'), prod.get('count'), store)
+        grouped_lots = groupByStore(get_product_lots(prod.get('product'), prod.get('count'), store))
         #Найденные продукты могут находиться в разных складах. Для каждого склада
         #нужно создать отдельный документ списания
         #Если передан store и на нем не хватает нужных продуктов, то
         #создастся исключение ValueError
-        for store in store_list:
-            wo_doc = WriteOff.objects.create(store=store.get('store'))
-            doc = Document.objects.create(store=store, reason_doc=wo_doc)
-            lot_list = store.get('lots')
-            #lot_list=['store': Store,
-            #          'lots': [{'lot':Lot, 'count':int}]}]
-            for item in lot_list:
-                source_lot = item['lot']
-                lot = Lot.objects.create(product=source_lot.product,
-                                         number=source_lot.number,
-                                         expire_date=source_lot.expire_date,
-                                         document=doc,
-                                         count=item['count'])
-                RegistryItem.objects.create(lot=lot, count=-lot['count'])
+        for group in grouped_lots:
+            if len(group):
+                store_from_lot = Store.objects.get(id=group[0]['store'])
+            else:
+                continue
+            wo_doc = WriteOff.objects.create()
+            doc = Document.objects.create(store=store_from_lot, reason_doc=wo_doc)
+            docitems = {}
+            for item in group:
+                source_lot = Lot.objects.get(id=item['lot'])
+                RegistryItem.objects.create(lot=source_lot, count=-item['count'])
+                if (source_lot.product in docitems):
+                    docitems[source_lot.product] += int(item['count'])
+                else:
+                    docitems[source_lot.product] = int(item['count'])
+            for prod, total_count in docitems.items():
+                DocumentItem.objects.create(product=prod, total_count=total_count, document=doc)
 
 
 def on_shift_save(document, store, product_list=[]):
-    '''store - store_from. store_to указан в document'''
+    '''процедура перемещения продукта со склада на склад
+    store - store_from. store_to указан в document'''
     for prod in product_list:
-        store_list = get_product_lots(prod.get('product'), prod.get('count'), store)
+        lot_list = get_product_lots(prod.get('product'), prod.get('count'), store.id)
         #Возвращен только один склад, так как он передан параметром в get_product_lots
-        lot_list = store_list[0].get('lots')
-        #lot_list=['store': Store,
-        #          'lots': [{'lot':Lot, 'count':int}]}]
-
         #Создаем документ списания со склада
         writeoff = Document.objects.create(store=store, reason_doc=document)
 
@@ -320,20 +330,20 @@ def on_shift_save(document, store, product_list=[]):
         receipt = Document.objects.create(store=document.store_to, reason_doc=document)
         for item in lot_list:
             #списание
-            source_lot = item['lot']
+            source_lot = Lot.objects.get(id=item['lot'])
             lot = Lot.objects.create(product=source_lot.product,
                                      number=source_lot.number,
                                      expire_date=source_lot.expire_date,
                                      document=writeoff,
                                      count=item['count'])
-            RegistryItem.objects.create(lot=lot, count=-lot['count'])
+            RegistryItem.objects.create(lot=lot, count=-item['count'])
             #приход
             lot = Lot.objects.create(product=source_lot.product,
                                      number=source_lot.number,
                                      expire_date=source_lot.expire_date,
                                      document=receipt,
                                      count=item['count'])
-            RegistryItem.objects.create(lot=lot, count=lot['count'])
+            RegistryItem.objects.create(lot=lot, count=item['count'])
 
 
 def stock_balance(store=None, product=None):
@@ -353,25 +363,53 @@ def stock_balance(store=None, product=None):
     return results[0][0]
 
 
-def get_product_lots(product=None, count=0, store=None):
+def get_product_lots(product_id, count=0, store_id=None):
     '''Возвращает имеющиеся партии продуктов, содержащие необходимое их количество.
     Приоритетные лоты - с минимальным оставшимся сроком годности.
     Далее по мере добавления партии на склад
-    возвращает массив словарей ['store': Store,
-                                'lots': [{'lot':Lot, 'count':int}]}]'''
+    возвращает массив словарей [{'lot':lot_id, 'count':int, 'store': store_id}]'''
+
+    whereStr = 'where TLot.product_id = %s%s%s' %\
+                    (product_id,
+                     product_id and store_id and ' and' or '',
+                     store_id and ' TDoc.store_id = %s' % store_id or '') or ''
 
     query = '''SELECT TDoc.store_id, TLot.id, TLot.expire_date, sum(TRegItem.count)
        FROM public.store_registryitem TRegItem
        left outer join public.store_lot TLot on TLot.id = TRegItem.lot_id
        left outer join public.store_document TDoc on TLot.document_id=Tdoc.id
-       WHERE TLot.product_id = %s
+       %s
        GROUP BY TLot.id, TDoc.store_id, TLot.expire_date
        ORDER BY TLot.expire_date
-    ''' % product.id
+    ''' % whereStr
     cursor = connection.cursor()
     cursor.execute(query)
-    results = cursor.fetchall()
+    rawData = cursor.fetchall()
     cursor.close()
+    # Сортируем результаты по приоритетам
+    withExpDate, withoutExpDate = [], []
+    for rec in rawData:
+        elem = {'store': rec[0],
+                'lot': rec[1],
+                'expire_date': rec[2] or 0,
+                'count': rec[3]}
+        if rec[2]:
+            withExpDate.append(elem)
+        else:
+            withoutExpDate.append(elem)
+    withExpDate = sorted(withExpDate, key=lambda x: (x['expire_date'], x['lot']))
+    withoutExpDate = sorted(withoutExpDate, key=lambda x: x['lot'])
+    # Отбираем необходимое количество продукта
+    results = []
+    for rec in withExpDate + withoutExpDate:
+        if count > 0:
+            newRec = rec.copy()
+            if rec['count'] > count:
+                newRec['count'] = count
+            count -= newRec['count']
+            results.append(newRec)
+    if count > 0:
+        raise ValueError(u'Недостаточное количество продукта %s на складе %s' % (product_id, store_id and store_id or ''))
     return results
 
 

@@ -4,11 +4,13 @@ from django.test.client import Client
 import factory
 from patient.models import Patient
 import datetime
+from core.tests import UserFactory
 
 
 class PatientFactory(factory.Factory):
     FACTORY_FOR = Patient
 
+    operator = factory.SubFactory(UserFactory)
     last_name = factory.Sequence(lambda n: 'Ivanov{0}'.format(n))
     first_name = factory.Sequence(lambda n: 'Ivan{0}'.format(n))
     birth_day = datetime.date.today()

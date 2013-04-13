@@ -6,6 +6,7 @@ from visit.models import Visit, OrderedService
 from patient.tests import PatientFactory
 from service.tests import BaseServiceFactory
 from core.tests import UserFactory
+from state.tests import StateFactory
 
 
 class VisitFactory(factory.Factory):
@@ -13,7 +14,7 @@ class VisitFactory(factory.Factory):
 
     patient = factory.SubFactory(PatientFactory)
     operator = factory.SubFactory(UserFactory)
-    office = u'b'
+    office = factory.SubFactory(StateFactory)
 
 
 class OrderedServiceFactory(factory.Factory):

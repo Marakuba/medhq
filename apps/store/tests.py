@@ -100,7 +100,7 @@ class StoreUnitTest(TestCase):
         docs = Document.objects.all()
         ct = ContentType.objects.get_for_model(Receipt)
         doc_ids = docs.values_list("object_id", flat=True).filter(content_type=ct)
-        docs = Document.objects.filter(pk__in=doc_ids)
+        docs = Document.objects.filter(object_id__in=doc_ids)
         self.assertEqual(len(docs), 1)
         doc = docs[0]
         self.assertEqual(doc.store, self.store1)
@@ -119,7 +119,7 @@ class StoreUnitTest(TestCase):
         docs = Document.objects.all()
         ct = ContentType.objects.get_for_model(Receipt)
         doc_ids = docs.values_list("object_id", flat=True).filter(content_type=ct)
-        docs = Document.objects.filter(pk__in=doc_ids)
+        docs = Document.objects.filter(object_id__in=doc_ids)
         self.assertEqual(len(docs), 1)
         doc = docs[0]
         self.assertEqual(doc.store, self.store1)
@@ -155,7 +155,7 @@ class StoreUnitTest(TestCase):
         docs = Document.objects.all()
         ct = ContentType.objects.get_for_model(Receipt)
         doc_ids = docs.values_list("object_id", flat=True).filter(content_type=ct)
-        docs = Document.objects.filter(pk__in=doc_ids)
+        docs = Document.objects.filter(object_id__in=doc_ids)
         '''должен создасться только 1 документ'''
         self.assertEqual(len(docs), 1)
         doc = docs[0]
@@ -208,7 +208,7 @@ class StoreUnitTest(TestCase):
         docs = Document.objects.all()
         ct = ContentType.objects.get_for_model(Receipt)
         doc_ids = docs.values_list("object_id", flat=True).filter(content_type=ct)
-        docs = Document.objects.filter(pk__in=doc_ids)
+        docs = Document.objects.filter(object_id__in=doc_ids)
         self.assertEqual(len(docs), 1)
         doc = docs[0]
         self.assertEqual(doc.store, self.store1)
@@ -329,14 +329,19 @@ class StoreUnitTest(TestCase):
                     {'product': self.prod2.id, 'count': 9}]
         save_method = get_save_method('writeoff')
         save_method(product_list=products)
-        # Допустим, каждого продукта в базе не более 1 лота
+        #Для prod1 создался 1 лот
         lot_prod1 = Lot.objects.filter(product=self.prod1)
-        reg_prod1 = RegistryItem.objects.filter(lot=lot_prod1)
+        self.assertEqual(len(lot_prod1), 1)
+        # после писания продукта в базе появилось 2 RegistryItem для этого лота:
+        # на прием и на списание
+        # выбираем те, у которых count<0 - списание
+        reg_prod1 = RegistryItem.objects.filter(lot=lot_prod1[0], count__lte=0)
         self.assertEqual(len(reg_prod1), 1)
         self.assertEqual(reg_prod1[0].count, -5)
         lot_prod2 = Lot.objects.filter(product=self.prod2)
-        reg_prod2 = RegistryItem.filter(lot=lot_prod2)
-        self.assertEqual(len(reg_prod2), 2)
+        self.assertEqual(len(lot_prod2), 1)
+        reg_prod2 = RegistryItem.objects.filter(lot=lot_prod2[0], count__lte=0)
+        self.assertEqual(len(reg_prod2), 1)
         self.assertEqual(reg_prod2[0].count, -9)
 
     def test_get_product_lots(self):
@@ -383,41 +388,50 @@ class StoreUnitTest(TestCase):
         lot231 = Lot.objects.get(number='231', product=self.prod3)
         lot232 = Lot.objects.get(number='232', product=self.prod3)
 
-        lots = get_product_lots(product=self.prod1, count=2)
-        self.assertEqual(lots, [{'lot': lot212, 'count': 2}])
+        lots = get_product_lots(product_id=self.prod1.id, count=2)
+        self.assertEqual(lots, [{'lot': lot212.id,
+                                 'count': 2,
+                                 'expire_date': 2,
+                                 'store': self.store2.id}])
 
-        lots = get_product_lots(product=self.prod1, count=18)
-        self.assertEqual(lots, [{'lot': lot112, 'count': 7},
-                                {'lot': lot212, 'count': 7},
-                                {'lot': lot111, 'count': 3},
-                                {'lot': lot211, 'count': 1}])
+        lots = get_product_lots(product_id=self.prod1.id, count=18)
+        self.assertEqual(lots, [{'lot': lot212.id, 'count': 7, 'expire_date': 2, 'store': self.store2.id},
+                                {'lot': lot112.id, 'count': 7, 'expire_date': 3, 'store': self.store1.id},
+                                {'lot': lot111.id, 'count': 3, 'expire_date': 0, 'store': self.store1.id},
+                                {'lot': lot211.id, 'count': 1, 'expire_date': 0, 'store': self.store2.id}])
 
-        lots = get_product_lots(product=self.prod2, count=26, store=self.store1)
-        self.assertEqual(lots, [{'lot': lot124, 'count': 5},
-                                {'lot': lot122, 'count': 10},
-                                {'lot': lot121, 'count': 10},
-                                {'lot': lot123, 'count': 1}])
+        lots = get_product_lots(product_id=self.prod2.id, count=26)
+        self.assertEqual(lots, [{'lot': lot124.id, 'count': 5, 'expire_date': 5, 'store': self.store1.id},
+                                {'lot': lot224.id, 'count': 5, 'expire_date': 5, 'store': self.store2.id},
+                                {'lot': lot122.id, 'count': 10, 'expire_date': 8, 'store': self.store1.id},
+                                {'lot': lot222.id, 'count': 6, 'expire_date': 8, 'store': self.store2.id}])
 
-        lots = get_product_lots(product=self.prod2, count=26, store=self.store2)
-        self.assertEqual(lots, [{'lot': lot224, 'count': 5},
-                                {'lot': lot222, 'count': 10},
-                                {'lot': lot221, 'count': 10},
-                                {'lot': lot223, 'count': 1}])
+        lots = get_product_lots(product_id=self.prod2.id, count=26, store_id=self.store1.id)
+        self.assertEqual(lots, [{'lot': lot124.id, 'count': 5, 'expire_date': 5, 'store': self.store1.id},
+                                {'lot': lot122.id, 'count': 10, 'expire_date': 8, 'store': self.store1.id},
+                                {'lot': lot121.id, 'count': 10, 'expire_date': 0, 'store': self.store1.id},
+                                {'lot': lot123.id, 'count': 1, 'expire_date': 0, 'store': self.store1.id}])
+
+        lots = get_product_lots(product_id=self.prod2.id, count=26, store_id=self.store2.id)
+        self.assertEqual(lots, [{'lot': lot224.id, 'count': 5, 'expire_date': 5, 'store': self.store2.id},
+                                {'lot': lot222.id, 'count': 10, 'expire_date': 8, 'store': self.store2.id},
+                                {'lot': lot221.id, 'count': 10, 'expire_date': 0, 'store': self.store2.id},
+                                {'lot': lot223.id, 'count': 1, 'expire_date': 0, 'store': self.store2.id}])
 
         #Провека того, что неуказанные лоты создаются автоматически
-        lots = get_product_lots(product=self.prod3, count=15, store=self.store2)
-        l = Lot.objects.get(product=self.prod3, count=5, document__store=self.store2)
-        self.assertEqual(lots, [{'lot': lot231, 'count': 4},
-                                {'lot': lot232, 'count': 6},
-                                {'lot': l, 'count': 5}])
+        lots = get_product_lots(product_id=self.prod3.id, count=15, store_id=self.store2.id)
+        l = Lot.objects.get(product=self.prod3, count=5, document__store=self.store2.id)
+        self.assertEqual(lots, [{'lot': l.id, 'count': 5, 'expire_date': 0, 'store': self.store2.id},
+                                {'lot': lot231.id, 'count': 4, 'expire_date': 0, 'store': self.store2.id},
+                                {'lot': lot232.id, 'count': 6, 'expire_date': 0, 'store': self.store2.id}])
 
         # Если достаточного количества продуктов на складах нет,
         # должна вернуться ошибка
         with self.assertRaises(ValueError):
-            get_product_lots(product=self.prod1, count=21)
-            get_product_lots(product=self.prod2, count=61)
-            get_product_lots(product=self.prod3, count=31)
-            get_product_lots(product=self.prod3, count=16, store=self.store2)
+            get_product_lots(product_id=self.prod1.id, count=21)
+            get_product_lots(product_id=self.prod2.id, count=61)
+            get_product_lots(product_id=self.prod3.id, count=31)
+            get_product_lots(product_id=self.prod3.id, count=16, store_id=self.store2.id)
 
     def test_shift(self):
         # Внесем продукты в store1
