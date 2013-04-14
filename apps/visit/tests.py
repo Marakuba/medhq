@@ -21,7 +21,9 @@ class OrderedServiceFactory(factory.Factory):
     FACTORY_FOR = OrderedService
 
     order = factory.SubFactory(VisitFactory)
+    operator = factory.SubFactory(UserFactory)
     service = factory.SubFactory(BaseServiceFactory)
+    execution_place = factory.SubFactory(StateFactory)
 
 
 class VisitApiTest(unittest.TestCase):

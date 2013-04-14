@@ -298,13 +298,14 @@ class StoreUnitTest(TestCase):
         visit = VisitFactory()
         OrderedServiceFactory(service=self.bs1, order=visit)
         OrderedServiceFactory(service=self.bs2, order=visit)
+        # self.assertEqual(on_visit_save(visit), [])
         prod1_count = stock_balance(product=self.prod1)
         prod2_count = stock_balance(product=self.prod2)
         prod3_count = stock_balance(product=self.prod3)
         self.assertEqual(int(prod1_count), 43)
         self.assertEqual(int(prod2_count), 43)
         self.assertEqual(int(prod3_count), 45)
-        #Количество base_service > 1
+        #Количество ordered_service > 1
         visit = VisitFactory()
         OrderedServiceFactory(service=self.bs1, order=visit, count=3)
         OrderedServiceFactory(service=self.bs2, order=visit, count=5)

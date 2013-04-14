@@ -183,36 +183,23 @@ def groupByStore(lotlist):
     return [[lot for lot in lotlist if lot['store'] == store] for store in stores]
 
 
-def on_visit_save(document):
-    ordered_services = OrderedService.objects.filter(order=document)
+def on_visit_save(ordered_service):
     #Собираем общий список необходимых продуктов из всех ordered_service
     # [{<prod_id>:count}]
-    general_list = {}
-    for ord_serv in ordered_services:
-        prod_list = get_service_products(ord_serv.service)
-        for prod in prod_list:
-            if prod['product'] in general_list:
-                general_list[prod['product']] += prod['count']
-            else:
-                general_list[prod['product']] = prod['count']
-    for prod_id in general_list.keys():
+    prod_list = get_service_products(ordered_service.service, ordered_service.count)
+    for prod in prod_list:
         #Создаем документы для разных складов, откуда берутся продукты
-        grouped_lots = groupByStore(get_product_lots(prod_id, general_list[prod_id]))
+        grouped_lots = groupByStore(get_product_lots(prod['product'], prod['count']))
         for group in grouped_lots:
             if len(group):
                 store_from_lot = Store.objects.get(id=group[0]['store'])
             else:
                 continue
-            doc = Document.objects.create(store=store_from_lot, reason_doc=document)
+            doc = Document.objects.create(store=store_from_lot, reason_doc=ordered_service.order)
             for item in group:
                 #списание
-                source_lot = item['lot']
-                lot = Lot(product=source_lot.product,
-                          number=source_lot.number,
-                          expire_date=source_lot.expire_date,
-                          document=doc,
-                          count=item['count'])
-                RegistryItem.objects.create(lot=lot, count=-lot['count'])
+                source_lot = Lot.objects.get(id=item['lot'])
+                RegistryItem.objects.create(lot=source_lot, count=-item['count'])
 
 
 def on_labresult_save(document):
@@ -230,13 +217,8 @@ def on_labresult_save(document):
             doc = Document.objects.create(store=store_from_lot, reason_doc=document)
             for item in group:
                 #списание
-                source_lot = item['lot']
-                lot = Lot.objects.create(product=source_lot.product,
-                                         number=source_lot.number,
-                                         expire_date=source_lot.expire_date,
-                                         document=doc,
-                                         count=item['count'])
-                RegistryItem.objects.create(lot=lot, count=-lot['count'])
+                source_lot = Lot.objects.get(id=item['lot'])
+                RegistryItem.objects.create(lot=source_lot, count=-item['count'])
 
 
 def check_doc_items(doc_items=[]):
@@ -413,14 +395,14 @@ def get_product_lots(product_id, count=0, store_id=None):
     return results
 
 
-def get_service_products(source):
+def get_service_products(source, source_count=1):
     '''Возвращает список [{'product':id, 'count':int}]'''
     source_cls = source.__class__
     items = Ingredient.objects.all()
     ct = ContentType.objects.get_for_model(source_cls)
     item_ids = items.values_list("object_id", flat=True).filter(content_type=ct, object_id=source.id)
     ingredients = Ingredient.objects.filter(object_id__in=item_ids)
-    prod_list = [{'product': i.product.id, 'count': i.count} for i in ingredients]
+    prod_list = [{'product': i.product.id, 'count': i.count * source_count} for i in ingredients]
     return prod_list
 
 SAVE_METHODS = {'visit': on_visit_save,
@@ -444,4 +426,10 @@ def generate_product_code(sender, **kwargs):
         obj.save()
 
 
+def writeoff_from_visit(sender, **kwargs):
+    obj = kwargs['instance']
+    func = get_save_method('visit')
+    func(obj)
+
 post_save.connect(generate_product_code, sender=Product)
+post_save.connect(writeoff_from_visit, sender=OrderedService)
